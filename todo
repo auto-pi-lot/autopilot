@@ -1,0 +1,6 @@
+- make settings in user folder not the repo. Settings folder should just be for templates
+- rename/restructure templates as tasks, protocols. make protocol a base class of tasks
+- restructure folder of hardware objects - LEDs, Ports, etc. that all have their own logic
+- Make inits and the RPilot object more generic - init hardware rather than pins, etc.
+    - Make all the hardware logic as separate objects, and have the mouse & protocol determine which hardware is present
+    - Same with load_sounds, the speakers/sound driver should be a hardware object.

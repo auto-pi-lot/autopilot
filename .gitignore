@@ -89,3 +89,10 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# ------------------
+# PyCharm stuff
+.idea
+
+# OSX stuff
+.DS_Store

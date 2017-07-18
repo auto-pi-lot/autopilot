@@ -33,8 +33,7 @@ from time import sleep
 class RPilot:
     def __init__(self, firstrun=0):
         # Init all the hardware stuff, get the RPi ready for instructions
-        # Remember! All the RPi should care about is the immediate future and the recent past.
-        # Let the terminal deal with stuff like total number of trials, etc.
+
         self.licks  = rpiset.LICKS
         self.valves = rpiset.VALVES
         self.licks_inv = {v: k for k,v in self.licks.items()} #So we can translate pin # to 'L', etc.
@@ -94,7 +93,7 @@ class RPilot:
         # Task should be assigned in the Mouse object such that subject.stages.next() should run the next stage.
         self.subject = core.mouse.Mouse(name)
         # We have to make the sounds for the task so the task class can remain agnostic to the sound implementation
-        # TODO: Check if task is assigned before trying to load sounds.
+        # TODO: Put 'load_sounds' as separate function, separate preparing the task to run from loading the mouse
         self.load_sounds(self.subject.task_params['sounds'])
         self.subject.receive_sounds(self.pyo_sounds,self.sound_lookup)
 

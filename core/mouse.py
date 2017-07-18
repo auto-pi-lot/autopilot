@@ -147,7 +147,7 @@ class Mouse:
 
     def load_protocol(self,step_number=-1):
         # If no step_number passed, load the last step assigned
-        # TODO: dicts are mutable, so last number won't necessarily be last assigned. Fix when multi-step protocols made
+        # TODO: dicts are mutable, so last number won't necessarily be last assigned. Fix when multi-step protocols made - use odicts
         last_assigned_task   = self.h5data._v_children.keys()[step_number]
         self.h5trial_records = self.h5data._f_get_child(last_assigned_task)
         self.trial_row       = self.h5trial_records.row
