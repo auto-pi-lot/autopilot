@@ -1,0 +1,58 @@
+NOTES:
+- The problem seem sto be about stopping the paradigm, waiting too long, and restarting.
+- Starting and stopping the paradigm (without waiting) is not the problem
+- I found out that it is related to statematrix.VERYLONGTIME
+
+TO DEBUG:
+eventsThisTrial
+print self.sm
+print np.array(self.dispatcherModel.eventsMat)
+
+ipdb> print np.array(self.dispatcherModel.eventsMat)
+[[  0.308  -1.      0.   ]
+ [  2.209   2.      0.   ]
+ [  2.209   4.      0.   ]
+ [  2.256  -1.      1.   ]
+ [  2.256   6.      2.   ]
+ [  4.065  -1.      0.   ]
+ [ 11.857   6.      0.   ]]
+
+Tup = 6    StartTrial=1,waitForC=2
+
+Connecting to serial port
+[17:56:08] Started
+[17:56:10] Stopped
+[17:56:46] Started
+[17:56:47] Stopped
+[18:00:49] Started
+---------------------------------------------------------------------------
+IndexError                                Traceback (most recent call last)
+/home/jarauser/src/tkparadigms/adaptive_freq_discrim.py in prepare_next_trial(self, nextTrial)
+    311         if nextTrial>0:
+    312             self.params.update_history()
+--> 313             self.calculate_results(nextTrial-1)
+    314             # -- Apply anti-bias --
+    315             if self.params['antibiasMode'].get_string()=='repeat_mistake':
+
+/home/jarauser/src/tkparadigms/adaptive_freq_discrim.py in calculate_results(self, trialIndex)
+    602             # -- Store time of stimulus --
+    603             targetStateID = self.sm.statesNameToIndex['playStimulus']
+--> 604             targetEventInd = np.flatnonzero(statesThisTrial==targetStateID)[0]
+    605             self.results['timeTarget'][trialIndex] = eventsThisTrial[targetEventInd,0]
+    606 
+
+IndexError: index out of bounds
+> /home/jarauser/src/tkparadigms/adaptive_freq_discrim.py(604)calculate_results()
+    603             targetStateID = self.sm.statesNameToIndex['playStimulus']
+--> 604             targetEventInd = np.flatnonzero(statesThisTrial==targetStateID)[0]
+    605             self.results['timeTarget'][trialIndex] = eventsThisTrial[targetEventInd,0]
+
+ipdb> statesThisTrial
+array([ 1.,  2.,  0.,  0.])
+ipdb> targetStateID
+4
+ipdb> trialIndex
+1
+ipdb> self.results['timeTarget'][:4]
+array([ nan,   0.,   0.,   0.])
+ipdb> 

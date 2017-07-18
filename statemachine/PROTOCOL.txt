@@ -1,0 +1,252 @@
+-----------------------------------------------------------
+ COMMUNICATION PROTOCOL (client=Ubuntu, server=ArduinoDue)
+-----------------------------------------------------------
+
+Version 0.2
+
+Here 'opcode' refers to one byte that specifies a particular
+command. See definitions at top of statemachine.ino and smclient.py
+
+* CONNECT (establish connection):
+- Client sends CONNECT opcode.
+- Server checks for CONNECT opcode.
+- Server sends OK opcode.
+- Server starts main loop.
+- Client checks for OK opcode.
+- Client continues.
+
+* TEST_CONNECTION:
+- Client sends opcode.
+- Server sends OK opcode.
+
+* GET_SERVER_VERSION:
+- Client sends opcode.
+- Server sends a single line of text (a string with line-break).
+
+* SET_SIZES:
+- Client sends opcode.
+- Client sends one byte with the number of inputs.
+- Client sends one byte with the number of outputs.
+- Client sends one byte with the number of extra timers.
+- Server does not return anything.
+
+* GET_TIME:
+- Client sends opcode.
+- Server sends the time as a single line of text (a string with line-break)
+
+* GET_INPUTS:
+- Client sends opcode.
+- Server sends one byte with the number of inputs.
+- Server sends one byte for each input with the corresponding value.
+
+* FORCE_OUTPUT:
+- Client sends opcode.
+- Client sends outputIndex as one byte.
+- Client sends outputValue as one byte.
+- Server sets the output. It does not return anything.
+
+* SET_STATE_MATRIX:
+- Client sends opcode.
+- Client sends each element of the matrix as one byte, one row at a time:
+  (state0,action0) then (state0,action1) and so on.
+- Server does not return anything.
+- NOTE: currently, matrix is limited to 256x256
+
+* REPORT_STATE_MATRIX:
+- Client sends opcode.
+- Server sends one strings (line) per row of the matrix
+
+* RUN:
+- Client sends opcode.
+- Servers starts running the state machine. It does not return anything.
+
+* STOP:
+- Client sends opcode.
+- Servers stops running the state machine. It does not return anything.
+
+* SET_STATE_TIMERS:
+- Client sends opcode.
+- Client sends each timer value (in milliseconds) as unsigned long (32bit int)
+  with little-endian byte order (i.e., least significant byte first).
+- Server does not return anything.
+
+* REPORT_STATE_TIMERS:
+- Client sends opcode.
+- Server sends one line per timer (with the timer value).
+
+* SET_EXTRA_TIMERS:
+- Client sends opcode.
+- Client sends each timer value (in milliseconds) as unsigned long (32bit int)
+  with little-endian byte order (i.e., least significant byte first).
+- Server does not return anything.
+
+* SET_EXTRA_TRIGGERS:
+- Client sends opcode.
+- Client sends one byte specifying the state that triggers each extra timer.
+
+* REPORT_EXTRA_TIMERS:
+- Client sends opcode.
+- Server sends one line per extra timer (with the trigger state and timer value).
+
+* SET_STATE_OUTPUTS:
+- Client sends opcode.
+- Client sends, for each output on each state, one byte specifying the value:
+  0:low, 1:high, else:keep previous value.
+  All outputs for one state are sent first, then for another state, and so on:
+  (state0,output0) then (state0,output1) and so on.
+
+* SET_SERIAL_OUTPUTS:
+- Client sends opcode.
+- Client sends one byte for each state.
+- Server does not return anything.
+
+* REPORT_SERIAL_OUTPUTS:
+- Client sends opcode.
+- Server sends one line with the values of the serial outputs.
+
+* GET_EVENTS
+- Client sends opcode.
+- Server sends a string for each event containing:
+  eventTime eventCode nextState (separated by spaces, terminated with '\n')
+  . eventTime is sent in milliseconds
+  . eventCode will be -1, if the transition was done through FORCE_STATE.
+- The client has to read each line, split the values and convert to numbers.
+
+* GET_CURRENT_STATE:
+- Client sends opcode.
+- Server sends one byte specifying the current state.
+
+* FORCE_STATE:
+- Client sends opcode.
+- Client sends stateID as one byte.
+- The server updates the events table with the code -1 for a forced transition.
+
+* ERROR:
+- The server sends an ERROR opcode if the command was not recognized.
+
+
+
+=== Events matrix ===
+- Events' IDs are integers as follows:
+  - TTL inputs: 0,1,2,3,... (nInputs-1)
+  - State timer: nInputs
+  - Extra timer: (nInputs+1),(nInputs+2),...
+  - Forced event: -1
+
+
+=== TIMERS' BEHAVIOR ===
+There are two types of timers:
+
+1. State timers: when the state machine enters a state, a timer for
+   that state is started. The state transition matrix defines what to
+   do when the timer goes off.
+ - If there is a "null" transition to the same state, the timer is not
+   reinitiated, but continues.
+ - This timer is reset/forgotten when leaving that state.
+
+2. Extra timers: these are additional timers that can be triggered
+   when the state machine enters a state. Extra columns in the state
+   transition matrix define what to do when each timer goes off.
+ - If there is a "null" transition to the same state, the timer is not
+   reinitiated, but continues.
+ - These timers are remembered between states.
+ - If the timer is running when entering again the triggering state,
+   the timer is reset.
+   
+
+=== TO DO ===
+- Check how much memory is being used:
+  http://playground.arduino.cc/Code/AvailableMemory
+- Test that nStates (in stateMatrix) is within limits (<256)
+
+
+=== QUESTIONS ABOUT DESIGN ===
+- What happens if a state-timer event makes a transition from a state to
+  itself? does it appear in the matrix of transitions?
+  ANSWER: Yes. In the example I run, it appear as eventCode 6.
+
+
+=== DESIGN DECISIONS ==
+- Millisecond precision:
+  . Function millis() returns uint32 which overflows at 50 days.
+  . Behavior rarely requires higher resolution
+  . micros() would overflow after 70min, but we could modify it to
+    return an uint64 instead.
+- The client takes and returns time values in seconds.
+- The server does not use interrupts (for timing or input events). This
+  way it is easy to find out the order of steps by the server.
+- If all events in the queue bring the state machine to the same state
+  within a cycle, it will be as if nothing had happened. That is, outputs
+  in intermediate states will not be set.
+- Stopping the state machine does not turn off outputs. This may be a
+  problem when using lasers and other pulsed outputs.
+- When returning events, the server only sends the next state, not the
+  previous state. Having next state and the previous event should be =
+  enough for keeping track of transitions, unless events are skipped.
+
+
+
+
+- Arrays for events and stateMatrix are created as globals with a
+  predefined max size.
+- Additional timers ... (not sure yet)
+- Little endian for transmission. Arbitraty decision, let's say
+  because x86 architecture uses it.
+- Maximum number of states is 256 (to fit in one byte)
+- Maximum number of events in one go depends on board memory,
+  You need to use get_events() often to avoid overflow.
+
+- When the state machine is not running it still reads the inputs, but
+  it does not update the states.
+- Outputs for each state are sent as one byte from which each bit is
+  one output. This limits the number of outputs to 8.
+- A stateTimer value of 0 means that the outputs for that state are set
+  but the state will change right away on the next cycle.
+- The time between finishing one trial and starting the next, depends on
+  the updating time of the dispatcher. The client needs to check that a
+  final state has been reached, and the server needs to receive the code
+  that starts the new trial.
+
+- XXFIXME:  Inputs are detected by external interrupts.
+- XXFIXME: A timer for each state is implemented with a hardware timer and interrupt.
+
+=== LIMITS (to improve) ===
+- nEvents is limited at 256 by the way it is sent in GET_EVENTS
+- stateMatrix is limited to 256x256
+- If many events happen in 1ms (the resolution of the system) they will executed
+  but if the system returns to the same state after all these, no outputs will
+  change. See implementation in execute_cycle()
+
+=== BUGS (server) ===
+- Opcode 0x98 or 0x99 did not work on Maple (why?)
+- The serial port has spurious data before requesting GET_INPUTS
+  (or other commands)
+  SOLUTION: I had to use self.ser.flushInput()
+- 2012-08-07:  attachInterrupt(BOARD_BUTTON_PIN, log_event, CHANGE);
+  seems to work only when removing the all 'case' statements.
+  NOPE: I was missing 'break' statements in each 'case'.
+- 2012-08-08: Serial port handle only 64bits at the time.
+  http://forums.leaflabs.com/topic.php?id=659
+  I need to split the stateMatrix.
+  NOTE: when receiving the events data this does not seem to be a problem
+
+- 2012-08-08: weird behavior after sending matrix, is as if the serialUSB
+  gets stuck, and it doesn't reach the end of loop() where state machine
+  is updated. (or interrupt not called?)
+
+- 2012-08-16: random data in the SerialUSB when sending matrix and timers
+  one after the other.
+  SOLUTION: Using SerialUSB.available() before each read seems to solve the
+  problem.
+
+- 2012-08-17: after ~45sec of switching states with timers, the LED starts
+  pulsing (throbing) and the Maple cannot be reset from software.
+  And sending commands on the SerialUSB does not stop the problem.
+  See http://leaflabs.com/docs/troubleshooting.html#id3
+  SOLUTION: The problem was that there were more events than MAXNEVENTS,
+            and the matrix of events had allocated only so many.
+            You need to request events often to clear the matrix.
+
+
+=== BUGS (client) ===
+- When replacing a value (e.g., a NumericParam), the system will crash if the box if empty.

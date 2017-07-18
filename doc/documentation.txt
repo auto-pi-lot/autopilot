@@ -1,0 +1,21 @@
+
+____________________
+ 
+  DATA STRUCTURES
+____________________
+
+The protocol keeps its data in the following data structures:
+
+- self.sm : <class 'statematrix.StateMatrix'> To be modified when preparing each trial. Its content should be modified through assembler methods like self.sm.addState(). The actual format of the matrix is defined in SM_PROTOCOL.txt.
+
+- self.params : <class 'paramgui.Container'> Is a subclassed dictionary that contains each GUI parameter of the protocol.
+
+- self.params['someParameter] : <class 'paramgui.NumericParam'>
+ or <class 'paramgui.MenuParam'> Defines the graphical interface for each parameter and provides methods for getting and setting its value. 
+- self.dispatcher.eventsMat : <type 'numpy.ndarray'> contains the events from the state machine. It consists of 5 (or 4) columns: (1) the departure state, (2) the event ID, (3) the time of the event, (4) the destination state. The fifth column can be ignored (it was used for an external timer).
+
+
+
+
+
+
