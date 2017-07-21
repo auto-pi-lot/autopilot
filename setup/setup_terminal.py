@@ -1,0 +1,68 @@
+# Routines for initially setting up a terminal
+
+import os
+import json
+import argparse
+
+# Check for sudo
+
+if os.getuid() != 0:
+    raise Exception("Need to run as root")
+
+
+# Argument parsing
+parser = argparse.ArgumentParser(description="Setup an RPilot Terminal")
+parser.add_argument('-d', '--dir', help="Base Directory for RPilot")
+
+args = parser.parse_args()
+
+if args.dir:
+	basedir = args.dir
+else:
+	basedir = '/usr/rpilot'
+
+datadir = os.path.join(basedir,'data')
+
+# Check for prereqs
+#try:
+#	import PySide
+
+#except:
+#	print("Error importing prerequisite packages!")
+
+
+# Make folders
+#os.umask(0)
+if not os.path.exists(basedir):
+	try:
+		os.makedirs(basedir)
+		os.chmod(basedir, 0777)
+	except:
+		print("Error making basedir: {}".format(basedir))
+if not os.path.exists(datadir):
+	os.makedirs(datadir)
+	os.chmod(basedir, 0777)
+
+# Get repo dir
+file_loc = os.path.realpath(__file__)
+print(file_loc)
+file_loc = file_loc.split(os.sep)[:-2]
+repo_loc = os.path.join(os.sep,*file_loc)
+print(repo_loc)
+
+
+# make and save prefs
+prefs = {}
+prefs['BASEDIR'] = basedir
+prefs['DATADIR'] = datadir
+prefs['REPODIR'] = repo_loc
+with open(os.path.join(basedir,'prefs.json'), 'w') as prefs_file:
+	json.dump(prefs, prefs_file)
+
+# TODO: Make a .sh file to run the Terminal.py file with the prefs_file as an argument
+
+
+
+
+
+
