@@ -3,6 +3,7 @@
 import os
 import json
 import argparse
+import pprint
 
 # Check for sudo
 
@@ -17,49 +18,69 @@ parser.add_argument('-d', '--dir', help="Base Directory for RPilot")
 args = parser.parse_args()
 
 if args.dir:
-	basedir = args.dir
+    basedir = args.dir
 else:
-	basedir = '/usr/rpilot'
+    basedir = '/usr/rpilot'
 
 datadir = os.path.join(basedir,'data')
 
 # Check for prereqs
 #try:
-#	import PySide
+#   import PySide
 
 #except:
-#	print("Error importing prerequisite packages!")
+#   print("Error importing prerequisite packages!")
 
 
 # Make folders
 #os.umask(0)
 if not os.path.exists(basedir):
-	try:
-		os.makedirs(basedir)
-		os.chmod(basedir, 0777)
-	except:
-		print("Error making basedir: {}".format(basedir))
+    try:
+        os.makedirs(basedir)
+        os.chmod(basedir, 0777)
+    except:
+        print("Error making basedir: {}".format(basedir))
 if not os.path.exists(datadir):
-	os.makedirs(datadir)
-	os.chmod(basedir, 0777)
+    os.makedirs(datadir)
+    os.chmod(basedir, 0777)
 
 # Get repo dir
 file_loc = os.path.realpath(__file__)
-print(file_loc)
 file_loc = file_loc.split(os.sep)[:-2]
 repo_loc = os.path.join(os.sep,*file_loc)
-print(repo_loc)
 
 
-# make and save prefs
+# make prefs dict
 prefs = {}
 prefs['BASEDIR'] = basedir
 prefs['DATADIR'] = datadir
 prefs['REPODIR'] = repo_loc
-with open(os.path.join(basedir,'prefs.json'), 'w') as prefs_file:
-	json.dump(prefs, prefs_file)
 
-# TODO: Make a .sh file to run the Terminal.py file with the prefs_file as an argument
+# If it doesn't exist, make a blank pilot database
+pilot_db = os.path.join(basedir,'pilot_db.json')
+prefs['PILOT_DB'] = pilot_db
+if not os.path.exists(pilot_db):
+    with open(pilot_db, 'w') as pilot_db_file:
+        json.dump({}, pilot_db_file)
+
+# save prefs
+prefs_file = os.path.join(basedir, 'prefs.json')
+with open(prefs_file, 'w') as prefs_file_open:
+    json.dump(prefs, prefs_file_open)
+
+# Create .sh file to open terminal
+launch_file = os.path.join(basedir, 'launch_terminal.sh')
+with open(launch_file, 'w') as launch_file_open:
+    launch_string = "python " + os.path.join(repo_loc, "core", "terminal.py") + " -p " + prefs_file
+    launch_file_open.write(launch_string)
+
+os.chmod(launch_file, 0775)
+
+
+pp = pprint.PrettyPrinter(indent=4)
+print("Terminal set up with prefs:\r")
+pp.pprint(prefs)
+
 
 
 

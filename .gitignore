@@ -92,7 +92,7 @@ ENV/
 
 # ------------------
 # PyCharm stuff
-.idea
+.idea/*
 
 # OSX stuff
 .DS_Store
