@@ -267,6 +267,7 @@ class Terminal(QtGui.QWidget):
     def initUI(self):
         # Main panel layout
         self.panel_layout = QtGui.QHBoxLayout()
+        self.panel_layout.setContentsMargins(0,0,0,0)
 
         # Init panels and add to layout
         self.pilot_panel = Pilots()
@@ -280,11 +281,22 @@ class Terminal(QtGui.QWidget):
         #self.panel_layout.addWidget(self.param_panel, stretch = 2)
         self.panel_layout.addWidget(self.data_panel, stretch=5)
 
-        # To make picture...
-        #self.label = QtGui.QLabel(self)
-        #self.label.setPixmap(QtGui.QPixmap('mute.png'))
+        # add logo
+        self.layout = QtGui.QVBoxLayout()
+        self.layout.setContentsMargins(5,5,5,5)
+        self.logo = QtGui.QLabel()
+        print(prefs['REPODIR']+'/graphics/logo.png')
+        self.logo.setPixmap(QtGui.QPixmap(prefs['REPODIR']+'/graphics/logo.png').scaled(265,40))
+        self.logo.setFixedHeight(40)
+        self.logo.setAlignment(QtCore.Qt.AlignRight)
 
-        self.setLayout(self.panel_layout)
+        self.plot_container = QtGui.QFrame()
+        self.plot_container.setLayout(self.panel_layout)
+        self.plot_container.setContentsMargins(0,0,0,0)
+        self.layout.addWidget(self.logo)
+        self.layout.addWidget(self.plot_container)
+
+        self.setLayout(self.layout)
         self.show()
 
 
