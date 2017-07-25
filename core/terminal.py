@@ -7,9 +7,11 @@ import argparse
 import json
 import sys
 import os
+from collections import OrderedDict as odict
 from PySide import QtCore
 from PySide import QtGui
 
+from mouse import Mouse
 
 
 # http://zetcode.com/gui/pysidetutorial/layoutmanagement/
@@ -27,7 +29,7 @@ class Pilots(QtGui.QWidget):
         #self.layout.setContentsMargins(0,0,0,0)
 
         # Make containers to style backgrounds
-        self.container = QtGui.QFrame()
+        self.container = QtGui.QGroupBox()
         self.container.setObjectName("pilot_container")
         self.container.setStyleSheet("#pilot_container {background-color:blue;}")
 
@@ -44,24 +46,28 @@ class Pilots(QtGui.QWidget):
         self.layout.addWidget(self.container)
         self.setLayout(self.layout)
 
-        # Get dict of pilots and make buttons
-        with open(prefs['PILOT_DB']) as prefs_file:
-            self.pilots = json.load(prefs_file)
-        #self.pilots = {0:{"ip":12345,"mice":[1000,2000,3000,4000]},
-        #               1:{"ip":12345,"mice":[1000,2000,3000,4000]}}
+        # Create button group that houses button logic / exclusivity
+        self.button_group = QtGui.QButtonGroup()
+        self.button_group.buttonClicked.connect(self.select_pilot)
 
+        # Get dict of pilots and make buttons
+        with open(prefs['PILOT_DB']) as pilot_file:
+            # load as ordered dictionary
+            self.pilots = json.load(pilot_file, object_pairs_hook=odict)
         self.create_buttons()
 
-        #self.show()
-
     def create_buttons(self):
-        self.buttons = []
+        self.clear_buttons()
+        self.buttons = {}
         for p in self.pilots.keys():
-            self.buttons.append(QtGui.QPushButton(str(p)))
-            self.layout.addWidget(self.buttons[-1])
+            self.buttons[p] = (QtGui.QPushButton(str(p)))
+            self.buttons[p].setCheckable(True)
+            self.button_group.addButton(self.buttons[p])
+            self.button_layout.addWidget(self.buttons[p])
 
         # Make an add pilot button
         self.add_pilot_button = QtGui.QPushButton("+")
+        self.add_pilot_button.clicked.connect(self.create_pilot)
         self.button_layout.addWidget(self.add_pilot_button)
         self.button_layout.addStretch(1)
 
@@ -71,13 +77,62 @@ class Pilots(QtGui.QWidget):
             if child.widget():
                 child.widget().deleteLater()
 
+        for b in self.button_group.buttons():
+            self.button_group.removeButton(b)
+
+    class New_Pilot_Window(QtGui.QDialog):
+        # Dialog window for declaring a new pilot
+        def __init__(self):
+            QtGui.QDialog.__init__(self)
+
+            # Lines to add
+            self.name = QtGui.QLineEdit()
+            self.ip = QtGui.QLineEdit("0.0.0.0")
+
+            # OK/Cancel buttons
+            self.cancel = QtGui.QPushButton("Cancel")
+            self.ok     = QtGui.QPushButton("OK")
+            self.cancel.clicked.connect(self.reject)
+            self.ok.clicked.connect(self.accept)
+
+            # Add buttons to layout
+            self.layout = QtGui.QFormLayout()
+            self.layout.addRow(QtGui.QLabel("RPilot Name:"), self.name)
+            self.layout.addRow(QtGui.QLabel("IP:"), self.ip)
+            self.layout.addRow(self.cancel,self.ok)
+
+            self.setLayout(self.layout)
+
+
     def create_pilot(self):
-        # When create_pilot button is pressed...
-        pass
+        self.pilot_window = self.New_Pilot_Window()
+        self.pilot_window.exec_()
+
+        # If OK was pressed, we make a new pilot
+        print(self.pilot_window.result())
+        if self.pilot_window.result() == 1:
+            # TODO: List RPilots that are broadcasting availability and list rather than manual IP config
+            # TODO: Test connection to RPilots
+
+            self.pilots[self.pilot_window.name.text()] = {"ip": self.pilot_window.ip.text(), "mice":[]}
+            self.update_db()
+
+            self.create_buttons()
 
     def select_pilot(self):
-        # We have selected a pilot!
+        pilot_name = self.button_group.checkedButton().text()
+        # This passes the actual list, not a copy,
+        # so appending to it in the mice object appends to it here
+        self.mice_panel.create_buttons(self.pilots[pilot_name]["mice"])
         pass
+
+    def give_mice_panel(self, mice_panel):
+        # Pass the instance of the mice panel so we know where to send signals
+        self.mice_panel = mice_panel
+
+    def update_db(self):
+        with open(prefs['PILOT_DB'], 'w') as pilot_file:
+            json.dump(self.pilots, pilot_file)
 
 class Mice(QtGui.QWidget):
     '''
@@ -90,7 +145,7 @@ class Mice(QtGui.QWidget):
         self.layout = QtGui.QVBoxLayout(self)
 
         # Containers to style background
-        self.container = QtGui.QFrame()
+        self.container = QtGui.QGroupBox()
         self.container.setObjectName("mice_container")
         self.container.setStyleSheet("#mice_container {background-color:green;}")
 
@@ -107,22 +162,34 @@ class Mice(QtGui.QWidget):
         self.layout.addWidget(self.container)
         self.setLayout(self.layout)
 
+        # Create button group that houses button logic / exclusivity
+        self.button_group = QtGui.QButtonGroup()
+        self.button_group.buttonClicked.connect(self.select_mouse)
+
+        # Empty list of mice, passed from the pilot widget
+        self.mice = []
+
+        # Current Mouse, opened as Mouse Data model
+        self.mouse = []
+
+
         #self.show()
 
     def create_buttons(self, mice):
         # Create the buttons for each mouse that a pilot owns
         self.clear_buttons()
-
         self.mice = mice
-
-        self.mouse_buttons = []
+        self.buttons = {}
         for m in mice:
-            self.mouse_buttons.append(QtGui.QPushButton(str(m)))
-            self.button_layout.addWidget(self.mouse_buttons[-1])
+            self.buttons[m] = QtGui.QPushButton(str(m))
+            self.buttons[m].setCheckable(True)
+            self.button_group.addButton(self.buttons[m])
+            self.button_layout.addWidget(self.buttons[m])
 
         # Make an add mouse button
         self.add_mouse_button = QtGui.QPushButton("+")
-        self.button_layout.addWidget(self.add_pilot_button)
+        self.add_mouse_button.clicked.connect(self.create_mouse)
+        self.button_layout.addWidget(self.add_mouse_button)
         self.button_layout.addStretch(1)
 
     def clear_buttons(self):
@@ -131,11 +198,24 @@ class Mice(QtGui.QWidget):
             if child.widget():
                 child.widget().deleteLater()
 
+        for b in self.button_group.buttons():
+            self.button_group.removeButton(b)
+
+    class New_Mouse_Wizard(QtGui.QDialog):
+        def __init__(self):
+
     def create_mouse(self):
-        pass
+        text, ok = QtGui.QInputDialog.getText(self, "Input Mouse ID", "Mouse ID:")
+        if ok:
+            self.mice.append(text)
+            self.create_buttons(self.mice)
+            self.pilot_panel.update_db()
 
     def select_mouse(self):
         pass
+
+    def give_pilot_panel(self, pilot_panel):
+        self.pilot_panel = pilot_panel
 
 class Parameters(QtGui.QWidget):
     '''
@@ -274,6 +354,10 @@ class Terminal(QtGui.QWidget):
         self.mice_panel = Mice()
         self.param_panel = Parameters()
         self.data_panel = DataView()
+
+        # Acquaint the panels
+        self.pilot_panel.give_mice_panel(self.mice_panel)
+        self.mice_panel.give_pilot_panel(self.pilot_panel)
 
         self.panel_layout.addWidget(self.pilot_panel, stretch = 1)
         self.panel_layout.addWidget(self.mice_panel, stretch = 1)

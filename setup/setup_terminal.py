@@ -63,10 +63,13 @@ if not os.path.exists(pilot_db):
     with open(pilot_db, 'w') as pilot_db_file:
         json.dump({}, pilot_db_file)
 
+os.chmod(pilot_db, 0777)
+
 # save prefs
 prefs_file = os.path.join(basedir, 'prefs.json')
 with open(prefs_file, 'w') as prefs_file_open:
     json.dump(prefs, prefs_file_open)
+
 
 # Create .sh file to open terminal
 launch_file = os.path.join(basedir, 'launch_terminal.sh')

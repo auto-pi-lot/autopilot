@@ -20,14 +20,15 @@ class Mouse:
     """Mouse object for managing protocol, parameters, and data"""
     # hdf5 structure is split into two groups, mouse info and trial data.
 
-    def __init__(self, name, new=0):
+    def __init__(self, name, dir='/usr/rpilot/data', new=0):
         self.name = str(name)
-        if new or not os.path.isfile(rpiset.PI_DATA_DIR + self.name + '.hdf5'):
+        self.file = os.path.join(dir, name + '.h5')
+        if new or not os.path.isfile(self.file):
             print("\nNo file detected or flagged as new.")
-            self.new_mouse(name)
-            return
-
-        self.h5f    = tables.open_file(rpiset.PI_DATA_DIR + self.name + '.hdf5', 'r+')
+            self.new_mouse_file()
+        else:
+            # .new_mouse() opens the file
+            self.h5f    = tables.open_file(self.file, 'r+')
         # TODO figure out pytables swmr mode
         self.h5info = self.h5f.root.info.info # double because info is a group and a table
         self.h5data = self.h5f.root.data
@@ -44,8 +45,8 @@ class Mouse:
         if self.h5data._v_children.keys():
             self.load_protocol()
 
-    def new_mouse(self,name):
-        if os.path.isfile(rpiset.PI_DATA_DIR + self.name + '.hdf5'):
+    def new_mouse_file(self):
+        if os.path.isfile(self.file):
             overw = str(raw_input("\nMouse already has file, overwrite and make new file? (y/n)\n   >>"))
             if overw == 'y':
                 self.h5f = tables.open_file(rpiset.PI_DATA_DIR + self.name + '.hdf5', mode='w')
@@ -56,37 +57,48 @@ class Mouse:
                 return
         else:
             print("\nNo file found, making a new file.")
-            self.h5f = tables.open_file(rpiset.PI_DATA_DIR + self.name + '.hdf5', mode='w')
+            self.h5f = tables.open_file(self.file, mode='w')
             # TODO ask if user wants to redefine all params or just set new protocol.
 
-        # TODO when terminal built, have terminal stash what types of biographical information we want/allow new fields to be defined.
-        # Basic info about the mouse
-        self.info               = dict()
-        self.info['name']       = self.name
-        self.info['start_date'] = datetime.date.today().isoformat()
+        # Basic file structure
+        self.h5f.create_group("/","data","Trial Record Data")
+        self.h5f.create_group("/","info","Biographical Info")
 
-        try:
-            self.info['baseline_mass'] = float(raw_input("\nWhat is {}'s baseline mass?\n    >".format(self.name)))
-            self.info['minimum_mass']  = float(raw_input("\nAnd what is {}'s minimum mass? (eg. 80% of baseline?)\n    >".format(self.name)))
-            self.info['box']           = int(raw_input("\nWhat box will {} be run in?\n    >".format(self.name)))
-        except ValueError:
-            print "\nNumber must be convertible to a float, input only numbers in decimal format like 12.3.\nTrying again..."
-            self.info['baseline_mass'] = float(raw_input("\nWhat is {}'s baseline mass?\n    >".format(self.name)))
-            self.info['minimum_mass']  = float(raw_input("\nAnd what is {}'s minimum mass? (eg. 80% of baseline?)\n    >".format(self.name)))
-            self.info['box']           = int(raw_input("\nWhat box will {} be run in?\n    >".format(self.name)))
 
-        # Make hdf5 structure and Save info to hdf5
-        self.h5info = self.h5f.create_group("/","info","biographical information")
-        self.h5data = self.h5f.create_group("/","data","trial record data")
-        self.h5info.info_table = self.h5f.create_table(self.h5info, 'info',Biography, "A mouse's biographical information table")
-        for k,v in self.info.items():
-            self.h5info.info_table.row[k] = v
-        self.h5info.info_table.row.append()
-        self.h5info.info_table.flush()
+        #
+        # # TODO when terminal built, have terminal stash what types of biographical information we want/allow new fields to be defined.
+        # # Basic info about the mouse
+        # self.info               = dict()
+        # self.info['name']       = self.name
+        # self.info['start_date'] = datetime.date.today().isoformat()
+        #
+        # try:
+        #     self.info['baseline_mass'] = float(raw_input("\nWhat is {}'s baseline mass?\n    >".format(self.name)))
+        #     self.info['minimum_mass']  = float(raw_input("\nAnd what is {}'s minimum mass? (eg. 80% of baseline?)\n    >".format(self.name)))
+        #     self.info['box']           = int(raw_input("\nWhat box will {} be run in?\n    >".format(self.name)))
+        # except ValueError:
+        #     print "\nNumber must be convertible to a float, input only numbers in decimal format like 12.3.\nTrying again..."
+        #     self.info['baseline_mass'] = float(raw_input("\nWhat is {}'s baseline mass?\n    >".format(self.name)))
+        #     self.info['minimum_mass']  = float(raw_input("\nAnd what is {}'s minimum mass? (eg. 80% of baseline?)\n    >".format(self.name)))
+        #     self.info['box']           = int(raw_input("\nWhat box will {} be run in?\n    >".format(self.name)))
+        #
+        # # Make hdf5 structure and Save info to hdf5
+        # self.h5info = self.h5f.create_group("/","info","biographical information")
+        # self.h5data = self.h5f.create_group("/","data","trial record data")
+        # self.h5info.info_table = self.h5f.create_table(self.h5info, 'info',Biography, "A mouse's biographical information table")
+        # for k,v in self.info.items():
+        #     self.h5info.info_table.row[k] = v
+        # self.h5info.info_table.row.append()
+        # self.h5info.info_table.flush()
+        #
+        # # TODO make "schedule" table that lists which trial #s were done when, which steps, etc.
+        #
+        # self.h5f.flush()
 
-        # TODO make "schedule" table that lists which trial #s were done when, which steps, etc.
+    def update_biography(self, params):
+        for k, v in params:
 
-        self.h5f.flush()
+
 
     def assign_protocol(self,protocol,params):
         # Will need to change this to be protocols rather than individual steps, developing the skeleton.
