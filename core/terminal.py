@@ -7,6 +7,7 @@ import argparse
 import json
 import sys
 import os
+import datetime
 from collections import OrderedDict as odict
 from PySide import QtCore
 from PySide import QtGui
@@ -109,7 +110,6 @@ class Pilots(QtGui.QWidget):
         self.pilot_window.exec_()
 
         # If OK was pressed, we make a new pilot
-        print(self.pilot_window.result())
         if self.pilot_window.result() == 1:
             # TODO: List RPilots that are broadcasting availability and list rather than manual IP config
             # TODO: Test connection to RPilots
@@ -175,7 +175,7 @@ class Mice(QtGui.QWidget):
 
         #self.show()
 
-    def create_buttons(self, mice):
+    def create_buttons(self, mice, current=None):
         # Create the buttons for each mouse that a pilot owns
         self.clear_buttons()
         self.mice = mice
@@ -185,6 +185,10 @@ class Mice(QtGui.QWidget):
             self.buttons[m].setCheckable(True)
             self.button_group.addButton(self.buttons[m])
             self.button_layout.addWidget(self.buttons[m])
+
+        # If we are passed a mouse to select, select it
+        if current:
+            self.buttons[current].setChecked(True)
 
         # Make an add mouse button
         self.add_mouse_button = QtGui.QPushButton("+")
@@ -201,21 +205,35 @@ class Mice(QtGui.QWidget):
         for b in self.button_group.buttons():
             self.button_group.removeButton(b)
 
-    class New_Mouse_Wizard(QtGui.QDialog):
-        def __init__(self):
 
     def create_mouse(self):
-        text, ok = QtGui.QInputDialog.getText(self, "Input Mouse ID", "Mouse ID:")
-        if ok:
-            self.mice.append(text)
-            self.create_buttons(self.mice)
+        self.new_mouse_window = New_Mouse_Wizard()
+        self.new_mouse_window.exec_()
+
+        # If new mouse wizard completed successfully, get its values
+        if self.new_mouse_window.result() == 1:
+            biography_vals = self.new_mouse_window.bio_tab.values
+            protocol_vals = self.new_mouse_window.task_tab.values
+
+            # Make new mouse object
+            self.mouse = Mouse(biography_vals['id'], new=True,
+                               biography=biography_vals, protocol=protocol_vals)
+
+            # Update panels and pilot db, select new mouse
+            self.mice.append(biography_vals['id'])
+            self.create_buttons(self.mice, biography_vals['id'])
             self.pilot_panel.update_db()
 
     def select_mouse(self):
+        # TODO: Check if current mouse is already assigned, eg. from create_mouse
         pass
 
     def give_pilot_panel(self, pilot_panel):
         self.pilot_panel = pilot_panel
+
+    def assign_protocol(self):
+        # TODO: Read assigned protocol from setup
+        pass
 
 class Parameters(QtGui.QWidget):
     '''
@@ -325,6 +343,152 @@ class DataView(QtGui.QWidget):
         groupbox.setLayout(hbox)
 
         return groupbox
+
+
+# Mouse Biography Classes
+# TODO: Make 'edit mouse' button
+# TODO: Populate task tab and get possible levels, but also put those in param window
+# TODO: Make experiment tags, save and populate?
+class New_Mouse_Wizard(QtGui.QDialog):
+    def __init__(self):
+        QtGui.QDialog.__init__(self)
+
+        tabWidget = QtGui.QTabWidget()
+
+        self.bio_tab = self.Biography_Tab()
+        self.task_tab = self.Task_Tab()
+        tabWidget.addTab(self.bio_tab, "Biography")
+        tabWidget.addTab(self.task_tab, "Protocol")
+
+        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+
+        mainLayout = QtGui.QVBoxLayout()
+        mainLayout.addWidget(tabWidget)
+        mainLayout.addWidget(buttonBox)
+        self.setLayout(mainLayout)
+
+        self.setWindowTitle("Setup New Mouse")
+
+
+
+
+    class Biography_Tab(QtGui.QWidget):
+        def __init__(self):
+            QtGui.QWidget.__init__(self)
+
+            # Input Labels
+            ID_label = QtGui.QLabel("ID:")
+            start_label = QtGui.QLabel("Start Date:")
+            blmass_label = QtGui.QLabel("Baseline Mass:")
+            minmasspct_label = QtGui.QLabel("% of Baseline Mass:")
+            minmass_label = QtGui.QLabel("Minimum Mass:")
+            genotype_label = QtGui.QLabel("Genotype:")
+            expt_label = QtGui.QLabel("Experiment Tag:")
+
+            # Input widgets
+            self.id = QtGui.QLineEdit()
+            self.start_date = QtGui.QLineEdit(datetime.date.today().isoformat())
+            self.blmass = QtGui.QLineEdit()
+            self.blmass.setValidator(QtGui.QDoubleValidator(0.0, 30.0, 1, self.blmass))
+            self.minmass_pct = QtGui.QSpinBox()
+            self.minmass_pct.setRange(0,100)
+            self.minmass_pct.setSingleStep(5)
+            self.minmass_pct.setSuffix('%')
+            self.minmass_pct.setValue(80)
+            self.minmass = QtGui.QLineEdit()
+            self.minmass.setValidator(QtGui.QDoubleValidator(0.0, 30.0, 1, self.minmass))
+            self.genotype = QtGui.QLineEdit()
+            self.expt     = QtGui.QLineEdit()
+
+            # Set return dictionary signals
+            self.id.editingFinished.connect(lambda: self.update_return_dict('id', self.id.text()))
+            self.start_date.editingFinished.connect(lambda: self.update_return_dict('start_date', self.start_date.text()))
+            self.blmass.editingFinished.connect(lambda: self.update_return_dict('baseline_mass', self.blmass.text()))
+            self.minmass.editingFinished.connect(lambda: self.update_return_dict('min_mass', self.minmass.text()))
+            self.genotype.editingFinished.connect(lambda: self.update_return_dict('genotype', self.genotype.text()))
+            self.expt.editingFinished.connect(lambda: self.update_return_dict('experiment', self.expt.text()))
+
+            # Set update minmass signals
+            self.blmass.editingFinished.connect(self.calc_minmass)
+            self.minmass_pct.valueChanged.connect(self.calc_minmass)
+
+            # Setup Layout
+            mainLayout = QtGui.QVBoxLayout()
+            mainLayout.addWidget(ID_label)
+            mainLayout.addWidget(self.id)
+            mainLayout.addWidget(start_label)
+            mainLayout.addWidget(self.start_date)
+            mainLayout.addWidget(blmass_label)
+            mainLayout.addWidget(self.blmass)
+            mainLayout.addWidget(minmasspct_label)
+            mainLayout.addWidget(self.minmass_pct)
+            mainLayout.addWidget(minmass_label)
+            mainLayout.addWidget(self.minmass)
+            mainLayout.addWidget(genotype_label)
+            mainLayout.addWidget(self.genotype)
+            mainLayout.addWidget(expt_label)
+            mainLayout.addWidget(self.expt)
+            mainLayout.addStretch(1)
+
+            self.setLayout(mainLayout)
+
+            # Dictionary to return values
+            self.values = {}
+
+        def update_return_dict(self, key, val):
+            self.values[key] = val
+            # When values changed, update return dict
+
+        def calc_minmass(self):
+            # minimum mass automatically from % and baseline
+            # We try but don't really care if we fail bc cmon
+            #try:
+            baseline = float(self.blmass.text())
+            pct = float(self.minmass_pct.text()[:-1])/100
+            self.minmass.setText(str(baseline*pct))
+            #except:
+            #    print(float(self.blmass.text()))
+            #    print(float(self.minmass_pct.text()[:-1]))
+
+
+
+    class Task_Tab(QtGui.QWidget):
+        def __init__(self):
+            QtGui.QWidget.__init__(self)
+
+            topLabel = QtGui.QLabel("Protocols:")
+
+            self.protocol_listbox = QtGui.QListWidget()
+            # TODO: Load available protocols
+            # Dummy for now
+            protocols = ['test protocol']
+
+            self.protocol_listbox.insertItems(0, protocols)
+
+            # TODO: Get Steps
+            self.step = QtGui.QSpinBox()
+            max_step = 5
+            self.step.setRange(1,5)
+            self.step.setSingleStep(1)
+
+            self.protocol_listbox.itemChanged.connect(lambda: self.update_return_dict('protocol'))
+            self.step.valueChanged.connect(lambda: self.update_return_dict('step'))
+
+            layout = QtGui.QVBoxLayout()
+            layout.addWidget(topLabel)
+            layout.addWidget(self.protocol_listbox)
+            layout.addWidget(self.step)
+
+            self.setLayout(layout)
+
+            # Dict to return values
+            self.values = {}
+
+        def update_return_dict(self, key):
+            sender = self.sender()
+            self.values[key] = sender.text()
 
 
 

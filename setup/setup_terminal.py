@@ -31,18 +31,18 @@ datadir = os.path.join(basedir,'data')
 #except:
 #   print("Error importing prerequisite packages!")
 
-
+#TODO: Handle permissions better than this...
 # Make folders
 #os.umask(0)
 if not os.path.exists(basedir):
     try:
         os.makedirs(basedir)
-        os.chmod(basedir, 0777)
+        os.chmod(basedir, 1777)
     except:
         print("Error making basedir: {}".format(basedir))
 if not os.path.exists(datadir):
     os.makedirs(datadir)
-    os.chmod(basedir, 0777)
+    os.chmod(basedir, 1777)
 
 # Get repo dir
 file_loc = os.path.realpath(__file__)

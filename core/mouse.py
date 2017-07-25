@@ -5,10 +5,10 @@ Base Mouse Class.
 Methods for storing data like mass, DOB, etc. as well as assigned protocols and trial data
 '''
 
-from taskontrol.settings import rpisettings as rpiset
-from taskontrol import templates
+#from taskontrol.settings import rpisettings as rpiset
+#from taskontrol import templates
 import os
-import h5py
+#import h5py
 import tables
 import datetime
 from importlib import import_module
@@ -20,32 +20,29 @@ class Mouse:
     """Mouse object for managing protocol, parameters, and data"""
     # hdf5 structure is split into two groups, mouse info and trial data.
 
-    def __init__(self, name, dir='/usr/rpilot/data', new=0):
+    def __init__(self, name, dir='/usr/rpilot/data', new=0, biography=None, protocol=None):
+        #TODO: Pass dir from prefs
         self.name = str(name)
         self.file = os.path.join(dir, name + '.h5')
         if new or not os.path.isfile(self.file):
             print("\nNo file detected or flagged as new.")
-            self.new_mouse_file()
+            self.new_mouse_file(biography, protocol)
         else:
             # .new_mouse() opens the file
             self.h5f    = tables.open_file(self.file, 'r+')
         # TODO figure out pytables swmr mode
-        self.h5info = self.h5f.root.info.info # double because info is a group and a table
+        self.h5info = self.h5f.root.info._v_attrs  #TODO: Check if can directly assign to self.h5info
         self.h5data = self.h5f.root.data
 
-        # Get mouse attributes from hdf5 file
-        self.info = dict()
-        for k in self.h5info.colnames:
-            # for all the fields in info, get those fields
-            self.info[k] = self.h5info.read(field=k)[0]
+        # TODO: Check that self.h5info imports as a dict, if not, do so
 
         # Load Task if Exists
         # TODO make this more robust for multiple tasks - saving position, etc.
         self.task = None
-        if self.h5data._v_children.keys():
-            self.load_protocol()
+        # if self.h5data._v_children.keys():
+        #     self.load_protocol()
 
-    def new_mouse_file(self):
+    def new_mouse_file(self, biography, protocol):
         if os.path.isfile(self.file):
             overw = str(raw_input("\nMouse already has file, overwrite and make new file? (y/n)\n   >>"))
             if overw == 'y':
@@ -57,12 +54,19 @@ class Mouse:
                 return
         else:
             print("\nNo file found, making a new file.")
+            print(self.file)
             self.h5f = tables.open_file(self.file, mode='w')
             # TODO ask if user wants to redefine all params or just set new protocol.
 
         # Basic file structure
         self.h5f.create_group("/","data","Trial Record Data")
         self.h5f.create_group("/","info","Biographical Info")
+
+        for k, v in biography.items():
+            self.h5f.root.info._v_attrs[k] = v
+
+        # self.assign_protocol(protocol=protocol)
+
 
 
         #
@@ -93,19 +97,26 @@ class Mouse:
         #
         # # TODO make "schedule" table that lists which trial #s were done when, which steps, etc.
         #
-        # self.h5f.flush()
+        self.h5f.flush()
 
     def update_biography(self, params):
-        for k, v in params:
+        for k, v in params.items():
+            self.h5f.root.info._v_attrs[k] = v
 
 
 
-    def assign_protocol(self,protocol,params):
+
+    def assign_protocol(self,protocol,params=None):
         # Will need to change this to be protocols rather than individual steps, developing the skeleton.
         #Condition the size of numvars on the number of vars to be stored
         # Assign the names of columns as .attrs['column names']
         self.task_type = protocol
-        self.task_params = params
+
+        if params:
+            self.task_params = params
+        else:
+            pass
+            #TODO: Created without params from terminal, need to be set by prefs pane
 
         # Import the task class from its module
         template_module = import_module('taskontrol.templates.{}'.format(protocol))
