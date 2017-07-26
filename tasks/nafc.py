@@ -12,14 +12,16 @@ Stage functions should each return three dicts: data, triggers, and timers
 '''
 
 import random
-from taskontrol.settings import rpisettings as rpiset
+# from taskontrol.settings import rpisettings as rpiset
 import datetime
 import itertools
 import warnings
 import tables
+from collections import OrderedDict as odict
 
 # This declaration allows Mouse to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
 TASK = 'Nafc'
+
 
 class Nafc:
     """
@@ -42,10 +44,37 @@ class Nafc:
         bailed = tables.Int32Col()
 
     # List of needed params, returned data and data format.
-    PARAM_LIST = ['sounds', 'reward', 'punish', 'pct_correction', 'bias_mode', 'timeout']
+    # Params are [name]={'tag': Human Readable Tag, 'type': 'int', 'float', 'check', etc.}
+    PARAMS = odict()
+    PARAMS['reward']         = {'tag':'Reward Duration (ms)',
+                                'type':'int'}
+    PARAMS['req_reward']     = {'tag':'Request Rewards',
+                                'type':'check'}
+    PARAMS['punish_sound']   = {'tag':'White Noise Punishment',
+                                'type':'check'}
+    PARAMS['punish']         = {'tag':'Punishment Duration (ms)',
+                                'type':'int'}
+    PARAMS['correction']     = {'tag':'Correction Trials',
+                                'type':'check'}
+    PARAMS['pct_correction'] = {'tag':'% Correction Trials',
+                                'type':'int',
+                                'depends':{'correction':True}}
+    PARAMS['bias_mode']      = {'tag':'Bias Correction Mode',
+                                'type':'list',
+                                'values':{'None':0, 'Proportional':1, 'Thresholded Proportional':2}}
+    PARAMS['bias_threshold'] = {'tag': 'Bias Correction Threshold (%)',
+                                'type':'int',
+                                'depends':{'bias_mode':2}}
+    PARAMS['timeout']        = {'tag':'Delay Timeout (ms)',
+                                'type':'int'}
+    PARAMS['sounds']         = {'tag':'Sounds',
+                                'type':'sounds'}
+
     DATA_LIST = {'trial_num':'i32','target':'S1','target_sound_id':'S32', 'response':'S1', 'correct':'i32', 'bias':'f32', 'RQ_timestamp':'S26','DC_timestamp':'S26','bailed':'i32'}
 
-    def __init__(self, sounds, reward=50, punish=2000, pct_correction=.5, bias_mode=1, timeout=30000, assisted_assign=0, **kwargs):
+    def __init__(self, sounds, reward=50, req_reward=False,
+                 punish_sound=True, punish=2000, correction=True, pct_correction=.5,
+                 bias_mode=1, timeout=30000, **kwargs):
         # Sounds come in two flavors
         #   soundict: a dict of parameters like:
         #       {'L': 'path/to/file.wav', 'R': 'etc'} or
@@ -235,6 +264,7 @@ class Nafc:
 #################################################################################################
 # Prebuilt Parameter Sets
 
+
 FREQ_DISCRIM = {
     'description':'Pure_Tone_Discrimination',
     'sounds':{
@@ -267,6 +297,9 @@ SOUND_TEST = {
     'R': {'type': 'tone', 'frequency': 2000, 'duration': 500, 'amplitude': .1}
 }
 
+# Dict of templates for GUI
+TEMPLATES = {'Frequency Discrimination':FREQ_DISCRIM,
+             'Sound Test':SOUND_TEST}
 
 
 

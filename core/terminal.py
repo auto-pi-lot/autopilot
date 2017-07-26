@@ -11,8 +11,12 @@ import datetime
 from collections import OrderedDict as odict
 from PySide import QtCore
 from PySide import QtGui
+from pprint import pprint
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from mouse import Mouse
+import tasks
+import sounds
 
 
 # http://zetcode.com/gui/pysidetutorial/layoutmanagement/
@@ -282,6 +286,7 @@ class Parameters(QtGui.QWidget):
 
 
 class DataView(QtGui.QWidget):
+    # TODO: Use pyqtgraph for this: http://www.pyqtgraph.org/
     def __init__(self):
         QtGui.QWidget.__init__(self)
 
@@ -491,6 +496,278 @@ class New_Mouse_Wizard(QtGui.QDialog):
             self.values[key] = sender.text()
 
 
+class Protocol_Wizard(QtGui.QDialog):
+    def __init__(self):
+        QtGui.QDialog.__init__(self)
+
+        # Left Task List/Add Step Box
+        addstep_label = QtGui.QLabel("Add Step")
+        addstep_label.setFixedHeight(40)
+        self.task_list = QtGui.QListWidget()
+        self.task_list.insertItems(0, tasks.TASK_LIST.keys())
+        self.add_button = QtGui.QPushButton("+")
+        self.add_button.setFixedHeight(40)
+        self.add_button.clicked.connect(self.add_step)
+
+        addstep_layout = QtGui.QVBoxLayout()
+        addstep_layout.addWidget(addstep_label)
+        addstep_layout.addWidget(self.task_list)
+        addstep_layout.addWidget(self.add_button)
+
+        # Center Step List Box
+        steplist_label = QtGui.QLabel("Step List")
+        steplist_label.setFixedHeight(40)
+        self.step_list = QtGui.QListWidget()
+        self.step_list.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
+        self.step_list.selectionMode = QtGui.QAbstractItemView.SingleSelection
+        self.step_list.itemSelectionChanged.connect(self.populate_params)
+        self.list_model = self.step_list.model()
+        self.list_model.rowsMoved.connect(self.reorder_steps)
+        self.remove_step_button = QtGui.QPushButton('-')
+        self.remove_step_button.setFixedHeight(40)
+        self.remove_step_button.clicked.connect(self.remove_step)
+
+        steplist_layout = QtGui.QVBoxLayout()
+        steplist_layout.addWidget(steplist_label)
+        steplist_layout.addWidget(self.step_list)
+        steplist_layout.addWidget(self.remove_step_button)
+
+        # Right Parameter Definition Window
+        param_label = QtGui.QLabel("Step Parameters")
+        param_label.setFixedHeight(40)
+        self.param_layout = QtGui.QFormLayout()
+        param_frame = QtGui.QFrame()
+        param_frame.setLayout(self.param_layout)
+
+        param_box_layout = QtGui.QVBoxLayout()
+        param_box_layout.addWidget(param_label)
+        param_box_layout.addWidget(param_frame)
+
+        # Main Layout
+        frame_layout = QtGui.QHBoxLayout()
+        frame_layout.addLayout(addstep_layout, stretch=1)
+        frame_layout.addLayout(steplist_layout, stretch=1)
+        frame_layout.addLayout(param_box_layout, stretch=3)
+
+        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+
+        main_layout = QtGui.QVBoxLayout()
+        main_layout.addLayout(frame_layout)
+        main_layout.addWidget(buttonBox)
+
+        self.setLayout(main_layout)
+        self.setWindowTitle("Make New Protocol")
+
+        # List to store dicts of steps and params
+        self.steps = []
+
+    def add_step(self):
+        task_type = self.task_list.currentItem().text()
+        new_item = QtGui.QListWidgetItem()
+        new_item.setText(task_type)
+        self.steps.append(tasks.TASK_LIST[task_type].PARAMS)
+        self.step_list.addItem(new_item)
+        self.step_list.setCurrentItem(new_item)
+
+
+    def rename_step(self):
+        pass
+
+    def remove_step(self):
+        pass
+
+    def populate_params(self):
+        # Widget dict to set dependencies later
+        self.clear_params()
+        widgets = {}
+
+        # Get current item index
+        step_index = self.step_list.currentRow()
+
+        # Iterate through params to make input widgets
+        for k, v in self.steps[step_index].items():
+            # Make Input Widget depending on type
+            if v['type'] == 'int':
+                rowtag = QtGui.QLabel(v['tag'])
+                input_widget = QtGui.QLineEdit()
+                input_widget.setObjectName(k)
+                input_widget.setValidator(QtGui.QIntValidator())
+                input_widget.editingFinished.connect(self.set_param)
+                self.param_layout.addRow(rowtag,input_widget)
+            elif v['type'] == 'check':
+                rowtag = QtGui.QLabel(v['tag'])
+                input_widget = QtGui.QCheckBox()
+                input_widget.setObjectName(k)
+                input_widget.stateChanged.connect(self.set_param)
+                self.param_layout.addRow(rowtag, input_widget)
+            elif v['type'] == 'list':
+                rowtag = QtGui.QLabel(v['tag'])
+                input_widget = QtGui.QListWidget()
+                input_widget.setObjectName(k)
+                input_widget.insertItems(0, v['values'].keys())
+                input_widget.itemSelectionChanged.connect(self.set_param)
+                self.param_layout.addRow(rowtag, input_widget)
+            elif v['type'] == 'sounds':
+                self.sound_widget = self.Sound_Widget()
+                self.sound_widget.setObjectName(k)
+                self.sound_widget.pass_set_param_function(self.set_sounds)
+                self.param_layout.addRow(self.sound_widget)
+
+            widgets[k] = input_widget
+
+        # Iterate again to check for dependencies
+        for k, v in self.steps[step_index].items():
+            pass
+
+    def clear_params(self):
+        while self.param_layout.count():
+            child = self.param_layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+
+    def reorder_steps(self, *args):
+        # arg positions 1 and 4 are starting and ending positions in the list, respectively
+        # We reorder our step list so the params line up.
+        before = args[1]
+        after = args[4]
+        self.steps.insert(after, self.steps.pop(before))
+
+    def set_param(self):
+        sender = self.sender()
+        param_name = sender.objectName()
+        current_step = self.step_list.currentRow()
+        sender_type = self.steps[current_step][param_name]['type']
+
+        if sender_type == 'int':
+            self.steps[current_step][param_name]['value'] = sender.text()
+        elif sender_type == 'check':
+            self.steps[current_step][param_name]['value'] = sender.isChecked()
+        elif sender_type == 'list':
+            list_text = sender.currentItem().text()
+            list_value = self.steps[current_step][param_name]['values'][list_text]
+            self.steps[current_step][param_name]['value'] = list_value
+        elif sender_type == 'sounds':
+            self.steps[current_step][param_name]['value'] = self.sound_widget.sound_dict
+
+        pprint(dict(self.steps[current_step]))
+
+    def set_sounds(self):
+        current_step = self.step_list.currentRow()
+        self.steps[current_step]['sounds']['value'] = self.sound_widget.sound_dict
+
+    def check_depends(self):
+        pass
+
+
+    class Sound_Widget(QtGui.QWidget):
+        def __init__(self):
+            QtGui.QWidget.__init__(self)
+
+            # Left sounds
+            left_label = QtGui.QLabel("Left Sounds")
+            left_label.setFixedHeight(30)
+            self.left_list = QtGui.QListWidget()
+            self.add_left_button = QtGui.QPushButton("+")
+            self.add_left_button.setFixedHeight(30)
+            self.add_left_button.clicked.connect(lambda: self.add_sound('L'))
+
+            left_layout = QtGui.QVBoxLayout()
+            left_layout.addWidget(left_label)
+            left_layout.addWidget(self.left_list)
+            left_layout.addWidget(self.add_left_button)
+
+            # Right sounds
+            right_label = QtGui.QLabel("Right Sounds")
+            right_label.setFixedHeight(30)
+            self.right_list = QtGui.QListWidget()
+            self.add_right_button = QtGui.QPushButton("+")
+            self.add_right_button.setFixedHeight(30)
+            self.add_right_button.clicked.connect(lambda: self.add_sound('R'))
+
+            right_layout = QtGui.QVBoxLayout()
+            right_layout.addWidget(right_label)
+            right_layout.addWidget(self.right_list)
+            right_layout.addWidget(self.add_right_button)
+
+            self.sound_dict = {'L': [], 'R': []}
+
+            main_layout = QtGui.QHBoxLayout()
+            main_layout.addLayout(left_layout)
+            main_layout.addLayout(right_layout)
+            self.setLayout(main_layout)
+
+            # TODO:Add drag and drop for files
+
+        def pass_set_param_function(self, set_param_fnxn):
+            self.set_sounds = set_param_fnxn
+
+        def add_sound(self, side):
+            new_sound = self.Add_Sound_Dialog()
+            new_sound.exec_()
+
+            if new_sound.result() == 1:
+                self.sound_dict[side].append(new_sound.param_dict)
+                if side == 'L':
+                    self.left_list.addItem(new_sound.param_dict['type'])
+                elif side == 'R':
+                    self.right_list.addItem(new_sound.param_dict['type'])
+                self.set_sounds()
+
+
+        class Add_Sound_Dialog(QtGui.QDialog):
+            def __init__(self):
+                QtGui.QDialog.__init__(self)
+
+                # Sound type dropdown
+                type_label = QtGui.QLabel("Sound Type:")
+                self.type_selection = QtGui.QComboBox()
+                self.type_selection.insertItems(0, sounds.SOUND_LIST.keys())
+                self.type_selection.currentIndexChanged.connect(self.populate_params)
+
+                # Param form
+                self.param_layout = QtGui.QFormLayout()
+
+                # Button box
+                buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+                buttonBox.accepted.connect(self.accept)
+                buttonBox.rejected.connect(self.reject)
+
+                # Layout
+                layout = QtGui.QVBoxLayout()
+                layout.addWidget(type_label)
+                layout.addWidget(self.type_selection)
+                layout.addLayout(self.param_layout)
+                layout.addWidget(buttonBox)
+
+                self.setLayout(layout)
+
+                # dict for storing params
+                self.param_dict = {}
+
+            def populate_params(self):
+                self.clear_params()
+
+                self.type = self.type_selection.currentText()
+                self.param_dict['type'] = self.type
+
+                for k in sounds.SOUND_LIST[self.type].PARAMS:
+                    edit_box = QtGui.QLineEdit()
+                    edit_box.editingFinished.connect(lambda: self.store_param(k, edit_box.text()))
+                    self.param_layout.addRow(QtGui.QLabel(k), edit_box)
+
+            def clear_params(self):
+                while self.param_layout.count():
+                    child = self.param_layout.takeAt(0)
+                    if child.widget():
+                        child.widget().deleteLater()
+
+            def store_param(self, key, value):
+                self.param_dict[key] = value
+
+
+
 
 
 
@@ -529,23 +806,42 @@ class Terminal(QtGui.QWidget):
         #self.panel_layout.addWidget(self.param_panel, stretch = 2)
         self.panel_layout.addWidget(self.data_panel, stretch=5)
 
-        # add logo
+        # add logo and new protocol button
         self.layout = QtGui.QVBoxLayout()
         self.layout.setContentsMargins(5,5,5,5)
+
         self.logo = QtGui.QLabel()
-        print(prefs['REPODIR']+'/graphics/logo.png')
         self.logo.setPixmap(QtGui.QPixmap(prefs['REPODIR']+'/graphics/logo.png').scaled(265,40))
         self.logo.setFixedHeight(40)
         self.logo.setAlignment(QtCore.Qt.AlignRight)
 
+        self.new_protocol_button = QtGui.QPushButton("New Protocol")
+        self.new_protocol_button.clicked.connect(self.new_protocol)
+        self.new_protocol_button.setFixedHeight(40)
+
+        self.top_strip = QtGui.QHBoxLayout()
+        self.top_strip.addWidget(self.new_protocol_button)
+        self.top_strip.addStretch(1)
+        self.top_strip.addWidget(self.logo)
+
+
         self.plot_container = QtGui.QFrame()
         self.plot_container.setLayout(self.panel_layout)
         self.plot_container.setContentsMargins(0,0,0,0)
-        self.layout.addWidget(self.logo)
+        self.layout.addLayout(self.top_strip)
         self.layout.addWidget(self.plot_container)
 
         self.setLayout(self.layout)
+        #self.showMaximized()
         self.show()
+
+    def new_protocol(self):
+        self.new_protocol_window = Protocol_Wizard()
+        self.new_protocol_window.exec_()
+
+        if self.new_protocol_window.result() == 1:
+            protocol_dict = self.new_protocol_window.protocol_dict
+            # TODO: Dump to JSON
 
 
 if __name__ == '__main__':

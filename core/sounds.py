@@ -12,29 +12,43 @@ Notes on creating functions:
 
 import pyo
 from time import sleep
-from taskontrol.settings import rpisettings as rpiset
+#from taskontrol.settings import rpisettings as rpiset
 
+# Sound list at bottom of file
 
-
-def Tone(frequency,duration,amplitude=0.3,phase=0,**kwargs):
+class Tone:
     '''
     The Humble Sine Wave
     '''
-    sin = pyo.Sine(frequency,mul=amplitude)
-    tableout = TableWrap(sin,duration)
-    return tableout
+    PARAMS = ['frequency','duration','amplitude']
+    def __init__(self, frequency, duration, amplitude=0.3, phase=0):
 
-def Noise(duration,amplitude,**kwargs):
+        sin = pyo.Sine(frequency,mul=amplitude)
+        self.table = TableWrap(sin, duration)
+
+    def play(self):
+        self.table.out()
+
+class Noise:
     '''
     White Noise straight up
     '''
-    noiser = pyo.Noise(mul=amplitude)
-    tableout = TableWrap(noiser,duration)
-    return tableout
+    PARAMS = ['duration','amplitude']
+    def __init__(self, duration, amplitude):
+        noiser = pyo.Noise(mul=amplitude)
+        self.table = TableWrap(noiser,duration)
 
+    def play(self):
+        self.table.out()
 
-def Wav_file(path,duration):
-    pass
+class File:
+    PARAMS = ['file', 'duration']
+
+    def __init__(self):
+        pass
+
+    def play(self):
+        pass
 
 def TableWrap(audio,duration):
     '''
@@ -50,7 +64,8 @@ def TableWrap(audio,duration):
     return tabread
 
 # Has to be at bottom so fnxns already defined when assigned.
-SWITCH = {
-    'tone':Tone,
-    'noise':Noise
+SOUND_LIST = {
+    'Tone':Tone,
+    'Noise':Noise,
+    'File':File
 }

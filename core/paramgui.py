@@ -324,7 +324,7 @@ class MenuParam(GenericParam):
 def create_app(paradigmClass):
     '''
     The paradigm file needs to run something like:
-    (app,paradigm) = templates.create_app(Paradigm)
+    (app,paradigm) = tasks.create_app(Paradigm)
     '''
     signal.signal(signal.SIGINT, signal.SIG_DFL) # Enable Ctrl-C
     app=QtGui.QApplication.instance() # checks if QApplication already exists 
@@ -361,7 +361,7 @@ def create_app_only():
     '''
     NOT FINISHED
     When using this version, the paradigm file needs to run the following:
-        app = templates.create_app_only()
+        app = tasks.create_app_only()
         paradigm = Paradigm()
         paradigm.show()
         app.exec_()

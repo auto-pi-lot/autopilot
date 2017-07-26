@@ -6,7 +6,7 @@ Methods for storing data like mass, DOB, etc. as well as assigned protocols and 
 '''
 
 #from taskontrol.settings import rpisettings as rpiset
-#from taskontrol import templates
+#from taskontrol import tasks
 import os
 #import h5py
 import tables
@@ -31,10 +31,10 @@ class Mouse:
             # .new_mouse() opens the file
             self.h5f    = tables.open_file(self.file, 'r+')
         # TODO figure out pytables swmr mode
-        self.h5info = self.h5f.root.info._v_attrs  #TODO: Check if can directly assign to self.h5info
-        self.h5data = self.h5f.root.data
 
-        # TODO: Check that self.h5info imports as a dict, if not, do so
+        # Make shortcuts for direct assignation
+        self.h5info = self.h5f.root.info._v_attrs
+        self.h5data = self.h5f.root.data
 
         # Load Task if Exists
         # TODO make this more robust for multiple tasks - saving position, etc.
@@ -44,59 +44,18 @@ class Mouse:
 
     def new_mouse_file(self, biography, protocol):
         if os.path.isfile(self.file):
-            overw = str(raw_input("\nMouse already has file, overwrite and make new file? (y/n)\n   >>"))
-            if overw == 'y':
-                self.h5f = tables.open_file(rpiset.PI_DATA_DIR + self.name + '.hdf5', mode='w')
-            elif overw == 'n':
-                self.h5f = tables.open_file(rpiset.PI_DATA_DIR + self.name + '.hdf5', mode='a')
-                return
-            else:
-                return
+            self.h5f = tables.open_file(self.file, mode='a')
         else:
-            print("\nNo file found, making a new file.")
-            print(self.file)
             self.h5f = tables.open_file(self.file, mode='w')
-            # TODO ask if user wants to redefine all params or just set new protocol.
 
-        # Basic file structure
-        self.h5f.create_group("/","data","Trial Record Data")
-        self.h5f.create_group("/","info","Biographical Info")
+            # Make Basic file structure
+            self.h5f.create_group("/","data","Trial Record Data")
+            self.h5f.create_group("/","info","Biographical Info")
 
         for k, v in biography.items():
             self.h5f.root.info._v_attrs[k] = v
 
-        # self.assign_protocol(protocol=protocol)
-
-
-
-        #
-        # # TODO when terminal built, have terminal stash what types of biographical information we want/allow new fields to be defined.
-        # # Basic info about the mouse
-        # self.info               = dict()
-        # self.info['name']       = self.name
-        # self.info['start_date'] = datetime.date.today().isoformat()
-        #
-        # try:
-        #     self.info['baseline_mass'] = float(raw_input("\nWhat is {}'s baseline mass?\n    >".format(self.name)))
-        #     self.info['minimum_mass']  = float(raw_input("\nAnd what is {}'s minimum mass? (eg. 80% of baseline?)\n    >".format(self.name)))
-        #     self.info['box']           = int(raw_input("\nWhat box will {} be run in?\n    >".format(self.name)))
-        # except ValueError:
-        #     print "\nNumber must be convertible to a float, input only numbers in decimal format like 12.3.\nTrying again..."
-        #     self.info['baseline_mass'] = float(raw_input("\nWhat is {}'s baseline mass?\n    >".format(self.name)))
-        #     self.info['minimum_mass']  = float(raw_input("\nAnd what is {}'s minimum mass? (eg. 80% of baseline?)\n    >".format(self.name)))
-        #     self.info['box']           = int(raw_input("\nWhat box will {} be run in?\n    >".format(self.name)))
-        #
-        # # Make hdf5 structure and Save info to hdf5
-        # self.h5info = self.h5f.create_group("/","info","biographical information")
-        # self.h5data = self.h5f.create_group("/","data","trial record data")
-        # self.h5info.info_table = self.h5f.create_table(self.h5info, 'info',Biography, "A mouse's biographical information table")
-        # for k,v in self.info.items():
-        #     self.h5info.info_table.row[k] = v
-        # self.h5info.info_table.row.append()
-        # self.h5info.info_table.flush()
-        #
-        # # TODO make "schedule" table that lists which trial #s were done when, which steps, etc.
-        #
+        # TODO make "schedule" table that lists which trial #s were done when, which steps, etc.
         self.h5f.flush()
 
     def update_biography(self, params):
@@ -119,7 +78,7 @@ class Mouse:
             #TODO: Created without params from terminal, need to be set by prefs pane
 
         # Import the task class from its module
-        template_module = import_module('taskontrol.templates.{}'.format(protocol))
+        template_module = import_module('taskontrol.tasks.{}'.format(protocol))
         task_class = getattr(template_module,template_module.TASK)
 
         self.task_data_list = task_class.DATA_LIST
@@ -180,7 +139,7 @@ class Mouse:
         self.task_data_list  = self.h5trial_records.attrs.data_list
         # TODO Check if template has changed since assign
         # Import the task class from its module & make
-        template_module = import_module('taskontrol.templates.{}'.format(self.task_type))
+        template_module = import_module('taskontrol.tasks.{}'.format(self.task_type))
         task_class = getattr(template_module,template_module.TASK)
         self.task = task_class(**self.task_params)
 

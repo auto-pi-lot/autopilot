@@ -23,17 +23,17 @@ else:
     basedir = '/usr/rpilot'
 
 datadir = os.path.join(basedir,'data')
+protocoldir = os.path.join(basedir,'protocols')
 
 # Check for prereqs
-#try:
-#   import PySide
-
-#except:
-#   print("Error importing prerequisite packages!")
+try:
+   import PySide
+   import pyo
+except:
+   print("Error importing prerequisite packages!")
 
 #TODO: Handle permissions better than this...
 # Make folders
-#os.umask(0)
 if not os.path.exists(basedir):
     try:
         os.makedirs(basedir)
@@ -42,7 +42,12 @@ if not os.path.exists(basedir):
         print("Error making basedir: {}".format(basedir))
 if not os.path.exists(datadir):
     os.makedirs(datadir)
-    os.chmod(basedir, 1777)
+    os.chmod(datadir, 1777)
+if not os.path.exists(protocoldir):
+    os.makedirs(protocoldir)
+    os.chmod(protocoldir, 1777)
+
+
 
 # Get repo dir
 file_loc = os.path.realpath(__file__)
