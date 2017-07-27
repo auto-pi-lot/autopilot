@@ -37,15 +37,15 @@ except:
 if not os.path.exists(basedir):
     try:
         os.makedirs(basedir)
-        os.chmod(basedir, 1777)
+        os.chmod(basedir, 0777)
     except:
         print("Error making basedir: {}".format(basedir))
 if not os.path.exists(datadir):
     os.makedirs(datadir)
-    os.chmod(datadir, 1777)
+    os.chmod(datadir, 0777)
 if not os.path.exists(protocoldir):
     os.makedirs(protocoldir)
-    os.chmod(protocoldir, 1777)
+    os.chmod(protocoldir, 0777)
 
 
 
@@ -60,6 +60,8 @@ prefs = {}
 prefs['BASEDIR'] = basedir
 prefs['DATADIR'] = datadir
 prefs['REPODIR'] = repo_loc
+prefs['PROTOCOLDIR'] = protocoldir
+
 
 # If it doesn't exist, make a blank pilot database
 pilot_db = os.path.join(basedir,'pilot_db.json')

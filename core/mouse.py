@@ -10,7 +10,9 @@ Methods for storing data like mass, DOB, etc. as well as assigned protocols and 
 import os
 #import h5py
 import tables
+from tables.nodes import filenode
 import datetime
+from time import time
 from importlib import import_module
 import json
 import numpy as np
@@ -20,29 +22,29 @@ class Mouse:
     """Mouse object for managing protocol, parameters, and data"""
     # hdf5 structure is split into two groups, mouse info and trial data.
 
-    def __init__(self, name, dir='/usr/rpilot/data', new=0, biography=None, protocol=None):
+    def __init__(self, name, dir='/usr/rpilot/data', new=0, biography=None):
         #TODO: Pass dir from prefs
         self.name = str(name)
         self.file = os.path.join(dir, name + '.h5')
         if new or not os.path.isfile(self.file):
             print("\nNo file detected or flagged as new.")
-            self.new_mouse_file(biography, protocol)
+            self.new_mouse_file(biography)
         else:
             # .new_mouse() opens the file
             self.h5f    = tables.open_file(self.file, 'r+')
         # TODO figure out pytables swmr mode
 
         # Make shortcuts for direct assignation
-        self.h5info = self.h5f.root.info._v_attrs
-        self.h5data = self.h5f.root.data
+        self.info = self.h5f.root.info._v_attrs
+        self.data = self.h5f.root.data
+        self.current = self.h5f.root.current
+        self.history = self.h5f.root.history.history
 
-        # Load Task if Exists
-        # TODO make this more robust for multiple tasks - saving position, etc.
-        self.task = None
-        # if self.h5data._v_children.keys():
-        #     self.load_protocol()
 
-    def new_mouse_file(self, biography, protocol):
+    def new_mouse_file(self, biography):
+        # If a file already exists, we open it for appending so we don't lose data.
+        # For now we are assuming that the existing file has the basic structure,
+        # but that's probably a bad assumption for full reliability
         if os.path.isfile(self.file):
             self.h5f = tables.open_file(self.file, mode='a')
         else:
@@ -51,87 +53,93 @@ class Mouse:
             # Make Basic file structure
             self.h5f.create_group("/","data","Trial Record Data")
             self.h5f.create_group("/","info","Biographical Info")
+            history_group = self.h5f.create_group("/","history","History")
 
+            # When a whole protocol is changed, we stash the old protocol as a filenode in the past_protocols group
+            self.h5f.create_group("/history", "past_protocols",'Past Protocol Files')
+
+            # Also canonical to the basic file structure is the 'current' filenode which stores the current protocol,
+            # but since we want to be able to tell that a protocol hasn't been assigned yet we don't instantiate it here
+            # See http://www.pytables.org/usersguide/filenode.html
+            # filenode.new_node(self.h5f, where="/", name="current")
+
+            # We keep track of changes to parameters, promotions, etc. in the history table
+            self.h5f.create_table(history_group, 'history', self.History_Table, "Change History")
+
+
+        # Save biographical information as node attributes
         for k, v in biography.items():
             self.h5f.root.info._v_attrs[k] = v
 
-        # TODO make "schedule" table that lists which trial #s were done when, which steps, etc.
         self.h5f.flush()
 
     def update_biography(self, params):
         for k, v in params.items():
             self.h5f.root.info._v_attrs[k] = v
 
+    def update_history(self, type, name, value):
+        # Check that we're all strings in here
+        if not isinstance(type, basestring):
+            type = str(type)
+        if not isinstance(name, basestring):
+            name = str(name)
+        if not isinstance(value, basestring):
+            value = str(value)
 
+        history_row = self.h5f.root.history.history.row
 
+        history_row['timestamp'] = self.get_timestamp(string=True)
+        history_row['type'] = type
+        history_row['name'] = name
+        history_row['value'] = value
+        history_row.append()
 
-    def assign_protocol(self,protocol,params=None):
-        # Will need to change this to be protocols rather than individual steps, developing the skeleton.
-        #Condition the size of numvars on the number of vars to be stored
-        # Assign the names of columns as .attrs['column names']
-        self.task_type = protocol
-
-        if params:
-            self.task_params = params
-        else:
-            pass
-            #TODO: Created without params from terminal, need to be set by prefs pane
-
-        # Import the task class from its module
-        template_module = import_module('taskontrol.tasks.{}'.format(protocol))
-        task_class = getattr(template_module,template_module.TASK)
-
-        self.task_data_list = task_class.DATA_LIST
-        self.task_data_class = task_class.DataTypes
-        if 'trial_num' not in self.task_data_list.keys():
-            warnings.warn('You didn\'t declare you wanted trial numbers saved. Inserted, but go back and check your task class')
-            self.task_data_list.update({'trial_num':'i32'})
-            self.task_data_class.trial_num = tables.Int32Col()
-
-        # Check if params are a dict of params or a string referring to a premade parameter set
-        if isinstance(params, basestring):
-            self.param_template = params
-            self.task_params = getattr(template_module, params)
-            self.task = task_class(**self.task_params)
-        elif isinstance(params, dict):
-            self.param_template = False
-            self.task = task_class(**self.task_params)
-        else:
-            raise TypeError('Not sure what to do with your Params, need dict or string reference to parameter set in template')
-
-        # Make dataset in the hdf5 file to store trial records. When protocols are multiple steps, this will be multiple datasets
-        # dtask_data_class arg - We have to specifically declare the type of data we are storing since we are likely to have multiple types
-            # We do so with a subclass of the task class of type tables.IsDescription.
-            # See http://www.pytables.org/usersguide/tutorials.html
-        if 'step_num' and 'protocol_type' in self.task_params.keys():
-            self.h5trial_records = self.h5f.create_table(self.h5data,
-                                                         self.task_params['protocol_type'] + '_' + self.params['step_num'],
-                                                         self.task_data_class,
-                                                         expectedrows=50000)
-        elif 'description' in self.task_params.keys():
-            self.h5trial_records = self.h5f.create_table(self.h5data,
-                                                         self.task_params['description'],
-                                                         self.task_data_class,
-                                                         expectedrows=50000)
-        else:
-            self.h5trial_records = self.h5f.create_table(self.h5data,
-                                                         'task_' + str(len(self.h5data._v_children.keys()) + 1),
-                                                         self.task_data_class, expectedrows=50000)
-
-        # Save task parameters as table attributes
-        self.h5trial_records.attrs.task_type      = self.task_type
-        self.h5trial_records.attrs.date_assigned  = datetime.date.today().isoformat()
-        self.h5trial_records.attrs.params         = self.task_params
-        self.h5trial_records.attrs.data_list      = self.task_data_list
-        self.h5trial_records.attrs.param_template = self.param_template
-        self.trial_row                            = self.h5trial_records.row
         self.h5f.flush()
+
+    def assign_protocol(self, protocol, step=0):
+        # Protocol will be passed as a .json filename in prefs['PROTOCOLDIR']
+        # The full filename is passed because we don't want to assume knowledge of prefs in the mouse data model
+
+        # Check if there is an existing protocol, archive it if there is.
+        if "/current" in self.h5f:
+            # We store it as the date that it was changed followed by its name if it has one
+            current_node = filenode.open_node(self.h5f.current)
+            old_protocol = current_node.readall()
+
+            archive_name = datetime.datetime.now().strftime('%y%m%d-%H%M')
+
+            if 'protocol_name' in self.h5f.root.current.attrs._v_attrnames:
+                protocol_name = self.h5f.root.current.attrs._v_attrnames['protocol_name']
+                archive_name = '_'.join([archive_name, protocol_name])
+
+            archive_node = filenode.new_node(self.h5f, where='/history/past_protocols', name=archive_name)
+            archive_node.write(old_protocol)
+
+            self.h5f.remove_node('/current')
+
+        # Assign new protocol
+        # Load protocol to dict
+        with open(protocol) as protocol_file:
+            self.protocol = json.load(protocol_file)
+
+        # Make filenode and save as string
+        current_node = filenode.new_node(self.h5f, where='/', name='current')
+        current_node.write(json.dumps(self.protocol))
+
+        # Set name and step
+        # Strip off path and extension to get the protocol name
+        protocol_name = os.path.splitext(protocol)[0].split(os.sep)[-1]
+        current_node.attrs['protocol_name'] = protocol_name
+        current_node.attrs['step'] = step
+
+        # Update history (flushed the file so we don't have to here)
+        self.update_history('protocol', protocol_name, step)
 
     def load_protocol(self,step_number=-1):
         # If no step_number passed, load the last step assigned
         # TODO: dicts are mutable, so last number won't necessarily be last assigned. Fix when multi-step protocols made - use odicts
-        last_assigned_task   = self.h5data._v_children.keys()[step_number]
-        self.h5trial_records = self.h5data._f_get_child(last_assigned_task)
+        last_assigned_task   = self.data._v_children.keys()[step_number]
+        self.h5trial_records = self.data._f_get_child(last_assigned_task)
         self.trial_row       = self.h5trial_records.row
         self.task_type       = self.h5trial_records.attrs.task_type
         self.task_params     = self.h5trial_records.attrs.params
@@ -166,6 +174,28 @@ class Mouse:
     def put_away(self):
         self.h5f.flush()
         self.h5f.close()
+
+    def get_timestamp(self, string=False):
+        # Timestamps have two different applications, and thus two different formats:
+        # coarse timestamps that should be human-readable
+        # fine timestamps for data analysis that don't need to be
+        if string:
+            return datetime.datetime.now().strftime('%y%m%d-%H%M')
+        else:
+            return time()
+
+    class History_Table(tables.IsDescription):
+        # Class to describe parameter and protocol change history
+        # Columns:
+            # Timestamp
+            # Type of change - protocol, parameter, step
+            # Name - Which parameter was changed, name of protocol, manual vs. graduation step change
+            # Value - What was the parameter/protocol/etc. changed to, step if protocol.
+        time = tables.Float32Col()
+        type = tables.StringCol(64)
+        name = tables.StringCol(64)
+        value = tables.StringCol(64)
+
 
 ############################################################################################
 # Utility functions and classes

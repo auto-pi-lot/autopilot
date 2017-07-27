@@ -10,6 +10,7 @@ Notes on creating functions:
     -You must include **kwargs in the methods statement or otherwise handle the 'type' key fed to the function
 '''
 
+# TODO: make it so terminal doesn't have to import pyo just to access sound info
 import pyo
 from time import sleep
 #from taskontrol.settings import rpisettings as rpiset

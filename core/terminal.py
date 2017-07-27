@@ -8,6 +8,7 @@ import json
 import sys
 import os
 import datetime
+import copy
 from collections import OrderedDict as odict
 from PySide import QtCore
 from PySide import QtGui
@@ -221,7 +222,7 @@ class Mice(QtGui.QWidget):
 
             # Make new mouse object
             self.mouse = Mouse(biography_vals['id'], new=True,
-                               biography=biography_vals, protocol=protocol_vals)
+                               biography=biography_vals)
 
             # Update panels and pilot db, select new mouse
             self.mice.append(biography_vals['id'])
@@ -229,6 +230,9 @@ class Mice(QtGui.QWidget):
             self.pilot_panel.update_db()
 
     def select_mouse(self):
+        sender = self.sender()
+        mouse_id = sender.text()
+        self.mouse = Mouse(mouse_id)
         # TODO: Check if current mouse is already assigned, eg. from create_mouse
         pass
 
@@ -244,6 +248,14 @@ class Parameters(QtGui.QWidget):
     Read task parameters from mouse protocol, populate with buttons, etc.
     '''
     def __init__(self):
+
+        ##############
+        #
+        #
+        # TODO: Should just reuse the params window from the new protocol window for this. It's easy dumbass just make it not a nested class
+        #
+        #
+        ##############3
         QtGui.QWidget.__init__(self)
 
         # main layout
@@ -567,16 +579,33 @@ class Protocol_Wizard(QtGui.QDialog):
         task_type = self.task_list.currentItem().text()
         new_item = QtGui.QListWidgetItem()
         new_item.setText(task_type)
-        self.steps.append(tasks.TASK_LIST[task_type].PARAMS)
+        task_params = copy.deepcopy(tasks.TASK_LIST[task_type].PARAMS)
+
+        # Add params that are non-task specific
+        # Name of task type
+        task_params['task_type'] = {'type':'label','value':task_type}
+        # Prepend name of step shittily
+        task_params_temp = odict()
+        task_params_temp['step_name'] = {'type':'str', 'tag':'Step Name', 'value':task_type}
+        task_params_temp.update(task_params)
+        task_params.clear()
+        task_params.update(task_params_temp)
+
+        self.steps.append(task_params)
         self.step_list.addItem(new_item)
         self.step_list.setCurrentItem(new_item)
 
-
     def rename_step(self):
-        pass
+        sender = self.sender()
+        sender_text = sender.text()
+        current_step = self.step_list.item(self.step_list.currentRow())
+        current_step.setText(sender_text)
 
     def remove_step(self):
-        pass
+        step_index = self.step_list.currentRow()
+        del self.steps[step_index]
+        self.step_list.takeItem(step_index)
+
 
     def populate_params(self):
         # Widget dict to set dependencies later
@@ -585,35 +614,57 @@ class Protocol_Wizard(QtGui.QDialog):
 
         # Get current item index
         step_index = self.step_list.currentRow()
+        step_dict = self.steps[step_index]
 
         # Iterate through params to make input widgets
-        for k, v in self.steps[step_index].items():
+        for k, v in step_dict.items():
             # Make Input Widget depending on type
-            if v['type'] == 'int':
+            # Each Input type needs a different widget type,
+            # and each widget type has different methods to get/change values, so we have to do this ugly
+            if v['type'] == 'int' or v['type'] == 'str':
                 rowtag = QtGui.QLabel(v['tag'])
                 input_widget = QtGui.QLineEdit()
                 input_widget.setObjectName(k)
-                input_widget.setValidator(QtGui.QIntValidator())
+                if v['type'] == 'int':
+                    input_widget.setValidator(QtGui.QIntValidator())
                 input_widget.editingFinished.connect(self.set_param)
+                if 'value' in v.keys():
+                    input_widget.setText(v['value'])
                 self.param_layout.addRow(rowtag,input_widget)
             elif v['type'] == 'check':
                 rowtag = QtGui.QLabel(v['tag'])
                 input_widget = QtGui.QCheckBox()
                 input_widget.setObjectName(k)
                 input_widget.stateChanged.connect(self.set_param)
+                if 'value' in v.keys():
+                    input_widget.setChecked(v['value'])
                 self.param_layout.addRow(rowtag, input_widget)
             elif v['type'] == 'list':
                 rowtag = QtGui.QLabel(v['tag'])
                 input_widget = QtGui.QListWidget()
                 input_widget.setObjectName(k)
-                input_widget.insertItems(0, v['values'].keys())
+                input_widget.insertItems(0, sorted(v['values'], key=v['values'].get))
                 input_widget.itemSelectionChanged.connect(self.set_param)
+                if 'value' in v.keys():
+                    select_item = input_widget.item(v['value'])
+                    input_widget.setCurrentItem(select_item)
                 self.param_layout.addRow(rowtag, input_widget)
             elif v['type'] == 'sounds':
                 self.sound_widget = self.Sound_Widget()
                 self.sound_widget.setObjectName(k)
                 self.sound_widget.pass_set_param_function(self.set_sounds)
                 self.param_layout.addRow(self.sound_widget)
+                if 'value' in v.keys():
+                    self.sound_widget.populate_lists(v['value'])
+            elif v['type'] == 'label':
+                # This is a .json label not for display
+                pass
+
+            # Step name needs to be hooked up to the step list text
+
+            if k == 'step_name':
+                input_widget.editingFinished.connect(self.rename_step)
+
 
             widgets[k] = input_widget
 
@@ -640,7 +691,7 @@ class Protocol_Wizard(QtGui.QDialog):
         current_step = self.step_list.currentRow()
         sender_type = self.steps[current_step][param_name]['type']
 
-        if sender_type == 'int':
+        if sender_type == 'int' or sender_type == 'str':
             self.steps[current_step][param_name]['value'] = sender.text()
         elif sender_type == 'check':
             self.steps[current_step][param_name]['value'] = sender.isChecked()
@@ -651,13 +702,15 @@ class Protocol_Wizard(QtGui.QDialog):
         elif sender_type == 'sounds':
             self.steps[current_step][param_name]['value'] = self.sound_widget.sound_dict
 
-        pprint(dict(self.steps[current_step]))
+        # pprint(dict(self.steps[current_step]))
 
     def set_sounds(self):
         current_step = self.step_list.currentRow()
         self.steps[current_step]['sounds']['value'] = self.sound_widget.sound_dict
 
     def check_depends(self):
+        # TODO: Make dependent fields unavailable if dependencies unmet
+        # I mean if it really matters
         pass
 
 
@@ -672,11 +725,17 @@ class Protocol_Wizard(QtGui.QDialog):
             self.add_left_button = QtGui.QPushButton("+")
             self.add_left_button.setFixedHeight(30)
             self.add_left_button.clicked.connect(lambda: self.add_sound('L'))
+            self.remove_left_button = QtGui.QPushButton("-")
+            self.remove_left_button.setFixedHeight(30)
+            self.remove_left_button.clicked.connect(lambda: self.remove_sound('L'))
 
             left_layout = QtGui.QVBoxLayout()
+            left_button_layout = QtGui.QHBoxLayout()
+            left_button_layout.addWidget(self.add_left_button)
+            left_button_layout.addWidget(self.remove_left_button)
             left_layout.addWidget(left_label)
             left_layout.addWidget(self.left_list)
-            left_layout.addWidget(self.add_left_button)
+            left_layout.addLayout(left_button_layout)
 
             # Right sounds
             right_label = QtGui.QLabel("Right Sounds")
@@ -685,11 +744,17 @@ class Protocol_Wizard(QtGui.QDialog):
             self.add_right_button = QtGui.QPushButton("+")
             self.add_right_button.setFixedHeight(30)
             self.add_right_button.clicked.connect(lambda: self.add_sound('R'))
+            self.remove_right_button = QtGui.QPushButton("-")
+            self.remove_right_button.setFixedHeight(30)
+            self.remove_right_button.clicked.connect(lambda: self.remove_sound('R'))
 
             right_layout = QtGui.QVBoxLayout()
+            right_button_layout = QtGui.QHBoxLayout()
+            right_button_layout.addWidget(self.add_right_button)
+            right_button_layout.addWidget(self.remove_right_button)
             right_layout.addWidget(right_label)
             right_layout.addWidget(self.right_list)
-            right_layout.addWidget(self.add_right_button)
+            right_layout.addLayout(right_button_layout)
 
             self.sound_dict = {'L': [], 'R': []}
 
@@ -714,6 +779,25 @@ class Protocol_Wizard(QtGui.QDialog):
                 elif side == 'R':
                     self.right_list.addItem(new_sound.param_dict['type'])
                 self.set_sounds()
+
+        def remove_sound(self, side):
+            if side == 'L':
+                current_sound = self.left_list.currentRow()
+                del self.sound_dict['L'][current_sound]
+                self.left_list.takeItem(current_sound)
+            elif side == 'R':
+                current_sound = self.right_list.currentRow()
+                del self.sound_dict['R'][current_sound]
+                self.right_list.takeItem(current_sound)
+            self.set_sounds()
+
+        def populate_lists(self, sound_dict):
+            # Populate the sound lists after re-selecting a step
+            self.sound_dict = sound_dict
+            for k in self.sound_dict['L']:
+                self.left_list.addItem(k['type'])
+            for k in self.sound_dict['R']:
+                self.right_list.addItem(k['type'])
 
 
         class Add_Sound_Dialog(QtGui.QDialog):
@@ -835,13 +919,40 @@ class Terminal(QtGui.QWidget):
         #self.showMaximized()
         self.show()
 
+    def show_params(self):
+
+        # TODO: Give params window handle to mouse panel's update params function
+        # TODO: Give params window handle to Terminal's delete params function
+
     def new_protocol(self):
         self.new_protocol_window = Protocol_Wizard()
         self.new_protocol_window.exec_()
 
         if self.new_protocol_window.result() == 1:
-            protocol_dict = self.new_protocol_window.protocol_dict
-            # TODO: Dump to JSON
+            steps = self.new_protocol_window.steps
+
+            # The values useful to the step functions are stored with a 'value' key in the param_dict
+            save_steps = []
+            for s in steps:
+                param_values = {}
+                for k, v in s.items():
+                    if 'value' in v.keys():
+                        param_values[k] = v['value']
+                save_steps.append(param_values)
+
+            # Name the protocol
+            name, ok = QtGui.QInputDialog.getText(self, "Name Protocol", "Protocol Name:")
+            if ok and name != '':
+                protocol_file = os.path.join(prefs['PROTOCOLDIR'], name + '.json')
+                with open(protocol_file, 'w') as pfile_open:
+                    json.dump(save_steps, pfile_open)
+            elif name == '' or not ok:
+                placeholder_name = 'protocol_created_{}'.format(datetime.date.today().isoformat())
+                protocol_file = os.path.join(prefs['PROTOCOLDIR'], placeholder_name + '.json')
+                with open(protocol_file, 'w') as pfile_open:
+                    json.dump(save_steps, pfile_open)
+
+
 
 
 if __name__ == '__main__':
@@ -862,7 +973,6 @@ if __name__ == '__main__':
     else:
         prefs_file = args.prefs
 
-    print(prefs_file)
     with open(prefs_file) as prefs_file_open:
         prefs = json.load(prefs_file_open)
 
