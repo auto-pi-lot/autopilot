@@ -27,7 +27,6 @@ class Mouse:
         self.name = str(name)
         self.file = os.path.join(dir, name + '.h5')
         if new or not os.path.isfile(self.file):
-            print("\nNo file detected or flagged as new.")
             self.new_mouse_file(biography)
         else:
             # .new_mouse() opens the file
@@ -37,8 +36,14 @@ class Mouse:
         # Make shortcuts for direct assignation
         self.info = self.h5f.root.info._v_attrs
         self.data = self.h5f.root.data
-        self.current = self.h5f.root.current
         self.history = self.h5f.root.history.history
+
+        # If mouse has a protocol, load it to a dict
+        if "/current" in self.h5f:
+            current_node = filenode.open_node(self.h5f.root.current)
+            protocol_string = current_node.readall()
+            self.current = json.loads(protocol_string)
+            self.step = int(current_node.attrs['step'])
 
 
     def new_mouse_file(self, biography):
@@ -78,6 +83,15 @@ class Mouse:
             self.h5f.root.info._v_attrs[k] = v
 
     def update_history(self, type, name, value):
+        # Make sure the updates are written to the mouse file
+        if type == 'param':
+            self.current[self.step][name] = value
+            self.flush_current()
+        if type == 'step':
+            self.step = int(value)
+            self.h5f.root.current.attrs['step'] = self.step
+            self.flush_current()
+
         # Check that we're all strings in here
         if not isinstance(type, basestring):
             type = str(type)
@@ -88,13 +102,14 @@ class Mouse:
 
         history_row = self.h5f.root.history.history.row
 
-        history_row['timestamp'] = self.get_timestamp(string=True)
+        history_row['time'] = self.get_timestamp(string=True)
         history_row['type'] = type
         history_row['name'] = name
         history_row['value'] = value
         history_row.append()
 
-        self.h5f.flush()
+    def update_params(self, param, value):
+        pass
 
     def assign_protocol(self, protocol, step=0):
         # Protocol will be passed as a .json filename in prefs['PROTOCOLDIR']
@@ -103,7 +118,7 @@ class Mouse:
         # Check if there is an existing protocol, archive it if there is.
         if "/current" in self.h5f:
             # We store it as the date that it was changed followed by its name if it has one
-            current_node = filenode.open_node(self.h5f.current)
+            current_node = filenode.open_node(self.h5f.root.current)
             old_protocol = current_node.readall()
 
             archive_name = datetime.datetime.now().strftime('%y%m%d-%H%M')
@@ -132,8 +147,20 @@ class Mouse:
         current_node.attrs['protocol_name'] = protocol_name
         current_node.attrs['step'] = step
 
-        # Update history (flushed the file so we don't have to here)
+        # Update history (flushes the file so we don't have to here)
         self.update_history('protocol', protocol_name, step)
+
+    def flush_current(self):
+        step = self.h5f.root.current.attrs['step']
+        protocol_name = self.h5f.root.current.attrs['protocol_name']
+        self.h5f.remove_node('/current')
+        current_node = filenode.new_node(self.h5f, where='/', name='current')
+        current_node.write(json.dumps(self.current))
+        current_node.attrs['step'] = step
+        current_node.attrs['protocol_name'] = protocol_name
+        self.h5f.flush()
+
+
 
     def load_protocol(self,step_number=-1):
         # If no step_number passed, load the last step assigned
@@ -191,7 +218,7 @@ class Mouse:
             # Type of change - protocol, parameter, step
             # Name - Which parameter was changed, name of protocol, manual vs. graduation step change
             # Value - What was the parameter/protocol/etc. changed to, step if protocol.
-        time = tables.Float32Col()
+        time = tables.StringCol(64)
         type = tables.StringCol(64)
         name = tables.StringCol(64)
         value = tables.StringCol(64)
