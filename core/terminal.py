@@ -13,6 +13,7 @@ from collections import OrderedDict as odict
 from PySide import QtCore
 from PySide import QtGui
 from pprint import pprint
+import zmq
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from mouse import Mouse
@@ -224,6 +225,10 @@ class Mice(QtGui.QWidget):
             self.mouse = Mouse(biography_vals['id'], new=True,
                                biography=biography_vals)
 
+            if 'protocol' in protocol_vals.keys() and 'step' in protocol_vals.keys():
+                protocol_file = os.path.join(prefs['PROTOCOLDIR'], protocol_vals['protocol'] + '.json')
+                self.mouse.assign_protocol(protocol_file, int(protocol_vals['step']))
+
             # Update panels and pilot db, select new mouse
             self.mice.append(biography_vals['id'])
             self.create_buttons(self.mice, biography_vals['id'])
@@ -360,12 +365,13 @@ class Parameters(QtGui.QWidget):
             self.step_ind[s['step_name']] = i
 
         # Combobox for step selection
+        step_label = QtGui.QLabel("Current Step:")
         self.step_selection = QtGui.QComboBox()
         self.step_selection.insertItems(0, self.step_list)
         self.step_selection.setCurrentIndex(self.step)
         self.step_selection.currentIndexChanged.connect(self.step_changed)
 
-        self.param_layout.addWidget(self.step_selection)
+        self.param_layout.addRow(step_label, self.step_selection)
 
         # Populate params for current step
         step_params = self.protocol[self.step]
@@ -380,7 +386,7 @@ class Parameters(QtGui.QWidget):
                 input_widget.setObjectName(k)
                 if v['type'] == 'int':
                     input_widget.setValidator(QtGui.QIntValidator())
-                input_widget.editingFinished.connect(self.set_param)
+                input_widget.textEdited.connect(self.set_param)
                 if k in step_params.keys():
                     input_widget.setText(step_params[k])
                 self.param_layout.addRow(rowtag,input_widget)
@@ -449,7 +455,7 @@ class Parameters(QtGui.QWidget):
 
 
     def set_sounds(self):
-        pass
+        self.protocol[self.step]['sounds'] = self.sound_widget.sound_dict
 
 
     def assign_protocol(self, assign_protocol_function):
@@ -646,35 +652,60 @@ class New_Mouse_Wizard(QtGui.QDialog):
 
             topLabel = QtGui.QLabel("Protocols:")
 
+            # List available protocols
+            protocol_list = os.listdir(prefs['PROTOCOLDIR'])
+            protocol_list = [os.path.splitext(p)[0] for p in protocol_list]
+
             self.protocol_listbox = QtGui.QListWidget()
-            # TODO: Load available protocols
-            # Dummy for now
-            protocols = ['test protocol']
+            self.protocol_listbox.insertItems(0, protocol_list)
+            self.protocol_listbox.currentItemChanged.connect(self.protocol_changed)
+            
 
-            self.protocol_listbox.insertItems(0, protocols)
-
-            # TODO: Get Steps
-            self.step = QtGui.QSpinBox()
-            max_step = 5
-            self.step.setRange(1,5)
-            self.step.setSingleStep(1)
-
-            self.protocol_listbox.itemChanged.connect(lambda: self.update_return_dict('protocol'))
-            self.step.valueChanged.connect(lambda: self.update_return_dict('step'))
+            # Make Step combobox
+            self.step_selection = QtGui.QComboBox()
+            self.step_selection.currentIndexChanged.connect(self.step_changed)
 
             layout = QtGui.QVBoxLayout()
             layout.addWidget(topLabel)
             layout.addWidget(self.protocol_listbox)
-            layout.addWidget(self.step)
+            layout.addWidget(self.step_selection)
 
             self.setLayout(layout)
 
             # Dict to return values
             self.values = {}
 
-        def update_return_dict(self, key):
-            sender = self.sender()
-            self.values[key] = sender.text()
+
+        def update_step_box(self):
+            # Clear box 
+            while self.step_selection.count():
+                self.step_selection.removeItem(0)
+
+            # Load the protocol and parse its steps
+            protocol_str = self.protocol_listbox.currentItem().text()
+            protocol_file = os.path.join(prefs['PROTOCOLDIR'],protocol_str + '.json')
+            with open(protocol_file) as protocol_file_open:
+                protocol = json.load(protocol_file_open)
+
+            step_list = []
+            self.step_ind   = {}
+            for i, s in enumerate(protocol):
+                step_list.append(s['step_name'])
+                self.step_ind[s['step_name']] = i
+
+            self.step_selection.insertItems(0, step_list)
+            self.step_selection.setCurrentIndex(0)
+
+        def protocol_changed(self):
+            self.values['protocol'] = self.protocol_listbox.currentItem().text()
+            self.update_step_box()
+
+        def step_changed(self):
+            current_step = self.step_selection.currentText()
+            # Check that we have selected a step...
+            if current_step is not u'':
+                self.values['step'] = self.step_ind[current_step]
+
 
 
 class Protocol_Wizard(QtGui.QDialog):
@@ -1033,6 +1064,7 @@ class Terminal(QtGui.QWidget):
         QtGui.QWidget.__init__(self)
         self.setWindowTitle('Terminal')
         self.initUI()
+        self.init_networking()
 
     def initUI(self):
         # Main panel layout
@@ -1109,6 +1141,25 @@ class Terminal(QtGui.QWidget):
         self.panel_layout.removeWidget(self.param_panel)
         self.param_panel.deleteLater()
         self.setLayout(self.layout)
+
+    def init_networking(self):
+        context = zmq.Context()
+        # Publisher sends commands to Pilots
+        # Subscriber listens for data from Pilots
+        # Sync ensures pilots are ready for publishing
+        self.publisher  = context.socket(zmq.PUB)
+        self.subscriber = context.socket(zmq.SUB)
+        self.sync       = context.socket(zmq.REP)
+
+        self.publisher.bind('tcp://*:' + prefs['PUBPORT'])
+        self.subscriber.bind('tcp://*:' + prefs['SUBPORT'])
+        self.sync.bind('tcp://*:'+prefs['SYNCPORT'])
+
+    def connect_pilots(self):
+
+
+
+
 
 
 

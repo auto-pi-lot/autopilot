@@ -14,13 +14,33 @@ if os.getuid() != 0:
 # Argument parsing
 parser = argparse.ArgumentParser(description="Setup an RPilot Terminal")
 parser.add_argument('-d', '--dir', help="Base Directory for RPilot")
+parser.add_argument('-p', '--pubport', help="PUB port for publishing commands to RPilots. 5555 is default")
+parser.add_argument('-s', '--subport', help="SUB port for receiving data from RPilots. 5560 is default")
+parser.add_argument('-y', '--syncport', help="REP port to synchronize RPilot subscriptions. 5565 is default")
 
 args = parser.parse_args()
 
+# Parse Arguments and assign defaults
 if args.dir:
     basedir = args.dir
 else:
     basedir = '/usr/rpilot'
+
+if args.pubport:
+    pub_port = str(args.pubport)
+else:
+    pub_port = '5555'
+
+if args.subport:
+    sub_port = str(args.subport)
+else:
+    sub_port = '5560'
+
+if args.syncport:
+    sync_port = str(args.syncport)
+else:
+    sync_port = '5565'
+
 
 datadir = os.path.join(basedir,'data')
 protocoldir = os.path.join(basedir,'protocols')
@@ -61,7 +81,9 @@ prefs['BASEDIR'] = basedir
 prefs['DATADIR'] = datadir
 prefs['REPODIR'] = repo_loc
 prefs['PROTOCOLDIR'] = protocoldir
-
+prefs['PUBPORT'] = pub_port
+prefs['SUBPORT'] = sub_port
+prefs['SYNCPORT'] = sync_port
 
 # If it doesn't exist, make a blank pilot database
 pilot_db = os.path.join(basedir,'pilot_db.json')

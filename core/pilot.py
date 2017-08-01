@@ -22,8 +22,6 @@ __author__ = 'Jonny Saunders <jsaunder@uoregon.edu>'
 
 import os
 import subprocess
-from taskontrol.settings import rpisettings as rpiset
-from taskontrol import core
 import datetime
 # import RPi.GPIO as GPIO
 import pyo
@@ -31,29 +29,37 @@ import threading
 from time import sleep
 
 class RPilot:
-    def __init__(self, firstrun=0):
+
+    # Networking signals and associated methods
+    SIGNALS={
+        'SYNC': self.network_sync,
+        'RENAME': self.rename_pilot
+    }
+
+    def __init__(self):
+
         # Init all the hardware stuff, get the RPi ready for instructions
 
-        self.licks  = rpiset.LICKS
-        self.valves = rpiset.VALVES
-        self.licks_inv = {v: k for k,v in self.licks.items()} #So we can translate pin # to 'L', etc.
-        self.data = dict() # Temporary storage of trial data before flushing to h5f
-        self.triggers = dict()
-        self.timers = dict()
-        self.next_triggers = dict() # Precomputed triggers/times for next stage, kept separate so triggers/timers can be assigned under control of timers/locks/etc.
-        self.next_timers = dict()
+        #self.licks  = rpiset.LICKS
+        #self.valves = rpiset.VALVES
+        #self.licks_inv = {v: k for k,v in self.licks.items()} #So we can translate pin # to 'L', etc.
+        #self.data = dict() # Temporary storage of trial data before flushing to h5f
+        #self.triggers = dict()
+        #self.timers = dict()
+        #self.next_triggers = dict() # Precomputed triggers/times for next stage, kept separate so triggers/timers can be assigned under control of timers/locks/etc.
+        #self.next_timers = dict()
         # self.init_pins()
         # self.init_pyo()
-        self.protocol_ready = 0
+        #self.protocol_ready = 0
 
         # Locks, etc. for threading
-        self.threads = dict()
-        self.pin = None # Which pin was triggered? Set by pin_cb()
-        self.is_running = threading.Event()
-        self.stage_lock = threading.Condition()
-        self.trigger_lock = threading.Condition()
-        self.timer_block = threading.Event()
-        self.timer_block.set()
+        #self.threads = dict()
+        #self.pin = None # Which pin was triggered? Set by pin_cb()
+        #self.is_running = threading.Event()
+        #self.stage_lock = threading.Condition()
+        #self.trigger_lock = threading.Condition()
+        #self.timer_block = threading.Event()
+        #self.timer_block.set()
 
 
         # Init TCP/IP connection
@@ -336,6 +342,42 @@ class RPilot:
         #after init, wait for connection from the terminal
         #set up a TCP interrupt with RPi.GPIO
         pass
+
+    def network_sync(self):
+        # If the terminal requests it, we resync
+        pass
+
+    def rename_pilot(self):
+        # If the terminal renames us, change in prefs
+        pass
+
+
+
+
+
+
+if __name__ == '__main__':
+    # Parse arguments - this should have been called with a .json prefs file passed
+    # We'll try to look in the default location first
+    parser = argparse.ArgumentParser(description="Run an RPilot")
+    parser.add_argument('-p', '--prefs', help="Location of .json prefs file (created during setup_terminal.py)")
+    args = parser.parse_args()
+
+    if not args.prefs:
+        prefs_file = '/usr/rpilot/prefs.json'
+
+        if not os.path.exists(prefs_file):
+            raise Exception("No Prefs file passed, and file not in default location")
+
+        raise Warning('No prefs file passed, loaded from default location. Should pass explicitly with -p')
+
+    else:
+        prefs_file = args.prefs
+
+    with open(prefs_file) as prefs_file_open:
+        prefs = json.load(prefs_file_open)
+
+
 
 
 
