@@ -1064,7 +1064,6 @@ class Terminal(QtGui.QWidget):
         QtGui.QWidget.__init__(self)
         self.setWindowTitle('Terminal')
         self.initUI()
-        self.init_networking()
 
     def initUI(self):
         # Main panel layout
@@ -1102,6 +1101,9 @@ class Terminal(QtGui.QWidget):
         self.top_strip.addWidget(self.new_protocol_button)
         self.top_strip.addStretch(1)
         self.top_strip.addWidget(self.logo)
+
+        # Get variables from the widgets
+        self.pilots = self.pilot_panel.pilots
 
 
         self.plot_container = QtGui.QFrame()
@@ -1142,20 +1144,11 @@ class Terminal(QtGui.QWidget):
         self.param_panel.deleteLater()
         self.setLayout(self.layout)
 
-    def init_networking(self):
-        context = zmq.Context()
-        # Publisher sends commands to Pilots
-        # Subscriber listens for data from Pilots
-        # Sync ensures pilots are ready for publishing
-        self.publisher  = context.socket(zmq.PUB)
-        self.subscriber = context.socket(zmq.SUB)
-        self.sync       = context.socket(zmq.REP)
 
-        self.publisher.bind('tcp://*:' + prefs['PUBPORT'])
-        self.subscriber.bind('tcp://*:' + prefs['SUBPORT'])
-        self.sync.bind('tcp://*:'+prefs['SYNCPORT'])
 
-    def connect_pilots(self):
+    def publish_command(self, pi, commandstr):
+        self.publisher.send_multipart([bytes(pi), bytes(commandstr)])
+
 
 
 
