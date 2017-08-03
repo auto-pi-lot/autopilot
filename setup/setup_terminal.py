@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser(description="Setup an RPilot Terminal")
 parser.add_argument('-d', '--dir', help="Base Directory for RPilot")
 parser.add_argument('-p', '--pubport', help="PUB port for publishing commands to RPilots. 5555 is default")
 parser.add_argument('-s', '--listenport', help="PULL port for receiving data from RPilots. 5560 is default")
-parser.add_argument('-y', '--syncport', help="REP port to synchronize RPilot subscriptions. 5565 is default")
+parser.add_argument('-y', '--msgport', help="PAIR port to pass messages from Terminal to networking object. 5565 is default")
 
 args = parser.parse_args()
 
@@ -36,10 +36,10 @@ if args.listenport:
 else:
     listen_port = '5560'
 
-if args.syncport:
-    sync_port = str(args.syncport)
+if args.msgport:
+    msg_port = str(args.msgport)
 else:
-    sync_port = '5565'
+    msg_port = '5565'
 
 
 datadir = os.path.join(basedir,'data')
@@ -83,7 +83,7 @@ prefs['REPODIR'] = repo_loc
 prefs['PROTOCOLDIR'] = protocoldir
 prefs['PUBPORT'] = pub_port
 prefs['LISTENPORT'] = listen_port
-prefs['SYNCPORT'] = sync_port
+prefs['MESSAGEPORT'] = msg_port
 
 # If it doesn't exist, make a blank pilot database
 pilot_db = os.path.join(basedir,'pilot_db.json')
@@ -98,12 +98,12 @@ os.chmod(pilot_db, 0777)
 prefs_file = os.path.join(basedir, 'prefs.json')
 with open(prefs_file, 'w') as prefs_file_open:
     json.dump(prefs, prefs_file_open)
-
+os.chmod(prefs_file, 0775)
 
 # Create .sh file to open terminal
 launch_file = os.path.join(basedir, 'launch_terminal.sh')
 with open(launch_file, 'w') as launch_file_open:
-    launch_string = "python " + os.path.join(repo_loc, "core", "terminal.py") + " -p " + prefs_file
+    launch_string = "python " + os.path.join(repo_loc, "core", "terminal.py") + " -f " + prefs_file
     launch_file_open.write(launch_string)
 
 os.chmod(launch_file, 0775)

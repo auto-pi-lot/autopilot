@@ -17,6 +17,7 @@ import zmq
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from mouse import Mouse
+from networking import Terminal_Networking
 import tasks
 import sounds
 
@@ -1064,6 +1065,8 @@ class Terminal(QtGui.QWidget):
         QtGui.QWidget.__init__(self)
         self.setWindowTitle('Terminal')
         self.initUI()
+        self.networking = Terminal_Networking(prefs)
+        self.networking.start()
 
     def initUI(self):
         # Main panel layout
@@ -1196,7 +1199,7 @@ if __name__ == '__main__':
     # Parse arguments - this should have been called with a .json prefs file passed
     # We'll try to look in the default location first
     parser = argparse.ArgumentParser(description="Run an RPilot Terminal")
-    parser.add_argument('-p', '--prefs', help="Location of .json prefs file (created during setup_terminal.py)")
+    parser.add_argument('-f', '--prefs', help="Location of .json prefs file (created during setup_terminal.py)")
     args = parser.parse_args()
 
     if not args.prefs:
