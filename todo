@@ -9,6 +9,10 @@
 ------------------
 !- make name param for steps
 !- implement protocol assignation in mouse object
-- implement protocol assignation in 'new mouse' dialog
-- make popup protocol params dialog
+!- implement protocol assignation in 'new mouse' dialog
+!- make popup protocol params dialog
 - drag and drop mice order
+- send sound files
+- make multiple network keys - not just 'X' but also 'Pis', 'plots,' etc.
+- Make verbose/nonverbose mode - either report whole trials or events
+- Just have events, no data messages. check if the message dict has a field 'TRIALEND' or something to flush a row

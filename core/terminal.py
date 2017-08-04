@@ -9,11 +9,15 @@ import sys
 import os
 import datetime
 import copy
+import logging
+import threading
 from collections import OrderedDict as odict
 from PySide import QtCore
 from PySide import QtGui
 from pprint import pprint
 import zmq
+from zmq.eventloop.ioloop import IOLoop
+from zmq.eventloop.zmqstream import ZMQStream
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from mouse import Mouse
@@ -21,6 +25,10 @@ from networking import Terminal_Networking
 import tasks
 import sounds
 
+# TODO: Oh holy hell just rewrite all the inter-widget communication as zmq
+# TODO: Be more complete about generating logs
+# TODO: Save logs on exit
+# TODO: Make exit graceful
 
 # http://zetcode.com/gui/pysidetutorial/layoutmanagement/
 # https://wiki.qt.io/PySide_Tutorials
@@ -48,6 +56,8 @@ class Pilots(QtGui.QWidget):
         label.setFixedHeight(30)
 
         # Create vertical layouts to hold buttons and nest within main layout
+        # TODO: Make form layout with left column having status icons
+        # TODO: Make status icon graphics
         self.button_layout = QtGui.QVBoxLayout()
         self.container.setLayout(self.button_layout)
         self.layout.addWidget(label)
@@ -475,6 +485,7 @@ class Parameters(QtGui.QWidget):
 
 class DataView(QtGui.QWidget):
     # TODO: Use pyqtgraph for this: http://www.pyqtgraph.org/
+    # TODO: Spawn widget in own process, spawn each plot in own thread with subscriber and loop
     def __init__(self):
         QtGui.QWidget.__init__(self)
 
@@ -1063,10 +1074,19 @@ class Terminal(QtGui.QWidget):
     def __init__(self):
         # Initialize the superclass (QtGui.QWidget)
         QtGui.QWidget.__init__(self)
+
+        # Declare attributes
+        self.context = None
+        self.loop    = None
+        self.messenger = None
+        self.listener  = None
+        self.networking = None
+        self.rows = None #handles to row writing functions
+
         self.setWindowTitle('Terminal')
         self.initUI()
-        self.networking = Terminal_Networking(prefs)
-        self.networking.start()
+        self.init_networking()
+        self.send_message('INIT',value = self.pilots.keys()) # Inits our pilots
 
     def initUI(self):
         # Main panel layout
@@ -1147,11 +1167,82 @@ class Terminal(QtGui.QWidget):
         self.param_panel.deleteLater()
         self.setLayout(self.layout)
 
+    def start_mouse(self):
+        # TODO: Give prefs panel an attribute to refer to the start_mouse function
+        # TODO: Give this method to the prefs panel
 
+        # ready table in mouse h5f Get handle to mouse h5f row object
+        pass
 
-    def publish_command(self, pi, commandstr):
-        self.publisher.send_multipart([bytes(pi), bytes(commandstr)])
+    def stop_mouse(self):
+        # flush table, handle coherence checking, close .h5f
+        pass
 
+    ##########################3
+    # NETWORKING METHODS
+
+    def init_network(self):
+        # Start external communications process
+        # TODO: Spawn in own process
+        # TODO: When doing ^, probably need to move context() out of __init__()
+        self.networking = Terminal_Networking(prefs)
+        self.networking.start()
+
+        # Start internal communications
+        self.context = zmq.Context.instance()
+        self.loop = IOLoop.instance()
+
+        # Messenger to send messages to networking class via ipc
+        # Subscriber to receive return messages
+        self.messenger   = self.context.socket(zmq.PUSH)
+        self.subscriber  = self.context.socket(zmq.SUB)
+
+        self.messenger.bind('ipc://{}.ipc'.format(prefs['MSGPORT']))
+        self.subscriber.connect('tcp://localhost:{}'.format(prefs['PUBPORT']))
+        self.subscriber.setsockopt(zmq.SUBSCRIBE, b'T')
+
+        # Setup subscriber for looping
+        self.subscriber = ZMQStream(self.subscriber)
+        self.subscriber.on_recv(self.handle_listen)
+
+        # Listen dictionary - which methods to call for different messages
+        self.listens = {
+            'ALIVE': self.l_alive, # A Pi is telling us that it is alive
+            'STATE': self.l_state, # A Pi has changed state
+            'EVENT': self.l_event # A Pi is returning data from an event
+        }
+
+        # Spinoff IOLoop thread
+        self.loop_thread = threading.Thread(target=self.loop.start)
+        self.loop_thread.start()
+
+    def handle_listen(self, msg):
+        # Listens are multipart target-msg messages
+        # target = msg[0]
+        message = json.loads(msg[1])
+
+        logging.info('TERMINAL LISTEN - KEY: {}, VALUE: {}'.format(message['key'], message['value']))
+
+        listen_funk = self.listens[message['key']]
+        listen_thread = threading.Thread(target=listen_funk, args=(message['value'],))
+        listen_thread.start()
+
+    def send_message(self, key, target='', value=''):
+        msg = {'key': key, 'target': target, 'value': value}
+
+        self.messenger.send_json(json.dumps(msg))
+
+    def l_alive(self, value):
+        # Change icon next to appropriate pilot button
+        pass
+
+    def l_state(self, value):
+        # A Pi has changed state
+        pass
+
+    def l_event(self, value):
+        # A Pi sends us either an event or a full trial's data
+        pass
 
 
 
@@ -1215,6 +1306,11 @@ if __name__ == '__main__':
 
     with open(prefs_file) as prefs_file_open:
         prefs = json.load(prefs_file_open)
+
+    # Start Logging
+    logging.basicConfig(format="%(asctime)s %(message)s",
+                        datefmt="%Y-%m-%d %H:%M%:S",
+                        level=logging.INFO)
 
     app = QtGui.QApplication(sys.argv)
     ex = Terminal()

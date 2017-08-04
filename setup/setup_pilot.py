@@ -1,6 +1,7 @@
 import os
 import json
 import argparse
+import uuid
 
 
 # Check for sudo
@@ -11,17 +12,18 @@ if os.getuid() != 0:
 parser = argparse.ArgumentParser(description='Setup an RPilot')
 parser.add_argument('-n', '--name', help="The name for this pilot")
 parser.add_argument('-d', '--dir',  help="Base Directory for RPilot resources")
-parser.add_argument('-p', '--pubport', help="PUB port for publishing data to terminal. 5560 is default")
+parser.add_argument('-p', '--pushport', help="PUB port for publishing data to terminal. 5560 is default")
 parser.add_argument('-s', '--subport', help="SUB port for receiving commands from RPilots. 5555 is default")
-parser.add_argument('-y', '--syncport', help="REQ port to synchronize RPilot subscriptions. 5565 is default")
-
+parser.add_argument('-y', '--msgport', help="PULL port to receive messages from the Pilot class. 5565 is default")
+parser.add_argument('-t', '--terminalip', help="Local IP of terminal. Default is 192.168.0.100")
 
 
 args = parser.parse_args()
 
 # Parse Arguments and assign defaults
 if not args.name:
-    Exception("Need to give a name to your RPilot")
+    name = str(uuid.uuid4())
+    Warning("Need to give a name to your RPilot, assigning random unique name: {}".format(name))
 else:
     name = args.name
 
@@ -30,20 +32,25 @@ if args.dir:
 else:
     basedir = '/usr/rpilot'
 
-if args.pubport:
-    pub_port = str(args.pubport)
+if args.pushport:
+    push_port = str(args.pushport)
 else:
-    pub_port = '5560'
+    push_port = '5560'
 
 if args.subport:
     sub_port = str(args.subport)
 else:
     sub_port = '5555'
 
-if args.syncport:
-    sync_port = str(args.syncport)
+if args.msgport:
+    msg_port = str(args.msgport)
 else:
-    sync_port = '5565'
+    msg_port = '5565'
+
+if args.terminalip:
+    terminal_ip = str(args.terminalip)
+else:
+    terminal_ip = '192.168.0.100'
 
 
 datadir = os.path.join(basedir,'data')
@@ -77,18 +84,21 @@ repo_loc = os.path.join(os.sep,*file_loc)
 
 # make prefs dict
 prefs = {}
+prefs['NAME'] = name
 prefs['BASEDIR'] = basedir
 prefs['DATADIR'] = datadir
 prefs['REPODIR'] = repo_loc
 prefs['SOUNDDIR'] = sounddir
-prefs['PUBPORT'] = pub_port
+prefs['PUSHPORT'] = push_port
 prefs['SUBPORT'] = sub_port
-prefs['SYNCPORT'] = sync_port
+prefs['MSGPORT'] = msg_port
+prefs['TERMINALIP'] = terminal_ip
 
 # save prefs
 prefs_file = os.path.join(basedir, 'prefs.json')
 with open(prefs_file, 'w') as prefs_file_open:
     json.dump(prefs, prefs_file_open)
+os.chmod(prefs_file, 0775)
 
 
 # Create .sh file to open pilot

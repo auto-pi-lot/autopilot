@@ -7,26 +7,26 @@ import threading
 import zmq
 from zmq.eventloop.ioloop import IOLoop, PeriodicCallback
 from zmq.eventloop.zmqstream import ZMQStream
+from warnings import warn
 
 # Message structure:
 # Messages flow from the Terminal class to the raspberry pi
 # {key: {target, value}}
 # key - what type of message is this (byte string)
 # target - where should it go (json encoded on receipt, converted to byte string)
+#          For the Pilot, target refers to the mouse so the Terminal can plot/store data
 # value - what is the message (json encoded)
 # This structure allows us to sensibly 'unwrap' messages:
 # the handler function for each socket passes the target and value to the appropriate function for a given key
 # the key function will do whatever it needs to do with value and send it on to target
 
 # Listens
-# Listens flow from the raspberry pi to the terminal, so same structure but no need for target
 
 # TODO: Periodically ping pis to check that they are still responsive
 
 class Terminal_Networking:
-    # Internal Variables/Objects to the Networking Object
+    # Internal Variables/Objects to the Terminal Networking Object
     ctx          = None    # Context
-    kvmap        = None    # Key-value store
     loop         = None    # IOLoop
     pub_port     = None    # Publisher Port
     listen_port  = None    # Listener Port
@@ -42,17 +42,16 @@ class Terminal_Networking:
         self.message_port = prefs['MESSAGEPORT']
 
         self.context = zmq.Context.instance()
-        self.kvmap = {}
         self.loop = IOLoop.instance()
         # Publisher sends commands to Pilots
         # Subscriber listens for data from Pilots
         # Sync ensures pilots are ready for publishing
         self.publisher  = self.context.socket(zmq.PUB)
-        self.listener = self.context.socket(zmq.PULL)
-        self.messenger = self.context.socket(zmq.PAIR)
-        #self.publisher.bind('tcp://*:{}'.format(self.pub_port))
-        self.listener.connect('tcp://localhost:{}'.format(self.listen_port))
-        self.messenger.connect('tcp://localhost:{}'.format(self.message_port))
+        self.listener   = self.context.socket(zmq.PULL)
+        self.messenger  = self.context.socket(zmq.PULL)
+        self.publisher.bind('tcp://*:{}'.format(self.pub_port))
+        self.listener.bind('tcp://*:{}'.format(self.listen_port))
+        self.messenger.connect('ipc://{}.ipc'.format(self.message_port))
 
         # Wrap as ZMQStreams
         #self.publisher = ZMQStream(self.publisher)
@@ -65,7 +64,7 @@ class Terminal_Networking:
 
         # Message dictionary - What method to call for each type of message received by the terminal class
         self.messages = {
-            'PING': self.m_ping,    # We are asked to confirm that we are alive
+            'PING': self.m_ping,    # We are asked to confirm that the raspberry pis are alive
             'INIT': self.m_init,    # We should ask all the pilots to confirm that they are alive
             'START': self.m_start_task,  # Upload task to a pilot
             'CHANGE': self.m_change,  # Change a parameter on the Pi
@@ -77,15 +76,15 @@ class Terminal_Networking:
         self.listens = {
             'DATA': self.l_data, # Stash incoming data from an rpilot
             'ALIVE': self.l_alive, # A Pi is responding to our periodic query of whether it remains alive
-            'EVENT': self.l_event # Stash a single event (not a whole trial's data)
+                                   # It replies with its subscription filter
+            'EVENT': self.l_event, # Stash a single event (not a whole trial's data)
+            'STATE': self.l_state # The Pi is confirming/notifying us that it has changed state
         }
 
         self.mice_data = {} # maps the running mice to methods to stash their data
-
-        # Log formatting
-        logging.basicConfig(format="%(asctime)s %(message)s",
-                            datefmt="%Y-%m-%d %H:%M%:S",
-                            level=logging.INFO)
+        self.subscribers = set()
+        # TODO: Subscribers should actually be a dict with names and # of expected subscribers
+        self.states = {} # States of each of the pilots
 
         # TODO: Get KVMsg from zexamples repo
         # TODO: Be passed method to write rows of data to mouse files
@@ -99,32 +98,67 @@ class Terminal_Networking:
 
     def stop(self):
         try:
-            self.thread.stop()
+            pass
+        # TODO: Call this when shutting down
         except:
             pass
 
-    def publish(self, message):
-        # If it's to all... use "X" or other nonspecific sub pattern
-        # Otherwise send a message to a specific pi
-        if len(message) != 3:
-            print("Bad Message to Publish: {}".format(message))
-            return
-        elif len(message) == 3:
-            # should have pi, a message field and the value
+    def publish(self, target, message):
+        # target is the subscriber filter
+        # Message is a dict that should have two k/v pairs:
+        # 'key': the type of message this is
+        # 'value': the content of the message
 
-            pass
+        # Check if we know about this target
+        # Warn if not, but still try and send message
+
+        # TODO: Make more robust - number each publish, spawn timer thread that checks whether we have received receipt
+        # TODO: Bind an on_send callback that spawns the timer thread
+        # TODO: Then add a 'TTL' field in the message dict and check for it in this function
+        # TODO: Add 'TTL' to prefs setup
+
+        if target not in self.subscribers:
+            logging.warning('PUBLISH Message to unconfirmed target: {}'.format(target))
+
+        # Make sure our message has everything
+        if not all(i in message.keys() for i in ['key', 'value']):
+            logging.warning('PUBLISH Improperly formatted: {}'.format(message))
+            return
+
+        # Publish the message
+        self.publisher.send_multipart([bytes(target), json.dumps(message)])
+
+
 
     def handle_listen(self, msg):
         # listens are always json encoded, single-part messages
-        print(msg[0])
         msg = json.loads(msg[0])
-        print(msg)
-        self.listens[msg['key']](msg['value'])
 
-    def handle_message(self):
+        # Check if our listen was sent properly
+        if not all(i in msg.keys() for i in ['key','value']):
+            logging.warning('LISTEN Improperly formatted: {}'.format(msg))
+            return
+
+        # Log and spawn thread to respond to listen
+        logging.info('LISTEN - KEY: {}, VALUE: {}'.format(msg['key'],msg['value']))
+        listen_funk = self.listens[msg['key']]
+        listen_thread = threading.Thread(target=listen_funk, args=(msg['value'],))
+        listen_thread.start()
+
+
+    def handle_message(self, msg):
         # messages are always json encoded, single-part messages.
-        msg = json.loads(msg)
-        self.messages[msg['key']](msg['target'], msg['value'])
+        msg = json.loads(msg[0])
+
+        # Check if message was formatted properly
+        if not all(i in msg.keys() for i in ['key', 'target', 'value']):
+            logging.warning('MESSAGE Improperly formatted: {}'.format(msg))
+
+        # Log and spawn thread to respond to message
+        logging.info('MESSAGE - KEY: {}, TARGET: {}, VALUE: {}'.format(msg['key'], msg['target'], msg['value']))
+        message_funk = self.messages[msg['key']]
+        message_thread = threading.Thread(target=message_funk, args=[msg['target'], msg['value']])
+        message_thread.start()
 
 
 
@@ -132,9 +166,22 @@ class Terminal_Networking:
     # Message Handling Methods
 
     def m_ping(self, target, value):
+        # All subscribers should be subscribed with the general filter b'X'.
+        # We then ping everyone, whoever is listening should respond with their filterset
+
         print(target, value)
 
     def m_init(self, target, value):
+        # Ping all pis that we are expecting given our pilot db until we get a response
+        # Pass back who responds as they do to update the GUI.
+
+        # Override target if any is fed to us
+        target = b'X' # TODO: Allow all pub/sub key to be defined in setup functions
+
+        # Value should be a list of the PIs we expect to hear from
+        # We send pings until
+
+
         pass
 
 
@@ -145,6 +192,7 @@ class Terminal_Networking:
         # Start listening thread
 
     def m_change(self, target, value):
+        # TODO: Should also handle param changes to GUI objects like ntrials, etc.
         pass
 
 
@@ -155,12 +203,156 @@ class Terminal_Networking:
     def m_stopall(self, target, value):
         pass
 
-    def l_data(self,value):
+    def l_data(self, target, value):
         pass
 
-    def l_alive(self, value):
-        print(value)
+    def l_alive(self, target, value):
+        # A pi has told us that it is alive and what its filter is
+        self.subscribers.update(value)
 
-    def l_event(self, value):
+    def l_event(self, target, value):
         pass
+
+    def l_state(self, target, value):
+        pass
+
+
+class Pilot_Networking:
+    # Internal Variables/Objects to the Pilot Networking Object
+    ctx          = None    # Context
+    loop         = None    # IOLoop
+    sub_port     = None    # Subscriber Port to Terminal Publisher
+    push_port    = None    # Port to push messages back to Terminal
+    message_port = None    # Port to receive messages from the Pilot
+    subscriber   = None    # Subscriber Handler - For receiving messages from the terminal
+    pusher       = None    # Pusher Handler - For pushing data back to the terminal
+    messenger    = None    # Messenger Handler - For receiving messages from the Pilot
+
+    def __init__(self, prefs):
+        self.name = prefs['NAME']
+
+        self.sub_port = prefs['SUBPORT']
+        self.push_port = prefs['PUSHPORT']
+        self.message_port = prefs['MSGPORT']
+
+        self.context = zmq.Context.instance()
+
+        self.loop = IOLoop.instance()
+
+        # Instantiate and connect sockets
+        self.subscriber = self.context.socket(zmq.SUB)
+        self.pusher     = self.context.socket(zmq.PUSH)
+        self.messenger  = self.context.socket(zmq.PULL)
+
+        self.subscriber.connect('tcp://{}:{}'.format(prefs['TERMINALIP'],self.sub_port))
+        self.pusher.connect('tcp://{}:{}'.format(prefs['TERMINALIP'],self.push_port))
+        self.messenger.connect('ipc://{}.ipc'.format(self.message_port))
+
+        # Set subscriber filters
+        self.subscriber.setsockopt(zmq.SUBSCRIBE, bytes(prefs['NAME']))
+        self.subscriber.setsockopt(zmq.SUBSCRIBE, b'X')
+
+        # Wrap as ZMQStreams
+        self.subscriber = ZMQStream(self.subscriber)
+        self.messenger  = ZMQStream(self.messenger)
+
+        # Set on_recv callbacks
+        self.subscriber.on_recv(self.handle_listen)
+        self.messenger.on_recv(self.handle_message)
+
+        # Message dictionary - What method to call for messages from the parent Pilot
+        self.messages = {
+            'STATE': self.m_state, # Confirm or notify terminal of state change
+            'DATA': self.m_data,  # Sending a whole trial's data back
+            'EVENT': self.m_event, # Sending a single event within a trial back
+            'COHERE': self.m_cohere # Sending our temporary data table at the end of a run to compare w/ terminal's copy
+        }
+
+        # Listen dictionary - What method to call for PUBlishes from the Terminal
+        self.listens = {
+            'PING': self.l_ping, # The Terminal wants to know if we're listening
+            'START': self.l_start, # We are being sent a task to start
+            'STOP': self.l_stop, # We are being told to stop the current task
+            'CHANGE': self.l_change # The Terminal is changing some task parameter
+        }
+
+    def start(self):
+        try:
+            self.thread = threading.Thread(target=self.loop.start)
+            self.thread.start()
+        except KeyboardInterrupt:
+            pass
+
+    def push(self, key, value):
+        self.pusher.send_json(json.dumps({'key':key, 'value':value}))
+
+    def handle_listen(self):
+        pass
+
+    def handle_message(self):
+        pass
+
+    ###########################3
+    # Message/Listen handling methods
+    def m_state(self, target, value):
+        pass
+
+    def m_data(self, target, value):
+        pass
+
+    def m_event(self, target, value):
+        pass
+
+    def m_cohere(self, target, value):
+        # Send our local version of the data table so the terminal can double check
+        pass
+
+    def l_ping(self, value):
+        pass
+
+    def l_start(self, value):
+        pass
+
+    def l_stop(self, value):
+        pass
+
+    def l_change(self, value):
+        pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -44,11 +44,13 @@ else:
 
 datadir = os.path.join(basedir,'data')
 protocoldir = os.path.join(basedir,'protocols')
+logdir = os.path.join(basedir,'logs')
 
 # Check for prereqs
 try:
    import PySide
    import pyo
+   import zmq
 except:
    print("Error importing prerequisite packages!")
 
@@ -66,6 +68,9 @@ if not os.path.exists(datadir):
 if not os.path.exists(protocoldir):
     os.makedirs(protocoldir)
     os.chmod(protocoldir, 0777)
+if not os.path.exists(logdir):
+    os.makedirs(logdir)
+    os.chmod(logdir, 0777)
 
 
 
