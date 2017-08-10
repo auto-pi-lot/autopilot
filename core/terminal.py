@@ -11,6 +11,7 @@ import datetime
 import copy
 import logging
 import threading
+import multiprocessing
 from collections import OrderedDict as odict
 from PySide import QtCore
 from PySide import QtGui
@@ -150,6 +151,8 @@ class Pilots(QtGui.QWidget):
     def update_db(self):
         with open(prefs['PILOT_DB'], 'w') as pilot_file:
             json.dump(self.pilots, pilot_file)
+
+
 
 class Mice(QtGui.QWidget):
     '''
@@ -1185,8 +1188,11 @@ class Terminal(QtGui.QWidget):
         # Start external communications process
         # TODO: Spawn in own process
         # TODO: When doing ^, probably need to move context() out of __init__()
-        self.networking = Terminal_Networking(prefs)
+        self.networking = multiprocessing.Process(target=Terminal_Networking,
+                                                  args=(prefs,), kwargs={'start':True},
+                                                  name='networking')
         self.networking.start()
+
 
         # Start internal communications
         self.context = zmq.Context.instance()
@@ -1208,6 +1214,7 @@ class Terminal(QtGui.QWidget):
         # Listen dictionary - which methods to call for different messages
         self.listens = {
             'ALIVE': self.l_alive, # A Pi is telling us that it is alive
+            'DEAD' : self.l_dead, # A Pi we requested is not responding
             'STATE': self.l_state, # A Pi has changed state
             'EVENT': self.l_event # A Pi is returning data from an event
         }
@@ -1227,6 +1234,10 @@ class Terminal(QtGui.QWidget):
         listen_thread = threading.Thread(target=listen_funk, args=(message['value'],))
         listen_thread.start()
 
+        # Tell the networking process that we got it
+        self.send_message('RECVD', value=msg['id'])
+
+
     def send_message(self, key, target='', value=''):
         msg = {'key': key, 'target': target, 'value': value}
 
@@ -1234,7 +1245,15 @@ class Terminal(QtGui.QWidget):
 
     def l_alive(self, value):
         # Change icon next to appropriate pilot button
-        pass
+        # If we have the value in our list of pilots...
+        if value in self.pilots.keys():
+            self.pilot_panel.buttons[value].setStyleSheet("background-color:green")
+
+    def l_dead(self, value):
+        # Change icon next to appropriate pilot button
+        # If we have the value in our list of pilots...
+        if value in self.pilots.keys():
+            self.pilot_panel.buttons[value].setStyleSheet("background-color:red")
 
     def l_state(self, value):
         # A Pi has changed state
