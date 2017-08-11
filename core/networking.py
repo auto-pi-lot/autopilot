@@ -332,7 +332,15 @@ class Pilot_Networking:
     pusher       = None    # Pusher Handler - For pushing data back to the terminal
     messenger    = None    # Messenger Handler - For receiving messages from the Pilot
 
-    def __init__(self, prefs, start=False):
+    def __init__(self, prefs=None, start=False):
+        # Prefs should be passed to us, try to load from default location if not
+        if not prefs:
+            try:
+                with open('/usr/rpilot/prefs.json') as op:
+                    prefs = json.load(op)
+            except:
+                logging.exception('No prefs file passed, and none found!')
+
         self.name = prefs['NAME']
 
         self.sub_port = prefs['SUBPORT']
