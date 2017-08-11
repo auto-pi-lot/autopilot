@@ -276,7 +276,6 @@ class Terminal_Networking:
 
     def l_alive(self, target, value):
         # A pi has told us that it is alive and what its filter is
-        whodis = value['']
         self.subscribers.update(value)
         logging.info('Received ALIVE from {}'.format(value))
         # Tell the terminal
@@ -310,6 +309,7 @@ class Terminal_Networking:
         if int(self.outbox[message_id]['ttl']) <= 0:
             logging.warning('PUBLISH FAILED {} - {}'.format(message_id, self.outbox[message_id]))
             del self.outbox[message_id]
+            return
 
         # Publish the message
         self.publisher.send_multipart([bytes(self.outbox[message_id]['target']), json.dumps(self.outbox[message_id])])
@@ -407,6 +407,10 @@ class Pilot_Networking:
         listen_funk = self.listens[msg['key']]
         listen_thread = threading.Thread(target=listen_funk, args=(msg['value'],))
         listen_thread.start()
+
+        # Then let the terminal know we got the message
+        recvd_thread = threading.Thread(target=self.push, kwargs={'key':'RECVD','value':msg['id']})
+        recvd_thread.start()
 
     def handle_message(self):
         pass
