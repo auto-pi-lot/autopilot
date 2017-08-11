@@ -1203,7 +1203,7 @@ class Terminal(QtGui.QWidget):
         self.messenger   = self.context.socket(zmq.PUSH)
         self.subscriber  = self.context.socket(zmq.SUB)
 
-        self.messenger.bind('ipc://{}.ipc'.format(prefs['MSGPORT']))
+        self.messenger.bind('tcp://localhost:{}'.format(prefs['MSGPORT']))
         self.subscriber.connect('tcp://localhost:{}'.format(prefs['PUBPORT']))
         self.subscriber.setsockopt(zmq.SUBSCRIBE, b'T')
 

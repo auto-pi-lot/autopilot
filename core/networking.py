@@ -40,7 +40,15 @@ class Terminal_Networking:
     messenger    = None    # Messenger Handler - For receiving messages from the Terminal Class
 
 
-    def __init__(self, prefs, start=False):
+    def __init__(self, prefs=None, start=False):
+        # Prefs should be passed by the terminal, if not, try to load from default location
+        if not prefs:
+            try:
+                with open('/usr/rpilot/prefs.json') as op:
+                    prefs = json.load(op)
+            except:
+                logging.exception('No Prefs passed to networking class!')
+
         self.pub_port = prefs['PUBPORT']
         self.listen_port = prefs['LISTENPORT']
         self.message_port = prefs['MESSAGEPORT']
@@ -55,7 +63,7 @@ class Terminal_Networking:
         self.messenger  = self.context.socket(zmq.PULL)
         self.publisher.bind('tcp://*:{}'.format(self.pub_port))
         self.listener.bind('tcp://*:{}'.format(self.listen_port))
-        self.messenger.connect('ipc://{}.ipc'.format(self.message_port))
+        self.messenger.connect('tcp://localhost:{}'.format(self.message_port))
 
         # Wrap as ZMQStreams
         #self.publisher = ZMQStream(self.publisher)
@@ -158,31 +166,38 @@ class Terminal_Networking:
     def handle_listen(self, msg):
         # listens are always json encoded, single-part messages
         msg = json.loads(msg[0])
+        if isinstance(msg, unicode or basestring):
+            msg = json.loads(msg)
 
         # Check if our listen was sent properly
-        if not all(i in msg.keys() for i in ['key','value']):
+        if not all(i in msg.keys() for i in ['key','value','target']):
             logging.warning('LISTEN Improperly formatted: {}'.format(msg))
             return
 
         # Log and spawn thread to respond to listen
         logging.info('LISTEN - KEY: {}, VALUE: {}'.format(msg['key'],msg['value']))
         listen_funk = self.listens[msg['key']]
-        listen_thread = threading.Thread(target=listen_funk, args=(msg['value'],))
+        listen_thread = threading.Thread(target=listen_funk, args=[msg['target'],msg['value']])
         listen_thread.start()
 
 
     def handle_message(self, msg):
         # messages are always json encoded, single-part messages.
-        msg = json.loads(msg[0])
+        msg_enc = json.loads(msg[0])
+        if isinstance(msg_enc, unicode or basestring):
+            msg_enc = json.loads(msg_enc)
+
+        print msg_enc
+        sys.stdout.flush()
 
         # Check if message was formatted properly
-        if not all(i in msg.keys() for i in ['key', 'target', 'value']):
+        if not all(i in msg_enc.keys() for i in ['key', 'target', 'value']):
             logging.warning('MESSAGE Improperly formatted: {}'.format(msg))
 
         # Log and spawn thread to respond to message
-        logging.info('MESSAGE - KEY: {}, TARGET: {}, VALUE: {}'.format(msg['key'], msg['target'], msg['value']))
-        message_funk = self.messages[msg['key']]
-        message_thread = threading.Thread(target=message_funk, args=[msg['target'], msg['value']])
+        logging.info('MESSAGE - KEY: {}, TARGET: {}, VALUE: {}'.format(msg_enc['key'], msg_enc['target'], msg_enc['value']))
+        message_funk = self.messages[msg_enc['key']]
+        message_thread = threading.Thread(target=message_funk, args=[msg_enc['target'], msg_enc['value']])
         message_thread.start()
 
 
@@ -261,6 +276,7 @@ class Terminal_Networking:
 
     def l_alive(self, target, value):
         # A pi has told us that it is alive and what its filter is
+        whodis = value['']
         self.subscribers.update(value)
         logging.info('Received ALIVE from {}'.format(value))
         # Tell the terminal
@@ -285,15 +301,15 @@ class Terminal_Networking:
         else:
             self.outbox[message_id]['ttl'] = 5 # TODO: Get this value from prefs
 
-        # If our TTL is now zero, delete the message and log its failure
-        if int(self.outbox[message_id]['ttl']) <= 0:
-            logging.warning('PUBLISH FAILED {} - {}'.format(message_id, self.outbox[message_id]))
-            del self.outbox[message_id]
-
         # Otherwise send the message and spawn another timer thread
         logging.info('REPUBLISH {} - TARGET: {}, MESSAGE: {}'.format(message_id,
                                                                      self.outbox[message_id]['target'],
                                                                      self.outbox[message_id]))
+
+        # If our TTL is now zero, delete the message and log its failure
+        if int(self.outbox[message_id]['ttl']) <= 0:
+            logging.warning('PUBLISH FAILED {} - {}'.format(message_id, self.outbox[message_id]))
+            del self.outbox[message_id]
 
         # Publish the message
         self.publisher.send_multipart([bytes(self.outbox[message_id]['target']), json.dumps(self.outbox[message_id])])
@@ -374,8 +390,8 @@ class Pilot_Networking:
         except KeyboardInterrupt:
             pass
 
-    def push(self, key, value):
-        self.pusher.send_json(json.dumps({'key':key, 'value':value}))
+    def push(self, key, target='', value=''):
+        self.pusher.send_json(json.dumps({'key':key, 'target':target, 'value':value}))
 
     def handle_listen(self, msg):
         # listens are always json encoded, single-part messages
@@ -412,7 +428,7 @@ class Pilot_Networking:
 
     def l_ping(self, value):
         # The terminal wants to know if we are alive, respond with our name
-        self.push('ALIVE', self.name)
+        self.push('ALIVE', value=self.name)
 
     def l_start(self, value):
         pass

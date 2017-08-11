@@ -88,7 +88,7 @@ prefs['REPODIR'] = repo_loc
 prefs['PROTOCOLDIR'] = protocoldir
 prefs['PUBPORT'] = pub_port
 prefs['LISTENPORT'] = listen_port
-prefs['MESSAGEPORT'] = msg_port
+prefs['MSGPORT'] = msg_port
 
 # If it doesn't exist, make a blank pilot database
 pilot_db = os.path.join(basedir,'pilot_db.json')
