@@ -430,7 +430,7 @@ class Pilot_Networking(multiprocessing.Process):
 
         # Set on_recv callbacks
         self.subscriber.on_recv(self.handle_listen)
-        self.messenger.on_recv(self.handle_message)
+        self.message_in.on_recv(self.handle_message)
 
         # Message dictionary - What method to call for messages from the parent Pilot
         self.messages = {
