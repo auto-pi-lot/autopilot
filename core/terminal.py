@@ -1100,10 +1100,23 @@ class Terminal(QtGui.QWidget):
         self.logger.setLevel(logging.INFO)
         self.logger.info('Terminal Logging Initiated')
 
+        # Make invoker object to send GUI events back to the main thread
+        self.invoker = Invoker()
+
+        # Start GUI
         self.setWindowTitle('Terminal')
         self.initUI()
+
+        # Start Networking
         self.spawn_network()
         self.init_network()
+
+        time.sleep(1)
+
+        self.check_network()
+
+
+
 
         #self.send_message('LISTENING')
 
@@ -1143,7 +1156,7 @@ class Terminal(QtGui.QWidget):
         self.new_protocol_button.setFixedHeight(40)
 
         self.connect_pilots_button = QtGui.QPushButton("Connect to Pilots")
-        self.connect_pilots_button.clicked.connect(self.check_network)
+        self.connect_pilots_button.clicked.connect(self.init_pilots)
         self.connect_pilots_button.setFixedHeight(40)
 
         self.top_strip = QtGui.QHBoxLayout()
@@ -1210,29 +1223,27 @@ class Terminal(QtGui.QWidget):
     # NETWORKING METHODS
 
     def spawn_network(self):
-        # Start external communications process
-        # TODO: Spawn in own process
-        # TODO: When doing ^, probably need to move context() out of __init__()
+        # Start external communications in own process
         self.networking = Terminal_Networking()
-        #self.networking.daemon = True
         self.networking.start()
 
     def init_network(self):
         # Start internal communications
         self.context = zmq.Context()
-        self.loop = IOLoop()
+        self.loop = IOLoop.instance()
 
-        # Messenger to send messages to networking class via ipc
+        # Messenger to send messages to networking class
         # Subscriber to receive return messages
-        self.pusher   = self.context.socket(zmq.PUSH)
+        self.pusher      = self.context.socket(zmq.PUSH)
         self.subscriber  = self.context.socket(zmq.SUB)
 
         self.pusher.connect('tcp://localhost:{}'.format(prefs['MSGPORT']))
         self.subscriber.connect('tcp://localhost:{}'.format(prefs['PUBPORT']))
         self.subscriber.setsockopt(zmq.SUBSCRIBE, b'T')
+        self.subscriber.setsockopt(zmq.SUBSCRIBE, b'X')
 
         # Setup subscriber for looping
-        self.subscriber = ZMQStream(self.subscriber)
+        self.subscriber = ZMQStream(self.subscriber, self.loop)
         self.subscriber.on_recv(self.handle_listen)
 
         # Listen dictionary - which methods to call for different messages
@@ -1241,45 +1252,55 @@ class Terminal(QtGui.QWidget):
             'DEAD' : self.l_dead, # A Pi we requested is not responding
             'STATE': self.l_state, # A Pi has changed state
             'EVENT': self.l_event, # A Pi is returning data from an event
-            'LISTENING': self.l_listening # The networking object tells us it's online
+            'LISTENING': self.l_listening, # The networking object tells us it's online
+            'PING' : self.l_ping # Someone wants to know if we're alive
         }
 
-        # Spinoff IOLoop thread
-        self.loop_thread = threading.Thread(target=self.loop.start)
+        # Start IOLoop in daemon thread
+        self.loop_thread = threading.Thread(target=self.threaded_loop)
+        self.loop_thread.daemon = True
         self.loop_thread.start()
 
         self.logger.info("Networking Initiated")
-        print('gothere')
-        sys.stdout.flush()
+
+    def threaded_loop(self):
+        while True:
+            self.logger.info("Starting IOLoop")
+            self.loop.start()
 
     def check_network(self):
         # Let's see if the network is alive
         self.logger.info("Contacting Networking Object")
         attempts = 0
-        while not self.networking_ok and attempts < 20:
-            self.send_message('LISTENING') # Inits our pilots
+        while not self.networking_ok and attempts < 10:
+            self.send_message('LISTENING')
             attempts += 1
             time.sleep(1)
 
-        # Once we figure that out we send the init signal
-        if self.networking_ok:
-            self.send_message('INIT', value=self.pilots.keys())
-        else:
-            self.logger.info('No Response from Network Object')
+        if not self.networking_ok:
+            self.logger.warning("No response from network object")
+
+    def init_pilots(self):
+        self.logger.info('Initializing Pilots')
+        self.send_message('INIT', value=self.pilots.keys())
 
     def handle_listen(self, msg):
         # Listens are multipart target-msg messages
         # target = msg[0]
         message = json.loads(msg[1])
 
-        logging.info('TERMINAL LISTEN - KEY: {}, VALUE: {}'.format(message['key'], message['value']))
+        if not all(i in message.keys() for i in ['key', 'value']):
+            self.logger.warning('LISTEN Improperly formatted: {}'.format(msg))
+            return
+
+        self.logger.info('LISTEN {} - KEY: {}, VALUE: {}'.format(message['id'], message['key'], message['value']))
 
         listen_funk = self.listens[message['key']]
         listen_thread = threading.Thread(target=listen_funk, args=(message['value'],))
         listen_thread.start()
 
         # Tell the networking process that we got it
-        self.send_message('RECVD', value=msg['id'])
+        self.send_message('RECVD', value=message['id'])
 
 
     def send_message(self, key, target='', value=''):
@@ -1288,19 +1309,29 @@ class Terminal(QtGui.QWidget):
         msg_thread = threading.Thread(target= self.pusher.send_json, args=(json.dumps(msg),))
         msg_thread.start()
 
-        self.logger.info("Message sent - Target: {}, Key: {}, Value: {}".format(target, key, value))
+        self.logger.info("MESSAGE SENT - Target: {}, Key: {}, Value: {}".format(target, key, value))
 
     def l_alive(self, value):
         # Change icon next to appropriate pilot button
         # If we have the value in our list of pilots...
+        self.logger.info('arrived at gui setting, value: {}, pilots: {}'.format(value, self.pilots.keys()))
         if value in self.pilots.keys():
-            self.pilot_panel.buttons[value].setStyleSheet("background-color:green")
+            self.logger.info('boolean passed')
+            self.gui_event(self.pilot_panel.buttons[value].setStyleSheet, "background-color:green")
+            self.logger.info('passed GUI setting')
+            #self.pilot_panel.buttons[value].setStyleSheet("background-color:green")
+        else:
+            self.logger.info('boolean failed, returning')
+            return
 
     def l_dead(self, value):
         # Change icon next to appropriate pilot button
         # If we have the value in our list of pilots...
         if value in self.pilots.keys():
-            self.pilot_panel.buttons[value].setStyleSheet("background-color:red")
+            self.gui_event(self.pilot_panel.buttons[value].setStyleSheet, "background-color:red")
+            #self.pilot_panel.buttons[value].setStyleSheet("background-color:red")
+        else:
+            return
 
     def l_state(self, value):
         # A Pi has changed state
@@ -1312,15 +1343,10 @@ class Terminal(QtGui.QWidget):
 
     def l_listening(self, value):
         self.networking_ok = True
-        self.logging.info('Networking responds as alive')
+        self.logger.info('Networking responds as alive')
 
-
-
-
-
-
-
-
+    def l_ping(self, value):
+        self.send_message('ALIVE', value=b'T')
 
         # TODO: Give params window handle to mouse panel's update params function
         # TODO: Give params window handle to Terminal's delete params function
@@ -1353,7 +1379,30 @@ class Terminal(QtGui.QWidget):
                 with open(protocol_file, 'w') as pfile_open:
                     json.dump(save_steps, pfile_open)
 
+    def gui_event(self, fn, *args, **kwargs):
+        # Don't ask me how this works, stolen from
+        # https://stackoverflow.com/a/12127115
+        QtCore.QCoreApplication.postEvent(self.invoker, InvokeEvent(fn, *args, **kwargs))
 
+
+# Stuff to send signals to the main QT thread from spawned message threads
+# https://stackoverflow.com/a/12127115
+
+class InvokeEvent(QtCore.QEvent):
+    EVENT_TYPE = QtCore.QEvent.Type(QtCore.QEvent.registerEventType())
+
+    def __init__(self, fn, *args, **kwargs):
+        QtCore.QEvent.__init__(self, InvokeEvent.EVENT_TYPE)
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+
+
+class Invoker(QtCore.QObject):
+    def event(self, event):
+        event.fn(*event.args, **event.kwargs)
+
+        return True
 
 
 if __name__ == '__main__':

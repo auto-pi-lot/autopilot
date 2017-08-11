@@ -21,22 +21,37 @@ __version__ = '0.1'
 __author__ = 'Jonny Saunders <jsaunder@uoregon.edu>'
 
 import os
+import sys
 import subprocess
 import datetime
+import logging
+import json
 # import RPi.GPIO as GPIO
 import pyo
 import threading
 from time import sleep
+import zmq
+from zmq.eventloop.ioloop import IOLoop
+from zmq.eventloop.zmqstream import ZMQStream
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from networking import Pilot_Networking
 
 class RPilot:
 
-    # Networking signals and associated methods
-    SIGNALS={
-        'SYNC': self.network_sync,
-        'RENAME': self.rename_pilot
-    }
-
     def __init__(self):
+
+        # Start Logging
+        timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
+        log_file = os.path.join(prefs['LOGDIR'], 'Pilots_Log_{}.log'.format(timestr))
+
+        self.logger = logging.getLogger('main')
+        self.log_handler = logging.FileHandler(log_file)
+        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
+        self.log_handler.setFormatter(self.log_formatter)
+        self.logger.addHandler(self.log_handler)
+        self.logger.setLevel(logging.INFO)
+        self.logger.info('Pilot Logging Initiated')
 
         # Init all the hardware stuff, get the RPi ready for instructions
 
@@ -62,11 +77,82 @@ class RPilot:
         #self.timer_block.set()
 
 
-        # Init TCP/IP connection
-        # TODO TCP/IP communication w/ terminal
+        # Init Networking
+        self.spawn_network()
+        self.init_network()
+
         # Synchronize system clock w/ time from terminal.
         # Send message back to terminal that we're all good.
 
+
+    #################################################################
+    # Networking
+    #################################################################
+
+    def spawn_network(self):
+        # Spawn the networking object as a separate process
+        self.networking = Pilot_Networking()
+        self.networking.start()
+
+    def init_network(self):
+        # Start internal communications
+        self.context = zmq.Context()
+        self.loop = IOLoop.instance()
+
+        # Pusher sends messages to the network object
+        # Message in receives them
+        self.pusher = self.context.socket(zmq.PUSH)
+        self.message_in  = self.context.socket(zmq.PULL)
+
+        self.pusher.connect('tcp://localhost:{}'.format(prefs['MSGINPORT']))
+        self.message_in.connect('tcp://localhost:{}'.format(prefs['MSGOUTPORT']))
+
+        # Setup message_in for looping
+        self.message_in = ZMQStream(self.message_in, self.loop)
+        self.message_in.on_recv(self.handle_message)
+
+        # Listen dictionary - what do we do when we receive different messages?
+        self.messages = {
+            'START': self.l_start, # We are being passed a task and asked to start it
+            'STOP' : self.l_stop # We are being asked to stop running our task
+
+        }
+
+        # Start IOLoop in daemon thread
+        self.loop_thread = threading.Thread(target=self.loop.start)
+        self.loop_thread.daemon = True
+        self.loop_thread.start()
+
+        self.logger.info("Networking Initialized")
+
+    def handle_message(self, msg):
+        # Messages are single part json-encoded messages
+        msg = json.loads(msg[0])
+
+        if not all(i in msg.keys() for i in ['key', 'value']):
+            self.logger.warning('MESSAGE Improperly formatted: {}'.format(msg))
+            return
+
+        self.logger.info('MESSAGE - KEY: {}, VALUE: {}'.format(msg['key'], msg['value']))
+
+        message_funk = self.messages[msg['key']]
+        message_thread = threading.Thread(target=message_funk, args=(message['value'],))
+        message_thread.start()
+
+    def send_message(self, key, target='', value=''):
+        msg = {'key':key, 'target':target, 'value':value}
+
+        msg_thread = threading.Thread(target=self.pusher.send_json, args=(json.dumps(msg),))
+        msg_thread.start()
+
+        self.logger.info("MESSAGE SENT - Target: {}, Key: {}, Value: {}".format(key, target, value))
+
+
+    def l_start(self):
+        pass
+
+    def l_stop(self):
+        pass
     #################################################################
     # Hardware Init
     #################################################################

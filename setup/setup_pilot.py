@@ -15,7 +15,9 @@ parser.add_argument('-n', '--name', help="The name for this pilot")
 parser.add_argument('-d', '--dir',  help="Base Directory for RPilot resources")
 parser.add_argument('-p', '--pushport', help="PUB port for publishing data to terminal. 5560 is default")
 parser.add_argument('-s', '--subport', help="SUB port for receiving commands from RPilots. 5555 is default")
-parser.add_argument('-y', '--msgport', help="PULL port to receive messages from the Pilot class. 5565 is default")
+parser.add_argument('-i', '--msginport', help="PULL port to receive messages from the Pilot class. 5565 is default")
+parser.add_argument('-o', '--msgoutport', help="PUSH port to send messages from the Pilot class. 5565 is default")
+
 parser.add_argument('-t', '--terminalip', help="Local IP of terminal. Default is 192.168.0.100")
 
 
@@ -43,10 +45,15 @@ if args.subport:
 else:
     sub_port = '5555'
 
-if args.msgport:
-    msg_port = str(args.msgport)
+if args.msginport:
+    msg_in_port = str(args.msginport)
 else:
-    msg_port = '5565'
+    msg_in_port = '5565'
+
+if args.msgoutport:
+    msg_out_port = str(args.msgoutport)
+else:
+    msg_out_port = '5570'
 
 if args.terminalip:
     terminal_ip = str(args.terminalip)
@@ -56,6 +63,7 @@ else:
 
 datadir = os.path.join(basedir,'data')
 sounddir = os.path.join(basedir, 'sounds')
+logdir = os.path.join(basedir,'logs')
 
 # Check for prereqs
 try:
@@ -77,6 +85,9 @@ if not os.path.exists(datadir):
 if not os.path.exists(sounddir):
     os.makedirs(sounddir)
     os.chmod(sounddir, 0777)
+if not os.path.exists(logdir):
+    os.makedirs(logdir)
+    os.chmod(logdir, 0777)
 
 # Get repo dir
 file_loc = os.path.realpath(__file__)
@@ -91,9 +102,11 @@ prefs['BASEDIR'] = basedir
 prefs['DATADIR'] = datadir
 prefs['REPODIR'] = repo_loc
 prefs['SOUNDDIR'] = sounddir
+prefs['LOGDIR'] = logdir
 prefs['PUSHPORT'] = push_port
 prefs['SUBPORT'] = sub_port
-prefs['MSGPORT'] = msg_port
+prefs['MSGINPORT'] = msg_in_port
+prefs['MSGOUTPORT'] = msg_out_port
 prefs['TERMINALIP'] = terminal_ip
 
 # save prefs
