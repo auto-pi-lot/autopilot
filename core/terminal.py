@@ -12,6 +12,7 @@ import copy
 import logging
 import threading
 import multiprocessing
+import time
 from collections import OrderedDict as odict
 from PySide import QtCore
 from PySide import QtGui
@@ -1081,15 +1082,33 @@ class Terminal(QtGui.QWidget):
         # Declare attributes
         self.context = None
         self.loop    = None
-        self.messenger = None
+        self.pusher = None
         self.listener  = None
         self.networking = None
         self.rows = None #handles to row writing functions
+        self.networking_ok = False
+
+        # Start Logging
+        timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
+        log_file = os.path.join(prefs['LOGDIR'], 'Terminal_Log_{}.log'.format(timestr))
+
+        self.logger = logging.getLogger('main')
+        self.log_handler = logging.FileHandler(log_file)
+        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
+        self.log_handler.setFormatter(self.log_formatter)
+        self.logger.addHandler(self.log_handler)
+        self.logger.setLevel(logging.INFO)
+        self.logger.info('Terminal Logging Initiated')
 
         self.setWindowTitle('Terminal')
         self.initUI()
-        self.init_networking()
-        self.send_message('INIT',value = self.pilots.keys()) # Inits our pilots
+        self.spawn_network()
+        self.init_network()
+
+        #self.send_message('LISTENING')
+
+        # Spawn a thread to check the network
+        #self.check_network()
 
     def initUI(self):
         # Main panel layout
@@ -1123,8 +1142,13 @@ class Terminal(QtGui.QWidget):
         self.new_protocol_button.clicked.connect(self.new_protocol)
         self.new_protocol_button.setFixedHeight(40)
 
+        self.connect_pilots_button = QtGui.QPushButton("Connect to Pilots")
+        self.connect_pilots_button.clicked.connect(self.check_network)
+        self.connect_pilots_button.setFixedHeight(40)
+
         self.top_strip = QtGui.QHBoxLayout()
         self.top_strip.addWidget(self.new_protocol_button)
+        self.top_strip.addWidget(self.connect_pilots_button)
         self.top_strip.addStretch(1)
         self.top_strip.addWidget(self.logo)
 
@@ -1141,6 +1165,7 @@ class Terminal(QtGui.QWidget):
         self.setLayout(self.layout)
         #self.showMaximized()
         self.show()
+        logging.info('UI Initialized')
 
     def show_params(self, protocol=None, step=0):
         # Delete a param panel if one already exists
@@ -1184,26 +1209,25 @@ class Terminal(QtGui.QWidget):
     ##########################3
     # NETWORKING METHODS
 
-    def init_network(self):
+    def spawn_network(self):
         # Start external communications process
         # TODO: Spawn in own process
         # TODO: When doing ^, probably need to move context() out of __init__()
-        self.networking = multiprocessing.Process(target=Terminal_Networking,
-                                                  args=(prefs,), kwargs={'start':True},
-                                                  name='networking')
+        self.networking = Terminal_Networking()
+        #self.networking.daemon = True
         self.networking.start()
 
-
+    def init_network(self):
         # Start internal communications
-        self.context = zmq.Context.instance()
-        self.loop = IOLoop.instance()
+        self.context = zmq.Context()
+        self.loop = IOLoop()
 
         # Messenger to send messages to networking class via ipc
         # Subscriber to receive return messages
-        self.messenger   = self.context.socket(zmq.PUSH)
+        self.pusher   = self.context.socket(zmq.PUSH)
         self.subscriber  = self.context.socket(zmq.SUB)
 
-        self.messenger.bind('tcp://localhost:{}'.format(prefs['MSGPORT']))
+        self.pusher.connect('tcp://localhost:{}'.format(prefs['MSGPORT']))
         self.subscriber.connect('tcp://localhost:{}'.format(prefs['PUBPORT']))
         self.subscriber.setsockopt(zmq.SUBSCRIBE, b'T')
 
@@ -1216,12 +1240,32 @@ class Terminal(QtGui.QWidget):
             'ALIVE': self.l_alive, # A Pi is telling us that it is alive
             'DEAD' : self.l_dead, # A Pi we requested is not responding
             'STATE': self.l_state, # A Pi has changed state
-            'EVENT': self.l_event # A Pi is returning data from an event
+            'EVENT': self.l_event, # A Pi is returning data from an event
+            'LISTENING': self.l_listening # The networking object tells us it's online
         }
 
         # Spinoff IOLoop thread
         self.loop_thread = threading.Thread(target=self.loop.start)
         self.loop_thread.start()
+
+        self.logger.info("Networking Initiated")
+        print('gothere')
+        sys.stdout.flush()
+
+    def check_network(self):
+        # Let's see if the network is alive
+        self.logger.info("Contacting Networking Object")
+        attempts = 0
+        while not self.networking_ok and attempts < 20:
+            self.send_message('LISTENING') # Inits our pilots
+            attempts += 1
+            time.sleep(1)
+
+        # Once we figure that out we send the init signal
+        if self.networking_ok:
+            self.send_message('INIT', value=self.pilots.keys())
+        else:
+            self.logger.info('No Response from Network Object')
 
     def handle_listen(self, msg):
         # Listens are multipart target-msg messages
@@ -1241,7 +1285,10 @@ class Terminal(QtGui.QWidget):
     def send_message(self, key, target='', value=''):
         msg = {'key': key, 'target': target, 'value': value}
 
-        self.messenger.send_json(json.dumps(msg))
+        msg_thread = threading.Thread(target= self.pusher.send_json, args=(json.dumps(msg),))
+        msg_thread.start()
+
+        self.logger.info("Message sent - Target: {}, Key: {}, Value: {}".format(target, key, value))
 
     def l_alive(self, value):
         # Change icon next to appropriate pilot button
@@ -1262,6 +1309,10 @@ class Terminal(QtGui.QWidget):
     def l_event(self, value):
         # A Pi sends us either an event or a full trial's data
         pass
+
+    def l_listening(self, value):
+        self.networking_ok = True
+        self.logging.info('Networking responds as alive')
 
 
 
@@ -1325,11 +1376,6 @@ if __name__ == '__main__':
 
     with open(prefs_file) as prefs_file_open:
         prefs = json.load(prefs_file_open)
-
-    # Start Logging
-    logging.basicConfig(format="%(asctime)s %(message)s",
-                        datefmt="%Y-%m-%d %H:%M%:S",
-                        level=logging.INFO)
 
     app = QtGui.QApplication(sys.argv)
     ex = Terminal()

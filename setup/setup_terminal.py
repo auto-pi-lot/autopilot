@@ -86,9 +86,11 @@ prefs['BASEDIR'] = basedir
 prefs['DATADIR'] = datadir
 prefs['REPODIR'] = repo_loc
 prefs['PROTOCOLDIR'] = protocoldir
+prefs['LOGDIR'] = logdir
 prefs['PUBPORT'] = pub_port
 prefs['LISTENPORT'] = listen_port
 prefs['MSGPORT'] = msg_port
+prefs['TERMINALIP'] = '192.168.0.100'
 
 # If it doesn't exist, make a blank pilot database
 pilot_db = os.path.join(basedir,'pilot_db.json')

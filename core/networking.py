@@ -7,6 +7,10 @@ import threading
 import zmq
 import time
 import sys
+import datetime
+import os
+from PySide import QtCore
+import multiprocessing
 from zmq.eventloop.ioloop import IOLoop, PeriodicCallback
 from zmq.eventloop.zmqstream import ZMQStream
 from warnings import warn
@@ -28,7 +32,7 @@ from itertools import count
 
 # TODO: Periodically ping pis to check that they are still responsive
 
-class Terminal_Networking:
+class Terminal_Networking(QtCore.QThread):
     # Internal Variables/Objects to the Terminal Networking Object
     ctx          = None    # Context
     loop         = None    # IOLoop
@@ -40,21 +44,26 @@ class Terminal_Networking:
     messenger    = None    # Messenger Handler - For receiving messages from the Terminal Class
 
 
-    def __init__(self, prefs=None, start=False):
-        # Prefs should be passed by the terminal, if not, try to load from default location
+    def __init__(self, prefs=None, start=True):
+        # Prefs should be passed by the terminal, if not, try to load from default locatio
+        QtCore.QThread.__init__(self)
         if not prefs:
             try:
                 with open('/usr/rpilot/prefs.json') as op:
-                    prefs = json.load(op)
+                    self.prefs = json.load(op)
             except:
-                logging.exception('No Prefs passed to networking class!')
+                Exception('No Prefs for networking class')
+        else:
+            self.prefs = prefs
 
-        self.pub_port = prefs['PUBPORT']
-        self.listen_port = prefs['LISTENPORT']
-        self.message_port = prefs['MESSAGEPORT']
+        self.pub_port = self.prefs['PUBPORT']
+        self.listen_port = self.prefs['LISTENPORT']
+        self.message_port = self.prefs['MSGPORT']
 
-        self.context = zmq.Context.instance()
-        self.loop = IOLoop.instance()
+        print(self.message_port)
+
+        self.context = zmq.Context()
+        self.loop = IOLoop()
         # Publisher sends commands to Pilots
         # Subscriber listens for data from Pilots
         # Sync ensures pilots are ready for publishing
@@ -62,11 +71,14 @@ class Terminal_Networking:
         self.listener   = self.context.socket(zmq.PULL)
         self.messenger  = self.context.socket(zmq.PULL)
         self.publisher.bind('tcp://*:{}'.format(self.pub_port))
+        time.sleep(0.1)
         self.listener.bind('tcp://*:{}'.format(self.listen_port))
-        self.messenger.connect('tcp://localhost:{}'.format(self.message_port))
+        time.sleep(0.1)
+        self.messenger.bind('tcp://*:{}'.format(self.message_port))
+        time.sleep(0.1)
 
         # Wrap as ZMQStreams
-        #self.publisher = ZMQStream(self.publisher)
+        self.publisher = ZMQStream(self.publisher)
         self.listener  = ZMQStream(self.listener)
         self.messenger = ZMQStream(self.messenger)
 
@@ -82,7 +94,8 @@ class Terminal_Networking:
             'CHANGE': self.m_change,  # Change a parameter on the Pi
             'STOP': self.m_stop,
             'STOPALL': self.m_stopall,
-            'RECVD': self.m_recvd # We are getting confirmation that the message was received
+            'RECVD': self.m_recvd, # We are getting confirmation that the message was received
+            'LISTENING': self.m_listening # Terminal wants to know if we're alive yet
         }
 
         # Listen dictionary - What to do with pushes from the raspberry pis
@@ -106,15 +119,30 @@ class Terminal_Networking:
 
         # TODO: Get KVMsg from zexamples repo
 
-        if start:
-            self.start()
+        # Setup logging
+        timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
+        log_file = os.path.join(self.prefs['LOGDIR'], 'Networking_Log_{}.log'.format(timestr))
 
-    def start(self):
+        self.logger = logging.getLogger('networking')
+        self.log_handler = logging.FileHandler(log_file)
+        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
+        self.log_handler.setFormatter(self.log_formatter)
+        self.logger.addHandler(self.log_handler)
+        self.logger.setLevel(logging.INFO)
+        self.logger.info('Networking Logging Initiated')
+
+        #if start:
+        #    self.start_loop()
+
+        #while True:
+        #    time.sleep(1)
+
+    def run(self):
         try:
-            self.thread = threading.Thread(target=self.loop.start)
-            self.thread.start()
+            self.loop.start()
+
         except KeyboardInterrupt:
-            pass
+            self.context.destroy()
 
     def stop(self):
         try:
@@ -145,14 +173,14 @@ class Terminal_Networking:
         self.outbox[msg_num] = message
 
         if target not in self.subscribers:
-            logging.warning('PUBLISH {} - Message to unconfirmed target: {}'.format(msg_num, target))
+            self.logger.warning('PUBLISH {} - Message to unconfirmed target: {}'.format(msg_num, target))
 
         # Make sure our message has everything
         if not all(i in message.keys() for i in ['key', 'value']):
-            logging.warning('PUBLISH {} - Improperly formatted: {}'.format(msg_num, message))
+            self.logger.warning('PUBLISH {} - Improperly formatted: {}'.format(msg_num, message))
             return
 
-        logging.info('PUBLISH {} - TARGET: {}, MESSAGE: {}'.format(msg_num, target, message))
+        self.logger.info('PUBLISH {} - TARGET: {}, MESSAGE: {}'.format(msg_num, target, message))
 
         # Publish the message
         self.publisher.send_multipart([bytes(target), json.dumps(message)])
@@ -171,11 +199,11 @@ class Terminal_Networking:
 
         # Check if our listen was sent properly
         if not all(i in msg.keys() for i in ['key','value','target']):
-            logging.warning('LISTEN Improperly formatted: {}'.format(msg))
+            self.logger.warning('LISTEN Improperly formatted: {}'.format(msg))
             return
 
         # Log and spawn thread to respond to listen
-        logging.info('LISTEN - KEY: {}, VALUE: {}'.format(msg['key'],msg['value']))
+        self.logger.info('LISTEN - KEY: {}, VALUE: {}'.format(msg['key'],msg['value']))
         listen_funk = self.listens[msg['key']]
         listen_thread = threading.Thread(target=listen_funk, args=[msg['target'],msg['value']])
         listen_thread.start()
@@ -187,20 +215,20 @@ class Terminal_Networking:
         if isinstance(msg_enc, unicode or basestring):
             msg_enc = json.loads(msg_enc)
 
-        print msg_enc
-        sys.stdout.flush()
-
         # Check if message was formatted properly
         if not all(i in msg_enc.keys() for i in ['key', 'target', 'value']):
-            logging.warning('MESSAGE Improperly formatted: {}'.format(msg))
+            self.logger.warning('MESSAGE Improperly formatted: {}'.format(msg))
 
         # Log and spawn thread to respond to message
-        logging.info('MESSAGE - KEY: {}, TARGET: {}, VALUE: {}'.format(msg_enc['key'], msg_enc['target'], msg_enc['value']))
         message_funk = self.messages[msg_enc['key']]
-        message_thread = threading.Thread(target=message_funk, args=[msg_enc['target'], msg_enc['value']])
-        message_thread.start()
+        #message_thread = threading.Thread(target=message_funk, args=[msg_enc['target'], msg_enc['value']])
+        #message_thread.start()
+        message_funk(msg_enc['target'],msg_enc['value'])
 
+        print('gotit')
+        sys.stdout.flush()
 
+        self.logger.info('MESSAGE - KEY: {}, TARGET: {}, VALUE: {}'.format(msg_enc['key'], msg_enc['target'], msg_enc['value']))
 
     ##########################
     # Message Handling Methods
@@ -219,6 +247,7 @@ class Terminal_Networking:
         # Publish a general ping five times, m_alive will update our list of subscribers as they respond
         for i in range(5):
             self.publisher.send_multipart([bytes(target), json.dumps({'key':'PING', 'value':''})])
+            self.logger.info('PUBLISH - Target: {}, Key: {}'.format(target, 'PING'))
             time.sleep(1)
 
         # If we still haven't heard from pis that we expected to, we'll ping them a few more times
@@ -229,12 +258,13 @@ class Terminal_Networking:
                 awol_pis = pis - self.subscribers
                 for p in awol_pis:
                     self.publisher.send_multipart([bytes(p), json.dumps({'key': 'PING', 'value': ''})])
+                    self.logger.info('PUBLISH - Target: {}, Key: {}'.format(p, 'PING'))
                 time.sleep(2)
 
             # If we still haven't heard from them, tell the terminal that
             awol_pis = pis - self.subscribers
             for p in awol_pis:
-                logging.warning('Requested Pilot {} was not heard from'.format(p))
+                self.logger.warning('Requested Pilot {} was not heard from'.format(p))
                 self.publish('T',{'key':'DEAD','value':p})
 
 
@@ -269,7 +299,10 @@ class Terminal_Networking:
         if value in self.timers.keys():
             self.timers[value].cancel()
 
-        logging.info('CONFIRMED MESSAGE {}'.format(value))
+        self.logger.info('CONFIRMED MESSAGE {}'.format(value))
+
+    def m_listening(self, target, value):
+        self.publish('T',{'key':'LISTENING'})
 
     def l_data(self, target, value):
         pass
@@ -277,7 +310,7 @@ class Terminal_Networking:
     def l_alive(self, target, value):
         # A pi has told us that it is alive and what its filter is
         self.subscribers.update(value)
-        logging.info('Received ALIVE from {}'.format(value))
+        self.logger.info('Received ALIVE from {}'.format(value))
         # Tell the terminal
         self.publish('T',{'key':'ALIVE','value':value})
 
@@ -291,7 +324,7 @@ class Terminal_Networking:
         # Handle repeated messages
         # If we still have the message in our outbox...
         if message_id not in self.outbox.keys():
-            logging.warning('Republish called for message {}, but missing message'.format(message_id))
+            self.logger.warning('Republish called for message {}, but missing message'.format(message_id))
             return
 
         # if it doesn't have a TTL, set it, if it does, decrement it
@@ -301,13 +334,13 @@ class Terminal_Networking:
             self.outbox[message_id]['ttl'] = 5 # TODO: Get this value from prefs
 
         # Otherwise send the message and spawn another timer thread
-        logging.info('REPUBLISH {} - TARGET: {}, MESSAGE: {}'.format(message_id,
+        self.logger.info('REPUBLISH {} - TARGET: {}, MESSAGE: {}'.format(message_id,
                                                                      self.outbox[message_id]['target'],
                                                                      self.outbox[message_id]))
 
         # If our TTL is now zero, delete the message and log its failure
         if int(self.outbox[message_id]['ttl']) <= 0:
-            logging.warning('PUBLISH FAILED {} - {}'.format(message_id, self.outbox[message_id]))
+            self.logger.warning('PUBLISH FAILED {} - {}'.format(message_id, self.outbox[message_id]))
             del self.outbox[message_id]
             return
 
