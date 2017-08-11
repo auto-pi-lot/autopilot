@@ -119,7 +119,7 @@ os.chmod(prefs_file, 0775)
 # Create .sh file to open pilot
 launch_file = os.path.join(basedir, 'launch_pilot.sh')
 with open(launch_file, 'w') as launch_file_open:
-    launch_string = "python " + os.path.join(repo_loc, "core", "pilot.py") + " -p " + prefs_file
+    launch_string = "python " + os.path.join(repo_loc, "core", "pilot.py") + " -f " + prefs_file
     launch_file_open.write(launch_string)
 
 os.chmod(launch_file, 0775)
