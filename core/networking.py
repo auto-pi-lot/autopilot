@@ -9,7 +9,6 @@ import time
 import sys
 import datetime
 import os
-from PySide import QtCore
 import multiprocessing
 from zmq.eventloop.ioloop import IOLoop, PeriodicCallback
 from zmq.eventloop.zmqstream import ZMQStream
