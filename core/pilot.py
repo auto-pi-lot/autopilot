@@ -26,6 +26,7 @@ import subprocess
 import datetime
 import logging
 import json
+import argparse
 # import RPi.GPIO as GPIO
 import pyo
 import threading
@@ -446,7 +447,7 @@ if __name__ == '__main__':
     # Parse arguments - this should have been called with a .json prefs file passed
     # We'll try to look in the default location first
     parser = argparse.ArgumentParser(description="Run an RPilot")
-    parser.add_argument('-p', '--prefs', help="Location of .json prefs file (created during setup_terminal.py)")
+    parser.add_argument('-f', '--prefs', help="Location of .json prefs file (created during setup_terminal.py)")
     args = parser.parse_args()
 
     if not args.prefs:
@@ -462,6 +463,8 @@ if __name__ == '__main__':
 
     with open(prefs_file) as prefs_file_open:
         prefs = json.load(prefs_file_open)
+
+    a = RPilot()
 
 
 
