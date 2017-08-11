@@ -2,6 +2,7 @@ import os
 import json
 import argparse
 import uuid
+import pprint
 
 
 # Check for sudo
@@ -59,6 +60,7 @@ sounddir = os.path.join(basedir, 'sounds')
 # Check for prereqs
 try:
     import pyo
+    import zmq
 except:
     print("Error importing prerequisite packages!")
 
@@ -108,5 +110,9 @@ with open(launch_file, 'w') as launch_file_open:
     launch_file_open.write(launch_string)
 
 os.chmod(launch_file, 0775)
+
+pp = pprint.PrettyPrinter(indent=4)
+print("Pilot set up with prefs:\r")
+pp.pprint(prefs)
 
 # TODO: Automatically run launch_pilot.sh on startup

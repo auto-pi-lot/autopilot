@@ -83,7 +83,7 @@ class Terminal_Networking:
             'ALIVE': self.l_alive, # A Pi is responding to our periodic query of whether it remains alive
                                    # It replies with its subscription filter
             'EVENT': self.l_event, # Stash a single event (not a whole trial's data)
-            'STATE': self.l_state # The Pi is confirming/notifying us that it has changed state
+            'STATE': self.l_state, # The Pi is confirming/notifying us that it has changed state
             'RECVD': self.m_recvd  # We are getting confirmation that the message was received
         }
 
