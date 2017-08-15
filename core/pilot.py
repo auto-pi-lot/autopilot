@@ -150,6 +150,7 @@ class RPilot:
 
 
     def l_start(self):
+        # TODO: If any of the sounds are 'file,' make sure we have them. If not, request them.
         pass
 
     def l_stop(self):

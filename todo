@@ -16,3 +16,8 @@
 - make multiple network keys - not just 'X' but also 'Pis', 'plots,' etc.
 - Make verbose/nonverbose mode - either report whole trials or events
 - Just have events, no data messages. check if the message dict has a field 'TRIALEND' or something to flush a row
+- Backfill logging into terminal & etc.
+
+TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
+>>> tabr = TableRead(SNDS_PATH + "/transparent.aif").out()
+>>> trig = TrigRand(tabr['trig'])

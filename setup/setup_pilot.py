@@ -17,8 +17,8 @@ parser.add_argument('-p', '--pushport', help="PUB port for publishing data to te
 parser.add_argument('-s', '--subport', help="SUB port for receiving commands from RPilots. 5555 is default")
 parser.add_argument('-i', '--msginport', help="PULL port to receive messages from the Pilot class. 5565 is default")
 parser.add_argument('-o', '--msgoutport', help="PUSH port to send messages from the Pilot class. 5565 is default")
-
 parser.add_argument('-t', '--terminalip', help="Local IP of terminal. Default is 192.168.0.100")
+parser.add_argument('-m', '--manualpins', help="Assign pin numbers manually")
 
 
 args = parser.parse_args()
@@ -59,6 +59,15 @@ if args.terminalip:
     terminal_ip = str(args.terminalip)
 else:
     terminal_ip = '192.168.0.100'
+
+if args.manualpins:
+    NotImplementedError()
+else:
+    pins = {
+        'L':7,
+        'C':11,
+        'R':13
+    }
 
 
 datadir = os.path.join(basedir,'data')
@@ -108,6 +117,7 @@ prefs['SUBPORT'] = sub_port
 prefs['MSGINPORT'] = msg_in_port
 prefs['MSGOUTPORT'] = msg_out_port
 prefs['TERMINALIP'] = terminal_ip
+prefs['PINS'] = pins
 
 # save prefs
 prefs_file = os.path.join(basedir, 'prefs.json')

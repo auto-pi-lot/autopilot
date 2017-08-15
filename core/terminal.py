@@ -76,6 +76,8 @@ class Pilots(QtGui.QWidget):
             self.pilots = json.load(pilot_file, object_pairs_hook=odict)
         self.create_buttons()
 
+        self.pilot = None # Currently selected pilot
+
     def create_buttons(self):
         self.clear_buttons()
         self.buttons = {}
@@ -140,6 +142,7 @@ class Pilots(QtGui.QWidget):
 
     def select_pilot(self):
         pilot_name = self.button_group.checkedButton().text()
+        self.pilot = pilot_name
         # This passes the actual list, not a copy,
         # so appending to it in the mice object appends to it here
         self.mice_panel.create_buttons(self.pilots[pilot_name]["mice"])
@@ -190,8 +193,9 @@ class Mice(QtGui.QWidget):
         # Empty list of mice, passed from the pilot widget
         self.mice = []
 
-        # Current Mouse, opened as Mouse Data model
-        self.mouse = []
+        # Name of currently selected mouse, do NOT load Mouse object here,
+        # the main Terminal class should have all the Mouse objects because pyTables isn't thread-safe
+        self.mouse = ''
 
 
         #self.show()
@@ -237,12 +241,15 @@ class Mice(QtGui.QWidget):
             protocol_vals = self.new_mouse_window.task_tab.values
 
             # Make new mouse object
-            self.mouse = Mouse(biography_vals['id'], new=True,
+            mouse_obj = Mouse(biography_vals['id'], new=True,
                                biography=biography_vals)
 
             if 'protocol' in protocol_vals.keys() and 'step' in protocol_vals.keys():
                 protocol_file = os.path.join(prefs['PROTOCOLDIR'], protocol_vals['protocol'] + '.json')
-                self.mouse.assign_protocol(protocol_file, int(protocol_vals['step']))
+                mouse_obj.assign_protocol(protocol_file, int(protocol_vals['step']))
+
+            # make mouse_obj save to delete by closing h5f
+            mouse_obj.close_h5f()
 
             # Update panels and pilot db, select new mouse
             self.mice.append(biography_vals['id'])
@@ -252,26 +259,15 @@ class Mice(QtGui.QWidget):
     def select_mouse(self, mouse=None):
         if isinstance(mouse, basestring):
             # If we were specifically passed the mouse
-            mouse_id = mouse
+            self.mouse = mouse
         else:
             # The mouse's button was clicked
             sender = self.sender()
             sender = sender.checkedButton()
-            mouse_id = sender.text()
+            self.mouse = sender.text()
 
-        # Try to close the mouse file if one is open
-        try:
-            self.mouse.h5f.close()
-        except:
-            pass
-
-        self.mouse = Mouse(mouse_id)
-        if not hasattr(self.mouse,'current'):
-            # Mouse doesn't have a protocol, we pass nothing
-            self.param_trigger()
-        else:
-            # We pass the protocol dict and step
-            self.param_trigger(self.mouse.current, self.mouse.step)
+        # Call trigger to have terminal populate params for us
+        self.param_trigger(self.mouse)
 
     def give_pilot_panel(self, pilot_panel):
         self.pilot_panel = pilot_panel
@@ -310,10 +306,12 @@ class Mice(QtGui.QWidget):
         step_number = step_ind[step_str]
 
         # Assign protocol in mouse object
-        self.mouse.assign_protocol(protocol_file, step_number)
+        mouse_obj = Mouse(self.mouse)
+        mouse_obj.assign_protocol(protocol_file, step_number)
+        mouse_obj.close_h5f()
 
         # Repopulate param window
-        self.select_mouse(self.mouse.name)
+        self.select_mouse(self.mouse)
 
 class Parameters(QtGui.QWidget):
     '''
@@ -354,6 +352,9 @@ class Parameters(QtGui.QWidget):
 
         self.step = None
         self.protocol = None
+
+        # Start/stop placeholder
+        self.toggle_start = None
 
         #self.show()
 
@@ -434,6 +435,19 @@ class Parameters(QtGui.QWidget):
                 # This is a .json label not for display
                 pass
 
+        # Add button to start, stop run
+
+        start_stop_button = QtGui.QPushButton("START/STOP")
+        start_stop_button.setCheckable(True)
+        # Set button status depending on status in mouse object
+        if self.mouse.running:
+            start_stop_button.setChecked(True)
+        else:
+            start_stop_button.setChecked(False)
+
+        start_stop_button.toggled.connect(self.toggle_start)
+
+
 
     def step_changed(self):
         # We're passed a new step,
@@ -485,6 +499,9 @@ class Parameters(QtGui.QWidget):
 
     def give_close_function(self, close_function):
         self.close_button.clicked.connect(close_function)
+
+    def give_startstop_function(self, toggle_start):
+        self.toggle_start = toggle_start
 
 
 class DataView(QtGui.QWidget):
@@ -1087,6 +1104,8 @@ class Terminal(QtGui.QWidget):
         self.networking = None
         self.rows = None #handles to row writing functions
         self.networking_ok = False
+        self.mice = {} # Dict of our open mouse objects
+        self.current_mouse = None # ID of mouse currently in params panel
 
         # Start Logging
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
@@ -1180,40 +1199,79 @@ class Terminal(QtGui.QWidget):
         self.show()
         logging.info('UI Initialized')
 
-    def show_params(self, protocol=None, step=0):
+    def show_params(self, mouse_id):
         # Delete a param panel if one already exists
         if self.panel_layout.count() > 3:
-            self.panel_layout.removeWidget(self.param_panel)
-            self.param_panel.deleteLater()
+            self.hide_params()
 
-        # We are either passed nothing if the mouse has no protocol, or a protocol dict
+        self.current_mouse = mouse_id
+
         self.param_panel = Parameters()
 
-        if protocol:
-            self.param_panel.give_mouse_object(self.mice_panel.mouse)
-            self.param_panel.populate_params(protocol, step=step)
+        # Create Mouse object if we haven't already and load protocol
+        if not mouse_id in self.mice.keys():
+            self.mice[mouse_id] = Mouse(mouse_id)
 
-        else:
-            self.param_panel.assign_protocol(self.mice_panel.assign_protocol)
-
-        # Give closing function
+        # Give methods/mouse object
+        self.param_panel.give_mouse_object(self.mice[mouse_id])
         self.param_panel.give_close_function(self.hide_params)
+        self.param_panel.give_startstop_function(self.mouse_start_toggled)
+
+        if hasattr(self.mice[mouse_id], 'current'):
+            self.param_panel.populate_params(self.mice[mouse_id].current,
+                                             step=self.mice[mouse_id].step)
+        else:
+            # Mouse doesn't have a protocol, we pass the assign_protocol method
+            self.param_panel.assign_protocol(self.mice_panel.assign_protocol)
 
         # Insert param panel
         self.panel_layout.insertWidget(2, self.param_panel, stretch=2)
 
 
     def hide_params(self):
+        # If the current mouse isn't running, close its h5f file and delete the object
+        try:
+            if not self.mice[self.current_mouse].running:
+                self.mice[self.current_mouse].close_h5f()
+                del self.mice[self.current_mouse]
+        except:
+            # TODO Logging here
+            pass
+
+        # Set current mouse to None because we're closing the window anyway
+        self.current_mouse = None
+
         self.panel_layout.removeWidget(self.param_panel)
         self.param_panel.deleteLater()
         self.setLayout(self.layout)
 
-    def start_mouse(self):
+    def mouse_start_toggled(self, toggled):
+        # Get object for current mouse
+        mouse = self.mice[self.current_mouse]
+        pilot = bytes(self.pilot_panel.pilot)
+
+        # If toggled=True we are starting the mouse
+        if toggled:
+            # Set mouse to running
+            mouse.running = True
+            # Get protocol and send it to the pi
+            task = mouse.current[mouse.step]
+            # TODO: Prepare to save data (
+            self.send_message('START', pilot, task)
+            # TODO: Spawn dataview widget
+            # TODO: Spawn timer thread to trigger stop after run duration
+
+        # Or else we are stopping the mouse
+        else:
+            mouse.running = False
+            self.send_message('STOP', pilot)
+            mouse.h5f.flush()
+            # TODO: Destroy dataview widget
+
         # TODO: Give prefs panel an attribute to refer to the start_mouse function
         # TODO: Give this method to the prefs panel
 
-        # ready table in mouse h5f Get handle to mouse h5f row object
-        pass
+
 
     def stop_mouse(self):
         # flush table, handle coherence checking, close .h5f
@@ -1253,7 +1311,8 @@ class Terminal(QtGui.QWidget):
             'STATE': self.l_state, # A Pi has changed state
             'EVENT': self.l_event, # A Pi is returning data from an event
             'LISTENING': self.l_listening, # The networking object tells us it's online
-            'PING' : self.l_ping # Someone wants to know if we're alive
+            'PING' : self.l_ping, # Someone wants to know if we're alive
+            'FILE' : self.l_file # A pi needs some files to run its protocol
         }
 
         # Start IOLoop in daemon thread
@@ -1319,6 +1378,7 @@ class Terminal(QtGui.QWidget):
             self.logger.info('boolean passed')
             self.gui_event(self.pilot_panel.buttons[value].setStyleSheet, "background-color:green")
             self.logger.info('passed GUI setting')
+            # TODO: maintain list of responsive pilots, only try to send 'start' to connected pilots
             #self.pilot_panel.buttons[value].setStyleSheet("background-color:green")
         else:
             self.logger.info('boolean failed, returning')
@@ -1350,6 +1410,9 @@ class Terminal(QtGui.QWidget):
 
         # TODO: Give params window handle to mouse panel's update params function
         # TODO: Give params window handle to Terminal's delete params function
+
+    def l_file(self, value):
+        pass
 
     def new_protocol(self):
         self.new_protocol_window = Protocol_Wizard()

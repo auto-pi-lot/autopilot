@@ -45,6 +45,9 @@ class Mouse:
             self.current = json.loads(protocol_string)
             self.step = int(current_node.attrs['step'])
 
+        # Is the mouse currently running (ie. we expect data to be incoming)
+        self.running = False
+
 
     def new_mouse_file(self, biography):
         # If a file already exists, we open it for appending so we don't lose data.
@@ -159,6 +162,11 @@ class Mouse:
         current_node.attrs['step'] = step
         current_node.attrs['protocol_name'] = protocol_name
         self.h5f.flush()
+
+    def close_h5f(self):
+        self.h5f.flush()
+        self.h5f.close()
+
 
 
 

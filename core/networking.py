@@ -254,6 +254,10 @@ class Terminal_Networking(multiprocessing.Process):
         # If we still haven't heard from pis that we expected to, we'll ping them a few more times
         pis = set(value)
 
+        print(pis)
+        print(self.subscribers)
+        sys.stdout.flush()
+
         if not len(pis - self.subscribers) == 0:
             for i in range(3):
                 awol_pis = pis - self.subscribers
@@ -311,7 +315,7 @@ class Terminal_Networking(multiprocessing.Process):
 
     def l_alive(self, target, value):
         # A pi has told us that it is alive and what its filter is
-        self.subscribers.update(value)
+        self.subscribers.update([value])
         self.logger.info('Received ALIVE from {}'.format(value))
         # Tell the terminal
         self.publish('T',{'key':'ALIVE','value':value})
@@ -379,7 +383,6 @@ class Pilot_Networking(multiprocessing.Process):
         else:
             self.prefs = prefs
 
-    def run(self):
         # Setup logging
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
         log_file = os.path.join(self.prefs['LOGDIR'], 'Networking_Log_{}.log'.format(timestr))
@@ -392,6 +395,7 @@ class Pilot_Networking(multiprocessing.Process):
         self.logger.setLevel(logging.INFO)
         self.logger.info('Networking Logging Initiated')
 
+    def run(self):
 
         # Store some prefs values
         self.name = self.prefs['NAME']

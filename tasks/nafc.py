@@ -17,17 +17,22 @@ import datetime
 import itertools
 import warnings
 import tables
+import json
+from ..core import hardware, sounds
 from collections import OrderedDict as odict
 
 # This declaration allows Mouse to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
 TASK = 'Nafc'
 
+# TODO: Make meta task class that has logic for loading sounds, etc.
 
 class Nafc:
     """
     Actually 2afc, but can't have number as first character of class.
     Template for 2afc tasks. Pass in a dict. of sounds & other parameters,
     """
+    STAGE_NAMES = ["request", "discrim", "reinforcement"]
+
 
     # Class attributes
     # for numpy data types see http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html#arrays-dtypes-constructing
@@ -70,11 +75,28 @@ class Nafc:
     PARAMS['sounds']         = {'tag':'Sounds',
                                 'type':'sounds'}
 
-    DATA_LIST = {'trial_num':'i32','target':'S1','target_sound_id':'S32', 'response':'S1', 'correct':'i32', 'bias':'f32', 'RQ_timestamp':'S26','DC_timestamp':'S26','bailed':'i32'}
+    # Dict of data and type that will be returned for each complete trial
+    DATA = {
+        'trial_num':       'i32',
+        'target':          'S1',
+        'target_sound_id': 'S32',
+        'response':        'S1',
+        'correct':         'i32',
+        'bias':            'f32',
+        'RQ_timestamp':    'S26',
+        'DC_timestamp':    'S26',
+        'bailed':          'i32'
+    }
 
-    def __init__(self, sounds, reward=50, req_reward=False,
+    HARDWARE = {
+        'L': hardware.Beambreak,
+        'C': hardware.Beambreak,
+        'R': hardware.Beambreak # TODO: Going to need solenoids as well
+    }
+
+    def __init__(self, sounds=None, reward=50, req_reward=False,
                  punish_sound=True, punish=2000, correction=True, pct_correction=.5,
-                 bias_mode=1, timeout=30000, **kwargs):
+                 bias_mode=1, bias_threshold=15, timeout=10000, **kwargs):
         # Sounds come in two flavors
         #   soundict: a dict of parameters like:
         #       {'L': 'path/to/file.wav', 'R': 'etc'} or
@@ -95,17 +117,31 @@ class Nafc:
         #     that side will only be the target 35% of the time.
         # Pass assign as 1 to be prompted for all necessary params.
 
-        if assisted_assign:
-            self.assisted_assign()
-            return
+        if not sounds:
+            Warning("Cant instantiate task without sounds!")
+
+        try:
+            self.prefs = prefs
+        except NameError:
+            Warning("No prefs has been loaded in the global namespace, attempting to load from default location")
+            try:
+                with open('/usr/rpilot/prefs.json') as op:
+                    self.prefs = json.load(op)
+            except:
+                Exception('No Prefs file passed, and none found!')
+
+
 
         # Fixed parameters
         self.soundict = sounds # Sounds should always be soundicts on __init__
         self.reward = reward
+        self.req_reward = req_reward
+        self.punish_sound = punish_sound
         self.punish = punish
+        self.correction = correction
         self.pct_correction = pct_correction
         self.bias_mode = bias_mode
-        self.stage_names = ["request","discrim","reinforcement"]
+        self.bias_threshold = bias_threshold
         self.timeout = timeout
 
         # Variable Parameters
@@ -118,17 +154,47 @@ class Nafc:
         self.correct = None
         self.correction = None
 
-        # Passed by RPilot after init
-        self.sounds = None
-        self.sound_lookup = None
-
         # This allows us to cycle through the task by just repeatedly calling self.stages.next()
-        stage_list = [self.request,self.discrim,self.reinforcement]
+        stage_list = [self.request, self.discrim, self.reinforcement]
         self.num_stages = len(stage_list)
         self.stages = itertools.cycle(enumerate(stage_list)) # Enumerate lets us get the number of the stage we're on.
 
-        # TODO: Probably some error checking around here.
+        # Initialize hardware
+        # TODO: class subtypes with different hardware
+        self.pins = {}
+        self.init_hardware()
 
+        # Load sounds
+        self.sounds       = {}
+        self.sound_lookup = {}
+        self.load_sounds()
+
+    def init_hardware(self):
+        self.pins = {}
+        pin_numbers = self.prefs['PINS']
+        for pin, handler in self.HARDWARE.items():
+            try:
+                self.pins[pin] = handler(pin_numbers[pin])
+            except:
+                # TODO: More informative exception
+                Exception('Something went wrong instantiating pins, tell jonny to handle this better!')
+
+                # Load sounds, pilot should have already inited pyo and jackd.
+
+    def load_sounds(self):
+        # TODO: Definitely put this in a metaclass
+
+        # Iterate through sounds and load them to memory
+        for k, v in self.soundict.items():
+            # If multiple sounds on one side, v will be a list
+            if isinstance(v, list):
+                self.sounds[k] = []
+                for sound in v:
+                    # We send the dict 'sound' to the function specified by 'type' and 'SOUND_LIST' as kwargs
+                    self.sounds[k].append(sounds.SOUND_LIST[sound['type']](**sound))
+            # If not a list, a single sound
+            else:
+                self.sounds[k] = sounds.SOUND_LIST[v['type']](**v)
 
 
     ##################################################################################
