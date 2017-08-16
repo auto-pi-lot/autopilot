@@ -19,6 +19,8 @@ parser.add_argument('-i', '--msginport', help="PULL port to receive messages fro
 parser.add_argument('-o', '--msgoutport', help="PUSH port to send messages from the Pilot class. 5565 is default")
 parser.add_argument('-t', '--terminalip', help="Local IP of terminal. Default is 192.168.0.100")
 parser.add_argument('-m', '--manualpins', help="Assign pin numbers manually")
+parser.add_argument('-j', '--jackdstring', help="Specify a custom string to run jackd server")
+parser.add_argument('-a', '--naudiochannels', help="Specify the number of audio channels for the pyo server to use. Default is 2")
 
 
 args = parser.parse_args()
@@ -69,6 +71,16 @@ else:
         'R':13
     }
 
+if args.jackdstring:
+    jackd_string = str(args.jackdstring)
+else:
+    jackd_string = "jackd -P70 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -p128 -n3 -r44100 -s &"
+
+if args.naudiochannels:
+    n_channels = int(args.naudiochannels)
+else:
+    n_channels = 2
+
 
 datadir = os.path.join(basedir,'data')
 sounddir = os.path.join(basedir, 'sounds')
@@ -118,6 +130,8 @@ prefs['MSGINPORT'] = msg_in_port
 prefs['MSGOUTPORT'] = msg_out_port
 prefs['TERMINALIP'] = terminal_ip
 prefs['PINS'] = pins
+prefs['JACKDSTRING'] = jackd_string
+prefs['NCHANNELS'] = n_channels
 
 # save prefs
 prefs_file = os.path.join(basedir, 'prefs.json')
@@ -129,6 +143,8 @@ os.chmod(prefs_file, 0775)
 # Create .sh file to open pilot
 launch_file = os.path.join(basedir, 'launch_pilot.sh')
 with open(launch_file, 'w') as launch_file_open:
+    launch_file_open.write('killall jackd') # Try to kill any existing jackd processes
+    launch_file_open.write(jackd_string)    # Then launch ours
     launch_string = "python " + os.path.join(repo_loc, "core", "pilot.py") + " -f " + prefs_file
     launch_file_open.write(launch_string)
 

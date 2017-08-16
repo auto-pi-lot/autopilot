@@ -96,6 +96,8 @@ class RPilot:
         #self.timer_block = threading.Event()
         #self.timer_block.set()
 
+        # Init pyo server
+        self.init_pyo()
 
         # Init Networking
         self.spawn_network()
@@ -237,20 +239,10 @@ class RPilot:
     #################################################################
 
     def init_pyo(self):
-        # sampling rate, nchan, etc. set in the JACKD_STRING
-        # check if jackd is running, if so kill it and restart
-        try:
-            procnum = int(subprocess.Popen('pidof jackd', shell=True, stdout=subprocess.PIPE).communicate()[0])
-            if os.path.exists("/proc/{}".format(procnum)):
-                os.system('killall jackd')
-        except ValueError:
-            # if jackd not running, should be a ValueError b/c we try to convert None to int
-            pass
-
-        os.system(rpiset.JACKD_STRING)
-        sleep(1) # Wait to let the server start to pyo doesn't try too
-        self.pyo_server = pyo.Server(audio='jack',nchnls=rpiset.NUM_CHANNELS).boot()
+        # Jackd should already be running from the launch script created by setup_pilot, we we just
+        self.pyo_server = pyo.Server(audio='jack',nchnls=int(prefs['NCHANNELS'])).boot()
         self.pyo_server.start()
+        self.logger.info("pyo server started")
 
     #################################################################
     # Trial Running and Management
