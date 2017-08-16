@@ -447,6 +447,9 @@ class Parameters(QtGui.QWidget):
 
         start_stop_button.toggled.connect(self.toggle_start)
 
+        #self.param_layout.addRow(QtGui.QSpacerItem(1,1))
+        self.param_layout.addRow(start_stop_button)
+
 
 
     def step_changed(self):

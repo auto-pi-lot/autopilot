@@ -275,7 +275,9 @@ class Terminal_Networking(multiprocessing.Process):
 
 
     def m_start_task(self, target, value):
-        pass
+        # Just publish it
+        msg = {'key':'START', 'value':value}
+        self.publish(target, msg)
 
 
         # Start listening thread

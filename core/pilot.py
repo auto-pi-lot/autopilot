@@ -154,6 +154,8 @@ class RPilot:
     def handle_message(self, msg):
         # Messages are single part json-encoded messages
         msg = json.loads(msg[0])
+        if isinstance(msg, unicode or basestring):
+            msg = json.loads(msg)
 
         if not all(i in msg.keys() for i in ['key', 'value']):
             self.logger.warning('MESSAGE Improperly formatted: {}'.format(msg))
