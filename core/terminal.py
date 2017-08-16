@@ -1070,7 +1070,8 @@ class Sound_Widget(QtGui.QWidget):
 
             for k in sounds.SOUND_LIST[self.type].PARAMS:
                 edit_box = QtGui.QLineEdit()
-                edit_box.editingFinished.connect(lambda: self.store_param(k, edit_box.text()))
+                edit_box.setObjectName(k)
+                edit_box.editingFinished.connect(self.store_param)
                 self.param_layout.addRow(QtGui.QLabel(k), edit_box)
 
         def clear_params(self):
@@ -1079,8 +1080,10 @@ class Sound_Widget(QtGui.QWidget):
                 if child.widget():
                     child.widget().deleteLater()
 
-        def store_param(self, key, value):
-            self.param_dict[key] = value
+        def store_param(self):
+            sender = self.sender()
+            name = sender.objectName()
+            self.param_dict[name] = sender.text()
 
 
 

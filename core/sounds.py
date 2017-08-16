@@ -22,7 +22,7 @@ class Tone:
     The Humble Sine Wave
     '''
     PARAMS = ['frequency','duration','amplitude']
-    def __init__(self, frequency, duration, amplitude=0.3, phase=0):
+    def __init__(self, frequency, duration, amplitude=0.3, phase=0, **kwargs):
 
         sin = pyo.Sine(frequency,mul=amplitude)
         self.table = TableWrap(sin, duration)
@@ -35,7 +35,7 @@ class Noise:
     White Noise straight up
     '''
     PARAMS = ['duration','amplitude']
-    def __init__(self, duration, amplitude):
+    def __init__(self, duration, amplitude, **kwargs):
         noiser = pyo.Noise(mul=amplitude)
         self.table = TableWrap(noiser,duration)
 
