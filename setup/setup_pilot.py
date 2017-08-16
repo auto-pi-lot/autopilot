@@ -143,8 +143,8 @@ os.chmod(prefs_file, 0775)
 # Create .sh file to open pilot
 launch_file = os.path.join(basedir, 'launch_pilot.sh')
 with open(launch_file, 'w') as launch_file_open:
-    launch_file_open.write('killall jackd') # Try to kill any existing jackd processes
-    launch_file_open.write(jackd_string)    # Then launch ours
+    launch_file_open.write('killall jackd\n') # Try to kill any existing jackd processes
+    launch_file_open.write(jackd_string+'\n')    # Then launch ours
     launch_string = "python " + os.path.join(repo_loc, "core", "pilot.py") + " -f " + prefs_file
     launch_file_open.write(launch_string)
 
