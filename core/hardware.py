@@ -1,18 +1,21 @@
 # Classes that house hardware logic
 
-import RPi.GPIO as GPIO
+
 
 class Beambreak:
     # IR Beambreak sensor
 
-    # Trigger map
-    TRIGGER_MAP = {
-        'U': GPIO.RISING,
-        'D': GPIO.FALLING,
-        'B': GPIO.BOTH
-    }
+
 
     def __init__(self, pin, bounce=200, pull_ud='U', trigger_ud='D', event=None):
+        import RPi.GPIO as GPIO
+
+        # Trigger map
+        TRIGGER_MAP = {
+            'U': GPIO.RISING,
+            'D': GPIO.FALLING,
+            'B': GPIO.BOTH
+        }
 
         # If the board mode hasn't already been set, set it
         if not GPIO.getmode():

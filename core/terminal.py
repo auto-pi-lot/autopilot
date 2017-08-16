@@ -1308,7 +1308,6 @@ class Terminal(QtGui.QWidget):
             'ALIVE': self.l_alive, # A Pi is telling us that it is alive
             'DEAD' : self.l_dead, # A Pi we requested is not responding
             'STATE': self.l_state, # A Pi has changed state
-            'EVENT': self.l_event, # A Pi is returning data from an event
             'LISTENING': self.l_listening, # The networking object tells us it's online
             'PING' : self.l_ping, # Someone wants to know if we're alive
             'FILE' : self.l_file # A pi needs some files to run its protocol

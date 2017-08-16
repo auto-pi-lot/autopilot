@@ -20,7 +20,7 @@ import warnings
 import tables
 import json
 import threading
-from ..core import hardware, sounds
+from core import hardware, sounds
 from collections import OrderedDict as odict
 
 # This declaration allows Mouse to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.

@@ -8,6 +8,7 @@ Methods for storing data like mass, DOB, etc. as well as assigned protocols and 
 #from taskontrol.settings import rpisettings as rpiset
 #from taskontrol import tasks
 import os
+import sys
 #import h5py
 import tables
 from tables.nodes import filenode
@@ -17,7 +18,8 @@ from importlib import import_module
 import json
 import numpy as np
 import warnings
-from .. import tasks
+sys.path.append('~/git/RPilot')
+import tasks
 
 class Mouse:
     """Mouse object for managing protocol, parameters, and data"""
