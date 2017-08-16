@@ -11,6 +11,7 @@ Stage functions should each return three dicts: data, triggers, and timers
     -timers: (type:{params}) like {'too_early':{'sound':too_early_sound}}
 '''
 
+import os
 import random
 # from taskontrol.settings import rpisettings as rpiset
 import datetime
@@ -18,6 +19,7 @@ import itertools
 import warnings
 import tables
 import json
+import threading
 from ..core import hardware, sounds
 from collections import OrderedDict as odict
 
@@ -31,22 +33,13 @@ class Nafc:
     Actually 2afc, but can't have number as first character of class.
     Template for 2afc tasks. Pass in a dict. of sounds & other parameters,
     """
+
+    # TODO: Make shutdown method, clear pins, etc.
+
     STAGE_NAMES = ["request", "discrim", "reinforcement"]
 
-
     # Class attributes
-    # for numpy data types see http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html#arrays-dtypes-constructing
-    class DataTypes(tables.IsDescription):
-        # This class allows the Mouse object to make a data table with the correct data types. You must update it for any new data you'd like to store
-        trial_num = tables.Int32Col()
-        target = tables.StringCol(1)
-        target_sound_id = tables.StringCol(32) # FIXME need to do ids way smarter than this
-        response = tables.StringCol(1)
-        correct = tables.Int32Col()
-        bias = tables.Float32Col()
-        RQ_timestamp = tables.StringCol(26)
-        DC_timestamp = tables.StringCol(26)
-        bailed = tables.Int32Col()
+
 
     # List of needed params, returned data and data format.
     # Params are [name]={'tag': Human Readable Tag, 'type': 'int', 'float', 'check', etc.}
@@ -88,15 +81,29 @@ class Nafc:
         'bailed':          'i32'
     }
 
+    # PyTables Data descriptor
+    # for numpy data types see http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html#arrays-dtypes-constructing
+    class DataTypes(tables.IsDescription):
+        # This class allows the Mouse object to make a data table with the correct data types. You must update it for any new data you'd like to store
+        trial_num = tables.Int32Col()
+        target = tables.StringCol(1)
+        target_sound_id = tables.StringCol(32) # FIXME need to do ids way smarter than this
+        response = tables.StringCol(1)
+        correct = tables.Int32Col()
+        bias = tables.Float32Col()
+        RQ_timestamp = tables.StringCol(26)
+        DC_timestamp = tables.StringCol(26)
+        bailed = tables.Int32Col()
+
     HARDWARE = {
         'L': hardware.Beambreak,
         'C': hardware.Beambreak,
         'R': hardware.Beambreak # TODO: Going to need solenoids as well
     }
 
-    def __init__(self, sounds=None, reward=50, req_reward=False,
+    def __init__(self, prefs=None, stage_block=None, sounds=None, reward=50, req_reward=False,
                  punish_sound=True, punish=2000, correction=True, pct_correction=.5,
-                 bias_mode=1, bias_threshold=15, timeout=10000, **kwargs):
+                 bias_mode=1, bias_threshold=15, timeout=10000, current_trial=0, **kwargs):
         # Sounds come in two flavors
         #   soundict: a dict of parameters like:
         #       {'L': 'path/to/file.wav', 'R': 'etc'} or
@@ -118,31 +125,45 @@ class Nafc:
         # Pass assign as 1 to be prompted for all necessary params.
 
         if not sounds:
-            Warning("Cant instantiate task without sounds!")
+            raise RuntimeError("Cant instantiate task without sounds!")
 
-        try:
-            self.prefs = prefs
-        except NameError:
-            Warning("No prefs has been loaded in the global namespace, attempting to load from default location")
-            try:
-                with open('/usr/rpilot/prefs.json') as op:
-                    self.prefs = json.load(op)
-            except:
-                Exception('No Prefs file passed, and none found!')
+        # If we aren't passed prefs, try to load them from default location
+        if not prefs:
+            prefs_file = '/usr/rpilot/prefs.json'
+            if not os.path.exists(prefs_file):
+                raise RuntimeError("No prefs file passed and none found in {}".format(prefs_file))
 
+            with open(prefs_file) as prefs_file_open:
+                prefs = json.load(prefs_file_open)
+                raise Warning('No prefs file passed, loaded from default location. Should pass explicitly')
 
+        self.prefs = prefs
+
+        # If we aren't passed an event handler
+        # (used to signal that a trigger has been tripped),
+        # we should warn whoever called us that things could get a little screwy
+        if not stage_block:
+            raise Warning('No stage_block Event() was passed, youll need to handle stage progression on your own')
+        else:
+            self.stage_block = stage_block
+
+        # We use another event handler to block for punishment without blocking stage calculation
+        self.punish_block = threading.Event()
+        self.punish_block.set()
 
         # Fixed parameters
-        self.soundict = sounds # Sounds should always be soundicts on __init__
-        self.reward = reward
-        self.req_reward = req_reward
-        self.punish_sound = punish_sound
-        self.punish = punish
-        self.correction = correction
-        self.pct_correction = pct_correction
-        self.bias_mode = bias_mode
-        self.bias_threshold = bias_threshold
-        self.timeout = timeout
+        # Because the current protocol is json.loads from a string,
+        # we should explicitly type everything to be safe.
+        self.soundict       = sounds
+        self.reward         = int(reward)
+        self.req_reward     = bool(req_reward)
+        self.punish_sound   = bool(punish_sound)
+        self.punish         = float(punish)
+        self.correction     = bool(correction)
+        self.pct_correction = int(pct_correction)
+        self.bias_mode      = int(bias_mode)
+        self.bias_threshold = float(bias_threshold)
+        self.timeout        = int(timeout)
 
         # Variable Parameters
         self.target = None
@@ -153,15 +174,20 @@ class Nafc:
         self.response = None
         self.correct = None
         self.correction = None
+        self.trial_counter = itertools.count(int(current_trial))
+        self.triggers = {}
+        self.timers = []
+        self.last_pin = None # Some functions will depend on the last triggered pin
 
         # This allows us to cycle through the task by just repeatedly calling self.stages.next()
         stage_list = [self.request, self.discrim, self.reinforcement]
         self.num_stages = len(stage_list)
-        self.stages = itertools.cycle(enumerate(stage_list)) # Enumerate lets us get the number of the stage we're on.
+        self.stages = itertools.cycle(stage_list)
 
         # Initialize hardware
         # TODO: class subtypes with different hardware
         self.pins = {}
+        self.pin_id = {} # Take pin numbers back to letters
         self.init_hardware()
 
         # Load sounds
@@ -170,16 +196,18 @@ class Nafc:
         self.load_sounds()
 
     def init_hardware(self):
+        # We use the HARDWARE dict that specifies what we need to run the task
+        # alongside the PINS subdict in the prefs structure to tell us how they're plugged in to the pi
         self.pins = {}
         pin_numbers = self.prefs['PINS']
         for pin, handler in self.HARDWARE.items():
             try:
                 self.pins[pin] = handler(pin_numbers[pin])
+                self.pins[pin].assign_cb(self.handle_trigger)
+                self.pin_id[pin_numbers[pin]] = pin
             except:
                 # TODO: More informative exception
                 Exception('Something went wrong instantiating pins, tell jonny to handle this better!')
-
-                # Load sounds, pilot should have already inited pyo and jackd.
 
     def load_sounds(self):
         # TODO: Definitely put this in a metaclass
@@ -196,11 +224,47 @@ class Nafc:
             else:
                 self.sounds[k] = sounds.SOUND_LIST[v['type']](**v)
 
+        # TODO: If punish_sound, make punish duration of noise
+
+    def handle_trigger(self, pin):
+        # All triggers call this function with their ID as an argument
+        # Triggers will be functions unless they are "TIMEUP", at which point we
+        # register a timeout and restart the trial
+
+        # We get fed pins as numbers usually, convert back to letters
+        if isinstance(pin, int):
+            pin = self.pin_id[pin]
+
+        self.last_pin = pin
+
+        if pin == 'TIMEUP':
+            # TODO: Handle timers, reset trial
+            # TODO: Handle bailing, for example by replacing the cycle with a single function that returns the 'bail' flag
+            return
+
+        # Wait for any punishment delay
+        self.punish_block.wait()
+
+        # TODO: For nosepokes where they have to hold after sound, have some flag that tells us to spawn a timer thread to bail on the trial
+        # Call the trigger
+        try:
+            self.triggers[pin]()
+        except KeyError:
+            # If we don't have a trigger, that's fine, eg. L and R before requesting
+            return
+
+        # Set the stage block so the pilot calls the next stage
+        self.stage_block.set()
+
 
     ##################################################################################
     # Stage Functions
     ##################################################################################
     def request(self,*args,**kwargs):
+        # TODO: Make a list of all trial-resetting variables and clear them here
+        # Set the event lock
+        self.stage_block.clear()
+
 
         if not self.sounds:
             raise RuntimeError('\nSound objects have not been passed! Make sure RPilot makes sounds from the soundict before running.')
@@ -210,7 +274,7 @@ class Nafc:
         # Set bias threshold
         if self.bias_mode == 0:
             randthresh = 0.5
-        elif self.bias_mode ==1:
+        elif self.bias_mode == 1:
             randthresh = 0.5 + self.bias
         else:
             randthresh = 0.5
@@ -234,57 +298,56 @@ class Nafc:
 
 
         # Attempt to identify target sound
-        try:
-            self.target_sound_id = self.target_sound.id
-        except AttributeError:
-            warnings.warn("Sound ID not defined! Sounds cannot be uniquely identified!")
-            self.target_sound_id = None
+        #TODO: Implement sound ID's better
+        #try:
+        #    self.target_sound_id = self.target_sound.id
+        #except AttributeError:
+        #    warnings.warn("Sound ID not defined! Sounds cannot be uniquely identified!")
+        #    self.target_sound_id = None
+
+        # Set sound trigger
+        self.triggers['C'] = self.target_sound.out
 
         data = {
             'target':self.target,
             'target_sound_id':self.target_sound_id,
-            'RQ_timestamp':datetime.datetime.now().isoformat()
+            'RQ_timestamp':datetime.datetime.now().isoformat(),
+            'trial_num' : self.trial_counter.next()
         }
-        triggers = {
-            'C':self.target_sound.out
-        }
-        timers = {
-            'inf':None
-        }
-        return data,triggers,timers
+        return data
 
     def discrim(self,*args,**kwargs):
+        self.stage_block.clear()
+
+        # TODO: Open solenoid for specific time, for now pass.
+        #self.triggers[self.target] = solenoid(time)
+        self.triggers[self.target] = self.nothing
+        self.triggers[self.distractor] = self.punish
+
+        # TODO: Handle timeout
 
         # Only data is the timestamp
         data = {'DC_timestamp': datetime.datetime.now().isoformat()}
+        return data
 
-        try:
-            triggers = {
-                self.target:{'reward':self.reward},
-                self.distractor:{'punish':self.punish,'sound':self.sounds['punish'].out}
-            }
-        except KeyError:
-            # If we get a KeyError it's probably because we don't have a punish_sound
-            triggers = {
-                self.target:{'reward':self.reward},
-                self.distractor:{'punish':self.punish}
-            }
+    def nothing(self):
+        print('testing')
 
-        timers = {
-            'timeout':{'duration':self.timeout,'sound':self.sounds['punish'].out}
-        }
+    def reinforcement(self,*args,**kwargs):
+        # We do NOT clear the task event flag here because we want
+        # the pi to call the next stage immediately
+        # We are just filling in the last data
+        # and performing any calculations we need for the next trial
+        self.response = self.last_pin
 
-        return data,triggers,timers
-
-    def reinforcement(self,pin,*args,**kwargs):
-        # pin passed from callback function as string version ('L', 'C', etc.)
-        self.response = pin
         if self.response == self.target:
             self.correct = 1
         else:
             self.correct = 0
 
         if self.bias_mode == 1:
+            # TODO: Take window length from terminal preferences
+            # TODO: Implement other bias modes
             # Use a "running average" of responses to control bias. Rather than computing the bias each time from
             # a list of responses, we just update a float weighted with the inverse of the "window size"
             # Sign is arbitrary, but make sure it corresponds to the inequality that assigns targets in request()!
@@ -300,16 +363,20 @@ class Nafc:
             'response':self.response,
             'correct':self.correct,
             'bias':self.bias,
-            'bailed':0
+            'bailed':0,
+            'TRIAL_END':True
         }
-        triggers = {
-            'task_end':None
-        }
-        timers = {
-            None:None # Next trial is called by RPilot automatically at last stage.
-        }
-        return data, triggers, timers
-        # Also calc ongoing vals. like bias.
+
+        return data
+
+    def punish(self):
+        # TODO: If we're not in the last stage (eg. we were timed out after stim presentation), reset stages
+        if self.punish_sound:
+            self.sounds['punish'].out()
+
+        self.punish_block.clear()
+        threading.Timer(self.punish/1000, self.punish_block.set).start()
+
 
     def reset_stages(self):
         """
@@ -318,11 +385,9 @@ class Nafc:
 
         self.stages = itertools.cycle(enumerate([self.request, self.discrim, self.reinforcement]))
 
-    def assisted_assign(self):
-        # This should actually be just a way to send the param_list to terminal
-        # for param in self.param_list: ...
-        # TODO Implement this as a generic template function: ask for params in the param list.
-        pass
+    def clear_triggers(self):
+        for pin in self.pins.values():
+            pin.clear_cb()
 
 
 

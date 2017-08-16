@@ -17,6 +17,7 @@ from importlib import import_module
 import json
 import numpy as np
 import warnings
+from .. import tasks
 
 class Mouse:
     """Mouse object for managing protocol, parameters, and data"""
@@ -44,6 +45,7 @@ class Mouse:
             protocol_string = current_node.readall()
             self.current = json.loads(protocol_string)
             self.step = int(current_node.attrs['step'])
+            self.protocol_name = current_node.attrs['protocol_name']
 
         # Is the mouse currently running (ie. we expect data to be incoming)
         self.running = False
@@ -149,11 +151,17 @@ class Mouse:
         protocol_name = os.path.splitext(protocol)[0].split(os.sep)[-1]
         current_node.attrs['protocol_name'] = protocol_name
         current_node.attrs['step'] = step
+        self.step = int(step)
+        self.protocol_name = protocol_name
+
+        # Make file group for protocol, tables will be made for each step
+        self.h5f.create_group('/data', protocol_name)
 
         # Update history (flushes the file so we don't have to here)
         self.update_history('protocol', protocol_name, step)
 
     def flush_current(self):
+        # Flush the 'current' attribute in the mouse object to the .h5
         step = self.h5f.root.current.attrs['step']
         protocol_name = self.h5f.root.current.attrs['protocol_name']
         self.h5f.remove_node('/current')
@@ -167,44 +175,33 @@ class Mouse:
         self.h5f.flush()
         self.h5f.close()
 
+    def prepare_run(self):
+        self.running = True
 
+        # Get current task parameters and prepare data table
+        task_params = self.current[self.step]
+        task_class = tasks.TASK_LIST[task_params['task_type']]
+        self.data_keys = task_class.DATA.keys()
+        data_descriptor = task_class.DataTypes
+        data_group = self.h5f.get_node('/data',self.protocol_name)
 
+        datestring = datetime.date.today().isoformat()
+        conflict_avoid = 0
+        while datestring in data_group:
+            conflict_avoid += 1
+            datestring = datetime.date.today().isoformat() + '-' + str(conflict_avoid)
 
-    def load_protocol(self,step_number=-1):
-        # If no step_number passed, load the last step assigned
-        # TODO: dicts are mutable, so last number won't necessarily be last assigned. Fix when multi-step protocols made - use odicts
-        last_assigned_task   = self.data._v_children.keys()[step_number]
-        self.h5trial_records = self.data._f_get_child(last_assigned_task)
-        self.trial_row       = self.h5trial_records.row
-        self.task_type       = self.h5trial_records.attrs.task_type
-        self.task_params     = self.h5trial_records.attrs.params
-        self.param_template  = self.h5trial_records.attrs.param_template
-        self.task_data_list  = self.h5trial_records.attrs.data_list
-        # TODO Check if template has changed since assign
-        # Import the task class from its module & make
-        template_module = import_module('taskontrol.tasks.{}'.format(self.task_type))
-        task_class = getattr(template_module,template_module.TASK)
-        self.task = task_class(**self.task_params)
+        self.task_table = self.h5f.create_table(data_group, datestring, data_descriptor)
+        self.trial_row = self.task_table.row
 
-    def receive_sounds(self,sounds,sound_lookup):
-        # To be passed by RPilot after initing the Mouse
-        # We do this here because the Mouse is in charge of its records, and also has access to its task.
-        # TODO some error checking, ie. do we have a task already loaded, etc.
-        self.task.sounds = sounds
-        self.task.sound_lookup = sound_lookup
-        # Update records with lookup table. Append date of lookup if conflicts
-        #if not set(sound_lookup.items()).issubset(set(self.h5trial_records.attrs.params['sounds'])):
-            # TODO: error checking here, need to keep record if param changes, keep record. This is a more general problem so not implementing yet
-            # pass
+    def save_data(self,data):
+        for k, v in data.items():
+            if k in self.data_keys:
+                self.trial_row[k] = v
 
-    def save_trial(self,data):
-        # TODO Error checking: does the data dict contain all the columns of the table?
-        # TODO Error checking: handling basic type mismatches
-
-        for k,v in data.items():
-            self.trial_row[k] = v
-        self.trial_row.append()
-        self.h5trial_records.flush() # FIXME: pytables might do a decent job of flushing when buffer's full - we might gain fluidity by letting it handle flushing.
+        if 'TRIAL_END' in data.keys():
+            self.trial_row.append()
+            self.task_table.flush()
 
     def put_away(self):
         self.h5f.flush()

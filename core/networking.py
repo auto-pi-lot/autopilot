@@ -118,7 +118,6 @@ class Terminal_Networking(multiprocessing.Process):
             'DATA': self.l_data, # Stash incoming data from an rpilot
             'ALIVE': self.l_alive, # A Pi is responding to our periodic query of whether it remains alive
                                    # It replies with its subscription filter
-            'EVENT': self.l_event, # Stash a single event (not a whole trial's data)
             'STATE': self.l_state, # The Pi is confirming/notifying us that it has changed state
             'RECVD': self.m_recvd  # We are getting confirmation that the message was received
         }
@@ -311,7 +310,8 @@ class Terminal_Networking(multiprocessing.Process):
         self.publish('T',{'key':'LISTENING', 'value':''})
 
     def l_data(self, target, value):
-        pass
+        # Just sending it through
+        self.publish('T', value)
 
     def l_alive(self, target, value):
         # A pi has told us that it is alive and what its filter is
@@ -395,6 +395,8 @@ class Pilot_Networking(multiprocessing.Process):
         self.logger.setLevel(logging.INFO)
         self.logger.info('Networking Logging Initiated')
 
+        self.state = None # To respond to queries without bothing the pilot
+
     def run(self):
 
         # Store some prefs values
@@ -404,6 +406,7 @@ class Pilot_Networking(multiprocessing.Process):
         self.message_in_port = self.prefs['MSGINPORT']
         self.message_out_port = self.prefs['MSGOUTPORT']
         self.terminal_ip = self.prefs['TERMINALIP']
+        self.mouse = None # To store mouse name
 
         # Initialize Network Objects
         self.context = zmq.Context()
@@ -439,8 +442,7 @@ class Pilot_Networking(multiprocessing.Process):
         # Message dictionary - What method to call for messages from the parent Pilot
         self.messages = {
             'STATE': self.m_state, # Confirm or notify terminal of state change
-            'DATA': self.m_data,  # Sending a whole trial's data back
-            'EVENT': self.m_event, # Sending a single event within a trial back
+            'DATA': self.m_data,  # Sending data back
             'COHERE': self.m_cohere # Sending our temporary data table at the end of a run to compare w/ terminal's copy
         }
 
@@ -512,10 +514,16 @@ class Pilot_Networking(multiprocessing.Process):
     ###########################3
     # Message/Listen handling methods
     def m_state(self, target, value):
-        pass
+        # Save locally so we can respond to queries on our own, then push 'er on through
+        # Value will just have the state, we want to add our name
+        self.state = value
+        state_message = {'name': self.name, 'state': value}
+        self.push('STATE', target, state_message)
 
     def m_data(self, target, value):
-        pass
+        # Just sending it along after appending the mouse name
+        value['mouse'] = self.mouse
+        self.push('DATA', target, value)
 
     def m_event(self, target, value):
         pass
@@ -529,7 +537,8 @@ class Pilot_Networking(multiprocessing.Process):
         self.push('ALIVE', value=self.name)
 
     def l_start(self, value):
-        pass
+        self.mouse = value['mouse']
+        self.send_message_out('START', value)
 
     def l_stop(self, value):
         pass

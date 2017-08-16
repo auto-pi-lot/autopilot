@@ -30,6 +30,7 @@ import argparse
 # import RPi.GPIO as GPIO
 import pyo
 import threading
+import tables
 from time import sleep
 import zmq
 from zmq.eventloop.ioloop import IOLoop
@@ -37,10 +38,24 @@ from zmq.eventloop.zmqstream import ZMQStream
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from networking import Pilot_Networking
+import tasks
 
 class RPilot:
 
-    def __init__(self):
+    def __init__(self, prefs=None):
+        # If we weren't handed prefs, try to load them from the default location
+        if not prefs:
+            prefs_file = '/usr/rpilot/prefs.json'
+            if not os.path.exists(prefs_file):
+                raise RuntimeError("No prefs file passed and none found in {}".format(prefs_file))
+
+            with open(prefs_file) as prefs_file_open:
+                prefs = json.load(prefs_file_open)
+                raise Warning('No prefs file passed, loaded from default location. Should pass explicitly')
+
+        self.prefs = prefs
+        self.name = self.prefs['NAME']
+
 
         # Start Logging
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
@@ -54,11 +69,14 @@ class RPilot:
         self.logger.setLevel(logging.INFO)
         self.logger.info('Pilot Logging Initiated')
 
-        # Init all the hardware stuff, get the RPi ready for instructions
+        # Open .h5 used to store local copies of data
+        # NOTE: THESE ARE NOT TO BE RELIED ON FOR STORAGE,
+        # Their purpose is to compare with the terminal at the end of running a task
+        # in case the terminal missed us sending any events.
+        local_file = os.path.join(self.prefs['DATADIR'], 'local.h5')
+        self.h5f = tables.open_file(local_file, mode='a')
+        self.logger.info('Local file opened: {}'.format(local_file))
 
-        #self.licks  = rpiset.LICKS
-        #self.valves = rpiset.VALVES
-        #self.licks_inv = {v: k for k,v in self.licks.items()} #So we can translate pin # to 'L', etc.
         #self.data = dict() # Temporary storage of trial data before flushing to h5f
         #self.triggers = dict()
         #self.timers = dict()
@@ -71,7 +89,8 @@ class RPilot:
         # Locks, etc. for threading
         #self.threads = dict()
         #self.pin = None # Which pin was triggered? Set by pin_cb()
-        #self.is_running = threading.Event()
+        self.running = threading.Event() # Are we running a task?
+        self.stage_block = threading.Event() # Are we waiting on stage triggers?
         #self.stage_lock = threading.Condition()
         #self.trigger_lock = threading.Condition()
         #self.timer_block = threading.Event()
@@ -81,6 +100,12 @@ class RPilot:
         # Init Networking
         self.spawn_network()
         self.init_network()
+
+        # Set and update state
+        self.state = 'IDLE' # or 'Running'
+        self.update_state()
+
+
 
         # Synchronize system clock w/ time from terminal.
         # Send message back to terminal that we're all good.
@@ -137,7 +162,7 @@ class RPilot:
         self.logger.info('MESSAGE - KEY: {}, VALUE: {}'.format(msg['key'], msg['value']))
 
         message_funk = self.messages[msg['key']]
-        message_thread = threading.Thread(target=message_funk, args=(message['value'],))
+        message_thread = threading.Thread(target=message_funk, args=(msg['value'],))
         message_thread.start()
 
     def send_message(self, key, target='', value=''):
@@ -149,20 +174,65 @@ class RPilot:
         self.logger.info("MESSAGE SENT - Target: {}, Key: {}, Value: {}".format(key, target, value))
 
 
-    def l_start(self):
+    def l_start(self, value):
         # TODO: If any of the sounds are 'file,' make sure we have them. If not, request them.
-        pass
+        # TODO: We should also update the system time here
+        # Value should be a dict of protocol params
 
-    def l_stop(self):
-        pass
+        # Get the task object by its type
+        task_class = tasks.TASK_LIST[value['task_type']]
+        # Instantiate the task
+        self.task = task_class(prefs=self.prefs, stage_block=self.stage_block, **value)
+
+        # Setup a table to store data locally
+        # Get data table descriptor
+        table_descriptor = self.task.DataTypes
+
+        # Make a group for this mouse if we don't already have one
+        mouse_name = value['mouse']
+        if not mouse_name in self.h5f.root:
+            self.h5f.create_group("/", mouse_name, "Local Data for {}".format(mouse_name))
+        mouse_group = self.h5f.get_node('/', mouse_name)
+
+        # Make a table for today's data, appending a conflict-avoidance int if one already exists
+        datestring = datetime.date.today().isoformat()
+        conflict_avoid = 0
+        while datestring in mouse_group:
+            conflict_avoid += 1
+            datestring = datetime.date.today().isoformat() + '-' + str(conflict_avoid)
+
+        self.table = self.h5f.create_table(mouse_group, datestring, table_descriptor,
+                                           "Mouse {} on {}".format(mouse_name, datestring))
+
+        # The Row object is what we write data into as it comes in
+        self.row = self.table.row
+
+        # Run the task and tell the terminal we have
+        self.running.set()
+        threading.Thread(target=self.run_task).start()
+
+        self.state = 'RUNNING'
+        self.update_state()
+
+
+
+    def l_stop(self, value):
+        # We just clear the stage block and reset the running flag here
+        # and call the cleanup routine from run_task so it can exit cleanly
+        self.running.clear()
+        self.stage_block.set()
+
+
+        # Let the terminal know we're stopping
+        # (not stopped yet because we'll still have to sync data, etc.)
+        self.state = 'STOPPING'
+        self.update_state()
+
+    def update_state(self):
+        self.send_message('STATE', target='T', value = self.state)
     #################################################################
     # Hardware Init
     #################################################################
-    def init_pins(self):
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.licks.values(), GPIO.IN, pull_up_down.GPIO.PUD_DOWN)
-        GPIO.add_event_detect(self.licks.values(), GPIO.RISING, callback=self.pin_cb, bouncetime = 300) # Bouncetime is ms unresponsive after trigger
-        GPIO.setup(self.valves.values(), GPIO.OUT, initial=GPIO.LOW)
 
     def init_pyo(self):
         # sampling rate, nchan, etc. set in the JACKD_STRING
@@ -181,66 +251,46 @@ class RPilot:
         self.pyo_server.start()
 
     #################################################################
-    # Mouse and Protocol Management
-    #################################################################
-    def load_mouse(self, name):
-        # Task should be assigned in the Mouse object such that subject.stages.next() should run the next stage.
-        self.subject = core.mouse.Mouse(name)
-        # We have to make the sounds for the task so the task class can remain agnostic to the sound implementation
-        # TODO: Put 'load_sounds' as separate function, separate preparing the task to run from loading the mouse
-        self.load_sounds(self.subject.task_params['sounds'])
-        self.subject.receive_sounds(self.pyo_sounds,self.sound_lookup)
-
-    def load_sounds(self,sounds):
-        '''
-        Sounds as a param dict. understandable by one of the types in 'sounds'
-        Returns a soundtable-esque packaged soundplayer capable of playing sound with .out()
-        Make unique IDs for each sound for data collection, store param dicts in sound_lookup so IDs can be compared to
-        the param sets that made them.
-        '''
-        self.pyo_sounds = dict()
-        self.sound_lookup = dict()
-        for k,v in sounds.items():
-            # If multiple sounds on one side, 'L' val will be a list.
-            if isinstance(v,list):
-                self.pyo_sounds[k] = list()
-                for i,z in enumerate(v):
-                    # Uses the SWITCH dict in sounds to call the proper function,
-                    # calls fnxn in sounds with parameter dict 'z',
-                    # appends to list of 'k' sounds
-                    # because lists are not mutable, ids should be same every time.
-                    self.pyo_sounds[k].append(core.sounds.SWITCH[z['type']](**z))
-                    if 'id' not in z.keys():
-                        print('\n ID not assigned in sound params, giving unique ID that is NOT guaranteed to remain stable over multiple sessions')
-                        id = str(k) + str(i)
-                    else:
-                        id = z['id']
-                    self.pyo_sounds[k][-1].id = id
-                    self.sound_lookup[id] = z
-            else:
-                self.pyo_sounds[k] = core.sounds.SWITCH[v['type']](**v)
-                if 'id' not in v.keys():
-                    print('\n ID not assigned in sound params, giving unique ID that is NOT guaranteed to remain stable over multiple sessions')
-                    id = str(k)
-                else:
-                    id = v['id']
-                self.pyo_sounds[k].id = id
-                self.sound_lookup[id] = v
-
-    def new_mouse(self, name):
-        self.subject = core.mouse.Mouse(name, new=1)
-
-    def assign_subject_protocol(self, protocol, params):
-        self.subject.assign_protocol(protocol, params)
-        self.load_sounds(self.subject.task_params['sounds'])
-        self.subject.receive_sounds(self.pyo_sounds, self.sound_lookup)
-
-
-
-    #################################################################
     # Trial Running and Management
     #################################################################
     def run_task(self):
+        # Run as a separate thread, just keeps calling next() and shoveling data
+        while True:
+            # Calculate next stage data and prep triggers
+            data = self.task.stages.next()() # Double parens because next just gives us the function, we still have to call it
+
+            # Send data back to terminal
+            self.send_message('DATA', target='T', value=data)
+
+            # Store a local copy
+            # the task class has a class variable DATA that lets us know which data the row is expecting
+            for k, v in data.items():
+                if k in self.task.DATA.keys():
+                    self.row[k] = v
+
+            # If the trial is over (either completed or bailed), flush the row
+            if 'TRIAL_END' in data.keys():
+                self.row.append()
+                self.table.flush()
+
+            # Wait on the stage lock to clear
+            self.stage_block.wait()
+
+            # If the running
+            if not self.running.is_set():
+                # TODO: Call task shutdown method
+                self.row.append()
+                self.table.flush()
+                break
+
+
+
+
+
+
+
+
+    def run_task_old(self):
         """
         Make threads for running task, start running task.
         Refresher on the terminology that's been adopted: a "Protocol" is a collection of "Steps", each of which is a "Task" with promotion criteria to the next step.
@@ -465,7 +515,7 @@ if __name__ == '__main__':
     with open(prefs_file) as prefs_file_open:
         prefs = json.load(prefs_file_open)
 
-    a = RPilot()
+    a = RPilot(prefs)
 
 
 

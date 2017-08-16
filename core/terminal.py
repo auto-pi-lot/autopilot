@@ -1253,10 +1253,12 @@ class Terminal(QtGui.QWidget):
         # If toggled=True we are starting the mouse
         if toggled:
             # Set mouse to running
-            mouse.running = True
+            mouse.prepare_run()
             # Get protocol and send it to the pi
             task = mouse.current[mouse.step]
-            # TODO: Prepare to save data (
+            # Dress up the protocol dict with some extra values that the pilot needs
+            task['mouse'] = mouse.name
+            # TODO: Get last trial number and insert in dict
             self.send_message('START', pilot, task)
             # TODO: Spawn dataview widget
             # TODO: Spawn timer thread to trigger stop after run duration
@@ -1267,9 +1269,6 @@ class Terminal(QtGui.QWidget):
             self.send_message('STOP', pilot)
             mouse.h5f.flush()
             # TODO: Destroy dataview widget
-
-        # TODO: Give prefs panel an attribute to refer to the start_mouse function
-        # TODO: Give this method to the prefs panel
 
 
 
@@ -1395,11 +1394,14 @@ class Terminal(QtGui.QWidget):
 
     def l_state(self, value):
         # A Pi has changed state
+        # TODO: If we are stopping, we enter into a cohere state
+        # TODO: If we are stopped, close the mouse object.
         pass
 
-    def l_event(self, value):
-        # A Pi sends us either an event or a full trial's data
-        pass
+    def l_data(self, value):
+        # A Pi has sent us data, let's save it huh?
+        mouse_name = value['mouse']
+        self.mice[mouse_name].save_data(value)
 
     def l_listening(self, value):
         self.networking_ok = True
