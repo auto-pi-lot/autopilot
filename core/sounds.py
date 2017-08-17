@@ -24,8 +24,8 @@ class Tone:
     PARAMS = ['frequency','duration','amplitude']
     def __init__(self, frequency, duration, amplitude=0.3, phase=0, **kwargs):
 
-        sin = pyo.Sine(frequency,mul=amplitude)
-        self.table = TableWrap(sin, duration)
+        sin = pyo.Sine(float(frequency),mul=float(amplitude))
+        self.table = TableWrap(sin, float(duration))
 
     def play(self):
         self.table.out()
@@ -36,8 +36,8 @@ class Noise:
     '''
     PARAMS = ['duration','amplitude']
     def __init__(self, duration, amplitude, **kwargs):
-        noiser = pyo.Noise(mul=amplitude)
-        self.table = TableWrap(noiser,duration)
+        noiser = pyo.Noise(mul=float(amplitude))
+        self.table = TableWrap(noiser,float(duration))
 
     def play(self):
         self.table.out()
@@ -57,7 +57,7 @@ def TableWrap(audio,duration):
     '''
     # Duration is in ms, so divide by 1000
     audio.play()
-    tab = pyo.NewTable(length=(float(duration)/1000),chnls=rpiset.NUM_CHANNELS)
+    tab = pyo.NewTable(length=(float(duration)/1000),chnls=prefs['NCHANNELS']) # Prefs should always be declared in the global namespace
     tabrec = pyo.TableRec(audio,table=tab,fadetime=0.01)
     tabrec.play()
     sleep((float(duration)/1000))
