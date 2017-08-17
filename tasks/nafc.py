@@ -306,7 +306,7 @@ class Nafc:
         #    self.target_sound_id = None
 
         # Set sound trigger
-        self.triggers['C'] = self.target_sound.out
+        self.triggers['C'] = self.target_sound.play
 
         data = {
             'target':self.target,
