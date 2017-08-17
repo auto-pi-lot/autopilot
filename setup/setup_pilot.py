@@ -74,7 +74,7 @@ else:
 if args.jackdstring:
     jackd_string = str(args.jackdstring)
 else:
-    jackd_string = "jackd -P70 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -p128 -n3 -r44100 -s &"
+    jackd_string = "jackd -P75 -dalsa -dhw:sndrpihifiberry -s &"
 
 if args.naudiochannels:
     n_channels = int(args.naudiochannels)
