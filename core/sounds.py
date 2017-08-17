@@ -56,8 +56,9 @@ def TableWrap(audio,duration):
     Records a PyoAudio generator into a sound table, returns a tableread object which can play the audio with .out()
     '''
     # Duration is in ms, so divide by 1000
+    #TODO: Get chnls to be responsive to NCHANNELS in prefs. hardcoded for now
     audio.play()
-    tab = pyo.NewTable(length=(float(duration)/1000),chnls=prefs['NCHANNELS']) # Prefs should always be declared in the global namespace
+    tab = pyo.NewTable(length=(float(duration)/1000),chnls=2) # Prefs should always be declared in the global namespace
     tabrec = pyo.TableRec(audio,table=tab,fadetime=0.01)
     tabrec.play()
     sleep((float(duration)/1000))
