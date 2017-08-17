@@ -274,9 +274,9 @@ class RPilot:
                 self.table.flush()
 
             # Wait on the stage lock to clear
-            print('pre-')
+            print('pre-block')
             self.stage_block.wait()
-
+            print('post-block')
             # If the running
             if not self.running.is_set():
                 # TODO: Call task shutdown method

@@ -13,7 +13,7 @@ class Beambreak:
 
 
         # Trigger map
-        TRIGGER_MAP = {
+        self.TRIGGER_MAP = {
             'U': GPIO.RISING,
             'D': GPIO.FALLING,
             'B': GPIO.BOTH
