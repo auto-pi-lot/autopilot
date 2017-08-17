@@ -201,6 +201,8 @@ class Nafc:
         self.pins = {}
         pin_numbers = self.prefs['PINS']
         for pin, handler in self.HARDWARE.items():
+            print(pin)
+            sys.stdout.flush()
             try:
                 self.pins[pin] = handler(pin_numbers[pin])
                 self.pins[pin].assign_cb(self.handle_trigger)

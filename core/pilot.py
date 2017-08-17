@@ -274,6 +274,7 @@ class RPilot:
                 self.table.flush()
 
             # Wait on the stage lock to clear
+            print('pre-')
             self.stage_block.wait()
 
             # If the running
