@@ -1,14 +1,16 @@
 # Classes that house hardware logic
 
-
+try:
+    import RPi.GPIO as GPIO
+except:
+    pass
 
 class Beambreak:
     # IR Beambreak sensor
 
 
-
     def __init__(self, pin, bounce=200, pull_ud='U', trigger_ud='D', event=None):
-        import RPi.GPIO as GPIO
+
 
         # Trigger map
         TRIGGER_MAP = {

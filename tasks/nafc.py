@@ -10,7 +10,7 @@ Stage functions should each return three dicts: data, triggers, and timers
     -triggers: (input:action) what to do if the relevant input is triggered
     -timers: (type:{params}) like {'too_early':{'sound':too_early_sound}}
 '''
-
+import sys
 import os
 import random
 # from taskontrol.settings import rpisettings as rpiset
@@ -205,6 +205,8 @@ class Nafc:
                 self.pins[pin] = handler(pin_numbers[pin])
                 self.pins[pin].assign_cb(self.handle_trigger)
                 self.pin_id[pin_numbers[pin]] = pin
+                print('initd pin {}, number {}'.format(pin, pin_numbers[pin]))
+                sys.stdout.flush()
             except:
                 # TODO: More informative exception
                 Exception('Something went wrong instantiating pins, tell jonny to handle this better!')
@@ -230,12 +232,16 @@ class Nafc:
         # All triggers call this function with their ID as an argument
         # Triggers will be functions unless they are "TIMEUP", at which point we
         # register a timeout and restart the trial
-
+        print(pin)
+        sys.stdout.flush()
         # We get fed pins as numbers usually, convert back to letters
         if isinstance(pin, int):
             pin = self.pin_id[pin]
 
         self.last_pin = pin
+
+        print(pin)
+        sys.stdout.flush()
 
         if pin == 'TIMEUP':
             # TODO: Handle timers, reset trial
@@ -244,6 +250,10 @@ class Nafc:
 
         # Wait for any punishment delay
         self.punish_block.wait()
+
+        print('past punish block')
+        sys.stdout.flush()
+
 
         # TODO: For nosepokes where they have to hold after sound, have some flag that tells us to spawn a timer thread to bail on the trial
         # Call the trigger
