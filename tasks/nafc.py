@@ -332,8 +332,8 @@ class Nafc:
 
         # TODO: Open solenoid for specific time, for now pass.
         #self.triggers[self.target] = solenoid(time)
-        self.triggers[self.target] = self.correct
-        self.triggers[self.distractor] = self.incorrect
+        self.triggers[self.target] = self.test_correct
+        self.triggers[self.distractor] = self.test_incorrect
 
         print('printing triggers from discrim')
         pprint.pprint(self.triggers)
@@ -344,10 +344,10 @@ class Nafc:
         data = {'DC_timestamp': datetime.datetime.now().isoformat()}
         return data
 
-    def nothing(self):
+    def test_correct(self):
         print('Correct!')
 
-    def incorrect(self):
+    def test_incorrect(self):
         print('Incorrect :(')
 
     def reinforcement(self,*args,**kwargs):
