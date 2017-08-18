@@ -20,6 +20,7 @@ import warnings
 import tables
 import json
 import threading
+import pprint
 from core import hardware, sounds
 from collections import OrderedDict as odict
 
@@ -234,16 +235,11 @@ class Nafc:
         # All triggers call this function with their ID as an argument
         # Triggers will be functions unless they are "TIMEUP", at which point we
         # register a timeout and restart the trial
-        print(pin)
-        sys.stdout.flush()
         # We get fed pins as numbers usually, convert back to letters
         if isinstance(pin, int):
             pin = self.pin_id[pin]
 
         self.last_pin = pin
-
-        print(pin)
-        sys.stdout.flush()
 
         if pin == 'TIMEUP':
             # TODO: Handle timers, reset trial
@@ -253,8 +249,8 @@ class Nafc:
         # Wait for any punishment delay
         self.punish_block.wait()
 
-        print('past punish block')
-        sys.stdout.flush()
+        print('printing from handle_trigger')
+        pprint.pprint(self.triggers)
 
 
         # TODO: For nosepokes where they have to hold after sound, have some flag that tells us to spawn a timer thread to bail on the trial
@@ -338,6 +334,9 @@ class Nafc:
         #self.triggers[self.target] = solenoid(time)
         self.triggers[self.target] = self.correct
         self.triggers[self.distractor] = self.incorrect
+
+        print('printing triggers from discrim')
+        pprint.pprint(self.triggers)
 
         # TODO: Handle timeout
 
