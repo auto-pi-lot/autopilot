@@ -336,8 +336,8 @@ class Nafc:
 
         # TODO: Open solenoid for specific time, for now pass.
         #self.triggers[self.target] = solenoid(time)
-        self.triggers[self.target] = self.nothing
-        self.triggers[self.distractor] = self.punish
+        self.triggers[self.target] = self.correct
+        self.triggers[self.distractor] = self.incorrect
 
         # TODO: Handle timeout
 
@@ -346,7 +346,10 @@ class Nafc:
         return data
 
     def nothing(self):
-        print('testing')
+        print('Correct!')
+
+    def incorrect(self):
+        print('Incorrect :(')
 
     def reinforcement(self,*args,**kwargs):
         # We do NOT clear the task event flag here because we want

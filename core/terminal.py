@@ -1316,7 +1316,8 @@ class Terminal(QtGui.QWidget):
             'STATE': self.l_state, # A Pi has changed state
             'LISTENING': self.l_listening, # The networking object tells us it's online
             'PING' : self.l_ping, # Someone wants to know if we're alive
-            'FILE' : self.l_file # A pi needs some files to run its protocol
+            'FILE' : self.l_file, # A pi needs some files to run its protocol
+            'DATA' : self.l_data
         }
 
         # Start IOLoop in daemon thread
