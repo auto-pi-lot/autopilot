@@ -265,6 +265,9 @@ class Nafc:
             # If we don't have a trigger, that's fine, eg. L and R before requesting
             return
 
+        # clear triggers
+        self.triggers = {}
+
         # Set the stage block so the pilot calls the next stage
         self.stage_block.set()
 

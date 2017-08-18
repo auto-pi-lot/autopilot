@@ -1172,7 +1172,7 @@ class Terminal(QtGui.QWidget):
         self.layout.setContentsMargins(5,5,5,5)
 
         self.logo = QtGui.QLabel()
-        self.logo.setPixmap(QtGui.QPixmap(prefs['REPODIR']+'/graphics/logo.png').scaled(265,40))
+        #self.logo.setPixmap(QtGui.QPixmap(prefs['REPODIR']+'/graphics/logo.png').scaled(265,40))
         self.logo.setFixedHeight(40)
         self.logo.setAlignment(QtCore.Qt.AlignRight)
 

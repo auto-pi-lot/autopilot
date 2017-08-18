@@ -313,8 +313,10 @@ class Terminal_Networking(multiprocessing.Process):
 
     def l_data(self, target, value):
         # Just sending it through
-        self.publish('T', value)
+        #msg = {'key':'DATA', 'value':value}
+        #self.publish('T', msg)
 
+        pass
     def l_alive(self, target, value):
         # A pi has told us that it is alive and what its filter is
         self.subscribers.update([value])
