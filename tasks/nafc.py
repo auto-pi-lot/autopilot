@@ -29,6 +29,7 @@ TASK = 'Nafc'
 
 # TODO: Make meta task class that has logic for loading sounds, etc.
 
+
 class Nafc:
     """
     Actually 2afc, but can't have number as first character of class.
@@ -161,7 +162,7 @@ class Nafc:
         self.punish_sound   = bool(punish_sound)
         self.punish         = float(punish)
         self.correction     = bool(correction)
-        self.pct_correction = int(pct_correction)
+        self.pct_correction = float(pct_correction)/100
         self.bias_mode      = int(bias_mode)
         self.bias_threshold = float(bias_threshold)
         self.timeout        = int(timeout)
