@@ -5,6 +5,25 @@ try:
 except:
     pass
 
+try:
+    import pigpio
+except:
+    pass
+
+import threading
+
+# pigpio only uses BCM numbers, we need to translate them
+# See https://www.element14.com/community/servlet/JiveServlet/previewBody/73950-102-11-339300/pi3_gpio.png
+BOARD_TO_BCM = {
+     3: 2,   5: 3,   7: 4,   8: 14, 10: 15,
+    11: 17, 12: 18, 13: 27, 15: 22, 16: 23,
+    18: 24, 19: 10, 21: 9,  22: 25, 23: 11,
+    24: 8,  26: 7,  29: 5,  31: 6,  32: 12,
+    33: 13, 35: 19, 36: 16, 37: 26, 38: 20,
+    40: 21
+}
+BCM_TO_BOARD = dict([reversed(i) for i in BOARD_TO_BCM.items()])
+
 class Beambreak:
     # IR Beambreak sensor
 
@@ -79,6 +98,79 @@ class Beambreak:
 
     def clear_cb(self):
         GPIO.remove_event_detect(self.pin)
+
+    # TODO: Add cleanup so task can be closed and another opened
+
+class LED_RGB:
+    def __init__(self, common = 'anode', pins = None, r = None, g=None, b=None):
+        # Can pass RGB pins as list or as kwargs "r", "g", "b"
+        # Can be configured for common anode (low turns LED on) or cathode (low turns LED off)
+        self.common = common
+
+        # Initialize connection to pigpio daemon
+        self.pig = pigpio.pi()
+        if not self.pig.connected:
+            Exception('No connection to pigpio daemon could be made')
+
+        # Unpack input
+        self.pins = {}
+        if r and g and b:
+            self.pins['r'] = int(r)
+            self.pins['g'] = int(g)
+            self.pins['b'] = int(b)
+        elif isinstance(pins, list):
+            self.pins['r'] = int(pins[0])
+            self.pins['g'] = int(pins[1])
+            self.pins['b'] = int(pins[2])
+        else:
+            Exception('Dont know how to handle input to LED_RGB')
+
+        # Convert to BCM numbers
+        self.pins = {k: BOARD_TO_BCM[v] for k, v in self.pins.items()}
+
+        # set pin mode to output and make sure they're turned off
+        for pin in self.pins.values():
+            self.pig.set_mode(pin, pigpio.OUTPUT)
+            if self.common == 'anode':
+                self.pig.set_PWM_dutycycle(pin, 255)
+            elif self.common == 'cathode':
+                self.pig.set_PWM_dutycycle(pin, 0)
+            else:
+                Exception('Common passed to LED_RGB not anode or cathode')
+
+    def set_color(self, col=None, r=None, g=None, b=None, timed=None):
+        # Unpack input
+        if r and g and b:
+            color = {'r':int(r), 'g':int(g), 'b':int(b)}
+        elif isinstance(col, list):
+            color = {'r':int(col[0]), 'g':int(col[1]), 'b':int(col[2])}
+        else:
+            Warning('Color improperly formatted')
+            return
+
+        # Set PWM dutycycle
+        if self.common == 'anode':
+            for k, v in color.items():
+                self.pig.set_PWM_dutycycle(self.pins[k], 255-v)
+        elif self.common == 'cathode':
+            for k, v in color.items():
+                self.pig.set_PWM_dutycycle(self.pins[k], v)
+
+        # If this is is a timed blink, start thread to turn led off
+        if timed:
+            # timed should be a float or int specifying the delay in ms
+            offtimer = threading.Timer(float(timed)/1000, self.set_color, kwargs={'col':[0,0,0]})
+            offtimer.start()
+
+
+
+
+
+
+
+
+
+
 
 
 

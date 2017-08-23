@@ -29,7 +29,6 @@ TASK = 'Nafc'
 
 # TODO: Make meta task class that has logic for loading sounds, etc.
 
-
 class Nafc:
     """
     Actually 2afc, but can't have number as first character of class.
@@ -98,9 +97,22 @@ class Nafc:
         bailed = tables.Int32Col()
 
     HARDWARE = {
-        'L': hardware.Beambreak,
-        'C': hardware.Beambreak,
-        'R': hardware.Beambreak # TODO: Going to need solenoids as well
+        'POKES':{
+            'L': hardware.Beambreak,
+            'C': hardware.Beambreak,
+            'R': hardware.Beambreak
+        },
+        'LEDS':{
+            # TODO: use LEDs, RGB vs. white LED option in init
+            'L': hardware.LED_RGB,
+            'C': hardware.LED_RGB,
+            'R': hardware.LED_RGB
+        },
+        'PORTS':{
+            'L': hardware.Solenoid,
+            'C': hardware.Solenoid,
+            'R': hardware.Solenoid
+        }
     }
 
     def __init__(self, prefs=None, stage_block=None, sounds=None, reward=50, req_reward=False,
@@ -201,19 +213,34 @@ class Nafc:
         # We use the HARDWARE dict that specifies what we need to run the task
         # alongside the PINS subdict in the prefs structure to tell us how they're plugged in to the pi
         self.pins = {}
+        self.pin_id = {} # Reverse dict to identify pokes
         pin_numbers = self.prefs['PINS']
-        for pin, handler in self.HARDWARE.items():
-            print(pin)
-            sys.stdout.flush()
-            try:
-                self.pins[pin] = handler(pin_numbers[pin])
-                self.pins[pin].assign_cb(self.handle_trigger)
-                self.pin_id[pin_numbers[pin]] = pin
-                print('initd pin {}, number {}'.format(pin, pin_numbers[pin]))
-                sys.stdout.flush()
-            except:
-                # TODO: More informative exception
-                Exception('Something went wrong instantiating pins, tell jonny to handle this better!')
+
+        # We first iterate through the types of hardware we need
+        for type, values in self.HARDWARE.items():
+            self.pins[type] = {}
+            # Then switch depending on the type
+            # First IR beambreak nosepokes
+            if type == 'POKES':
+                for pin, handler in values.items():
+                    try:
+                        # Instantiate poke class, assign callback, and make reverse dict
+                        self.pins[type][pin] = handler(pin_numbers[type][pin])
+                        self.pins[type][pin].assign_cb(self.handle_trigger)
+                        self.pin_id[pin_numbers[type][pin]] = pin
+                    except:
+                        # TODO: More informative exception
+                        Exception('Something went wrong instantiating pins, tell jonny to handle this better!')
+
+            # Then LEDs
+            elif type == 'LEDS':
+                pass
+
+            elif type == 'PORTS':
+                pass
+
+            else:
+                Exception('HARDWARE dict misspecified in class definition')
 
     def load_sounds(self):
         # TODO: Definitely put this in a metaclass

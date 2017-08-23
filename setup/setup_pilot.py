@@ -63,12 +63,26 @@ else:
     terminal_ip = '192.168.0.100'
 
 if args.manualpins:
+    # TODO: make dialog window to set pins manually
     NotImplementedError()
 else:
     pins = {
-        'L':7,
-        'C':11,
-        'R':13
+        'POKES':{
+            'L':7,
+            'C':11,
+            'R':13
+        },
+        'LEDS':{
+            # Three pins for RGB LEDs
+            'L': [16, 18, 22],
+            'C': [8,  10, 15],
+            'R': [19, 21, 23]
+        },
+        'PORTS':{
+            'L':29,
+            'C':31,
+            'R':33
+        }
     }
 
 if args.jackdstring:
@@ -90,6 +104,9 @@ logdir = os.path.join(basedir,'logs')
 try:
     import pyo
     import zmq
+    # TODO: Test for pigpio
+    # TODO: Set pigpio to start on startup
+    # TODO: don't just test, compile pyo if missing
 except:
     print("Error importing prerequisite packages!")
 
@@ -145,7 +162,7 @@ launch_file = os.path.join(basedir, 'launch_pilot.sh')
 with open(launch_file, 'w') as launch_file_open:
     launch_file_open.write('killall jackd\n') # Try to kill any existing jackd processes
     launch_file_open.write(jackd_string+'\n')    # Then launch ours
-    launch_file_open.write('sleep 5\n') # We wait a damn second to let jackd start up
+    launch_file_open.write('sleep 1\n') # We wait a damn second to let jackd start up
     launch_string = "python " + os.path.join(repo_loc, "core", "pilot.py") + " -f " + prefs_file
     launch_file_open.write(launch_string)
 
