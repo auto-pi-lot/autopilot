@@ -103,7 +103,7 @@ class Beambreak:
     # TODO: Add cleanup so task can be closed and another opened
 
 class LED_RGB:
-    def __init__(self, common = 'anode', pins = None, r = None, g=None, b=None):
+    def __init__(self, pins = None, r = None, g=None, b=None, common = 'anode'):
         # Can pass RGB pins as list or as kwargs "r", "g", "b"
         # Can be configured for common anode (low turns LED on) or cathode (low turns LED off)
         self.common = common
@@ -140,7 +140,7 @@ class LED_RGB:
                 Exception('Common passed to LED_RGB not anode or cathode')
 
         # Blink to show we're alive
-        self.color_series([[255,0,0],[0,255,0],[0,0,255]], 1000)
+        self.color_series([[255,0,0],[0,255,0],[0,0,255],[0,0,0]], 500)
 
     def set_color(self, col=None, r=None, g=None, b=None, timed=None):
         # Unpack input
