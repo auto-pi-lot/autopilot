@@ -1,7 +1,7 @@
 # Classes that house hardware logic
 
 try:
-    import RPi.GPIO as GPIO
+    import RPi.GPIO as GPIO # TODO: Redo Beambreak class with pigpio, it just is better in every way
 except:
     pass
 
@@ -25,6 +25,7 @@ BOARD_TO_BCM = {
 }
 BCM_TO_BOARD = dict([reversed(i) for i in BOARD_TO_BCM.items()])
 
+# TODO: Subclass nosepoke that knows about waiting for mouse leaving
 class Beambreak:
     # IR Beambreak sensor
 
@@ -187,19 +188,47 @@ class LED_RGB:
             Exception("Dont know how to handle your color series")
             return
 
+class Solenoid:
+    # Solenoid valves for water delivery
+    def __init__(self, pin, duration=100):
+        # Initialize connection to pigpio daemon
+        self.pig = pigpio.pi()
+        if not self.pig.connected:
+            Exception('No connection to pigpio daemon could be made')
+
+        # Setup port
+        self.pin = BOARD_TO_BCM[int(pin)]
+        self.pig.set_mode(self.pin, pigpio.OUTPUT)
+
+        # Pigpio has us create waves to deliver timed output
+        # Since we typically only use one duration,
+        # we make the wave once and only make it again when asked to
+        # We start with passed or default duration (ms)
+        self.duration = int(duration)
+        self.wave_id = None
+        self.make_wave()
+
+    def make_wave(self, duration=None):
+        # TODO: Is there any point in storing multiple waves?
+        # Typically duration is stored as an attribute, but if we are passed one...
+        if duration:
+            self.duration = int(duration)
+
+        self.pig.wave_clear()
+        # Make a pulse (duration is in microseconds for pigpio, ours is in milliseconds
+        reward_pulse = [pigpio.pulse(1<<self.pin, 0, self.duration*1000)]
+        self.pig.wave_add_generic(reward_pulse)
+        self.wave_id = self.pig.wave_create()
 
 
+    def open(self, duration=None):
+        # If we are passed a duration, check if we have a wave for it
+        if duration:
+            # If not, make one
+            if int(duration) != self.duration:
+                self.duration = int(duration)
+                self.make_wave()
+
+        self.pig.wave_send_once(self.wave_id)
 
 
-
-
-
-
-
-
-
-
-
-
-
-# TODO: Subclass nosepoke that knows about waiting for mouse leaving
