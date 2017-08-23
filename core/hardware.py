@@ -11,6 +11,7 @@ except:
     pass
 
 import threading
+import time
 
 # pigpio only uses BCM numbers, we need to translate them
 # See https://www.element14.com/community/servlet/JiveServlet/previewBody/73950-102-11-339300/pi3_gpio.png
@@ -138,6 +139,9 @@ class LED_RGB:
             else:
                 Exception('Common passed to LED_RGB not anode or cathode')
 
+        # Blink to show we're alive
+        self.color_series([[255,0,0],[0,255,0],[0,0,255]], 1000)
+
     def set_color(self, col=None, r=None, g=None, b=None, timed=None):
         # Unpack input
         if r and g and b:
@@ -161,6 +165,28 @@ class LED_RGB:
             # timed should be a float or int specifying the delay in ms
             offtimer = threading.Timer(float(timed)/1000, self.set_color, kwargs={'col':[0,0,0]})
             offtimer.start()
+
+    def color_series(self, colors, duration):
+        # Colors needs to be a list of a list of integers
+        # Duration (ms) can be an int (same duration of all colors) or a list
+
+        # Just a wrapper to make threaded
+        series_thread = threading.Thread(target=self.threaded_color_series, kwargs={'colors':colors, 'duration':duration})
+        series_thread.start()
+
+    def threaded_color_series(self, colors, duration):
+        if isinstance(duration, int) or isinstance(duration, float):
+            for c in colors:
+                self.set_color(c)
+                time.sleep(float(duration)/1000)
+        elif isinstance(duration, list) and (len(colors) == len(duration)):
+            for i, c in enumerate(colors):
+                self.set_color(c)
+                time.sleep(float(duration[i])/1000)
+        else:
+            Exception("Dont know how to handle your color series")
+            return
+
 
 
 
