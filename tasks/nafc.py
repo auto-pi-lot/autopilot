@@ -249,7 +249,7 @@ class Nafc:
                 for pin, handler in values.items():
                     try:
                         print(type, pin, pin_numbers[type][pin])
-                        self.pins[type][pin] = handler(col=pin_numbers[type][pin])
+                        self.pins[type][pin] = handler(pins=pin_numbers[type][pin])
                     except:
                         print('reached exception')
                         Exception("Something wrong instantiating LEDs")
