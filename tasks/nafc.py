@@ -245,6 +245,7 @@ class Nafc:
 
             # Then LEDs
             elif type == 'LEDS':
+                print('reached LEDs')
                 for pin, handler in values.items():
                     try:
                         self.pins[type][pin] = handler(col=pin_numbers[type][pin])
@@ -329,7 +330,7 @@ class Nafc:
         # Set the stage block so the pilot calls the next stage
         self.stage_block.set()
 
-    def center_out(self, pin):
+    def center_out(self):
         # Called when something leaves the center pin,
         # We use this to handle the mouse leaving the port early
         if not self.discrim_finished:
