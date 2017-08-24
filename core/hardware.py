@@ -28,57 +28,43 @@ BCM_TO_BOARD = dict([reversed(i) for i in BOARD_TO_BCM.items()])
 # TODO: Subclass nosepoke that knows about waiting for mouse leaving
 class Beambreak:
     # IR Beambreak sensor
+    def __init__(self, pin, pull_ud='U', trigger_ud='D', event=None):
+        # Make pigpio instance
+        self.pig = pigpio.pi()
 
-
-    def __init__(self, pin, bounce=200, pull_ud='U', trigger_ud='D', event=None):
-
-
-        # Trigger map
-        self.TRIGGER_MAP = {
-            'U': GPIO.RISING,
-            'D': GPIO.FALLING,
-            'B': GPIO.BOTH
-        }
-
-        # If the board mode hasn't already been set, set it
-        if not GPIO.getmode():
-            GPIO.setmode(GPIO.BOARD)
-
-        try:
-            pin = int(pin)
-        except:
-            Exception("Need pin as an integer")
-            return
-
-        self.pin = pin
-        self.bounce = bounce # Bouncetime (ms)
+        # Convert pin from board to bcm numbering
+        self.pin = BOARD_TO_BCM[int(pin)]
 
         # TODO: Wrap pull_ud and trigger_ud as 'types' so can be set in prefs
         self.pull_ud = None
         if pull_ud == 'U':
-            self.pull_ud = GPIO.PUD_UP
+            self.pull_ud = pigpio.PUD_UP
         elif pull_ud == 'D':
-            self.pull_ud = GPIO.PUD_DOWN
+            self.pull_ud = pigpio.PUD_DOWN
 
+        # TODO: Make dependent on pull_ud, instead of rising, falling, etc. have user input be "in" "out"
+        self.TRIGGER_MAP = {
+            'U': pigpio.RISING_EDGE,
+            'D': pigpio.FALLING_EDGE,
+            'B': pigpio.EITHER_EDGE
+        }
         self.trigger_ud = self.TRIGGER_MAP[trigger_ud]
-        if trigger_ud   == 'U':
-            self.trigger_ud = GPIO.RISING
-        elif trigger_ud == 'D':
-            self.trigger_ud = GPIO.FALLING
-        elif trigger_ud == 'B':
-            self.trigger_ud = GPIO.BOTH
 
         # We can be passed a threading.Event object if we want to handle stage logic here
         # rather than in the parent as is typical.
         self.event = event
 
-        # Setup as input
-        GPIO.setup(self.pin, GPIO.IN, pull_up_down=self.pull_ud)
+        # List to store callback handles
+        self.callbacks = []
+
+        # Setup pin
+        self.pig.set_mode(self.pin, pigpio.INPUT)
+        self.pig.set_pull_up_down(self.pin, self.pull_ud)
 
     def assign_cb(self, callback_fn, add=False, evented=False, manual_trigger=None):
-        # If we aren't adding, we clear the existing callback
+        # If we aren't adding, we clear any existing callbacks
         if not add:
-            GPIO.remove_event_detect(self.pin)
+            self.clear_cb()
 
         # We can set the direction of the trigger manually,
         # for example if we want to set 'BOTH' only sometimes
@@ -90,16 +76,19 @@ class Beambreak:
         # We can handle eventing (blocking) here if we want (usually this is handled in the parent)
         # This won't work if we weren't init'd with an event.
         if evented:
-            GPIO.add_event_detect(self.pin, trigger_ud,
-                                  callback=self.event.set,
-                                  bouncetime=self.bounce)
+            cb = self.pig.callback(self.pin, trigger_ud, self.event.set)
+            self.callbacks.append(cb)
 
-        GPIO.add_event_detect(self.pin, trigger_ud,
-                              callback=callback_fn,
-                              bouncetime=self.bounce)
+        cb = self.pig.callback(self.pin, trigger_ud, callback_fn)
+        self.callbacks.append(cb)
 
     def clear_cb(self):
-        GPIO.remove_event_detect(self.pin)
+        for cb in self.callbacks:
+            try:
+                cb.cancel()
+            except:
+                pass
+        self.callbacks = []
 
     # TODO: Add cleanup so task can be closed and another opened
 

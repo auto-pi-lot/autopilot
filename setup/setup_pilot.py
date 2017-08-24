@@ -88,12 +88,15 @@ else:
 if args.jackdstring:
     jackd_string = str(args.jackdstring)
 else:
-    jackd_string = "jackd -P75 -dalsa -dhw:sndrpihifiberry -s &"
+    jackd_string = "jackd -P70 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -n3 -r128000 -s &"
 
 if args.naudiochannels:
     n_channels = int(args.naudiochannels)
 else:
     n_channels = 2
+
+# TODO: Turn this whole thing into a command line dialog and add this to it
+pigpio_location = '/home/pi/PIGPIO/pidpiod'
 
 
 datadir = os.path.join(basedir,'data')
@@ -158,9 +161,21 @@ os.chmod(prefs_file, 0775)
 
 
 # Create .sh file to open pilot
+# Some performance tweaks (stopping services, etc.) are added from: https://github.com/autostatic/scripts/blob/rpi/jackstart
 launch_file = os.path.join(basedir, 'launch_pilot.sh')
 with open(launch_file, 'w') as launch_file_open:
     launch_file_open.write('killall jackd\n') # Try to kill any existing jackd processes
+    launch_file_open.write('sudo killall pigpiod')
+    launch_file_open.write('sudo service ntp stop\n')
+    launch_file_open.write('sudo service triggerhappy stop\n')
+    launch_file_open.write('sudo service dbus stop\n')
+    launch_file_open.write('sudo killall console-kit-daemon\n')
+    launch_file_open.write('sudo killall polkitd\n')
+    launch_file_open.write('sudo mount -o remount,size=128M /dev/shm')
+    launch_file_open.write('killall gvfsd')
+    launch_file_open.write('killall dbus-daemon')
+    launch_file_open.write('killall dbus-launch')
+    launch_file_open.write('sudo ' + pigpio_location)
     launch_file_open.write(jackd_string+'\n')    # Then launch ours
     launch_file_open.write('sleep 1\n') # We wait a damn second to let jackd start up
     launch_string = "python " + os.path.join(repo_loc, "core", "pilot.py") + " -f " + prefs_file

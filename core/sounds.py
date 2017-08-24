@@ -72,6 +72,8 @@ def TableWrap(audio,duration):
     tabrec.play()
     sleep((float(duration)/1000))
     tabread = pyo.TableRead(tab,loop=0)
+    audio.stop()
+    tabrec.stop()
     return tabread
 
 # Has to be at bottom so fnxns already defined when assigned.

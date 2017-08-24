@@ -33,6 +33,7 @@ import threading
 import tables
 from time import sleep
 import zmq
+import multiprocessing
 from zmq.eventloop.ioloop import IOLoop
 from zmq.eventloop.zmqstream import ZMQStream
 
@@ -240,14 +241,9 @@ class RPilot:
 
     def init_pyo(self):
         # Jackd should already be running from the launch script created by setup_pilot, we we just
-        self.pyo_server = pyo.Server(audio='jack', nchnls=int(prefs['NCHANNELS']), duplex=0)
-
-        # We have to set pyo to not automatically try to connect to inputs when there aren't any
-        self.pyo_server.setJackAuto(False, True)
-
-        # Then boot and start
-        self.pyo_server.boot()
-        self.pyo_server.start()
+        # Boot the pyo server in another process.
+        self.pyo_process_class = Pyo_Process(channels=prefs['NCHANNELS'])
+        self.pyo_server = self.pyo_process_class.run()
         self.logger.info("pyo server started")
 
     #################################################################
@@ -490,7 +486,18 @@ class RPilot:
         # If the terminal renames us, change in prefs
         pass
 
+class Pyo_Process(multiprocessing.Process):
+    def __init__(self, channels=2):
+        super(Pyo_Process, self).__init__()
+        self.channels = channels
+        self.daemon = True
 
+    def run(self):
+        self.server = pyo.Server(audio='jack', nchnls=self.channels, duplex=0)
+        self.server.setJackAuto(False, True)
+        self.server.boot()
+        self.server.start()
+        return self.server
 
 
 

@@ -232,10 +232,10 @@ class Nafc:
             if type == 'POKES':
                 for pin, handler in values.items():
                     try:
+                        self.pin_id[pin_numbers[type][pin]] = pin
                         # Instantiate poke class, assign callback, and make reverse dict
                         self.pins[type][pin] = handler(pin_numbers[type][pin])
                         self.pins[type][pin].assign_cb(self.handle_trigger)
-                        self.pin_id[pin_numbers[type][pin]] = pin
                         # If center port, add an additional callback for when something leaves it
                         if pin == 'C':
                             self.pins[type][pin].assign_cb(self.center_out, manual_trigger='U', add=True)
@@ -289,12 +289,14 @@ class Nafc:
             #change_to_green = lambda: self.pins['LEDS']['C'].set_color([0, 255, 0])
             #self.sounds['punish'].set_trigger(change_to_green)
 
-    def handle_trigger(self, pin):
-        # All triggers call this function with their ID as an argument
+    def handle_trigger(self, pin, level, tick):
+        # All triggers call this function with the pin number, level (high, low), and ticks since booting pigpio
         # Triggers will be functions unless they are "TIMEUP", at which point we
         # register a timeout and restart the trial
-        # We get fed pins as numbers usually, convert back to letters
+
+        # We get fed pins as numbers usually, convert to board number and then back to letters
         if isinstance(pin, int):
+            pin = hardware.BCM_TO_BOARD[pin]
             pin = self.pin_id[pin]
 
         print('printing from handle_trigger')
@@ -332,12 +334,11 @@ class Nafc:
         # Set the stage block so the pilot calls the next stage
         self.stage_block.set()
 
-    def center_out(self):
+    def center_out(self, pin, level, tick):
         # Called when something leaves the center pin,
         # We use this to handle the mouse leaving the port early
         if not self.discrim_finished:
             self.bail_trial()
-        #pass
 
 
 
