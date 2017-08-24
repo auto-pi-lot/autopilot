@@ -172,7 +172,7 @@ class Nafc:
         self.reward         = int(reward)
         self.req_reward     = bool(req_reward)
         self.punish_sound   = bool(punish_sound)
-        self.punish_dur     = float(punish)
+        self.punish_dur     = float(punish_dur)
         self.correction     = bool(correction)
         self.pct_correction = float(pct_correction)/100
         self.bias_mode      = int(bias_mode)
