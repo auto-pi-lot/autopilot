@@ -297,6 +297,10 @@ class Nafc:
         if isinstance(pin, int):
             pin = self.pin_id[pin]
 
+        print('printing from handle_trigger')
+        pprint.pprint(self.triggers)
+
+
         if not pin in self.triggers.keys():
             # No trigger assigned, get out without waiting
             return
@@ -310,8 +314,6 @@ class Nafc:
         # Wait for any punishment delay
         self.punish_block.wait()
 
-        print('printing from handle_trigger')
-        pprint.pprint(self.triggers)
 
         # Call the trigger
         try:
@@ -333,9 +335,9 @@ class Nafc:
     def center_out(self):
         # Called when something leaves the center pin,
         # We use this to handle the mouse leaving the port early
-        if not self.discrim_finished:
-            self.bail_trial()
-
+        #if not self.discrim_finished:
+        #    self.bail_trial()
+        pass
 
 
 
