@@ -512,12 +512,14 @@ class Nafc:
         for pin in self.pins.values():
             pin.clear_cb()
 
-    def set_leds(self, color_dict={}):
+    def set_leds(self, color_dict=None):
         # We are passed a dict of ['pin']:[R, G, B] to set multiple colors
         # All others are turned off
+        if not color_dict:
+            color_dict = {}
         for k, v in self.pins['LEDS'].items():
             if k in color_dict.keys():
-                v.set_color(v)
+                v.set_color(color_dict[k])
             else:
                 v.set_color([0,0,0])
 
