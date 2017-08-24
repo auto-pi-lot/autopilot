@@ -277,11 +277,11 @@ class Nafc:
                     # We send the dict 'sound' to the function specified by 'type' and 'SOUND_LIST' as kwargs
                     self.sounds[k].append(sounds.SOUND_LIST[sound['type']](**sound))
                     # Then give the sound a callback to mark when it's finished
-                    self.sounds[k][-1].set_trigger(self.center_out)
+                    self.sounds[k][-1].set_trigger(self.stim_end)
             # If not a list, a single sound
             else:
                 self.sounds[k] = sounds.SOUND_LIST[v['type']](**v)
-                self.sounds[k].set_trigger(self.center_out)
+                self.sounds[k].set_trigger(self.stim_end)
 
         # If we want a punishment sound...
         if self.punish_sound:
@@ -335,9 +335,9 @@ class Nafc:
     def center_out(self):
         # Called when something leaves the center pin,
         # We use this to handle the mouse leaving the port early
-        #if not self.discrim_finished:
-        #    self.bail_trial()
-        pass
+        if not self.discrim_finished:
+            self.bail_trial()
+        #pass
 
 
 
@@ -440,6 +440,7 @@ class Nafc:
         # We are just filling in the last data
         # and performing any calculations we need for the next trial
         if self.bailed:
+            self.bailed = 0
             data = {
                 'bailed':1,
                 'TRIAL_END':True
