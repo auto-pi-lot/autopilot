@@ -260,6 +260,8 @@ class Nafc:
             else:
                 Exception('HARDWARE dict misspecified in class definition')
 
+        print(self.pins)
+
     def load_sounds(self):
         # TODO: Definitely put this in a metaclass
 
