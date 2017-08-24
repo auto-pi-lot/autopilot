@@ -51,7 +51,7 @@ class Nafc:
                                 'type':'check'}
     PARAMS['punish_sound']   = {'tag':'White Noise Punishment',
                                 'type':'check'}
-    PARAMS['punish']         = {'tag':'Punishment Duration (ms)',
+    PARAMS['punish_dur']     = {'tag':'Punishment Duration (ms)',
                                 'type':'int'}
     PARAMS['correction']     = {'tag':'Correction Trials',
                                 'type':'check'}
@@ -116,7 +116,7 @@ class Nafc:
     }
 
     def __init__(self, prefs=None, stage_block=None, sounds=None, reward=50, req_reward=False,
-                 punish_sound=True, punish=2000, correction=True, pct_correction=.5,
+                 punish_sound=True, punish_dur=2000, correction=True, pct_correction=.5,
                  bias_mode=1, bias_threshold=15, timeout=10000, current_trial=0, **kwargs):
         # Sounds come in two flavors
         #   soundict: a dict of parameters like:
@@ -172,7 +172,7 @@ class Nafc:
         self.reward         = int(reward)
         self.req_reward     = bool(req_reward)
         self.punish_sound   = bool(punish_sound)
-        self.punish         = float(punish)
+        self.punish_dur     = float(punish)
         self.correction     = bool(correction)
         self.pct_correction = float(pct_correction)/100
         self.bias_mode      = int(bias_mode)
@@ -192,6 +192,14 @@ class Nafc:
         self.triggers = {}
         self.timers = []
         self.last_pin = None # Some functions will depend on the last triggered pin
+        self.discrim_finished = False # Set to true once the discrim stim has finished, used for punishing leaving C early
+        self.current_stage = None # Keep track of stages so some asynchronous callbacks know when it's their turn
+        self.bailed = 0
+
+        # We make a list of the variables that need to be reset each trial so it's easier to do so
+        self.resetting_variables = [self.target, self.target_sound, self.target_sound_id,
+                                    self.distractor, self.response, self.correct, self.last_pin,
+                                    self.bailed]
 
         # This allows us to cycle through the task by just repeatedly calling self.stages.next()
         stage_list = [self.request, self.discrim, self.reinforcement]
@@ -228,17 +236,27 @@ class Nafc:
                         self.pins[type][pin] = handler(pin_numbers[type][pin])
                         self.pins[type][pin].assign_cb(self.handle_trigger)
                         self.pin_id[pin_numbers[type][pin]] = pin
+                        # If center port, add an additional callback for when something leaves it
+                        if pin == 'C':
+                            self.pins[type][pin].assign_cb(self.center_out, manual_trigger='U')
                     except:
                         # TODO: More informative exception
                         Exception('Something went wrong instantiating pins, tell jonny to handle this better!')
 
             # Then LEDs
             elif type == 'LEDS':
-                pass
+                for pin, handler in values.items():
+                    try:
+                        self.pins[type][pin] = handler(col=pin_numbers[type][pin])
+                    except:
+                        Exception("Something wrong instantiating LEDs")
 
             elif type == 'PORTS':
-                pass
-
+                for pin, handler in values.items():
+                    try:
+                        self.pins[type][pin] = handler(pin_numbers[type][pin], duration=self.reward)
+                    except:
+                        Exception('Something wrong instantiating solenoids')
             else:
                 Exception('HARDWARE dict misspecified in class definition')
 
@@ -253,11 +271,18 @@ class Nafc:
                 for sound in v:
                     # We send the dict 'sound' to the function specified by 'type' and 'SOUND_LIST' as kwargs
                     self.sounds[k].append(sounds.SOUND_LIST[sound['type']](**sound))
+                    # Then give the sound a callback to mark when it's finished
+                    self.sounds[k][-1].set_trigger(self.center_out)
             # If not a list, a single sound
             else:
                 self.sounds[k] = sounds.SOUND_LIST[v['type']](**v)
+                self.sounds[k].set_trigger(self.center_out)
 
-        # TODO: If punish_sound, make punish duration of noise
+        # If we want a punishment sound...
+        if self.punish_sound:
+            self.sounds['punish'] = sounds.Noise(self.punish_dur, 0.5)
+            change_to_green = lambda: self.pins['LEDS']['C'].set_color([0, 255, 0])
+            self.sounds['punish'].set_trigger(change_to_green)
 
     def handle_trigger(self, pin):
         # All triggers call this function with their ID as an argument
@@ -267,13 +292,16 @@ class Nafc:
         if isinstance(pin, int):
             pin = self.pin_id[pin]
 
-        self.last_pin = pin
+        if not pin in self.triggers.keys():
+            # No trigger assigned, get out without waiting
+            return
 
         if pin == 'TIMEUP':
             # TODO: Handle timers, reset trial
             # TODO: Handle bailing, for example by replacing the cycle with a single function that returns the 'bail' flag
             return
 
+        self.last_pin = pin
         # Wait for any punishment delay
         self.punish_block.wait()
 
@@ -285,6 +313,10 @@ class Nafc:
         # Call the trigger
         try:
             self.triggers[pin]()
+        except TypeError:
+            # Multiple triggers, call them all
+            for trig in self.triggers[pin]:
+                trig()
         except KeyError:
             # If we don't have a trigger, that's fine, eg. L and R before requesting
             return
@@ -295,6 +327,14 @@ class Nafc:
         # Set the stage block so the pilot calls the next stage
         self.stage_block.set()
 
+    def center_out(self, pin):
+        # Called when something leaves the center pin,
+        # We use this to handle the mouse leaving the port early
+        if not self.discrim_finished:
+            self.bail_trial()
+
+
+
 
     ##################################################################################
     # Stage Functions
@@ -304,10 +344,14 @@ class Nafc:
         # Set the event lock
         self.stage_block.clear()
 
+        # Reset all the variables that need to be
+        for v in self.resetting_variables:
+            v = None
+
 
         if not self.sounds:
             raise RuntimeError('\nSound objects have not been passed! Make sure RPilot makes sounds from the soundict before running.')
-        if 'punish' not in self.sounds.keys():
+        if self.punish_sound and ('punish' not in self.sounds.keys()):
             warnings.warn('No Punishment Sound defined.')
 
         # Set bias threshold
@@ -344,8 +388,12 @@ class Nafc:
         #    warnings.warn("Sound ID not defined! Sounds cannot be uniquely identified!")
         #    self.target_sound_id = None
 
-        # Set sound trigger
-        self.triggers['C'] = self.target_sound.play
+        # Set sound trigger and LEDs
+        # We make two triggers to play the sound and change the light color
+        self.discrim_finished = False
+        change_to_blue = lambda: self.pins['LEDS']['C'].set_color([0,0,255])
+        self.triggers['C'] = [self.target_sound.play, change_to_blue]
+        self.set_leds({'C':[0,255,0]})
 
         data = {
             'target':self.target,
@@ -353,6 +401,8 @@ class Nafc:
             'RQ_timestamp':datetime.datetime.now().isoformat(),
             'trial_num' : self.trial_counter.next()
         }
+
+        self.current_stage = 0
         return data
 
     def discrim(self,*args,**kwargs):
@@ -370,6 +420,7 @@ class Nafc:
 
         # Only data is the timestamp
         data = {'DC_timestamp': datetime.datetime.now().isoformat()}
+        self.current_stage = 1
         return data
 
     def test_correct(self):
@@ -383,6 +434,13 @@ class Nafc:
         # the pi to call the next stage immediately
         # We are just filling in the last data
         # and performing any calculations we need for the next trial
+        if self.bailed:
+            data = {
+                'bailed':1,
+                'TRIAL_END':True
+            }
+            return data
+
         self.response = self.last_pin
 
         if self.response == self.target:
@@ -411,17 +469,31 @@ class Nafc:
             'bailed':0,
             'TRIAL_END':True
         }
-
+        self.current_stage = 2
         return data
 
     def punish(self):
         # TODO: If we're not in the last stage (eg. we were timed out after stim presentation), reset stages
         if self.punish_sound:
-            self.sounds['punish'].out()
-
+            self.sounds['punish'].play()
+        self.set_leds()
         self.punish_block.clear()
         threading.Timer(self.punish/1000, self.punish_block.set).start()
 
+    def stim_end(self):
+        # Called by the discrim sound's table trigger when playback is finished
+        # Used in punishing leaving early
+        self.discrim_finished = True
+        if not self.bailed:
+            self.set_leds({'L':[0,255,0], 'R':[0,255,0]})
+
+
+    def bail_trial(self):
+        # If a timer ends or the mouse pulls out too soon, we punish and bail
+        self.bailed = 1
+        self.triggers = {}
+        self.punish()
+        self.stage_block.clear()
 
     def reset_stages(self):
         """
@@ -433,6 +505,15 @@ class Nafc:
     def clear_triggers(self):
         for pin in self.pins.values():
             pin.clear_cb()
+
+    def set_leds(self, color_dict={}):
+        # We are passed a dict of ['pin']:[R, G, B] to set multiple colors
+        # All others are turned off
+        for k, v in self.pins['LEDS'].items():
+            if k in color_dict.keys():
+                v.set_color(v)
+            else:
+                v.set_color([0,0,0])
 
 
 

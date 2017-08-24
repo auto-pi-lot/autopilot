@@ -87,7 +87,7 @@ class Beambreak:
         else:
             trigger_ud = self.TRIGGER_MAP[manual_trigger]
 
-        # We can handle eventing here if we want (usually this is handled in the parent)
+        # We can handle eventing (blocking) here if we want (usually this is handled in the parent)
         # This won't work if we weren't init'd with an event.
         if evented:
             GPIO.add_event_detect(self.pin, trigger_ud,
@@ -221,7 +221,7 @@ class Solenoid:
         self.wave_id = self.pig.wave_create()
 
 
-    def open(self, duration=None):
+    def open_valve(self, duration=None):
         # If we are passed a duration, check if we have a wave for it
         if duration:
             # If not, make one

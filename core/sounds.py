@@ -30,6 +30,11 @@ class Tone:
     def play(self):
         self.table.out()
 
+    def set_trigger(self, trig_fn):
+        # TODO: Put this in metaclass
+        # Using table triggers...
+        self.trigger = pyo.TrigFunc(self.table['trig'], trig_fn)
+
 class Noise:
     '''
     White Noise straight up
@@ -41,6 +46,10 @@ class Noise:
 
     def play(self):
         self.table.out()
+
+    def set_trigger(self, trig_fn):
+        # Using table triggers...
+        self.trigger = pyo.TrigFunc(self.table['trig'], trig_fn)
 
 class File:
     PARAMS = ['file', 'duration']
