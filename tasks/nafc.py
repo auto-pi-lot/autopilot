@@ -286,8 +286,8 @@ class Nafc:
         # If we want a punishment sound...
         if self.punish_sound:
             self.sounds['punish'] = sounds.Noise(self.punish_dur, 0.5)
-            change_to_green = lambda: self.pins['LEDS']['C'].set_color([0, 255, 0])
-            self.sounds['punish'].set_trigger(change_to_green)
+            #change_to_green = lambda: self.pins['LEDS']['C'].set_color([0, 255, 0])
+            #self.sounds['punish'].set_trigger(change_to_green)
 
     def handle_trigger(self, pin):
         # All triggers call this function with their ID as an argument
@@ -313,8 +313,6 @@ class Nafc:
         print('printing from handle_trigger')
         pprint.pprint(self.triggers)
 
-
-        # TODO: For nosepokes where they have to hold after sound, have some flag that tells us to spawn a timer thread to bail on the trial
         # Call the trigger
         try:
             self.triggers[pin]()
@@ -498,7 +496,7 @@ class Nafc:
         self.bailed = 1
         self.triggers = {}
         self.punish()
-        self.stage_block.clear()
+        self.stage_block.set()
 
     def reset_stages(self):
         """
