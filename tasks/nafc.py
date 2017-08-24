@@ -192,7 +192,8 @@ class Nafc:
         self.triggers = {}
         self.timers = []
         self.last_pin = None # Some functions will depend on the last triggered pin
-        self.discrim_finished = False # Set to true once the discrim stim has finished, used for punishing leaving C early
+        #self.discrim_finished = False # Set to true once the discrim stim has finished, used for punishing leaving C early
+        self.discrim_playing = False
         self.current_stage = None # Keep track of stages so some asynchronous callbacks know when it's their turn
         self.bailed = 0
 
@@ -340,6 +341,9 @@ class Nafc:
         if not self.discrim_finished:
             self.bail_trial()
 
+    def mark_playing(self):
+        self.discrim_playing = True
+
 
 
     ##################################################################################
@@ -481,7 +485,8 @@ class Nafc:
 
     def punish(self):
         # TODO: If we're not in the last stage (eg. we were timed out after stim presentation), reset stages
-        if self.punish_sound:
+        print(self.sounds)
+        if self.punish_sound and ('punish' in self.sounds.keys()):
             self.sounds['punish'].play()
         self.set_leds()
         self.punish_block.clear()
@@ -490,7 +495,7 @@ class Nafc:
     def stim_end(self):
         # Called by the discrim sound's table trigger when playback is finished
         # Used in punishing leaving early
-        self.discrim_finished = True
+        self.discrim_playing = False
         if not self.bailed:
             self.set_leds({'L':[0,255,0], 'R':[0,255,0]})
 
