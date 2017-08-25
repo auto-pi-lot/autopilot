@@ -116,7 +116,7 @@ class Nafc:
     }
 
     def __init__(self, prefs=None, stage_block=None, sounds=None, reward=50, req_reward=False,
-                 punish_sound=True, punish_dur=2000, correction=True, pct_correction=.5,
+                 punish_sound=True, punish_dur=5000, correction=True, pct_correction=.5,
                  bias_mode=1, bias_threshold=15, timeout=10000, current_trial=0, **kwargs):
         # Sounds come in two flavors
         #   soundict: a dict of parameters like:
