@@ -98,7 +98,7 @@ class RPilot:
         #self.timer_block.set()
 
         # Init pyo server
-        # self.init_pyo()
+        self.init_pyo()
 
         # Init Networking
         self.spawn_network()
