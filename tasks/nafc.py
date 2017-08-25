@@ -21,13 +21,14 @@ import tables
 import json
 import threading
 import pprint
+#import pyo
 from core import hardware, sounds
 from collections import OrderedDict as odict
 
 # This declaration allows Mouse to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
 TASK = 'Nafc'
 
-# TODO: Make meta task class that has logic for loading sounds, etc.
+# TODO: Make meta task class that has logic for loading sounds, starting pyo server etc.
 
 class Nafc:
     """
@@ -265,6 +266,12 @@ class Nafc:
                 Exception('HARDWARE dict misspecified in class definition')
 
         print(self.pins)
+
+    def init_pyo(self):
+        self.server = pyo.Server(audio='jack', nchnls=self.channels, duplex=0)
+        self.server.setJackAuto(False, True)
+        self.server.boot()
+        self.server.start()
 
     def load_sounds(self):
         # TODO: Definitely put this in a metaclass

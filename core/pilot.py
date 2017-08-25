@@ -98,7 +98,7 @@ class RPilot:
         #self.timer_block.set()
 
         # Init pyo server
-        self.init_pyo()
+        # self.init_pyo()
 
         # Init Networking
         self.spawn_network()
@@ -240,11 +240,11 @@ class RPilot:
     #################################################################
 
     def init_pyo(self):
-        # Jackd should already be running from the launch script created by setup_pilot, we we just
-        # Boot the pyo server in another process.
-        self.pyo_process_class = Pyo_Process(channels=prefs['NCHANNELS'])
-        self.pyo_process_class.start()
-        self.pyo_server = self.pyo_process_class.server
+        # Jackd should already be running from the launch script created by setup_pilot
+        self.server = pyo.Server(audio='jack', nchnls=self.channels, duplex=0)
+        self.server.setJackAuto(False, True)
+        self.server.boot()
+        self.server.start()
         self.logger.info("pyo server started")
 
     #################################################################
@@ -497,9 +497,12 @@ class Pyo_Process(multiprocessing.Process):
 
     def run(self):
         self.start_server()
-        self.keep_alive_thread = threading.Thread(target=self.keep_alive)
-        self.keep_alive_thread.start()
-        self.keep_alive_thread.join()
+        #self.keep_alive_thread = threading.Thread(target=self.keep_alive)
+        #self.keep_alive_thread.start()
+        #self.keep_alive_thread.join()
+        while not self.kill_event.is_set():
+            time.sleep(1)
+
         self.server.stop()
         print('pyo server process has been killed')
 
