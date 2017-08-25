@@ -21,7 +21,7 @@ import tables
 import json
 import threading
 import pprint
-#import pyo
+import pyo
 from core import hardware, sounds
 from collections import OrderedDict as odict
 
@@ -215,6 +215,7 @@ class Nafc:
         self.init_hardware()
 
         # Load sounds
+        self.init_pyo()
         self.sounds       = {}
         self.sound_lookup = {}
         self.load_sounds()
@@ -268,7 +269,7 @@ class Nafc:
         print(self.pins)
 
     def init_pyo(self):
-        self.server = pyo.Server(audio='jack', nchnls=self.channels, duplex=0)
+        self.server = pyo.Server(audio='jack', nchnls=2, duplex=0)
         self.server.setJackAuto(False, True)
         self.server.boot()
         self.server.start()
