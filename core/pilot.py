@@ -241,7 +241,7 @@ class RPilot:
 
     def init_pyo(self):
         # Jackd should already be running from the launch script created by setup_pilot
-        self.server = pyo.Server(audio='jack', nchnls=self.channels, duplex=0)
+        self.server = pyo.Server(audio='jack', nchnls=self.params['NCHANNELS'], duplex=0)
         self.server.setJackAuto(False, True)
         self.server.boot()
         self.server.start()
