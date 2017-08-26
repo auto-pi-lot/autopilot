@@ -503,7 +503,7 @@ class Nafc:
         # Called by the discrim sound's table trigger when playback is finished
         # Used in punishing leaving early
         self.discrim_playing = False
-        if not self.bailed:
+        if not self.bailed and self.current_stage == 1:
             self.set_leds({'L':[0,255,0], 'R':[0,255,0]})
 
 
