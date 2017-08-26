@@ -241,22 +241,18 @@ class RPilot:
 
     def init_pyo(self):
         # Jackd should already be running from the launch script created by setup_pilot, we we just
-        # self.pyo_server = pyo.Server(audio='jack', nchnls=int(self.prefs['NCHANNELS']), duplex=0)
-        # self.pyo_server.setOutputDevice(0)
-        # self.pyo_server.deactivateMidi()
-        # self.pyo_server.setVerbosity(8)
-        #
-        # # We have to set pyo to not automatically try to connect to inputs when there aren't any
-        # self.pyo_server.setJackAuto(False, True)
-        #
-        # # Then boot and start
-        # self.pyo_server.boot()
-        # self.pyo_server.start()
-        # self.logger.info("pyo server started")
+        self.pyo_server = pyo.Server(audio='jack', nchnls=int(self.prefs['NCHANNELS']), duplex=0)
+        self.pyo_server.setOutputDevice(0)
+        self.pyo_server.deactivateMidi()
+        self.pyo_server.setVerbosity(8)
 
-        self.server_process = Pyo_Process()
-        self.server_process.start()
-        self.pyo_server = self.server_process.server
+        # We have to set pyo to not automatically try to connect to inputs when there aren't any
+        self.pyo_server.setJackAuto(False, True)
+
+        # Then boot and start
+        self.pyo_server.boot()
+        self.pyo_server.start()
+        self.logger.info("pyo server started")
 
     #################################################################
     # Trial Running and Management

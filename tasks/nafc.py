@@ -240,8 +240,8 @@ class Nafc:
                         self.pins[type][pin] = handler(pin_numbers[type][pin])
                         self.pins[type][pin].assign_cb(self.handle_trigger)
                         # If center port, add an additional callback for when something leaves it
-                        if pin == 'C':
-                            self.pins[type][pin].assign_cb(self.center_out, manual_trigger='U', add=True)
+                        #if pin == 'C':
+                        #    self.pins[type][pin].assign_cb(self.center_out, manual_trigger='U', add=True)
                     except:
                         # TODO: More informative exception
                         Exception('Something went wrong instantiating pins, tell jonny to handle this better!')
@@ -409,7 +409,8 @@ class Nafc:
         # Set sound trigger and LEDs
         # We make two triggers to play the sound and change the light color
         change_to_blue = lambda: self.pins['LEDS']['C'].set_color([0,0,255])
-        self.triggers['C'] = [change_to_blue, self.mark_playing, self.target_sound.play]
+        #self.triggers['C'] = [change_to_blue, self.mark_playing, self.target_sound.play]
+        self.triggers['C'] = self.target_sound.play
         self.set_leds({'C':[0,255,0]})
 
         data = {
