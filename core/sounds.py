@@ -12,6 +12,7 @@ Notes on creating functions:
 
 # TODO: make it so terminal doesn't have to import pyo just to access sound info
 import pyo
+import sys
 from time import sleep
 #from taskontrol.settings import rpisettings as rpiset
 
@@ -28,7 +29,9 @@ class Tone:
         self.table = TableWrap(sin, float(duration))
 
     def play(self):
-        self.table.out()
+        print('play method called')
+        sys.stdout.flush()
+        self.table.out([0,1])
 
     def set_trigger(self, trig_fn):
         # TODO: Put this in metaclass
