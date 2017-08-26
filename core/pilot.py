@@ -256,7 +256,7 @@ class RPilot:
 
         self.server_process = Pyo_Process()
         self.server_process.start()
-        self.pyo_server = Pyo_Process.server
+        self.pyo_server = self.server_process.server
 
     #################################################################
     # Trial Running and Management
