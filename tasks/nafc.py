@@ -346,7 +346,7 @@ class Nafc:
     def center_out(self, pin, level, tick):
         # Called when something leaves the center pin,
         # We use this to handle the mouse leaving the port early
-        if not self.discrim_playing:
+        if self.discrim_playing:
             self.bail_trial()
 
     def mark_playing(self):
