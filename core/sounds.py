@@ -67,6 +67,7 @@ def TableWrap(audio,duration):
     '''
     # Duration is in ms, so divide by 1000
     #TODO: Get chnls to be responsive to NCHANNELS in prefs. hardcoded for now
+    audio = audio.mix(voices=2)
     audio.play()
     tab = pyo.NewTable(length=(float(duration)/1000),chnls=2) # Prefs should always be declared in the global namespace
     tabrec = pyo.TableRec(audio,table=tab,fadetime=0.01)
