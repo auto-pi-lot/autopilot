@@ -215,7 +215,7 @@ class Nafc:
         self.init_hardware()
 
         # Load sounds
-        self.init_pyo()
+        #self.init_pyo()
         self.sounds       = {}
         self.sound_lookup = {}
         self.load_sounds()
