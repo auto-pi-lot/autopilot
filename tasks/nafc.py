@@ -268,12 +268,6 @@ class Nafc:
 
         print(self.pins)
 
-    def init_pyo(self):
-        self.server = pyo.Server(audio='jack', nchnls=2, duplex=0)
-        self.server.setJackAuto(False, True)
-        self.server.boot()
-        self.server.start()
-
     def load_sounds(self):
         # TODO: Definitely put this in a metaclass
 
@@ -409,8 +403,7 @@ class Nafc:
         # Set sound trigger and LEDs
         # We make two triggers to play the sound and change the light color
         change_to_blue = lambda: self.pins['LEDS']['C'].set_color([0,0,255])
-        #self.triggers['C'] = [change_to_blue, self.mark_playing, self.target_sound.play]
-        self.triggers['C'] = self.target_sound.play
+        self.triggers['C'] = [change_to_blue, self.mark_playing, self.target_sound.play]
         self.set_leds({'C':[0,255,0]})
 
         data = {
@@ -493,7 +486,6 @@ class Nafc:
 
     def punish(self):
         # TODO: If we're not in the last stage (eg. we were timed out after stim presentation), reset stages
-        print(self.sounds)
         if self.punish_sound and ('punish' in self.sounds.keys()):
             self.sounds['punish'].play()
         self.set_leds()

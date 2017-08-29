@@ -24,13 +24,14 @@ class Tone:
     '''
     PARAMS = ['frequency','duration','amplitude']
     def __init__(self, frequency, duration, amplitude=0.3, phase=0, **kwargs):
+        self.frequency = float(frequency)
+        self.duration = float(duration)
+        self.amplitude = float(amplitude)
 
-        sin = pyo.Sine(float(frequency),mul=float(amplitude))
-        self.table = TableWrap(sin, float(duration))
+        sin = pyo.Sine(self.frequency, mul=self.amplitude)
+        self.table = TableWrap(sin, self.duration)
 
     def play(self):
-        print('play method called')
-        sys.stdout.flush()
         self.table.out()
 
     def set_trigger(self, trig_fn):
