@@ -139,7 +139,7 @@ class LED_RGB:
         # Blink to show we're alive
         self.color_series([[255,0,0],[0,255,0],[0,0,255],[0,0,0]], 250)
 
-    def set_color(self, col=None, r=None, g=None, b=None, timed=None, stored=False):
+    def set_color(self, col=None, r=None, g=None, b=None, timed=None, stored=False, internal=False):
 
         if stored:
             # being called after a flash train
@@ -161,7 +161,8 @@ class LED_RGB:
                 return
 
         # If we're flashing or doing a color series, stash the color and we'll set it after the flash is done
-        if not self.flash_block.is_set():
+        # the 'internal' flag checks if this is being called within a flash train
+        if not internal and not self.flash_block.is_set():
             self.stored_color = color
             return
 
@@ -201,11 +202,11 @@ class LED_RGB:
         self.flash_block.clear()
         if isinstance(duration, int) or isinstance(duration, float):
             for c in colors:
-                self.set_color(c)
+                self.set_color(c, internal=True)
                 time.sleep(float(duration)/1000)
         elif isinstance(duration, list) and (len(colors) == len(duration)):
             for i, c in enumerate(colors):
-                self.set_color(c)
+                self.set_color(c, internal=True)
                 time.sleep(float(duration[i])/1000)
         else:
             Exception("Dont know how to handle your color series")
