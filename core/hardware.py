@@ -130,7 +130,11 @@ class LED_RGB:
                 Exception('Common passed to LED_RGB not anode or cathode')
 
         # Blink to show we're alive
-        self.color_series([[255,0,0],[0,255,0],[0,0,255],[0,0,0]], 500)
+        self.color_series([[255,0,0],[0,255,0],[0,0,255],[0,0,0]], 250)
+
+        # Event to wait on setting colors if we're flashing
+        self.flash_block = threading.Event()
+        self.flash_block.set()
 
     def set_color(self, col=None, r=None, g=None, b=None, timed=None):
         # Unpack input
@@ -141,6 +145,9 @@ class LED_RGB:
         else:
             Warning('Color improperly formatted')
             return
+
+        # Wait to set if we're currently flashing or doing a color series
+        self.flash_block.wait()
 
         # Set PWM dutycycle
         if self.common == 'anode':
@@ -175,6 +182,7 @@ class LED_RGB:
         series_thread.start()
 
     def threaded_color_series(self, colors, duration):
+        self.flash_block.clear()
         if isinstance(duration, int) or isinstance(duration, float):
             for c in colors:
                 self.set_color(c)
@@ -186,6 +194,7 @@ class LED_RGB:
         else:
             Exception("Dont know how to handle your color series")
             return
+        self.flash_block.set()
 
 class Solenoid:
     # Solenoid valves for water delivery

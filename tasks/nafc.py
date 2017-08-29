@@ -404,10 +404,7 @@ class Nafc:
         # We make two triggers to play the sound and change the light color
         change_to_blue = lambda: self.pins['LEDS']['C'].set_color([0,0,255])
         self.triggers['C'] = [change_to_blue, self.mark_playing, self.target_sound.play]
-
-        # If we are currently punishing, don't set color, punish() will do that.
-        if not self.punish_block.is_set():
-            self.set_leds({'C':[0,255,0]})
+        self.set_leds({'C': [0, 255, 0]})
 
         data = {
             'target':self.target,
@@ -493,7 +490,6 @@ class Nafc:
         self.flash_leds()
         self.punish_block.clear()
         threading.Timer(self.punish_dur/1000, self.punish_block.set).start()
-        threading.Timer(self.punish_dur/1000, lambda: self.pins['LEDS']['C'].set_color([0,255,0])).start()
 
     def stim_end(self):
         # Called by the discrim sound's table trigger when playback is finished
