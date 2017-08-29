@@ -17,19 +17,20 @@ from collections import OrderedDict as odict
 from PySide import QtCore
 from PySide import QtGui
 from pprint import pprint
+import pyqtgraph as pg
 import zmq
 from zmq.eventloop.ioloop import IOLoop
 from zmq.eventloop.zmqstream import ZMQStream
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from mouse import Mouse
+from plots import Plot_Widget
 from networking import Terminal_Networking
 import tasks
 import sounds
 
 # TODO: Oh holy hell just rewrite all the inter-widget communication as zmq
 # TODO: Be more complete about generating logs
-# TODO: Save logs on exit
 # TODO: Make exit graceful
 
 # http://zetcode.com/gui/pysidetutorial/layoutmanagement/
@@ -505,72 +506,6 @@ class Parameters(QtGui.QWidget):
 
     def give_startstop_function(self, toggle_start):
         self.toggle_start = toggle_start
-
-
-class DataView(QtGui.QWidget):
-    # TODO: Use pyqtgraph for this: http://www.pyqtgraph.org/
-    # TODO: Spawn widget in own process, spawn each plot in own thread with subscriber and loop
-    def __init__(self):
-        QtGui.QWidget.__init__(self)
-
-        # Main Layout
-        self.layout = QtGui.QVBoxLayout(self)
-
-        # Containers to style backgrounds
-        self.container = QtGui.QFrame()
-        self.container.setObjectName("data_container")
-        self.container.setStyleSheet("#data_container {background-color:orange;}")
-
-        # Plot Selection Buttons
-        self.plot_select = self.create_plot_buttons()
-
-        # Plot Layout and put in container
-        self.plot_layout = QtGui.QVBoxLayout()
-        #self.plot_layout.addStretch(1)
-        self.container.setLayout(self.plot_layout)
-
-        # Assemble buttons and plots
-        self.layout.addWidget(self.plot_select)
-        self.layout.addWidget(self.container)
-        self.setLayout(self.layout)
-
-        #self.show()
-
-    def create_plot_buttons(self):
-        groupbox = QtGui.QGroupBox()
-        groupbox.setFlat(True)
-        groupbox.setFixedHeight(30)
-        groupbox.setContentsMargins(0,0,0,0)
-        #groupbox.setAlignment(QtCore.Qt.AlignBottom)
-
-        check1 = QtGui.QCheckBox("Corrects")
-        check1.setChecked(True)
-        check2 = QtGui.QCheckBox("Responses")
-        check3 = QtGui.QCheckBox("Rolling Accuracy")
-        check4 = QtGui.QCheckBox("Bias")
-        winsize = QtGui.QLineEdit("50")
-        winsize.setFixedWidth(50)
-        winsize_lab = QtGui.QLabel("Window Size")
-        n_trials = QtGui.QLineEdit("50")
-        n_trials.setFixedWidth(50)
-        n_trials_lab = QtGui.QLabel("N Trials")
-
-        hbox = QtGui.QHBoxLayout()
-        hbox.setContentsMargins(0,0,0,0)
-        hbox.addWidget(check1)
-        hbox.addWidget(check2)
-        hbox.addWidget(check3)
-        hbox.addWidget(check4)
-        hbox.addWidget(winsize)
-        hbox.addWidget(winsize_lab)
-        hbox.addStretch(1)
-        hbox.addWidget(n_trials_lab)
-        hbox.addWidget(n_trials)
-        #hbox.setAlignment(QtCore.Qt.AlignBottom)
-
-        groupbox.setLayout(hbox)
-
-        return groupbox
 
 
 # Mouse Biography Classes
@@ -1155,8 +1090,10 @@ class Terminal(QtGui.QWidget):
 
         # Init panels and add to layout
         self.pilot_panel = Pilots()
+        self.pilots = self.pilot_panel.pilots
         self.mice_panel = Mice()
-        self.data_panel = DataView()
+        self.data_panel = Plot_Widget()
+        self.data_panel.init_plots(self.pilots.keys())
 
         # Acquaint the panels
         self.pilot_panel.give_mice_panel(self.mice_panel)
@@ -1191,7 +1128,7 @@ class Terminal(QtGui.QWidget):
         self.top_strip.addWidget(self.logo)
 
         # Get variables from the widgets
-        self.pilots = self.pilot_panel.pilots
+
 
 
         self.plot_container = QtGui.QFrame()
