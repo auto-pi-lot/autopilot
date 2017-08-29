@@ -156,6 +156,16 @@ class LED_RGB:
             offtimer = threading.Timer(float(timed)/1000, self.set_color, kwargs={'col':[0,0,0]})
             offtimer.start()
 
+    def flash(self, duration, frequency=10, colors=[[255,255,255],[0,0,0]]):
+        # Duration is total in ms, frequency in Hz
+        # Get number of flashes in duration rounded down
+        n_rep = int(float(duration/1000)*frequency)
+        flashes = colors*n_rep
+
+        # Invert frequency to duration for single flash
+        single_dur = (1./frequency)*1000
+        self.color_series(flashes, single_dur)
+
     def color_series(self, colors, duration):
         # Colors needs to be a list of a list of integers
         # Duration (ms) can be an int (same duration of all colors) or a list

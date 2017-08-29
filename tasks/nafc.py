@@ -240,8 +240,8 @@ class Nafc:
                         self.pins[type][pin] = handler(pin_numbers[type][pin])
                         self.pins[type][pin].assign_cb(self.handle_trigger)
                         # If center port, add an additional callback for when something leaves it
-                        #if pin == 'C':
-                        #    self.pins[type][pin].assign_cb(self.center_out, manual_trigger='U', add=True)
+                        if pin == 'C':
+                            self.pins[type][pin].assign_cb(self.center_out, manual_trigger='U', add=True)
                     except:
                         # TODO: More informative exception
                         Exception('Something went wrong instantiating pins, tell jonny to handle this better!')
@@ -422,10 +422,7 @@ class Nafc:
         # TODO: Open solenoid for specific time, for now pass.
         #self.triggers[self.target] = solenoid(time)
         self.triggers[self.target] = self.test_correct
-        self.triggers[self.distractor] = self.test_incorrect
-
-        print('printing triggers from discrim')
-        pprint.pprint(self.triggers)
+        self.triggers[self.distractor] = self.punish
 
         # TODO: Handle timeout
 
@@ -488,7 +485,9 @@ class Nafc:
         # TODO: If we're not in the last stage (eg. we were timed out after stim presentation), reset stages
         if self.punish_sound and ('punish' in self.sounds.keys()):
             self.sounds['punish'].play()
-        self.set_leds()
+        # TODO: Ask for whether we should flash or not and either .set_leds() or flash_leds()
+        #self.set_leds()
+        self.flash_leds()
         self.punish_block.clear()
         threading.Timer(self.punish_dur/1000, self.punish_block.set).start()
 
@@ -528,6 +527,11 @@ class Nafc:
                 v.set_color(color_dict[k])
             else:
                 v.set_color([0,0,0])
+
+    def flash_leds(self):
+        for k, v in self.pins['LEDS'].items():
+            v.flash(self.punish_dur)
+
 
 
 
