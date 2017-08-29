@@ -108,6 +108,8 @@ class RPilot:
         self.state = 'IDLE' # or 'Running'
         self.update_state()
 
+        # TODO: On startup, turn off LED's and then release them
+
 
 
         # Synchronize system clock w/ time from terminal.

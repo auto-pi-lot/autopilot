@@ -98,6 +98,13 @@ class LED_RGB:
         # Can be configured for common anode (low turns LED on) or cathode (low turns LED off)
         self.common = common
 
+        # Dict to store color for after flash trains
+        self.stored_color = {}
+
+        # Event to wait on setting colors if we're flashing
+        self.flash_block = threading.Event()
+        self.flash_block.set()
+
         # Initialize connection to pigpio daemon
         self.pig = pigpio.pi()
         if not self.pig.connected:
@@ -131,13 +138,6 @@ class LED_RGB:
 
         # Blink to show we're alive
         self.color_series([[255,0,0],[0,255,0],[0,0,255],[0,0,0]], 250)
-
-        # Event to wait on setting colors if we're flashing
-        self.flash_block = threading.Event()
-        self.flash_block.set()
-
-        # Dict to store color for after flash trains
-        self.stored_color = {}
 
     def set_color(self, col=None, r=None, g=None, b=None, timed=None, stored=False):
 
