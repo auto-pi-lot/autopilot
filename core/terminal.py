@@ -59,8 +59,6 @@ class Pilots(QtGui.QWidget):
         label.setFixedHeight(30)
 
         # Create vertical layouts to hold buttons and nest within main layout
-        # TODO: Make form layout with left column having status icons
-        # TODO: Make status icon graphics
         self.button_layout = QtGui.QVBoxLayout()
         self.container.setLayout(self.button_layout)
         self.layout.addWidget(label)
