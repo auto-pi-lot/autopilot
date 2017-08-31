@@ -1,22 +1,29 @@
 import sys
+import os
 import json
 from collections import OrderedDict as odict
 from PySide import QtCore
 from PySide import QtGui
+sys.path.append('/home/jonny/git/RPilot')
+from core.terminal import New_Mouse_Wizard
+from core.mouse import Mouse
 
 class Control_Panel(QtGui.QWidget):
     # Hosts two nested tab widgets to select pilot and mouse,
     # set params, run mice, etc.
 
-    def __init__(self, pilots=None, pilot_width=30, mouse_width=150):
+    def __init__(self, pilots=None, pilot_width=30, mouse_width=150, prefs=None):
         super(Control_Panel, self).__init__()
         # We should be passed a pilot odict {'pilot':[mouse1, mouse2]}
         # If we're not, try to load prefs, and if we don't have prefs, from default loc.
+
+        self.prefs = prefs
+
         if pilots:
             self.pilots = pilots
         else:
             try:
-                with open(prefs['PILOT_DB']) as pilot_file:
+                with open(self.prefs['PILOT_DB']) as pilot_file:
                     self.pilots = json.load(pilot_file, object_pairs_hook=odict)
             except NameError:
                 try:
@@ -28,6 +35,9 @@ class Control_Panel(QtGui.QWidget):
         # Sizes to pass to the tab widgets
         self.pilot_width = pilot_width
         self.mouse_width = mouse_width
+
+        # Keep a dict of the ids and Mouse objects that are currently running
+        self.running_mice = {}
 
         self.init_ui()
 
@@ -59,10 +69,19 @@ class Control_Panel(QtGui.QWidget):
         self.pilot_tabs.setTabPosition(QtGui.QTabWidget.West)
 
         self.layout.addWidget(self.pilot_tabs)
-        # TODO: Make label row
 
         # Make dict to store handles to mice tabs
         self.mouse_tabs = {}
+
+        self.populate_tabs()
+
+
+    def populate_tabs(self):
+        # Clear tabs if there are any
+        # We can use clear even though it doesn't delete the sub-widgets because
+        # adding a bunch of mice should be rare,
+        # and the widgets themselves should be lightweight
+        self.pilot_tabs.clear()
 
         # Iterate through pilots and mice, making tabs and subtabs
         for pilot, mice in self.pilots.items():
@@ -98,14 +117,67 @@ class Control_Panel(QtGui.QWidget):
             pass
 
     def create_mouse(self):
-        pass
+        new_mouse_wizard = New_Mouse_Wizard(self.prefs['PROTOCOLDIR'])
+        new_mouse_wizard.exec_()
+
+        # If the wizard completed successfully, get its values
+        if new_mouse_wizard.result() == 1:
+            biography_vals = new_mouse_wizard.bio_tab.values
+
+            # Make a new mouse object, make it temporary because we want to close it
+            mouse_obj = Mouse(biography_vals['id'], new=True,
+                              biography=biography_vals)
+
+            # If a protocol was selected in the mouse wizard, assign it.
+            try:
+                protocol_vals = new_mouse_wizard.task_tab.values
+                if 'protocol' in protocol_vals.keys() and 'step' in protocol_vals.keys():
+                    protocol_file = os.path.join(prefs['PROTOCOLDIR'], protocol_vals['protocol'] + '.json')
+                    mouse_obj.assign_protocol(protocol_file, int(protocol_vals['step']))
+            except:
+                # the wizard couldn't find the protocol dir, so no task tab was made
+                pass
+
+
+            # Close the file because we want to keep mouse objects only when they are running
+            mouse_obj.close_h5f()
+
+            # Add mouse to pilots dict, update it and our tabs
+            current_pilot = self.pilot_tabs.tabText(self.pilot_tabs.currentIndex())
+            self.pilots[current_pilot].append(biography_vals['id'])
+            self.update_db()
+            self.populate_tabs()
+
+
+
 
     def select_pilot(self):
         # Probably just ping it to check its status
         pass
 
-    def select_mouse(self):
-        pass
+    def select_mouse(self, index):
+        # When a mouse's button is clicked, we expand a parameters pane for it
+        # This pane lets us give the mouse a protocol if it doesn't have one,
+        # adjust the parameters if it does, and start the mouse running
+
+        # sender is the qtabwidget, we we get the text of the current tab
+        sender = self.sender()
+        mouse_id = sender.tabText(index)
+
+        # open the mouse object if it isn't already
+        if not mouse_id in self.running_mice.keys():
+            mouse_obj = Mouse(mouse_id)
+        else:
+            mouse_obj = self.running_mice[mouse_id]
+
+        # TODO: START HERE NEXT TIME
+
+
+        params_widget = sender.widget(index)
+        params_widget.show_params(mouse_id)
+
+        #sender = sender.checkedButton()
+        #self.mouse = sender.text()
 
     def update_db(self):
         # TODO: Pretty hacky, should explicitly pass prefs or find some way of making sure every object has it
@@ -156,7 +228,6 @@ class Expanding_Tabs(QtGui.QTabBar):
         ctl_panel_handle = self.parent().parent()
         margins = ctl_panel_handle.layout.getContentsMargins()
         nudge_size = self.width + margins[1] + margins[3] + ctl_panel_handle.layout.spacing() # top and bottom
-        print(nudge_size)
         return QtCore.QSize(self.width, (ctl_panel_handle.frameGeometry().height()-nudge_size)/self.count())
 
 
@@ -187,15 +258,16 @@ class Stacked_Tabs(QtGui.QTabBar):
 
 
 class Test_App(QtGui.QWidget):
-    def __init__(self):
+    def __init__(self, prefs):
         super(Test_App, self).__init__()
+        self.prefs = prefs
         self.initUI()
 
     def initUI(self):
         #self.setWindowState(QtCore.Qt.WindowMaximized)
         self.layout = QtGui.QHBoxLayout()
         self.setLayout(self.layout)
-        self.panel = Control_Panel()
+        self.panel = Control_Panel(prefs=self.prefs)
         self.layout.addWidget(self.panel)
         self.layout.addStretch(1)
         titleBarHeight = self.style().pixelMetric(QtGui.QStyle.PM_TitleBarHeight,
@@ -222,9 +294,13 @@ class Parameters(QtGui.QWidget):
 
 
 if __name__ == '__main__':
+    prefs_file = '/usr/rpilot/prefs.json'
+    with open(prefs_file) as prefs_file_open:
+        prefs = json.load(prefs_file_open)
+
     app = QtGui.QApplication(sys.argv)
     app.setStyle('Cleanlooks')
-    ex = Test_App()
+    ex = Test_App(prefs)
     ex.show()
     sys.exit(app.exec_())
 

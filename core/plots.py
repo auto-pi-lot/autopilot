@@ -1,6 +1,7 @@
 # Classes for plots
 from PySide import QtGui
 from PySide import QtCore
+import pyqtgraph as pg
 
 
 class Plot_Widget(QtGui.QWidget):
@@ -58,7 +59,7 @@ class Plot_Widget(QtGui.QWidget):
             hlayout.addWidget(m_label)
             hlayout.addWidget(plot)
 
-            vlayout.addLayout(hlayout)
+            self.plot_layout.addLayout(hlayout)
 
     def create_plots(self):
         vlayout = QtGui.QVBoxLayout()

@@ -511,15 +511,25 @@ class Parameters(QtGui.QWidget):
 # TODO: Populate task tab and get possible levels, but also put those in param window
 # TODO: Make experiment tags, save and populate?
 class New_Mouse_Wizard(QtGui.QDialog):
-    def __init__(self):
+    def __init__(self, protocol_dir=None):
         QtGui.QDialog.__init__(self)
+
+        if not protocol_dir:
+            try:
+                self.protocol_dir = prefs['PROTOCOLDIR']
+            except NameError:
+                Warning('No protocol dir found, cant assign protocols here')
+        else:
+            self.protocol_dir = protocol_dir
 
         tabWidget = QtGui.QTabWidget()
 
         self.bio_tab = self.Biography_Tab()
-        self.task_tab = self.Task_Tab()
         tabWidget.addTab(self.bio_tab, "Biography")
-        tabWidget.addTab(self.task_tab, "Protocol")
+
+        if self.protocol_dir:
+            self.task_tab = self.Task_Tab(self.protocol_dir)
+            tabWidget.addTab(self.task_tab, "Protocol")
 
         buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
         buttonBox.accepted.connect(self.accept)
@@ -604,31 +614,27 @@ class New_Mouse_Wizard(QtGui.QDialog):
 
         def calc_minmass(self):
             # minimum mass automatically from % and baseline
-            # We try but don't really care if we fail bc cmon
-            #try:
             baseline = float(self.blmass.text())
             pct = float(self.minmass_pct.text()[:-1])/100
             self.minmass.setText(str(baseline*pct))
-            #except:
-            #    print(float(self.blmass.text()))
-            #    print(float(self.minmass_pct.text()[:-1]))
 
 
 
     class Task_Tab(QtGui.QWidget):
-        def __init__(self):
+        def __init__(self, protocol_dir):
             QtGui.QWidget.__init__(self)
+
+            self.protocol_dir = protocol_dir
 
             topLabel = QtGui.QLabel("Protocols:")
 
             # List available protocols
-            protocol_list = os.listdir(prefs['PROTOCOLDIR'])
+            protocol_list = os.listdir(self.protocol_dir)
             protocol_list = [os.path.splitext(p)[0] for p in protocol_list]
 
             self.protocol_listbox = QtGui.QListWidget()
             self.protocol_listbox.insertItems(0, protocol_list)
             self.protocol_listbox.currentItemChanged.connect(self.protocol_changed)
-            
 
             # Make Step combobox
             self.step_selection = QtGui.QComboBox()
@@ -652,7 +658,7 @@ class New_Mouse_Wizard(QtGui.QDialog):
 
             # Load the protocol and parse its steps
             protocol_str = self.protocol_listbox.currentItem().text()
-            protocol_file = os.path.join(prefs['PROTOCOLDIR'],protocol_str + '.json')
+            protocol_file = os.path.join(self.protocol_dir,protocol_str + '.json')
             with open(protocol_file) as protocol_file_open:
                 protocol = json.load(protocol_file_open)
 
