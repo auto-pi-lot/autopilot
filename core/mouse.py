@@ -42,6 +42,9 @@ class Mouse:
         self.history = self.h5f.root.history.history
 
         # If mouse has a protocol, load it to a dict
+        self.current = None
+        self.step    = None
+        self.protocol_name = None
         if "/current" in self.h5f:
             current_node = filenode.open_node(self.h5f.root.current)
             protocol_string = current_node.readall()
@@ -50,6 +53,7 @@ class Mouse:
             self.protocol_name = current_node.attrs['protocol_name']
 
         # Is the mouse currently running (ie. we expect data to be incoming)
+        # Used to keep the mouse object alive, otherwise we close the file whenever we don't need it
         self.running = False
 
 
@@ -205,7 +209,8 @@ class Mouse:
             self.trial_row.append()
             self.task_table.flush()
 
-    def put_away(self):
+    def stop_run(self):
+        self.running = False
         self.h5f.flush()
         self.h5f.close()
 

@@ -221,6 +221,8 @@ class RPilot:
         self.state = 'RUNNING'
         self.update_state()
 
+        # TODO: Send a message back to the terminal with the runtime if there is one so it can handle timed stops
+
 
 
     def l_stop(self, value):

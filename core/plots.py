@@ -21,9 +21,9 @@ class Plot_Widget(QtGui.QWidget):
         self.layout = QtGui.QVBoxLayout(self)
 
         # Containers to style backgrounds
-        self.container = QtGui.QFrame()
-        self.container.setObjectName("data_container")
-        self.container.setStyleSheet("#data_container {background-color:orange;}")
+        #self.container = QtGui.QFrame()
+        #self.container.setObjectName("data_container")
+        #self.container.setStyleSheet("#data_container {background-color:orange;}")
 
         # Plot Selection Buttons
         self.plot_select = self.create_plot_buttons()
@@ -47,35 +47,27 @@ class Plot_Widget(QtGui.QWidget):
         # Make a plot for each pilot.
 
         for p in self.pilots:
-            # three columns, pilot label, mouse label, plot
-            p_label = QtGui.QLabel(p)
-            p_label.setFixedWidth(50)
-            m_label = QtGui.QLabel()
+
             plot = pg.PlotWidget()
+            # TODO: Why do they overflow by default jesuz
 
             # Make row
-            hlayout = QtGui.QHBoxLayout()
-            hlayout.addWidget(p_label)
-            hlayout.addWidget(m_label)
-            hlayout.addWidget(plot)
 
-            self.plot_layout.addLayout(hlayout)
+            self.plot_layout.addWidget(plot)
 
     def create_plots(self):
         vlayout = QtGui.QVBoxLayout()
 
         return vlayout
 
-
-
-
-
     def create_plot_buttons(self):
         groupbox = QtGui.QGroupBox()
-        groupbox.setFlat(True)
+        groupbox.setFlat(False)
         groupbox.setFixedHeight(30)
         groupbox.setContentsMargins(0,0,0,0)
         #groupbox.setAlignment(QtCore.Qt.AlignBottom)
+
+        # TODO: Make these each independent plotting classes, list and create boxes depending on a dict like all the others
 
         check1 = QtGui.QCheckBox("Targets")
         check1.setChecked(True)

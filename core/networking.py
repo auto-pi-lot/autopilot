@@ -542,6 +542,7 @@ class Pilot_Networking(multiprocessing.Process):
     def l_start(self, value):
         self.mouse = value['mouse']
         self.send_message_out('START', value)
+        # TODO: Send a message back to
 
     def l_stop(self, value):
         pass
