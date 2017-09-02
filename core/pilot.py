@@ -60,7 +60,7 @@ class RPilot:
 
         # Start Logging
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(prefs['LOGDIR'], 'Pilots_Log_{}.log'.format(timestr))
+        log_file = os.path.join(self.prefs['LOGDIR'], 'Pilots_Log_{}.log'.format(timestr))
 
         self.logger = logging.getLogger('main')
         self.log_handler = logging.FileHandler(log_file)
@@ -98,7 +98,7 @@ class RPilot:
         #self.timer_block.set()
 
         # Init pyo server
-        # self.init_pyo()
+        self.init_pyo()
 
         # Init Networking
         self.spawn_network()
@@ -107,6 +107,8 @@ class RPilot:
         # Set and update state
         self.state = 'IDLE' # or 'Running'
         self.update_state()
+
+        # TODO: On startup, turn off LED's and then release them
 
 
 
@@ -133,8 +135,8 @@ class RPilot:
         self.pusher = self.context.socket(zmq.PUSH)
         self.message_in  = self.context.socket(zmq.PULL)
 
-        self.pusher.connect('tcp://localhost:{}'.format(prefs['MSGINPORT']))
-        self.message_in.connect('tcp://localhost:{}'.format(prefs['MSGOUTPORT']))
+        self.pusher.connect('tcp://localhost:{}'.format(self.prefs['MSGINPORT']))
+        self.message_in.connect('tcp://localhost:{}'.format(self.prefs['MSGOUTPORT']))
 
         # Setup message_in for looping
         self.message_in = ZMQStream(self.message_in, self.loop)
@@ -219,6 +221,8 @@ class RPilot:
         self.state = 'RUNNING'
         self.update_state()
 
+        # TODO: Send a message back to the terminal with the runtime if there is one so it can handle timed stops
+
 
 
     def l_stop(self, value):
@@ -240,11 +244,19 @@ class RPilot:
     #################################################################
 
     def init_pyo(self):
-        # Jackd should already be running from the launch script created by setup_pilot
-        self.server = pyo.Server(audio='jack', nchnls=self.prefs['NCHANNELS'], duplex=0)
-        self.server.setJackAuto(False, True)
-        self.server.boot()
-        self.server.start()
+        # Jackd should already be running from the launch script created by setup_pilot, we we just
+        self.pyo_server = pyo.Server(audio='jack', nchnls=int(self.prefs['NCHANNELS']), duplex=0)
+
+        # Deactivate MIDI because we don't use it and it's expensive
+        self.pyo_server.deactivateMidi()
+
+        # We have to set pyo to not automatically try to connect to inputs when there aren't any
+        self.pyo_server.setJackAuto(False, True)
+
+        # Then boot and start
+        self.pyo_server.boot()
+        self.pyo_server.start()
+
         self.logger.info("pyo server started")
 
     #################################################################

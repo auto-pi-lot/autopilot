@@ -12,6 +12,7 @@ Notes on creating functions:
 
 # TODO: make it so terminal doesn't have to import pyo just to access sound info
 import pyo
+import sys
 from time import sleep
 #from taskontrol.settings import rpisettings as rpiset
 
@@ -23,9 +24,12 @@ class Tone:
     '''
     PARAMS = ['frequency','duration','amplitude']
     def __init__(self, frequency, duration, amplitude=0.3, phase=0, **kwargs):
+        self.frequency = float(frequency)
+        self.duration = float(duration)
+        self.amplitude = float(amplitude)
 
-        sin = pyo.Sine(float(frequency),mul=float(amplitude))
-        self.table = TableWrap(sin, float(duration))
+        sin = pyo.Sine(self.frequency, mul=self.amplitude)
+        self.table = TableWrap(sin, self.duration)
 
     def play(self):
         self.table.out()
@@ -58,6 +62,7 @@ class File:
         pass
 
     def play(self):
+        # test
         pass
 
 def TableWrap(audio,duration):
@@ -65,15 +70,15 @@ def TableWrap(audio,duration):
     Records a PyoAudio generator into a sound table, returns a tableread object which can play the audio with .out()
     '''
     # Duration is in ms, so divide by 1000
+    # See https://groups.google.com/forum/#!topic/pyo-discuss/N-pan7wPF-o
     #TODO: Get chnls to be responsive to NCHANNELS in prefs. hardcoded for now
-    audio.play()
+    #audio.play()
     tab = pyo.NewTable(length=(float(duration)/1000),chnls=2) # Prefs should always be declared in the global namespace
-    tabrec = pyo.TableRec(audio,table=tab,fadetime=0.01)
-    tabrec.play()
+    tabrec = pyo.TableRec(audio,table=tab,fadetime=0.01).play()
     sleep((float(duration)/1000))
-    tabread = pyo.TableRead(tab,loop=0)
-    audio.stop()
-    tabrec.stop()
+    tabread = pyo.TableRead(tab,freq=tab.getRate(), loop=0)
+    #audio.stop()
+    #tabrec.stop()
     return tabread
 
 # Has to be at bottom so fnxns already defined when assigned.

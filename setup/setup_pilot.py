@@ -88,7 +88,7 @@ else:
 if args.jackdstring:
     jackd_string = str(args.jackdstring)
 else:
-    jackd_string = "jackd -P70 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -n3 -r128000 -s &"
+    jackd_string = "jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -n3 -r128000 -s &"
 
 if args.naudiochannels:
     n_channels = int(args.naudiochannels)
@@ -97,7 +97,13 @@ else:
 
 # TODO: Turn this whole thing into a command line dialog and add this to it
 pigpio_location = '/home/pi/PIGPIO/pigpiod'
-
+# Need to make a binary mask that excludes the pins needed for hifiberry
+# (BCM: 2, 3, 18, 19, 20, 21)
+pigpio_mask = '-x 1111110000111111111111110000'
+# Also need to use PWM rather than PCM so hifiberry can use it
+# see http://abyz.co.uk/rpi/pigpio/faq.html#Sound_isnt_working
+pigpio_device = '-t 0'
+pigpio_string = ' '.join([pigpio_location, pigpio_mask, pigpio_device])
 
 datadir = os.path.join(basedir,'data')
 sounddir = os.path.join(basedir, 'sounds')
@@ -175,7 +181,7 @@ with open(launch_file, 'w') as launch_file_open:
     launch_file_open.write('killall gvfsd\n')
     #launch_file_open.write('killall dbus-daemon\n')
     #launch_file_open.write('killall dbus-launch\n')
-    launch_file_open.write('sudo ' + pigpio_location + '\n')
+    launch_file_open.write('sudo ' + pigpio_string + '\n')
     launch_file_open.write(jackd_string+'\n')    # Then launch ours
     launch_file_open.write('sleep 1\n') # We wait a damn second to let jackd start up
     launch_string = "python " + os.path.join(repo_loc, "core", "pilot.py") + " -f " + prefs_file

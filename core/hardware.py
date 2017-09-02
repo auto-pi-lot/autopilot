@@ -98,6 +98,13 @@ class LED_RGB:
         # Can be configured for common anode (low turns LED on) or cathode (low turns LED off)
         self.common = common
 
+        # Dict to store color for after flash trains
+        self.stored_color = {}
+
+        # Event to wait on setting colors if we're flashing
+        self.flash_block = threading.Event()
+        self.flash_block.set()
+
         # Initialize connection to pigpio daemon
         self.pig = pigpio.pi()
         if not self.pig.connected:
@@ -130,16 +137,33 @@ class LED_RGB:
                 Exception('Common passed to LED_RGB not anode or cathode')
 
         # Blink to show we're alive
-        self.color_series([[255,0,0],[0,255,0],[0,0,255],[0,0,0]], 500)
+        self.color_series([[255,0,0],[0,255,0],[0,0,255],[0,0,0]], 250)
 
-    def set_color(self, col=None, r=None, g=None, b=None, timed=None):
-        # Unpack input
-        if r and g and b:
-            color = {'r':int(r), 'g':int(g), 'b':int(b)}
-        elif isinstance(col, list):
-            color = {'r':int(col[0]), 'g':int(col[1]), 'b':int(col[2])}
+    def set_color(self, col=None, r=None, g=None, b=None, timed=None, stored=False, internal=False):
+
+        if stored:
+            # being called after a flash train
+            # Since this is always called after a flash train, check that we were actually assigned a color
+            if self.stored_color:
+                color = self.stored_color
+                self.stored_color = {}
+            else:
+                # It's fine not to have a color, just return quietly.
+                return
         else:
-            Warning('Color improperly formatted')
+            # Unpack input
+            if r and g and b:
+                color = {'r':int(r), 'g':int(g), 'b':int(b)}
+            elif isinstance(col, list):
+                color = {'r':int(col[0]), 'g':int(col[1]), 'b':int(col[2])}
+            else:
+                Warning('Color improperly formatted')
+                return
+
+        # If we're flashing or doing a color series, stash the color and we'll set it after the flash is done
+        # the 'internal' flag checks if this is being called within a flash train
+        if not internal and not self.flash_block.is_set():
+            self.stored_color = color
             return
 
         # Set PWM dutycycle
@@ -156,6 +180,16 @@ class LED_RGB:
             offtimer = threading.Timer(float(timed)/1000, self.set_color, kwargs={'col':[0,0,0]})
             offtimer.start()
 
+    def flash(self, duration, frequency=20, colors=[[255,255,255],[0,0,0]]):
+        # Duration is total in ms, frequency in Hz
+        # Get number of flashes in duration rounded down
+        n_rep = int(float(duration/1000)*frequency)
+        flashes = colors*n_rep
+
+        # Invert frequency to duration for single flash
+        single_dur = (1./frequency)*1000
+        self.color_series(flashes, single_dur)
+
     def color_series(self, colors, duration):
         # Colors needs to be a list of a list of integers
         # Duration (ms) can be an int (same duration of all colors) or a list
@@ -165,17 +199,22 @@ class LED_RGB:
         series_thread.start()
 
     def threaded_color_series(self, colors, duration):
+        self.flash_block.clear()
         if isinstance(duration, int) or isinstance(duration, float):
             for c in colors:
-                self.set_color(c)
+                self.set_color(c, internal=True)
                 time.sleep(float(duration)/1000)
         elif isinstance(duration, list) and (len(colors) == len(duration)):
             for i, c in enumerate(colors):
-                self.set_color(c)
+                self.set_color(c, internal=True)
                 time.sleep(float(duration[i])/1000)
         else:
             Exception("Dont know how to handle your color series")
             return
+        self.flash_block.set()
+        # If we received a color command while we were doing the series, set it now.
+        # We call the function regardless, it will switch to a color if it has one
+        self.set_color(stored=True)
 
 class Solenoid:
     # Solenoid valves for water delivery

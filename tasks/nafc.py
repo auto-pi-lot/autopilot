@@ -215,7 +215,7 @@ class Nafc:
         self.init_hardware()
 
         # Load sounds
-        self.init_pyo()
+        #self.init_pyo()
         self.sounds       = {}
         self.sound_lookup = {}
         self.load_sounds()
@@ -267,12 +267,6 @@ class Nafc:
                 Exception('HARDWARE dict misspecified in class definition')
 
         print(self.pins)
-
-    def init_pyo(self):
-        self.server = pyo.Server(audio='jack', nchnls=2, duplex=0)
-        self.server.setJackAuto(False, True)
-        self.server.boot()
-        self.server.start()
 
     def load_sounds(self):
         # TODO: Definitely put this in a metaclass
@@ -346,7 +340,7 @@ class Nafc:
     def center_out(self, pin, level, tick):
         # Called when something leaves the center pin,
         # We use this to handle the mouse leaving the port early
-        if not self.discrim_finished:
+        if self.discrim_playing:
             self.bail_trial()
 
     def mark_playing(self):
@@ -408,10 +402,9 @@ class Nafc:
 
         # Set sound trigger and LEDs
         # We make two triggers to play the sound and change the light color
-        self.discrim_finished = False
         change_to_blue = lambda: self.pins['LEDS']['C'].set_color([0,0,255])
-        self.triggers['C'] = [self.target_sound.play, change_to_blue]
-        self.set_leds({'C':[0,255,0]})
+        self.triggers['C'] = [change_to_blue, self.mark_playing, self.target_sound.play]
+        self.set_leds({'C': [0, 255, 0]})
 
         data = {
             'target':self.target,
@@ -429,10 +422,7 @@ class Nafc:
         # TODO: Open solenoid for specific time, for now pass.
         #self.triggers[self.target] = solenoid(time)
         self.triggers[self.target] = self.test_correct
-        self.triggers[self.distractor] = self.test_incorrect
-
-        print('printing triggers from discrim')
-        pprint.pprint(self.triggers)
+        self.triggers[self.distractor] = self.punish
 
         # TODO: Handle timeout
 
@@ -493,10 +483,11 @@ class Nafc:
 
     def punish(self):
         # TODO: If we're not in the last stage (eg. we were timed out after stim presentation), reset stages
-        print(self.sounds)
         if self.punish_sound and ('punish' in self.sounds.keys()):
             self.sounds['punish'].play()
-        self.set_leds()
+        # TODO: Ask for whether we should flash or not and either .set_leds() or flash_leds()
+        #self.set_leds()
+        self.flash_leds()
         self.punish_block.clear()
         threading.Timer(self.punish_dur/1000, self.punish_block.set).start()
 
@@ -504,7 +495,7 @@ class Nafc:
         # Called by the discrim sound's table trigger when playback is finished
         # Used in punishing leaving early
         self.discrim_playing = False
-        if not self.bailed:
+        if not self.bailed and self.current_stage == 1:
             self.set_leds({'L':[0,255,0], 'R':[0,255,0]})
 
 
@@ -536,6 +527,11 @@ class Nafc:
                 v.set_color(color_dict[k])
             else:
                 v.set_color([0,0,0])
+
+    def flash_leds(self):
+        for k, v in self.pins['LEDS'].items():
+            v.flash(self.punish_dur)
+
 
 
 
