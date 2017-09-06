@@ -1,24 +1,40 @@
 # Classes for plots
+from collections import deque as dq
+import PySide
 from PySide import QtGui
 from PySide import QtCore
 import pyqtgraph as pg
+import threading
+pg.setConfigOptions(antialias=True)
 
+############
+# Plot list at the bottom!
+###########
+# TODO Have to have update methods happen with invoker
 
 class Plot_Widget(QtGui.QWidget):
     # Widget that frames multiple plots
     # TODO: Use pyqtgraph for this: http://www.pyqtgraph.org/
     # TODO: Spawn widget in own process, spawn each plot in own thread with subscriber and loop
-    def __init__(self):
+    def __init__(self, prefs, invoker):
         QtGui.QWidget.__init__(self)
 
-        # We should get passed an odict of pilots to keep ourselves in order after initing
+        # store prefs
+        self.prefs = prefs
+
+        # store invoker to give to children
+        self.invoker = invoker
+
+        # We should get passed a list of pilots to keep ourselves in order after initing
         self.pilots = None
 
-        # Dict to store handles to plot windows by mouse
+        # Dict to store handles to plot windows by pilot
         self.plots = {}
 
         # Main Layout
         self.layout = QtGui.QVBoxLayout(self)
+        self.layout.setContentsMargins(0,0,0,0)
+        self.layout.setSpacing(0)
 
         # Containers to style backgrounds
         #self.container = QtGui.QFrame()
@@ -38,8 +54,8 @@ class Plot_Widget(QtGui.QWidget):
         self.layout.addLayout(self.plot_layout)
         self.setLayout(self.layout)
 
-
-        #self.show()
+        # Set size policy to expand horizontally
+        #self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
 
     def init_plots(self, pilot_list):
         self.pilots = pilot_list
@@ -48,7 +64,8 @@ class Plot_Widget(QtGui.QWidget):
 
         for p in self.pilots:
 
-            plot = pg.PlotWidget()
+            plot = Plot(p, self.invoker)
+            #plot.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
             # TODO: Why do they overflow by default jesuz
 
             # Make row
@@ -99,6 +116,119 @@ class Plot_Widget(QtGui.QWidget):
 
         return groupbox
 
+class Plot(pg.PlotWidget):
+
+    def __init__(self, pilot, invoker):
+        super(Plot, self).__init__()
+
+        self.invoker = invoker
+        # The name of our pilot, used to listen for events
+        self.pilot = pilot
+
+        # Not necessarily curves, but pg graphics items
+        self.curves = []
+
+        # TODO: Put inside of update function, use a counter init'd with the first trial
+        self.setXRange(0, 50)
+        self.getPlotItem().hideAxis('bottom')
+        self.getPlotItem().hideAxis('left')
+        self.getPlotItem().addLine(y=0.5, pen=(255,0,0))
+        self.setBackground(None)
+        self.addItem(Targets())
+        self.addItem(Responses())
+
+    def init_curves(self):
+        pass
+
+    def init_listener(self):
+        pass
+
+###################################
+# Curve subclasses
+
+class Targets(pg.PlotDataItem):
+    def __init__(self, winsize = 50, spot_color=(0,0,0), spot_size=5):
+        #super(Targets, self).__init__(symbolBrush=symbolBrush, symbolPen=symbolPen, symbolSize=symbolSize, connect="pairs")
+        super(Targets, self).__init__()
+
+        self.winsize=winsize
+
+
+        self.spot_brush = pg.mkBrush(spot_color)
+        self.spot_pen   = pg.mkPen(spot_color, width=spot_size)
+        self.spot_size  = spot_size
+
+        # Make a queue to hold values, double the size because we plot duplets of data
+        # each couple has 0.5 and the value (0, 1) to use the 'connect' kwarg in setData
+        self.spot_queue = dq(maxlen=self.winsize)
+
+        self.spot_queue.extend([1,0,1,0,1])
+        self.update(0)
+
+    def update(self, y):
+        #TODO: Change this to replace .setData and then just .setData with the y series from Plot()
+        # Y should be an int 0 or 1 for right/left, but just to be sure...
+        if y > 0.5:
+            y = 1.
+        else:
+            y = 0.
+
+        self.spot_queue.append(y)
+
+        spot_xs = range(self.winsize-len(self.spot_queue)+1, self.winsize+1)
+
+        self.scatter.setData(x=spot_xs, y=list(self.spot_queue), size=self.spot_size,
+                             brush=self.spot_brush, symbol='o', pen=self.spot_pen)
+
+    def change_window(self, winsize):
+        self.winsize = winsize
+        new_queue = dq(maxlen=self.winsize*2)
+        new_queue.extend(self.queue)
+        self.queue = new_queue
+
+class Responses(pg.PlotDataItem):
+    def __init__(self, winsize=50, spot_color=(0, 0, 0), spot_size=5):
+        # super(Targets, self).__init__(symbolBrush=symbolBrush, symbolPen=symbolPen, symbolSize=symbolSize, connect="pairs")
+        super(Responses, self).__init__()
+
+        self.winsize = winsize
+
+        self.spot_brush = pg.mkBrush(spot_color)
+        self.spot_pen = pg.mkPen(spot_color, width=spot_size)
+        self.spot_size = spot_size
+
+        # Make a queue to hold values, double the size because we plot duplets of data
+        # each couple has 0.5 and the value (0, 1) to use the 'connect' kwarg in setData
+        self.line_queue = dq(maxlen=self.winsize * 2)
+
+        self.line_queue.extend([0.5, 1, 0.5, 0, 0.5, 1, 0.5, 1])
+        self.update(None)
+
+    def update(self, y=None):
+        # TODO: Change this to replace .setData and then just .setData with the y series from Plot()
+        # TODO: X-axis shifting is probably better done by changing the XRange in the Plot window, that also lets us append x in a less awkward way
+        # Y should be an int 0 or 1 for right/left, but just to be sure...
+        if not y:
+            line_xs = [i for i in range((self.winsize - len(self.line_queue) / 2), self.winsize) for _ in
+                       range(2)]
+        else:
+            self.line_queue.extend([0.5, y])
+            line_xs = [i for i in range((self.winsize - len(self.line_queue) / 2) + 1, self.winsize + 1) for _ in range(2)]
+
+        self.curve.setData(line_xs, list(self.line_queue), connect='pairs', pen='k')
+
+    def change_window(self, winsize):
+        self.winsize = winsize
+        new_queue = dq(maxlen=self.winsize * 2)
+        new_queue.extend(self.queue)
+        self.queue = new_queue
+
+
+PLOT_LIST = {
+    'Targets':Targets
+}
+
+
 class VLabel(QtGui.QWidget):
     # Vertically oriented label
     # https://stackoverflow.com/questions/34080798/pyqt-draw-a-vertical-label
@@ -111,8 +241,23 @@ class VLabel(QtGui.QWidget):
         painter.setPen(QtCore.Qt.black)
         painter.rotate(-90)
         if self.text:
-            painter.drawText(0,0, self.text)
+            painter.drawText(0, 0, self.text)
         painter.end()
 
     def setText(self, newText):
         self.text = newText
+
+class InvokeEvent(QtCore.QEvent):
+    EVENT_TYPE = QtCore.QEvent.Type(QtCore.QEvent.registerEventType())
+
+    def __init__(self, fn, *args, **kwargs):
+        QtCore.QEvent.__init__(self, InvokeEvent.EVENT_TYPE)
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+
+
+class Invoker(QtCore.QObject):
+    def event(self, event):
+        event.fn(*event.args, **event.kwargs)
+        return True

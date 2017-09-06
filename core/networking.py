@@ -110,7 +110,8 @@ class Terminal_Networking(multiprocessing.Process):
             'STOPALL': self.m_stopall,
             'RECVD': self.m_recvd, # We are getting confirmation that the message was received
             'LISTENING': self.m_listening, # Terminal wants to know if we're alive yet
-            'ALIVE': self.l_alive # Terminal tells us it's alive
+            'ALIVE': self.l_alive, # Terminal tells us it's alive
+            'KILL':  self.m_kill # Terminal wants us to die :(
         }
 
         # Listen dictionary - What to do with pushes from the raspberry pis
@@ -146,8 +147,6 @@ class Terminal_Networking(multiprocessing.Process):
         while True:
             self.logger.info("Starting IOLoop")
             self.loop.start()
-
-
 
     def publish(self, target, message):
         # target is the subscriber filter
@@ -310,6 +309,21 @@ class Terminal_Networking(multiprocessing.Process):
 
     def m_listening(self, target, value):
         self.publish('T',{'key':'LISTENING', 'value':''})
+
+    def m_kill(self, target, value):
+        self.logger.info('Received kill request')
+
+        # Close sockets
+        #self.publisher.close()
+        #self.messenger.close()
+        #self.listener.close()
+
+        # Kill context
+        #self.context.term()
+
+        # Stopping the loop should kill the process, as it's what's holding us in run()
+        self.loop.stop()
+
 
     def l_data(self, target, value):
         # Just sending it through
