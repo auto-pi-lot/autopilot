@@ -1,16 +1,24 @@
 # Classes for plots
+import sys
 from collections import deque as dq
 import PySide
 from PySide import QtGui
 from PySide import QtCore
 import pyqtgraph as pg
+import zmq
+from zmq.eventloop.ioloop import IOLoop
+from zmq.eventloop.zmqstream import ZMQStream
 import threading
 pg.setConfigOptions(antialias=True)
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import tasks
 
 ############
 # Plot list at the bottom!
 ###########
 # TODO Have to have update methods happen with invoker
+# TODO: Add data panel on the right for summary stats, n days run, task, step, etc.
 
 class Plot_Widget(QtGui.QWidget):
     # Widget that frames multiple plots
@@ -42,9 +50,10 @@ class Plot_Widget(QtGui.QWidget):
         #self.container.setStyleSheet("#data_container {background-color:orange;}")
 
         # Plot Selection Buttons
+        # TODO: Each plot bar should have an option panel, because different tasks have different plots
         self.plot_select = self.create_plot_buttons()
 
-        # Create empty plots
+        # Create empty plot container
         self.plot_layout = QtGui.QVBoxLayout()
         #self.plot_layout.addStretch(1)
         #self.container.setLayout(self.plot_layout)
@@ -61,21 +70,11 @@ class Plot_Widget(QtGui.QWidget):
         self.pilots = pilot_list
 
         # Make a plot for each pilot.
-
         for p in self.pilots:
-
-            plot = Plot(p, self.invoker)
-            #plot.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-            # TODO: Why do they overflow by default jesuz
-
-            # Make row
-
+            plot = Plot(pilot=p, invoker=self.invoker,
+                        subport=self.prefs['PUBPORT'])
             self.plot_layout.addWidget(plot)
-
-    def create_plots(self):
-        vlayout = QtGui.QVBoxLayout()
-
-        return vlayout
+            self.plots[p] = plot
 
     def create_plot_buttons(self):
         groupbox = QtGui.QGroupBox()
@@ -116,40 +115,62 @@ class Plot_Widget(QtGui.QWidget):
 
         return groupbox
 
+    def start_plotting(self, value):
+        # We're sent a task dict, we extract the plot params and send them to the plot object
+        plot_params = tasks.TASK_LIST[value['task_type']].PLOT
+        self.plots[value['pilot']].init_plots(plot_params)
+
 class Plot(pg.PlotWidget):
 
-    def __init__(self, pilot, invoker):
+    def __init__(self, pilot, invoker, subport, xrange=None):
         super(Plot, self).__init__()
 
-        self.invoker = invoker
         # The name of our pilot, used to listen for events
         self.pilot = pilot
 
-        # Not necessarily curves, but pg graphics items
-        self.curves = []
+        self.invoker = invoker
+
+        # The port that the terminal networking object will send data from
+        self.subport = subport
 
         # TODO: Put inside of update function, use a counter init'd with the first trial
-        self.setXRange(0, 50)
+        self.xrange = xrange or 50
+
+        #self.setXRange(0, 50)
         self.getPlotItem().hideAxis('bottom')
         self.getPlotItem().hideAxis('left')
-        self.getPlotItem().addLine(y=0.5, pen=(255,0,0))
         self.setBackground(None)
-        self.addItem(Targets())
-        self.addItem(Responses())
 
-    def init_curves(self):
+        self.data = {} # Keep a dict of the data we are keeping track of, will be instantiated in init_plots
+
+        # Start the listener, subscribes to terminal_networking that will broadcast data
+        self.context = None
+        self.subscriber = None
+        self.loop = None
+        self.init_listener()
+
+
+    def init_plots(self, plots):
+        # TODO Make this dependent on task plot params
+        self.getPlotItem().addLine(y=0.5, pen=(255, 0, 0))
+
+        self.addItem(Target())
+        self.addItem(Response())
         pass
 
     def init_listener(self):
+        self.context = zmq.Context.instance()
+        self.loop = IOLoop.instance()
+        # TODO START HERE 9/11/17
         pass
 
 ###################################
 # Curve subclasses
 
-class Targets(pg.PlotDataItem):
+class Target(pg.PlotDataItem):
     def __init__(self, winsize = 50, spot_color=(0,0,0), spot_size=5):
         #super(Targets, self).__init__(symbolBrush=symbolBrush, symbolPen=symbolPen, symbolSize=symbolSize, connect="pairs")
-        super(Targets, self).__init__()
+        super(Target, self).__init__()
 
         self.winsize=winsize
 
@@ -186,10 +207,10 @@ class Targets(pg.PlotDataItem):
         new_queue.extend(self.queue)
         self.queue = new_queue
 
-class Responses(pg.PlotDataItem):
+class Response(pg.PlotDataItem):
     def __init__(self, winsize=50, spot_color=(0, 0, 0), spot_size=5):
         # super(Targets, self).__init__(symbolBrush=symbolBrush, symbolPen=symbolPen, symbolSize=symbolSize, connect="pairs")
-        super(Responses, self).__init__()
+        super(Response, self).__init__()
 
         self.winsize = winsize
 
@@ -223,29 +244,20 @@ class Responses(pg.PlotDataItem):
         new_queue.extend(self.queue)
         self.queue = new_queue
 
+class Correct_Roll():
+    pass
+
+class Bail():
+    pass
+
 
 PLOT_LIST = {
-    'Targets':Targets
+    'target':Target,
+    'response':Response,
+    'correct_roll':Correct_Roll,
+    'bail':Bail
 }
 
-
-class VLabel(QtGui.QWidget):
-    # Vertically oriented label
-    # https://stackoverflow.com/questions/34080798/pyqt-draw-a-vertical-label
-    def __init__(self, text=None):
-        super(VLabel, self).__init__()
-        self.text = text
-
-    def paintEvent(self, event):
-        painter = QtGui.QPainter(self)
-        painter.setPen(QtCore.Qt.black)
-        painter.rotate(-90)
-        if self.text:
-            painter.drawText(0, 0, self.text)
-        painter.end()
-
-    def setText(self, newText):
-        self.text = newText
 
 class InvokeEvent(QtCore.QEvent):
     EVENT_TYPE = QtCore.QEvent.Type(QtCore.QEvent.registerEventType())

@@ -531,9 +531,10 @@ class Parameters(QtGui.QWidget):
             # Sets the mouse to running, makes a file to store data
             self.mouse.prepare_run()
 
-            # Prep task to send to pi
+            # Prep task to send to pi, the pilot needs to know the mouse
             task = self.protocol[self.step]
             task['mouse'] = self.mouse.name
+            task['pilot'] = self.pilot
 
             # TODO: Get last trial number and send to pi as well
             self.send_message('START', bytes(self.pilot), task)

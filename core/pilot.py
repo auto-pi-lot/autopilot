@@ -122,7 +122,7 @@ class RPilot:
 
     def spawn_network(self):
         # Spawn the networking object as a separate process
-        self.networking = Pilot_Networking()
+        self.networking = Pilot_Networking(name=self.name, prefs=self.prefs)
         self.networking.start()
 
     def init_network(self):
@@ -196,10 +196,10 @@ class RPilot:
         table_descriptor = self.task.DataTypes
 
         # Make a group for this mouse if we don't already have one
-        mouse_name = value['mouse']
-        if not mouse_name in self.h5f.root:
-            self.h5f.create_group("/", mouse_name, "Local Data for {}".format(mouse_name))
-        mouse_group = self.h5f.get_node('/', mouse_name)
+        self.mouse = value['mouse']
+        if not self.mouse in self.h5f.root:
+            self.h5f.create_group("/", self.mouse, "Local Data for {}".format(self.mouse))
+        mouse_group = self.h5f.get_node('/', self.mouse)
 
         # Make a table for today's data, appending a conflict-avoidance int if one already exists
         datestring = datetime.date.today().isoformat()
@@ -209,7 +209,7 @@ class RPilot:
             datestring = datetime.date.today().isoformat() + '-' + str(conflict_avoid)
 
         self.table = self.h5f.create_table(mouse_group, datestring, table_descriptor,
-                                           "Mouse {} on {}".format(mouse_name, datestring))
+                                           "Mouse {} on {}".format(self.mouse, datestring))
 
         # The Row object is what we write data into as it comes in
         self.row = self.table.row
@@ -268,7 +268,7 @@ class RPilot:
             # Calculate next stage data and prep triggers
             data = self.task.stages.next()() # Double parens because next just gives us the function, we still have to call it
 
-            # Send data back to terminal
+            # Send data back to terminal (mouse is identified by the networking object)
             self.send_message('DATA', target='T', value=data)
 
             # Store a local copy

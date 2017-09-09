@@ -78,7 +78,7 @@ class Terminal_Networking(multiprocessing.Process):
         # Initialize Network Objects
         self.context = zmq.Context()
 
-        self.loop = IOLoop.instance()
+        self.loop = IOLoop()
 
         # Publisher Publishes info to everybody
         # Listener receives messages from pilots
@@ -278,6 +278,9 @@ class Terminal_Networking(multiprocessing.Process):
         msg = {'key':'START', 'value':value}
         self.publish(target, msg)
 
+        # Then let the terminal know so that it makes and starts a plot
+        self.publish(bytes('T'), msg)
+
 
         # Start listening thread
 
@@ -326,9 +329,13 @@ class Terminal_Networking(multiprocessing.Process):
 
 
     def l_data(self, target, value):
-        # Just sending it through
+        # Send through to terminal
         msg = {'key': 'DATA', 'value':value}
         self.publish('T', msg)
+
+        # Send to plot widget, which should be listening to "P_{pilot_name}"
+        self.publish('P_{}'.format(value['pilot']), value)
+
 
     def l_alive(self, target, value):
         # A pi has told us that it is alive and what its filter is
@@ -388,8 +395,10 @@ class Pilot_Networking(multiprocessing.Process):
     pusher       = None    # Pusher Handler - For pushing data back to the terminal
     messenger    = None    # Messenger Handler - For receiving messages from the Pilot
 
-    def __init__(self, prefs=None):
+    def __init__(self, name, prefs=None):
         super(Pilot_Networking, self).__init__()
+        self.name = name
+
         # Prefs should be passed to us, try to load from default location if not
         if not prefs:
             try:
@@ -540,6 +549,7 @@ class Pilot_Networking(multiprocessing.Process):
     def m_data(self, target, value):
         # Just sending it along after appending the mouse name
         value['mouse'] = self.mouse
+        value['pilot'] = self.name
         self.push('DATA', target, value)
 
     def m_event(self, target, value):

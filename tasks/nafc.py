@@ -70,17 +70,32 @@ class Nafc:
     PARAMS['sounds']         = {'tag':'Sounds',
                                 'type':'sounds'}
 
-    # Dict of data and type that will be returned for each complete trial
+    # Dict of data and info about that data that will be returned for each complete trial
+    # 'type' refers to the datatype in PyTables, but truth be told I don't remember where these abbrevs came from
+    # 'plot' gives information about which data and how it should be plotted. The syntax for this is still evolving
     DATA = {
-        'trial_num':       'i32',
-        'target':          'S1',
-        'target_sound_id': 'S32',
-        'response':        'S1',
-        'correct':         'i32',
-        'bias':            'f32',
-        'RQ_timestamp':    'S26',
-        'DC_timestamp':    'S26',
-        'bailed':          'i32'
+        'trial_num':       {'type':'i32'},
+        'target':          {'type':'S1', 'plot':'target'},
+        'target_sound_id': {'type':'S32'},
+        'response':        {'type':'S1', 'plot':'response'},
+        'correct':         {'type':'i32','plot':'correct_roll'},
+        'bias':            {'type':'f32'}, # TODO: Shouldn't this just be calculated but not stored?
+        'RQ_timestamp':    {'type':'S26'},
+        'DC_timestamp':    {'type':'S26'},
+        'bailed':          {'type':'i32','plot':'bail'}
+    }
+
+    # Set plot params, which data should be plotted, its default shape, etc.
+    # TODO: Plots should take the default type, but options panel should be able to set - eg. corrects are done by rolling mean as default, but can be made points
+    PLOT = {
+        'data': {
+            'target'   : 'point',
+            'response' : 'segment',
+            'correct'  : 'rollmean',
+            'bailed'   : 'highlight'
+        },
+        'chance_bar'  : True, # Draw a red bar at 50%
+        'roll_window' : 50 # number of trials to roll window over
     }
 
     # PyTables Data descriptor

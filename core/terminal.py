@@ -85,15 +85,16 @@ class Terminal(QtGui.QWidget):
 
         # Start GUI
         self.setWindowTitle('Terminal')
-        self.initUI()
+        self.initUI() # Has to be before networking so plot listeners are caught by IOLoop
 
         # Start Networking
-        self.spawn_network()
+
         self.init_network()
+        self.spawn_network() # Has to be after init_network so it makes a new context
 
         time.sleep(1)
 
-        self.check_network()
+        #self.check_network()
 
     def initUI(self):
         # Main panel layout
@@ -191,7 +192,8 @@ class Terminal(QtGui.QWidget):
 
     def init_network(self):
         # Start internal communications
-        self.context = zmq.Context()
+        #self.context = zmq.Context()
+        self.context = zmq.Context.instance()
         self.loop = IOLoop.instance()
 
         # Messenger to send messages to networking class
@@ -216,7 +218,8 @@ class Terminal(QtGui.QWidget):
             'LISTENING': self.l_listening, # The networking object tells us it's online
             'PING' : self.l_ping, # Someone wants to know if we're alive
             'FILE' : self.l_file, # A pi needs some files to run its protocol
-            'DATA' : self.l_data
+            'DATA' : self.l_data,
+            'START': self.l_start # A mouse has been started
         }
 
         # Start IOLoop in daemon thread
@@ -321,6 +324,11 @@ class Terminal(QtGui.QWidget):
 
     def l_file(self, value):
         pass
+
+    def l_start(self, value):
+        # Let the plot widget know we're starting a mouse
+        self.data_panel.start_plotting(value)
+
 
     def new_protocol(self):
         self.new_protocol_window = Protocol_Wizard()
