@@ -278,11 +278,8 @@ class Terminal_Networking(multiprocessing.Process):
         msg = {'key':'START', 'value':value}
         self.publish(target, msg)
 
-        # Then let the terminal know so that it makes and starts a plot
-        self.publish(bytes('T'), msg)
-
-
-        # Start listening thread
+        # Then let the plot widget know so that it makes and starts a plot
+        self.publish(bytes('P_{}'.format(target)), msg)
 
     def m_change(self, target, value):
         # TODO: Should also handle param changes to GUI objects like ntrials, etc.

@@ -1,7 +1,12 @@
 # Classes for plots
 import sys
+import json
+import logging
+import os
 from collections import deque as dq
+import numpy as np
 import PySide
+import pandas as pd
 from PySide import QtGui
 from PySide import QtCore
 import pyqtgraph as pg
@@ -26,6 +31,8 @@ class Plot_Widget(QtGui.QWidget):
     # TODO: Spawn widget in own process, spawn each plot in own thread with subscriber and loop
     def __init__(self, prefs, invoker):
         QtGui.QWidget.__init__(self)
+
+        self.logger = logging.getLogger('main')
 
         # store prefs
         self.prefs = prefs
@@ -72,7 +79,8 @@ class Plot_Widget(QtGui.QWidget):
         # Make a plot for each pilot.
         for p in self.pilots:
             plot = Plot(pilot=p, invoker=self.invoker,
-                        subport=self.prefs['PUBPORT'])
+                        subport=self.prefs['PUBPORT'],
+                        msgport=self.prefs['MSGPORT'])
             self.plot_layout.addWidget(plot)
             self.plots[p] = plot
 
@@ -115,15 +123,12 @@ class Plot_Widget(QtGui.QWidget):
 
         return groupbox
 
-    def start_plotting(self, value):
-        # We're sent a task dict, we extract the plot params and send them to the plot object
-        plot_params = tasks.TASK_LIST[value['task_type']].PLOT
-        self.plots[value['pilot']].init_plots(plot_params)
-
 class Plot(pg.PlotWidget):
 
-    def __init__(self, pilot, invoker, subport, xrange=None):
+    def __init__(self, pilot, invoker, subport, msgport, x_width=50):
         super(Plot, self).__init__()
+
+        self.logger = logging.getLogger('main')
 
         # The name of our pilot, used to listen for events
         self.pilot = pilot
@@ -132,40 +137,207 @@ class Plot(pg.PlotWidget):
 
         # The port that the terminal networking object will send data from
         self.subport = subport
+        self.msgport = msgport
 
         # TODO: Put inside of update function, use a counter init'd with the first trial
-        self.xrange = xrange or 50
+        self.x_width = x_width
+        self.last_trial = self.x_width
+        self.xrange = xrange(self.last_trial-self.x_width+1, self.last_trial+1)
+        self.setXRange(self.xrange[0], self.xrange[-1])
 
-        #self.setXRange(0, 50)
-        self.getPlotItem().hideAxis('bottom')
-        self.getPlotItem().hideAxis('left')
-        self.setBackground(None)
+        # Inits the basic widget settings
+        self.init_plots()
 
+        self.plot_params = {}
         self.data = {} # Keep a dict of the data we are keeping track of, will be instantiated in init_plots
+        self.plots = {}
 
         # Start the listener, subscribes to terminal_networking that will broadcast data
         self.context = None
         self.subscriber = None
+        self.pusher = None
         self.loop = None
+        self.listens = None
         self.init_listener()
 
 
-    def init_plots(self, plots):
+    def init_plots(self):
         # TODO Make this dependent on task plot params
-        self.getPlotItem().addLine(y=0.5, pen=(255, 0, 0))
-
-        self.addItem(Target())
-        self.addItem(Response())
-        pass
+        # This is called to make the basic plot window,
+        # each task started should then send us params to populate afterwards
+        #self.getPlotItem().hideAxis('bottom')
+        self.getPlotItem().hideAxis('left')
+        self.setBackground(None)
+        self.setXRange(self.xrange[0], self.xrange[1]) # When we get data we'll do this differently, but for now..
 
     def init_listener(self):
         self.context = zmq.Context.instance()
         self.loop = IOLoop.instance()
-        # TODO START HERE 9/11/17
+
+        self.subscriber = self.context.socket(zmq.SUB)
+        self.subscriber.connect('tcp://localhost:{}'.format(self.subport))
+        sub_string = 'P_{}'.format(self.pilot)
+        self.subscriber.setsockopt(zmq.SUBSCRIBE, bytes(sub_string))
+        self.subscriber = ZMQStream(self.subscriber, self.loop)
+        self.subscriber.on_recv(self.handle_listen)
+
+        self.listens = {
+            'START' : self.l_start, # Receiving a new task
+            'DATA' : self.l_data, # Receiving a new datapoint
+            'STOP' : self.l_stop
+        }
+
+        # Also make a message sender to validate receipts
+        self.pusher = self.context.socket(zmq.PUSH)
+        self.pusher.connect('tcp://localhost:{}'.format(self.msgport))
+
+
+    def handle_listen(self, msg):
+        # Published as multipart target-msg messages
+        message = json.loads(msg[1])
+
+        if not all(i in message.keys() for i in ['key', 'value']):
+            self.logger.warning('PLOT {}: LISTEN Improperly formatted - {}'.format(self.pilot, message))
+            return
+
+        self.logger.info('PLOT {} MSG {}: LISTEN - KEY: {}, VALUE: {}'.format(self.pilot,
+                                                                              message['id'],
+                                                                              message['key'],
+                                                                              message['value']))
+
+        listen_funk = self.listens[message['key']]
+        listen_thread = threading.Thread(target=listen_funk, args=(message['value'],))
+        listen_thread.start()
+
+        # Tell the networking process that we got it
+        self.send_message('RECVD', value=message['id'])
+
+    def send_message(self, key, target='', value=''):
+        msg = {'key': key, 'target': target, 'value': value}
+
+        msg_thread = threading.Thread(target= self.pusher.send_json, args=(json.dumps(msg),))
+        msg_thread.start()
+
+        self.logger.info("MESSAGE SENT - Target: {}, Key: {}, Value: {}".format(target, key, value))
+
+
+    def l_start(self, value):
+        # We're sent a task dict, we extract the plot params and send them to the plot object
+        self.plot_params = tasks.TASK_LIST[value['task_type']].PLOT
+
+        self.clear()
+        self.plots = {}
+
+        # Get basic layout info
+        # TODO: Make mouse name label
+        self.mouse = value['mouse']
+
+        try:
+            self.last_trial = value['last_trial']
+            self.xrange = xrange(self.last_trial-self.x_width+1, self.last_trial+1)
+        except NameError:
+            pass
+
+        self.setXRange(self.xrange[0], self.xrange[1])
+
+        try:
+            if self.plot_params['chance_bar']:
+                self.getPlotItem().addLine(y=0.5, pen=(255,0,0))
+        except NameError:
+            # No big deal, chance bar wasn't set
+            pass
+
+        try:
+            self.roll_window = self.plot_params['roll_window']
+        except NameError:
+            pass
+
+        # Make plot items for each data type
+        for data, plot in self.plot_params.items():
+            # TODO: Better way of doing params for plots, might just have to suck it up and make dict another level
+            if plot == 'rollmean' and 'roll_window' in self.plot_params.keys():
+                self.plots[data] = Roll_Mean(winsize=self.plot_params['roll_window'])
+                self.addItem(self.plots[data])
+                self.data[data] = np.zeros((0,2), dtype=np.float)
+            else:
+                self.plots[data] = PLOT_LIST[plot]()
+                self.addItem(self.plots[data])
+                self.data[data] = np.zeros((0,2), dtype=np.int)
+
+    def l_data(self, value):
+        for k, v in value.items():
+            if k == 'trial_num':
+                self.last_trial = v
+                self.xrange = xrange(v-self.x_width+1, v+1)
+                self.setXRange(self.xrange[0], self.xrange[-1])
+            if k in self.data.keys():
+                self.data[k] = np.vstack((self.data[k], (self.last_trial, v)))
+                self.plots[k].update(self.data[k])
+
+    def l_stop(self, value):
         pass
+
+
 
 ###################################
 # Curve subclasses
+class Point(pg.PlotDataItem):
+    def __init__(self, color=(0,0,0), size=5):
+        super(Point, self).__init__()
+
+        self.brush = pg.mkBrush(color)
+        self.pen   = pg.mkPen(color, width=size)
+        self.size  = size
+
+    def update(self, data):
+        # data should come in as an n x 2 array,
+        # 0th column - trial number (x), 1st - (y) value
+
+        self.scatter.setData(x=data[...,0], y=data[...,1], size=self.size,
+                             brush=self.brush, symbol='o', pen=self.pen)
+
+
+
+
+class Segment(pg.PlotDataItem):
+    def __init__(self):
+        super(Segment, self).__init__()
+
+    def update(self, data):
+        # data should come in as an n x 2 array,
+        # 0th column - trial number (x), 1st - (y) value
+        xs = np.repeat(data[...,0],2)
+        ys = np.repeat(data[...,1],2)
+        ys[::2] = 0.5
+
+        self.curve.setData(xs, ys, connect='pairs', pen='k')
+
+
+class Roll_Mean(pg.PlotDataItem):
+    def __init__(self, winsize=10):
+        super(Roll_Mean, self).__init__()
+
+        self.winsize = winsize
+
+        self.setFillLevel(0.5)
+
+        self.series = pd.Series()
+
+        self.brush = pg.mkBrush((0,0,0,100))
+        self.setBrush(self.brush)
+
+
+    def update(self, data):
+        # data should come in as an n x 2 array,
+        # 0th column - trial number (x), 1st - (y) value
+
+        self.series = pd.Series(data[...,1])
+        ys = self.series.rolling(self.winsize, min_periods=0).mean()
+
+        self.curve.setData(data[...,0], ys, fillLevel=0.5)
+
+
+
 
 class Target(pg.PlotDataItem):
     def __init__(self, winsize = 50, spot_color=(0,0,0), spot_size=5):
@@ -250,12 +422,18 @@ class Correct_Roll():
 class Bail():
     pass
 
+class Highlight():
+    pass
 
 PLOT_LIST = {
     'target':Target,
     'response':Response,
     'correct_roll':Correct_Roll,
-    'bail':Bail
+    'bail':Bail,
+    'point':Point,
+    'segment':Segment,
+    'rollmean':Roll_Mean,
+    'highlight':Highlight
 }
 
 

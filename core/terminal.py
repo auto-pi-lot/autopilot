@@ -218,8 +218,8 @@ class Terminal(QtGui.QWidget):
             'LISTENING': self.l_listening, # The networking object tells us it's online
             'PING' : self.l_ping, # Someone wants to know if we're alive
             'FILE' : self.l_file, # A pi needs some files to run its protocol
-            'DATA' : self.l_data,
-            'START': self.l_start # A mouse has been started
+            'DATA' : self.l_data
+            #'START': self.l_start # A mouse has been started
         }
 
         # Start IOLoop in daemon thread
@@ -325,9 +325,9 @@ class Terminal(QtGui.QWidget):
     def l_file(self, value):
         pass
 
-    def l_start(self, value):
-        # Let the plot widget know we're starting a mouse
-        self.data_panel.start_plotting(value)
+    #def l_start(self, value):
+    #    # Let the plot widget know we're starting a mouse
+    #    self.data_panel.start_plotting(value)
 
 
     def new_protocol(self):

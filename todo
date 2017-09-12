@@ -26,3 +26,4 @@ TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
 - punishment flashing lights
 - sound calibration routine
 - move all class references to __init__
+- Make meta 'subscriber' class instead of describing each subscriber separately

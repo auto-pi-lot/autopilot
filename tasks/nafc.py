@@ -91,8 +91,8 @@ class Nafc:
         'data': {
             'target'   : 'point',
             'response' : 'segment',
-            'correct'  : 'rollmean',
-            'bailed'   : 'highlight'
+            'correct'  : 'rollmean'
+            #'bailed'   : 'highlight'
         },
         'chance_bar'  : True, # Draw a red bar at 50%
         'roll_window' : 50 # number of trials to roll window over
