@@ -331,7 +331,7 @@ class Terminal_Networking(multiprocessing.Process):
         self.publish('T', msg)
 
         # Send to plot widget, which should be listening to "P_{pilot_name}"
-        self.publish('P_{}'.format(value['pilot']), value)
+        self.publish('P_{}'.format(value['pilot']), msg)
 
 
     def l_alive(self, target, value):

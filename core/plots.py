@@ -18,6 +18,7 @@ pg.setConfigOptions(antialias=True)
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import tasks
+from utils import InvokeEvent, Invoker
 
 ############
 # Plot list at the bottom!
@@ -146,7 +147,8 @@ class Plot(pg.PlotWidget):
         self.setXRange(self.xrange[0], self.xrange[-1])
 
         # Inits the basic widget settings
-        self.init_plots()
+        self.gui_event(self.init_plots)
+        #self.init_plots()
 
         self.plot_params = {}
         self.data = {} # Keep a dict of the data we are keeping track of, will be instantiated in init_plots
@@ -169,6 +171,8 @@ class Plot(pg.PlotWidget):
         self.getPlotItem().hideAxis('left')
         self.setBackground(None)
         self.setXRange(self.xrange[0], self.xrange[1]) # When we get data we'll do this differently, but for now..
+        self.setYRange(0, 1)
+
 
     def init_listener(self):
         self.context = zmq.Context.instance()
@@ -206,11 +210,15 @@ class Plot(pg.PlotWidget):
                                                                               message['value']))
 
         listen_funk = self.listens[message['key']]
-        listen_thread = threading.Thread(target=listen_funk, args=(message['value'],))
-        listen_thread.start()
+        #listen_thread = threading.Thread(target=listen_funk, args=(message['value'],))
+        #listen_thread.start()
 
         # Tell the networking process that we got it
         self.send_message('RECVD', value=message['id'])
+
+        self.gui_event(listen_funk, *(message['value'],))
+
+
 
     def send_message(self, key, target='', value=''):
         msg = {'key': key, 'target': target, 'value': value}
@@ -225,35 +233,38 @@ class Plot(pg.PlotWidget):
         # We're sent a task dict, we extract the plot params and send them to the plot object
         self.plot_params = tasks.TASK_LIST[value['task_type']].PLOT
 
-        self.clear()
-        self.plots = {}
-
-        # Get basic layout info
-        # TODO: Make mouse name label
-        self.mouse = value['mouse']
-
-        try:
-            self.last_trial = value['last_trial']
-            self.xrange = xrange(self.last_trial-self.x_width+1, self.last_trial+1)
-        except NameError:
-            pass
-
-        self.setXRange(self.xrange[0], self.xrange[1])
-
+        # self.clear()
+        # self.plots = {}
+        #
+        # # Get basic layout info
+        # # TODO: Make mouse name label
+        # self.mouse = value['mouse']
+        #
+        # try:
+        #     self.last_trial = value['last_trial']
+        #     self.xrange = xrange(self.last_trial-self.x_width+1, self.last_trial+1)
+        # except KeyError:
+        #     pass
+        #
+        # self.setXRange(self.xrange[0], self.xrange[1])
+        #
         try:
             if self.plot_params['chance_bar']:
+                #pass
+                #self.gui_event(self.getPlotItem().addLine, **{"y":0.5, "pen":(255,0,0)})
                 self.getPlotItem().addLine(y=0.5, pen=(255,0,0))
-        except NameError:
+        except KeyError:
             # No big deal, chance bar wasn't set
             pass
-
-        try:
-            self.roll_window = self.plot_params['roll_window']
-        except NameError:
-            pass
+        #
+        # try:
+        #     self.roll_window = self.plot_params['roll_window']
+        # except KeyError:
+        #     pass
 
         # Make plot items for each data type
-        for data, plot in self.plot_params.items():
+        print(self.plot_params['data'].items())
+        for data, plot in self.plot_params['data'].items():
             # TODO: Better way of doing params for plots, might just have to suck it up and make dict another level
             if plot == 'rollmean' and 'roll_window' in self.plot_params.keys():
                 self.plots[data] = Roll_Mean(winsize=self.plot_params['roll_window'])
@@ -262,21 +273,28 @@ class Plot(pg.PlotWidget):
             else:
                 self.plots[data] = PLOT_LIST[plot]()
                 self.addItem(self.plots[data])
-                self.data[data] = np.zeros((0,2), dtype=np.int)
+                self.data[data] = np.zeros((0,2), dtype=np.float)
 
     def l_data(self, value):
+        print(value)
         for k, v in value.items():
             if k == 'trial_num':
                 self.last_trial = v
                 self.xrange = xrange(v-self.x_width+1, v+1)
+                #self.gui_event(self.setXRange, *[self.xrange[0], self.xrange[-1]])
                 self.setXRange(self.xrange[0], self.xrange[-1])
             if k in self.data.keys():
                 self.data[k] = np.vstack((self.data[k], (self.last_trial, v)))
+                #self.gui_event(self.plots[k].update, *(self.data[k],))
                 self.plots[k].update(self.data[k])
 
     def l_stop(self, value):
         pass
 
+    def gui_event(self, fn, *args, **kwargs):
+        # Don't ask me how this works, stolen from
+        # https://stackoverflow.com/a/12127115
+        QtCore.QCoreApplication.postEvent(self.invoker, InvokeEvent(fn, *args, **kwargs))
 
 
 ###################################
@@ -293,6 +311,11 @@ class Point(pg.PlotDataItem):
         # data should come in as an n x 2 array,
         # 0th column - trial number (x), 1st - (y) value
 
+        data[data=="R"] = 1
+        data[data=="L"] = 0
+        data = data.astype(np.int)
+        print("POINT", data)
+
         self.scatter.setData(x=data[...,0], y=data[...,1], size=self.size,
                              brush=self.brush, symbol='o', pen=self.pen)
 
@@ -306,9 +329,17 @@ class Segment(pg.PlotDataItem):
     def update(self, data):
         # data should come in as an n x 2 array,
         # 0th column - trial number (x), 1st - (y) value
+        data[data=="R"] = 1
+        data[data=="L"] = 0
+        data[data=="C"] = 0.5
+        data = data.astype(np.float)
+        print("SEG", data)
+
         xs = np.repeat(data[...,0],2)
         ys = np.repeat(data[...,1],2)
         ys[::2] = 0.5
+
+        print("SEG", ys)
 
         self.curve.setData(xs, ys, connect='pairs', pen='k')
 
@@ -330,9 +361,12 @@ class Roll_Mean(pg.PlotDataItem):
     def update(self, data):
         # data should come in as an n x 2 array,
         # 0th column - trial number (x), 1st - (y) value
+        data = data.astype(np.float)
 
         self.series = pd.Series(data[...,1])
-        ys = self.series.rolling(self.winsize, min_periods=0).mean()
+        ys = self.series.rolling(self.winsize, min_periods=0).mean().as_matrix()
+
+        #print(ys)
 
         self.curve.setData(data[...,0], ys, fillLevel=0.5)
 
