@@ -554,7 +554,7 @@ class Mice(QtGui.QWidget):
                 "Step:", step_list, 0, False)
         if not ok:
             return
-        
+
         # Get the step index
         step_number = step_ind[step_str]
 
@@ -1183,7 +1183,7 @@ class New_Mouse_Wizard(QtGui.QDialog):
 
 
         def update_step_box(self):
-            # Clear box 
+            # Clear box
             while self.step_selection.count():
                 self.step_selection.removeItem(0)
 
@@ -2041,5 +2041,3 @@ if __name__ == '__main__':
     app.setStyle('plastique') # Keeps some GTK errors at bay
     ex = Terminal(prefs=prefs)
     sys.exit(app.exec_())
-
-

@@ -25,3 +25,4 @@ TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
 - classic mode, button that switches the UI to flickering grey screen
 - punishment flashing lights
 - sound calibration routine
+- if sound keeps glitching, maybe use pasuspender?
