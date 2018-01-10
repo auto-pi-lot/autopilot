@@ -430,8 +430,8 @@ class Nafc:
     def discrim(self,*args,**kwargs):
         self.stage_block.clear()
 
-        #self.triggers[self.target] = self.pins['PORTS']['C'].open
-        self.triggers[self.target] = self.test_correct
+        self.triggers[self.target] = self.pins['PORTS']['C'].open
+        #self.triggers[self.target] = self.test_correct
         self.triggers[self.distractor] = self.punish
 
         # TODO: Handle timeout
