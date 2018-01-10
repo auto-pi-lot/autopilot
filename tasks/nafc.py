@@ -387,7 +387,7 @@ class Nafc:
             warnings.warn("bias_mode is not defined or defined incorrectly")
 
         # Decide if correction trial (repeat last stim) or choose new target/stim
-        if (random.random() < self.pct_correction) or (self.target is None):
+        if (random.random() > self.pct_correction) or (self.target is None):
             # Choose target side and sound
             self.correction = 0
             if random.random() > randthresh:
@@ -430,7 +430,7 @@ class Nafc:
     def discrim(self,*args,**kwargs):
         self.stage_block.clear()
 
-        self.triggers[self.target] = self.pins['PORTS']['C'].open
+        self.triggers[self.target] = self.pins['PORTS'][self.target].open
         #self.triggers[self.target] = self.test_correct
         self.triggers[self.distractor] = self.punish
 
