@@ -232,7 +232,7 @@ class Solenoid:
         # Since we typically only use one duration,
         # we make the wave once and only make it again when asked to
         # We start with passed or default duration (ms)
-        self.duration = float(duration/1000)
+        self.duration = float(duration)/1000
         #self.wave_id = None
         #self.make_wave()
 
