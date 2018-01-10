@@ -387,7 +387,7 @@ class Nafc:
             warnings.warn("bias_mode is not defined or defined incorrectly")
 
         # Decide if correction trial (repeat last stim) or choose new target/stim
-        if (random.random() > self.pct_correction) or (self.target == None):
+        if (random.random() < self.pct_correction) or (self.target is None):
             # Choose target side and sound
             self.correction = 0
             if random.random() > randthresh:
