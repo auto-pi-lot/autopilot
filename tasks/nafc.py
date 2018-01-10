@@ -387,7 +387,7 @@ class Nafc:
             warnings.warn("bias_mode is not defined or defined incorrectly")
 
         # Decide if correction trial (repeat last stim) or choose new target/stim
-        if (random.random() < self.pct_correction) or (self.target is None):
+        if (random.random() > self.pct_correction) or (self.target == None):
             # Choose target side and sound
             self.correction = 0
             if random.random() > randthresh:
@@ -430,7 +430,8 @@ class Nafc:
     def discrim(self,*args,**kwargs):
         self.stage_block.clear()
 
-        self.triggers[self.target] = self.pins['PORTS']['C'].open
+        #self.triggers[self.target] = self.pins['PORTS']['C'].open
+        self.triggers[self.target] = self.test_correct
         self.triggers[self.distractor] = self.punish
 
         # TODO: Handle timeout
@@ -483,6 +484,9 @@ class Nafc:
         }
         self.current_stage = 2
         return data
+
+    def test_correct(self):
+        print('correct!')
 
     def punish(self):
         # TODO: If we're not in the last stage (eg. we were timed out after stim presentation), reset stages
