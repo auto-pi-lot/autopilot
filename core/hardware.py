@@ -232,9 +232,9 @@ class Solenoid:
         # Since we typically only use one duration,
         # we make the wave once and only make it again when asked to
         # We start with passed or default duration (ms)
-        self.duration = int(duration)
-        self.wave_id = None
-        self.make_wave()
+        self.duration = float(duration/1000)
+        #self.wave_id = None
+        #self.make_wave()
 
     def make_wave(self, duration=None):
         # TODO: Is there any point in storing multiple waves?
@@ -253,14 +253,15 @@ class Solenoid:
         self.pig.wave_add_generic(reward_pulse)
         self.wave_id = self.pig.wave_create()
 
-    def open(self, duration=None):
-        # If we are passed a duration, check if we have a wave for it
-        if duration:
-            # If not, make one
-            if int(duration) != self.duration:
-                self.duration = int(duration)
-                self.make_wave()
+    def open(self):
+        #self.pig.wave_send_once(self.wave_id)
+        self.pig.write(self.pin, 1)
+        time.sleep(self.duration)
+        self.pig.write(self.pin, 0)
 
-        self.pig.wave_send_once(self.wave_id)
+
+
+
+
 
 
