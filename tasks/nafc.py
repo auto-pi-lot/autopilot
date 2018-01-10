@@ -255,8 +255,9 @@ class Nafc:
                         self.pins[type][pin] = handler(pin_numbers[type][pin])
                         self.pins[type][pin].assign_cb(self.handle_trigger)
                         # If center port, add an additional callback for when something leaves it
-                        if pin == 'C':
-                            self.pins[type][pin].assign_cb(self.center_out, manual_trigger='U', add=True)
+                        # TODO: Disabling for now, make with a bounce time
+                        #if pin == 'C':
+                        #    self.pins[type][pin].assign_cb(self.center_out, manual_trigger='U', add=True)
                     except:
                         # TODO: More informative exception
                         Exception('Something went wrong instantiating pins, tell jonny to handle this better!')
@@ -266,10 +267,8 @@ class Nafc:
                 print('reached LEDs')
                 for pin, handler in values.items():
                     try:
-                        print(type, pin, pin_numbers[type][pin])
                         self.pins[type][pin] = handler(pins=pin_numbers[type][pin])
                     except:
-                        print('reached exception')
                         Exception("Something wrong instantiating LEDs")
 
             elif type == 'PORTS':
@@ -317,9 +316,7 @@ class Nafc:
             pin = hardware.BCM_TO_BOARD[pin]
             pin = self.pin_id[pin]
 
-        print('printing from handle_trigger')
         pprint.pprint(self.triggers)
-
 
         if not pin in self.triggers.keys():
             # No trigger assigned, get out without waiting
@@ -375,7 +372,6 @@ class Nafc:
         for v in self.resetting_variables:
             v = None
 
-
         if not self.sounds:
             raise RuntimeError('\nSound objects have not been passed! Make sure RPilot makes sounds from the soundict before running.')
         if self.punish_sound and ('punish' not in self.sounds.keys()):
@@ -391,7 +387,7 @@ class Nafc:
             warnings.warn("bias_mode is not defined or defined incorrectly")
 
         # Decide if correction trial (repeat last stim) or choose new target/stim
-        if (random.random() > self.pct_correction) or (self.target == None):
+        if (random.random() < self.pct_correction) or (self.target is None):
             # Choose target side and sound
             self.correction = 0
             if random.random() > randthresh:
@@ -434,9 +430,7 @@ class Nafc:
     def discrim(self,*args,**kwargs):
         self.stage_block.clear()
 
-        # TODO: Open solenoid for specific time, for now pass.
-        #self.triggers[self.target] = solenoid(time)
-        self.triggers[self.target] = self.test_correct
+        self.triggers[self.target] = self.pins['PORTS']['C'].open
         self.triggers[self.distractor] = self.punish
 
         # TODO: Handle timeout
@@ -445,12 +439,6 @@ class Nafc:
         data = {'DC_timestamp': datetime.datetime.now().isoformat()}
         self.current_stage = 1
         return data
-
-    def test_correct(self):
-        print('Correct!')
-
-    def test_incorrect(self):
-        print('Incorrect :(')
 
     def reinforcement(self,*args,**kwargs):
         # We do NOT clear the task event flag here because we want

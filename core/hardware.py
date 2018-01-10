@@ -242,14 +242,18 @@ class Solenoid:
         if duration:
             self.duration = int(duration)
 
-        self.pig.wave_clear()
         # Make a pulse (duration is in microseconds for pigpio, ours is in milliseconds
-        reward_pulse = [pigpio.pulse(1<<self.pin, 0, self.duration*1000)]
+        # Pulses are (pin to turn on, pin to turn off, delay)
+        # So we add two pulses, one to turn the pin on with a delay,
+        # then a second to turn the pin off with no delay.
+        reward_pulse = []
+        reward_pulse.append(pigpio.pulse(1<<self.pin, 0, self.duration*1000))
+        reward_pulse.append(pigpio.pulse(0, 1<<self.pin, 0))
+
         self.pig.wave_add_generic(reward_pulse)
         self.wave_id = self.pig.wave_create()
 
-
-    def open_valve(self, duration=None):
+    def open(self, duration=None):
         # If we are passed a duration, check if we have a wave for it
         if duration:
             # If not, make one
