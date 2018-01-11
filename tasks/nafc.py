@@ -26,6 +26,7 @@ from core import hardware, sounds
 from collections import OrderedDict as odict
 
 # This declaration allows Mouse to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
+# TODO: Move this to __init__
 TASK = 'Nafc'
 
 # TODO: Make meta task class that has logic for loading sounds, starting pyo server etc.
@@ -316,8 +317,6 @@ class Nafc:
             pin = hardware.BCM_TO_BOARD[pin]
             pin = self.pin_id[pin]
 
-        pprint.pprint(self.triggers)
-
         if not pin in self.triggers.keys():
             # No trigger assigned, get out without waiting
             return
@@ -364,7 +363,6 @@ class Nafc:
     # Stage Functions
     ##################################################################################
     def request(self,*args,**kwargs):
-        # TODO: Make a list of all trial-resetting variables and clear them here
         # Set the event lock
         self.stage_block.clear()
 
@@ -437,6 +435,7 @@ class Nafc:
         # TODO: Handle timeout
 
         # Only data is the timestamp
+        # TODO: Timestamps are fucked up here, should shift down a stage
         data = {'DC_timestamp': datetime.datetime.now().isoformat()}
         self.current_stage = 1
         return data
