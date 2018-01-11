@@ -125,6 +125,10 @@ class Free_Water:
 
     def response(self):
         # we just have to tell the Terminal that this trial has ended
+
+        # mebs also turn the light off rl quick
+        self.set_leds()
+        
         return {'TRIAL_END':True}
 
     def handle_trigger(self, pin, level, tick):
