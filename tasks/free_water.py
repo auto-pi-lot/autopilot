@@ -107,11 +107,11 @@ class Free_Water:
         self.stage_block.clear()
 
         # If this is the first trial, release water in all three ports
-        if self.first_trial:
-            self.first_trial = False
-            self.pins['PORTS']['L'].open()
-            self.pins['PORTS']['C'].open()
-            self.pins['PORTS']['R'].open()
+        #if self.first_trial:
+        #    self.first_trial = False
+        #    self.pins['PORTS']['L'].open()
+        #    self.pins['PORTS']['C'].open()
+        #    self.pins['PORTS']['R'].open()
 
         # Choose random port
         if self.allow_repeat:
