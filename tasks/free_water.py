@@ -91,6 +91,7 @@ class Free_Water:
         self.current_stage = None
         self.trial_counter = itertools.count(int(current_trial))
         self.triggers = {}
+        self.first_trial = True
 
         # Stage list to iterate
         stage_list = [self.water, self.response]
@@ -104,6 +105,13 @@ class Free_Water:
 
     def water(self, *args, **kwargs):
         self.stage_block.clear()
+
+        # If this is the first trial, release water in all three ports
+        if self.first_trial:
+            self.first_trial = False
+            self.pins['PORTS']['L'].open()
+            self.pins['PORTS']['C'].open()
+            self.pins['PORTS']['R'].open()
 
         # Choose random port
         if self.allow_repeat:
@@ -128,7 +136,7 @@ class Free_Water:
 
         # mebs also turn the light off rl quick
         self.set_leds()
-        
+
         return {'TRIAL_END':True}
 
     def handle_trigger(self, pin, level, tick):
