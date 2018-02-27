@@ -157,9 +157,6 @@ class Terminal_Networking(multiprocessing.Process):
         # Check if we know about this target
         # Warn if not, but still try and send message
 
-        # TODO: Make more robust - number each publish, spawn timer thread that checks whether we have received receipt
-        # TODO: Bind an on_send callback that spawns the timer thread
-        # TODO: Then add a 'TTL' field in the message dict and check for it in this function
         # TODO: Add 'TTL' to prefs setup
         # TODO: Add timer value to prefs setup
 

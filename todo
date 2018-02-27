@@ -1,21 +1,13 @@
-- make settings in user folder not the repo. Settings folder should just be for templates
 - rename/restructure templates as tasks, protocols. make protocol a base class of tasks
-- restructure folder of hardware objects - LEDs, Ports, etc. that all have their own logic
 - Make inits and the RPilot object more generic - init hardware rather than pins, etc.
     - Make all the hardware logic as separate objects, and have the mouse & protocol determine which hardware is present
     - Same with load_sounds, the speakers/sound driver should be a hardware object.
 
 
 ------------------
-!- make name param for steps
-!- implement protocol assignation in mouse object
-!- implement protocol assignation in 'new mouse' dialog
-!- make popup protocol params dialog
 - drag and drop mice order
 - send sound files
-- make multiple network keys - not just 'X' but also 'Pis', 'plots,' etc.
 - Make verbose/nonverbose mode - either report whole trials or events
-- Just have events, no data messages. check if the message dict has a field 'TRIALEND' or something to flush a row
 - Backfill logging into terminal & etc.
 
 TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
@@ -23,7 +15,22 @@ TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
 >>> trig = TrigRand(tabr['trig'])
 
 - classic mode, button that switches the UI to flickering grey screen
-- punishment flashing lights
 - sound calibration routine
 - move all class references to __init__
 - Make meta 'subscriber' class instead of describing each subscriber separately
+- Standardize messages into class
+- simplify networking objects with metaclass
+- change GUI so params not always shown on click, and start/stop button isn't hidden in it.
+    - Instead, just scroll box with mice, start/stop button
+    - auto-open textbox to input weight then auto-advance to next mouse in list.
+    - make 'add mice' dropdown to each pilot
+    - make mice reorderable
+- make batch mouse creation window
+
+
+order of code review:
+!- terminal
+- pilot
+- networking
+- plots
+-

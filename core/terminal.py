@@ -8,16 +8,12 @@ import json
 import sys
 import os
 import datetime
-import copy
 import logging
 import threading
-import multiprocessing
 import time
 from collections import OrderedDict as odict
-from PySide import QtCore
-from PySide import QtGui
-from pprint import pprint
-import pyqtgraph as pg
+
+from PySide import QtCore, QtGui
 import zmq
 from zmq.eventloop.ioloop import IOLoop
 from zmq.eventloop.zmqstream import ZMQStream
@@ -58,27 +54,36 @@ class Terminal(QtGui.QWidget):
             self.pilots = json.load(pilot_file, object_pairs_hook=odict)
 
         # Declare attributes
-        self.context = None
-        self.loop    = None
-        self.pusher = None
-        self.listener  = None
-        self.networking = None
-        self.rows = None #handles to row writing functions
+        self.context       = None
+        self.loop          = None
+        self.pusher        = None
+        self.listener      = None
+        self.networking    = None
+        self.rows          = None #handles to row writing functions
         self.networking_ok = False
-        self.mice = {} # Dict of our open mouse objects
+        self.mice          = {} # Dict of our open mouse objects
         self.current_mouse = None # ID of mouse currently in params panel
 
         # Start Logging
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
         log_file = os.path.join(prefs['LOGDIR'], 'Terminal_Log_{}.log'.format(timestr))
 
-        self.logger = logging.getLogger('main')
-        self.log_handler = logging.FileHandler(log_file)
+        self.logger        = logging.getLogger('main')
+        self.log_handler   = logging.FileHandler(log_file)
         self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
         self.log_handler.setFormatter(self.log_formatter)
         self.logger.addHandler(self.log_handler)
         self.logger.setLevel(logging.INFO)
         self.logger.info('Terminal Logging Initiated')
+
+        # Listen dictionary - which methods to call for different messages
+        # Methods are spawned in new threads using handle_message
+        self.listens = {
+            'STATE': self.l_state, # A Pi has changed state
+            'PING' : self.l_ping,  # Someone wants to know if we're alive
+            'FILE' : self.l_file,  # A pi needs some files to run its protocol
+            'DATA' : self.l_data   # yay data!
+        }
 
         # Make invoker object to send GUI events back to the main thread
         self.invoker = Invoker()
@@ -88,13 +93,15 @@ class Terminal(QtGui.QWidget):
         self.initUI() # Has to be before networking so plot listeners are caught by IOLoop
 
         # Start Networking
-
-        self.init_network()
+        # Networking is in two parts,
+        # "internal" networking for messages sent to and from the Terminal object itself
+        # "external" networking for messages to and from all the other components,
+        # The split is so the external networking can run in another process, do potentially time-consuming tasks
+        # like resending & confirming message delivery without blocking or missing messages
+        self.init_network()  # start "internal" networking
         self.spawn_network() # Has to be after init_network so it makes a new context
 
-        time.sleep(1)
-
-        #self.check_network()
+        #time.sleep(1)
 
     def initUI(self):
         # Main panel layout
@@ -113,21 +120,20 @@ class Terminal(QtGui.QWidget):
         # Set a high stretch so it fills all space that control panel doesn't take up
         self.panel_layout.addWidget(self.data_panel, 10)
 
-        # add logo and new protocol button in top strip
+        # add logo
         self.logo = QtGui.QLabel()
         self.logo.setPixmap(QtGui.QPixmap(prefs['REPODIR']+'/graphics/logo.png').scaled(265,40))
         self.logo.setFixedHeight(40)
         self.logo.setAlignment(QtCore.Qt.AlignRight)
+
+        # add buttons to top strip
+        # TODO: Put in dropdown boxes
         self.new_protocol_button = QtGui.QPushButton("New Protocol")
         self.new_protocol_button.clicked.connect(self.new_protocol)
         self.new_protocol_button.setFixedHeight(40)
-        self.connect_pilots_button = QtGui.QPushButton("Connect to Pilots")
-        self.connect_pilots_button.clicked.connect(self.init_pilots)
-        self.connect_pilots_button.setFixedHeight(40)
         top_strip = QtGui.QHBoxLayout()
         top_strip.setContentsMargins(0,0,0,0)
         top_strip.addWidget(self.new_protocol_button)
-        top_strip.addWidget(self.connect_pilots_button)
         top_strip.addStretch(1)
         top_strip.addWidget(self.logo)
 
@@ -151,6 +157,9 @@ class Terminal(QtGui.QWidget):
         self.show()
         logging.info('UI Initialized')
 
+    ##########################
+    # MOUSE DATA METHODS
+
     def mouse_start_toggled(self, toggled):
         # Get object for current mouse
         mouse = self.mice[self.current_mouse]
@@ -166,7 +175,6 @@ class Terminal(QtGui.QWidget):
             task['mouse'] = mouse.name
             # TODO: Get last trial number and insert in dict
             self.send_message('START', pilot, task)
-            # TODO: Spawn dataview widget
             # TODO: Spawn timer thread to trigger stop after run duration
 
         # Or else we are stopping the mouse
@@ -175,8 +183,6 @@ class Terminal(QtGui.QWidget):
             self.send_message('STOP', pilot)
             mouse.h5f.flush()
             # TODO: Destroy dataview widget
-
-
 
     def stop_mouse(self):
         # TODO flush table, handle coherence checking, close .h5f
@@ -192,7 +198,6 @@ class Terminal(QtGui.QWidget):
 
     def init_network(self):
         # Start internal communications
-        #self.context = zmq.Context()
         self.context = zmq.Context.instance()
         self.loop = IOLoop.instance()
 
@@ -203,24 +208,12 @@ class Terminal(QtGui.QWidget):
 
         self.pusher.connect('tcp://localhost:{}'.format(prefs['MSGPORT']))
         self.subscriber.connect('tcp://localhost:{}'.format(prefs['PUBPORT']))
-        self.subscriber.setsockopt(zmq.SUBSCRIBE, b'T')
-        self.subscriber.setsockopt(zmq.SUBSCRIBE, b'X')
+        self.subscriber.setsockopt(zmq.SUBSCRIBE, b'T') # Subscribe as "T"erminal
+        self.subscriber.setsockopt(zmq.SUBSCRIBE, b'X') # Subscribe to All
 
         # Setup subscriber for looping
         self.subscriber = ZMQStream(self.subscriber, self.loop)
         self.subscriber.on_recv(self.handle_listen)
-
-        # Listen dictionary - which methods to call for different messages
-        self.listens = {
-            'ALIVE': self.l_alive, # A Pi is telling us that it is alive
-            'DEAD' : self.l_dead, # A Pi we requested is not responding
-            'STATE': self.l_state, # A Pi has changed state
-            'LISTENING': self.l_listening, # The networking object tells us it's online
-            'PING' : self.l_ping, # Someone wants to know if we're alive
-            'FILE' : self.l_file, # A pi needs some files to run its protocol
-            'DATA' : self.l_data
-            #'START': self.l_start # A mouse has been started
-        }
 
         # Start IOLoop in daemon thread
         self.loop_thread = threading.Thread(target=self.threaded_loop)
@@ -234,25 +227,10 @@ class Terminal(QtGui.QWidget):
             self.logger.info("Starting IOLoop")
             self.loop.start()
 
-    def check_network(self):
-        # Let's see if the network is alive
-        self.logger.info("Contacting Networking Object")
-        attempts = 0
-        while not self.networking_ok and attempts < 10:
-            self.send_message('LISTENING')
-            attempts += 1
-            time.sleep(1)
-
-        if not self.networking_ok:
-            self.logger.warning("No response from network object")
-
-    def init_pilots(self):
-        self.logger.info('Initializing Pilots')
-        self.send_message('INIT', value=self.pilots.keys())
-
     def handle_listen(self, msg):
         # Listens are multipart target-msg messages
         # target = msg[0]
+        # 'key' determines which method is called, 'value' is passed to the method.
         message = json.loads(msg[1])
 
         if not all(i in message.keys() for i in ['key', 'value']):
@@ -268,37 +246,17 @@ class Terminal(QtGui.QWidget):
         # Tell the networking process that we got it
         self.send_message('RECVD', value=message['id'])
 
-
     def send_message(self, key, target='', value=''):
         msg = {'key': key, 'target': target, 'value': value}
 
+        # Send in own thread -- sending via pusher blocks
         msg_thread = threading.Thread(target= self.pusher.send_json, args=(json.dumps(msg),))
         msg_thread.start()
 
         self.logger.info("MESSAGE SENT - Target: {}, Key: {}, Value: {}".format(target, key, value))
 
-    def l_alive(self, value):
-        # Change icon next to appropriate pilot button
-        # If we have the value in our list of pilots...
-        self.logger.info('arrived at gui setting, value: {}, pilots: {}'.format(value, self.pilots.keys()))
-        if value in self.pilots.keys():
-            self.logger.info('boolean passed')
-            self.gui_event(self.pilot_panel.buttons[value].setStyleSheet, "background-color:green")
-            self.logger.info('passed GUI setting')
-            # TODO: maintain list of responsive pilots, only try to send 'start' to connected pilots
-            #self.pilot_panel.buttons[value].setStyleSheet("background-color:green")
-        else:
-            self.logger.info('boolean failed, returning')
-            return
-
-    def l_dead(self, value):
-        # Change icon next to appropriate pilot button
-        # If we have the value in our list of pilots...
-        if value in self.pilots.keys():
-            self.gui_event(self.pilot_panel.buttons[value].setStyleSheet, "background-color:red")
-            #self.pilot_panel.buttons[value].setStyleSheet("background-color:red")
-        else:
-            return
+    ############################
+    # MESSAGE HANDLING METHODS
 
     def l_state(self, value):
         # A Pi has changed state
@@ -311,24 +269,16 @@ class Terminal(QtGui.QWidget):
         # A Pi has sent us data, let's save it huh?
         mouse_name = value['mouse']
         self.mice[mouse_name].save_data(value)
-
-    def l_listening(self, value):
-        self.networking_ok = True
-        self.logger.info('Networking responds as alive')
+        # TODO check graduation here
 
     def l_ping(self, value):
         self.send_message('ALIVE', value=b'T')
 
-        # TODO: Give params window handle to mouse panel's update params function
-        # TODO: Give params window handle to Terminal's delete params function
-
     def l_file(self, value):
         pass
 
-    #def l_start(self, value):
-    #    # Let the plot widget know we're starting a mouse
-    #    self.data_panel.start_plotting(value)
-
+    #############################
+    # GUI & etc. methods
 
     def new_protocol(self):
         self.new_protocol_window = Protocol_Wizard()
@@ -379,12 +329,6 @@ class Terminal(QtGui.QWidget):
         #    event.accept() # let the window close
         #else:
         #    event.ignore()
-
-
-
-
-
-
 
 if __name__ == '__main__':
     # Parse arguments - this should have been called with a .json prefs file passed
