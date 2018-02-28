@@ -26,10 +26,13 @@ TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
     - make 'add mice' dropdown to each pilot
     - make mice reorderable
 - make batch mouse creation window
-
+- add mouse infobox to left of plot
+- fix 'new mouse' button to specify pilot
+- make superclass of all "parameters-like" windows (windows that are a list of something.)
 
 order of code review:
 !- terminal
+- gui (starting 2/28)
 - pilot
 - networking
 - plots

@@ -209,6 +209,13 @@ class Mouse:
             self.trial_row.append()
             self.task_table.flush()
 
+        if 'start_weight' in data.keys():
+            # TODO: Handle weights
+            pass
+
+        if 'end_weight' in data.keys():
+            pass
+
     def stop_run(self):
         self.running = False
         self.h5f.flush()
