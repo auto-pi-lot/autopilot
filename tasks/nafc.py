@@ -101,7 +101,7 @@ class Nafc:
 
     # PyTables Data descriptor
     # for numpy data types see http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html#arrays-dtypes-constructing
-    class DataTypes(tables.IsDescription):
+    class TrialDTypes(tables.IsDescription):
         # This class allows the Mouse object to make a data table with the correct data types. You must update it for any new data you'd like to store
         trial_num = tables.Int32Col()
         target = tables.StringCol(1)

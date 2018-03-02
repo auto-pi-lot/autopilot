@@ -31,7 +31,7 @@ class Free_Water:
     }
 
     # TODO: This should be generated from DATA above. Perhaps parsimoniously by using tables types rather than string descriptors
-    class DataTypes(tables.IsDescription):
+    class TrialData(tables.IsDescription):
         trial_num = tables.Int32Col()
         target    = tables.StringCol(1)
         timestamp = tables.StringCol(26)

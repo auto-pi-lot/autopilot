@@ -53,40 +53,11 @@ class Control_Panel(QtGui.QWidget):
 
     def init_ui(self):
         # Layout for whole widget
-        self.layout = QtGui.QVBoxLayout()
+        self.layout = QtGui.QGridLayout()
         self.layout.setContentsMargins(0,0,0,0)
         self.layout.setSpacing(0)
         self.setLayout(self.layout)
 
-        # Make top row 'new' buttons
-        new_button_panel = QtGui.QHBoxLayout()
-        new_button_panel.setContentsMargins(0,0,0,0)
-        new_button_panel.setSpacing(0)
-
-        self.new_pilot_button = QtGui.QPushButton('+')
-        self.new_pilot_button.setContentsMargins(0,0,0,0)
-        self.new_pilot_button.setFixedSize(self.pilot_width, self.pilot_width)
-        self.new_pilot_button.clicked.connect(self.create_pilot)
-
-        self.new_mouse_button = QtGui.QPushButton('+')
-        self.new_mouse_button.setContentsMargins(0,0,0,0)
-        self.new_mouse_button.setFixedSize(self.mouse_width, self.pilot_width)
-        self.new_mouse_button.clicked.connect(self.create_mouse)
-
-        new_button_panel.addWidget(self.new_pilot_button)
-        new_button_panel.addWidget(self.new_mouse_button)
-        new_button_panel.addStretch(1)
-
-        self.layout.addLayout(new_button_panel)
-
-        # Make main pilot layout,
-        # each row will consist of a pilot's start/stop button and a list of mice
-        self.pilot_layout = QtGui.QGridLayout()
-        self.layout.addLayout(self.pilot_layout, stretch=1)
-
-        self.populate_pilots()
-
-    def populate_pilots(self):
         # Iterate through pilots and mice, making start/stop buttons for pilots and lists of mice
         for i, (pilot, mice) in enumerate(self.pilots.items()):
             mouse_list = QtGui.QListWidget()
@@ -96,8 +67,34 @@ class Control_Panel(QtGui.QWidget):
 
             pilot_button = Pilot_Button(pilot, mouse_list, self.toggle_start)
 
-            self.pilot_layout.addWidget(pilot_button, i, 1, 1, 1)
-            self.pilot_layout.addWidget(mouse_list, i, 2, 1, 1)
+            self.layout.addWidget(pilot_button, i, 1, 1, 1)
+            self.layout.addWidget(mouse_list, i, 2, 1, 1)
+
+        # # Make top row 'new' buttons
+        # new_button_panel = QtGui.QHBoxLayout()
+        # new_button_panel.setContentsMargins(0,0,0,0)
+        # new_button_panel.setSpacing(0)
+        #
+        # self.new_pilot_button = QtGui.QPushButton('+')
+        # self.new_pilot_button.setContentsMargins(0,0,0,0)
+        # self.new_pilot_button.setFixedSize(self.pilot_width, self.pilot_width)
+        # self.new_pilot_button.clicked.connect(self.create_pilot)
+        #
+        # self.new_mouse_button = QtGui.QPushButton('+')
+        # self.new_mouse_button.setContentsMargins(0,0,0,0)
+        # self.new_mouse_button.setFixedSize(self.mouse_width, self.pilot_width)
+        # self.new_mouse_button.clicked.connect(self.create_mouse)
+        #
+        # new_button_panel.addWidget(self.new_pilot_button)
+        # new_button_panel.addWidget(self.new_mouse_button)
+        # new_button_panel.addStretch(1)
+
+        # self.layout.addLayout(new_button_panel)
+
+        # Make main pilot layout,
+        # each row will consist of a pilot's start/stop button and a list of mice
+
+        # self.populate_pilots()
 
     def toggle_start(self, starting, pilot, mouse=None):
         # stopping is the enemy of starting so we put them in the same function to learn about each other

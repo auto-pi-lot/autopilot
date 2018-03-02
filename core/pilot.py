@@ -193,7 +193,7 @@ class RPilot:
 
         # Setup a table to store data locally
         # Get data table descriptor
-        table_descriptor = self.task.DataTypes
+        table_descriptor = self.task.TrialData
 
         # Make a group for this mouse if we don't already have one
         self.mouse = value['mouse']

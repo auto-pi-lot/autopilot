@@ -51,6 +51,15 @@ class Mouse:
             self.current = json.loads(protocol_string)
             self.step = int(current_node.attrs['step'])
             self.protocol_name = current_node.attrs['protocol_name']
+            self.current_group = self.h5f.get_node('/data',self.protocol_name)
+
+        # We will get handles to trial and continuous data when we start running
+        self.trial_table = None
+        self.trial_row   = None
+        self.trial_keys  = None
+        self.cont_table  = None
+        self.cont_row    = None
+        self.cont_keys   = None
 
         # Is the mouse currently running (ie. we expect data to be incoming)
         # Used to keep the mouse object alive, otherwise we close the file whenever we don't need it
@@ -137,25 +146,45 @@ class Mouse:
         ## Assign new protocol
         # Load protocol to dict
         with open(protocol) as protocol_file:
-            self.protocol = json.load(protocol_file)
+            self.current = json.load(protocol_file)
 
         # Make filenode and save as string
         current_node = filenode.new_node(self.h5f, where='/', name='current')
-        current_node.write(json.dumps(self.protocol))
+        current_node.write(json.dumps(self.current))
 
         # Set name and step
         # Strip off path and extension to get the protocol name
-        # TODO: Why not metadata?
         protocol_name = os.path.splitext(protocol)[0].split(os.sep)[-1]
         current_node.attrs['protocol_name'] = protocol_name
-        current_node.attrs['step'] = step
-        # We potentially double-assign step in the case that the mouse didn't have a protocol on init
-        self.step = int(step)
         self.protocol_name = protocol_name
-        self.current = protocol
 
-        # Make file group for protocol, tables will be made for each step
-        self.h5f.create_group('/data', protocol_name)
+        current_node.attrs['step'] = step
+        self.step = int(step)
+
+        # Make file group for protocol
+        self.current_group = self.h5f.create_group('/data', protocol_name)
+
+        # Create groups for each step
+        # There are two types of data - continuous and trialwise.
+        # Each gets a single table within a group: since each step should have
+        # consistent data requirements over time and hdf5 doesn't need to be in
+        # memory, we can just keep appending to keep things simple.
+        for i, step in enumerate(self.current):
+            # First we get the task class for this step
+            task_class = tasks.TASK_LIST[step['task_type']]
+            step_name = step['step_name']
+            group_name = "{:2d}_{}".format(i, step_name)
+
+            step_group = self.h5f.create_group(self.current_group, group_name)
+
+            # The task class *should* have at least one PyTables DataTypes descriptor
+            if hasattr(task_class, "TrialData"):
+                trial_descriptor = task_class.TrialData
+                self.h5f.create_table(step_group, "trial_data", trial_descriptor)
+
+            if hasattr(task_class, "ContinuousData"):
+                cont_descriptor = task_class.ContinuousData
+                self.h5f.create_table(step_group, "continuous_data", cont_descriptor)
 
         # Update history (flushes the file so we don't have to here)
         self.update_history('protocol', protocol_name, step)
@@ -191,39 +220,48 @@ class Mouse:
 
         self.h5f.remove_node('/current')
 
-
-
     def close_h5f(self):
         self.h5f.flush()
         self.h5f.close()
 
     def prepare_run(self):
+        # Get current task parameters and handles to tables
+        task_params = self.current[self.step]
+        step_name = task_params['step_name']
+
+        # file structure is '/data/protocol_name/##_step_name/tables'
+        group_name = "/data/{}/{:2d}_{}".format(self.protocol_name, self.step, step_name)
+        try:
+            self.trial_table = self.h5f.get_node(group_name, 'trial_data')
+            self.trial_row = self.trial_table.row
+            self.trial_keys = self.trial_table.colnames
+        except:
+            # fine, we just need one
+            pass
+
+        try:
+            self.cont_table = self.h5f.get_node(group_name, 'continuous_data')
+            self.cont_row   = self.cont_table.row
+            self.cont_keys  = self.cont_table.colnames
+        except:
+            pass
+
+        if not any([self.cont_table, self.trial_table]):
+            Exception("No data tables exist for step {}! Is there a Trial or Continuous data descriptor in the task class?".format(self.step))
+
+        # TODO: Spawn graduation checking object!
+        
+
         self.running = True
 
-        # Get current task parameters and prepare data table
-        task_params = self.current[self.step]
-        task_class = tasks.TASK_LIST[task_params['task_type']]
-        self.data_keys = task_class.DATA.keys()
-        data_descriptor = task_class.DataTypes
-        data_group = self.h5f.get_node('/data',self.protocol_name)
-
-        datestring = datetime.date.today().isoformat()
-        conflict_avoid = 0
-        while datestring in data_group:
-            conflict_avoid += 1
-            datestring = datetime.date.today().isoformat() + '-' + str(conflict_avoid)
-
-        self.task_table = self.h5f.create_table(data_group, datestring, data_descriptor)
-        self.trial_row = self.task_table.row
-
-    def save_data(self,data):
+    def save_data(self, data):
         for k, v in data.items():
-            if k in self.data_keys:
+            if k in self.trial_keys:
                 self.trial_row[k] = v
 
         if 'TRIAL_END' in data.keys():
             self.trial_row.append()
-            self.task_table.flush()
+            self.trial_table.flush()
 
         if 'start_weight' in data.keys():
             # TODO: Handle weights
