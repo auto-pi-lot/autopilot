@@ -15,7 +15,7 @@ class Control_Panel(QtGui.QWidget):
     # Hosts two nested tab widgets to select pilot and mouse,
     # set params, run mice, etc.
 
-    def __init__(self, pilots=None, mice=None, msg_fn=None, pilot_width=30, mouse_width=150, prefs=None):
+    def __init__(self, pilots=None, mice=None, msg_fn=None, prefs=None):
         super(Control_Panel, self).__init__()
         # We should be passed a pilot odict {'pilot':[mouse1, mouse2]}
         # If we're not, try to load prefs, and if we don't have prefs, from default loc.
@@ -24,7 +24,7 @@ class Control_Panel(QtGui.QWidget):
         # We share a dict of mouse objects with the main Terminal class to avoid access conflicts
         self.mice = mice
 
-        # We get the Terminal's send_message function and give it to all the Param windows on instantiation
+        # We get the Terminal's send_message function so we can communicate directly from here
         self.send_message = msg_fn
 
         if pilots:
@@ -41,60 +41,43 @@ class Control_Panel(QtGui.QWidget):
                 except IOError:
                     Exception('Couldnt find pilot directory!')
 
-        # Sizes to pass to the tab widgets
-        self.pilot_width = pilot_width
-        self.mouse_width = mouse_width
+        # Make dict to store handles to mice lists
+        self.mouse_lists = {}
 
-        # Make dict to store handles to mice tabs
-        # TODO: See if we need this after changing the UI
-        self.mouse_tabs = {}
-
-        self.init_ui()
-
-    def init_ui(self):
-        # Layout for whole widget
+        # Set layout for whole widget
         self.layout = QtGui.QGridLayout()
         self.layout.setContentsMargins(0,0,0,0)
         self.layout.setSpacing(0)
         self.setLayout(self.layout)
 
+        self.init_ui()
+
+    def init_ui(self):
+        self.layout.setColumnStretch(0, 1)
+        self.layout.setColumnStretch(1, 5)
+
         # Iterate through pilots and mice, making start/stop buttons for pilots and lists of mice
         for i, (pilot, mice) in enumerate(self.pilots.items()):
-            mouse_list = QtGui.QListWidget()
-            for m in mice:
-                mouse_list.addItem(m)
-                # TODO: Make mouse_list launch param/task editor on double click
+            # Make a list of mice
+            mouse_list = Mouse_List(mice, drop_fn = self.update_db)
+            self.mouse_lists[pilot] = mouse_list
+            mouse_list.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+            # TODO: Make mouse_list launch param/task editor on double click
 
-            pilot_button = Pilot_Button(pilot, mouse_list, self.toggle_start)
+            # Make a panel for pilot control
+            pilot_panel = Pilot_Panel(pilot, mouse_list, self.toggle_start, self.create_mouse)
+            pilot_panel.setFixedWidth(100)
 
-            self.layout.addWidget(pilot_button, i, 1, 1, 1)
+            self.layout.addWidget(pilot_panel, i, 1, 1, 1)
             self.layout.addWidget(mouse_list, i, 2, 1, 1)
 
-        # # Make top row 'new' buttons
-        # new_button_panel = QtGui.QHBoxLayout()
-        # new_button_panel.setContentsMargins(0,0,0,0)
-        # new_button_panel.setSpacing(0)
-        #
-        # self.new_pilot_button = QtGui.QPushButton('+')
-        # self.new_pilot_button.setContentsMargins(0,0,0,0)
-        # self.new_pilot_button.setFixedSize(self.pilot_width, self.pilot_width)
-        # self.new_pilot_button.clicked.connect(self.create_pilot)
-        #
-        # self.new_mouse_button = QtGui.QPushButton('+')
-        # self.new_mouse_button.setContentsMargins(0,0,0,0)
-        # self.new_mouse_button.setFixedSize(self.mouse_width, self.pilot_width)
-        # self.new_mouse_button.clicked.connect(self.create_mouse)
-        #
-        # new_button_panel.addWidget(self.new_pilot_button)
-        # new_button_panel.addWidget(self.new_mouse_button)
-        # new_button_panel.addStretch(1)
-
-        # self.layout.addLayout(new_button_panel)
-
-        # Make main pilot layout,
-        # each row will consist of a pilot's start/stop button and a list of mice
-
-        # self.populate_pilots()
+    def reset_ui(self):
+        # TODO This don't work.
+        self.layout = QtGui.QGridLayout()
+        self.layout.setContentsMargins(0,0,0,0)
+        self.layout.setSpacing(0)
+        self.setLayout(self.layout)
+        self.init_ui()
 
     def toggle_start(self, starting, pilot, mouse=None):
         # stopping is the enemy of starting so we put them in the same function to learn about each other
@@ -105,8 +88,7 @@ class Control_Panel(QtGui.QWidget):
 
             self.mice[mouse].prepare_run()
 
-            # If the mouse has a task assigned to it, we populate the window with its parameters
-            # Otherwise we make a button to assign a protocol
+            # Get the mouse's task info to send to the pilot
             try:
                 protocol = self.mice[mouse].current
                 step = self.mice[mouse].step
@@ -117,53 +99,26 @@ class Control_Panel(QtGui.QWidget):
                 return
 
             # Prep task to send to pi, the pilot needs to know the mouse
-            task['mouse'] = self.mouse.name
-            task['pilot'] = self.pilot
+            task['mouse'] = self.mice[mouse].name
+            task['pilot'] = pilot
 
             # TODO: Before starting, pop a window to get weight.
-
             # TODO: Get last trial number and send to pi as well
 
-            self.send_message('START', bytes(self.pilot), task)
+            self.send_message('START', bytes(pilot), task)
 
         else:
             # Send message to pilot to stop running,
             # it should initiate a coherence checking routine to make sure
             # its data matches what the Terminal got,
             # so the terminal will handle closing the mouse object
-            self.send_message('STOP', bytes(self.pilot))
+            self.send_message('STOP', bytes(pilot))
             # TODO: Start coherence checking ritual
-            # TODO: Close mouse object here, somewhere, who knows. probably in terminal following the "STOP"
+            # TODO: Close mouse object
             # TODO: Pop weight entry window
             # TODO: Auto-select the next mouse in the list.
 
-    def create_pilot(self):
-        name, ok = QtGui.QInputDialog.getText(self, "Pilot ID", "Pilot ID:")
-
-        # make sure we won't overwrite ourself
-        if ok and name in self.pilots.keys():
-            # TODO: Pop a window confirming we want to overwrite
-            pass
-
-
-        if ok and name != '':
-            self.pilots[name] = []
-            self.update_db()
-            self.populate_tabs()
-            # Make a mouse TabWidget
-            #mice_tabs = QtGui.QTabWidget()
-            #mice_tabs.setTabBar(Stacked_Tabs(width=self.mouse_width,
-            #                                 height=self.pilot_width))
-            #mice_tabs.setTabPosition(QtGui.QTabWidget.West)
-            #mice_tabs.currentChanged.connect(self.select_mouse)
-            #self.pilot_tabs.addTab(mice_tabs,name)
-            #self.pilot_tabs.setCurrentWidget(mice_tabs)
-            # TODO: Add a row to the dataview
-        else:
-            # Idk maybe pop a dialog window but i don't really see why
-            pass
-
-    def create_mouse(self):
+    def create_mouse(self, pilot):
         new_mouse_wizard = New_Mouse_Wizard(self.prefs['PROTOCOLDIR'])
         new_mouse_wizard.exec_()
 
@@ -174,6 +129,7 @@ class Control_Panel(QtGui.QWidget):
             # Make a new mouse object, make it temporary because we want to close it
             mouse_obj = Mouse(biography_vals['id'], new=True,
                               biography=biography_vals)
+            self.mice[biography_vals['id']] = mouse_obj
 
             # If a protocol was selected in the mouse wizard, assign it.
             try:
@@ -187,67 +143,21 @@ class Control_Panel(QtGui.QWidget):
 
 
             # Close the file because we want to keep mouse objects only when they are running
-            mouse_obj.close_h5f()
 
             # Add mouse to pilots dict, update it and our tabs
-            current_pilot = self.pilot_tabs.tabText(self.pilot_tabs.currentIndex())
-            self.pilots[current_pilot].append(biography_vals['id'])
+            self.pilots[pilot].append(biography_vals['id'])
+            self.mouse_lists[pilot].addItem(biography_vals['id'])
             self.update_db()
-            self.populate_tabs(new_mouse=True)
+            self.mouse_lists[pilot].addItem(biography_vals['id'])
 
-    def select_mouse(self, index=0):
-        # TODO: Make this the doubleclick function, make params a popup
-        # When a mouse's button is clicked, we expand a parameters pane for it
-        # This pane lets us give the mouse a protocol if it doesn't have one,
-        # adjust the parameters if it does, and start the mouse running
+    def update_db(self, *args, **kwargs):
+        for pilot, mlist in self.mouse_lists.items():
+            mice = []
+            for i in range(mlist.count()):
+                mice.append(mlist.item(i).text())
 
-        # sender is the mice qtabwidget, we we get the text of the current tab
-        if self.pilot_tabs.currentWidget().count() == 0:
-            # If the current mouse tab has no mice in it (we just made the pilot)
-            # just chill until we do.
-            self.hide_tabs()
-            return
+            self.pilots[pilot] = mice
 
-        sender = self.pilot_tabs.currentWidget()
-
-
-        #if new_mouse:
-        #    sender.setCurrentIndex(sender.count())
-        mouse_id = sender.tabText(sender.currentIndex())
-
-        # Set an arbitrarily large max width to counteract the spell of hide_tabs()
-        # Set expanding size policy to let the params panel take as much space as it wants,
-        # it is supposed to float, aftear all.
-        self.pilot_tabs.setMaximumWidth(10000)
-        #self.pilot_tabs.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-
-        # We check if there was a param window populated before and close it if it was
-        for i in xrange(sender.count()):
-            w = sender.widget(i)
-            if hasattr(w.mouse, 'running'):
-                if not w.mouse.running:
-                    self.mice[w.mouse.name].close_h5f()
-                    del self.mice[w.mouse.name]
-                    w.mouse = None
-            #w.hide_params()
-
-        # open the mouse object if it isn't already
-        if not mouse_id in self.mice:
-            self.mice[mouse_id] = Mouse(mouse_id)
-            mouse_obj = self.mice[mouse_id]
-        else:
-            mouse_obj = self.mice[mouse_id]
-
-        params_widget = sender.widget(index)
-        params_widget.show_params(mouse_obj)
-
-        # TODO: Also look for mouse objects in our dict that aren't running and delete them
-
-        #sender = sender.checkedButton()
-        #self.mouse = sender.text()
-
-    def update_db(self):
-        # TODO: Pretty hacky, should explicitly pass prefs or find some way of making sure every object has it
         try:
             with open(self.prefs['PILOT_DB'], 'w') as pilot_file:
                 json.dump(self.pilots, pilot_file)
@@ -257,37 +167,117 @@ class Control_Panel(QtGui.QWidget):
                     json.dump(self.pilots, pilot_file)
             except IOError:
                 Exception('Couldnt update pilot db!')
-                # TODO: Probably just pop a dialog, don't need to crash shit.
+
+
+class Mouse_List(QtGui.QListWidget):
+    def __init__(self, mice=None, drop_fn=None):
+        super(Mouse_List, self).__init__()
+
+        # if we are passed a list of mice, populate
+        if mice:
+            self.mice = mice
+            self.populate_list()
+
+        # make draggable
+        self.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
+        self.setDragDropOverwriteMode(False)
+        self.setAcceptDrops(True)
+
+        # drop_fn gets called on a dropEvent (after calling the superclass method)
+        self.drop_fn = drop_fn
+
+    def populate_list(self):
+        for m in self.mice:
+            self.addItem(m)
+
+    def dropEvent(self, event):
+        super(Mouse_List, self).dropEvent(event)
+        self.drop_fn()
+
+
+class Pilot_Panel(QtGui.QWidget):
+    def __init__(self, pilot=None, mouse_list=None, toggle_fn=None, create_fn=None):
+        # A little panel with the name of a pilot on top,
+        # a big start/stop button, and two smaller add/remove mouse buttons at the bottom
+        super(Pilot_Panel, self).__init__()
+
+        self.layout = QtGui.QGridLayout()
+        self.layout.setContentsMargins(0,0,0,0)
+        self.layout.setSpacing(0)
+        self.setLayout(self.layout)
+
+        self.pilot = pilot
+        self.mouse_list = mouse_list
+        self.toggle_fn = toggle_fn
+        self.create_fn = create_fn
+
+        self.init_ui()
+
+    def init_ui(self):
+        label = QtGui.QLabel(self.pilot)
+        start_button = Pilot_Button(self.pilot, self.mouse_list, self.toggle_fn)
+        add_button = QtGui.QPushButton("+")
+        add_button.clicked.connect(self.create_mouse)
+        remove_button = QtGui.QPushButton("-")
+        remove_button.clicked.connect(self.remove_mouse)
+
+        self.layout.addWidget(label, 0, 0, 1, 2)
+        self.layout.addWidget(start_button, 1, 0, 1, 2)
+        self.layout.addWidget(add_button, 2,0,1,1)
+        self.layout.addWidget(remove_button, 2,1,1,1)
+
+        self.layout.setRowStretch(0, 0)
+        self.layout.setRowStretch(1, 5)
+        self.layout.setRowStretch(2, 0)
+
+    def remove_mouse(self):
+        self.mouse_list.takeItem(self.mouse_list.currentRow())
+        # the drop fn updates the db
+        self.mouse_list.drop_fn()
+
+    def create_mouse(self):
+        # essentially just a decorator, just calling create_mouse w/ our name
+        self.create_fn(self.pilot)
 
 
 class Pilot_Button(QtGui.QPushButton):
     def __init__(self, pilot=None, mouse_list=None, toggle_fn=None):
+        # Just easier to add the button behavior as a class.
         super(Pilot_Button, self).__init__()
 
+        ## GUI Settings
         self.setCheckable(True)
         self.setChecked(False)
+        self.setStyleSheet("QPushButton {color:white; background-color: green}"
+                           "QPushButton:checked {color:white; background-color: red}")
+        # since we're stopped when created, set our text as a start button...
+        self.setText("START")
+
+        # Normally buttons only expand horizontally, but these big ole ones....
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
 
         # What's yr name anyway?
         self.pilot = pilot
-        self.setText(pilot)
-
 
         # What mice do we know about?
         self.mouse_list = mouse_list
 
         # Passed a function to toggle start from the control panel
         self.toggle_fn = toggle_fn
-
+        # toggle_start has a little sugar on it before sending to control panel
         self.toggled.connect(self.toggle_start)
+
 
     def toggle_start(self, toggled):
         # If we're stopped, start, and vice versa...
         if toggled:
             current_mouse = self.mouse_list.currentItem().text()
             self.toggle_fn(True, self.pilot, current_mouse)
-
+            self.setText("STOP")
         else:
             self.toggle_fn(False, self.pilot)
+            self.setText("START")
+
 
 
 
@@ -601,9 +591,6 @@ class New_Mouse_Wizard(QtGui.QDialog):
 
         self.setWindowTitle("Setup New Mouse")
 
-
-
-
     class Biography_Tab(QtGui.QWidget):
         def __init__(self):
             QtGui.QWidget.__init__(self)
@@ -677,8 +664,6 @@ class New_Mouse_Wizard(QtGui.QDialog):
             pct = float(self.minmass_pct.text()[:-1])/100
             self.minmass.setText(str(baseline*pct))
 
-
-
     class Task_Tab(QtGui.QWidget):
         def __init__(self, protocol_dir):
             QtGui.QWidget.__init__(self)
@@ -708,7 +693,6 @@ class New_Mouse_Wizard(QtGui.QDialog):
 
             # Dict to return values
             self.values = {}
-
 
         def update_step_box(self):
             # Clear box
@@ -837,7 +821,6 @@ class Protocol_Wizard(QtGui.QDialog):
         step_index = self.step_list.currentRow()
         del self.steps[step_index]
         self.step_list.takeItem(step_index)
-
 
     def populate_params(self):
         self.clear_params()
@@ -1025,7 +1008,6 @@ class Sound_Widget(QtGui.QWidget):
             self.left_list.addItem(k['type'])
         for k in self.sound_dict['R']:
             self.right_list.addItem(k['type'])
-
 
     class Add_Sound_Dialog(QtGui.QDialog):
         def __init__(self):

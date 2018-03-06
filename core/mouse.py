@@ -173,7 +173,7 @@ class Mouse:
             # First we get the task class for this step
             task_class = tasks.TASK_LIST[step['task_type']]
             step_name = step['step_name']
-            group_name = "{:2d}_{}".format(i, step_name)
+            group_name = "{:02d}_{}".format(i, step_name)
 
             step_group = self.h5f.create_group(self.current_group, group_name)
 
@@ -186,6 +186,7 @@ class Mouse:
                 cont_descriptor = task_class.ContinuousData
                 self.h5f.create_table(step_group, "continuous_data", cont_descriptor)
 
+        print('finished making ')
         # Update history (flushes the file so we don't have to here)
         self.update_history('protocol', protocol_name, step)
 
@@ -230,14 +231,14 @@ class Mouse:
         step_name = task_params['step_name']
 
         # file structure is '/data/protocol_name/##_step_name/tables'
-        group_name = "/data/{}/{:2d}_{}".format(self.protocol_name, self.step, step_name)
-        try:
-            self.trial_table = self.h5f.get_node(group_name, 'trial_data')
-            self.trial_row = self.trial_table.row
-            self.trial_keys = self.trial_table.colnames
-        except:
+        group_name = "/data/{}/{:02d}_{}".format(self.protocol_name, self.step, step_name)
+        #try:
+        self.trial_table = self.h5f.get_node(group_name, 'trial_data')
+        self.trial_row = self.trial_table.row
+        self.trial_keys = self.trial_table.colnames
+        #except:
             # fine, we just need one
-            pass
+        #    pass
 
         try:
             self.cont_table = self.h5f.get_node(group_name, 'continuous_data')
@@ -250,7 +251,7 @@ class Mouse:
             Exception("No data tables exist for step {}! Is there a Trial or Continuous data descriptor in the task class?".format(self.step))
 
         # TODO: Spawn graduation checking object!
-        
+
 
         self.running = True
 

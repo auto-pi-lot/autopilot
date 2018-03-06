@@ -32,7 +32,7 @@ TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
 
 order of code review:
 !- terminal
-- gui (starting 2/28)
+!- gui
 - pilot
 - networking
 - plots

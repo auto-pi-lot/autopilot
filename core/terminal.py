@@ -37,14 +37,18 @@ from gui import Control_Panel, Protocol_Wizard
 # https://wiki.qt.io/PySide_Tutorials
 
 
-class Terminal(QtGui.QWidget):
+class Terminal(QtGui.QMainWindow):
     '''
     GUI for RPilot Terminal
     '''
 
     def __init__(self, prefs):
         # Initialize the superclass (QtGui.QWidget)
-        QtGui.QWidget.__init__(self)
+        super(Terminal, self).__init__()
+
+        # set central widget
+        self.widget = QtGui.QWidget()
+        self.setCentralWidget(self.widget)
 
         # Get prefs dict
         self.prefs = prefs
@@ -89,8 +93,14 @@ class Terminal(QtGui.QWidget):
         self.invoker = Invoker()
 
         # Start GUI
+        self.layout = QtGui.QGridLayout()
+        self.layout.setSpacing(0)
+        self.layout.setContentsMargins(0,0,0,0)
+        self.widget.setLayout(self.layout)
+
         self.setWindowTitle('Terminal')
         self.initUI() # Has to be before networking so plot listeners are caught by IOLoop
+
 
         # Start Networking
         # Networking is in two parts,
@@ -103,46 +113,45 @@ class Terminal(QtGui.QWidget):
 
         #time.sleep(1)
 
+
+
     def initUI(self):
         # Main panel layout
-        self.panel_layout = QtGui.QHBoxLayout()
         #self.panel_layout.setContentsMargins(0,0,0,0)
 
-        # Init main panels and add to layout
+        # Init toolbar
+        self.file_menu = self.menuBar().addMenu("&File")
+        new_pilot_act = QtGui.QAction("New &Pilot", self, triggered=self.new_pilot)
+        new_prot_act  = QtGui.QAction("New Pro&tocol", self, triggered=self.new_protocol)
+        batch_create_mice = QtGui.QAction("Batch &Create Mice", self, triggered=self.batch_mice)
+        self.file_menu.addAction(new_pilot_act)
+        self.file_menu.addAction(new_prot_act)
+        self.file_menu.addAction(batch_create_mice)
+
+        ## Init main panels and add to layout
+        # Control panel sits on the left, controls pilots & mice
         self.control_panel = Control_Panel(pilots=self.pilots,
                                            mice=self.mice,
                                            msg_fn=self.send_message,
                                            prefs=self.prefs)
+
+        # Data panel sits on the right, plots stuff.
         self.data_panel = Plot_Widget(prefs=self.prefs,
                                       invoker=self.invoker)
         self.data_panel.init_plots(self.pilots.keys())
-        self.panel_layout.addWidget(self.control_panel)
-        # Set a high stretch so it fills all space that control panel doesn't take up
-        self.panel_layout.addWidget(self.data_panel, 10)
 
-        # add logo
+        # Logo goes up top
         self.logo = QtGui.QLabel()
         self.logo.setPixmap(QtGui.QPixmap(prefs['REPODIR']+'/graphics/logo.png').scaled(265,40))
         self.logo.setFixedHeight(40)
-        self.logo.setAlignment(QtCore.Qt.AlignRight)
-
-        # add buttons to top strip
-        # TODO: Put in dropdown boxes
-        self.new_protocol_button = QtGui.QPushButton("New Protocol")
-        self.new_protocol_button.clicked.connect(self.new_protocol)
-        self.new_protocol_button.setFixedHeight(40)
-        top_strip = QtGui.QHBoxLayout()
-        top_strip.setContentsMargins(0,0,0,0)
-        top_strip.addWidget(self.new_protocol_button)
-        top_strip.addStretch(1)
-        top_strip.addWidget(self.logo)
+        self.logo.setAlignment(QtCore.Qt.AlignLeft)
 
         # Combine all in main layout
-        self.layout = QtGui.QVBoxLayout()
-        self.layout.setContentsMargins(0,0,0,0)
-        self.layout.addLayout(top_strip)
-        self.layout.addLayout(self.panel_layout)
-        self.setLayout(self.layout)
+        self.layout.addWidget(self.logo, 0,0,1,1)
+        self.layout.addWidget(self.control_panel, 1,0,1,1)
+        self.layout.addWidget(self.data_panel, 0,1,2,1)
+        self.layout.setColumnStretch(0, 2)
+        self.layout.setColumnStretch(1, 10)
 
         # Set size of window to be fullscreen without maximization
         # Until a better solution is found, if not set large enough, the pilot tabs will
@@ -156,6 +165,14 @@ class Terminal(QtGui.QWidget):
 
         self.show()
         logging.info('UI Initialized')
+
+    def reset_ui(self):
+        self.layout = QtGui.QGridLayout()
+        self.layout.setSpacing(0)
+        self.layout.setContentsMargins(0,0,0,0)
+        self.widget.setLayout(self.layout)
+        self.initUI()
+
 
     ##########################
     # MOUSE DATA METHODS
@@ -280,6 +297,22 @@ class Terminal(QtGui.QWidget):
     #############################
     # GUI & etc. methods
 
+    def new_pilot(self):
+        name, ok = QtGui.QInputDialog.getText(self, "Pilot ID", "Pilot ID:")
+
+        # make sure we won't overwrite ourself
+        if ok and name in self.pilots.keys():
+            # TODO: Pop a window confirming we want to overwrite
+            pass
+
+        if ok and name != '':
+            self.pilots[name] = []
+            self.control_panel.update_db()
+            self.reset_ui()
+        else:
+            # Idk maybe pop a dialog window but i don't really see why
+            pass
+
     def new_protocol(self):
         self.new_protocol_window = Protocol_Wizard()
         self.new_protocol_window.exec_()
@@ -307,6 +340,10 @@ class Terminal(QtGui.QWidget):
                 protocol_file = os.path.join(prefs['PROTOCOLDIR'], placeholder_name + '.json')
                 with open(protocol_file, 'w') as pfile_open:
                     json.dump(save_steps, pfile_open)
+
+    def batch_mice(self):
+        # TODO: Implement me...
+        pass
 
     def gui_event(self, fn, *args, **kwargs):
         # Don't ask me how this works, stolen from

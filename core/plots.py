@@ -14,6 +14,8 @@ import zmq
 from zmq.eventloop.ioloop import IOLoop
 from zmq.eventloop.zmqstream import ZMQStream
 import threading
+from time import time
+from itertools import count
 pg.setConfigOptions(antialias=True)
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -23,13 +25,9 @@ from utils import InvokeEvent, Invoker
 ############
 # Plot list at the bottom!
 ###########
-# TODO Have to have update methods happen with invoker
-# TODO: Add data panel on the right for summary stats, n days run, task, step, etc.
 
 class Plot_Widget(QtGui.QWidget):
     # Widget that frames multiple plots
-    # TODO: Use pyqtgraph for this: http://www.pyqtgraph.org/
-    # TODO: Spawn widget in own process, spawn each plot in own thread with subscriber and loop
     def __init__(self, prefs, invoker):
         QtGui.QWidget.__init__(self)
 
@@ -52,11 +50,6 @@ class Plot_Widget(QtGui.QWidget):
         self.layout.setContentsMargins(0,0,0,0)
         self.layout.setSpacing(0)
 
-        # Containers to style backgrounds
-        #self.container = QtGui.QFrame()
-        #self.container.setObjectName("data_container")
-        #self.container.setStyleSheet("#data_container {background-color:orange;}")
-
         # Plot Selection Buttons
         # TODO: Each plot bar should have an option panel, because different tasks have different plots
         self.plot_select = self.create_plot_buttons()
@@ -71,9 +64,6 @@ class Plot_Widget(QtGui.QWidget):
         self.layout.addLayout(self.plot_layout)
         self.setLayout(self.layout)
 
-        # Set size policy to expand horizontally
-        #self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-
     def init_plots(self, pilot_list):
         self.pilots = pilot_list
 
@@ -83,17 +73,17 @@ class Plot_Widget(QtGui.QWidget):
                         subport=self.prefs['PUBPORT'],
                         msgport=self.prefs['MSGPORT'])
             self.plot_layout.addWidget(plot)
+            self.plot_layout.addWidget(HLine())
             self.plots[p] = plot
 
     def create_plot_buttons(self):
         groupbox = QtGui.QGroupBox()
         groupbox.setFlat(False)
-        groupbox.setFixedHeight(30)
+        groupbox.setFixedHeight(40)
         groupbox.setContentsMargins(0,0,0,0)
         #groupbox.setAlignment(QtCore.Qt.AlignBottom)
 
-        # TODO: Make these each independent plotting classes, list and create boxes depending on a dict like all the others
-
+        # TODO: Actually make these hooked up to something...
         check1 = QtGui.QCheckBox("Targets")
         check1.setChecked(True)
         check2 = QtGui.QCheckBox("Responses")
@@ -124,12 +114,16 @@ class Plot_Widget(QtGui.QWidget):
 
         return groupbox
 
-class Plot(pg.PlotWidget):
+
+class Plot(QtGui.QWidget):
 
     def __init__(self, pilot, invoker, subport, msgport, x_width=50):
         super(Plot, self).__init__()
 
         self.logger = logging.getLogger('main')
+
+        self.layout = QtGui.QHBoxLayout()
+        self.setLayout(self.layout)
 
         # The name of our pilot, used to listen for events
         self.pilot = pilot
@@ -140,11 +134,30 @@ class Plot(pg.PlotWidget):
         self.subport = subport
         self.msgport = msgport
 
+        # A little infobox to keep track of running time, trials, etc.
+        self.infobox = QtGui.QFormLayout()
+        self.n_trials = count()
+        self.info = {
+            'N Trials': QtGui.QLabel(),
+            'Runtime' : Timer(),
+            'Session' : pg.ValueLabel(),
+            'Protocol': QtGui.QLabel(),
+            'Step'    : QtGui.QLabel()
+        }
+        for k, v in self.info.items():
+            self.infobox.addRow(k, v)
+
+        self.layout.addLayout(self.infobox, 1)
+
+        # The plot that we own :)
+        self.plot = pg.PlotWidget()
+        self.layout.addWidget(self.plot, 8)
+
         # TODO: Put inside of update function, use a counter init'd with the first trial
         self.x_width = x_width
         self.last_trial = self.x_width
         self.xrange = xrange(self.last_trial-self.x_width+1, self.last_trial+1)
-        self.setXRange(self.xrange[0], self.xrange[-1])
+        self.plot.setXRange(self.xrange[0], self.xrange[-1])
 
         # Inits the basic widget settings
         self.gui_event(self.init_plots)
@@ -155,24 +168,27 @@ class Plot(pg.PlotWidget):
         self.plots = {}
 
         # Start the listener, subscribes to terminal_networking that will broadcast data
+        self.listens = {
+            'START' : self.l_start, # Receiving a new task
+            'DATA' : self.l_data, # Receiving a new datapoint
+            'STOP' : self.l_stop,
+            'PARAM': self.l_param # changing some param
+        }
+
         self.context = None
         self.subscriber = None
         self.pusher = None
         self.loop = None
-        self.listens = None
         self.init_listener()
 
-
     def init_plots(self):
-        # TODO Make this dependent on task plot params
         # This is called to make the basic plot window,
         # each task started should then send us params to populate afterwards
         #self.getPlotItem().hideAxis('bottom')
-        self.getPlotItem().hideAxis('left')
-        self.setBackground(None)
-        self.setXRange(self.xrange[0], self.xrange[1]) # When we get data we'll do this differently, but for now..
-        self.setYRange(0, 1)
-
+        self.plot.getPlotItem().hideAxis('left')
+        self.plot.setBackground(None)
+        self.plot.setXRange(self.xrange[0], self.xrange[1]) # When we get data we'll do this differently, but for now..
+        self.plot.setYRange(0, 1)
 
     def init_listener(self):
         self.context = zmq.Context.instance()
@@ -185,16 +201,9 @@ class Plot(pg.PlotWidget):
         self.subscriber = ZMQStream(self.subscriber, self.loop)
         self.subscriber.on_recv(self.handle_listen)
 
-        self.listens = {
-            'START' : self.l_start, # Receiving a new task
-            'DATA' : self.l_data, # Receiving a new datapoint
-            'STOP' : self.l_stop
-        }
-
         # Also make a message sender to validate receipts
         self.pusher = self.context.socket(zmq.PUSH)
         self.pusher.connect('tcp://localhost:{}'.format(self.msgport))
-
 
     def handle_listen(self, msg):
         # Published as multipart target-msg messages
@@ -209,16 +218,12 @@ class Plot(pg.PlotWidget):
                                                                               message['key'],
                                                                               message['value']))
 
-        listen_funk = self.listens[message['key']]
-        #listen_thread = threading.Thread(target=listen_funk, args=(message['value'],))
-        #listen_thread.start()
-
         # Tell the networking process that we got it
         self.send_message('RECVD', value=message['id'])
 
+        # Get function and call it as a gui event
+        listen_funk = self.listens[message['key']]
         self.gui_event(listen_funk, *(message['value'],))
-
-
 
     def send_message(self, key, target='', value=''):
         msg = {'key': key, 'target': target, 'value': value}
@@ -228,68 +233,50 @@ class Plot(pg.PlotWidget):
 
         self.logger.info("MESSAGE SENT - Target: {}, Key: {}, Value: {}".format(target, key, value))
 
-
     def l_start(self, value):
         # We're sent a task dict, we extract the plot params and send them to the plot object
         self.plot_params = tasks.TASK_LIST[value['task_type']].PLOT
 
-        # self.clear()
-        # self.plots = {}
-        #
-        # # Get basic layout info
-        # # TODO: Make mouse name label
-        # self.mouse = value['mouse']
-        #
-        # try:
-        #     self.last_trial = value['last_trial']
-        #     self.xrange = xrange(self.last_trial-self.x_width+1, self.last_trial+1)
-        # except KeyError:
-        #     pass
-        #
-        # self.setXRange(self.xrange[0], self.xrange[1])
-        #
+        self.info['Runtime'].start_timer()
+
         # TODO: Make this more general, make cases for each non-'data' key
         try:
             if self.plot_params['chance_bar']:
-                #pass
-                #self.gui_event(self.getPlotItem().addLine, **{"y":0.5, "pen":(255,0,0)})
-                self.getPlotItem().addLine(y=0.5, pen=(255,0,0))
+                self.plot.getPlotItem().addLine(y=0.5, pen=(255,0,0))
         except KeyError:
             # No big deal, chance bar wasn't set
             pass
-        #
-        # try:
-        #     self.roll_window = self.plot_params['roll_window']
-        # except KeyError:
-        #     pass
 
         # Make plot items for each data type
-        print(self.plot_params['data'].items())
         for data, plot in self.plot_params['data'].items():
             # TODO: Better way of doing params for plots, might just have to suck it up and make dict another level
             if plot == 'rollmean' and 'roll_window' in self.plot_params.keys():
                 self.plots[data] = Roll_Mean(winsize=self.plot_params['roll_window'])
-                self.addItem(self.plots[data])
+                self.plot.addItem(self.plots[data])
                 self.data[data] = np.zeros((0,2), dtype=np.float)
             else:
                 self.plots[data] = PLOT_LIST[plot]()
-                self.addItem(self.plots[data])
+                self.plot.addItem(self.plots[data])
                 self.data[data] = np.zeros((0,2), dtype=np.float)
 
     def l_data(self, value):
-        print(value)
+
+
         for k, v in value.items():
             if k == 'trial_num':
+                self.info['N Trials'].setText(str(self.n_trials.next()))
                 self.last_trial = v
                 self.xrange = xrange(v-self.x_width+1, v+1)
-                #self.gui_event(self.setXRange, *[self.xrange[0], self.xrange[-1]])
-                self.setXRange(self.xrange[0], self.xrange[-1])
+                self.plot.setXRange(self.xrange[0], self.xrange[-1])
             if k in self.data.keys():
                 self.data[k] = np.vstack((self.data[k], (self.last_trial, v)))
                 #self.gui_event(self.plots[k].update, *(self.data[k],))
                 self.plots[k].update(self.data[k])
 
     def l_stop(self, value):
+        pass
+
+    def l_param(self, value):
         pass
 
     def gui_event(self, fn, *args, **kwargs):
@@ -316,7 +303,6 @@ class Point(pg.PlotDataItem):
         data[data=="C"] = 0.5
         data[data=="L"] = 0
         data = data.astype(np.float)
-        print("POINT", data)
 
         self.scatter.setData(x=data[...,0], y=data[...,1], size=self.size,
                              brush=self.brush, symbol='o', pen=self.pen)
@@ -371,6 +357,29 @@ class Roll_Mean(pg.PlotDataItem):
         #print(ys)
 
         self.curve.setData(data[...,0], ys, fillLevel=0.5)
+
+class Timer(QtGui.QLabel):
+    def __init__(self):
+        super(Timer, self).__init__()
+
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.update_time)
+
+        self.start_time = None
+
+    def start_timer(self, update_interval=1000):
+        self.start_time = time()
+        self.timer.start(update_interval)
+
+    def stop_timer(self):
+        self.timer.stop()
+
+
+    def update_time(self):
+        secs_elapsed = int(time()-self.start_time)
+        self.setText("{:02d}:{:02d}:{:02d}".format(secs_elapsed/3600, secs_elapsed/60, secs_elapsed%60))
+
+
 
 
 
@@ -487,3 +496,9 @@ class Invoker(QtCore.QObject):
     def event(self, event):
         event.fn(*event.args, **event.kwargs)
         return True
+
+class HLine(QtGui.QFrame):
+    def __init__(self):
+        super(HLine, self).__init__()
+        self.setFrameShape(QtGui.QFrame.HLine)
+        self.setFrameShadow(QtGui.QFrame.Sunken)
