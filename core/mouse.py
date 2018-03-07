@@ -251,7 +251,7 @@ class Mouse:
         step_name = task_params['step_name']
 
         # file structure is '/data/protocol_name/##_step_name/tables'
-        group_name = "/data/{}/{:02d}_{}".format(self.protocol_name, self.step, step_name)
+        group_name = "/data/{}/S{:02d}_{}".format(self.protocol_name, self.step, step_name)
         #try:
         self.trial_table = self.h5f.get_node(group_name, 'trial_data')
         self.trial_row = self.trial_table.row

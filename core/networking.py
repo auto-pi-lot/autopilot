@@ -10,6 +10,7 @@ import sys
 import datetime
 import os
 import multiprocessing
+import base64
 from zmq.eventloop.ioloop import IOLoop, PeriodicCallback
 from zmq.eventloop.zmqstream import ZMQStream
 from warnings import warn
@@ -149,7 +150,7 @@ class Terminal_Networking(multiprocessing.Process):
             self.logger.info("Starting IOLoop")
             self.loop.start()
 
-    def publish(self, target, message):
+    def publish(self, target, message, suppress_print=False):
         # target is the subscriber filter
         # Message is a dict that should have two k/v pairs:
         # 'key': the type of message this is
@@ -174,7 +175,10 @@ class Terminal_Networking(multiprocessing.Process):
             self.logger.warning('PUBLISH {} - Improperly formatted: {}'.format(msg_num, message))
             return
 
-        self.logger.info('PUBLISH {} - TARGET: {}, MESSAGE: {}'.format(msg_num, target, message))
+        if not suppress_print:
+            self.logger.info('PUBLISH {} - TARGET: {}, MESSAGE: {}'.format(msg_num, target, message))
+        else:
+            self.logger.info('PUBLISH {} - TARGET: {}'.format(msg_num, target))
 
         # Publish the message
         self.publisher.send_multipart([bytes(target), json.dumps(message)])
@@ -272,6 +276,7 @@ class Terminal_Networking(multiprocessing.Process):
 
     def m_start_task(self, target, value):
         # Just publish it
+        print('start task reached')
         msg = {'key':'START', 'value':value}
         self.publish(target, msg)
 
@@ -347,15 +352,19 @@ class Terminal_Networking(multiprocessing.Process):
     def l_file(self, target, value):
         # The <target> pi has requested some file <value> from us, let's send it back
         # This assumes the file is small, if this starts crashing we'll have to split the message...
+        print('file req received')
 
         full_path = os.path.join(self.prefs['SOUNDDIR'], value)
         with open(full_path, 'rb') as open_file:
-            file_contents = open_file.read()
+            # encode in base64 so json doesn't complain
+            file_contents = base64.b64encode(open_file.read())
 
         file_message = {'path':value, 'file':file_contents}
         message = {'key':'FILE', 'value':file_message}
 
         self.publish(target, message)
+
+        print('file sending inited')
 
     def p_repeat(self, message_id):
         # Handle repeated messages
@@ -602,8 +611,9 @@ class Pilot_Networking(multiprocessing.Process):
         # The file should be of the structure {'path':path, 'file':contents}
 
         full_path = os.path.join(self.prefs['SOUNDDIR'], value['path'])
+        file_data = base64.b64decode(value['file'])
         with open(full_path, 'wb') as open_file:
-            open_file.write(value['file'])
+            open_file.write(file_data)
 
         self.logger.info('SOUND RECEIVED {}'.format(value['path']))
 
