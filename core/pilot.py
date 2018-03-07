@@ -176,8 +176,11 @@ class RPilot:
 
         # Make a group for this mouse if we don't already have one
         self.mouse = value['mouse']
-        if not self.mouse in self.h5f.root:
+        try:
             self.h5f.create_group("/", self.mouse, "Local Data for {}".format(self.mouse))
+        except tables.NodeError:
+            # already made it
+            pass
         mouse_group = self.h5f.get_node('/', self.mouse)
 
         # Make a table for today's data, appending a conflict-avoidance int if one already exists
