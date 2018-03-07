@@ -264,6 +264,15 @@ class RPilot:
     #################################################################
     def run_task(self):
         # Run as a separate thread, just keeps calling next() and shoveling data
+
+        # do we expect TrialData?
+        trial_data = False
+        if hasattr(self.task, 'TrialData'):
+            trial_data = True
+
+        # TODO: Init sending continuous data here
+
+
         while True:
             # Calculate next stage data and prep triggers
             data = self.task.stages.next()() # Double parens because next just gives us the function, we still have to call it
@@ -273,9 +282,10 @@ class RPilot:
 
             # Store a local copy
             # the task class has a class variable DATA that lets us know which data the row is expecting
-            for k, v in data.items():
-                if k in self.task.DATA.keys():
-                    self.row[k] = v
+            if trial_data:
+                for k, v in data.items():
+                    if k in self.task.TrialData.columns.keys():
+                        self.row[k] = v
 
             # If the trial is over (either completed or bailed), flush the row
             if 'TRIAL_END' in data.keys():
@@ -283,10 +293,9 @@ class RPilot:
                 self.table.flush()
 
             # Wait on the stage lock to clear
-            print('pre-block')
             self.stage_block.wait()
-            print('post-block')
-            # If the running
+
+            # If the running flag gets set, we're closing.
             if not self.running.is_set():
                 # TODO: Call task shutdown method
                 self.row.append()

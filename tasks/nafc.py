@@ -74,17 +74,17 @@ class Nafc:
     # Dict of data and info about that data that will be returned for each complete trial
     # 'type' refers to the datatype in PyTables, but truth be told I don't remember where these abbrevs came from
     # 'plot' gives information about which data and how it should be plotted. The syntax for this is still evolving
-    DATA = {
-        'trial_num':       {'type':'i32'},
-        'target':          {'type':'S1', 'plot':'target'},
-        'target_sound_id': {'type':'S32'},
-        'response':        {'type':'S1', 'plot':'response'},
-        'correct':         {'type':'i32','plot':'correct_roll'},
-        'bias':            {'type':'f32'}, # TODO: Shouldn't this just be calculated but not stored?
-        'RQ_timestamp':    {'type':'S26'},
-        'DC_timestamp':    {'type':'S26'},
-        'bailed':          {'type':'i32','plot':'bail'}
-    }
+    # DATA = {
+    #     'trial_num':       {'type':'i32'},
+    #     'target':          {'type':'S1', 'plot':'target'},
+    #     'target_sound_id': {'type':'S32'},
+    #     'response':        {'type':'S1', 'plot':'response'},
+    #     'correct':         {'type':'i32','plot':'correct_roll'},
+    #     'bias':            {'type':'f32'}, # TODO: Shouldn't this just be calculated but not stored?
+    #     'RQ_timestamp':    {'type':'S26'},
+    #     'DC_timestamp':    {'type':'S26'},
+    #     'bailed':          {'type':'i32','plot':'bail'}
+    # }
 
     # Set plot params, which data should be plotted, its default shape, etc.
     # TODO: Plots should take the default type, but options panel should be able to set - eg. corrects are done by rolling mean as default, but can be made points
@@ -101,7 +101,7 @@ class Nafc:
 
     # PyTables Data descriptor
     # for numpy data types see http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html#arrays-dtypes-constructing
-    class TrialDTypes(tables.IsDescription):
+    class TrialData(tables.IsDescription):
         # This class allows the Mouse object to make a data table with the correct data types. You must update it for any new data you'd like to store
         trial_num = tables.Int32Col()
         target = tables.StringCol(1)

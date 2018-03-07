@@ -153,7 +153,7 @@ class Plot(QtGui.QWidget):
         self.plot = pg.PlotWidget()
         self.layout.addWidget(self.plot, 8)
 
-        # TODO: Put inside of update function, use a counter init'd with the first trial
+        # Set initial x-value, will update when data starts coming in
         self.x_width = x_width
         self.last_trial = self.x_width
         self.xrange = xrange(self.last_trial-self.x_width+1, self.last_trial+1)
@@ -161,10 +161,9 @@ class Plot(QtGui.QWidget):
 
         # Inits the basic widget settings
         self.gui_event(self.init_plots)
-        #self.init_plots()
 
         self.plot_params = {}
-        self.data = {} # Keep a dict of the data we are keeping track of, will be instantiated in init_plots
+        self.data = {} # Keep a dict of the data we are keeping track of, will be instantiated on start
         self.plots = {}
 
         # Start the listener, subscribes to terminal_networking that will broadcast data
@@ -187,7 +186,7 @@ class Plot(QtGui.QWidget):
         #self.getPlotItem().hideAxis('bottom')
         self.plot.getPlotItem().hideAxis('left')
         self.plot.setBackground(None)
-        self.plot.setXRange(self.xrange[0], self.xrange[1]) # When we get data we'll do this differently, but for now..
+        self.plot.setXRange(self.xrange[0], self.xrange[1])
         self.plot.setYRange(0, 1)
 
     def init_listener(self):
@@ -260,7 +259,6 @@ class Plot(QtGui.QWidget):
                 self.data[data] = np.zeros((0,2), dtype=np.float)
 
     def l_data(self, value):
-
 
         for k, v in value.items():
             if k == 'trial_num':

@@ -29,6 +29,8 @@ TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
 - add mouse infobox to left of plot
 - fix 'new mouse' button to specify pilot
 - make superclass of all "parameters-like" windows (windows that are a list of something.)
+- change pi-> terminal networking to dealer/router rather than push/pull
+- implement sending continuous data in pilot.run_task
 
 order of code review:
 !- terminal

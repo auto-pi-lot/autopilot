@@ -93,8 +93,9 @@ class Mouse:
 
 
         # Save biographical information as node attributes
-        for k, v in biography.items():
-            self.h5f.root.info._v_attrs[k] = v
+        if biography:
+            for k, v in biography.items():
+                self.h5f.root.info._v_attrs[k] = v
 
         self.h5f.flush()
 
@@ -102,10 +103,13 @@ class Mouse:
         for k, v in params.items():
             self.info[k] = v
 
-    def update_history(self, type, name, value):
+    def update_history(self, type, name, value, step=None):
         # Make sure the updates are written to the mouse file
         if type == 'param':
-            self.current[self.step][name] = value
+            if not step:
+                self.current[self.step][name] = value
+            else:
+                self.current[step][name] = value
             self.flush_current()
         elif type == 'step':
             self.step = int(value)
@@ -162,7 +166,10 @@ class Mouse:
         self.step = int(step)
 
         # Make file group for protocol
-        self.current_group = self.h5f.create_group('/data', protocol_name)
+        if "/data/{}".format(protocol_name) not in self.h5f:
+            self.current_group = self.h5f.create_group('/data', protocol_name)
+        else:
+            self.current_group = self.h5f.get_node('/data', protocol_name)
 
         # Create groups for each step
         # There are two types of data - continuous and trialwise.
@@ -173,25 +180,36 @@ class Mouse:
             # First we get the task class for this step
             task_class = tasks.TASK_LIST[step['task_type']]
             step_name = step['step_name']
-            group_name = "{:02d}_{}".format(i, step_name)
+            group_name = "S{:02d}_{}".format(i, step_name)
 
-            step_group = self.h5f.create_group(self.current_group, group_name)
+            if group_name not in self.current_group:
+                step_group = self.h5f.create_group(self.current_group, group_name)
+            else:
+                step_group = self.current_group._f_get_child(group_name)
 
             # The task class *should* have at least one PyTables DataTypes descriptor
-            if hasattr(task_class, "TrialData"):
-                trial_descriptor = task_class.TrialData
-                self.h5f.create_table(step_group, "trial_data", trial_descriptor)
+            try:
+                if hasattr(task_class, "TrialData"):
+                    trial_descriptor = task_class.TrialData
+                    self.h5f.create_table(step_group, "trial_data", trial_descriptor)
+            except tables.NodeError:
+                # we already have made this table, that's fine
+                pass
+            try:
+                if hasattr(task_class, "ContinuousData"):
+                    cont_descriptor = task_class.ContinuousData
+                    self.h5f.create_table(step_group, "continuous_data", cont_descriptor)
+            except tables.NodeError:
+                # already made it
+                pass
 
-            if hasattr(task_class, "ContinuousData"):
-                cont_descriptor = task_class.ContinuousData
-                self.h5f.create_table(step_group, "continuous_data", cont_descriptor)
-
-        print('finished making ')
         # Update history (flushes the file so we don't have to here)
         self.update_history('protocol', protocol_name, step)
 
     def flush_current(self):
         # Flush the 'current' attribute in the mouse object to the .h5
+        # makes sure the stored .json representation of the current task stays up to date
+        # with the params set in the mouse object
         step = self.h5f.root.current.attrs['step']
         protocol_name = self.h5f.root.current.attrs['protocol_name']
         self.h5f.remove_node('/current')
@@ -205,16 +223,18 @@ class Mouse:
         # Save the current protocol in the history group and delete the node
         # Typically this should only be called when assigning a new protocol but what do I know
 
-        current_node = filenode.open_node(self.h5f.root.current)
-        old_protocol = current_node.readall()
-
         # We store it as the date that it was changed followed by its name if it has one
 
-        if 'protocol_name' in self.h5f.root.current.attrs._v_attrnames:
-            protocol_name = self.h5f.root.current.attrs._v_attrnames['protocol_name']
+        try:
+            protocol_name = self.h5f.get_node_attr('/current', 'protocol_name')
             archive_name = '_'.join([self.get_timestamp(string=True), protocol_name])
-        else:
+        except AttributeError:
+            warnings.warn("protocol_name attribute couldn't be accessed, using timestamp to stash protocol")
             archive_name = self.get_timestamp(string=True)
+
+
+        current_node = filenode.open_node(self.h5f.root.current)
+        old_protocol = current_node.readall()
 
         archive_node = filenode.new_node(self.h5f, where='/history/past_protocols', name=archive_name)
         archive_node.write(old_protocol)

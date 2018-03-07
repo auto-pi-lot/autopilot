@@ -60,8 +60,9 @@ class Control_Panel(QtGui.QWidget):
         for i, (pilot, mice) in enumerate(self.pilots.items()):
             # Make a list of mice
             mouse_list = Mouse_List(mice, drop_fn = self.update_db)
-            self.mouse_lists[pilot] = mouse_list
             mouse_list.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+            mouse_list.itemDoubleClicked.connect(self.edit_params)
+            self.mouse_lists[pilot] = mouse_list
             # TODO: Make mouse_list launch param/task editor on double click
 
             # Make a panel for pilot control
@@ -139,16 +140,41 @@ class Control_Panel(QtGui.QWidget):
                     mouse_obj.assign_protocol(protocol_file, int(protocol_vals['step']))
             except:
                 # the wizard couldn't find the protocol dir, so no task tab was made
+                # or no task was assigned
                 pass
-
-
-            # Close the file because we want to keep mouse objects only when they are running
 
             # Add mouse to pilots dict, update it and our tabs
             self.pilots[pilot].append(biography_vals['id'])
             self.mouse_lists[pilot].addItem(biography_vals['id'])
             self.update_db()
-            self.mouse_lists[pilot].addItem(biography_vals['id'])
+
+    def edit_params(self, item):
+        # edit a mouse's task parameters, called when mouse double-clicked
+        mouse = item.text()
+        if mouse not in self.mice.keys():
+            self.mice[mouse] = Mouse(mouse)
+
+        if '/current' not in self.mice[mouse].h5f:
+            Warning("Mouse {} has no protocol!".format(mouse))
+            return
+
+        protocol = self.mice[mouse].current
+        step = self.mice[mouse].step
+
+        protocol_edit = Protocol_Parameters_Dialogue(protocol, step)
+        protocol_edit.exec_()
+
+        if protocol_edit.result() == 1:
+            param_changes = protocol_edit.step_changes
+            # iterate through steps, checking for changes
+            for i, step_changes in enumerate(param_changes):
+                # if there are any changes to this step, stash them
+                if step_changes:
+                    for k, v in step_changes.items():
+                        self.mice[mouse].update_history('param', k, v, step=i)
+
+        # TODO: Check if mouse running, if mouse is running, communicate current step changes to pi
+
 
     def update_db(self, *args, **kwargs):
         for pilot, mlist in self.mouse_lists.items():
@@ -168,6 +194,9 @@ class Control_Panel(QtGui.QWidget):
             except IOError:
                 Exception('Couldnt update pilot db!')
 
+####################################
+# Control Panel Widgets
+###################################
 
 class Mouse_List(QtGui.QListWidget):
     def __init__(self, mice=None, drop_fn=None):
@@ -191,7 +220,9 @@ class Mouse_List(QtGui.QListWidget):
             self.addItem(m)
 
     def dropEvent(self, event):
+        # call the parent dropEvent to make sure all the list ops happen
         super(Mouse_List, self).dropEvent(event)
+        # then we call the drop_fn passed to us
         self.drop_fn()
 
 
@@ -279,126 +310,62 @@ class Pilot_Button(QtGui.QPushButton):
             self.setText("START")
 
 
-
+###################################3
+# Parameter setting widgets
+######################################
 
 class Parameters(QtGui.QWidget):
+    # Superclass to embed wherever needed
+    # Subclasses will implement use as standalong dialog and as step selector
     # Reads and edits tasks parameters from a mouse's protocol
-    def __init__(self, pilot, msg_fn, hide_fn):
+    def __init__(self, params=None, stash_changes=False):
         super(Parameters, self).__init__()
 
-        # send_message function from Terminal, lets us start the task from here
-        self.send_message = msg_fn
-
-        # we keep track of what pilot we're nested under so starting tasks is easier
-        self.pilot = pilot
-
-        self.hide = hide_fn
-
-        # Placeholders
-        self.close_button = None
-        self.param_layout = None
-        self.step = None
-        self.protocol = None
-        self.mouse = None
-        self.layout = None
-
-        # Says if we are currently open or not
-        self.populated = False
-
-        # make layout objects
-
-        self.init_ui()
-        self.setVisible(False)
-
-
-        # We want to do essentially nothing on init and only populate params when asked to
-    def show_params(self, mouse_obj):
-        self.populated = True
-        self.setVisible(True)
-
-        self.mouse = mouse_obj
-
-        # If the mouse has a task assigned to it, we populate the window with its parameters
-        # Otherwise we make a button to assign a protocol
-        if hasattr(self.mouse, 'current'):
-            self.populate_params(self.mouse.current, self.mouse.step)
-        else:
-            assign_protocol_button = QtGui.QPushButton('Assign Protocol')
-            assign_protocol_button.clicked.connect(self.assign_protocol)
-            self.param_layout.addRow(assign_protocol_button)
-
-    def hide_params(self):
-        # call clear params, and also clear top panel
-        self.populated = False
-        if isinstance(self.param_layout, QtGui.QLayout):
-            self.clear_layout(self.param_layout)
-        # if isinstance(self.top_panel, QtGui.QLayout):
-        #     self.clear_layout(self.top_panel)
-
-        #for i in range(self.layout.count()):
-        #    sublayout = self.layout.takeAt(i)
-        #    self.layout.removeItem(sublayout)
-
-        #self.param_layout = None
-        #self.top_panel    = None
-        self.setVisible(False)
-        self.hide()
-
-        # Set layout to blank layout
-        #self.layout = QtGui.QVBoxLayout(self)
-        #self.setLayout(self.layout)
-
-
-    def init_ui(self):
-        self.param_layout = QtGui.QFormLayout()
-        self.top_panel = QtGui.QHBoxLayout()
-
-        label = QtGui.QLabel('Parameters')
-        label.setFixedHeight(30)
-        self.close_button = QtGui.QPushButton('X')
-        self.close_button.setFixedSize(30,30)
-        self.close_button.clicked.connect(self.hide_params)
-        self.top_panel.addWidget(label)
-        self.top_panel.addWidget(self.close_button)
-
-        self.layout = QtGui.QVBoxLayout(self)
-        self.layout.setSizeConstraint(QtGui.QLayout.SetFixedSize)
-        self.layout.addLayout(self.top_panel)
-        self.layout.addLayout(self.param_layout)
-
+        # We're just a simple label and a populateable form layout
+        self.layout = QtGui.QVBoxLayout()
         self.setLayout(self.layout)
 
-        # Top bar - Label and close button
+        label = QtGui.QLabel("Parameters")
+        label.setFixedHeight(40)
 
-    def populate_params(self, protocol, step):
+        self.param_layout = QtGui.QFormLayout()
+
+        self.layout.addWidget(label)
+        self.layout.addLayout(self.param_layout)
+
+        # sometimes we only are interested in the changes - like editing params
+        # when that's the case, we keep a log of it
+        self.stash_changes = stash_changes
+        if self.stash_changes:
+            self.param_changes = {}
+
+
+        # If we were initialized with params, populate them now
+        self.params = None
+        if params:
+            self.populate_params(params)
+
+    def populate_params(self, params):
         # We want to hang on to the protocol and step
         # because they are direct references to the mouse file,
         # but we don't need to have them passed every time
+
+        print('populating params')
+
         self.clear_layout(self.param_layout)
 
-        self.step = step
-        self.protocol = protocol
+        if isinstance(params, basestring):
+            # we are filling an empty parameter set
+            self.params = {}
+            task_type = params
+        else:
+            # we are populating an existing parameter set (ie. the fields already have values)
+            self.params = params
+            task_type = params['task_type']
 
-        # Get step list and a dict to convert names back to ints
-        self.step_list = []
-        self.step_ind  = {}
-        for i, s in enumerate(self.protocol):
-            self.step_list.append(s['step_name'])
-            self.step_ind[s['step_name']] = i
+        self.param_layout.addRow("Task Type:", QtGui.QLabel(task_type))
 
-        # Combobox for step selection
-        step_label = QtGui.QLabel("Current Step:")
-        self.step_selection = QtGui.QComboBox()
-        self.step_selection.insertItems(0, self.step_list)
-        self.step_selection.setCurrentIndex(self.step)
-        self.step_selection.currentIndexChanged.connect(self.step_changed)
-
-        self.param_layout.addRow(step_label, self.step_selection)
-
-        # Populate params for current step
-        step_params = self.protocol[self.step]
-        task_type = step_params['task_type']
-        # Load the base tasks' params so we know what we're making
+        # we need to load the task class to get the types of our parameters,
         self.task_params = copy.deepcopy(tasks.TASK_LIST[task_type].PARAMS)
 
         # Make parameter widgets depending on type and populate with current values
@@ -410,16 +377,16 @@ class Parameters(QtGui.QWidget):
                 if v['type'] == 'int':
                     input_widget.setValidator(QtGui.QIntValidator())
                 input_widget.textEdited.connect(self.set_param)
-                if k in step_params.keys():
-                    input_widget.setText(step_params[k])
+                if k in self.params.keys():
+                    input_widget.setText(self.params[k])
                 self.param_layout.addRow(rowtag,input_widget)
             elif v['type'] == 'check':
                 rowtag = QtGui.QLabel(v['tag'])
                 input_widget = QtGui.QCheckBox()
                 input_widget.setObjectName(k)
                 input_widget.stateChanged.connect(self.set_param)
-                if k in step_params.keys():
-                    input_widget.setChecked(step_params[k])
+                if k in self.params.keys():
+                    input_widget.setChecked(self.params[k])
                 self.param_layout.addRow(rowtag, input_widget)
             elif v['type'] == 'list':
                 rowtag = QtGui.QLabel(v['tag'])
@@ -427,8 +394,8 @@ class Parameters(QtGui.QWidget):
                 input_widget.setObjectName(k)
                 input_widget.insertItems(0, sorted(v['values'], key=v['values'].get))
                 input_widget.itemSelectionChanged.connect(self.set_param)
-                if k in step_params.keys():
-                    select_item = input_widget.item(step_params[k])
+                if k in self.params.keys():
+                    select_item = input_widget.item(self.params[k])
                     input_widget.setCurrentItem(select_item)
                 self.param_layout.addRow(rowtag, input_widget)
             elif v['type'] == 'sounds':
@@ -436,43 +403,19 @@ class Parameters(QtGui.QWidget):
                 self.sound_widget.setObjectName(k)
                 self.sound_widget.pass_set_param_function(self.set_sounds)
                 self.param_layout.addRow(self.sound_widget)
-                if k in step_params.keys():
-                    self.sound_widget.populate_lists(step_params[k])
+                if k in self.params.keys():
+                    self.sound_widget.populate_lists(self.params[k])
             elif v['type'] == 'label':
                 # This is a .json label not for display
                 pass
 
-        # Add button to start, stop run
-
-        start_stop_button = QtGui.QPushButton("START/STOP")
-        start_stop_button.setCheckable(True)
-        # Set button status depending on status in mouse object
-        if self.mouse.running:
-            start_stop_button.setChecked(True)
-        else:
-            start_stop_button.setChecked(False)
-
-        start_stop_button.toggled.connect(self.toggle_start)
-
-        #self.param_layout.addRow(QtGui.QSpacerItem(1,1))
-        self.param_layout.addRow(start_stop_button)
-
-    def clear_layout(self, layout):
+    def clear_layout(self, layout=None):
+        if not layout:
+            layout = self.param_layout
         while layout.count():
             child = layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
-
-    def step_changed(self):
-        # the step was changed! Change our parameters here and update the mouse object
-        self.step = self.step_selection.currentIndex()
-        step_name = self.step_selection.currentText()
-
-        self.mouse.update_history('step', step_name, self.step)
-
-        self.populate_params(self.protocol, self.step)
-
-        # TODO: Send changes to the pi
 
     def set_param(self):
         # A param was changed in the window, update our values here and in the mouse object
@@ -482,82 +425,156 @@ class Parameters(QtGui.QWidget):
 
         if sender_type == 'int' or sender_type == 'str':
             new_val = sender.text()
-            self.protocol[self.step][param_name] = new_val
         elif sender_type == 'check':
             new_val = sender.isChecked()
-            self.protocol[self.step][param_name] = new_val
         elif sender_type == 'list':
             list_text = sender.currentItem().text()
             new_val = self.task_params[param_name]['values'][list_text]
-            self.protocol[self.step][param_name] = new_val
         elif sender_type == 'sounds':
             new_val = self.sound_widget.sound_dict
-            self.protocol[self.step][param_name] = new_val
 
-        self.mouse.update_history('param', param_name, new_val)
-        self.mouse.h5f.flush()
+        self.params[param_name] = new_val
+        if self.stash_changes:
+            self.param_changes[param_name] = new_val
 
     def set_sounds(self):
         # Have to handle sounds slightly differently
         # because the sound widget updates its own parameters
         self.protocol[self.step]['sounds'] = self.sound_widget.sound_dict
 
-    def assign_protocol(self):
-        # Get list of available protocols
-        protocol_list = os.listdir(prefs['PROTOCOLDIR'])
-        protocol_list = [os.path.splitext(p)[0] for p in protocol_list]
 
-        # Pop some dialogs to select a protocol and step
-        protocol_str, ok = QtGui.QInputDialog.getItem(self, "Select Protocol",
-                "Protocol:", protocol_list, 0, False)
-        if not ok:
-            return
+class Protocol_Parameters(QtGui.QWidget):
+    # Multiple steps in a protocol, enable selection of multiple param windows
 
-        # Load the protocol and parse its steps
-        protocol_file = os.path.join(prefs['PROTOCOLDIR'],protocol_str + '.json')
-        with open(protocol_file) as protocol_file_open:
-            protocol = json.load(protocol_file_open)
+    def __init__(self, protocol, step, protocol_name=None):
+        super(Protocol_Parameters, self).__init__()
 
-        step_list = []
-        step_ind   = {}
-        for i, s in enumerate(protocol):
-            step_list.append(s['step_name'])
-            step_ind[s['step_name']] = i
+        self.protocol = protocol
+        self.step = step
 
-        step_str, ok = QtGui.QInputDialog.getItem(self, "Select Step",
-                "Step:", step_list, 0, False)
-        if not ok:
-            return
+        # We're just a Parameters window with a combobox that lets us change step
+        self.layout = QtGui.QVBoxLayout()
+        self.setLayout(self.layout)
 
-        # Get the step index
-        step_number = step_ind[step_str]
-
-        # Assign protocol in mouse object
-        self.mouse.assign_protocol(protocol_file, step_number)
-
-        # Repopulate param window
-        self.show_params(self.mouse)
-
-    def toggle_start(self, toggled):
-        # If we're stopped, start, and vice versa...
-        if toggled:
-            # Sets the mouse to running, makes a file to store data
-            self.mouse.prepare_run()
-
-            # Prep task to send to pi, the pilot needs to know the mouse
-            task = self.protocol[self.step]
-            task['mouse'] = self.mouse.name
-            task['pilot'] = self.pilot
-
-            # TODO: Get last trial number and send to pi as well
-            self.send_message('START', bytes(self.pilot), task)
-
+        if protocol_name:
+            label = QtGui.QLabel(protocol_name)
         else:
-            # Send message to pilot to stop running,
-            # it should initiate a coherence checking routine to make sure
-            # its data matches what the Terminal got,
-            # so the terminal will handle closing the mouse object
-            self.send_message('STOP', bytes(self.pilot))
+            label = QtGui.QLabel('Protocol Parameters')
+
+        label.setFixedHeight(20)
+
+        # Make a combobox, we'll populate it in a second.
+        self.step_selection = QtGui.QComboBox()
+        self.step_selection.currentIndexChanged.connect(self.step_changed)
+
+        # And the rest of our body is the params window
+        self.params_widget = Parameters(stash_changes=True)
+        self.step_changes = []
+
+        # Add everything to the layout
+        self.layout.addWidget(label)
+        self.layout.addWidget(self.step_selection)
+        self.layout.addWidget(self.params_widget)
+
+        # and populate
+        self.populate_protocol(self.protocol, self.step)
+
+
+    def populate_protocol(self, protocol, step=0):
+        # clean up first
+        self.clear()
+
+        # store in case things have changed since init
+        self.protocol = protocol
+        self.step = step
+
+        if isinstance(self.protocol, basestring):
+            # If we were passed a string, we're being passed a path to a protocol
+            with open(self.protocol, 'r') as protocol_file:
+                self.protocol = json.load(protocol_file)
+
+        # Get step list and a dict to convert names back to ints
+        self.step_list = []
+        self.step_ind  = {}
+        for i, s in enumerate(self.protocol):
+            self.step_list.append(s['step_name'])
+            self.step_ind[s['step_name']] = i
+        # fill step_changes with empty dicts to be able to assign later
+        self.step_changes = [{} for i in range(len(self.protocol))]
+
+
+        # Add steps to combobox
+        # disconnect indexChanged trigger first so we don't fire a billion times
+        self.step_selection.currentIndexChanged.disconnect(self.step_changed)
+        self.step_selection.insertItems(0, self.step_list)
+        self.step_selection.currentIndexChanged.connect(self.step_changed)
+
+        # setting the current index should trigger the params window to refresh
+        self.step_selection.setCurrentIndex(self.step)
+        self.params_widget.populate_params(self.protocol[self.step])
+
+
+    def clear(self):
+        while self.step_selection.count():
+            self.step_selection.removeItem(0)
+
+        self.params_widget.clear_layout()
+
+    def step_changed(self):
+        # save any changes to last step
+        if self.params_widget.params:
+            self.protocol[self.step] = self.params_widget.params
+        if self.params_widget.stash_changes:
+            self.step_changes[self.step].update(self.params_widget.param_changes)
+
+        # the step was changed! Change our parameters here and update the mouse object
+        self.step = self.step_selection.currentIndex()
+
+        self.params_widget.populate_params(self.protocol[self.step])
+
+
+class Protocol_Parameters_Dialogue(QtGui.QDialog):
+    def __init__(self, protocol, step):
+        super(Protocol_Parameters_Dialogue, self).__init__()
+
+        # Dialogue wrapper for Protocol_Parameters
+
+        self.protocol = protocol
+        self.step = step
+
+        # Since we share self.protocol, updates in the widget should propagate to us
+        self.protocol_widget = Protocol_Parameters(self.protocol, self.step)
+
+        # We stash changes in the protocol widget and recover them on close
+        self.step_changes = None
+
+        # ok/cancel buttons
+        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+
+        self.layout = QtGui.QVBoxLayout()
+        self.layout.addWidget(self.protocol_widget)
+        self.layout.addWidget(buttonBox)
+        self.setLayout(self.layout)
+
+        self.setWindowTitle("Edit Protocol Parameters")
+
+    def accept(self):
+        # Get the changes from the currently open params window
+        self.step_changes = self.protocol_widget.step_changes
+        # And any since the last time the qcombobox was changed
+        self.step_changes[self.protocol_widget.step].update(self.protocol_widget.params_widget.param_changes)
+
+        # call the rest of the accept method
+        super(Protocol_Parameters_Dialogue, self).accept()
+
+
+##################################
+# Wizard Widgets
+################################3#
+
+# TODO: Change these classes to use the update params windows
 
 class New_Mouse_Wizard(QtGui.QDialog):
     def __init__(self, protocol_dir=None):
