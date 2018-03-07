@@ -176,6 +176,8 @@ class RPilot:
 
         # Make a group for this mouse if we don't already have one
         self.mouse = value['mouse']
+        local_file = os.path.join(self.prefs['DATADIR'], 'local.h5')
+        self.h5f = tables.open_file(local_file, mode='a')
         try:
             self.h5f.create_group("/", self.mouse, "Local Data for {}".format(self.mouse))
         except tables.NodeError:
