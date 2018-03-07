@@ -350,8 +350,6 @@ class Parameters(QtGui.QWidget):
         # because they are direct references to the mouse file,
         # but we don't need to have them passed every time
 
-        print('populating params')
-
         self.clear_layout(self.param_layout)
 
         if isinstance(params, basestring):

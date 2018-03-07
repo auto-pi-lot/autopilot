@@ -120,7 +120,8 @@ class Terminal_Networking(multiprocessing.Process):
             'ALIVE': self.l_alive, # A Pi is responding to our periodic query of whether it remains alive
                                    # It replies with its subscription filter
             'STATE': self.l_state, # The Pi is confirming/notifying us that it has changed state
-            'RECVD': self.m_recvd  # We are getting confirmation that the message was received
+            'RECVD': self.m_recvd,  # We are getting confirmation that the message was received
+            'FILE': self.l_file    # The pi needs some file from us
         }
 
         # self.mice_data = {} # maps the running mice to methods to stash their data
@@ -154,9 +155,6 @@ class Terminal_Networking(multiprocessing.Process):
         # 'key': the type of message this is
         # 'value': the content of the message
 
-        # Check if we know about this target
-        # Warn if not, but still try and send message
-
         # TODO: Add 'TTL' to prefs setup
         # TODO: Add timer value to prefs setup
 
@@ -166,6 +164,8 @@ class Terminal_Networking(multiprocessing.Process):
         message['target'] = target
         self.outbox[msg_num] = message
 
+        # Check if we know about this target
+        # Warn if not, but still try and send message
         if target not in self.subscribers:
             self.logger.warning('PUBLISH {} - Message to unconfirmed target: {}'.format(msg_num, target))
 
@@ -344,6 +344,19 @@ class Terminal_Networking(multiprocessing.Process):
     def l_state(self, target, value):
         pass
 
+    def l_file(self, target, value):
+        # The <target> pi has requested some file <value> from us, let's send it back
+        # This assumes the file is small, if this starts crashing we'll have to split the message...
+
+        full_path = os.path.join(self.prefs['SOUNDDIR'], value)
+        with open(full_path, 'rb') as open_file:
+            file_contents = open_file.read()
+
+        file_message = {'path':value, 'file':file_contents}
+        message = {'key':'FILE', 'value':file_message}
+
+        self.publish(target, message)
+
     def p_repeat(self, message_id):
         # Handle repeated messages
         # If we still have the message in our outbox...
@@ -417,6 +430,8 @@ class Pilot_Networking(multiprocessing.Process):
 
         self.state = None # To respond to queries without bothing the pilot
 
+        self.file_block = threading.Event() # to wait for file transfer
+
     def run(self):
 
         # Store some prefs values
@@ -463,7 +478,7 @@ class Pilot_Networking(multiprocessing.Process):
         self.messages = {
             'STATE': self.m_state, # Confirm or notify terminal of state change
             'DATA': self.m_data,  # Sending data back
-            'COHERE': self.m_cohere # Sending our temporary data table at the end of a run to compare w/ terminal's copy
+            'COHERE': self.m_cohere, # Sending our temporary data table at the end of a run to compare w/ terminal's copy
         }
 
         # Listen dictionary - What method to call for PUBlishes from the Terminal
@@ -471,13 +486,15 @@ class Pilot_Networking(multiprocessing.Process):
             'PING': self.l_ping, # The Terminal wants to know if we're listening
             'START': self.l_start, # We are being sent a task to start
             'STOP': self.l_stop, # We are being told to stop the current task
-            'CHANGE': self.l_change # The Terminal is changing some task parameter
+            'PARAM': self.l_change, # The Terminal is changing some task parameter
+            'FILE':  self.l_file, # We are receiving a file
         }
 
         self.logger.info('Starting IOLoop')
         self.loop.start()
 
     def push(self, key, target='', value=''):
+        # Push a message back to the terminal
         msg = {'key': key, 'target': target, 'value': value}
 
         push_thread = threading.Thread(target=self.pusher.send_json, args=(json.dumps(msg),))
@@ -524,6 +541,7 @@ class Pilot_Networking(multiprocessing.Process):
         message_thread.start()
 
     def send_message_out(self, key, value=''):
+        # send a message out to the pi
         msg = {'key':key, 'value':value}
 
         msg_thread = threading.Thread(target = self.message_out.send_json, args=(json.dumps(msg),))
@@ -546,9 +564,6 @@ class Pilot_Networking(multiprocessing.Process):
         value['pilot'] = self.name
         self.push('DATA', target, value)
 
-    def m_event(self, target, value):
-        pass
-
     def m_cohere(self, target, value):
         # Send our local version of the data table so the terminal can double check
         pass
@@ -559,14 +574,41 @@ class Pilot_Networking(multiprocessing.Process):
 
     def l_start(self, value):
         self.mouse = value['mouse']
+
+        # First make sure we have any sound files that we need
+        # nested list comprehension to get value['sounds']['L/R'][0-n]
+        f_sounds = [sound for sounds in value['sounds'].values() for sound in sounds
+                    if sound['type'] == 'File']
+        if len(f_sounds)>0:
+            for sound in f_sounds:
+                full_path = os.path.join(self.prefs['SOUNDDIR'], sound['path'])
+                if not os.path.exists(full_path):
+                    # We ask the terminal to send us the file and then wait.
+                    self.logger.info('REQUESTING SOUND {}'.format(sound['path']))
+                    self.push(key='FILE', target=self.name, value=sound['path'])
+                    self.file_block.clear()
+                    self.file_block.wait()
+
+
         self.send_message_out('START', value)
-        # TODO: Send a message back to
 
     def l_stop(self, value):
         pass
 
     def l_change(self, value):
         pass
+
+    def l_file(self, value):
+        # The file should be of the structure {'path':path, 'file':contents}
+
+        full_path = os.path.join(self.prefs['SOUNDDIR'], value['path'])
+        with open(full_path, 'wb') as open_file:
+            open_file.write(value['file'])
+
+        self.logger.info('SOUND RECEIVED {}'.format(value['path']))
+
+        # If we requested a file, some poor start fn is probably waiting on us
+        self.file_block.set()
 
 
 
