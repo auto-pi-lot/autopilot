@@ -292,12 +292,18 @@ class Nafc:
             if isinstance(v, list):
                 self.sounds[k] = []
                 for sound in v:
+                    if sound['type'] == 'File':
+                        # prepend sounddir
+                        sound['path'] = os.path.join(self.prefs['SOUNDDIR'], sound['path'])
                     # We send the dict 'sound' to the function specified by 'type' and 'SOUND_LIST' as kwargs
                     self.sounds[k].append(sounds.SOUND_LIST[sound['type']](**sound))
                     # Then give the sound a callback to mark when it's finished
                     self.sounds[k][-1].set_trigger(self.stim_end)
             # If not a list, a single sound
             else:
+                if v['type'] == 'File':
+                    # prepend sounddir
+                    v['path'] = os.path.join(self.prefs['SOUNDDIR'], v['path'])
                 self.sounds[k] = sounds.SOUND_LIST[v['type']](**v)
                 self.sounds[k].set_trigger(self.stim_end)
 
