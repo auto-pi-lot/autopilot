@@ -97,12 +97,12 @@ class File(Sound):
         super(File, self).__init__()
 
         self.path = path
-        self.amplitude = amplitude
+        self.amplitude = float(amplitude)
 
         # load file to sound table
         self.snd_table = pyo.SndTable(path, chnl=1)
         self.table = pyo.TableRead(self.snd_table, freq=self.snd_table.getRate(),
-                                   loop=False, mul=amplitude)
+                                   loop=False, mul=self.amplitude)
 
     # def play(self):
     #     # test
