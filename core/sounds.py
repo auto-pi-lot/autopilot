@@ -18,7 +18,7 @@ import json
 #from taskontrol.settings import rpisettings as rpiset
 
 # Sound list at bottom of file
-class Sound:
+class Sound(object):
     # Metaclass for sound objects
 
     # All sounds should be cast to tables with an .out() method (eg. TableRead, Osc)

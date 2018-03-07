@@ -362,7 +362,7 @@ class Terminal_Networking(multiprocessing.Process):
         file_message = {'path':value, 'file':file_contents}
         message = {'key':'FILE', 'value':file_message}
 
-        self.publish(target, message)
+        self.publish(target, message, suppress_print=True)
 
         print('file sending inited')
 
@@ -511,7 +511,7 @@ class Pilot_Networking(multiprocessing.Process):
 
         self.logger.info("PUSH SENT - Target: {}, Key: {}, Value: {}".format(target, key, value))
 
-    def handle_listen(self, msg):
+    def handle_listen(self, msg, suppress_print=False):
         # listens are always json encoded, single-part messages
         msg = json.loads(msg[1])
 
@@ -520,7 +520,13 @@ class Pilot_Networking(multiprocessing.Process):
             logging.warning('LISTEN Improperly formatted: {}'.format(msg))
             return
 
-        self.logger.info('LISTEN {} - KEY: {}, VALUE: {}'.format(msg['id'], msg['key'], msg['value']))
+        if msg['key'] == 'FILE':
+            suppress_print = True
+
+        if not suppress_print:
+            self.logger.info('LISTEN {} - KEY: {}, VALUE: {}'.format(msg['id'], msg['key'], msg['value']))
+        else:
+            self.logger.info('LISTEN {} - KEY: {}'.format(msg['id'], msg['key']))
 
         # Log and spawn thread to respond to listen
         listen_funk = self.listens[msg['key']]
