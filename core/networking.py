@@ -592,17 +592,18 @@ class Pilot_Networking(multiprocessing.Process):
 
         # First make sure we have any sound files that we need
         # nested list comprehension to get value['sounds']['L/R'][0-n]
-        f_sounds = [sound for sounds in value['sounds'].values() for sound in sounds
-                    if sound['type'] == 'File']
-        if len(f_sounds)>0:
-            for sound in f_sounds:
-                full_path = os.path.join(self.prefs['SOUNDDIR'], sound['path'])
-                if not os.path.exists(full_path):
-                    # We ask the terminal to send us the file and then wait.
-                    self.logger.info('REQUESTING SOUND {}'.format(sound['path']))
-                    self.push(key='FILE', target=self.name, value=sound['path'])
-                    self.file_block.clear()
-                    self.file_block.wait()
+        if 'sounds' in value.keys():
+            f_sounds = [sound for sounds in value['sounds'].values() for sound in sounds
+                        if sound['type'] == 'File']
+            if len(f_sounds)>0:
+                for sound in f_sounds:
+                    full_path = os.path.join(self.prefs['SOUNDDIR'], sound['path'])
+                    if not os.path.exists(full_path):
+                        # We ask the terminal to send us the file and then wait.
+                        self.logger.info('REQUESTING SOUND {}'.format(sound['path']))
+                        self.push(key='FILE', target=self.name, value=sound['path'])
+                        self.file_block.clear()
+                        self.file_block.wait()
 
 
         self.send_message_out('START', value)
