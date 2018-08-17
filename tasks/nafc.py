@@ -133,7 +133,7 @@ class Nafc:
     }
 
     def __init__(self, prefs=None, stage_block=None, sounds=None, reward=50, req_reward=False,
-                 punish_sound=True, punish_dur=5000, correction=True, pct_correction=.5,
+                 punish_sound=False, punish_dur=5000, correction=True, pct_correction=.5,
                  bias_mode=1, bias_threshold=15, timeout=10000, current_trial=0, **kwargs):
         # Sounds come in two flavors
         #   soundict: a dict of parameters like:
@@ -309,7 +309,7 @@ class Nafc:
 
         # If we want a punishment sound...
         if self.punish_sound:
-            self.sounds['punish'] = sounds.Noise(self.punish_dur, 0.5)
+            self.sounds['punish'] = sounds.Noise(self.punish_dur)
             #change_to_green = lambda: self.pins['LEDS']['C'].set_color([0, 255, 0])
             #self.sounds['punish'].set_trigger(change_to_green)
 
