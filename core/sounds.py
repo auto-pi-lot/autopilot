@@ -112,6 +112,10 @@ class File:
         self.table = pyo.TableRead(self.snd_table, freq=self.snd_table.getRate(),
                                    loop=False, mul=self.amplitude)
 
+    def set_trigger(self, trig_fn):
+        # Using table triggers...
+        self.trigger = pyo.TrigFunc(self.table['trig'], trig_fn)
+
 
 
     def play(self):
