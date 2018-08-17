@@ -59,7 +59,7 @@ class Tone:
     '''
     PARAMS = ['frequency','duration','amplitude']
     def __init__(self, frequency, duration, amplitude=0.05, phase=0, **kwargs):
-        super(Tone, self).__init__()
+        # super(Tone, self).__init__()
 
         self.frequency = float(frequency)
         self.duration = float(duration)
@@ -80,13 +80,13 @@ class Tone:
         self.table.out()
 
 
-class Noise(Sound):
+class Noise:
     '''
     White Noise straight up
     '''
     PARAMS = ['duration','amplitude']
     def __init__(self, duration, amplitude=0.05, **kwargs):
-        super(Noise, self).__init__()
+        #super(Noise, self).__init__()
 
         noiser = pyo.Noise(mul=float(amplitude))
         self.table = TableWrap(noiser,float(duration))
@@ -98,11 +98,11 @@ class Noise(Sound):
         # Using table triggers...
         self.trigger = pyo.TrigFunc(self.table['trig'], trig_fn)
 
-class File(Sound):
+class File:
     PARAMS = ['path', 'amplitude']
 
     def __init__(self, path, amplitude=0.05, **kwargs):
-        super(File, self).__init__()
+        #super(File, self).__init__()
 
         self.path = path
         self.amplitude = float(amplitude)
