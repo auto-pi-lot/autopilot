@@ -1,0 +1,13 @@
+PySide
+tables
+numpy
+pyzmq
+pyo
+pandas
+pyqtgraph
+
+
+
+# rpi specific requirements
+# pigpio
+# RPi.GPIO
