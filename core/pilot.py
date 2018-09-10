@@ -67,9 +67,9 @@ class RPilot:
         # NOTE: THESE ARE NOT TO BE RELIED ON FOR STORAGE,
         # Their purpose is to compare with the terminal at the end of running a task
         # in case the terminal missed us sending any events.
-        local_file = os.path.join(self.prefs['DATADIR'], 'local.h5')
-        self.h5f = tables.open_file(local_file, mode='a')
-        self.logger.info('Local file opened: {}'.format(local_file))
+        #local_file = os.path.join(self.prefs['DATADIR'], 'local.h5')
+        #self.h5f = tables.open_file(local_file, mode='a')
+        #self.logger.info('Local file opened: {}'.format(local_file))
 
         # Locks, etc. for threading
         self.running = threading.Event() # Are we running a task?
