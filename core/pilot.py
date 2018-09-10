@@ -176,10 +176,14 @@ class RPilot:
 
         # Make a group for this mouse if we don't already have one
         self.mouse = value['mouse']
-        #local_file = os.path.join(self.prefs['DATADIR'], 'local.h5')
-        #self.h5f = tables.open_file(local_file, mode='a')
+        if not self.h5f.isopen:
+            local_file = os.path.join(self.prefs['DATADIR'], 'local.h5')
+            self.h5f = tables.open_file(local_file, mode='a')
+            print('opened file')
+
         try:
             self.h5f.create_group("/", self.mouse, "Local Data for {}".format(self.mouse))
+            print('made group')
         except tables.NodeError:
             # already made it
             pass
@@ -194,6 +198,7 @@ class RPilot:
 
         self.table = self.h5f.create_table(mouse_group, datestring, table_descriptor,
                                            "Mouse {} on {}".format(self.mouse, datestring))
+        print('made table')
 
         # The Row object is what we write data into as it comes in
         self.row = self.table.row
