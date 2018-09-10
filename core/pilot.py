@@ -170,6 +170,7 @@ class RPilot:
         # Instantiate the task
         self.task = task_class(prefs=self.prefs, stage_block=self.stage_block, **value)
 
+        print('task instantiated')
         # Setup a table to store data locally
         # Get data table descriptor
         table_descriptor = self.task.TrialData
