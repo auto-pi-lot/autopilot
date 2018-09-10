@@ -33,6 +33,7 @@ TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
 - implement sending continuous data in pilot.run_task
 - make pis update libraries automatically
 - routine to update git repo and restart on command
+- make permissions safe.
 
 order of code review:
 !- terminal
