@@ -142,6 +142,7 @@ local_data = os.path.join(datadir, 'local.h5')
 if not os.path.exists(local_data):
     h5f = tables.open_file(local_data, mode='w')
     h5f.close()
+    os.chmod(local_data, 0777)
 
 # Get repo dir
 file_loc = os.path.realpath(__file__)
