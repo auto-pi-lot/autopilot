@@ -26,6 +26,7 @@ from core import hardware, sounds
 from collections import OrderedDict as odict
 
 # This declaration allows Mouse to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
+# TODO: Move this to __init__
 TASK = 'Nafc'
 
 # TODO: Make meta task class that has logic for loading sounds, starting pyo server etc.
@@ -70,22 +71,37 @@ class Nafc:
     PARAMS['sounds']         = {'tag':'Sounds',
                                 'type':'sounds'}
 
-    # Dict of data and type that will be returned for each complete trial
-    DATA = {
-        'trial_num':       'i32',
-        'target':          'S1',
-        'target_sound_id': 'S32',
-        'response':        'S1',
-        'correct':         'i32',
-        'bias':            'f32',
-        'RQ_timestamp':    'S26',
-        'DC_timestamp':    'S26',
-        'bailed':          'i32'
+    # Dict of data and info about that data that will be returned for each complete trial
+    # 'type' refers to the datatype in PyTables, but truth be told I don't remember where these abbrevs came from
+    # 'plot' gives information about which data and how it should be plotted. The syntax for this is still evolving
+    # DATA = {
+    #     'trial_num':       {'type':'i32'},
+    #     'target':          {'type':'S1', 'plot':'target'},
+    #     'target_sound_id': {'type':'S32'},
+    #     'response':        {'type':'S1', 'plot':'response'},
+    #     'correct':         {'type':'i32','plot':'correct_roll'},
+    #     'bias':            {'type':'f32'}, # TODO: Shouldn't this just be calculated but not stored?
+    #     'RQ_timestamp':    {'type':'S26'},
+    #     'DC_timestamp':    {'type':'S26'},
+    #     'bailed':          {'type':'i32','plot':'bail'}
+    # }
+
+    # Set plot params, which data should be plotted, its default shape, etc.
+    # TODO: Plots should take the default type, but options panel should be able to set - eg. corrects are done by rolling mean as default, but can be made points
+    PLOT = {
+        'data': {
+            'target'   : 'point',
+            'response' : 'segment',
+            'correct'  : 'rollmean'
+            #'bailed'   : 'highlight'
+        },
+        'chance_bar'  : True, # Draw a red bar at 50%
+        'roll_window' : 50 # number of trials to roll window over
     }
 
     # PyTables Data descriptor
     # for numpy data types see http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html#arrays-dtypes-constructing
-    class DataTypes(tables.IsDescription):
+    class TrialData(tables.IsDescription):
         # This class allows the Mouse object to make a data table with the correct data types. You must update it for any new data you'd like to store
         trial_num = tables.Int32Col()
         target = tables.StringCol(1)
@@ -117,7 +133,7 @@ class Nafc:
     }
 
     def __init__(self, prefs=None, stage_block=None, sounds=None, reward=50, req_reward=False,
-                 punish_sound=True, punish_dur=5000, correction=True, pct_correction=.5,
+                 punish_sound=False, punish_dur=100, correction=True, pct_correction=.5,
                  bias_mode=1, bias_threshold=15, timeout=10000, current_trial=0, **kwargs):
         # Sounds come in two flavors
         #   soundict: a dict of parameters like:
@@ -240,8 +256,9 @@ class Nafc:
                         self.pins[type][pin] = handler(pin_numbers[type][pin])
                         self.pins[type][pin].assign_cb(self.handle_trigger)
                         # If center port, add an additional callback for when something leaves it
-                        if pin == 'C':
-                            self.pins[type][pin].assign_cb(self.center_out, manual_trigger='U', add=True)
+                        # TODO: Disabling for now, make with a bounce time
+                        #if pin == 'C':
+                        #    self.pins[type][pin].assign_cb(self.center_out, manual_trigger='U', add=True)
                     except:
                         # TODO: More informative exception
                         Exception('Something went wrong instantiating pins, tell jonny to handle this better!')
@@ -251,10 +268,8 @@ class Nafc:
                 print('reached LEDs')
                 for pin, handler in values.items():
                     try:
-                        print(type, pin, pin_numbers[type][pin])
                         self.pins[type][pin] = handler(pins=pin_numbers[type][pin])
                     except:
-                        print('reached exception')
                         Exception("Something wrong instantiating LEDs")
 
             elif type == 'PORTS':
@@ -277,18 +292,24 @@ class Nafc:
             if isinstance(v, list):
                 self.sounds[k] = []
                 for sound in v:
+                    if sound['type'] == 'File':
+                        # prepend sounddir
+                        sound['path'] = os.path.join(self.prefs['SOUNDDIR'], sound['path'])
                     # We send the dict 'sound' to the function specified by 'type' and 'SOUND_LIST' as kwargs
                     self.sounds[k].append(sounds.SOUND_LIST[sound['type']](**sound))
                     # Then give the sound a callback to mark when it's finished
                     self.sounds[k][-1].set_trigger(self.stim_end)
             # If not a list, a single sound
             else:
+                if v['type'] == 'File':
+                    # prepend sounddir
+                    v['path'] = os.path.join(self.prefs['SOUNDDIR'], v['path'])
                 self.sounds[k] = sounds.SOUND_LIST[v['type']](**v)
                 self.sounds[k].set_trigger(self.stim_end)
 
         # If we want a punishment sound...
         if self.punish_sound:
-            self.sounds['punish'] = sounds.Noise(self.punish_dur, 0.5)
+            self.sounds['punish'] = sounds.Noise(self.punish_dur)
             #change_to_green = lambda: self.pins['LEDS']['C'].set_color([0, 255, 0])
             #self.sounds['punish'].set_trigger(change_to_green)
 
@@ -301,10 +322,6 @@ class Nafc:
         if isinstance(pin, int):
             pin = hardware.BCM_TO_BOARD[pin]
             pin = self.pin_id[pin]
-
-        print('printing from handle_trigger')
-        pprint.pprint(self.triggers)
-
 
         if not pin in self.triggers.keys():
             # No trigger assigned, get out without waiting
@@ -352,14 +369,12 @@ class Nafc:
     # Stage Functions
     ##################################################################################
     def request(self,*args,**kwargs):
-        # TODO: Make a list of all trial-resetting variables and clear them here
         # Set the event lock
         self.stage_block.clear()
 
         # Reset all the variables that need to be
         for v in self.resetting_variables:
             v = None
-
 
         if not self.sounds:
             raise RuntimeError('\nSound objects have not been passed! Make sure RPilot makes sounds from the soundict before running.')
@@ -376,7 +391,7 @@ class Nafc:
             warnings.warn("bias_mode is not defined or defined incorrectly")
 
         # Decide if correction trial (repeat last stim) or choose new target/stim
-        if (random.random() > self.pct_correction) or (self.target == None):
+        if (random.random() > self.pct_correction) or (self.target is None):
             # Choose target side and sound
             self.correction = 0
             if random.random() > randthresh:
@@ -419,23 +434,17 @@ class Nafc:
     def discrim(self,*args,**kwargs):
         self.stage_block.clear()
 
-        # TODO: Open solenoid for specific time, for now pass.
-        #self.triggers[self.target] = solenoid(time)
-        self.triggers[self.target] = self.test_correct
+        self.triggers[self.target] = self.pins['PORTS'][self.target].open
+        #self.triggers[self.target] = self.test_correct
         self.triggers[self.distractor] = self.punish
 
         # TODO: Handle timeout
 
         # Only data is the timestamp
+        # TODO: Timestamps are fucked up here, should shift down a stage
         data = {'DC_timestamp': datetime.datetime.now().isoformat()}
         self.current_stage = 1
         return data
-
-    def test_correct(self):
-        print('Correct!')
-
-    def test_incorrect(self):
-        print('Incorrect :(')
 
     def reinforcement(self,*args,**kwargs):
         # We do NOT clear the task event flag here because we want
@@ -480,6 +489,9 @@ class Nafc:
         }
         self.current_stage = 2
         return data
+
+    def test_correct(self):
+        print('correct!')
 
     def punish(self):
         # TODO: If we're not in the last stage (eg. we were timed out after stim presentation), reset stages

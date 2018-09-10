@@ -45,6 +45,7 @@ else:
 datadir = os.path.join(basedir,'data')
 protocoldir = os.path.join(basedir,'protocols')
 logdir = os.path.join(basedir,'logs')
+sounddir = os.path.join(basedir,'sounds')
 
 # Check for prereqs
 try:
@@ -71,6 +72,9 @@ if not os.path.exists(protocoldir):
 if not os.path.exists(logdir):
     os.makedirs(logdir)
     os.chmod(logdir, 0777)
+if not os.path.exists(sounddir):
+    os.makedirs(sounddir)
+    os.chmod(sounddir, 0777)
 
 
 
@@ -86,6 +90,7 @@ prefs['BASEDIR'] = basedir
 prefs['DATADIR'] = datadir
 prefs['REPODIR'] = repo_loc
 prefs['PROTOCOLDIR'] = protocoldir
+prefs['SOUNDDIR'] = sounddir
 prefs['LOGDIR'] = logdir
 prefs['PUBPORT'] = pub_port
 prefs['LISTENPORT'] = listen_port
