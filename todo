@@ -31,6 +31,8 @@ TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
 - make superclass of all "parameters-like" windows (windows that are a list of something.)
 - change pi-> terminal networking to dealer/router rather than push/pull
 - implement sending continuous data in pilot.run_task
+- make pis update libraries automatically
+- routine to update git repo and restart on command
 
 order of code review:
 !- terminal

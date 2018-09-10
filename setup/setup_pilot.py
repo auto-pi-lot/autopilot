@@ -96,7 +96,7 @@ else:
     n_channels = 2
 
 # TODO: Turn this whole thing into a command line dialog and add this to it
-pigpio_location = '/home/pi/PIGPIO/pigpiod'
+pigpio_location = 'pigpiod'
 # Need to make a binary mask that excludes the pins needed for hifiberry
 # (BCM: 2, 3, 18, 19, 20, 21)
 pigpio_mask = '-x 1111110000111111111111110000'
@@ -194,3 +194,4 @@ print("Pilot set up with prefs:\r")
 pp.pprint(prefs)
 
 # TODO: Automatically run launch_pilot.sh on startup
+# TODO: Automatically start jack on startup
