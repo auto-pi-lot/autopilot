@@ -63,7 +63,6 @@ class Control_Panel(QtGui.QWidget):
             mouse_list.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
             mouse_list.itemDoubleClicked.connect(self.edit_params)
             self.mouse_lists[pilot] = mouse_list
-            # TODO: Make mouse_list launch param/task editor on double click
 
             # Make a panel for pilot control
             pilot_panel = Pilot_Panel(pilot, mouse_list, self.toggle_start, self.create_mouse)
@@ -82,7 +81,7 @@ class Control_Panel(QtGui.QWidget):
 
     def toggle_start(self, starting, pilot, mouse=None):
         # stopping is the enemy of starting so we put them in the same function to learn about each other
-        if starting:
+        if starting is True:
             # Ope'nr up if she aint
             if mouse not in self.mice.keys():
                 self.mice[mouse] = Mouse(mouse)
@@ -113,7 +112,7 @@ class Control_Panel(QtGui.QWidget):
             # it should initiate a coherence checking routine to make sure
             # its data matches what the Terminal got,
             # so the terminal will handle closing the mouse object
-            self.send_message('STOP', bytes(pilot))
+            self.send_message('STOP', bytes(pilot), 'STOP')
             # TODO: Start coherence checking ritual
             # TODO: Close mouse object
             # TODO: Pop weight entry window
@@ -301,7 +300,7 @@ class Pilot_Button(QtGui.QPushButton):
 
     def toggle_start(self, toggled):
         # If we're stopped, start, and vice versa...
-        if toggled is True:
+        if toggled is True: # ie
             current_mouse = self.mouse_list.currentItem().text()
             self.toggle_fn(True, self.pilot, current_mouse)
             self.setText("STOP")

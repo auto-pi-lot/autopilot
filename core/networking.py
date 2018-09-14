@@ -276,7 +276,6 @@ class Terminal_Networking(multiprocessing.Process):
 
     def m_start_task(self, target, value):
         # Just publish it
-        print('start task reached')
         msg = {'key':'START', 'value':value}
         self.publish(target, msg)
 
@@ -289,7 +288,12 @@ class Terminal_Networking(multiprocessing.Process):
 
 
     def m_stop(self, target, value):
-        # also pop mouse value from data function dict
+        msg = {'key':'STOP', 'value':value}
+        self.publish(target, msg)
+        # and the plot widget
+        self.publish(bytes('P_{}'.format(target)), msg)
+
+        #TODO: also pop mouse value from data function dict
         pass
 
     def m_stopall(self, target, value):
@@ -609,7 +613,7 @@ class Pilot_Networking(multiprocessing.Process):
         self.send_message_out('START', value)
 
     def l_stop(self, value):
-        pass
+        self.send_message_out('STOP')
 
     def l_change(self, value):
         pass

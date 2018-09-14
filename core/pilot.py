@@ -211,16 +211,19 @@ class RPilot:
 
 
     def l_stop(self, value):
+        # Let the terminal know we're stopping
+        # (not stopped yet because we'll still have to sync data, etc.)
+        self.state = 'STOPPING'
+        self.update_state()
+
         # We just clear the stage block and reset the running flag here
         # and call the cleanup routine from run_task so it can exit cleanly
         self.running.clear()
         self.stage_block.set()
 
+        # TODO: Cohere here before closing file
+        self.h5f.close()
 
-        # Let the terminal know we're stopping
-        # (not stopped yet because we'll still have to sync data, etc.)
-        self.state = 'STOPPING'
-        self.update_state()
 
     def l_param(self, value):
         pass
@@ -294,14 +297,6 @@ class RPilot:
                 self.table.flush()
                 break
 
-
-    def stop_running(self):
-        self.is_running.clear()
-        # Stop timers, clear triggers, make sure we release any locks.
-        if not self.stage_lock.is_owned():
-            self.stage_lock.acquire()
-            self.stage_lock.notify()
-            self.stage_lock.release()
 
 class Pyo_Process(multiprocessing.Process):
     def __init__(self, channels=2):

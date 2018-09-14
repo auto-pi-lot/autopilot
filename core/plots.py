@@ -272,6 +272,10 @@ class Plot(QtGui.QWidget):
                 self.plots[k].update(self.data[k])
 
     def l_stop(self, value):
+        self.data = {}
+        self.plots = {}
+        self.plot.clear()
+        self.info['Runtime'].stop_timer()
         pass
 
     def l_param(self, value):
@@ -370,7 +374,6 @@ class Timer(QtGui.QLabel):
 
     def stop_timer(self):
         self.timer.stop()
-
 
     def update_time(self):
         secs_elapsed = int(time()-self.start_time)

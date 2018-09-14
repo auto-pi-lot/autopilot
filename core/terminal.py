@@ -41,6 +41,25 @@ class Terminal(QtGui.QMainWindow):
     '''
     GUI for RPilot Terminal
     '''
+    ## Declare attributes
+    prefs = None
+
+    # networking
+    context       = None
+    loop          = None
+    pusher        = None
+    listener      = None
+    networking    = None
+    networking_ok = False
+
+    # data
+    rows = None  # handles to row writing functions
+    mice = {}  # Dict of our open mouse objects
+    current_mouse = None  # ID of mouse currently in params panel
+    pilots = None
+
+    # gui
+    widget = None
 
     def __init__(self, prefs):
         # Initialize the superclass (QtGui.QWidget)
@@ -53,20 +72,11 @@ class Terminal(QtGui.QMainWindow):
         # Get prefs dict
         self.prefs = prefs
 
-        # Load pilots db
+        # Load pilots db as ordered dictionary
         with open(self.prefs['PILOT_DB']) as pilot_file:
             self.pilots = json.load(pilot_file, object_pairs_hook=odict)
 
-        # Declare attributes
-        self.context       = None
-        self.loop          = None
-        self.pusher        = None
-        self.listener      = None
-        self.networking    = None
-        self.rows          = None #handles to row writing functions
-        self.networking_ok = False
-        self.mice          = {} # Dict of our open mouse objects
-        self.current_mouse = None # ID of mouse currently in params panel
+
 
         # Start Logging
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
@@ -86,7 +96,7 @@ class Terminal(QtGui.QMainWindow):
             'STATE': self.l_state, # A Pi has changed state
             'PING' : self.l_ping,  # Someone wants to know if we're alive
             'FILE' : self.l_file,  # A pi needs some files to run its protocol
-            'DATA' : self.l_data   # yay data!
+            'DATA' : self.l_data   # data 4 us!
         }
 
         # Make invoker object to send GUI events back to the main thread
@@ -124,6 +134,7 @@ class Terminal(QtGui.QMainWindow):
         new_pilot_act = QtGui.QAction("New &Pilot", self, triggered=self.new_pilot)
         new_prot_act  = QtGui.QAction("New Pro&tocol", self, triggered=self.new_protocol)
         batch_create_mice = QtGui.QAction("Batch &Create Mice", self, triggered=self.batch_mice)
+        # TODO: Update pis
         self.file_menu.addAction(new_pilot_act)
         self.file_menu.addAction(new_prot_act)
         self.file_menu.addAction(batch_create_mice)
@@ -171,39 +182,40 @@ class Terminal(QtGui.QMainWindow):
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0,0,0,0)
         self.widget.setLayout(self.layout)
+        self.setCentralWidget(self.widget)
         self.initUI()
 
 
     ##########################
     # MOUSE DATA METHODS
+    #
+    # def mouse_start_toggled(self, toggled):
+    #     # Get object for current mouse
+    #     mouse = self.mice[self.current_mouse]
+    #     pilot = bytes(self.pilot_panel.pilot)
+    #
+    #     # If toggled=True we are starting the mouse
+    #     if toggled:
+    #         # Set mouse to running
+    #         mouse.prepare_run()
+    #         # Get protocol and send it to the pi
+    #         task = mouse.current[mouse.step]
+    #         # Dress up the protocol dict with some extra values that the pilot needs
+    #         task['mouse'] = mouse.name
+    #         # TODO: Get last trial number and insert in dict
+    #         self.send_message('START', pilot, task)
+    #         # TODO: Spawn timer thread to trigger stop after run duration
+    #
+    #     # Or else we are stopping the mouse
+    #     else:
+    #         mouse.running = False
+    #         self.send_message('STOP', pilot)
+    #         mouse.h5f.flush()
+    #         # TODO: Destroy dataview widget
 
-    def mouse_start_toggled(self, toggled):
-        # Get object for current mouse
-        mouse = self.mice[self.current_mouse]
-        pilot = bytes(self.pilot_panel.pilot)
-
-        # If toggled=True we are starting the mouse
-        if toggled:
-            # Set mouse to running
-            mouse.prepare_run()
-            # Get protocol and send it to the pi
-            task = mouse.current[mouse.step]
-            # Dress up the protocol dict with some extra values that the pilot needs
-            task['mouse'] = mouse.name
-            # TODO: Get last trial number and insert in dict
-            self.send_message('START', pilot, task)
-            # TODO: Spawn timer thread to trigger stop after run duration
-
-        # Or else we are stopping the mouse
-        else:
-            mouse.running = False
-            self.send_message('STOP', pilot)
-            mouse.h5f.flush()
-            # TODO: Destroy dataview widget
-
-    def stop_mouse(self):
-        # TODO flush table, handle coherence checking, close .h5f
-        pass
+    # def stop_mouse(self):
+    #     # TODO flush table, handle coherence checking, close .h5f
+    #     pass
 
     ##########################3
     # NETWORKING METHODS
