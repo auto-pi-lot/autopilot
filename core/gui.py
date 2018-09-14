@@ -303,10 +303,10 @@ class Pilot_Button(QtGui.QPushButton):
         # If we're stopped, start, and vice versa...
         if toggled is True:
             current_mouse = self.mouse_list.currentItem().text()
-            self.toggle_fn(False, self.pilot, current_mouse)
+            self.toggle_fn(True, self.pilot, current_mouse)
             self.setText("STOP")
         else:
-            self.toggle_fn(True, self.pilot)
+            self.toggle_fn(False, self.pilot)
             self.setText("START")
 
 
