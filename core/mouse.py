@@ -271,7 +271,11 @@ class Mouse:
             Exception("No data tables exist for step {}! Is there a Trial or Continuous data descriptor in the task class?".format(self.step))
 
         # TODO: Spawn graduation checking object!
-
+        if 'graduation' in task_params.keys():
+            grad_params = task_params['graduation']
+            self.graduation = tasks.GRAD_LIST[grad_params['type']](grad_params['value'])
+        else:
+            self.graduation = None
 
         self.running = True
 
@@ -281,8 +285,15 @@ class Mouse:
                 self.trial_row[k] = v
 
         if 'TRIAL_END' in data.keys():
+            if self.graduation:
+                did_graduate = self.graduation.update(self.trial_row)
+                if did_graduate:
+                    # TODO: Handle graduation
+                    pass
             self.trial_row.append()
             self.trial_table.flush()
+
+            # TODO: Check Graduation
 
         if 'start_weight' in data.keys():
             # TODO: Handle weights
@@ -312,10 +323,10 @@ class Mouse:
             # Type of change - protocol, parameter, step
             # Name - Which parameter was changed, name of protocol, manual vs. graduation step change
             # Value - What was the parameter/protocol/etc. changed to, step if protocol.
-        time = tables.StringCol(64)
-        type = tables.StringCol(64)
-        name = tables.StringCol(64)
-        value = tables.StringCol(64)
+        time = tables.StringCol(128)
+        type = tables.StringCol(128)
+        name = tables.StringCol(128)
+        value = tables.StringCol(4028)
 
 
 ############################################################################################

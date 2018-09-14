@@ -790,6 +790,7 @@ class Protocol_Wizard(QtGui.QDialog):
         frame_layout.addLayout(addstep_layout, stretch=1)
         frame_layout.addLayout(steplist_layout, stretch=1)
         frame_layout.addLayout(param_box_layout, stretch=3)
+        frame_layout.addLayout(grad_box_layout, stretch=3)
 
         buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
         buttonBox.accepted.connect(self.accept)
@@ -820,6 +821,8 @@ class Protocol_Wizard(QtGui.QDialog):
         task_params_temp.update(task_params)
         task_params.clear()
         task_params.update(task_params_temp)
+        # add graduation field
+        task_params['graduation'] = {'type':'graduation', 'tag':'Graduation Criterion', 'value':{}}
 
         self.steps.append(task_params)
         self.step_list.addItem(new_item)
@@ -883,6 +886,11 @@ class Protocol_Wizard(QtGui.QDialog):
                 self.param_layout.addRow(self.sound_widget)
                 if 'value' in v.keys():
                     self.sound_widget.populate_lists(v['value'])
+            elif v['type'] == 'graduation':
+                self.grad_widget = Graduation_Widget()
+                self.grad_widget.setObjectName(k)
+                self.grad_widget.set_graduation = self.set_graduation
+                self.param_layout.addRow(self.grad_widget)
             elif v['type'] == 'label':
                 # This is a .json label not for display
                 pass
@@ -894,6 +902,7 @@ class Protocol_Wizard(QtGui.QDialog):
 
 
         # Iterate again to check for dependencies
+        # no idea what i meant here -jls 180913
         for k, v in self.steps[step_index].items():
             pass
 
@@ -933,10 +942,64 @@ class Protocol_Wizard(QtGui.QDialog):
         current_step = self.step_list.currentRow()
         self.steps[current_step]['sounds']['value'] = self.sound_widget.sound_dict
 
+    def set_graduation(self):
+        current_step = self.step_list.currentRow()
+        grad_type = self.grad_widget.type
+        grad_params = self.grad_widget.param_dict
+        self.steps[current_step]['graduation'] = {'type':grad_type,'value':grad_params}
+
+
     def check_depends(self):
         # TODO: Make dependent fields unavailable if dependencies unmet
         # I mean if it really matters
         pass
+
+class Graduation_Widget(QtGui.QWidget):
+    def __init__(self):
+        super(Graduation_Widget, self).__init__()
+
+        # Grad type dropdown
+        type_label = QtGui.QLabel("Graduation Criterion:")
+        self.type_selection = QtGui.QComboBox()
+        self.type_selection.insertItems(0, tasks.GRAD_LIST.keys())
+        self.type_selection.currentIndexChanged.connect(self.populate_params)
+
+        # Param form
+        self.param_layout = QtGui.QFormLayout()
+
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(type_label)
+        layout.addWidget(self.type_selection)
+        layout.addLayout(self.param_layout)
+
+        self.setLayout(layout)
+
+        self.param_dict = {}
+
+        self.set_graduation = None
+
+    def populate_params(self):
+        self.clear_params()
+        self.type = self.type_selection.currentText()
+        self.param_dict['type'] = self.type
+
+        for k in tasks.GRAD_LIST[self.type].PARAMS:
+            edit_box = QtGui.QLineEdit()
+            edit_box.setObjectName(k)
+            edit_box.editingFinished.connect(self.store_param)
+            self.param_layout.addrow(QtGui.QLabel(k), edit_box)
+
+    def clear_params(self):
+        while self.param_layout.count():
+            child = self.param_layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+
+    def store_param(self):
+        sender = self.sender()
+        name = sender.objectName()
+        self.param_dict[name] = sender.text()
+
 
 class Sound_Widget(QtGui.QWidget):
     def __init__(self):
