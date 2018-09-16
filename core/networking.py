@@ -342,7 +342,8 @@ class Terminal_Networking(multiprocessing.Process):
 
     def l_alive(self, target, value):
         # A pi has told us that it is alive and what its filter is
-        self.subscribers.update([value]['pilot'])
+        print(value)
+        self.subscribers.update(value['pilot'])
         self.logger.info('Received ALIVE from {}, ip: {}'.format(value['pilot'], value['ip']))
         # Tell the terminal
         self.publish('T',{'key':'ALIVE','value':value})

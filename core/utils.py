@@ -1,6 +1,7 @@
 import numpy as np
 from PySide import QtCore
 import json
+from subprocess import call
 
 def dict_from_HDF5(dictGroup):
     newDict={}
@@ -55,7 +56,10 @@ def update_pis(github=True, apt=False, pilot_select = None, prefs_fn = None):
         pilots = {k: v for k, v in pilots.items() if k in pilot_select }
 
     if github is True:
-        ips = [v['ip'] for k,v in pilots.items()]
+        ips = ['pi@'+v['ip'] for k,v in pilots.items()]
+        ip_string = " ".join(ips)
+        call('parallel-ssh', '-H', ip_string, '~/git/RPilot/utils/update_pilot.sh', '-t', '20')
+
 
 
 

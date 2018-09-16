@@ -314,10 +314,12 @@ class Terminal(QtGui.QMainWindow):
 
     def l_alive(self, value):
         if value['pilot'] in self.pilots.keys():
-            self.pilots['ip'] = value['ip']
+            self.pilots[value['pilot']]['ip'] = value['ip']
 
         else:
             self.new_pilot(name=value['pilot'], ip=value['ip'])
+
+        self.control_panel.update_db()
 
     #############################
     # GUI & etc. methods
