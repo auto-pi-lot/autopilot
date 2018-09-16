@@ -147,7 +147,8 @@ class Terminal(QtGui.QMainWindow):
             QtGui.QStyleOptionTitleBar(), self)
         winsize = app.desktop().availableGeometry()
         # Then subtract height of titlebar
-        winsize.setHeight(winsize.height()-titleBarHeight*4)
+        winheight = winsize.height()-titleBarHeight*2
+        winsize.setHeight(winheight)
         self.setGeometry(winsize)
         self.setSizePolicy(QtGui.QSizePolicy.Maximum,QtGui.QSizePolicy.Maximum)
 
@@ -162,6 +163,10 @@ class Terminal(QtGui.QMainWindow):
         self.data_panel = Plot_Widget(prefs=self.prefs,
                                       invoker=self.invoker)
         self.data_panel.init_plots(self.pilots.keys())
+
+        # Set heights on control panel and data panel
+        self.control_panel.setMaximumHeight(winheight)
+        self.data_panel.setMaximumHeight(winheight)
 
         # Logo goes up top
         self.logo = QtGui.QLabel()

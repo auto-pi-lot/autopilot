@@ -62,7 +62,10 @@ class Plot_Widget(QtGui.QWidget):
         # Assemble buttons and plots
         self.layout.addWidget(self.plot_select)
         self.layout.addLayout(self.plot_layout)
+
         self.setLayout(self.layout)
+
+        self.setContentsMargins(0, 0, 0, 0)
 
     def init_plots(self, pilot_list):
         self.pilots = pilot_list
@@ -75,8 +78,6 @@ class Plot_Widget(QtGui.QWidget):
             self.plot_layout.addWidget(plot)
             self.plot_layout.addWidget(HLine())
             self.plots[p] = plot
-        for p in self.plots.values():
-            p.setSizePolicy(QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Maximum)
 
     def create_plot_buttons(self):
         groupbox = QtGui.QGroupBox()
@@ -278,7 +279,6 @@ class Plot(QtGui.QWidget):
         self.plots = {}
         self.plot.clear()
         self.info['Runtime'].stop_timer()
-        pass
 
     def l_param(self, value):
         pass
