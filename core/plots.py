@@ -75,6 +75,8 @@ class Plot_Widget(QtGui.QWidget):
             self.plot_layout.addWidget(plot)
             self.plot_layout.addWidget(HLine())
             self.plots[p] = plot
+        for p in self.plots.values():
+            p.setSizePolicy(QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Maximum)
 
     def create_plot_buttons(self):
         groupbox = QtGui.QGroupBox()

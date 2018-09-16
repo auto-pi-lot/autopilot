@@ -52,12 +52,16 @@ class Control_Panel(QtGui.QWidget):
 
         self.init_ui()
 
+        self.setSizePolicy(QtGui.QSizePolicy.Maximum,QtGui.QSizePolicy.Maximum)
+
     def init_ui(self):
         self.layout.setColumnStretch(0, 1)
         self.layout.setColumnStretch(1, 5)
 
         # Iterate through pilots and mice, making start/stop buttons for pilots and lists of mice
         for i, (pilot, mice) in enumerate(self.pilots.items()):
+            # in pilot dict, format is {'pilot':{'mice':['mouse1',...],'ip':'',etc.}}
+            mice = mice['mice']
             # Make a list of mice
             mouse_list = Mouse_List(mice, drop_fn = self.update_db)
             mouse_list.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
@@ -143,7 +147,7 @@ class Control_Panel(QtGui.QWidget):
                 pass
 
             # Add mouse to pilots dict, update it and our tabs
-            self.pilots[pilot].append(biography_vals['id'])
+            self.pilots[pilot]['mice'].append(biography_vals['id'])
             self.mouse_lists[pilot].addItem(biography_vals['id'])
             self.update_db()
 
@@ -181,7 +185,7 @@ class Control_Panel(QtGui.QWidget):
             for i in range(mlist.count()):
                 mice.append(mlist.item(i).text())
 
-            self.pilots[pilot] = mice
+            self.pilots[pilot]['mice'] = mice
 
         try:
             with open(self.prefs['PILOT_DB'], 'w') as pilot_file:
@@ -284,7 +288,7 @@ class Pilot_Button(QtGui.QPushButton):
         self.setText("START")
 
         # Normally buttons only expand horizontally, but these big ole ones....
-        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Maximum)
 
         # What's yr name anyway?
         self.pilot = pilot

@@ -21,6 +21,7 @@ import argparse
 import threading
 import time
 import multiprocessing
+import socket
 
 import pyo
 import tables
@@ -98,8 +99,11 @@ class RPilot:
         self.state = 'IDLE' # or 'Running'
         self.update_state()
 
-        # Synchronize system clock w/ time from terminal.
-        # Send message back to terminal that we're all good.
+        # Since we're starting up, handshake to introduce ourselves
+        self.ip = self.get_ip()
+        self.handshake()
+
+        # TODO Synchronize system clock w/ time from terminal.
 
 
     #################################################################
@@ -134,6 +138,24 @@ class RPilot:
         self.loop_thread.start()
 
         self.logger.info("Networking Initialized")
+
+    def get_ip(self):
+        # shamelessly stolen from https://www.w3resource.com/python-exercises/python-basic-exercise-55.php
+        # variables are badly named because this is just a rough unwrapping of what was a monstrous one-liner
+
+        # get ips that aren't the loopback
+        unwrap00 = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1]
+        # ???
+        unwrap01 = [[(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]
+
+        unwrap2 = [l for l in (unwrap00,unwrap01) if l][0][0]
+
+        return unwrap2
+
+    def handshake(self):
+        # send the terminal some information about ourselves
+        hello = {'pilot':self.name, 'ip':self.ip}
+        self.send_message('HELLO', target='T', value=hello)
 
     def handle_listen(self, msg):
         # Messages are single part json-encoded messages

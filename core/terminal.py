@@ -96,7 +96,8 @@ class Terminal(QtGui.QMainWindow):
             'STATE': self.l_state, # A Pi has changed state
             'PING' : self.l_ping,  # Someone wants to know if we're alive
             'FILE' : self.l_file,  # A pi needs some files to run its protocol
-            'DATA' : self.l_data   # data 4 us!
+            'DATA' : self.l_data,   # data 4 us!
+            'ALIVE': self.l_alive  # pi is responding to our ping, or telling us its info
         }
 
         # Make invoker object to send GUI events back to the main thread
@@ -139,6 +140,17 @@ class Terminal(QtGui.QMainWindow):
         self.file_menu.addAction(new_prot_act)
         self.file_menu.addAction(batch_create_mice)
 
+        # Set size of window to be fullscreen without maximization
+        # Until a better solution is found, if not set large enough, the pilot tabs will
+        # expand into infinity. See the Expandable_Tabs class
+        titleBarHeight = self.style().pixelMetric(QtGui.QStyle.PM_TitleBarHeight,
+            QtGui.QStyleOptionTitleBar(), self)
+        winsize = app.desktop().availableGeometry()
+        # Then subtract height of titlebar
+        winsize.setHeight(winsize.height()-titleBarHeight*4)
+        self.setGeometry(winsize)
+        self.setSizePolicy(QtGui.QSizePolicy.Maximum,QtGui.QSizePolicy.Maximum)
+
         ## Init main panels and add to layout
         # Control panel sits on the left, controls pilots & mice
         self.control_panel = Control_Panel(pilots=self.pilots,
@@ -164,15 +176,7 @@ class Terminal(QtGui.QMainWindow):
         self.layout.setColumnStretch(0, 2)
         self.layout.setColumnStretch(1, 10)
 
-        # Set size of window to be fullscreen without maximization
-        # Until a better solution is found, if not set large enough, the pilot tabs will
-        # expand into infinity. See the Expandable_Tabs class
-        titleBarHeight = self.style().pixelMetric(QtGui.QStyle.PM_TitleBarHeight,
-            QtGui.QStyleOptionTitleBar(), self)
-        winsize = app.desktop().availableGeometry()
-        # Then subtract height of titlebar
-        winsize.setHeight(winsize.height()-titleBarHeight*4)
-        self.setGeometry(winsize)
+
 
         self.show()
         logging.info('UI Initialized')
@@ -301,24 +305,34 @@ class Terminal(QtGui.QMainWindow):
         # TODO check graduation here
 
     def l_ping(self, value):
-        self.send_message('ALIVE', value=b'T')
+        # TODO Not this
+        pass
+        #self.send_message('ALIVE', value=b'T')
 
     def l_file(self, value):
         pass
 
+    def l_alive(self, value):
+        if value['pilot'] in self.pilots.keys():
+            self.pilots['ip'] = value['ip']
+
+        else:
+            self.new_pilot(name=value['pilot'], ip=value['ip'])
+
     #############################
     # GUI & etc. methods
 
-    def new_pilot(self):
-        name, ok = QtGui.QInputDialog.getText(self, "Pilot ID", "Pilot ID:")
+    def new_pilot(self, ip='', name=None):
+        if name is None:
+            name, ok = QtGui.QInputDialog.getText(self, "Pilot ID", "Pilot ID:")
 
         # make sure we won't overwrite ourself
-        if ok and name in self.pilots.keys():
+        if name in self.pilots.keys():
             # TODO: Pop a window confirming we want to overwrite
             pass
 
-        if ok and name != '':
-            self.pilots[name] = []
+        if name != '':
+            self.pilots[name] = {'mice':[], 'ip':ip}
             self.control_panel.update_db()
             self.reset_ui()
         else:
