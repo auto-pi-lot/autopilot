@@ -155,7 +155,7 @@ class RPilot:
     def handshake(self):
         # send the terminal some information about ourselves
         hello = {'pilot':self.name, 'ip':self.ip}
-        self.send_message('HELLO', target='T', value=hello)
+        self.send_message('ALIVE', target='T', value=hello)
 
     def handle_listen(self, msg):
         # Messages are single part json-encoded messages

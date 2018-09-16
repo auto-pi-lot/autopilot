@@ -35,6 +35,7 @@ TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
 - routine to update git repo and restart on command
 - make permissions safe.
 - handshaking when pi connects to terminal - check IP, store status
+- new pilot button is broken
 
 order of code review:
 !- terminal

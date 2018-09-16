@@ -123,7 +123,6 @@ class Terminal_Networking(multiprocessing.Process):
             'STATE': self.l_state, # The Pi is confirming/notifying us that it has changed state
             'RECVD': self.m_recvd,  # We are getting confirmation that the message was received
             'FILE': self.l_file,    # The pi needs some file from us
-            'HELLO': self.l_hello # the pi is sending us some startup information
         }
 
         # self.mice_data = {} # maps the running mice to methods to stash their data
@@ -495,7 +494,7 @@ class Pilot_Networking(multiprocessing.Process):
             'STATE': self.m_state, # Confirm or notify terminal of state change
             'DATA': self.m_data,  # Sending data back
             'COHERE': self.m_cohere, # Sending our temporary data table at the end of a run to compare w/ terminal's copy
-            'HELLO': self.m_hello # send some initial information to the terminal
+            'ALIVE': self.m_alive # send some initial information to the terminal
         }
 
         # Listen dictionary - What method to call for PUBlishes from the Terminal
@@ -605,9 +604,9 @@ class Pilot_Networking(multiprocessing.Process):
         # Send our local version of the data table so the terminal can double check
         pass
 
-    def m_hello(self, target, value):
+    def m_alive(self, target, value):
         # just say hello
-        self.push('HELLO', target=target, value=value)
+        self.push('ALIVE', target=target, value=value)
 
     def l_ping(self, value):
         # The terminal wants to know if we are alive, respond with our name and IP
