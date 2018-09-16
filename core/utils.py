@@ -60,6 +60,8 @@ def update_pis(github=True, apt=False, pilot_select = None, prefs_fn = None):
         ip_string = " ".join(ips)
         call('parallel-ssh', '-H', ip_string, '~/git/RPilot/utils/update_pilot.sh', '-t', '20')
 
+def dummy():
+    # testing if update pi works
 
 
 
