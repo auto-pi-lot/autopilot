@@ -4,7 +4,7 @@ import argparse
 import uuid
 import pprint
 import tables
-
+import subprocess
 
 # Check for sudo
 if os.getuid() != 0:
@@ -183,6 +183,7 @@ os.chmod(prefs_file, 0775)
 # Some performance tweaks (stopping services, etc.) are added from: https://github.com/autostatic/scripts/blob/rpi/jackstart
 launch_file = os.path.join(basedir, 'launch_pilot.sh')
 with open(launch_file, 'w') as launch_file_open:
+    launch_file_open.write('#!/bin/sh')
     launch_file_open.write('killall jackd\n') # Try to kill any existing jackd processes
     launch_file_open.write('sudo killall pigpiod\n')
     launch_file_open.write('sudo service ntp stop\n')
@@ -201,6 +202,25 @@ with open(launch_file, 'w') as launch_file_open:
     launch_file_open.write(launch_string)
 
 os.chmod(launch_file, 0775)
+
+# open pilot on startup using systemd
+systemd_string = '''[Unit]
+Description=RPilot
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart={}
+
+[Install]
+WantedBy=multi-user.target'''.format(launch_file)
+
+with open('/usr/rpilot/rpilot.service','w') as rpilot_service:
+    rpilot_service.write(systemd_string)
+
+# enable the service
+subprocess.call('sudo systemctl daemon-reload')
+subprocess.call('sudo systemctl enable rpilot.service')
 
 pp = pprint.PrettyPrinter(indent=4)
 print("Pilot set up with prefs:\r")

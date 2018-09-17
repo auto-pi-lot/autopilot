@@ -87,7 +87,7 @@ class Free_Water:
         self.allow_repeat = bool(allow_repeat)
 
         # Variable parameters
-        self.target = None
+        self.target = random.choice(['L', 'C', 'R'])
         self.current_stage = None
         self.trial_counter = itertools.count(int(current_trial))
         self.triggers = {}
@@ -116,13 +116,9 @@ class Free_Water:
         # Choose random port
         if self.allow_repeat:
             self.target = random.choice(['L', 'C', 'R'])
-        elif self.target:
+        else:
             other_ports = list(set(['L', 'C', 'R'])-set(self.target))
             self.target = random.choice(other_ports)
-        else:
-            # TODO: Inelegant
-            # On first trial...
-            self.target = random.choice(['L', 'C', 'R'])
 
         self.triggers[self.target] = self.pins['PORTS'][self.target].open
         self.set_leds({self.target: [0, 255, 0]})
