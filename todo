@@ -36,6 +36,10 @@ TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
 - make permissions safe.
 - handshaking when pi connects to terminal - check IP, store status
 - new pilot button is broken
+- make control panel responsive to pi state
+- clear last trigger on stop
+- check for dupes on mouse lists
+
 
 order of code review:
 !- terminal

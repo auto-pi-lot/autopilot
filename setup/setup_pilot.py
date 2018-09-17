@@ -152,8 +152,7 @@ repo_loc = os.path.join(os.sep,*file_loc)
 # make util scripts executable
 util_fns = os.listdir(os.path.join(repo_loc,'utils'))
 for fn in util_fns:
-    os.chmod(fn, 0444)
-
+    os.chmod(os.path.join(repo_loc,'utils',fn), 0444)
 
 # make prefs dict
 prefs = {}

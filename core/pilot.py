@@ -244,7 +244,8 @@ class RPilot:
         self.stage_block.set()
 
         # TODO: Cohere here before closing file
-        self.h5f.close()
+        if hasattr(self, 'h5f'):
+            self.h5f.close()
 
 
     def l_param(self, value):
