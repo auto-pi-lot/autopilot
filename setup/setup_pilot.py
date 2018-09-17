@@ -218,8 +218,8 @@ with open('/usr/rpilot/rpilot.service','w') as rpilot_service:
     rpilot_service.write(systemd_string)
 
 # enable the service
-subprocess.call('sudo systemctl daemon-reload')
-subprocess.call('sudo systemctl enable rpilot.service')
+subprocess.call(['sudo', 'systemctl', 'daemon-reload'])
+subprocess.call(['sudo', 'systemctl' , 'enable', 'rpilot.service'])
 
 pp = pprint.PrettyPrinter(indent=4)
 print("Pilot set up with prefs:\r")
