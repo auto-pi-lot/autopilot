@@ -117,9 +117,10 @@ class Free_Water:
         if self.allow_repeat:
             self.target = random.choice(['L', 'C', 'R'])
         else:
-            other_ports = list(set(['L', 'C', 'R'])-set([self.target]))
+            other_ports = [t for t in ['L', 'C', 'R'] if t is not self.target]
             self.target = random.choice(other_ports)
 
+        print(self.pins['PORTS'])
         self.triggers[self.target] = self.pins['PORTS'][self.target].open
         self.set_leds({self.target: [0, 255, 0]})
 

@@ -210,11 +210,12 @@ After=multi-user.target
 [Service]
 Type=idle
 ExecStart={}
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target'''.format(launch_file)
 
-with open('/usr/rpilot/rpilot.service','w') as rpilot_service:
+with open('/lib/systemd/system/rpilot.service','w') as rpilot_service:
     rpilot_service.write(systemd_string)
 
 # enable the service
