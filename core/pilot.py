@@ -319,6 +319,7 @@ class RPilot:
             # If the running flag gets set, we're closing.
             if not self.running.is_set():
                 # TODO: Call task shutdown method
+                self.task.end()
                 self.task = None
                 self.row.append()
                 self.table.flush()

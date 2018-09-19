@@ -225,3 +225,10 @@ class Free_Water:
                 v.set_color(color_dict[k])
             else:
                 v.set_color([0,0,0])
+
+    def end(self):
+        for k, v in self.pins:
+            for pin, obj in v:
+                obj.release()
+
+

@@ -64,6 +64,9 @@ class Beambreak:
     def __del__(self):
         self.pig.stop()
 
+    def release(self):
+        self.pig.stop()
+
     def assign_cb(self, callback_fn, add=False, evented=False, manual_trigger=None):
         # If we aren't adding, we clear any existing callbacks
         if not add:
@@ -143,6 +146,9 @@ class LED_RGB:
         self.color_series([[255,0,0],[0,255,0],[0,0,255],[0,0,0]], 250)
 
     def __del__(self):
+        self.pig.stop()
+
+    def release(self):
         self.pig.stop()
 
     def set_color(self, col=None, r=None, g=None, b=None, timed=None, stored=False, internal=False):
@@ -243,6 +249,9 @@ class Solenoid:
         #self.make_wave()
 
     def __del__(self):
+        self.pig.stop()
+
+    def release(self):
         self.pig.stop()
 
     def make_wave(self, duration=None):
