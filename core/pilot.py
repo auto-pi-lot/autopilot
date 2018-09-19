@@ -295,6 +295,7 @@ class RPilot:
 
         while True:
             # Calculate next stage data and prep triggers
+            print(self.task.pins)
             data = self.task.stages.next()() # Double parens because next just gives us the function, we still have to call it
 
             # Send data back to terminal (mouse is identified by the networking object)
@@ -318,6 +319,7 @@ class RPilot:
             # If the running flag gets set, we're closing.
             if not self.running.is_set():
                 # TODO: Call task shutdown method
+                self.task = None
                 self.row.append()
                 self.table.flush()
                 break
