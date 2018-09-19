@@ -418,7 +418,12 @@ class Nafc:
         # Set sound trigger and LEDs
         # We make two triggers to play the sound and change the light color
         change_to_blue = lambda: self.pins['LEDS']['C'].set_color([0,0,255])
-        self.triggers['C'] = [change_to_blue, self.mark_playing, self.target_sound.play]
+
+        # set triggers
+        if self.req_reward is True:
+            self.triggers['C'] = [change_to_blue, self.mark_playing, self.pins['PORTS']['C'].open, self.target_sound.play]
+        else:
+            self.triggers['C'] = [change_to_blue, self.mark_playing, self.target_sound.play]
         self.set_leds({'C': [0, 255, 0]})
 
         data = {
@@ -427,6 +432,9 @@ class Nafc:
             'RQ_timestamp':datetime.datetime.now().isoformat(),
             'trial_num' : self.trial_counter.next()
         }
+        # get sound info and add to data dict
+        sound_info = {k:getattr(self.target_sound, k) for k in self.target_sound.PARAMS}
+        data.update(sound_info)
 
         self.current_stage = 0
         return data

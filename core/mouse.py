@@ -192,7 +192,19 @@ class Mouse:
             try:
                 if hasattr(task_class, "TrialData"):
                     trial_descriptor = task_class.TrialData
+                    # add a session column, everyone needs a session column
                     trial_descriptor.columns.update({'session': tables.Int32Col()})
+                    # if this task has sounds, make columns for them
+                    if 'sounds' in step.keys():
+                        # for now we just assume they're floats
+                        sound_params = {}
+                        for side, sounds in step['sounds'].items():
+                            # each side has a list of sounds
+                            for sound in sounds:
+                                sound_params.update({k:tables.Float64Col() for k, v in sound.items() if k is not 'type'})
+                            sound_params.update({'type':tables.StringCol(128)})
+                        trial_descriptor.columns.update(sound_params)
+
                     self.h5f.create_table(step_group, "trial_data", trial_descriptor)
             except tables.NodeError:
                 # we already have made this table, that's fine

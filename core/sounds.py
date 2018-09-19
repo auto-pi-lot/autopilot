@@ -58,12 +58,14 @@ class Tone:
     The Humble Sine Wave
     '''
     PARAMS = ['frequency','duration','amplitude']
+    type = 'tone'
     def __init__(self, frequency, duration, amplitude=0.05, phase=0, **kwargs):
         # super(Tone, self).__init__()
 
         self.frequency = float(frequency)
         self.duration = float(duration)
         self.amplitude = float(amplitude)
+
 
         sin = pyo.Sine(self.frequency, mul=self.amplitude)
         self.table = TableWrap(sin, self.duration)

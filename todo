@@ -39,7 +39,7 @@ TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
 - make control panel responsive to pi state
 - clear last trigger on stop
 - check for dupes on mouse lists
-
+- unify param structure, make class
 
 order of code review:
 !- terminal

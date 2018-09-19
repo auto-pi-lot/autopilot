@@ -875,7 +875,10 @@ class Protocol_Wizard(QtGui.QDialog):
                 input_widget.editingFinished.connect(self.set_param)
                 if 'value' in v.keys():
                     input_widget.setText(v['value'])
+                elif v['type'] == 'str':
+                    self.steps[step_index][k]['value'] = ''
                 self.param_layout.addRow(rowtag,input_widget)
+
             elif v['type'] == 'check':
                 rowtag = QtGui.QLabel(v['tag'])
                 input_widget = QtGui.QCheckBox()
@@ -883,17 +886,24 @@ class Protocol_Wizard(QtGui.QDialog):
                 input_widget.stateChanged.connect(self.set_param)
                 if 'value' in v.keys():
                     input_widget.setChecked(v['value'])
+                else:
+                    self.steps[step_index][k]['value'] = False
                 self.param_layout.addRow(rowtag, input_widget)
+
             elif v['type'] == 'list':
                 rowtag = QtGui.QLabel(v['tag'])
                 input_widget = QtGui.QListWidget()
                 input_widget.setObjectName(k)
-                input_widget.insertItems(0, sorted(v['values'], key=v['values'].get))
+                sorted_values = sorted(v['values'], key=v['values'].get)
+                input_widget.insertItems(0, sorted_values)
                 input_widget.itemSelectionChanged.connect(self.set_param)
                 if 'value' in v.keys():
                     select_item = input_widget.item(v['value'])
                     input_widget.setCurrentItem(select_item)
+                else:
+                    self.steps[step_index][k]['value'] = sorted_values[0]
                 self.param_layout.addRow(rowtag, input_widget)
+                self.steps[step_index][k]['value'] = False
             elif v['type'] == 'sounds':
                 self.sound_widget = Sound_Widget()
                 self.sound_widget.setObjectName(k)
@@ -923,8 +933,9 @@ class Protocol_Wizard(QtGui.QDialog):
 
         # Iterate again to check for dependencies
         # no idea what i meant here -jls 180913
-        for k, v in self.steps[step_index].items():
-            pass
+        # maybe greying out unavailable boxes?
+        # for k, v in self.steps[step_index].items():
+        #    pass
 
     def clear_params(self):
         while self.param_layout.count():
