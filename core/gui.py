@@ -105,6 +105,9 @@ class Control_Panel(QtGui.QWidget):
             # Prep task to send to pi, the pilot needs to know the mouse
             task['mouse'] = self.mice[mouse].name
             task['pilot'] = pilot
+            task['step'] = step
+            task['current_trial'] = self.mice[mouse].current_trial
+            task['session'] = self.mice[mouse].session
 
             # TODO: Before starting, pop a window to get weight.
             # TODO: Get last trial number and send to pi as well
@@ -570,6 +573,15 @@ class Protocol_Parameters_Dialogue(QtGui.QDialog):
         # call the rest of the accept method
         super(Protocol_Parameters_Dialogue, self).accept()
 
+class Popup(QtGui.QDialog):
+    def __init__(self, message):
+        super(Popup, self,).__init__()
+        self.layout = QtGui.QVBoxLayout()
+        self.text = QtGui.QLabel(message)
+        self.layout.addWidget(self.text)
+        self.setLayout(self.layout)
+
+
 
 ##################################
 # Wizard Widgets
@@ -794,7 +806,6 @@ class Protocol_Wizard(QtGui.QDialog):
         frame_layout.addLayout(addstep_layout, stretch=1)
         frame_layout.addLayout(steplist_layout, stretch=1)
         frame_layout.addLayout(param_box_layout, stretch=3)
-        frame_layout.addLayout(grad_box_layout, stretch=3)
 
         buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
         buttonBox.accepted.connect(self.accept)
@@ -895,6 +906,11 @@ class Protocol_Wizard(QtGui.QDialog):
                 self.grad_widget.setObjectName(k)
                 self.grad_widget.set_graduation = self.set_graduation
                 self.param_layout.addRow(self.grad_widget)
+                if 'type' in v['value'].keys():
+                    combo_index = self.grad_widget.type_selection.findText(v['value']['type'])
+                    self.grad_widget.type_selection.setCurrentIndex(combo_index)
+                    self.grad_widget.populate_params(v['value']['value'])
+
             elif v['type'] == 'label':
                 # This is a .json label not for display
                 pass
@@ -950,7 +966,7 @@ class Protocol_Wizard(QtGui.QDialog):
         current_step = self.step_list.currentRow()
         grad_type = self.grad_widget.type
         grad_params = self.grad_widget.param_dict
-        self.steps[current_step]['graduation'] = {'type':grad_type,'value':grad_params}
+        self.steps[current_step]['graduation']['value'] = {'type':grad_type,'value':grad_params}
 
 
     def check_depends(self):
@@ -980,9 +996,13 @@ class Graduation_Widget(QtGui.QWidget):
 
         self.param_dict = {}
 
+        # we receive a method from the protocol wizard to
+        # store the graduation params in the step dictionary
         self.set_graduation = None
 
-    def populate_params(self):
+        self.populate_params()
+
+    def populate_params(self, params=None):
         self.clear_params()
         self.type = self.type_selection.currentText()
         self.param_dict['type'] = self.type
@@ -991,7 +1011,10 @@ class Graduation_Widget(QtGui.QWidget):
             edit_box = QtGui.QLineEdit()
             edit_box.setObjectName(k)
             edit_box.editingFinished.connect(self.store_param)
-            self.param_layout.addrow(QtGui.QLabel(k), edit_box)
+            if isinstance(params, dict):
+                if k in params.keys():
+                    edit_box.setText(params[k])
+            self.param_layout.addRow(QtGui.QLabel(k), edit_box)
 
     def clear_params(self):
         while self.param_layout.count():
@@ -1003,6 +1026,8 @@ class Graduation_Widget(QtGui.QWidget):
         sender = self.sender()
         name = sender.objectName()
         self.param_dict[name] = sender.text()
+        print(self.param_dict)
+        self.set_graduation()
 
 
 class Sound_Widget(QtGui.QWidget):

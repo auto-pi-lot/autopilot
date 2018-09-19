@@ -143,7 +143,7 @@ class Plot(QtGui.QWidget):
         self.info = {
             'N Trials': QtGui.QLabel(),
             'Runtime' : Timer(),
-            'Session' : pg.ValueLabel(),
+            'Session' : QtGui.QLabel(),
             'Protocol': QtGui.QLabel(),
             'Step'    : QtGui.QLabel()
         }
@@ -239,7 +239,13 @@ class Plot(QtGui.QWidget):
         # We're sent a task dict, we extract the plot params and send them to the plot object
         self.plot_params = tasks.TASK_LIST[value['task_type']].PLOT
 
+        # set infobox stuff
+        self.info['N Trials'].setText(str(value['current_trial']))
         self.info['Runtime'].start_timer()
+        self.info['Step'].setText(str(value['step']))
+        self.info['Session'].setText(str(value['session']))
+        self.info['Protocol'].setText(value['step_name'])
+
 
         # TODO: Make this more general, make cases for each non-'data' key
         try:
@@ -265,7 +271,7 @@ class Plot(QtGui.QWidget):
 
         for k, v in value.items():
             if k == 'trial_num':
-                self.info['N Trials'].setText(str(self.n_trials.next()))
+                self.info['N Trials'].setText(str(v))
                 self.last_trial = v
                 self.xrange = xrange(v-self.x_width+1, v+1)
                 self.plot.setXRange(self.xrange[0], self.xrange[-1])
@@ -323,13 +329,10 @@ class Segment(pg.PlotDataItem):
         data[data=="L"] = 0
         data[data=="C"] = 0.5
         data = data.astype(np.float)
-        print("SEG", data)
 
         xs = np.repeat(data[...,0],2)
         ys = np.repeat(data[...,1],2)
         ys[::2] = 0.5
-
-        print("SEG", ys)
 
         self.curve.setData(xs, ys, connect='pairs', pen='k')
 

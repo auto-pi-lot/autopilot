@@ -190,6 +190,7 @@ class RPilot:
         # Get the task object by its type
         task_class = tasks.TASK_LIST[value['task_type']]
         # Instantiate the task
+        self.stage_block.clear()
         self.task = task_class(prefs=self.prefs, stage_block=self.stage_block, **value)
 
         # Setup a table to store data locally
@@ -242,6 +243,7 @@ class RPilot:
         # and call the cleanup routine from run_task so it can exit cleanly
         self.running.clear()
         self.stage_block.set()
+
 
         # TODO: Cohere here before closing file
         if hasattr(self, 'h5f'):

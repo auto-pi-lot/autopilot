@@ -25,7 +25,7 @@ from networking import Terminal_Networking
 import tasks
 import sounds
 from utils import InvokeEvent, Invoker
-from gui import Control_Panel, Protocol_Wizard
+from gui import Control_Panel, Protocol_Wizard, Popup
 
 # TODO: Oh holy hell just rewrite all the inter-widget communication as zmq
 # TODO: Be more complete about generating logs
@@ -122,6 +122,7 @@ class Terminal(QtGui.QMainWindow):
         self.init_network()  # start "internal" networking
         self.spawn_network() # Has to be after init_network so it makes a new context
 
+        self.popups = []
         #time.sleep(1)
 
 
@@ -307,7 +308,18 @@ class Terminal(QtGui.QMainWindow):
         # A Pi has sent us data, let's save it huh?
         mouse_name = value['mouse']
         self.mice[mouse_name].save_data(value)
-        # TODO check graduation here
+        if self.mice[mouse_name].did_graduate is True:
+            self.mice[mouse_name].graduate()
+            self.send_message('STOP', value['pilot'])
+            protocol = self.mice[mouse_name].current
+            step = self.mice[mouse_name].step
+            task = protocol[step]
+            task['mouse'] = mouse_name
+            task['pilot'] = value['pilot']
+            task['step'] = step
+            task['current_trial'] = self.mice[mouse_name].current_trial
+            task['session'] = self.mice[mouse_name].session
+            self.send_message('START', value['pilot'], task)
 
     def l_ping(self, value):
         # TODO Not this

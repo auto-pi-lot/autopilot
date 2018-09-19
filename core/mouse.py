@@ -60,6 +60,7 @@ class Mouse:
         self.cont_table  = None
         self.cont_row    = None
         self.cont_keys   = None
+        self.current_trial  = None
 
         # Is the mouse currently running (ie. we expect data to be incoming)
         # Used to keep the mouse object alive, otherwise we close the file whenever we don't need it
@@ -113,7 +114,7 @@ class Mouse:
             self.flush_current()
         elif type == 'step':
             self.step = int(value)
-            self.h5f.root.current.attrs['step'] = self.step
+            #self.h5f.root.current.attrs['step'] = self.step
             self.flush_current()
         elif type == 'protocol':
             self.flush_current()
@@ -191,6 +192,7 @@ class Mouse:
             try:
                 if hasattr(task_class, "TrialData"):
                     trial_descriptor = task_class.TrialData
+                    trial_descriptor.columns.update({'session': tables.Int32Col()})
                     self.h5f.create_table(step_group, "trial_data", trial_descriptor)
             except tables.NodeError:
                 # we already have made this table, that's fine
@@ -198,6 +200,7 @@ class Mouse:
             try:
                 if hasattr(task_class, "ContinuousData"):
                     cont_descriptor = task_class.ContinuousData
+                    trial_descriptor.columns.update({'session': tables.Int32Col()})
                     self.h5f.create_table(step_group, "continuous_data", cont_descriptor)
             except tables.NodeError:
                 # already made it
@@ -210,13 +213,13 @@ class Mouse:
         # Flush the 'current' attribute in the mouse object to the .h5
         # makes sure the stored .json representation of the current task stays up to date
         # with the params set in the mouse object
-        step = self.h5f.root.current.attrs['step']
-        protocol_name = self.h5f.root.current.attrs['protocol_name']
+        #step = self.h5f.root.current.attrs['step']
+        #protocol_name = self.h5f.root.current.attrs['protocol_name']
         self.h5f.remove_node('/current')
         current_node = filenode.new_node(self.h5f, where='/', name='current')
         current_node.write(json.dumps(self.current))
-        current_node.attrs['step'] = step
-        current_node.attrs['protocol_name'] = protocol_name
+        current_node.attrs['step'] = self.step
+        current_node.attrs['protocol_name'] = self.protocol_name
         self.h5f.flush()
 
     def stash_current(self):
@@ -256,6 +259,18 @@ class Mouse:
         self.trial_table = self.h5f.get_node(group_name, 'trial_data')
         self.trial_row = self.trial_table.row
         self.trial_keys = self.trial_table.colnames
+
+        # get last trial number and session
+        try:
+            self.current_trial = self.trial_table.read(self.trial_table.nrows-1, field='trial_num')[0]+1
+        except IndexError:
+            self.current_trial = 0
+
+        try:
+            self.session = self.trial_table.read(self.trial_table.nrows-1, field='session')[0]+1
+        except IndexError:
+            self.session = 0
+
         #except:
             # fine, we just need one
         #    pass
@@ -273,9 +288,12 @@ class Mouse:
         # TODO: Spawn graduation checking object!
         if 'graduation' in task_params.keys():
             grad_params = task_params['graduation']
-            self.graduation = tasks.GRAD_LIST[grad_params['type']](grad_params['value'])
+            grad_params['value']['current_trial'] = self.current_trial
+            self.graduation = tasks.GRAD_LIST[grad_params['type']](**grad_params['value'])
+            self.did_graduate = False
         else:
             self.graduation = None
+            self.did_graduate = None
 
         self.running = True
 
@@ -285,16 +303,13 @@ class Mouse:
                 self.trial_row[k] = v
 
         if 'TRIAL_END' in data.keys():
-            if self.graduation:
-                did_graduate = self.graduation.update(self.trial_row)
-                if did_graduate:
-                    # TODO: Handle graduation
-                    pass
             self.trial_row.append()
             self.trial_table.flush()
-
-            # TODO: Check Graduation
-
+            print(self.trial_row)
+            if self.graduation:
+                # set our graduation flag, the terminal will get the rest rolling
+                self.did_graduate = self.graduation.update(self.trial_row)
+            print(self.graduation, self.did_graduate)
         if 'start_weight' in data.keys():
             # TODO: Handle weights
             pass
@@ -312,9 +327,27 @@ class Mouse:
         # coarse timestamps that should be human-readable
         # fine timestamps for data analysis that don't need to be
         if string:
-            return datetime.datetime.now().strftime('%y%m%d-%H%M')
+            return datetime.datetime.now().strftime('%y%m%d-%H%M%S')
         else:
             return time()
+
+    def graduate(self):
+        if len(self.current)<=self.step+1:
+            Warning('Tried to graduate from the last step!\n Task has {} steps and we are on {}'.format(len(self.current), self.step+1))
+            return
+
+        # increment step, update_history should handle the rest
+        step = self.step+1
+        name = self.current[step]['step_name']
+        self.update_history('step', name, step)
+
+        # prepare to run the next one
+        self.prepare_run()
+
+
+
+
+
 
     class History_Table(tables.IsDescription):
         # Class to describe parameter and protocol change history

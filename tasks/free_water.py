@@ -117,7 +117,7 @@ class Free_Water:
         if self.allow_repeat:
             self.target = random.choice(['L', 'C', 'R'])
         else:
-            other_ports = list(set(['L', 'C', 'R'])-set(self.target))
+            other_ports = list(set(['L', 'C', 'R'])-set([self.target]))
             self.target = random.choice(other_ports)
 
         self.triggers[self.target] = self.pins['PORTS'][self.target].open

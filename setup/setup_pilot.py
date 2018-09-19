@@ -182,7 +182,7 @@ os.chmod(prefs_file, 0775)
 # Some performance tweaks (stopping services, etc.) are added from: https://github.com/autostatic/scripts/blob/rpi/jackstart
 launch_file = os.path.join(basedir, 'launch_pilot.sh')
 with open(launch_file, 'w') as launch_file_open:
-    launch_file_open.write('#!/bin/sh')
+    launch_file_open.write('#!/bin/sh\n')
     launch_file_open.write('killall jackd\n') # Try to kill any existing jackd processes
     launch_file_open.write('sudo killall pigpiod\n')
     launch_file_open.write('sudo service ntp stop\n')

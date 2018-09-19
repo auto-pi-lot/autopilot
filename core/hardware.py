@@ -61,6 +61,9 @@ class Beambreak:
         self.pig.set_mode(self.pin, pigpio.INPUT)
         self.pig.set_pull_up_down(self.pin, self.pull_ud)
 
+    def __del__(self):
+        self.pig.stop()
+
     def assign_cb(self, callback_fn, add=False, evented=False, manual_trigger=None):
         # If we aren't adding, we clear any existing callbacks
         if not add:
@@ -138,6 +141,9 @@ class LED_RGB:
 
         # Blink to show we're alive
         self.color_series([[255,0,0],[0,255,0],[0,0,255],[0,0,0]], 250)
+
+    def __del__(self):
+        self.pig.stop()
 
     def set_color(self, col=None, r=None, g=None, b=None, timed=None, stored=False, internal=False):
 
@@ -235,6 +241,9 @@ class Solenoid:
         self.duration = float(duration)/1000
         #self.wave_id = None
         #self.make_wave()
+
+    def __del__(self):
+        self.pig.stop()
 
     def make_wave(self, duration=None):
         # TODO: Is there any point in storing multiple waves?

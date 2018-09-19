@@ -378,6 +378,11 @@ class Terminal_Networking(multiprocessing.Process):
             self.logger.warning('Republish called for message {}, but missing message'.format(message_id))
             return
 
+        # TODO: Fix this
+        # for now, don't repeat messages to plot widgets because it's fuckin up
+        if self.outbox[message_id]['target'].startswith("P"):
+            return
+
         # if it doesn't have a TTL, set it, if it does, decrement it
         if 'ttl' in self.outbox[message_id].keys():
             self.outbox[message_id]['ttl'] = int(self.outbox[message_id]['ttl'])-1
