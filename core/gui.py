@@ -109,6 +109,12 @@ class Control_Panel(QtGui.QWidget):
             task['current_trial'] = self.mice[mouse].current_trial
             task['session'] = self.mice[mouse].session
 
+            # Get Weights
+            start_weight, ok = QtGui.QInputDialog.getDouble(self, "Set Starting Weight",
+                                                        "Starting Weight:" )
+            if ok:
+                self.mice[mouse].update_weights(start=float(start_weight))
+
             # TODO: Before starting, pop a window to get weight.
             # TODO: Get last trial number and send to pi as well
 
@@ -124,6 +130,15 @@ class Control_Panel(QtGui.QWidget):
             # TODO: Close mouse object
             # TODO: Pop weight entry window
             # TODO: Auto-select the next mouse in the list.
+
+            # get weight
+            # Get Weights
+            stop_weight, ok = QtGui.QInputDialog.getDouble(self, "Set Stopping Weight",
+                                                        "Stopping Weight:" )
+            if ok:
+                self.mice[mouse].update_weights(stop=float(stop_weight))
+
+            self.mice[mouse].stop_run()
 
     def create_mouse(self, pilot):
         new_mouse_wizard = New_Mouse_Wizard(self.prefs['PROTOCOLDIR'])
@@ -580,6 +595,8 @@ class Popup(QtGui.QDialog):
         self.text = QtGui.QLabel(message)
         self.layout.addWidget(self.text)
         self.setLayout(self.layout)
+
+
 
 
 

@@ -435,6 +435,7 @@ class Nafc:
         # get sound info and add to data dict
         sound_info = {k:getattr(self.target_sound, k) for k in self.target_sound.PARAMS}
         data.update(sound_info)
+        data.update({'type':self.target_sound.type})
 
         self.current_stage = 0
         return data
@@ -551,6 +552,11 @@ class Nafc:
     def flash_leds(self):
         for k, v in self.pins['LEDS'].items():
             v.flash(self.punish_dur)
+
+    def end(self):
+        for k, v in self.pins.items():
+            for pin, obj in v.items():
+                obj.release()
 
 
 

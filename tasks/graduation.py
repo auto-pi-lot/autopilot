@@ -10,7 +10,7 @@ class Accuracy(object):
         self.threshold = float(threshold)
         self.window    = int(window)
 
-        self.corrects = deque(maxlen=window)
+        self.corrects = deque(maxlen=self.window)
 
 
     def update(self, row):

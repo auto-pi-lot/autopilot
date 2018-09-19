@@ -92,6 +92,8 @@ class Mouse:
             # We keep track of changes to parameters, promotions, etc. in the history table
             self.h5f.create_table(history_group, 'history', self.History_Table, "Change History")
 
+            # Make table for weights
+            self.h5f.create_table(history_group, 'weights', self.Weight_Table, "Mouse Weights")
 
         # Save biographical information as node attributes
         if biography:
@@ -135,6 +137,20 @@ class Mouse:
         history_row['name'] = name
         history_row['value'] = value
         history_row.append()
+
+    def update_weights(self, start=None, stop=None):
+        if start is not None:
+            weight_row = self.h5f.root.history.weights.row
+            weight_row['date'] = self.get_timestamp(string=True)
+            weight_row['session'] = self.session
+            weight_row['start'] = float(start)
+            weight_row.append()
+        elif stop is not None:
+            # TODO: Make this more robust - don't assume we got a start weight
+            self.h5f.root.history.weights.cols.stop[-1] = stop
+        else:
+            Warning("Need either a start or a stop weight")
+
 
     def update_params(self, param, value):
         # TODO: this
@@ -368,10 +384,17 @@ class Mouse:
             # Type of change - protocol, parameter, step
             # Name - Which parameter was changed, name of protocol, manual vs. graduation step change
             # Value - What was the parameter/protocol/etc. changed to, step if protocol.
-        time = tables.StringCol(128)
-        type = tables.StringCol(128)
-        name = tables.StringCol(128)
+        time = tables.StringCol(256)
+        type = tables.StringCol(256)
+        name = tables.StringCol(256)
         value = tables.StringCol(4028)
+
+    class Weight_Table(tables.IsDescription):
+        start = tables.Float32Col()
+        stop  = tables.Float32Col()
+        date  = tables.StringCol(256)
+        session = tables.Int32Col()
+
 
 
 ############################################################################################

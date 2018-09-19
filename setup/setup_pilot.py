@@ -185,15 +185,11 @@ with open(launch_file, 'w') as launch_file_open:
     launch_file_open.write('#!/bin/sh\n')
     launch_file_open.write('killall jackd\n') # Try to kill any existing jackd processes
     launch_file_open.write('sudo killall pigpiod\n')
-    launch_file_open.write('sudo service ntp stop\n')
     launch_file_open.write('sudo service triggerhappy stop\n')
-    #launch_file_open.write('sudo service dbus stop\n')
     launch_file_open.write('sudo killall console-kit-daemon\n')
     launch_file_open.write('sudo killall polkitd\n')
     launch_file_open.write('sudo mount -o remount,size=128M /dev/shm\n')
     launch_file_open.write('killall gvfsd\n')
-    #launch_file_open.write('killall dbus-daemon\n')
-    #launch_file_open.write('killall dbus-launch\n')
     launch_file_open.write('sudo ' + pigpio_string + '\n')
     launch_file_open.write(jackd_string+'\n')    # Then launch ours
     launch_file_open.write('sleep 1\n') # We wait a damn second to let jackd start up
