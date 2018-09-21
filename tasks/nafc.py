@@ -265,7 +265,6 @@ class Nafc:
 
             # Then LEDs
             elif type == 'LEDS':
-                print('reached LEDs')
                 for pin, handler in values.items():
                     try:
                         self.pins[type][pin] = handler(pins=pin_numbers[type][pin])
@@ -556,6 +555,8 @@ class Nafc:
     def end(self):
         for k, v in self.pins.items():
             for pin, obj in v.items():
+                if k == "LEDS":
+                    obj.set_color([0,0,0])
                 obj.release()
 
 

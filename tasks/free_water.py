@@ -227,8 +227,11 @@ class Free_Water:
                 v.set_color([0,0,0])
 
     def end(self):
+
         for k, v in self.pins.items():
             for pin, obj in v.items():
+                if k == "LEDS":
+                    obj.set_color([0,0,0])
                 obj.release()
 
 

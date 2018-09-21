@@ -209,7 +209,10 @@ class Plot(QtGui.QWidget):
 
     def handle_listen(self, msg):
         # Published as multipart target-msg messages
-        message = json.loads(msg[1])
+        try:
+            message = json.loads(msg[1])
+        except ValueError:
+            self.logger.exception('PLOT {}: Error decoding message'.format(self.pilot))
 
         if not all(i in message.keys() for i in ['key', 'value']):
             self.logger.warning('PLOT {}: LISTEN Improperly formatted - {}'.format(self.pilot, message))
@@ -382,7 +385,7 @@ class Timer(QtGui.QLabel):
 
     def update_time(self):
         secs_elapsed = int(time()-self.start_time)
-        self.setText("{:02d}:{:02d}:{:02d}".format(secs_elapsed/3600, secs_elapsed/60, secs_elapsed%60))
+        self.setText("{:02d}:{:02d}:{:02d}".format(secs_elapsed/3600, (secs_elapsed/60)%60, secs_elapsed%60))
 
 
 class Highlight():

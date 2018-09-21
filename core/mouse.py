@@ -335,17 +335,10 @@ class Mouse:
         if 'TRIAL_END' in data.keys():
             self.trial_row.append()
             self.trial_table.flush()
-            print(self.trial_row)
             if self.graduation:
                 # set our graduation flag, the terminal will get the rest rolling
                 self.did_graduate = self.graduation.update(self.trial_row)
-            print(self.graduation, self.did_graduate)
-        if 'start_weight' in data.keys():
-            # TODO: Handle weights
-            pass
 
-        if 'end_weight' in data.keys():
-            pass
 
     def stop_run(self):
         self.running = False

@@ -33,6 +33,7 @@ from zmq.eventloop.zmqstream import ZMQStream
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from networking import Pilot_Networking
 import tasks
+import hardware
 
 ########################################
 
@@ -103,6 +104,8 @@ class RPilot:
         self.ip = self.get_ip()
         self.handshake()
 
+        self.blank_LEDs()
+
         # TODO Synchronize system clock w/ time from terminal.
 
 
@@ -156,6 +159,16 @@ class RPilot:
         # send the terminal some information about ourselves
         hello = {'pilot':self.name, 'ip':self.ip}
         self.send_message('ALIVE', target='T', value=hello)
+
+    def blank_LEDs(self):
+        if 'LEDS' not in self.prefs['PINS'].keys():
+            return
+
+        for position, pins in self.prefs['PINS']['LEDS']:
+            led = hardware.LED_RGB(pins=pins)
+            led.set_color([0,0,0])
+            led.release()
+
 
     def handle_listen(self, msg):
         # Messages are single part json-encoded messages

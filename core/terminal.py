@@ -270,7 +270,11 @@ class Terminal(QtGui.QMainWindow):
         # Listens are multipart target-msg messages
         # target = msg[0]
         # 'key' determines which method is called, 'value' is passed to the method.
-        message = json.loads(msg[1])
+        try:
+            message = json.loads(msg[1])
+        except ValueError:
+            self.logger.exception('TERMINAL: Error decoding message')
+            return
 
         if not all(i in message.keys() for i in ['key', 'value']):
             self.logger.warning('LISTEN Improperly formatted: {}'.format(msg))
