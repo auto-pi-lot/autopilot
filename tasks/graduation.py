@@ -14,7 +14,7 @@ class Accuracy(object):
 
 
     def update(self, row):
-        if 'correct' in row.keys():
+        if row.__contains__('correct'):
             self.corrects.append(int(row['correct']))
         else:
             return False
@@ -30,7 +30,7 @@ class NTrials(object):
     def __init__(self, n_trials, current_trial=0, **kwargs):
         self.n_trials = int(n_trials)
         print('n_trials: {}, current_trial: {}'.format(n_trials, current_trial))
-        self.counter = count(start=current_trial)
+        self.counter = count(start=int(current_trial))
 
     def update(self, row):
         trials = self.counter.next()

@@ -59,7 +59,7 @@ class Tone:
     '''
     PARAMS = ['frequency','duration','amplitude']
     type = 'tone'
-    def __init__(self, frequency, duration, amplitude=0.05, phase=0, **kwargs):
+    def __init__(self, frequency, duration, amplitude=0.01, phase=0, **kwargs):
         # super(Tone, self).__init__()
 
         self.frequency = float(frequency)
@@ -87,7 +87,7 @@ class Noise:
     White Noise straight up
     '''
     PARAMS = ['duration','amplitude']
-    def __init__(self, duration, amplitude=0.05, **kwargs):
+    def __init__(self, duration, amplitude=0.01, **kwargs):
         #super(Noise, self).__init__()
 
         noiser = pyo.Noise(mul=float(amplitude))

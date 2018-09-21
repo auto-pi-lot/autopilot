@@ -116,7 +116,7 @@ class Mouse:
             self.flush_current()
         elif type == 'step':
             self.step = int(value)
-            #self.h5f.root.current.attrs['step'] = self.step
+            self.h5f.root.current.attrs['step'] = self.step
             self.flush_current()
         elif type == 'protocol':
             self.flush_current()
@@ -145,9 +145,11 @@ class Mouse:
             weight_row['session'] = self.session
             weight_row['start'] = float(start)
             weight_row.append()
+            self.h5f.root.history.weights.flush()
         elif stop is not None:
             # TODO: Make this more robust - don't assume we got a start weight
             self.h5f.root.history.weights.cols.stop[-1] = stop
+            self.h5f.root.history.weights.flush()
         else:
             Warning("Need either a start or a stop weight")
 
@@ -316,8 +318,8 @@ class Mouse:
         # TODO: Spawn graduation checking object!
         if 'graduation' in task_params.keys():
             grad_params = task_params['graduation']
-            grad_params['value']['current_trial'] = self.current_trial
-            self.graduation = tasks.GRAD_LIST[grad_params['type']](**grad_params['value'])
+            #grad_params['value']['current_trial'] = str(self.current_trial) # str so it's json serializable
+            self.graduation = tasks.GRAD_LIST[grad_params['type']](current_trial=self.current_trial, **grad_params['value'])
             self.did_graduate = False
         else:
             self.graduation = None
