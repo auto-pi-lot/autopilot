@@ -135,10 +135,13 @@ class Control_Panel(QtGui.QWidget):
             # Get Weights
             stop_weight, ok = QtGui.QInputDialog.getDouble(self, "Set Stopping Weight",
                                                         "Stopping Weight:" )
+
+            self.mice[mouse].stop_run()
+
             if ok:
                 self.mice[mouse].update_weights(stop=float(stop_weight))
 
-            self.mice[mouse].stop_run()
+
 
     def create_mouse(self, pilot):
         new_mouse_wizard = New_Mouse_Wizard(self.prefs['PROTOCOLDIR'])

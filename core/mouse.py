@@ -363,7 +363,7 @@ class Mouse:
         self.close_hdf(h5f)
 
         # spawn thread to accept data
-        self.thread = threading.Thread(target=self.data_thread, args=(self.data_queue,))
+        self.thread = threading.Thread(target=self.data_thread)
         self.thread.start()
         self.running = True
 
@@ -384,6 +384,7 @@ class Mouse:
         # start getting data
         # stop when 'END' gets put in the queue
         for data in iter(self.data_queue.get, 'END'):
+            print(data)
             for k, v in data.items():
                 if k in trial_keys:
                     trial_row[k] = v
@@ -392,9 +393,10 @@ class Mouse:
                 trial_table.flush()
                 if self.graduation:
                     # set our graduation flag, the terminal will get the rest rolling
-                    did_graduate = self.graduation.update(self.trial_row)
+                    did_graduate = self.graduation.update(trial_row)
                     if did_graduate is True:
                         self.did_graduate.set()
+            print('finished data')
 
         self.close_hdf(h5f)
 
