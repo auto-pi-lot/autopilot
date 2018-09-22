@@ -5,13 +5,14 @@ from itertools import count
 
 
 class Accuracy(object):
+    # TODO: Get the corrects that we need
     PARAMS = ['threshold', 'window']
+
     def __init__(self, threshold=0.75, window=500., **kwargs):
         self.threshold = float(threshold)
         self.window    = int(window)
 
         self.corrects = deque(maxlen=self.window)
-
 
     def update(self, row):
         if row.__contains__('correct'):
@@ -24,9 +25,11 @@ class Accuracy(object):
         else:
             return False
 
+
 class NTrials(object):
     '''graduate after doing n trials'''
     PARAMS = ['n_trials']
+
     def __init__(self, n_trials, current_trial=0, **kwargs):
         self.n_trials = int(n_trials)
         print('n_trials: {}, current_trial: {}'.format(n_trials, current_trial))
@@ -43,6 +46,6 @@ class NTrials(object):
 
 
 GRAD_LIST = {
-    'accuracy':Accuracy,
-    'n_trials':NTrials
+    'accuracy': Accuracy,
+    'n_trials': NTrials
 }

@@ -182,8 +182,6 @@ class Terminal(QtGui.QMainWindow):
         self.layout.setColumnStretch(0, 2)
         self.layout.setColumnStretch(1, 10)
 
-
-
         self.show()
         logging.info('UI Initialized')
 
@@ -308,7 +306,7 @@ class Terminal(QtGui.QMainWindow):
         # A Pi has sent us data, let's save it huh?
         mouse_name = value['mouse']
         self.mice[mouse_name].save_data(value)
-        if self.mice[mouse_name].did_graduate is True:
+        if self.mice[mouse_name].did_graduate.is_set() is True:
             self.mice[mouse_name].graduate()
             self.send_message('STOP', value['pilot'])
             protocol = self.mice[mouse_name].current
@@ -401,7 +399,8 @@ class Terminal(QtGui.QMainWindow):
 
         # Close all mice files
         for m in self.mice.values():
-            m.close_h5f()
+            if m.running is True:
+                m.stop_run()
 
         # Stop networking
         # send message to kill networking process
