@@ -28,37 +28,39 @@ class Mouse:
     """Mouse object for managing protocol, parameters, and data"""
 
     def __init__(self, name, dir='/usr/rpilot/data', new=False, biography=None):
+        # we need to use a lock to not corrupt the file, see
+        # https://www.pytables.org/cookbook/threading.html
+        # and https://www.pytables.org/FAQ.html#can-pytables-be-used-in-concurrent-access-scenarios
+        self.lock = threading.Lock()
+
         #TODO: Pass dir from prefs
         self.name = str(name)
         self.file = os.path.join(dir, name + '.h5')
         if new or not os.path.isfile(self.file):
             self.new_mouse_file(biography)
 
-        self.h5f = tables.open_file(self.file, 'r+')
+        h5f = tables.open_file(self.file, 'r+')
 
-        # we need to use a lock to not corrupt the file, see
-        # https://www.pytables.org/cookbook/threading.html
-        # and https://www.pytables.org/FAQ.html#can-pytables-be-used-in-concurrent-access-scenarios
-        self.lock = threading.Lock()
+
 
         # Make shortcuts for direct assignation
-        self.info = self.h5f.root.info._v_attrs
-        self.data = self.h5f.root.data
-        self.history = self.h5f.root.history.history
+        self.info = h5f.root.info._v_attrs
+        self.data = h5f.root.data
+        self.history = h5f.root.history.history
 
         # If mouse has a protocol, load it to a dict
         self.current = None
         self.step    = None
         self.protocol_name = None
-        if "/current" in self.h5f:
+        if "/current" in h5f:
             # We load the info from 'current' but don't keep the node open
             # Stash it as a dict so better access from Python
-            current_node = filenode.open_node(self.h5f.root.current)
+            current_node = filenode.open_node(h5f.root.current)
             protocol_string = current_node.readall()
             self.current = json.loads(protocol_string)
             self.step = int(current_node.attrs['step'])
             self.protocol_name = current_node.attrs['protocol_name']
-            self.current_group = self.h5f.get_node('/data',self.protocol_name)
+            self.current_group = h5f.get_node('/data',self.protocol_name)
 
         # We will get handles to trial and continuous data when we start running
         self.trial_table = None
@@ -74,13 +76,13 @@ class Mouse:
         self.running = False
 
         # We use a threading queue to dump data into a kept-alive h5f file
-        self.data_queue = queue.Queue()
+        self.data_queue = None
         self.thread = None
         self.did_graduate = threading.Event()
 
 
         # we have to always open and close the h5f
-        self.h5f.close()
+        h5f.close()
 
     def open_hdf(self, mode='r+'):
         with self.lock:
@@ -97,36 +99,35 @@ class Mouse:
         # For now we are assuming that the existing file has the basic structure,
         # but that's probably a bad assumption for full reliability
         if os.path.isfile(self.file):
-            self.h5f = tables.open_file(self.file, mode='a')
+            h5f = self.open_hdf(mode='a')
         else:
-            self.h5f = tables.open_file(self.file, mode='w')
+            h5f = self.open_hdf(mode='w')
 
             # Make Basic file structure
-            self.h5f.create_group("/","data","Trial Record Data")
-            self.h5f.create_group("/","info","Biographical Info")
-            history_group = self.h5f.create_group("/","history","History")
+            h5f.create_group("/","data","Trial Record Data")
+            h5f.create_group("/","info","Biographical Info")
+            history_group = h5f.create_group("/","history","History")
 
             # When a whole protocol is changed, we stash the old protocol as a filenode in the past_protocols group
-            self.h5f.create_group("/history", "past_protocols",'Past Protocol Files')
+            h5f.create_group("/history", "past_protocols",'Past Protocol Files')
 
             # Also canonical to the basic file structure is the 'current' filenode which stores the current protocol,
             # but since we want to be able to tell that a protocol hasn't been assigned yet we don't instantiate it here
             # See http://www.pytables.org/usersguide/filenode.html
-            # filenode.new_node(self.h5f, where="/", name="current")
+            # filenode.new_node(h5f, where="/", name="current")
 
             # We keep track of changes to parameters, promotions, etc. in the history table
-            self.h5f.create_table(history_group, 'history', self.History_Table, "Change History")
+            h5f.create_table(history_group, 'history', self.History_Table, "Change History")
 
             # Make table for weights
-            self.h5f.create_table(history_group, 'weights', self.Weight_Table, "Mouse Weights")
+            h5f.create_table(history_group, 'weights', self.Weight_Table, "Mouse Weights")
 
         # Save biographical information as node attributes
         if biography:
             for k, v in biography.items():
-                self.h5f.root.info._v_attrs[k] = v
+                h5f.root.info._v_attrs[k] = v
 
-        self.h5f.flush()
-        self.h5f.close()
+        self.close_hdf(h5f)
 
     def update_biography(self, params):
         h5f = self.open_hdf()
@@ -209,6 +210,7 @@ class Mouse:
         # Make filenode and save as serialized json
         current_node = filenode.new_node(h5f, where='/', name='current')
         current_node.write(json.dumps(self.current))
+        h5f.flush()
 
         # Set name and step
         # Strip off path and extension to get the protocol name
@@ -284,7 +286,7 @@ class Mouse:
         # with the params set in the mouse object
         h5f = self.open_hdf()
         h5f.remove_node('/current')
-        current_node = filenode.new_node(self.h5f, where='/', name='current')
+        current_node = filenode.new_node(h5f, where='/', name='current')
         current_node.write(json.dumps(self.current))
         current_node.attrs['step'] = self.step
         current_node.attrs['protocol_name'] = self.protocol_name
@@ -331,10 +333,10 @@ class Mouse:
         #self.trial_keys = self.trial_table.colnames
 
         # get last trial number and session
-        #try:
-        self.current_trial = trial_table.cols.trial_num[-1]+1
-        #except IndexError:
-        #    self.current_trial = 0
+        try:
+            self.current_trial = trial_table.cols.trial_num[-1]+1
+        except IndexError:
+            self.current_trial = 0
 
         try:
             self.session = trial_table.cols.session[-1]+1
@@ -363,11 +365,12 @@ class Mouse:
         self.close_hdf(h5f)
 
         # spawn thread to accept data
-        self.thread = threading.Thread(target=self.data_thread)
+        self.data_queue = queue.Queue()
+        self.thread = threading.Thread(target=self.data_thread, args=(self.data_queue,))
         self.thread.start()
         self.running = True
 
-    def data_thread(self):
+    def data_thread(self, queue):
 
         h5f = self.open_hdf()
 
@@ -383,8 +386,7 @@ class Mouse:
 
         # start getting data
         # stop when 'END' gets put in the queue
-        for data in iter(self.data_queue.get, 'END'):
-            print(data)
+        for data in iter(queue.get, 'END'):
             for k, v in data.items():
                 if k in trial_keys:
                     trial_row[k] = v
@@ -396,7 +398,6 @@ class Mouse:
                     did_graduate = self.graduation.update(trial_row)
                     if did_graduate is True:
                         self.did_graduate.set()
-            print('finished data')
 
         self.close_hdf(h5f)
 
@@ -405,13 +406,12 @@ class Mouse:
 
     def stop_run(self):
         self.data_queue.put('END')
-        if not self.thread.is_alive():
-            self.running = False
-        else:
+        self.thread.join(5)
+        self.running = False
+        if self.thread.is_alive():
             Warning('Data thread did not exit')
 
-        #self.h5f.flush()
-        #self.h5f.close()
+
 
     def get_timestamp(self, string=False):
         # Timestamps have two different applications, and thus two different formats:
@@ -431,13 +431,6 @@ class Mouse:
         step = self.step+1
         name = self.current[step]['step_name']
         self.update_history('step', name, step)
-
-        # prepare to run the next one
-        if self.running is False:
-            self.prepare_run()
-        else:
-            self.stop_run()
-            self.prepare_run()
 
     class History_Table(tables.IsDescription):
         # Class to describe parameter and protocol change history

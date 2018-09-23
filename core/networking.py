@@ -252,11 +252,6 @@ class Terminal_Networking(multiprocessing.Process):
 
         # If we still haven't heard from pis that we expected to, we'll ping them a few more times
         pis = set(value)
-
-        print(pis)
-        print(self.subscribers)
-        sys.stdout.flush()
-
         if not len(pis - self.subscribers) == 0:
             for i in range(3):
                 awol_pis = pis - self.subscribers
@@ -294,7 +289,6 @@ class Terminal_Networking(multiprocessing.Process):
         self.publish(bytes('P_{}'.format(target)), msg)
 
         #TODO: also pop mouse value from data function dict
-        pass
 
     def m_stopall(self, target, value):
         pass

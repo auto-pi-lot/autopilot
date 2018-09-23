@@ -311,8 +311,11 @@ class Terminal(QtGui.QMainWindow):
         mouse_name = value['mouse']
         self.mice[mouse_name].save_data(value)
         if self.mice[mouse_name].did_graduate.is_set() is True:
-            self.mice[mouse_name].graduate()
             self.send_message('STOP', value['pilot'])
+            self.mice[mouse_name].stop_run()
+            self.mice[mouse_name].graduate()
+            self.mice[mouse_name].prepare_run()
+
             protocol = self.mice[mouse_name].current
             step = self.mice[mouse_name].step
             task = protocol[step]
