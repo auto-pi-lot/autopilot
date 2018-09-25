@@ -114,9 +114,10 @@ class Control_Panel(QtGui.QWidget):
                                                         "Starting Weight:" )
             if ok:
                 self.mice[mouse].update_weights(start=float(start_weight))
-
-            # TODO: Before starting, pop a window to get weight.
-            # TODO: Get last trial number and send to pi as well
+            else:
+                # pressed cancel, don't start
+                self.mice[mouse].stop_run()
+                return
 
             self.send_message('START', bytes(pilot), task)
 
