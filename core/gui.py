@@ -1202,6 +1202,59 @@ class Sound_Widget(QtGui.QWidget):
             name = sender.objectName()
             self.param_dict[name] = sender.text()
 
+class Weights(QtGui.QTableWidget):
+    def __init__(self, mice_weights):
+        super(Weights, self).__init__()
+
+        self.mice_weights = mice_weights
+
+
+
+
+        self.colnames = odict()
+        self.colnames['mouse'] = "Mouse"
+        self.colnames['date'] = "Date"
+        self.colnames['baseline_mass'] = "Baseline"
+        self.colnames['minimum_mass'] = "Minimum"
+        self.colnames['start'] = 'Starting Mass'
+        self.colnames['stop'] = 'Stopping Mass'
+
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+
+        self.init_ui()
+
+
+    def init_ui(self):
+        # set shape (rows by cols
+        self.shape = (len(self.mice_weights), len(self.colnames.keys()))
+        self.setRowCount(self.shape[0])
+        self.setColumnCount(self.shape[1])
+
+
+        for row in range(self.shape[0]):
+            for j, col in enumerate(self.colnames.keys()):
+                if col == "date":
+                    format_date = datetime.datetime.strptime(self.mice_weights[row][col], '%y%m%d-%H%M%S')
+                    format_date = format_date.strftime('%b %d')
+                    item = QtGui.QTableWidgetItem(format_date)
+                elif col == "stop":
+                    stop_wt = str(self.mice_weights[row][col])
+                    minimum = float(self.mice_weights[row]['minimum_mass'])
+                    item = QtGui.QTableWidgetItem(stop_wt)
+                    if float(stop_wt) < minimum:
+                        item.setBackground(QtGui.QColor(255,0,0))
+
+                else:
+                    item = QtGui.QTableWidgetItem(str(self.mice_weights[row][col]))
+                self.setItem(row, j, item)
+
+        # make headers
+        self.setHorizontalHeaderLabels(self.colnames.values())
+
+        self.sortItems(0)
+
+
+
 class Expanding_Tabs(QtGui.QTabBar):
     # The expanding method of the QTabBar doesn't work,
     # we have to manually adjust the size policy and size hint

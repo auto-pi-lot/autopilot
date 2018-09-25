@@ -355,9 +355,33 @@ class Mouse:
 
         # TODO: Spawn graduation checking object!
         if 'graduation' in task_params.keys():
-            grad_params = task_params['graduation']
+            grad_type = task_params['graduation']['type']
+            grad_params = task_params['graduation']['value'].copy()
+
+            # add other params asked for by the task class
+            grad_obj = tasks.GRAD_LIST[grad_type]
+
+            if hasattr(grad_obj, 'PARAMS'):
+                # these are params that should be set in the protocol settings
+                for param in grad_obj.PARAMS:
+                    if param not in grad_params.keys():
+                        # for now, try to find it in our attributes
+                        # TODO: See where else we would want to get these from
+                        if hasattr(self, param):
+                            grad_params.update({param:getattr(self, param)})
+
+            if hasattr(grad_obj, 'COLS'):
+                # these are columns in our trial table
+                for col in grad_obj.COLS:
+                    try:
+                        grad_params.update({col: trial_table.col(col)})
+                    except KeyError:
+                        Warning('Graduation object requested column {}, but it was not found in the trial table'.format(col))
+
+
+
             #grad_params['value']['current_trial'] = str(self.current_trial) # str so it's json serializable
-            self.graduation = tasks.GRAD_LIST[grad_params['type']](current_trial=self.current_trial, **grad_params['value'])
+            self.graduation = grad_obj(**grad_params)
             self.did_graduate.clear()
         else:
             self.graduation = None
@@ -391,6 +415,7 @@ class Mouse:
                 if k in trial_keys:
                     trial_row[k] = v
             if 'TRIAL_END' in data.keys():
+                trial_row['session'] = self.session
                 trial_row.append()
                 trial_table.flush()
                 if self.graduation:
@@ -421,6 +446,30 @@ class Mouse:
             return datetime.datetime.now().strftime('%y%m%d-%H%M%S')
         else:
             return time()
+
+    def get_weight(self, which='last', include_baseline=False):
+        # get either the last start/stop weights, optionally including baseline
+        # TODO: Get by session
+        weights = {}
+
+        h5f = self.open_hdf()
+        weight_table = h5f.root.history.weights
+        if which == 'last':
+            for column in weight_table.colnames:
+                weights[column] = weight_table.read(-1, field=column)[0]
+        if include_baseline is True:
+            try:
+                baseline = float(h5f.root.info._v_attrs['baseline_mass'])
+            except KeyError:
+                baseline = 0.0
+            minimum = baseline*0.8
+            weights['baseline_mass'] = baseline
+            weights['minimum_mass'] = minimum
+
+        self.close_hdf(h5f)
+        return weights
+
+
 
     def graduate(self):
         if len(self.current)<=self.step+1:

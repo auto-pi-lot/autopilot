@@ -25,7 +25,7 @@ from networking import Terminal_Networking
 import tasks
 import sounds
 from utils import InvokeEvent, Invoker
-from gui import Control_Panel, Protocol_Wizard, Popup
+from gui import Control_Panel, Protocol_Wizard, Popup, Weights
 
 # TODO: Oh holy hell just rewrite all the inter-widget communication as zmq
 # TODO: Be more complete about generating logs
@@ -140,6 +140,10 @@ class Terminal(QtGui.QMainWindow):
         self.file_menu.addAction(new_pilot_act)
         self.file_menu.addAction(new_prot_act)
         self.file_menu.addAction(batch_create_mice)
+
+        self.tool_menu = self.menuBar().addMenu("&Tools")
+        mouse_weights_act = QtGui.QAction("View Mouse &Weights", self, triggered=self.mouse_weights)
+        self.tool_menu.addAction(mouse_weights_act)
 
         # Set size of window to be fullscreen without maximization
         # Until a better solution is found, if not set large enough, the pilot tabs will
@@ -394,6 +398,30 @@ class Terminal(QtGui.QMainWindow):
     def batch_mice(self):
         # TODO: Implement me...
         pass
+
+    def list_mice(self):
+        mice = []
+        for pilot, vals in self.pilots.items():
+            mice.extend(vals['mice'])
+        return mice
+
+    def mouse_weights(self):
+        mice = self.list_mice()
+
+        # open objects if not already
+        for mouse in mice:
+            if mouse not in self.mice.keys():
+                self.mice[mouse] = Mouse(mouse)
+
+        # for each mouse, get weight
+        weights = []
+        for mouse in mice:
+            weight = self.mice[mouse].get_weight(include_baseline=True)
+            weight['mouse'] = mouse
+            weights.append(weight)
+
+        self.weight_widget = Weights(weights)
+        self.weight_widget.show()
 
     def gui_event(self, fn, *args, **kwargs):
         # Don't ask me how this works, stolen from
