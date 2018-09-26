@@ -211,8 +211,9 @@ class Plot(QtGui.QWidget):
         # Published as multipart target-msg messages
         try:
             message = json.loads(msg[1])
-        except ValueError:
+        except:
             self.logger.exception('PLOT {}: Error decoding message'.format(self.pilot))
+            return
 
         if not all(i in message.keys() for i in ['key', 'value']):
             self.logger.warning('PLOT {}: LISTEN Improperly formatted - {}'.format(self.pilot, message))
@@ -222,13 +223,18 @@ class Plot(QtGui.QWidget):
                                                                               message['id'],
                                                                               message['key'],
                                                                               message['value']))
+        try:
+            # Tell the networking process that we got it
+            self.send_message('RECVD', value=message['id'])
 
-        # Tell the networking process that we got it
-        self.send_message('RECVD', value=message['id'])
+            # Get function and call it as a gui event
+            listen_funk = self.listens[message['key']]
+            self.gui_event(listen_funk, *(message['value'],))
+        except:
+            # TODO: I think the plots crash becasue json doesn't serialize integers well... make a json sanitizer method
+            pass
 
-        # Get function and call it as a gui event
-        listen_funk = self.listens[message['key']]
-        self.gui_event(listen_funk, *(message['value'],))
+
 
     def send_message(self, key, target='', value=''):
         msg = {'key': key, 'target': target, 'value': value}

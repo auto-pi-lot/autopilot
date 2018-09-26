@@ -12,6 +12,7 @@ import logging
 import threading
 import time
 from collections import OrderedDict as odict
+import numpy as np
 
 from PySide import QtCore, QtGui
 import zmq
@@ -132,6 +133,7 @@ class Terminal(QtGui.QMainWindow):
         #self.panel_layout.setContentsMargins(0,0,0,0)
 
         # Init toolbar
+        # File menu
         self.file_menu = self.menuBar().addMenu("&File")
         new_pilot_act = QtGui.QAction("New &Pilot", self, triggered=self.new_pilot)
         new_prot_act  = QtGui.QAction("New Pro&tocol", self, triggered=self.new_protocol)
@@ -141,9 +143,12 @@ class Terminal(QtGui.QMainWindow):
         self.file_menu.addAction(new_prot_act)
         self.file_menu.addAction(batch_create_mice)
 
+        # Tools menu
         self.tool_menu = self.menuBar().addMenu("&Tools")
         mouse_weights_act = QtGui.QAction("View Mouse &Weights", self, triggered=self.mouse_weights)
+        update_protocol_act = QtGui.QAction("Update Protocols", self, triggered=self.update_protocols)
         self.tool_menu.addAction(mouse_weights_act)
+        self.tool_menu.addAction(update_protocol_act)
 
         # Set size of window to be fullscreen without maximization
         # Until a better solution is found, if not set large enough, the pilot tabs will
@@ -422,6 +427,35 @@ class Terminal(QtGui.QMainWindow):
 
         self.weight_widget = Weights(weights)
         self.weight_widget.show()
+
+    def update_protocols(self):
+        # If we change the protocol file, update the stored version in mouse files
+
+        # get list of protocol files
+        protocols = os.listdir(self.prefs['PROTOCOLDIR'])
+        protocols = [p for p in protocols if p.endswith('.json')]
+
+
+        mice = self.list_mice()
+        for mouse in mice:
+            if mouse not in self.mice.keys():
+                self.mice[mouse] = Mouse(mouse)
+
+            protocol_bool = [self.mice[mouse].protocol_name == p.strip('.json') for p in protocols]
+            if any(protocol_bool):
+                which_prot = np.where(protocol_bool)[0][0]
+                protocol = protocols[which_prot]
+                self.mice[mouse].assign_protocol(os.path.join(self.prefs['PROTOCOLDIR'], protocol), step_n=self.mice[mouse].step)
+
+        msgbox = QtGui.QMessageBox()
+        msgbox.setText("Mouse Protocols Updated")
+        msgbox.exec_()
+
+
+
+
+
+
 
     def gui_event(self, fn, *args, **kwargs):
         # Don't ask me how this works, stolen from
