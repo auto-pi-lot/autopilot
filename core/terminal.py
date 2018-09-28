@@ -320,7 +320,7 @@ class Terminal(QtGui.QMainWindow):
         mouse_name = value['mouse']
         self.mice[mouse_name].save_data(value)
         if self.mice[mouse_name].did_graduate.is_set() is True:
-            self.send_message('STOP', value['pilot'])
+            self.send_message('STOP', value['pilot'], {'graduation':True})
             self.mice[mouse_name].stop_run()
             self.mice[mouse_name].graduate()
             self.mice[mouse_name].prepare_run()

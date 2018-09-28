@@ -140,6 +140,7 @@ class Plot(QtGui.QWidget):
         # A little infobox to keep track of running time, trials, etc.
         self.infobox = QtGui.QFormLayout()
         self.n_trials = count()
+        self.session_trials = 0
         self.info = {
             'N Trials': QtGui.QLabel(),
             'Runtime' : Timer(),
@@ -249,6 +250,8 @@ class Plot(QtGui.QWidget):
         self.plot_params = tasks.TASK_LIST[value['task_type']].PLOT
 
         # set infobox stuff
+        self.n_trials = count()
+        self.session_trials = 0
         self.info['N Trials'].setText(str(value['current_trial']))
         self.info['Runtime'].start_timer()
         self.info['Step'].setText(str(value['step']))
@@ -277,13 +280,17 @@ class Plot(QtGui.QWidget):
                 self.data[data] = np.zeros((0,2), dtype=np.float)
 
     def l_data(self, value):
+        if 'trial_num' in value.keys():
+            v = value.pop('trial_num')
+            if v != self.last_trial:
+                self.session_trials = self.n_trials.next()
+            self.last_trial = v
+            # self.last_trial = v
+            self.info['N Trials'].setText("{}/{}".format(self.session_trials, v))
+            self.xrange = xrange(v - self.x_width + 1, v + 1)
+            self.plot.setXRange(self.xrange[0], self.xrange[-1])
 
         for k, v in value.items():
-            if k == 'trial_num':
-                self.info['N Trials'].setText(str(v))
-                self.last_trial = v
-                self.xrange = xrange(v-self.x_width+1, v+1)
-                self.plot.setXRange(self.xrange[0], self.xrange[-1])
             if k in self.data.keys():
                 self.data[k] = np.vstack((self.data[k], (self.last_trial, v)))
                 #self.gui_event(self.plots[k].update, *(self.data[k],))
@@ -293,7 +300,8 @@ class Plot(QtGui.QWidget):
         self.data = {}
         self.plots = {}
         self.plot.clear()
-        self.info['Runtime'].stop_timer()
+        if isinstance(value, str) or ('graduation' not in value.keys()):
+            self.info['Runtime'].stop_timer()
 
     def l_param(self, value):
         pass
@@ -388,9 +396,10 @@ class Timer(QtGui.QLabel):
 
     def stop_timer(self):
         self.timer.stop()
+        self.setText("")
 
     def update_time(self):
-        secs_elapsed = int(time()-self.start_time)
+        secs_elapsed = int(np.floor(time()-self.start_time))
         self.setText("{:02d}:{:02d}:{:02d}".format(secs_elapsed/3600, (secs_elapsed/60)%60, secs_elapsed%60))
 
 

@@ -206,34 +206,8 @@ class RPilot:
         self.stage_block.clear()
         self.task = task_class(prefs=self.prefs, stage_block=self.stage_block, **value)
 
-        # Setup a table to store data locally
-        # Get data table descriptor
-        table_descriptor = self.task.TrialData
-
         # Make a group for this mouse if we don't already have one
         self.mouse = value['mouse']
-        local_file = os.path.join(self.prefs['DATADIR'], 'local.h5')
-        self.h5f = tables.open_file(local_file, mode='a')
-
-        try:
-            self.h5f.create_group("/", self.mouse, "Local Data for {}".format(self.mouse))
-        except tables.NodeError:
-            # already made it
-            pass
-        mouse_group = self.h5f.get_node('/', self.mouse)
-
-        # Make a table for today's data, appending a conflict-avoidance int if one already exists
-        datestring = datetime.date.today().isoformat()
-        conflict_avoid = 0
-        while datestring in mouse_group:
-            conflict_avoid += 1
-            datestring = datetime.date.today().isoformat() + '-' + str(conflict_avoid)
-
-        self.table = self.h5f.create_table(mouse_group, datestring, table_descriptor,
-                                           "Mouse {} on {}".format(self.mouse, datestring))
-
-        # The Row object is what we write data into as it comes in
-        self.row = self.table.row
 
         # Run the task and tell the terminal we have
         self.running.set()
@@ -295,6 +269,37 @@ class RPilot:
     #################################################################
     # Trial Running and Management
     #################################################################
+    def open_file(self):
+        # Setup a table to store data locally
+        # Get data table descriptor
+        table_descriptor = self.task.TrialData
+
+        local_file = os.path.join(self.prefs['DATADIR'], 'local.h5')
+        h5f = tables.open_file(local_file, mode='a')
+
+        try:
+            h5f.create_group("/", self.mouse, "Local Data for {}".format(self.mouse))
+        except tables.NodeError:
+            # already made it
+            pass
+        mouse_group = h5f.get_node('/', self.mouse)
+
+        # Make a table for today's data, appending a conflict-avoidance int if one already exists
+        datestring = datetime.date.today().isoformat()
+        conflict_avoid = 0
+        while datestring in mouse_group:
+            conflict_avoid += 1
+            datestring = datetime.date.today().isoformat() + '-' + str(conflict_avoid)
+
+        table = h5f.create_table(mouse_group, datestring, table_descriptor,
+                                           "Mouse {} on {}".format(self.mouse, datestring))
+
+        # The Row object is what we write data into as it comes in
+        row = table.row
+        return h5f, table, row
+
+
+
     def run_task(self):
         # Run as a separate thread, just keeps calling next() and shoveling data
 
@@ -303,12 +308,14 @@ class RPilot:
         if hasattr(self.task, 'TrialData'):
             trial_data = True
 
+        # Open local file for saving
+        h5f, table, row = self.open_file()
+
         # TODO: Init sending continuous data here
 
 
         while True:
             # Calculate next stage data and prep triggers
-            print(self.task.pins)
             data = self.task.stages.next()() # Double parens because next just gives us the function, we still have to call it
 
             # Send data back to terminal (mouse is identified by the networking object)
@@ -319,12 +326,12 @@ class RPilot:
             if trial_data:
                 for k, v in data.items():
                     if k in self.task.TrialData.columns.keys():
-                        self.row[k] = v
+                        row[k] = v
 
             # If the trial is over (either completed or bailed), flush the row
             if 'TRIAL_END' in data.keys():
-                self.row.append()
-                self.table.flush()
+                row.append()
+                table.flush()
 
             # Wait on the stage lock to clear
             self.stage_block.wait()
@@ -334,9 +341,12 @@ class RPilot:
                 # TODO: Call task shutdown method
                 self.task.end()
                 self.task = None
-                self.row.append()
-                self.table.flush()
+                row.append()
+                table.flush()
                 break
+
+        h5f.flush()
+        h5f.close()
 
 
 class Pyo_Process(multiprocessing.Process):

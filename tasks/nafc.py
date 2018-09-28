@@ -280,8 +280,6 @@ class Nafc:
             else:
                 Exception('HARDWARE dict misspecified in class definition')
 
-        print(self.pins)
-
     def load_sounds(self):
         # TODO: Definitely put this in a metaclass
 
@@ -509,7 +507,7 @@ class Nafc:
         #self.set_leds()
         self.flash_leds()
         self.punish_block.clear()
-        threading.Timer(self.punish_dur/1000, self.punish_block.set).start()
+        threading.Timer(self.punish_dur/1000., self.punish_block.set).start()
 
     def stim_end(self):
         # Called by the discrim sound's table trigger when playback is finished

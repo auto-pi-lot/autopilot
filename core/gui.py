@@ -1203,6 +1203,31 @@ class Sound_Widget(QtGui.QWidget):
             name = sender.objectName()
             self.param_dict[name] = sender.text()
 
+###################################3
+# Tools
+######################################
+
+class Calibrate_Water(QtGui.QDialog):
+    def __init__(self, pilots, message_fn):
+        super(Calibrate_Water, self).__init__()
+
+        self.pilots = pilots
+        self.send_message = message_fn
+
+    class Pilot_Ports(QtGui.QWidget):
+        def __init__(self, pilot, message_fn, n_clicks=1000, click_dur=30):
+            super(Pilot_Ports, self).__init__()
+
+            self.pilot = pilot
+            self.send_message = message_fn
+
+        def init_ui(self):
+            #
+            pass
+
+
+
+
 class Weights(QtGui.QTableWidget):
     def __init__(self, mice_weights):
         super(Weights, self).__init__()
