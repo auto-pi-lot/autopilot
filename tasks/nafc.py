@@ -206,6 +206,7 @@ class Nafc:
         self.correct = None
         self.correction = None
         self.trial_counter = itertools.count(int(current_trial))
+        self.current_trial = 0
         self.triggers = {}
         self.timers = []
         self.last_pin = None # Some functions will depend on the last triggered pin
@@ -423,11 +424,12 @@ class Nafc:
             self.triggers['C'] = [change_to_blue, self.mark_playing, self.target_sound.play]
         self.set_leds({'C': [0, 255, 0]})
 
+        self.current_trial = self.trial_counter.next()
         data = {
             'target':self.target,
             'target_sound_id':self.target_sound_id,
             'RQ_timestamp':datetime.datetime.now().isoformat(),
-            'trial_num' : self.trial_counter.next()
+            'trial_num' : self.current_trial
         }
         # get sound info and add to data dict
         sound_info = {k:getattr(self.target_sound, k) for k in self.target_sound.PARAMS}
@@ -448,7 +450,8 @@ class Nafc:
 
         # Only data is the timestamp
         # TODO: Timestamps are fucked up here, should shift down a stage
-        data = {'DC_timestamp': datetime.datetime.now().isoformat()}
+        data = {'DC_timestamp': datetime.datetime.now().isoformat(),
+                'trial_num': self.current_trial}
         self.current_stage = 1
         return data
 
@@ -461,6 +464,7 @@ class Nafc:
             self.bailed = 0
             data = {
                 'bailed':1,
+                'trial_num': self.current_trial,
                 'TRIAL_END':True
             }
             return data
@@ -491,6 +495,7 @@ class Nafc:
             'correct':self.correct,
             'bias':self.bias,
             'bailed':0,
+            'trial_num': self.current_trial,
             'TRIAL_END':True
         }
         self.current_stage = 2
