@@ -166,7 +166,8 @@ class RPilot:
 
         for position, pins in self.prefs['PINS']['LEDS'].items():
             led = hardware.LED_RGB(pins=pins)
-            led.set_color([0,0,0])
+            time.sleep(1.)
+            led.set_color(col=[0,0,0])
             led.release()
 
 
