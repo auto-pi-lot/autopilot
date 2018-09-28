@@ -104,7 +104,7 @@ class RPilot:
         self.ip = self.get_ip()
         self.handshake()
 
-        self.blank_LEDs()
+        #self.blank_LEDs()
 
         # TODO Synchronize system clock w/ time from terminal.
 
@@ -161,6 +161,7 @@ class RPilot:
         self.send_message('ALIVE', target='T', value=hello)
 
     def blank_LEDs(self):
+        # TODO: For some reason this dont work
         if 'LEDS' not in self.prefs['PINS'].keys():
             return
 
