@@ -164,7 +164,7 @@ class RPilot:
         if 'LEDS' not in self.prefs['PINS'].keys():
             return
 
-        for position, pins in self.prefs['PINS']['LEDS']:
+        for position, pins in self.prefs['PINS']['LEDS'].items():
             led = hardware.LED_RGB(pins=pins)
             led.set_color([0,0,0])
             led.release()
