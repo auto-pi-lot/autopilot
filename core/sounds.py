@@ -58,7 +58,7 @@ class Tone:
     The Humble Sine Wave
     '''
     PARAMS = ['frequency','duration','amplitude']
-    type = 'tone'
+    type = 'Tone'
     def __init__(self, frequency, duration, amplitude=0.01, phase=0, **kwargs):
         # super(Tone, self).__init__()
 
@@ -87,7 +87,7 @@ class Noise:
     White Noise straight up
     '''
     PARAMS = ['duration','amplitude']
-    type='noise'
+    type='Noise'
     def __init__(self, duration, amplitude=0.01, **kwargs):
         #super(Noise, self).__init__()
 
@@ -103,7 +103,7 @@ class Noise:
 
 class File(object):
     PARAMS = ['path', 'amplitude']
-    type='file'
+    type='File'
 
     def __init__(self, path, amplitude=0.01, **kwargs):
         #super(File, self).__init__()
@@ -131,7 +131,7 @@ class File(object):
         self.table.out()
 
 class Speech:
-    type='speech'
+    type='Speech'
     PARAMS = ['path', 'amplitude', 'speaker', 'consonant', 'vowel', 'token']
     def __init__(self, path, speaker, consonant, vowel, token, amplitude=0.05, **kwargs):
         self.path = path
@@ -147,8 +147,10 @@ class Speech:
     def load_file(self):
         # load file to sound table
         print(self.path)
-        sys.stdout.flush()
+
         self.snd_table = pyo.SndTable(self.path, chnl=1)
+        print(self.snd_table.getViewTable())
+        sys.stdout.flush()
         self.table = pyo.TableRead(self.snd_table, freq=self.snd_table.getRate(),
                                    loop=False, mul=self.amplitude)
 

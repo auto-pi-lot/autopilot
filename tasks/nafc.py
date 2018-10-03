@@ -298,7 +298,7 @@ class Nafc:
                     self.sounds[k][-1].set_trigger(self.stim_end)
             # If not a list, a single sound
             else:
-                if v['type'] == 'File':
+                if v['type'] in ['File', 'Speech']:
                     # prepend sounddir
                     v['path'] = os.path.join(self.prefs['SOUNDDIR'], v['path'])
                 self.sounds[k] = sounds.SOUND_LIST[v['type']](**v)
