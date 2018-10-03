@@ -204,7 +204,7 @@ class Nafc:
         self.bias = float(0)
         self.response = None
         self.correct = None
-        self.correction = None
+        self.correction_trial = None
         self.trial_counter = itertools.count(int(current_trial))
         self.current_trial = 0
         self.triggers = {}
@@ -216,8 +216,7 @@ class Nafc:
         self.bailed = 0
 
         # We make a list of the variables that need to be reset each trial so it's easier to do so
-        self.resetting_variables = [self.target, self.target_sound, self.target_sound_id,
-                                    self.distractor, self.response, self.correct, self.last_pin,
+        self.resetting_variables = [self.response, self.correct, self.last_pin,
                                     self.bailed]
 
         # This allows us to cycle through the task by just repeatedly calling self.stages.next()
@@ -290,7 +289,7 @@ class Nafc:
             if isinstance(v, list):
                 self.sounds[k] = []
                 for sound in v:
-                    if sound['type'] == 'File':
+                    if sound['type'] in ['File', 'Speech']:
                         # prepend sounddir
                         sound['path'] = os.path.join(self.prefs['SOUNDDIR'], sound['path'])
                     # We send the dict 'sound' to the function specified by 'type' and 'SOUND_LIST' as kwargs
@@ -389,9 +388,12 @@ class Nafc:
             warnings.warn("bias_mode is not defined or defined incorrectly")
 
         # Decide if correction trial (repeat last stim) or choose new target/stim
-        if (random.random() > self.pct_correction) or (self.target is None):
+        if self.correction == True and ((self.correction_trial == True) or (random.random() > self.pct_correction)):
+            self.correction_trial = True
+            # repeat last stim
+        else:
             # Choose target side and sound
-            self.correction = 0
+            self.correction_trial = False
             if random.random() > randthresh:
                 self.target = 'R'
                 self.target_sound = random.choice(self.sounds['R'])
@@ -400,9 +402,7 @@ class Nafc:
                 self.target = 'L'
                 self.target_sound = random.choice(self.sounds['L'])
                 self.distractor = 'R'
-        else:
-            self.correction = 1
-            # No need to define the rest, just keep it from the last trial.
+
 
 
         # Attempt to identify target sound
@@ -475,6 +475,9 @@ class Nafc:
             self.correct = 1
         else:
             self.correct = 0
+
+        if self.correct == 1:
+            self.correction_trial = False
 
         if self.bias_mode == 1:
             # TODO: Take window length from terminal preferences

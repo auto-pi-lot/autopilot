@@ -7,6 +7,12 @@ except:
 
 try:
     import pigpio
+    # TODO: needs better handling, pigpio crashes sometimes and we should know
+except:
+    pass
+
+try:
+    import usb
 except:
     pass
 
@@ -149,6 +155,7 @@ class LED_RGB:
         self.pig.stop()
 
     def release(self):
+        self.set_color(col=[0,0,0])
         self.pig.stop()
 
     def set_color(self, col=None, r=None, g=None, b=None, timed=None, stored=False, internal=False):
@@ -276,6 +283,29 @@ class Solenoid:
         self.pig.write(self.pin, 1)
         time.sleep(self.duration)
         self.pig.write(self.pin, 0)
+
+class Scale:
+    MODEL={
+        'stamps.com':{
+            'vendor_id':0x1446,
+            'product_id': 0x6a73
+
+        }
+    }
+    def __init__(self, model='stamps.com', vendor_id = None, product_id = None):
+        self.vendor_id = self.MODEL[model]['vendor_id']
+        self.product_id = self.MODEL[model]['product_id']
+
+        if vendor_id:
+            self.vendor_id = vendor_id
+        if product_id:
+            self.product_id = product_id
+
+        # find device
+        self.device = usb.core.find(idVendor=self.vendor_id,
+                                    idProduct=self.product_id)
+        # default configuration
+        self.device.set_configuration()
 
 
 

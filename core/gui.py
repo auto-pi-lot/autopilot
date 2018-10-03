@@ -779,8 +779,10 @@ class New_Mouse_Wizard(QtGui.QDialog):
                 self.values['step'] = self.step_ind[current_step]
 
 class Protocol_Wizard(QtGui.QDialog):
-    def __init__(self):
+    def __init__(self, prefs):
         QtGui.QDialog.__init__(self)
+
+        self.prefs = prefs
 
         # Left Task List/Add Step Box
         addstep_label = QtGui.QLabel("Add Step")
@@ -929,7 +931,7 @@ class Protocol_Wizard(QtGui.QDialog):
                 self.param_layout.addRow(rowtag, input_widget)
                 self.steps[step_index][k]['value'] = False
             elif v['type'] == 'sounds':
-                self.sound_widget = Sound_Widget()
+                self.sound_widget = Sound_Widget(self.prefs)
                 self.sound_widget.setObjectName(k)
                 self.sound_widget.pass_set_param_function(self.set_sounds)
                 self.param_layout.addRow(self.sound_widget)
@@ -1064,15 +1066,52 @@ class Graduation_Widget(QtGui.QWidget):
         print(self.param_dict)
         self.set_graduation()
 
+class Drag_List(QtGui.QListWidget):
+    # graciously copied from
+    # https://stackoverflow.com/a/25614674
+    fileDropped = QtCore.Signal(list)
+
+    def __init__(self):
+        super(Drag_List, self).__init__()
+        self.setAcceptDrops(True)
+
+    def dragEnterEvent(self, e):
+        if e.mimeData().hasUrls:
+            e.accept()
+        else:
+            e.ignore()
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.setDropAction(QtCore.Qt.CopyAction)
+            event.accept()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.setDropAction(QtCore.Qt.CopyAction)
+            event.accept()
+            links = []
+            for url in event.mimeData().urls():
+                links.append(str(url.toLocalFile()))
+            self.fileDropped.emit(links)
+        else:
+            event.ignore()
 
 class Sound_Widget(QtGui.QWidget):
-    def __init__(self):
+    def __init__(self, prefs):
         QtGui.QWidget.__init__(self)
+
+        self.prefs = prefs
+        self.sounddir = self.prefs['SOUNDDIR']
 
         # Left sounds
         left_label = QtGui.QLabel("Left Sounds")
         left_label.setFixedHeight(30)
-        self.left_list = QtGui.QListWidget()
+        self.left_list = Drag_List()
+        self.left_list.fileDropped.connect(self.files_dropped)
+        self.left_list.setObjectName("L")
         self.add_left_button = QtGui.QPushButton("+")
         self.add_left_button.setFixedHeight(30)
         self.add_left_button.clicked.connect(lambda: self.add_sound('L'))
@@ -1091,7 +1130,9 @@ class Sound_Widget(QtGui.QWidget):
         # Right sounds
         right_label = QtGui.QLabel("Right Sounds")
         right_label.setFixedHeight(30)
-        self.right_list = QtGui.QListWidget()
+        self.right_list = Drag_List()
+        self.right_list.fileDropped.connect(self.files_dropped)
+        self.right_list.setObjectName("R")
         self.add_right_button = QtGui.QPushButton("+")
         self.add_right_button.setFixedHeight(30)
         self.add_right_button.clicked.connect(lambda: self.add_sound('R'))
@@ -1149,6 +1190,47 @@ class Sound_Widget(QtGui.QWidget):
             self.left_list.addItem(k['type'])
         for k in self.sound_dict['R']:
             self.right_list.addItem(k['type'])
+
+    def files_dropped(self, files):
+        # TODO: Make this more general...
+        msg = QtGui.QMessageBox()
+        msg.setText("Are these Speech sounds in the format '/speaker/cv/cv_#.wav'?")
+        msg.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+        ret = msg.exec_()
+
+        sender = self.sender()
+        side = sender.objectName()
+
+        if ret == QtGui.QMessageBox.No:
+            for f in files:
+                f = f.strip(self.sounddir)
+
+                self.sound_dict[side].append({'type':'File', 'path':f})
+                if side == 'L':
+                    self.left_list.addItem(f)
+                elif side == 'R':
+                    self.right_list.addItem(f)
+
+
+        elif ret == QtGui.QMessageBox.Yes:
+            for f in files:
+                f = f.strip(self.sounddir)
+                f_split = f.split(os.sep)
+                speaker = f_split[0]
+                cv = f_split[-1].split('.')[0].split('_')[0]
+                consonant = cv[0]
+                vowel = cv[1:]
+                token = f_split[-1].split('.')[0].split('_')[1]
+                param_dict = {'type':'Speech','path':f,
+                 'speaker':speaker,'consonant':consonant,
+                 'vowel':vowel,'token':token}
+                self.sound_dict[side].append(param_dict)
+                if side == 'L':
+                    self.left_list.addItem(f)
+                elif side == 'R':
+                    self.right_list.addItem(f)
+
+        self.set_sounds()
 
     class Add_Sound_Dialog(QtGui.QDialog):
         def __init__(self):

@@ -103,14 +103,17 @@ class Noise:
 class File:
     PARAMS = ['path', 'amplitude']
 
-    def __init__(self, path, amplitude=0.05, **kwargs):
+    def __init__(self, path, amplitude=0.01, **kwargs):
         #super(File, self).__init__()
 
         self.path = path
         self.amplitude = float(amplitude)
 
+        self.load_file()
+
+    def load_file(self):
         # load file to sound table
-        self.snd_table = pyo.SndTable(path, chnl=1)
+        self.snd_table = pyo.SndTable(self.path, chnl=1)
         self.table = pyo.TableRead(self.snd_table, freq=self.snd_table.getRate(),
                                    loop=False, mul=self.amplitude)
 
@@ -122,6 +125,19 @@ class File:
 
     def play(self):
         self.table.out()
+
+class Speech(File):
+    PARAMS = ['path', 'amplitude', 'speaker', 'consonant', 'vowel', 'token']
+    def __init__(self, path, speaker, consonant, vowel, token, amplitude=0.05):
+        super(Speech, self).__init__(path, amplitude)
+
+        self.speaker = speaker
+        self.consonant = consonant
+        self.vowel = vowel
+        self.token = token
+
+
+
 
 def TableWrap(audio,duration):
     '''
@@ -144,5 +160,6 @@ def TableWrap(audio,duration):
 SOUND_LIST = {
     'Tone':Tone,
     'Noise':Noise,
-    'File':File
+    'File':File,
+    'Speech':Speech
 }

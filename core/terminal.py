@@ -373,7 +373,7 @@ class Terminal(QtGui.QMainWindow):
             pass
 
     def new_protocol(self):
-        self.new_protocol_window = Protocol_Wizard()
+        self.new_protocol_window = Protocol_Wizard(self.prefs)
         self.new_protocol_window.exec_()
 
         if self.new_protocol_window.result() == 1:
