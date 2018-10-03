@@ -619,7 +619,7 @@ class Pilot_Networking(multiprocessing.Process):
         # nested list comprehension to get value['sounds']['L/R'][0-n]
         if 'sounds' in value.keys():
             f_sounds = [sound for sounds in value['sounds'].values() for sound in sounds
-                        if sound['type'] == 'File']
+                        if sound['type'] in ['File', 'Speech']]
             if len(f_sounds)>0:
                 for sound in f_sounds:
                     full_path = os.path.join(self.prefs['SOUNDDIR'], sound['path'])
