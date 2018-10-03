@@ -149,7 +149,7 @@ class Speech:
         print(self.path)
 
         self.snd_table = pyo.SndTable(self.path, chnl=1)
-        print(self.snd_table.getViewTable())
+        #print(self.snd_table.getViewTable())
         sys.stdout.flush()
         self.table = pyo.TableRead(self.snd_table, freq=self.snd_table.getRate(),
                                    loop=False, mul=self.amplitude)
