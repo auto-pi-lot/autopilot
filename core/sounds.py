@@ -130,18 +130,37 @@ class File(object):
     def play(self):
         self.table.out()
 
-class Speech(File):
+class Speech:
     type='speech'
     PARAMS = ['path', 'amplitude', 'speaker', 'consonant', 'vowel', 'token']
     def __init__(self, path, speaker, consonant, vowel, token, amplitude=0.05, **kwargs):
         self.path = path
         self.amplitude = float(amplitude)
-        super(Speech, self).__init__(path, amplitude)
 
         self.speaker = speaker
         self.consonant = consonant
         self.vowel = vowel
         self.token = token
+
+        self.load_file()
+
+    def load_file(self):
+        # load file to sound table
+        print(self.path)
+        sys.stdout.flush()
+        self.snd_table = pyo.SndTable(self.path, chnl=1)
+        self.table = pyo.TableRead(self.snd_table, freq=self.snd_table.getRate(),
+                                   loop=False, mul=self.amplitude)
+
+    def set_trigger(self, trig_fn):
+        # Using table triggers...
+        self.trigger = pyo.TrigFunc(self.table['trig'], trig_fn)
+
+
+
+    def play(self):
+        self.table.out()
+
 
 
 
