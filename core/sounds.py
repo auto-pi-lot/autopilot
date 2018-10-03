@@ -100,7 +100,7 @@ class Noise:
         # Using table triggers...
         self.trigger = pyo.TrigFunc(self.table['trig'], trig_fn)
 
-class File:
+class File(object):
     PARAMS = ['path', 'amplitude']
 
     def __init__(self, path, amplitude=0.01, **kwargs):
