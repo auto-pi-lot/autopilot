@@ -87,6 +87,7 @@ class Noise:
     White Noise straight up
     '''
     PARAMS = ['duration','amplitude']
+    type='noise'
     def __init__(self, duration, amplitude=0.01, **kwargs):
         #super(Noise, self).__init__()
 
@@ -102,6 +103,7 @@ class Noise:
 
 class File(object):
     PARAMS = ['path', 'amplitude']
+    type='file'
 
     def __init__(self, path, amplitude=0.01, **kwargs):
         #super(File, self).__init__()
@@ -129,6 +131,7 @@ class File(object):
         self.table.out()
 
 class Speech(File):
+    type='speech'
     PARAMS = ['path', 'amplitude', 'speaker', 'consonant', 'vowel', 'token']
     def __init__(self, path, speaker, consonant, vowel, token, amplitude=0.05, **kwargs):
         self.path = path
