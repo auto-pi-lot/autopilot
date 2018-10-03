@@ -128,7 +128,7 @@ class File:
 
 class Speech(File):
     PARAMS = ['path', 'amplitude', 'speaker', 'consonant', 'vowel', 'token']
-    def __init__(self, path, speaker, consonant, vowel, token, amplitude=0.05):
+    def __init__(self, path, speaker, consonant, vowel, token, amplitude=0.05, **kwargs):
         super(Speech, self).__init__(path, amplitude)
 
         self.speaker = speaker
