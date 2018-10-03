@@ -645,7 +645,7 @@ class Pilot_Networking(multiprocessing.Process):
         full_path = os.path.join(self.prefs['SOUNDDIR'], value['path'])
         file_data = base64.b64decode(value['file'])
         try:
-            os.makedirs(full_path)
+            os.makedirs(os.path.dirname(full_path))
         except:
             pass
         with open(full_path, 'wb') as open_file:
