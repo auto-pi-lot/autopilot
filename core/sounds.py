@@ -148,12 +148,11 @@ class Speech:
         # load file to sound table
         print(self.path)
         #
-        # self.snd_table = pyo.SndTable(self.path, chnl=1)
-        # #print(self.snd_table.getViewTable())
-        # sys.stdout.flush()
-        # self.table = pyo.TableRead(self.snd_table, freq=self.snd_table.getRate(),
-        #                            loop=False, mul=self.amplitude)
-        self.table = pyo.SfPlayer(self.path, mul=self.amplitude)
+        self.snd_table = pyo.SndTable(self.path, chnl=1)
+        print(self.snd_table.getTable())
+        sys.stdout.flush()
+        self.table = pyo.TableRead(self.snd_table, freq=self.snd_table.getRate(),
+                                   loop=False, mul=self.amplitude)
 
     def set_trigger(self, trig_fn):
         # Using table triggers...
