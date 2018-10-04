@@ -389,7 +389,7 @@ class Nafc:
             warnings.warn("bias_mode is not defined or defined incorrectly")
 
         # Decide if correction trial (repeat last stim) or choose new target/stim
-        if self.correction == True:
+        if (self.correction == True) and (self.target != None):
             # if the last trial wasn't a correction trial, we spin to see if this one will be
             if (self.last_was_correction == False) and (random.random() > self.pct_correction):
                 # do nothing, repeat last stim
