@@ -133,7 +133,7 @@ class Nafc:
     }
 
     def __init__(self, prefs=None, stage_block=None, sounds=None, reward=50, req_reward=False,
-                 punish_sound=False, punish_dur=100, correction=True, pct_correction=.5,
+                 punish_sound=False, punish_dur=100, correction=True, pct_correction=50,
                  bias_mode=1, bias_threshold=15, timeout=10000, current_trial=0, **kwargs):
         # Sounds come in two flavors
         #   soundict: a dict of parameters like:
@@ -204,7 +204,8 @@ class Nafc:
         self.bias = float(0)
         self.response = None
         self.correct = None
-        self.correction_trial = None
+        self.correction_trial = False
+        self.last_was_correction = False
         self.trial_counter = itertools.count(int(current_trial))
         self.current_trial = 0
         self.triggers = {}
@@ -388,12 +389,40 @@ class Nafc:
             warnings.warn("bias_mode is not defined or defined incorrectly")
 
         # Decide if correction trial (repeat last stim) or choose new target/stim
-        if (self.correction == True) and (self.target is not None) and ((self.correction_trial == True) or (random.random() > self.pct_correction)):
-            self.correction_trial = True
-            # repeat last stim
+        if self.correction == True:
+            # if the last trial wasn't a correction trial, we spin to see if this one will be
+            if (self.last_was_correction == False) and (random.random() > self.pct_correction):
+                # do nothing, repeat last stim
+                self.correction_trial = True
+                self.last_was_correction = True
+            elif (self.last_was_correction == True) and (self.correction_trial == True):
+                # otherwise if we were in a correction trial and haven't corrected, keep going
+                pass
+            elif (self.last_was_correction == True) and (self.correction_trial == False):
+                # otherwise if we just corrected we switch the flag and choose randomly
+                self.last_was_correction = False
+                if random.random() > randthresh:
+                    self.target = 'R'
+                    self.target_sound = random.choice(self.sounds['R'])
+                    self.distractor = 'L'
+                else:
+                    self.target = 'L'
+                    self.target_sound = random.choice(self.sounds['L'])
+                    self.distractor = 'R'
+            else:
+                # if it's just a normal trial, randomly select
+                if random.random() > randthresh:
+                    self.target = 'R'
+                    self.target_sound = random.choice(self.sounds['R'])
+                    self.distractor = 'L'
+                else:
+                    self.target = 'L'
+                    self.target_sound = random.choice(self.sounds['L'])
+                    self.distractor = 'R'
+
         else:
+            # if correction trials are turned off, just randomly select
             # Choose target side and sound
-            self.correction_trial = False
             if random.random() > randthresh:
                 self.target = 'R'
                 self.target_sound = random.choice(self.sounds['R'])
