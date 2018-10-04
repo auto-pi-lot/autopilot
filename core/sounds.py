@@ -15,6 +15,8 @@ import pyo
 import sys
 from time import sleep
 import json
+from scipy.io import wavfile
+import numpy as np
 #from taskontrol.settings import rpisettings as rpiset
 
 # Sound list at bottom of file
@@ -117,7 +119,7 @@ class File(object):
         # load file to sound table
         print(self.path)
         sys.stdout.flush()
-        self.snd_table = pyo.SndTable(self.path, chnl=1)
+        self.snd_table = pyo.SndTable(self.path, chnl=2)
         self.table = pyo.TableRead(self.snd_table, freq=self.snd_table.getRate(),
                                    loop=False, mul=self.amplitude)
 
@@ -146,13 +148,19 @@ class Speech:
 
     def load_file(self):
         # load file to sound table
-        print(self.path)
         #
-        self.snd_table = pyo.SndTable(self.path, chnl=1)
-        print(self.snd_table.getTable())
-        sys.stdout.flush()
-        self.table = pyo.TableRead(self.snd_table, freq=self.snd_table.getRate(),
+        fs, audio = wavfile.read(self.path)
+        if audio.dtype in ['int16', 'int32']:
+            audio = int_to_float(audio)
+
+        self.dtable = pyo.DataTable(size=audio.shape[0], chnls=2, init=audio.tolist())
+
+        # get server to determine sampling rate modification
+        server_fs = self.dtable.getServer().getSamplingRate()
+
+        self.table = pyo.TableRead(table=self.dtable, freq=float(fs)/server_fs,
                                    loop=False, mul=self.amplitude)
+
 
     def set_trigger(self, trig_fn):
         # Using table triggers...
@@ -191,3 +199,14 @@ SOUND_LIST = {
     'File':File,
     'Speech':Speech
 }
+
+
+def int_to_float(audio):
+    if audio.dtype == 'int16':
+        audio = audio.astype(np.float16)
+        audio = audio / (float(2 ** 16) / 2)
+    elif audio.dtype == 'int32':
+        audio = audio.astype(np.float16)
+        audio = audio / (float(2 ** 32) / 2)
+
+    return audio
