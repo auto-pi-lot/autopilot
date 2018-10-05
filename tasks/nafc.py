@@ -542,6 +542,7 @@ class Nafc(object):
 
     def respond(self, pin):
         self.response = pin
+        # test
 
     def punish(self):
         # TODO: If we're not in the last stage (eg. we were timed out after stim presentation), reset stages
