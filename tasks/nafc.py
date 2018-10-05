@@ -31,7 +31,7 @@ TASK = 'Nafc'
 
 # TODO: Make meta task class that has logic for loading sounds, starting pyo server etc.
 
-class Nafc:
+class Nafc(object):
     """
     Actually 2afc, but can't have number as first character of class.
     Template for 2afc tasks. Pass in a dict. of sounds & other parameters,
@@ -105,7 +105,7 @@ class Nafc:
         # This class allows the Mouse object to make a data table with the correct data types. You must update it for any new data you'd like to store
         trial_num = tables.Int32Col()
         target = tables.StringCol(1)
-        target_sound_id = tables.StringCol(32) # FIXME need to do ids way smarter than this
+        #target_sound_id = tables.StringCol(32) # FIXME need to do ids way smarter than this
         response = tables.StringCol(1)
         correct = tables.Int32Col()
         #correction = tables.Int32Col()
@@ -375,6 +375,8 @@ class Nafc:
         for v in self.resetting_variables:
             v = None
 
+        self.triggers = {}
+
         if not self.sounds:
             raise RuntimeError('\nSound objects have not been passed! Make sure RPilot makes sounds from the soundict before running.')
         if self.punish_sound and ('punish' not in self.sounds.keys()):
@@ -390,16 +392,16 @@ class Nafc:
             warnings.warn("bias_mode is not defined or defined incorrectly")
 
         # Decide if correction trial (repeat last stim) or choose new target/stim
-        if (self.correction == True) and (self.target is not None):
+        if (self.correction is True) and (self.target is not None):
             # if the last trial wasn't a correction trial, we spin to see if this one will be
-            if (self.last_was_correction == False) and (self.correct != 1) and (random.random() > self.pct_correction):
+            if (self.last_was_correction is False) and (self.correct == 0) and (random.random() < self.pct_correction):
                 # do nothing, repeat last stim
                 self.correction_trial = True
                 self.last_was_correction = True
-            elif (self.last_was_correction == True) and (self.correction_trial == True):
+            elif (self.last_was_correction is True) and (self.correction_trial is True):
                 # otherwise if we were in a correction trial and haven't corrected, keep going
                 pass
-            elif (self.last_was_correction == True) and (self.correction_trial == False):
+            elif (self.last_was_correction is True) and (self.correction_trial is False):
                 # otherwise if we just corrected we switch the flag and choose randomly
                 self.last_was_correction = False
                 if random.random() > randthresh:
@@ -457,7 +459,7 @@ class Nafc:
         self.current_trial = self.trial_counter.next()
         data = {
             'target':self.target,
-            'target_sound_id':self.target_sound_id,
+            #'target_sound_id':self.target_sound_id,
             'RQ_timestamp':datetime.datetime.now().isoformat(),
             'trial_num' : self.current_trial
             #'correction':self.correction_trial
@@ -595,6 +597,178 @@ class Nafc:
                 if k == "LEDS":
                     obj.set_color([0,0,0])
                 obj.release()
+
+
+class Gap_2AFC(Nafc):
+    def __init__(self, prefs=None, stage_block=None, sounds=None, reward=50, req_reward=False,
+                 punish_sound=False, punish_dur=100, correction=True, pct_correction=50,
+                 bias_mode=1, bias_threshold=15, timeout=10000, current_trial=0, **kwargs):
+
+        super(Gap_2AFC, self).__init__(refs=None, stage_block=None, sounds=None, reward=50, req_reward=False,
+                 punish_sound=False, punish_dur=100, correction=True, pct_correction=50,
+                 bias_mode=1, bias_threshold=15, timeout=10000, current_trial=0, **kwargs)
+
+
+    def load_sounds(self):
+        # TODO: Definitely put this in a metaclass
+
+        # Iterate through sounds and load them to memory
+        for k, v in self.soundict.items():
+            # If multiple sounds on one side, v will be a list
+            if isinstance(v, list):
+                self.sounds[k] = []
+                for sound in v:
+                    if float(sound['duration']) == 0:
+                        self.sounds[k].append(None)
+                        # a zero duration gap doesn't change the continuous noise object
+
+                    # We send the dict 'sound' to the function specified by 'type' and 'SOUND_LIST' as kwargs
+                    self.sounds[k].append(sounds.SOUND_LIST[sound['type']](**sound))
+                    # Then give the sound a callback to mark when it's finished
+                    #self.sounds[k][-1].set_trigger(self.stim_end)
+            # If not a list, a single sound
+            else:
+                if v['duration'] == 0:
+                    self.sounds[k] = [None]
+
+                self.sounds[k] = sounds.SOUND_LIST[v['type']](**v)
+                #self.sounds[k].set_trigger(self.stim_end)
+
+    def blank_trigger(self):
+        pass
+
+    def request(self,*args,**kwargs):
+        # Set the event lock
+        self.stage_block.clear()
+
+        # Reset all the variables that need to be
+        for v in self.resetting_variables:
+            v = None
+
+        self.triggers = {}
+
+        if not self.sounds:
+            raise RuntimeError('\nSound objects have not been passed! Make sure RPilot makes sounds from the soundict before running.')
+        if self.punish_sound and ('punish' not in self.sounds.keys()):
+            warnings.warn('No Punishment Sound defined.')
+
+        # Set bias threshold
+        if self.bias_mode == 0:
+            randthresh = 0.5
+        elif self.bias_mode == 1:
+            randthresh = 0.5 + self.bias
+        else:
+            randthresh = 0.5
+            warnings.warn("bias_mode is not defined or defined incorrectly")
+
+        # Decide if correction trial (repeat last stim) or choose new target/stim
+        if (self.correction is True) and (self.target is not None):
+            # if the last trial wasn't a correction trial, we spin to see if this one will be
+            if (self.last_was_correction is False) and (self.correct == 0) and (random.random() < self.pct_correction):
+                # do nothing, repeat last stim
+                self.correction_trial = True
+                self.last_was_correction = True
+            elif (self.last_was_correction is True) and (self.correction_trial is True):
+                # otherwise if we were in a correction trial and haven't corrected, keep going
+                pass
+            elif (self.last_was_correction is True) and (self.correction_trial is False):
+                # otherwise if we just corrected we switch the flag and choose randomly
+                self.last_was_correction = False
+                if random.random() > randthresh:
+                    self.target = 'R'
+                    self.target_sound = random.choice(self.sounds['R'])
+                    self.distractor = 'L'
+                else:
+                    self.target = 'L'
+                    self.target_sound = random.choice(self.sounds['L'])
+                    self.distractor = 'R'
+            else:
+                # if it's just a normal trial, randomly select
+                if random.random() > randthresh:
+                    self.target = 'R'
+                    self.target_sound = random.choice(self.sounds['R'])
+                    self.distractor = 'L'
+                else:
+                    self.target = 'L'
+                    self.target_sound = random.choice(self.sounds['L'])
+                    self.distractor = 'R'
+
+        else:
+            # if correction trials are turned off, just randomly select
+            # Choose target side and sound
+            if random.random() > randthresh:
+                self.target = 'R'
+                self.target_sound = random.choice(self.sounds['R'])
+                self.distractor = 'L'
+            else:
+                self.target = 'L'
+                self.target_sound = random.choice(self.sounds['L'])
+                self.distractor = 'R'
+
+
+
+        # Attempt to identify target sound
+        #TODO: Implement sound ID's better
+        #try:
+        #    self.target_sound_id = self.target_sound.id
+        #except AttributeError:
+        #    warnings.warn("Sound ID not defined! Sounds cannot be uniquely identified!")
+        #    self.target_sound_id = None
+
+        # Set sound trigger and LEDs
+        # We make two triggers to play the sound and change the light color
+        change_to_blue = lambda: self.pins['LEDS']['C'].set_color([0,0,255])
+
+        # set triggers
+        if self.target_sound is None:
+            sound_trigger = self.blank_trigger()
+        else:
+            sound_trigger = self.target_sound.play
+
+
+        if self.req_reward is True:
+            self.triggers['C'] = [self.pins['PORTS']['C'].open, sound_trigger]
+        else:
+            self.triggers['C'] = [sound_trigger]
+        self.set_leds({'C': [0, 255, 0]})
+
+        self.current_trial = self.trial_counter.next()
+        data = {
+            'target':self.target,
+            #'target_sound_id':self.target_sound_id,
+            'RQ_timestamp':datetime.datetime.now().isoformat(),
+            'trial_num' : self.current_trial
+            #'correction':self.correction_trial
+        }
+        # get sound info and add to data dict
+        sound_info = {k:getattr(self.target_sound, k) for k in self.target_sound.PARAMS}
+        data.update(sound_info)
+        data.update({'type':self.target_sound.type})
+
+        self.current_stage = 0
+        return data
+
+    def end(self):
+        for k, v in self.sounds.items():
+            if isinstance(v, list):
+                for sound in v:
+                    try:
+                        sound.stop()
+                    except:
+                        pass
+            else:
+                try:
+                    v.stop()
+                except:
+                    pass
+
+        for k, v in self.pins.items():
+            for pin, obj in v.items():
+                if k == "LEDS":
+                    obj.set_color([0,0,0])
+                obj.release()
+
+
 
 
 

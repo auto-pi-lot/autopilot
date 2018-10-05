@@ -94,6 +94,9 @@ class Noise:
     def __init__(self, duration, amplitude=0.01, **kwargs):
         #super(Noise, self).__init__()
 
+        self.duration = float(duration)
+        self.amplitude = float(amplitude)
+
         noiser = pyo.Noise(mul=float(amplitude))
         self.table = TableWrap(noiser,float(duration))
 
@@ -103,6 +106,38 @@ class Noise:
     def set_trigger(self, trig_fn):
         # Using table triggers...
         self.trigger = pyo.TrigFunc(self.table['trig'], trig_fn)
+
+class Gap:
+    PARAMS = ['duration', 'amplitude']
+    type='Gap'
+    def __init__(self, duration, amplitude=0.01, out_chan=1, **kwargs):
+        # gap in noise
+        self.duration = float(duration)/1000
+        self.fad = pyo.Fader(fadein=0.0001, fadeout=0.0001,
+                             dur=self.duration, mul=1.0)
+        self.out_chan = out_chan
+
+        # fader is 0 when not playing, then goes to its mul when played.
+        # so we multiply the amplitude of the noise generator by 1-fad
+        self.noiser = pyo.Noise(mul=float(amplitude)*(1.0-self.fad))
+
+        # start it
+        self.noiser.out(self.out_chan)
+
+
+
+    def play(self):
+        self.fad.play()
+
+    def apply_faders(self):
+        pass
+
+    def set_trigger(self, trig_fn):
+        # Using table triggers...
+        self.trigger = pyo.TrigFunc(self.fad['trig'], trig_fn)
+
+    def stop(self):
+        self.noiser.stop()
 
 class File(object):
     PARAMS = ['path', 'amplitude']
@@ -198,7 +233,9 @@ SOUND_LIST = {
     'Tone':Tone,
     'Noise':Noise,
     'File':File,
-    'Speech':Speech
+    'Speech':Speech,
+    'speech':Speech,
+    'Gap':Gap
 }
 
 STRING_PARAMS = ['path', 'speaker', 'consonant', 'vowel', 'type']

@@ -325,15 +325,15 @@ class RPilot:
 
             # Store a local copy
             # the task class has a class variable DATA that lets us know which data the row is expecting
-            if trial_data:
-                for k, v in data.items():
-                    if k in self.task.TrialData.columns.keys():
-                        row[k] = v
-
-            # If the trial is over (either completed or bailed), flush the row
-            if 'TRIAL_END' in data.keys():
-                row.append()
-                table.flush()
+            # if trial_data:
+            #     for k, v in data.items():
+            #         if k in self.task.TrialData.columns.keys():
+            #             row[k] = v
+            #
+            # # If the trial is over (either completed or bailed), flush the row
+            # if 'TRIAL_END' in data.keys():
+            #     row.append()
+            #     table.flush()
 
             # Wait on the stage lock to clear
             self.stage_block.wait()
