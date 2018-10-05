@@ -737,9 +737,14 @@ class Gap_2AFC(Nafc):
             #'correction':self.correction_trial
         }
         # get sound info and add to data dict
-        sound_info = {k:getattr(self.target_sound, k) for k in self.target_sound.PARAMS}
+        if self.target_sound is None:
+            sound_info = {'duration':0, 'amplitude':0.01}
+        else:
+            sound_info = {k:getattr(self.target_sound, k) for k in self.target_sound.PARAMS}
+            data.update({'type': self.target_sound.type})
+            
         data.update(sound_info)
-        data.update({'type':self.target_sound.type})
+
 
         self.current_stage = 0
         return data
