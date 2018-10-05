@@ -300,8 +300,16 @@ class Plot(QtGui.QWidget):
         self.data = {}
         self.plots = {}
         self.plot.clear()
-        if isinstance(value, str) or ('graduation' not in value.keys()):
+        try:
+            if isinstance(value, str) or ('graduation' not in value.keys()):
+                self.info['Runtime'].stop_timer()
+        except:
             self.info['Runtime'].stop_timer()
+
+        self.info['N Trials'].setText('')
+        self.info['Step'].setText('')
+        self.info['Session'].setText('')
+        self.info['Protocol'].setText('')
 
     def l_param(self, value):
         pass
