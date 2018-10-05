@@ -600,13 +600,9 @@ class Nafc(object):
 
 
 class Gap_2AFC(Nafc):
-    def __init__(self, prefs=None, stage_block=None, sounds=None, reward=50, req_reward=False,
-                 punish_sound=False, punish_dur=100, correction=True, pct_correction=50,
-                 bias_mode=1, bias_threshold=15, timeout=10000, current_trial=0, **kwargs):
+    def __init__(self, **kwargs):
 
-        super(Gap_2AFC, self).__init__(refs=None, stage_block=None, sounds=None, reward=50, req_reward=False,
-                 punish_sound=False, punish_dur=100, correction=True, pct_correction=50,
-                 bias_mode=1, bias_threshold=15, timeout=10000, current_trial=0, **kwargs)
+        super(Gap_2AFC, self).__init__(**kwargs)
 
 
     def load_sounds(self):
