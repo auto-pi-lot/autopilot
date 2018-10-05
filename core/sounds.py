@@ -113,6 +113,7 @@ class Gap:
     def __init__(self, duration, amplitude=0.01, out_chan=1, **kwargs):
         # gap in noise
         self.duration = float(duration)/1000
+        self.amplitude = float(amplitude)
         self.fad = pyo.Fader(fadein=0.0001, fadeout=0.0001,
                              dur=self.duration, mul=1.0)
         self.out_chan = out_chan
