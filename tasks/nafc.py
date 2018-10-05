@@ -719,7 +719,7 @@ class Gap_2AFC(Nafc):
 
         # set triggers
         if self.target_sound is None:
-            sound_trigger = self.blank_trigger()
+            sound_trigger = self.blank_trigger
         else:
             sound_trigger = self.target_sound.play
 
