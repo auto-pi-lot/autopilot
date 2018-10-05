@@ -58,7 +58,7 @@ def update_pis(github=True, apt=False, pilot_select = None, prefs_fn = None):
     if github is True:
         ips = ['pi@'+v['ip'] for k,v in pilots.items()]
         ip_string = " ".join(ips)
-        call('parallel-ssh', '-H', ip_string, '/home/pi/git/RPilot/utils/update_pilot.sh', '-t', '20')
+        call('parallel-ssh', '-H', ip_string, 'git --git-dir=/home/pi/git/RPilot/.git pull')
 
 def dummy():
     # testing if update pi works

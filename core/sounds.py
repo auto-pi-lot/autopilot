@@ -17,6 +17,7 @@ from time import sleep
 import json
 from scipy.io import wavfile
 import numpy as np
+import tables
 #from taskontrol.settings import rpisettings as rpiset
 
 # Sound list at bottom of file
@@ -200,6 +201,7 @@ SOUND_LIST = {
     'Speech':Speech
 }
 
+STRING_PARAMS = ['path', 'speaker', 'consonant', 'vowel', 'type']
 
 def int_to_float(audio):
     if audio.dtype == 'int16':

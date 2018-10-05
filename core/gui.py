@@ -4,6 +4,7 @@ import json
 import copy
 import datetime
 from collections import OrderedDict as odict
+import numpy as np
 from PySide import QtGui, QtCore
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -1306,6 +1307,104 @@ class Calibrate_Water(QtGui.QDialog):
         def init_ui(self):
             #
             pass
+
+class Reassign(QtGui.QDialog):
+
+    def __init__(self, mice, protocols, protocol_dir):
+        super(Reassign, self).__init__()
+
+        self.mice = mice
+        self.protocols = protocols
+        self.protocol_dir = protocol_dir
+        self.init_ui()
+
+    def init_ui(self):
+
+        self.grid = QtGui.QGridLayout()
+
+        self.mouse_objects = {}
+
+        for i, (mouse, protocol) in zip(xrange(len(self.mice)), self.mice.items()):
+            mouse_name = copy.deepcopy(mouse)
+            step = protocol[1]
+            protocol = protocol[0]
+
+            # mouse label
+            mouse_lab = QtGui.QLabel(mouse)
+
+            self.mouse_objects[mouse] = [QtGui.QComboBox(), QtGui.QComboBox()]
+            protocol_box = self.mouse_objects[mouse][0]
+            protocol_box.setObjectName(mouse_name)
+            protocol_box.insertItems(0, self.protocols)
+            # set current item if mouse has matching protocol
+            protocol_bool = [protocol == p for p in self.protocols]
+            if any(protocol_bool):
+                protocol_ind = np.where(protocol_bool)[0][0]
+                protocol_box.setCurrentIndex(protocol_ind)
+            protocol_box.currentIndexChanged.connect(self.set_protocol)
+
+            step_box = self.mouse_objects[mouse][1]
+            step_box.setObjectName(mouse_name)
+
+            self.populate_steps(mouse_name)
+
+            step_box.setCurrentIndex(step)
+            step_box.currentIndexChanged.connect(self.set_step)
+
+            # add to layout
+            self.grid.addWidget(mouse_lab, i%25, 0+(i/25)*3)
+            self.grid.addWidget(protocol_box, i%25, 1+(i/25)*3)
+            self.grid.addWidget(step_box, i%25, 2+(i/25)*3)
+
+
+
+        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+        main_layout = QtGui.QVBoxLayout()
+        main_layout.addLayout(self.grid)
+        main_layout.addWidget(buttonBox)
+
+        self.setLayout(main_layout)
+
+    def populate_steps(self, mouse):
+        print(mouse)
+        protocol_box = self.mouse_objects[mouse][0]
+        step_box = self.mouse_objects[mouse][1]
+
+        while step_box.count():
+            step_box.removeItem(0)
+
+        # Load the protocol and parse its steps
+        protocol_str = protocol_box.currentText()
+        protocol_file = os.path.join(self.protocol_dir, protocol_str + '.json')
+        with open(protocol_file) as protocol_file_open:
+            protocol = json.load(protocol_file_open)
+
+        step_list = []
+        for i, s in enumerate(protocol):
+            step_list.append(s['step_name'])
+
+        step_box.insertItems(0, step_list)
+
+    def set_protocol(self):
+        mouse = self.sender().objectName()
+        protocol_box = self.mouse_objects[mouse][0]
+        step_box = self.mouse_objects[mouse][1]
+
+        self.mice[mouse][0] = protocol_box.currentText()
+        self.mice[mouse][1] = 0
+
+        self.populate_steps(mouse)
+
+
+    def set_step(self):
+        mouse = self.sender().objectName()
+        protocol_box = self.mouse_objects[mouse][0]
+        step_box = self.mouse_objects[mouse][1]
+
+        self.mice[mouse][1] = step_box.currentIndex()
+
 
 
 

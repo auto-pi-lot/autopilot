@@ -108,6 +108,7 @@ class Nafc:
         target_sound_id = tables.StringCol(32) # FIXME need to do ids way smarter than this
         response = tables.StringCol(1)
         correct = tables.Int32Col()
+        #correction = tables.Int32Col()
         bias = tables.Float32Col()
         RQ_timestamp = tables.StringCol(26)
         DC_timestamp = tables.StringCol(26)
@@ -217,7 +218,7 @@ class Nafc:
         self.bailed = 0
 
         # We make a list of the variables that need to be reset each trial so it's easier to do so
-        self.resetting_variables = [self.response, self.correct, self.last_pin,
+        self.resetting_variables = [self.response, self.last_pin,
                                     self.bailed]
 
         # This allows us to cycle through the task by just repeatedly calling self.stages.next()
@@ -389,9 +390,9 @@ class Nafc:
             warnings.warn("bias_mode is not defined or defined incorrectly")
 
         # Decide if correction trial (repeat last stim) or choose new target/stim
-        if (self.correction == True) and (self.target != None):
+        if (self.correction == True) and (self.target is not None):
             # if the last trial wasn't a correction trial, we spin to see if this one will be
-            if (self.last_was_correction == False) and (random.random() > self.pct_correction):
+            if (self.last_was_correction == False) and (self.correct != 1) and (random.random() > self.pct_correction):
                 # do nothing, repeat last stim
                 self.correction_trial = True
                 self.last_was_correction = True
@@ -459,6 +460,7 @@ class Nafc:
             'target_sound_id':self.target_sound_id,
             'RQ_timestamp':datetime.datetime.now().isoformat(),
             'trial_num' : self.current_trial
+            #'correction':self.correction_trial
         }
         # get sound info and add to data dict
         sound_info = {k:getattr(self.target_sound, k) for k in self.target_sound.PARAMS}

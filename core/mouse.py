@@ -18,6 +18,7 @@ import warnings
 sys.path.append('~/git/RPilot')
 import tasks
 import threading
+from sounds import STRING_PARAMS
 if sys.version_info >= (3,0):
     import queue
 else:
@@ -258,8 +259,11 @@ class Mouse:
                         for side, sounds in step['sounds'].items():
                             # each side has a list of sounds
                             for sound in sounds:
-                                sound_params.update({k:tables.Float64Col() for k, v in sound.items() if k is not 'type'})
-                        sound_params.update({'type':tables.StringCol(128)})
+                                for k, v in sound.items():
+                                    if k in STRING_PARAMS:
+                                        sound_params[k] = tables.StringCol(1024)
+                                    else:
+                                        sound_params[k] = tables.Float64Col()
                         trial_descriptor.columns.update(sound_params)
 
                     h5f.create_table(step_group, "trial_data", trial_descriptor)

@@ -26,7 +26,7 @@ from networking import Terminal_Networking
 import tasks
 import sounds
 from utils import InvokeEvent, Invoker
-from gui import Control_Panel, Protocol_Wizard, Popup, Weights
+from gui import Control_Panel, Protocol_Wizard, Popup, Weights, Reassign
 
 # TODO: Oh holy hell just rewrite all the inter-widget communication as zmq
 # TODO: Be more complete about generating logs
@@ -147,8 +147,10 @@ class Terminal(QtGui.QMainWindow):
         self.tool_menu = self.menuBar().addMenu("&Tools")
         mouse_weights_act = QtGui.QAction("View Mouse &Weights", self, triggered=self.mouse_weights)
         update_protocol_act = QtGui.QAction("Update Protocols", self, triggered=self.update_protocols)
+        reassign_act = QtGui.QAction("Batch Reassign Protocols", self, triggered=self.reassign_protocols)
         self.tool_menu.addAction(mouse_weights_act)
         self.tool_menu.addAction(update_protocol_act)
+        self.tool_menu.addAction(reassign_act)
 
         # Set size of window to be fullscreen without maximization
         # Until a better solution is found, if not set large enough, the pilot tabs will
@@ -450,6 +452,43 @@ class Terminal(QtGui.QMainWindow):
         msgbox = QtGui.QMessageBox()
         msgbox.setText("Mouse Protocols Updated")
         msgbox.exec_()
+
+    def reassign_protocols(self):
+
+        # get list of protocol files
+        protocols = os.listdir(self.prefs['PROTOCOLDIR'])
+        protocols = [os.path.splitext(p)[0] for p in protocols if p.endswith('.json')]
+
+        # get mice and current protocols
+        mice = self.list_mice()
+        mice_protocols = {}
+        for mouse in mice:
+            if mouse not in self.mice.keys():
+                self.mice[mouse] = Mouse(mouse)
+
+            mice_protocols[mouse] = [self.mice[mouse].protocol_name, self.mice[mouse].step]
+
+        reassign_window = Reassign(mice_protocols, protocols, self.prefs['PROTOCOLDIR'])
+        reassign_window.exec_()
+
+        if reassign_window.result() == 1:
+            mouse_protocols = reassign_window.mice
+
+            for mouse, protocol in mouse_protocols.items():
+                step = protocol[1]
+                protocol = protocol[0]
+                if self.mice[mouse].protocol_name != protocol:
+                    self.logger.info('Setting {} protocol from {} to {}'.format(mouse, self.mice[mouse].protocol_name, protocol))
+                    protocol_file = os.path.join(self.prefs['PROTOCOLDIR'], protocol + '.json')
+                    self.mice[mouse].assign_protocol(protocol_file, step)
+
+            # protocol_bool = [self.mice[mouse].protocol_name == p.strip('.json') for p in protocols]
+            # if any(protocol_bool):
+            #     which_prot = np.where(protocol_bool)[0][0]
+            #     protocol = protocols[which_prot]
+            #     self.mice[mouse].assign_protocol(os.path.join(self.prefs['PROTOCOLDIR'], protocol), step_n=self.mice[mouse].step)
+
+
 
 
 
