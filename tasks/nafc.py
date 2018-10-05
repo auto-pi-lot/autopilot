@@ -635,6 +635,12 @@ class Gap_2AFC(Nafc):
     def blank_trigger(self):
         pass
 
+    def stim_end(self):
+        # Called by the discrim sound's table trigger when playback is finished
+        # Used in punishing leaving early
+
+        self.set_leds({'L':[0,255,0], 'R':[0,255,0]})
+
     def request(self,*args,**kwargs):
         # Set the event lock
         self.stage_block.clear()
