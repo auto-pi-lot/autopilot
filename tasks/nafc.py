@@ -475,9 +475,9 @@ class Nafc(object):
     def discrim(self,*args,**kwargs):
         self.stage_block.clear()
 
-        self.triggers[self.target] = self.pins['PORTS'][self.target].open
+        self.triggers[self.target] = [lambda: self.respond(self.target), self.pins['PORTS'][self.target].open]
         #self.triggers[self.target] = self.test_correct
-        self.triggers[self.distractor] = self.punish
+        self.triggers[self.distractor] = [lambda: self.respond(self.distractor), self.punish]
 
         # TODO: Handle timeout
 
@@ -502,7 +502,7 @@ class Nafc(object):
             }
             return data
 
-        self.response = self.last_pin
+        #self.response = self.last_pin
 
         if self.response == self.target:
             self.correct = 1
@@ -539,6 +539,9 @@ class Nafc(object):
 
     def test_correct(self):
         print('correct!')
+
+    def respond(self, pin):
+        self.response = pin
 
     def punish(self):
         # TODO: If we're not in the last stage (eg. we were timed out after stim presentation), reset stages
