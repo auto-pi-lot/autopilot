@@ -545,13 +545,15 @@ class Nafc(object):
 
     def punish(self):
         # TODO: If we're not in the last stage (eg. we were timed out after stim presentation), reset stages
+        self.punish_block.clear()
+        threading.Timer(self.punish_dur / 1000., self.punish_block.set).start()
         if self.punish_sound and ('punish' in self.sounds.keys()):
             self.sounds['punish'].play()
         # TODO: Ask for whether we should flash or not and either .set_leds() or flash_leds()
         #self.set_leds()
         self.flash_leds()
-        self.punish_block.clear()
-        threading.Timer(self.punish_dur/1000., self.punish_block.set).start()
+
+
 
     def stim_end(self):
         # Called by the discrim sound's table trigger when playback is finished
