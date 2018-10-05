@@ -616,6 +616,7 @@ class Gap_2AFC(Nafc):
                 for sound in v:
                     if float(sound['duration']) == 0:
                         self.sounds[k].append(None)
+                        continue
                         # a zero duration gap doesn't change the continuous noise object
 
                     # We send the dict 'sound' to the function specified by 'type' and 'SOUND_LIST' as kwargs
@@ -626,6 +627,7 @@ class Gap_2AFC(Nafc):
             else:
                 if v['duration'] == 0:
                     self.sounds[k] = [None]
+                    continue
 
                 self.sounds[k] = sounds.SOUND_LIST[v['type']](**v)
                 #self.sounds[k].set_trigger(self.stim_end)
@@ -723,9 +725,9 @@ class Gap_2AFC(Nafc):
 
 
         if self.req_reward is True:
-            self.triggers['C'] = [self.pins['PORTS']['C'].open, sound_trigger]
+            self.triggers['C'] = [self.pins['PORTS']['C'].open, sound_trigger, self.stim_end]
         else:
-            self.triggers['C'] = [sound_trigger]
+            self.triggers['C'] = [sound_trigger, self.stim_end]
         self.set_leds({'C': [0, 255, 0]})
 
         self.current_trial = self.trial_counter.next()
@@ -742,7 +744,7 @@ class Gap_2AFC(Nafc):
         else:
             sound_info = {k:getattr(self.target_sound, k) for k in self.target_sound.PARAMS}
             data.update({'type': self.target_sound.type})
-            
+
         data.update(sound_info)
 
 
