@@ -332,8 +332,9 @@ class Nafc(object):
             return
 
         self.last_pin = pin
-        # Wait for any punishment delay
-        self.punish_block.wait()
+        # if we're being punished, don't recognize the trigger
+        if not self.punish_block.is_set():
+            return
 
 
         # Call the trigger
