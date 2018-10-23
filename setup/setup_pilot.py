@@ -69,7 +69,7 @@ if args.manualpins:
 else:
     pins = {
         'POKES':{
-            'L':7,
+            'L':24,
             'C':8,
             'R':10
         },
@@ -95,6 +95,8 @@ if args.naudiochannels:
     n_channels = int(args.naudiochannels)
 else:
     n_channels = 2
+
+pull_pins = {7:1}
 
 # TODO: Turn this whole thing into a command line dialog and add this to it
 pigpio_location = 'pigpiod'
@@ -170,6 +172,7 @@ prefs['TERMINALIP'] = terminal_ip
 prefs['PINS'] = pins
 prefs['JACKDSTRING'] = jackd_string
 prefs['NCHANNELS'] = n_channels
+prefs['PULLPINS'] = pull_pins
 
 # save prefs
 prefs_file = os.path.join(basedir, 'prefs.json')

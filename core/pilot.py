@@ -96,6 +96,12 @@ class RPilot:
         self.spawn_network()
         self.init_network()
 
+        # if we need to set pins pulled up or down, do that now
+        if 'PULLPINS' in self.prefs.keys():
+            self.pulls = []
+            for pin, updown in self.prefs['PULLPINS'].items():
+                self.pulls.append(hardware.Pull(int(pin), pud=int(updown)))
+
         # Set and update state
         self.state = 'IDLE' # or 'Running'
         self.update_state()

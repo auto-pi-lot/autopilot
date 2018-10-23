@@ -307,6 +307,30 @@ class Scale:
         # default configuration
         self.device.set_configuration()
 
+class Pull:
+    # Pull a pin up or down
+    def __init__(self, pin, pud=1):
+        self.pig = pigpio.pi()
+        if not self.pig.connected:
+            Exception('No connection to pigpio daemon could be made')
+
+        self.pin = BOARD_TO_BCM[int(pin)]
+
+        if pud == 1:
+            self.pig.set_pull_up_down(self.pin, pigpio.PUD_UP)
+        elif pud == 0:
+            self.pig.set_pull_up_down(self.pin, pigpio.PUD_DOWN)
+
+
+
+    def __del__(self):
+        self.pig.stop()
+
+    def release(self):
+        self.pig.stop()
+
+
+
 
 
 
