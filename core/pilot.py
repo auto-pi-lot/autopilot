@@ -262,6 +262,9 @@ class RPilot:
         # We have to set pyo to not automatically try to connect to inputs when there aren't any
         self.pyo_server.setJackAuto(False, True)
 
+        # debug
+        self.pyo_server.setVerbosity(8)
+
         # Then boot and start
         self.pyo_server.boot()
         self.pyo_server.start()

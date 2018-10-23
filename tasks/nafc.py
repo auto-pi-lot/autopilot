@@ -326,6 +326,8 @@ class Nafc(object):
         sys.stdout.flush()
 
         if not pin in self.triggers.keys():
+            print('handle trigger notrig return')
+            sys.stdout.flush()
             # No trigger assigned, get out without waiting
             return
 
