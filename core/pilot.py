@@ -320,6 +320,9 @@ class RPilot:
             # Calculate next stage data and prep triggers
             data = self.task.stages.next()() # Double parens because next just gives us the function, we still have to call it
 
+            print('pilot task called')
+            sys.stdout.flush()
+
             # Send data back to terminal (mouse is identified by the networking object)
             self.send_message('DATA', target='T', value=data)
 
@@ -335,8 +338,13 @@ class RPilot:
             #     row.append()
             #     table.flush()
 
+            print('pilot waiting stage block')
+            sys.stdout.flush()
             # Wait on the stage lock to clear
             self.stage_block.wait()
+
+            print('pilot wait done')
+            sys.stdout.flush()
 
             # If the running flag gets set, we're closing.
             if not self.running.is_set():

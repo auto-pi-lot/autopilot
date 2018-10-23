@@ -322,6 +322,9 @@ class Nafc(object):
             pin = hardware.BCM_TO_BOARD[pin]
             pin = self.pin_id[pin]
 
+        print('handle trigger 1')
+        sys.stdout.flush()
+
         if not pin in self.triggers.keys():
             # No trigger assigned, get out without waiting
             return
@@ -335,6 +338,9 @@ class Nafc(object):
         # if we're being punished, don't recognize the trigger
         if not self.punish_block.is_set():
             return
+
+        print('handle trigger past punish')
+        sys.stdout.flush()
 
 
         # Call the trigger
@@ -351,8 +357,13 @@ class Nafc(object):
         # clear triggers
         self.triggers = {}
 
+        print('handle trigger called')
+        sys.stdout.flush()
+
         # Set the stage block so the pilot calls the next stage
         self.stage_block.set()
+        print('handle trigger stage block')
+        sys.stdout.flush()
 
     def center_out(self, pin, level, tick):
         # Called when something leaves the center pin,
@@ -641,7 +652,9 @@ class Gap_2AFC(Nafc):
                 #self.sounds[k].set_trigger(self.stim_end)
 
     def blank_trigger(self):
-        pass
+        print('blank trig')
+        sys.stdout.flush()
+        #pass
 
     def stim_end(self):
         # Called by the discrim sound's table trigger when playback is finished
@@ -729,7 +742,6 @@ class Gap_2AFC(Nafc):
 
         # Set sound trigger and LEDs
         # We make two triggers to play the sound and change the light color
-        change_to_blue = lambda: self.pins['LEDS']['C'].set_color([0,0,255])
 
         # set triggers
         if self.target_sound is None:
