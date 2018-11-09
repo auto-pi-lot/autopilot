@@ -4,6 +4,7 @@ import json
 import copy
 import datetime
 from collections import OrderedDict as odict
+import numpy as np
 from PySide import QtGui, QtCore
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -52,18 +53,21 @@ class Control_Panel(QtGui.QWidget):
 
         self.init_ui()
 
+        self.setSizePolicy(QtGui.QSizePolicy.Maximum,QtGui.QSizePolicy.Maximum)
+
     def init_ui(self):
         self.layout.setColumnStretch(0, 1)
         self.layout.setColumnStretch(1, 5)
 
         # Iterate through pilots and mice, making start/stop buttons for pilots and lists of mice
         for i, (pilot, mice) in enumerate(self.pilots.items()):
+            # in pilot dict, format is {'pilot':{'mice':['mouse1',...],'ip':'',etc.}}
+            mice = mice['mice']
             # Make a list of mice
             mouse_list = Mouse_List(mice, drop_fn = self.update_db)
             mouse_list.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
             mouse_list.itemDoubleClicked.connect(self.edit_params)
             self.mouse_lists[pilot] = mouse_list
-            # TODO: Make mouse_list launch param/task editor on double click
 
             # Make a panel for pilot control
             pilot_panel = Pilot_Panel(pilot, mouse_list, self.toggle_start, self.create_mouse)
@@ -82,7 +86,7 @@ class Control_Panel(QtGui.QWidget):
 
     def toggle_start(self, starting, pilot, mouse=None):
         # stopping is the enemy of starting so we put them in the same function to learn about each other
-        if starting:
+        if starting is True:
             # Ope'nr up if she aint
             if mouse not in self.mice.keys():
                 self.mice[mouse] = Mouse(mouse)
@@ -102,9 +106,19 @@ class Control_Panel(QtGui.QWidget):
             # Prep task to send to pi, the pilot needs to know the mouse
             task['mouse'] = self.mice[mouse].name
             task['pilot'] = pilot
+            task['step'] = step
+            task['current_trial'] = self.mice[mouse].current_trial
+            task['session'] = self.mice[mouse].session
 
-            # TODO: Before starting, pop a window to get weight.
-            # TODO: Get last trial number and send to pi as well
+            # Get Weights
+            start_weight, ok = QtGui.QInputDialog.getDouble(self, "Set Starting Weight",
+                                                        "Starting Weight:" )
+            if ok:
+                self.mice[mouse].update_weights(start=float(start_weight))
+            else:
+                # pressed cancel, don't start
+                self.mice[mouse].stop_run()
+                return
 
             self.send_message('START', bytes(pilot), task)
 
@@ -113,11 +127,23 @@ class Control_Panel(QtGui.QWidget):
             # it should initiate a coherence checking routine to make sure
             # its data matches what the Terminal got,
             # so the terminal will handle closing the mouse object
-            self.send_message('STOP', bytes(pilot))
+            self.send_message('STOP', bytes(pilot), 'STOP')
             # TODO: Start coherence checking ritual
             # TODO: Close mouse object
             # TODO: Pop weight entry window
             # TODO: Auto-select the next mouse in the list.
+
+            # get weight
+            # Get Weights
+            stop_weight, ok = QtGui.QInputDialog.getDouble(self, "Set Stopping Weight",
+                                                        "Stopping Weight:" )
+
+            self.mice[mouse].stop_run()
+
+            if ok:
+                self.mice[mouse].update_weights(stop=float(stop_weight))
+
+
 
     def create_mouse(self, pilot):
         new_mouse_wizard = New_Mouse_Wizard(self.prefs['PROTOCOLDIR'])
@@ -144,7 +170,7 @@ class Control_Panel(QtGui.QWidget):
                 pass
 
             # Add mouse to pilots dict, update it and our tabs
-            self.pilots[pilot].append(biography_vals['id'])
+            self.pilots[pilot]['mice'].append(biography_vals['id'])
             self.mouse_lists[pilot].addItem(biography_vals['id'])
             self.update_db()
 
@@ -182,7 +208,7 @@ class Control_Panel(QtGui.QWidget):
             for i in range(mlist.count()):
                 mice.append(mlist.item(i).text())
 
-            self.pilots[pilot] = mice
+            self.pilots[pilot]['mice'] = mice
 
         try:
             with open(self.prefs['PILOT_DB'], 'w') as pilot_file:
@@ -285,7 +311,7 @@ class Pilot_Button(QtGui.QPushButton):
         self.setText("START")
 
         # Normally buttons only expand horizontally, but these big ole ones....
-        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Maximum)
 
         # What's yr name anyway?
         self.pilot = pilot
@@ -301,13 +327,16 @@ class Pilot_Button(QtGui.QPushButton):
 
     def toggle_start(self, toggled):
         # If we're stopped, start, and vice versa...
-        if toggled:
-            current_mouse = self.mouse_list.currentItem().text()
-            self.toggle_fn(True, self.pilot, current_mouse)
+        current_mouse = self.mouse_list.currentItem().text()
+        if toggled is True: # ie
+
             self.setText("STOP")
+            self.toggle_fn(True, self.pilot, current_mouse)
+
         else:
-            self.toggle_fn(False, self.pilot)
             self.setText("START")
+            self.toggle_fn(False, self.pilot, current_mouse)
+
 
 
 ###################################3
@@ -567,6 +596,17 @@ class Protocol_Parameters_Dialogue(QtGui.QDialog):
         # call the rest of the accept method
         super(Protocol_Parameters_Dialogue, self).accept()
 
+class Popup(QtGui.QDialog):
+    def __init__(self, message):
+        super(Popup, self,).__init__()
+        self.layout = QtGui.QVBoxLayout()
+        self.text = QtGui.QLabel(message)
+        self.layout.addWidget(self.text)
+        self.setLayout(self.layout)
+
+
+
+
 
 ##################################
 # Wizard Widgets
@@ -740,8 +780,10 @@ class New_Mouse_Wizard(QtGui.QDialog):
                 self.values['step'] = self.step_ind[current_step]
 
 class Protocol_Wizard(QtGui.QDialog):
-    def __init__(self):
+    def __init__(self, prefs):
         QtGui.QDialog.__init__(self)
+
+        self.prefs = prefs
 
         # Left Task List/Add Step Box
         addstep_label = QtGui.QLabel("Add Step")
@@ -821,6 +863,8 @@ class Protocol_Wizard(QtGui.QDialog):
         task_params_temp.update(task_params)
         task_params.clear()
         task_params.update(task_params_temp)
+        # add graduation field
+        task_params['graduation'] = {'type':'graduation', 'tag':'Graduation Criterion', 'value':{}}
 
         self.steps.append(task_params)
         self.step_list.addItem(new_item)
@@ -858,7 +902,10 @@ class Protocol_Wizard(QtGui.QDialog):
                 input_widget.editingFinished.connect(self.set_param)
                 if 'value' in v.keys():
                     input_widget.setText(v['value'])
+                elif v['type'] == 'str':
+                    self.steps[step_index][k]['value'] = ''
                 self.param_layout.addRow(rowtag,input_widget)
+
             elif v['type'] == 'check':
                 rowtag = QtGui.QLabel(v['tag'])
                 input_widget = QtGui.QCheckBox()
@@ -866,24 +913,41 @@ class Protocol_Wizard(QtGui.QDialog):
                 input_widget.stateChanged.connect(self.set_param)
                 if 'value' in v.keys():
                     input_widget.setChecked(v['value'])
+                else:
+                    self.steps[step_index][k]['value'] = False
                 self.param_layout.addRow(rowtag, input_widget)
+
             elif v['type'] == 'list':
                 rowtag = QtGui.QLabel(v['tag'])
                 input_widget = QtGui.QListWidget()
                 input_widget.setObjectName(k)
-                input_widget.insertItems(0, sorted(v['values'], key=v['values'].get))
+                sorted_values = sorted(v['values'], key=v['values'].get)
+                input_widget.insertItems(0, sorted_values)
                 input_widget.itemSelectionChanged.connect(self.set_param)
                 if 'value' in v.keys():
                     select_item = input_widget.item(v['value'])
                     input_widget.setCurrentItem(select_item)
+                else:
+                    self.steps[step_index][k]['value'] = sorted_values[0]
                 self.param_layout.addRow(rowtag, input_widget)
+                self.steps[step_index][k]['value'] = False
             elif v['type'] == 'sounds':
-                self.sound_widget = Sound_Widget()
+                self.sound_widget = Sound_Widget(self.prefs)
                 self.sound_widget.setObjectName(k)
                 self.sound_widget.pass_set_param_function(self.set_sounds)
                 self.param_layout.addRow(self.sound_widget)
                 if 'value' in v.keys():
                     self.sound_widget.populate_lists(v['value'])
+            elif v['type'] == 'graduation':
+                self.grad_widget = Graduation_Widget()
+                self.grad_widget.setObjectName(k)
+                self.grad_widget.set_graduation = self.set_graduation
+                self.param_layout.addRow(self.grad_widget)
+                if 'type' in v['value'].keys():
+                    combo_index = self.grad_widget.type_selection.findText(v['value']['type'])
+                    self.grad_widget.type_selection.setCurrentIndex(combo_index)
+                    self.grad_widget.populate_params(v['value']['value'])
+
             elif v['type'] == 'label':
                 # This is a .json label not for display
                 pass
@@ -895,8 +959,10 @@ class Protocol_Wizard(QtGui.QDialog):
 
 
         # Iterate again to check for dependencies
-        for k, v in self.steps[step_index].items():
-            pass
+        # no idea what i meant here -jls 180913
+        # maybe greying out unavailable boxes?
+        # for k, v in self.steps[step_index].items():
+        #    pass
 
     def clear_params(self):
         while self.param_layout.count():
@@ -934,19 +1000,119 @@ class Protocol_Wizard(QtGui.QDialog):
         current_step = self.step_list.currentRow()
         self.steps[current_step]['sounds']['value'] = self.sound_widget.sound_dict
 
+    def set_graduation(self):
+        current_step = self.step_list.currentRow()
+        grad_type = self.grad_widget.type
+        grad_params = self.grad_widget.param_dict
+        self.steps[current_step]['graduation']['value'] = {'type':grad_type,'value':grad_params}
+
+
     def check_depends(self):
         # TODO: Make dependent fields unavailable if dependencies unmet
         # I mean if it really matters
         pass
 
-class Sound_Widget(QtGui.QWidget):
+class Graduation_Widget(QtGui.QWidget):
     def __init__(self):
+        super(Graduation_Widget, self).__init__()
+
+        # Grad type dropdown
+        type_label = QtGui.QLabel("Graduation Criterion:")
+        self.type_selection = QtGui.QComboBox()
+        self.type_selection.insertItems(0, tasks.GRAD_LIST.keys())
+        self.type_selection.currentIndexChanged.connect(self.populate_params)
+
+        # Param form
+        self.param_layout = QtGui.QFormLayout()
+
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(type_label)
+        layout.addWidget(self.type_selection)
+        layout.addLayout(self.param_layout)
+
+        self.setLayout(layout)
+
+        self.param_dict = {}
+
+        # we receive a method from the protocol wizard to
+        # store the graduation params in the step dictionary
+        self.set_graduation = None
+
+        self.populate_params()
+
+    def populate_params(self, params=None):
+        self.clear_params()
+        self.type = self.type_selection.currentText()
+        self.param_dict['type'] = self.type
+
+        for k in tasks.GRAD_LIST[self.type].PARAMS:
+            edit_box = QtGui.QLineEdit()
+            edit_box.setObjectName(k)
+            edit_box.editingFinished.connect(self.store_param)
+            if isinstance(params, dict):
+                if k in params.keys():
+                    edit_box.setText(params[k])
+            self.param_layout.addRow(QtGui.QLabel(k), edit_box)
+
+    def clear_params(self):
+        while self.param_layout.count():
+            child = self.param_layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+
+    def store_param(self):
+        sender = self.sender()
+        name = sender.objectName()
+        self.param_dict[name] = sender.text()
+        print(self.param_dict)
+        self.set_graduation()
+
+class Drag_List(QtGui.QListWidget):
+    # graciously copied from
+    # https://stackoverflow.com/a/25614674
+    fileDropped = QtCore.Signal(list)
+
+    def __init__(self):
+        super(Drag_List, self).__init__()
+        self.setAcceptDrops(True)
+
+    def dragEnterEvent(self, e):
+        if e.mimeData().hasUrls:
+            e.accept()
+        else:
+            e.ignore()
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.setDropAction(QtCore.Qt.CopyAction)
+            event.accept()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.setDropAction(QtCore.Qt.CopyAction)
+            event.accept()
+            links = []
+            for url in event.mimeData().urls():
+                links.append(str(url.toLocalFile()))
+            self.fileDropped.emit(links)
+        else:
+            event.ignore()
+
+class Sound_Widget(QtGui.QWidget):
+    def __init__(self, prefs):
         QtGui.QWidget.__init__(self)
+
+        self.prefs = prefs
+        self.sounddir = self.prefs['SOUNDDIR']
 
         # Left sounds
         left_label = QtGui.QLabel("Left Sounds")
         left_label.setFixedHeight(30)
-        self.left_list = QtGui.QListWidget()
+        self.left_list = Drag_List()
+        self.left_list.fileDropped.connect(self.files_dropped)
+        self.left_list.setObjectName("L")
         self.add_left_button = QtGui.QPushButton("+")
         self.add_left_button.setFixedHeight(30)
         self.add_left_button.clicked.connect(lambda: self.add_sound('L'))
@@ -965,7 +1131,9 @@ class Sound_Widget(QtGui.QWidget):
         # Right sounds
         right_label = QtGui.QLabel("Right Sounds")
         right_label.setFixedHeight(30)
-        self.right_list = QtGui.QListWidget()
+        self.right_list = Drag_List()
+        self.right_list.fileDropped.connect(self.files_dropped)
+        self.right_list.setObjectName("R")
         self.add_right_button = QtGui.QPushButton("+")
         self.add_right_button.setFixedHeight(30)
         self.add_right_button.clicked.connect(lambda: self.add_sound('R'))
@@ -1024,6 +1192,47 @@ class Sound_Widget(QtGui.QWidget):
         for k in self.sound_dict['R']:
             self.right_list.addItem(k['type'])
 
+    def files_dropped(self, files):
+        # TODO: Make this more general...
+        msg = QtGui.QMessageBox()
+        msg.setText("Are these Speech sounds in the format '/speaker/cv/cv_#.wav'?")
+        msg.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+        ret = msg.exec_()
+
+        sender = self.sender()
+        side = sender.objectName()
+
+        if ret == QtGui.QMessageBox.No:
+            for f in files:
+                f = f.strip(self.sounddir)
+
+                self.sound_dict[side].append({'type':'File', 'path':f})
+                if side == 'L':
+                    self.left_list.addItem(f)
+                elif side == 'R':
+                    self.right_list.addItem(f)
+
+
+        elif ret == QtGui.QMessageBox.Yes:
+            for f in files:
+                f = f.strip(self.sounddir)
+                f_split = f.split(os.sep)
+                speaker = f_split[0]
+                cv = f_split[-1].split('.')[0].split('_')[0]
+                consonant = cv[0]
+                vowel = cv[1:]
+                token = f_split[-1].split('.')[0].split('_')[1]
+                param_dict = {'type':'Speech','path':f,
+                 'speaker':speaker,'consonant':consonant,
+                 'vowel':vowel,'token':token}
+                self.sound_dict[side].append(param_dict)
+                if side == 'L':
+                    self.left_list.addItem(f)
+                elif side == 'R':
+                    self.right_list.addItem(f)
+
+        self.set_sounds()
+
     class Add_Sound_Dialog(QtGui.QDialog):
         def __init__(self):
             QtGui.QDialog.__init__(self)
@@ -1076,6 +1285,182 @@ class Sound_Widget(QtGui.QWidget):
             sender = self.sender()
             name = sender.objectName()
             self.param_dict[name] = sender.text()
+
+###################################3
+# Tools
+######################################
+
+class Calibrate_Water(QtGui.QDialog):
+    def __init__(self, pilots, message_fn):
+        super(Calibrate_Water, self).__init__()
+
+        self.pilots = pilots
+        self.send_message = message_fn
+
+    class Pilot_Ports(QtGui.QWidget):
+        def __init__(self, pilot, message_fn, n_clicks=1000, click_dur=30):
+            super(Pilot_Ports, self).__init__()
+
+            self.pilot = pilot
+            self.send_message = message_fn
+
+        def init_ui(self):
+            #
+            pass
+
+class Reassign(QtGui.QDialog):
+
+    def __init__(self, mice, protocols, protocol_dir):
+        super(Reassign, self).__init__()
+
+        self.mice = mice
+        self.protocols = protocols
+        self.protocol_dir = protocol_dir
+        self.init_ui()
+
+    def init_ui(self):
+
+        self.grid = QtGui.QGridLayout()
+
+        self.mouse_objects = {}
+
+        for i, (mouse, protocol) in zip(xrange(len(self.mice)), self.mice.items()):
+            mouse_name = copy.deepcopy(mouse)
+            step = protocol[1]
+            protocol = protocol[0]
+
+            # mouse label
+            mouse_lab = QtGui.QLabel(mouse)
+
+            self.mouse_objects[mouse] = [QtGui.QComboBox(), QtGui.QComboBox()]
+            protocol_box = self.mouse_objects[mouse][0]
+            protocol_box.setObjectName(mouse_name)
+            protocol_box.insertItems(0, self.protocols)
+            # set current item if mouse has matching protocol
+            protocol_bool = [protocol == p for p in self.protocols]
+            if any(protocol_bool):
+                protocol_ind = np.where(protocol_bool)[0][0]
+                protocol_box.setCurrentIndex(protocol_ind)
+            protocol_box.currentIndexChanged.connect(self.set_protocol)
+
+            step_box = self.mouse_objects[mouse][1]
+            step_box.setObjectName(mouse_name)
+
+            self.populate_steps(mouse_name)
+
+            step_box.setCurrentIndex(step)
+            step_box.currentIndexChanged.connect(self.set_step)
+
+            # add to layout
+            self.grid.addWidget(mouse_lab, i%25, 0+(i/25)*3)
+            self.grid.addWidget(protocol_box, i%25, 1+(i/25)*3)
+            self.grid.addWidget(step_box, i%25, 2+(i/25)*3)
+
+
+
+        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+        main_layout = QtGui.QVBoxLayout()
+        main_layout.addLayout(self.grid)
+        main_layout.addWidget(buttonBox)
+
+        self.setLayout(main_layout)
+
+    def populate_steps(self, mouse):
+        print(mouse)
+        protocol_box = self.mouse_objects[mouse][0]
+        step_box = self.mouse_objects[mouse][1]
+
+        while step_box.count():
+            step_box.removeItem(0)
+
+        # Load the protocol and parse its steps
+        protocol_str = protocol_box.currentText()
+        protocol_file = os.path.join(self.protocol_dir, protocol_str + '.json')
+        with open(protocol_file) as protocol_file_open:
+            protocol = json.load(protocol_file_open)
+
+        step_list = []
+        for i, s in enumerate(protocol):
+            step_list.append(s['step_name'])
+
+        step_box.insertItems(0, step_list)
+
+    def set_protocol(self):
+        mouse = self.sender().objectName()
+        protocol_box = self.mouse_objects[mouse][0]
+        step_box = self.mouse_objects[mouse][1]
+
+        self.mice[mouse][0] = protocol_box.currentText()
+        self.mice[mouse][1] = 0
+
+        self.populate_steps(mouse)
+
+
+    def set_step(self):
+        mouse = self.sender().objectName()
+        protocol_box = self.mouse_objects[mouse][0]
+        step_box = self.mouse_objects[mouse][1]
+
+        self.mice[mouse][1] = step_box.currentIndex()
+
+
+
+
+
+class Weights(QtGui.QTableWidget):
+    def __init__(self, mice_weights):
+        super(Weights, self).__init__()
+
+        self.mice_weights = mice_weights
+
+
+
+
+        self.colnames = odict()
+        self.colnames['mouse'] = "Mouse"
+        self.colnames['date'] = "Date"
+        self.colnames['baseline_mass'] = "Baseline"
+        self.colnames['minimum_mass'] = "Minimum"
+        self.colnames['start'] = 'Starting Mass'
+        self.colnames['stop'] = 'Stopping Mass'
+
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+
+        self.init_ui()
+
+
+    def init_ui(self):
+        # set shape (rows by cols
+        self.shape = (len(self.mice_weights), len(self.colnames.keys()))
+        self.setRowCount(self.shape[0])
+        self.setColumnCount(self.shape[1])
+
+
+        for row in range(self.shape[0]):
+            for j, col in enumerate(self.colnames.keys()):
+                if col == "date":
+                    format_date = datetime.datetime.strptime(self.mice_weights[row][col], '%y%m%d-%H%M%S')
+                    format_date = format_date.strftime('%b %d')
+                    item = QtGui.QTableWidgetItem(format_date)
+                elif col == "stop":
+                    stop_wt = str(self.mice_weights[row][col])
+                    minimum = float(self.mice_weights[row]['minimum_mass'])
+                    item = QtGui.QTableWidgetItem(stop_wt)
+                    if float(stop_wt) < minimum:
+                        item.setBackground(QtGui.QColor(255,0,0))
+
+                else:
+                    item = QtGui.QTableWidgetItem(str(self.mice_weights[row][col]))
+                self.setItem(row, j, item)
+
+        # make headers
+        self.setHorizontalHeaderLabels(self.colnames.values())
+
+        self.sortItems(0)
+
+
 
 class Expanding_Tabs(QtGui.QTabBar):
     # The expanding method of the QTabBar doesn't work,

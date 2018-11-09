@@ -21,6 +21,7 @@ import argparse
 import threading
 import time
 import multiprocessing
+import socket
 
 import pyo
 import tables
@@ -32,6 +33,7 @@ from zmq.eventloop.zmqstream import ZMQStream
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from networking import Pilot_Networking
 import tasks
+import hardware
 
 ########################################
 
@@ -67,9 +69,9 @@ class RPilot:
         # NOTE: THESE ARE NOT TO BE RELIED ON FOR STORAGE,
         # Their purpose is to compare with the terminal at the end of running a task
         # in case the terminal missed us sending any events.
-        local_file = os.path.join(self.prefs['DATADIR'], 'local.h5')
-        self.h5f = tables.open_file(local_file, mode='a')
-        self.logger.info('Local file opened: {}'.format(local_file))
+        #local_file = os.path.join(self.prefs['DATADIR'], 'local.h5')
+        #self.h5f = tables.open_file(local_file, mode='a')
+        #self.logger.info('Local file opened: {}'.format(local_file))
 
         # Locks, etc. for threading
         self.running = threading.Event() # Are we running a task?
@@ -94,12 +96,23 @@ class RPilot:
         self.spawn_network()
         self.init_network()
 
+        # if we need to set pins pulled up or down, do that now
+        if 'PULLPINS' in self.prefs.keys():
+            self.pulls = []
+            for pin, updown in self.prefs['PULLPINS'].items():
+                self.pulls.append(hardware.Pull(int(pin), pud=int(updown)))
+
         # Set and update state
         self.state = 'IDLE' # or 'Running'
         self.update_state()
 
-        # Synchronize system clock w/ time from terminal.
-        # Send message back to terminal that we're all good.
+        # Since we're starting up, handshake to introduce ourselves
+        self.ip = self.get_ip()
+        self.handshake()
+
+        #self.blank_LEDs()
+
+        # TODO Synchronize system clock w/ time from terminal.
 
 
     #################################################################
@@ -135,6 +148,36 @@ class RPilot:
 
         self.logger.info("Networking Initialized")
 
+    def get_ip(self):
+        # shamelessly stolen from https://www.w3resource.com/python-exercises/python-basic-exercise-55.php
+        # variables are badly named because this is just a rough unwrapping of what was a monstrous one-liner
+
+        # get ips that aren't the loopback
+        unwrap00 = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1]
+        # ???
+        unwrap01 = [[(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]
+
+        unwrap2 = [l for l in (unwrap00,unwrap01) if l][0][0]
+
+        return unwrap2
+
+    def handshake(self):
+        # send the terminal some information about ourselves
+        hello = {'pilot':self.name, 'ip':self.ip}
+        self.send_message('ALIVE', target='T', value=hello)
+
+    def blank_LEDs(self):
+        # TODO: For some reason this dont work
+        if 'LEDS' not in self.prefs['PINS'].keys():
+            return
+
+        for position, pins in self.prefs['PINS']['LEDS'].items():
+            led = hardware.LED_RGB(pins=pins)
+            time.sleep(1.)
+            led.set_color(col=[0,0,0])
+            led.release()
+
+
     def handle_listen(self, msg):
         # Messages are single part json-encoded messages
         msg = json.loads(msg[0])
@@ -168,35 +211,11 @@ class RPilot:
         # Get the task object by its type
         task_class = tasks.TASK_LIST[value['task_type']]
         # Instantiate the task
+        self.stage_block.clear()
         self.task = task_class(prefs=self.prefs, stage_block=self.stage_block, **value)
-
-        # Setup a table to store data locally
-        # Get data table descriptor
-        table_descriptor = self.task.TrialData
 
         # Make a group for this mouse if we don't already have one
         self.mouse = value['mouse']
-        local_file = os.path.join(self.prefs['DATADIR'], 'local.h5')
-        self.h5f = tables.open_file(local_file, mode='a')
-        try:
-            self.h5f.create_group("/", self.mouse, "Local Data for {}".format(self.mouse))
-        except tables.NodeError:
-            # already made it
-            pass
-        mouse_group = self.h5f.get_node('/', self.mouse)
-
-        # Make a table for today's data, appending a conflict-avoidance int if one already exists
-        datestring = datetime.date.today().isoformat()
-        conflict_avoid = 0
-        while datestring in mouse_group:
-            conflict_avoid += 1
-            datestring = datetime.date.today().isoformat() + '-' + str(conflict_avoid)
-
-        self.table = self.h5f.create_table(mouse_group, datestring, table_descriptor,
-                                           "Mouse {} on {}".format(self.mouse, datestring))
-
-        # The Row object is what we write data into as it comes in
-        self.row = self.table.row
 
         # Run the task and tell the terminal we have
         self.running.set()
@@ -210,16 +229,21 @@ class RPilot:
 
 
     def l_stop(self, value):
+        # Let the terminal know we're stopping
+        # (not stopped yet because we'll still have to sync data, etc.)
+        self.state = 'STOPPING'
+        self.update_state()
+
         # We just clear the stage block and reset the running flag here
         # and call the cleanup routine from run_task so it can exit cleanly
         self.running.clear()
         self.stage_block.set()
 
 
-        # Let the terminal know we're stopping
-        # (not stopped yet because we'll still have to sync data, etc.)
-        self.state = 'STOPPING'
-        self.update_state()
+        # TODO: Cohere here before closing file
+        if hasattr(self, 'h5f'):
+            self.h5f.close()
+
 
     def l_param(self, value):
         pass
@@ -244,6 +268,9 @@ class RPilot:
         # We have to set pyo to not automatically try to connect to inputs when there aren't any
         self.pyo_server.setJackAuto(False, True)
 
+        # debug
+        self.pyo_server.setVerbosity(8)
+
         # Then boot and start
         self.pyo_server.boot()
         self.pyo_server.start()
@@ -253,6 +280,37 @@ class RPilot:
     #################################################################
     # Trial Running and Management
     #################################################################
+    def open_file(self):
+        # Setup a table to store data locally
+        # Get data table descriptor
+        table_descriptor = self.task.TrialData
+
+        local_file = os.path.join(self.prefs['DATADIR'], 'local.h5')
+        h5f = tables.open_file(local_file, mode='a')
+
+        try:
+            h5f.create_group("/", self.mouse, "Local Data for {}".format(self.mouse))
+        except tables.NodeError:
+            # already made it
+            pass
+        mouse_group = h5f.get_node('/', self.mouse)
+
+        # Make a table for today's data, appending a conflict-avoidance int if one already exists
+        datestring = datetime.date.today().isoformat()
+        conflict_avoid = 0
+        while datestring in mouse_group:
+            conflict_avoid += 1
+            datestring = datetime.date.today().isoformat() + '-' + str(conflict_avoid)
+
+        table = h5f.create_table(mouse_group, datestring, table_descriptor,
+                                           "Mouse {} on {}".format(self.mouse, datestring))
+
+        # The Row object is what we write data into as it comes in
+        row = table.row
+        return h5f, table, row
+
+
+
     def run_task(self):
         # Run as a separate thread, just keeps calling next() and shoveling data
 
@@ -261,6 +319,9 @@ class RPilot:
         if hasattr(self.task, 'TrialData'):
             trial_data = True
 
+        # Open local file for saving
+        h5f, table, row = self.open_file()
+
         # TODO: Init sending continuous data here
 
 
@@ -268,39 +329,44 @@ class RPilot:
             # Calculate next stage data and prep triggers
             data = self.task.stages.next()() # Double parens because next just gives us the function, we still have to call it
 
+            print('pilot task called')
+            sys.stdout.flush()
+
             # Send data back to terminal (mouse is identified by the networking object)
             self.send_message('DATA', target='T', value=data)
 
             # Store a local copy
             # the task class has a class variable DATA that lets us know which data the row is expecting
-            if trial_data:
-                for k, v in data.items():
-                    if k in self.task.TrialData.columns.keys():
-                        self.row[k] = v
+            # if trial_data:
+            #     for k, v in data.items():
+            #         if k in self.task.TrialData.columns.keys():
+            #             row[k] = v
+            #
+            # # If the trial is over (either completed or bailed), flush the row
+            # if 'TRIAL_END' in data.keys():
+            #     row.append()
+            #     table.flush()
 
-            # If the trial is over (either completed or bailed), flush the row
-            if 'TRIAL_END' in data.keys():
-                self.row.append()
-                self.table.flush()
-
+            print('pilot waiting stage block')
+            sys.stdout.flush()
             # Wait on the stage lock to clear
             self.stage_block.wait()
+
+            print('pilot wait done')
+            sys.stdout.flush()
 
             # If the running flag gets set, we're closing.
             if not self.running.is_set():
                 # TODO: Call task shutdown method
-                self.row.append()
-                self.table.flush()
+                self.task.end()
+                self.task = None
+                row.append()
+                table.flush()
                 break
 
+        h5f.flush()
+        h5f.close()
 
-    def stop_running(self):
-        self.is_running.clear()
-        # Stop timers, clear triggers, make sure we release any locks.
-        if not self.stage_lock.is_owned():
-            self.stage_lock.acquire()
-            self.stage_lock.notify()
-            self.stage_lock.release()
 
 class Pyo_Process(multiprocessing.Process):
     def __init__(self, channels=2):

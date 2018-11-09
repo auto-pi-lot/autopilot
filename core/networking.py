@@ -11,6 +11,7 @@ import datetime
 import os
 import multiprocessing
 import base64
+import socket
 from zmq.eventloop.ioloop import IOLoop, PeriodicCallback
 from zmq.eventloop.zmqstream import ZMQStream
 from warnings import warn
@@ -111,7 +112,6 @@ class Terminal_Networking(multiprocessing.Process):
             'STOPALL': self.m_stopall,
             'RECVD': self.m_recvd, # We are getting confirmation that the message was received
             'LISTENING': self.m_listening, # Terminal wants to know if we're alive yet
-            'ALIVE': self.l_alive, # Terminal tells us it's alive
             'KILL':  self.m_kill # Terminal wants us to die :(
         }
 
@@ -122,7 +122,7 @@ class Terminal_Networking(multiprocessing.Process):
                                    # It replies with its subscription filter
             'STATE': self.l_state, # The Pi is confirming/notifying us that it has changed state
             'RECVD': self.m_recvd,  # We are getting confirmation that the message was received
-            'FILE': self.l_file    # The pi needs some file from us
+            'FILE': self.l_file,    # The pi needs some file from us
         }
 
         # self.mice_data = {} # maps the running mice to methods to stash their data
@@ -252,11 +252,6 @@ class Terminal_Networking(multiprocessing.Process):
 
         # If we still haven't heard from pis that we expected to, we'll ping them a few more times
         pis = set(value)
-
-        print(pis)
-        print(self.subscribers)
-        sys.stdout.flush()
-
         if not len(pis - self.subscribers) == 0:
             for i in range(3):
                 awol_pis = pis - self.subscribers
@@ -276,7 +271,6 @@ class Terminal_Networking(multiprocessing.Process):
 
     def m_start_task(self, target, value):
         # Just publish it
-        print('start task reached')
         msg = {'key':'START', 'value':value}
         self.publish(target, msg)
 
@@ -289,8 +283,12 @@ class Terminal_Networking(multiprocessing.Process):
 
 
     def m_stop(self, target, value):
-        # also pop mouse value from data function dict
-        pass
+        msg = {'key':'STOP', 'value':value}
+        self.publish(target, msg)
+        # and the plot widget
+        self.publish(bytes('P_{}'.format(target)), msg)
+
+        #TODO: also pop mouse value from data function dict
 
     def m_stopall(self, target, value):
         pass
@@ -338,8 +336,9 @@ class Terminal_Networking(multiprocessing.Process):
 
     def l_alive(self, target, value):
         # A pi has told us that it is alive and what its filter is
-        self.subscribers.update([value])
-        self.logger.info('Received ALIVE from {}'.format(value))
+        print(value)
+        self.subscribers.update(value['pilot'])
+        self.logger.info('Received ALIVE from {}, ip: {}'.format(value['pilot'], value['ip']))
         # Tell the terminal
         self.publish('T',{'key':'ALIVE','value':value})
 
@@ -371,6 +370,11 @@ class Terminal_Networking(multiprocessing.Process):
         # If we still have the message in our outbox...
         if message_id not in self.outbox.keys():
             self.logger.warning('Republish called for message {}, but missing message'.format(message_id))
+            return
+
+        # TODO: Fix this
+        # for now, don't repeat messages to plot widgets because it's fuckin up
+        if self.outbox[message_id]['target'].startswith("P"):
             return
 
         # if it doesn't have a TTL, set it, if it does, decrement it
@@ -424,6 +428,8 @@ class Pilot_Networking(multiprocessing.Process):
                 logging.exception('No prefs file passed, and none found!')
         else:
             self.prefs = prefs
+
+        self.ip = self.get_ip()
 
         # Setup logging
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
@@ -488,6 +494,7 @@ class Pilot_Networking(multiprocessing.Process):
             'STATE': self.m_state, # Confirm or notify terminal of state change
             'DATA': self.m_data,  # Sending data back
             'COHERE': self.m_cohere, # Sending our temporary data table at the end of a run to compare w/ terminal's copy
+            'ALIVE': self.m_alive # send some initial information to the terminal
         }
 
         # Listen dictionary - What method to call for PUBlishes from the Terminal
@@ -564,6 +571,20 @@ class Pilot_Networking(multiprocessing.Process):
 
         self.logger.info("MESSAGE OUT SENT - Key: {}, Value: {}".format(key, value))
 
+    def get_ip(self):
+        # shamelessly stolen from https://www.w3resource.com/python-exercises/python-basic-exercise-55.php
+        # variables are badly named because this is just a rough unwrapping of what was a monstrous one-liner
+
+        # get ips that aren't the loopback
+        unwrap00 = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1]
+        # ???
+        unwrap01 = [[(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in
+                     [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]
+
+        unwrap2 = [l for l in (unwrap00, unwrap01) if l][0][0]
+
+        return unwrap2
+
     ###########################3
     # Message/Listen handling methods
     def m_state(self, target, value):
@@ -583,9 +604,13 @@ class Pilot_Networking(multiprocessing.Process):
         # Send our local version of the data table so the terminal can double check
         pass
 
+    def m_alive(self, target, value):
+        # just say hello
+        self.push('ALIVE', target=target, value=value)
+
     def l_ping(self, value):
-        # The terminal wants to know if we are alive, respond with our name
-        self.push('ALIVE', value=self.name)
+        # The terminal wants to know if we are alive, respond with our name and IP
+        self.push('ALIVE', value={'pilot':self.name, 'ip':self.ip})
 
     def l_start(self, value):
         self.mouse = value['mouse']
@@ -594,7 +619,7 @@ class Pilot_Networking(multiprocessing.Process):
         # nested list comprehension to get value['sounds']['L/R'][0-n]
         if 'sounds' in value.keys():
             f_sounds = [sound for sounds in value['sounds'].values() for sound in sounds
-                        if sound['type'] == 'File']
+                        if sound['type'] in ['File', 'Speech']]
             if len(f_sounds)>0:
                 for sound in f_sounds:
                     full_path = os.path.join(self.prefs['SOUNDDIR'], sound['path'])
@@ -609,7 +634,7 @@ class Pilot_Networking(multiprocessing.Process):
         self.send_message_out('START', value)
 
     def l_stop(self, value):
-        pass
+        self.send_message_out('STOP')
 
     def l_change(self, value):
         pass
@@ -619,6 +644,10 @@ class Pilot_Networking(multiprocessing.Process):
 
         full_path = os.path.join(self.prefs['SOUNDDIR'], value['path'])
         file_data = base64.b64decode(value['file'])
+        try:
+            os.makedirs(os.path.dirname(full_path))
+        except:
+            pass
         with open(full_path, 'wb') as open_file:
             open_file.write(file_data)
 

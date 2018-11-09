@@ -31,7 +31,7 @@ TASK = 'Nafc'
 
 # TODO: Make meta task class that has logic for loading sounds, starting pyo server etc.
 
-class Nafc:
+class Nafc(object):
     """
     Actually 2afc, but can't have number as first character of class.
     Template for 2afc tasks. Pass in a dict. of sounds & other parameters,
@@ -105,9 +105,10 @@ class Nafc:
         # This class allows the Mouse object to make a data table with the correct data types. You must update it for any new data you'd like to store
         trial_num = tables.Int32Col()
         target = tables.StringCol(1)
-        target_sound_id = tables.StringCol(32) # FIXME need to do ids way smarter than this
+        #target_sound_id = tables.StringCol(32) # FIXME need to do ids way smarter than this
         response = tables.StringCol(1)
         correct = tables.Int32Col()
+        #correction = tables.Int32Col()
         bias = tables.Float32Col()
         RQ_timestamp = tables.StringCol(26)
         DC_timestamp = tables.StringCol(26)
@@ -133,7 +134,7 @@ class Nafc:
     }
 
     def __init__(self, prefs=None, stage_block=None, sounds=None, reward=50, req_reward=False,
-                 punish_sound=False, punish_dur=100, correction=True, pct_correction=.5,
+                 punish_sound=False, punish_dur=100, correction=True, pct_correction=50,
                  bias_mode=1, bias_threshold=15, timeout=10000, current_trial=0, **kwargs):
         # Sounds come in two flavors
         #   soundict: a dict of parameters like:
@@ -204,8 +205,10 @@ class Nafc:
         self.bias = float(0)
         self.response = None
         self.correct = None
-        self.correction = None
+        self.correction_trial = False
+        self.last_was_correction = False
         self.trial_counter = itertools.count(int(current_trial))
+        self.current_trial = 0
         self.triggers = {}
         self.timers = []
         self.last_pin = None # Some functions will depend on the last triggered pin
@@ -215,8 +218,7 @@ class Nafc:
         self.bailed = 0
 
         # We make a list of the variables that need to be reset each trial so it's easier to do so
-        self.resetting_variables = [self.target, self.target_sound, self.target_sound_id,
-                                    self.distractor, self.response, self.correct, self.last_pin,
+        self.resetting_variables = [self.response, self.last_pin,
                                     self.bailed]
 
         # This allows us to cycle through the task by just repeatedly calling self.stages.next()
@@ -265,7 +267,6 @@ class Nafc:
 
             # Then LEDs
             elif type == 'LEDS':
-                print('reached LEDs')
                 for pin, handler in values.items():
                     try:
                         self.pins[type][pin] = handler(pins=pin_numbers[type][pin])
@@ -281,8 +282,6 @@ class Nafc:
             else:
                 Exception('HARDWARE dict misspecified in class definition')
 
-        print(self.pins)
-
     def load_sounds(self):
         # TODO: Definitely put this in a metaclass
 
@@ -292,7 +291,7 @@ class Nafc:
             if isinstance(v, list):
                 self.sounds[k] = []
                 for sound in v:
-                    if sound['type'] == 'File':
+                    if sound['type'] in ['File', 'Speech']:
                         # prepend sounddir
                         sound['path'] = os.path.join(self.prefs['SOUNDDIR'], sound['path'])
                     # We send the dict 'sound' to the function specified by 'type' and 'SOUND_LIST' as kwargs
@@ -301,7 +300,7 @@ class Nafc:
                     self.sounds[k][-1].set_trigger(self.stim_end)
             # If not a list, a single sound
             else:
-                if v['type'] == 'File':
+                if v['type'] in ['File', 'Speech']:
                     # prepend sounddir
                     v['path'] = os.path.join(self.prefs['SOUNDDIR'], v['path'])
                 self.sounds[k] = sounds.SOUND_LIST[v['type']](**v)
@@ -323,7 +322,12 @@ class Nafc:
             pin = hardware.BCM_TO_BOARD[pin]
             pin = self.pin_id[pin]
 
+        print('handle trigger 1')
+        sys.stdout.flush()
+
         if not pin in self.triggers.keys():
+            print('handle trigger notrig return')
+            sys.stdout.flush()
             # No trigger assigned, get out without waiting
             return
 
@@ -333,8 +337,12 @@ class Nafc:
             return
 
         self.last_pin = pin
-        # Wait for any punishment delay
-        self.punish_block.wait()
+        # if we're being punished, don't recognize the trigger
+        if not self.punish_block.is_set():
+            return
+
+        print('handle trigger past punish')
+        sys.stdout.flush()
 
 
         # Call the trigger
@@ -351,8 +359,13 @@ class Nafc:
         # clear triggers
         self.triggers = {}
 
+        print('handle trigger called')
+        sys.stdout.flush()
+
         # Set the stage block so the pilot calls the next stage
         self.stage_block.set()
+        print('handle trigger stage block')
+        sys.stdout.flush()
 
     def center_out(self, pin, level, tick):
         # Called when something leaves the center pin,
@@ -376,6 +389,8 @@ class Nafc:
         for v in self.resetting_variables:
             v = None
 
+        self.triggers = {}
+
         if not self.sounds:
             raise RuntimeError('\nSound objects have not been passed! Make sure RPilot makes sounds from the soundict before running.')
         if self.punish_sound and ('punish' not in self.sounds.keys()):
@@ -391,9 +406,40 @@ class Nafc:
             warnings.warn("bias_mode is not defined or defined incorrectly")
 
         # Decide if correction trial (repeat last stim) or choose new target/stim
-        if (random.random() > self.pct_correction) or (self.target is None):
+        if (self.correction is True) and (self.target is not None):
+            # if the last trial wasn't a correction trial, we spin to see if this one will be
+            if (self.last_was_correction is False) and (self.correct == 0) and (random.random() < self.pct_correction):
+                # do nothing, repeat last stim
+                self.correction_trial = True
+                self.last_was_correction = True
+            elif (self.last_was_correction is True) and (self.correction_trial is True):
+                # otherwise if we were in a correction trial and haven't corrected, keep going
+                pass
+            elif (self.last_was_correction is True) and (self.correction_trial is False):
+                # otherwise if we just corrected we switch the flag and choose randomly
+                self.last_was_correction = False
+                if random.random() > randthresh:
+                    self.target = 'R'
+                    self.target_sound = random.choice(self.sounds['R'])
+                    self.distractor = 'L'
+                else:
+                    self.target = 'L'
+                    self.target_sound = random.choice(self.sounds['L'])
+                    self.distractor = 'R'
+            else:
+                # if it's just a normal trial, randomly select
+                if random.random() > randthresh:
+                    self.target = 'R'
+                    self.target_sound = random.choice(self.sounds['R'])
+                    self.distractor = 'L'
+                else:
+                    self.target = 'L'
+                    self.target_sound = random.choice(self.sounds['L'])
+                    self.distractor = 'R'
+
+        else:
+            # if correction trials are turned off, just randomly select
             # Choose target side and sound
-            self.correction = 0
             if random.random() > randthresh:
                 self.target = 'R'
                 self.target_sound = random.choice(self.sounds['R'])
@@ -402,9 +448,7 @@ class Nafc:
                 self.target = 'L'
                 self.target_sound = random.choice(self.sounds['L'])
                 self.distractor = 'R'
-        else:
-            self.correction = 1
-            # No need to define the rest, just keep it from the last trial.
+
 
 
         # Attempt to identify target sound
@@ -418,15 +462,26 @@ class Nafc:
         # Set sound trigger and LEDs
         # We make two triggers to play the sound and change the light color
         change_to_blue = lambda: self.pins['LEDS']['C'].set_color([0,0,255])
-        self.triggers['C'] = [change_to_blue, self.mark_playing, self.target_sound.play]
+
+        # set triggers
+        if self.req_reward is True:
+            self.triggers['C'] = [change_to_blue, self.mark_playing, self.pins['PORTS']['C'].open, self.target_sound.play]
+        else:
+            self.triggers['C'] = [change_to_blue, self.mark_playing, self.target_sound.play]
         self.set_leds({'C': [0, 255, 0]})
 
+        self.current_trial = self.trial_counter.next()
         data = {
             'target':self.target,
-            'target_sound_id':self.target_sound_id,
+            #'target_sound_id':self.target_sound_id,
             'RQ_timestamp':datetime.datetime.now().isoformat(),
-            'trial_num' : self.trial_counter.next()
+            'trial_num' : self.current_trial
+            #'correction':self.correction_trial
         }
+        # get sound info and add to data dict
+        sound_info = {k:getattr(self.target_sound, k) for k in self.target_sound.PARAMS}
+        data.update(sound_info)
+        data.update({'type':self.target_sound.type})
 
         self.current_stage = 0
         return data
@@ -434,15 +489,16 @@ class Nafc:
     def discrim(self,*args,**kwargs):
         self.stage_block.clear()
 
-        self.triggers[self.target] = self.pins['PORTS'][self.target].open
+        self.triggers[self.target] = [lambda: self.respond(self.target), self.pins['PORTS'][self.target].open]
         #self.triggers[self.target] = self.test_correct
-        self.triggers[self.distractor] = self.punish
+        self.triggers[self.distractor] = [lambda: self.respond(self.distractor), self.punish]
 
         # TODO: Handle timeout
 
         # Only data is the timestamp
         # TODO: Timestamps are fucked up here, should shift down a stage
-        data = {'DC_timestamp': datetime.datetime.now().isoformat()}
+        data = {'DC_timestamp': datetime.datetime.now().isoformat(),
+                'trial_num': self.current_trial}
         self.current_stage = 1
         return data
 
@@ -455,16 +511,20 @@ class Nafc:
             self.bailed = 0
             data = {
                 'bailed':1,
+                'trial_num': self.current_trial,
                 'TRIAL_END':True
             }
             return data
 
-        self.response = self.last_pin
+        #self.response = self.last_pin
 
         if self.response == self.target:
             self.correct = 1
         else:
             self.correct = 0
+
+        if self.correct == 1:
+            self.correction_trial = False
 
         if self.bias_mode == 1:
             # TODO: Take window length from terminal preferences
@@ -485,6 +545,7 @@ class Nafc:
             'correct':self.correct,
             'bias':self.bias,
             'bailed':0,
+            'trial_num': self.current_trial,
             'TRIAL_END':True
         }
         self.current_stage = 2
@@ -493,15 +554,22 @@ class Nafc:
     def test_correct(self):
         print('correct!')
 
+    def respond(self, pin):
+        self.response = pin
+        # test
+
     def punish(self):
         # TODO: If we're not in the last stage (eg. we were timed out after stim presentation), reset stages
+        self.punish_block.clear()
+
         if self.punish_sound and ('punish' in self.sounds.keys()):
             self.sounds['punish'].play()
         # TODO: Ask for whether we should flash or not and either .set_leds() or flash_leds()
         #self.set_leds()
         self.flash_leds()
-        self.punish_block.clear()
-        threading.Timer(self.punish_dur/1000, self.punish_block.set).start()
+        threading.Timer(self.punish_dur / 1000., self.punish_block.set).start()
+
+
 
     def stim_end(self):
         # Called by the discrim sound's table trigger when playback is finished
@@ -543,6 +611,195 @@ class Nafc:
     def flash_leds(self):
         for k, v in self.pins['LEDS'].items():
             v.flash(self.punish_dur)
+
+    def end(self):
+        for k, v in self.pins.items():
+            for pin, obj in v.items():
+                if k == "LEDS":
+                    obj.set_color([0,0,0])
+                obj.release()
+
+
+class Gap_2AFC(Nafc):
+    def __init__(self, **kwargs):
+
+        super(Gap_2AFC, self).__init__(**kwargs)
+
+
+    def load_sounds(self):
+        # TODO: Definitely put this in a metaclass
+
+        # Iterate through sounds and load them to memory
+        for k, v in self.soundict.items():
+            # If multiple sounds on one side, v will be a list
+            if isinstance(v, list):
+                self.sounds[k] = []
+                for sound in v:
+                    if float(sound['duration']) == 0:
+                        self.sounds[k].append(None)
+                        continue
+                        # a zero duration gap doesn't change the continuous noise object
+
+                    # We send the dict 'sound' to the function specified by 'type' and 'SOUND_LIST' as kwargs
+                    self.sounds[k].append(sounds.SOUND_LIST[sound['type']](**sound))
+                    # Then give the sound a callback to mark when it's finished
+                    #self.sounds[k][-1].set_trigger(self.stim_end)
+            # If not a list, a single sound
+            else:
+                if v['duration'] == 0:
+                    self.sounds[k] = [None]
+                    continue
+
+                self.sounds[k] = sounds.SOUND_LIST[v['type']](**v)
+                #self.sounds[k].set_trigger(self.stim_end)
+
+    def blank_trigger(self):
+        print('blank trig')
+        sys.stdout.flush()
+        #pass
+
+    def stim_end(self):
+        # Called by the discrim sound's table trigger when playback is finished
+        # Used in punishing leaving early
+
+        self.set_leds({'L':[0,255,0], 'R':[0,255,0]})
+
+    def request(self,*args,**kwargs):
+        # Set the event lock
+        self.stage_block.clear()
+
+        # Reset all the variables that need to be
+        for v in self.resetting_variables:
+            v = None
+
+        self.triggers = {}
+
+        if not self.sounds:
+            raise RuntimeError('\nSound objects have not been passed! Make sure RPilot makes sounds from the soundict before running.')
+        if self.punish_sound and ('punish' not in self.sounds.keys()):
+            warnings.warn('No Punishment Sound defined.')
+
+        # Set bias threshold
+        if self.bias_mode == 0:
+            randthresh = 0.5
+        elif self.bias_mode == 1:
+            randthresh = 0.5 + self.bias
+        else:
+            randthresh = 0.5
+            warnings.warn("bias_mode is not defined or defined incorrectly")
+
+        # Decide if correction trial (repeat last stim) or choose new target/stim
+        if (self.correction is True) and (self.target is not None):
+            # if the last trial wasn't a correction trial, we spin to see if this one will be
+            if (self.last_was_correction is False) and (self.correct == 0) and (random.random() < self.pct_correction):
+                # do nothing, repeat last stim
+                self.correction_trial = True
+                self.last_was_correction = True
+            elif (self.last_was_correction is True) and (self.correction_trial is True):
+                # otherwise if we were in a correction trial and haven't corrected, keep going
+                pass
+            elif (self.last_was_correction is True) and (self.correction_trial is False):
+                # otherwise if we just corrected we switch the flag and choose randomly
+                self.last_was_correction = False
+                if random.random() > randthresh:
+                    self.target = 'R'
+                    self.target_sound = random.choice(self.sounds['R'])
+                    self.distractor = 'L'
+                else:
+                    self.target = 'L'
+                    self.target_sound = random.choice(self.sounds['L'])
+                    self.distractor = 'R'
+            else:
+                # if it's just a normal trial, randomly select
+                if random.random() > randthresh:
+                    self.target = 'R'
+                    self.target_sound = random.choice(self.sounds['R'])
+                    self.distractor = 'L'
+                else:
+                    self.target = 'L'
+                    self.target_sound = random.choice(self.sounds['L'])
+                    self.distractor = 'R'
+
+        else:
+            # if correction trials are turned off, just randomly select
+            # Choose target side and sound
+            if random.random() > randthresh:
+                self.target = 'R'
+                self.target_sound = random.choice(self.sounds['R'])
+                self.distractor = 'L'
+            else:
+                self.target = 'L'
+                self.target_sound = random.choice(self.sounds['L'])
+                self.distractor = 'R'
+
+
+
+        # Attempt to identify target sound
+        #TODO: Implement sound ID's better
+        #try:
+        #    self.target_sound_id = self.target_sound.id
+        #except AttributeError:
+        #    warnings.warn("Sound ID not defined! Sounds cannot be uniquely identified!")
+        #    self.target_sound_id = None
+
+        # Set sound trigger and LEDs
+        # We make two triggers to play the sound and change the light color
+
+        # set triggers
+        if self.target_sound is None:
+            sound_trigger = self.blank_trigger
+        else:
+            sound_trigger = self.target_sound.play
+
+
+        if self.req_reward is True:
+            self.triggers['C'] = [self.pins['PORTS']['C'].open, sound_trigger, self.stim_end]
+        else:
+            self.triggers['C'] = [sound_trigger, self.stim_end]
+        self.set_leds({'C': [0, 255, 0]})
+
+        self.current_trial = self.trial_counter.next()
+        data = {
+            'target':self.target,
+            #'target_sound_id':self.target_sound_id,
+            'RQ_timestamp':datetime.datetime.now().isoformat(),
+            'trial_num' : self.current_trial
+            #'correction':self.correction_trial
+        }
+        # get sound info and add to data dict
+        if self.target_sound is None:
+            sound_info = {'duration':0, 'amplitude':0.01}
+        else:
+            sound_info = {k:getattr(self.target_sound, k) for k in self.target_sound.PARAMS}
+            data.update({'type': self.target_sound.type})
+
+        data.update(sound_info)
+
+
+        self.current_stage = 0
+        return data
+
+    def end(self):
+        for k, v in self.sounds.items():
+            if isinstance(v, list):
+                for sound in v:
+                    try:
+                        sound.stop()
+                    except:
+                        pass
+            else:
+                try:
+                    v.stop()
+                except:
+                    pass
+
+        for k, v in self.pins.items():
+            for pin, obj in v.items():
+                if k == "LEDS":
+                    obj.set_color([0,0,0])
+                obj.release()
+
+
 
 
 

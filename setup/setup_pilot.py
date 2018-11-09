@@ -3,7 +3,8 @@ import json
 import argparse
 import uuid
 import pprint
-
+import tables
+import subprocess
 
 # Check for sudo
 if os.getuid() != 0:
@@ -68,7 +69,7 @@ if args.manualpins:
 else:
     pins = {
         'POKES':{
-            'L':7,
+            'L':24,
             'C':8,
             'R':10
         },
@@ -95,8 +96,10 @@ if args.naudiochannels:
 else:
     n_channels = 2
 
+pull_pins = {7:1}
+
 # TODO: Turn this whole thing into a command line dialog and add this to it
-pigpio_location = '/home/pi/PIGPIO/pigpiod'
+pigpio_location = 'pigpiod'
 # Need to make a binary mask that excludes the pins needed for hifiberry
 # (BCM: 2, 3, 18, 19, 20, 21)
 pigpio_mask = '-x 1111110000111111111111110000'
@@ -136,11 +139,22 @@ if not os.path.exists(logdir):
     os.makedirs(logdir)
     os.chmod(logdir, 0777)
 
+# make local file
+local_data = os.path.join(datadir, 'local.h5')
+if not os.path.exists(local_data):
+    h5f = tables.open_file(local_data, mode='w')
+    h5f.close()
+    os.chmod(local_data, 0777)
+
 # Get repo dir
 file_loc = os.path.realpath(__file__)
 file_loc = file_loc.split(os.sep)[:-2]
 repo_loc = os.path.join(os.sep,*file_loc)
 
+# make util scripts executable
+util_fns = os.listdir(os.path.join(repo_loc,'utils'))
+for fn in util_fns:
+    os.chmod(os.path.join(repo_loc,'utils',fn), 0444)
 
 # make prefs dict
 prefs = {}
@@ -158,6 +172,7 @@ prefs['TERMINALIP'] = terminal_ip
 prefs['PINS'] = pins
 prefs['JACKDSTRING'] = jackd_string
 prefs['NCHANNELS'] = n_channels
+prefs['PULLPINS'] = pull_pins
 
 # save prefs
 prefs_file = os.path.join(basedir, 'prefs.json')
@@ -170,27 +185,45 @@ os.chmod(prefs_file, 0775)
 # Some performance tweaks (stopping services, etc.) are added from: https://github.com/autostatic/scripts/blob/rpi/jackstart
 launch_file = os.path.join(basedir, 'launch_pilot.sh')
 with open(launch_file, 'w') as launch_file_open:
+    launch_file_open.write('#!/bin/sh\n')
     launch_file_open.write('killall jackd\n') # Try to kill any existing jackd processes
     launch_file_open.write('sudo killall pigpiod\n')
-    launch_file_open.write('sudo service ntp stop\n')
     launch_file_open.write('sudo service triggerhappy stop\n')
-    #launch_file_open.write('sudo service dbus stop\n')
     launch_file_open.write('sudo killall console-kit-daemon\n')
     launch_file_open.write('sudo killall polkitd\n')
     launch_file_open.write('sudo mount -o remount,size=128M /dev/shm\n')
     launch_file_open.write('killall gvfsd\n')
-    #launch_file_open.write('killall dbus-daemon\n')
-    #launch_file_open.write('killall dbus-launch\n')
     launch_file_open.write('sudo ' + pigpio_string + '\n')
     launch_file_open.write(jackd_string+'\n')    # Then launch ours
-    launch_file_open.write('sleep 1\n') # We wait a damn second to let jackd start up
+    launch_file_open.write('sleep 5\n') # We wait a damn second to let jackd start up
     launch_string = "python " + os.path.join(repo_loc, "core", "pilot.py") + " -f " + prefs_file
     launch_file_open.write(launch_string)
 
 os.chmod(launch_file, 0775)
+
+# open pilot on startup using systemd
+systemd_string = '''[Unit]
+Description=RPilot
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart={}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target'''.format(launch_file)
+
+with open('/lib/systemd/system/rpilot.service','w') as rpilot_service:
+    rpilot_service.write(systemd_string)
+
+# enable the service
+subprocess.call(['sudo', 'systemctl', 'daemon-reload'])
+subprocess.call(['sudo', 'systemctl' , 'enable', 'rpilot.service'])
 
 pp = pprint.PrettyPrinter(indent=4)
 print("Pilot set up with prefs:\r")
 pp.pprint(prefs)
 
 # TODO: Automatically run launch_pilot.sh on startup
+# TODO: Automatically start jack on startup

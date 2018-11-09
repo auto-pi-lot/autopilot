@@ -12,6 +12,7 @@ import logging
 import threading
 import time
 from collections import OrderedDict as odict
+import numpy as np
 
 from PySide import QtCore, QtGui
 import zmq
@@ -25,7 +26,7 @@ from networking import Terminal_Networking
 import tasks
 import sounds
 from utils import InvokeEvent, Invoker
-from gui import Control_Panel, Protocol_Wizard
+from gui import Control_Panel, Protocol_Wizard, Popup, Weights, Reassign
 
 # TODO: Oh holy hell just rewrite all the inter-widget communication as zmq
 # TODO: Be more complete about generating logs
@@ -41,6 +42,25 @@ class Terminal(QtGui.QMainWindow):
     '''
     GUI for RPilot Terminal
     '''
+    ## Declare attributes
+    prefs = None
+
+    # networking
+    context       = None
+    loop          = None
+    pusher        = None
+    listener      = None
+    networking    = None
+    networking_ok = False
+
+    # data
+    rows = None  # handles to row writing functions
+    mice = {}  # Dict of our open mouse objects
+    current_mouse = None  # ID of mouse currently in params panel
+    pilots = None
+
+    # gui
+    widget = None
 
     def __init__(self, prefs):
         # Initialize the superclass (QtGui.QWidget)
@@ -53,20 +73,11 @@ class Terminal(QtGui.QMainWindow):
         # Get prefs dict
         self.prefs = prefs
 
-        # Load pilots db
+        # Load pilots db as ordered dictionary
         with open(self.prefs['PILOT_DB']) as pilot_file:
             self.pilots = json.load(pilot_file, object_pairs_hook=odict)
 
-        # Declare attributes
-        self.context       = None
-        self.loop          = None
-        self.pusher        = None
-        self.listener      = None
-        self.networking    = None
-        self.rows          = None #handles to row writing functions
-        self.networking_ok = False
-        self.mice          = {} # Dict of our open mouse objects
-        self.current_mouse = None # ID of mouse currently in params panel
+
 
         # Start Logging
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
@@ -86,7 +97,8 @@ class Terminal(QtGui.QMainWindow):
             'STATE': self.l_state, # A Pi has changed state
             'PING' : self.l_ping,  # Someone wants to know if we're alive
             'FILE' : self.l_file,  # A pi needs some files to run its protocol
-            'DATA' : self.l_data   # yay data!
+            'DATA' : self.l_data,   # data 4 us!
+            'ALIVE': self.l_alive  # pi is responding to our ping, or telling us its info
         }
 
         # Make invoker object to send GUI events back to the main thread
@@ -111,6 +123,7 @@ class Terminal(QtGui.QMainWindow):
         self.init_network()  # start "internal" networking
         self.spawn_network() # Has to be after init_network so it makes a new context
 
+        self.popups = []
         #time.sleep(1)
 
 
@@ -120,13 +133,36 @@ class Terminal(QtGui.QMainWindow):
         #self.panel_layout.setContentsMargins(0,0,0,0)
 
         # Init toolbar
+        # File menu
         self.file_menu = self.menuBar().addMenu("&File")
         new_pilot_act = QtGui.QAction("New &Pilot", self, triggered=self.new_pilot)
         new_prot_act  = QtGui.QAction("New Pro&tocol", self, triggered=self.new_protocol)
         batch_create_mice = QtGui.QAction("Batch &Create Mice", self, triggered=self.batch_mice)
+        # TODO: Update pis
         self.file_menu.addAction(new_pilot_act)
         self.file_menu.addAction(new_prot_act)
         self.file_menu.addAction(batch_create_mice)
+
+        # Tools menu
+        self.tool_menu = self.menuBar().addMenu("&Tools")
+        mouse_weights_act = QtGui.QAction("View Mouse &Weights", self, triggered=self.mouse_weights)
+        update_protocol_act = QtGui.QAction("Update Protocols", self, triggered=self.update_protocols)
+        reassign_act = QtGui.QAction("Batch Reassign Protocols", self, triggered=self.reassign_protocols)
+        self.tool_menu.addAction(mouse_weights_act)
+        self.tool_menu.addAction(update_protocol_act)
+        self.tool_menu.addAction(reassign_act)
+
+        # Set size of window to be fullscreen without maximization
+        # Until a better solution is found, if not set large enough, the pilot tabs will
+        # expand into infinity. See the Expandable_Tabs class
+        titleBarHeight = self.style().pixelMetric(QtGui.QStyle.PM_TitleBarHeight,
+            QtGui.QStyleOptionTitleBar(), self)
+        winsize = app.desktop().availableGeometry()
+        # Then subtract height of titlebar
+        winheight = winsize.height()-titleBarHeight*2
+        winsize.setHeight(winheight)
+        self.setGeometry(winsize)
+        self.setSizePolicy(QtGui.QSizePolicy.Maximum,QtGui.QSizePolicy.Maximum)
 
         ## Init main panels and add to layout
         # Control panel sits on the left, controls pilots & mice
@@ -139,6 +175,10 @@ class Terminal(QtGui.QMainWindow):
         self.data_panel = Plot_Widget(prefs=self.prefs,
                                       invoker=self.invoker)
         self.data_panel.init_plots(self.pilots.keys())
+
+        # Set heights on control panel and data panel
+        self.control_panel.setMaximumHeight(winheight)
+        self.data_panel.setMaximumHeight(winheight)
 
         # Logo goes up top
         self.logo = QtGui.QLabel()
@@ -153,16 +193,6 @@ class Terminal(QtGui.QMainWindow):
         self.layout.setColumnStretch(0, 2)
         self.layout.setColumnStretch(1, 10)
 
-        # Set size of window to be fullscreen without maximization
-        # Until a better solution is found, if not set large enough, the pilot tabs will
-        # expand into infinity. See the Expandable_Tabs class
-        titleBarHeight = self.style().pixelMetric(QtGui.QStyle.PM_TitleBarHeight,
-            QtGui.QStyleOptionTitleBar(), self)
-        winsize = app.desktop().availableGeometry()
-        # Then subtract height of titlebar
-        winsize.setHeight(winsize.height()-titleBarHeight*4)
-        self.setGeometry(winsize)
-
         self.show()
         logging.info('UI Initialized')
 
@@ -171,39 +201,40 @@ class Terminal(QtGui.QMainWindow):
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0,0,0,0)
         self.widget.setLayout(self.layout)
+        self.setCentralWidget(self.widget)
         self.initUI()
 
 
     ##########################
     # MOUSE DATA METHODS
+    #
+    # def mouse_start_toggled(self, toggled):
+    #     # Get object for current mouse
+    #     mouse = self.mice[self.current_mouse]
+    #     pilot = bytes(self.pilot_panel.pilot)
+    #
+    #     # If toggled=True we are starting the mouse
+    #     if toggled:
+    #         # Set mouse to running
+    #         mouse.prepare_run()
+    #         # Get protocol and send it to the pi
+    #         task = mouse.current[mouse.step]
+    #         # Dress up the protocol dict with some extra values that the pilot needs
+    #         task['mouse'] = mouse.name
+    #         # TODO: Get last trial number and insert in dict
+    #         self.send_message('START', pilot, task)
+    #         # TODO: Spawn timer thread to trigger stop after run duration
+    #
+    #     # Or else we are stopping the mouse
+    #     else:
+    #         mouse.running = False
+    #         self.send_message('STOP', pilot)
+    #         mouse.h5f.flush()
+    #         # TODO: Destroy dataview widget
 
-    def mouse_start_toggled(self, toggled):
-        # Get object for current mouse
-        mouse = self.mice[self.current_mouse]
-        pilot = bytes(self.pilot_panel.pilot)
-
-        # If toggled=True we are starting the mouse
-        if toggled:
-            # Set mouse to running
-            mouse.prepare_run()
-            # Get protocol and send it to the pi
-            task = mouse.current[mouse.step]
-            # Dress up the protocol dict with some extra values that the pilot needs
-            task['mouse'] = mouse.name
-            # TODO: Get last trial number and insert in dict
-            self.send_message('START', pilot, task)
-            # TODO: Spawn timer thread to trigger stop after run duration
-
-        # Or else we are stopping the mouse
-        else:
-            mouse.running = False
-            self.send_message('STOP', pilot)
-            mouse.h5f.flush()
-            # TODO: Destroy dataview widget
-
-    def stop_mouse(self):
-        # TODO flush table, handle coherence checking, close .h5f
-        pass
+    # def stop_mouse(self):
+    #     # TODO flush table, handle coherence checking, close .h5f
+    #     pass
 
     ##########################3
     # NETWORKING METHODS
@@ -248,7 +279,11 @@ class Terminal(QtGui.QMainWindow):
         # Listens are multipart target-msg messages
         # target = msg[0]
         # 'key' determines which method is called, 'value' is passed to the method.
-        message = json.loads(msg[1])
+        try:
+            message = json.loads(msg[1])
+        except ValueError:
+            self.logger.exception('TERMINAL: Error decoding message')
+            return
 
         if not all(i in message.keys() for i in ['key', 'value']):
             self.logger.warning('LISTEN Improperly formatted: {}'.format(msg))
@@ -286,27 +321,53 @@ class Terminal(QtGui.QMainWindow):
         # A Pi has sent us data, let's save it huh?
         mouse_name = value['mouse']
         self.mice[mouse_name].save_data(value)
-        # TODO check graduation here
+        if self.mice[mouse_name].did_graduate.is_set() is True:
+            self.send_message('STOP', value['pilot'], {'graduation':True})
+            self.mice[mouse_name].stop_run()
+            self.mice[mouse_name].graduate()
+            self.mice[mouse_name].prepare_run()
+
+            protocol = self.mice[mouse_name].current
+            step = self.mice[mouse_name].step
+            task = protocol[step]
+            task['mouse'] = mouse_name
+            task['pilot'] = value['pilot']
+            task['step'] = step
+            task['current_trial'] = self.mice[mouse_name].current_trial
+            task['session'] = self.mice[mouse_name].session
+            self.send_message('START', value['pilot'], task)
 
     def l_ping(self, value):
-        self.send_message('ALIVE', value=b'T')
+        # TODO Not this
+        pass
+        #self.send_message('ALIVE', value=b'T')
 
     def l_file(self, value):
         pass
 
+    def l_alive(self, value):
+        if value['pilot'] in self.pilots.keys():
+            self.pilots[value['pilot']]['ip'] = value['ip']
+
+        else:
+            self.new_pilot(name=value['pilot'], ip=value['ip'])
+
+        self.control_panel.update_db()
+
     #############################
     # GUI & etc. methods
 
-    def new_pilot(self):
-        name, ok = QtGui.QInputDialog.getText(self, "Pilot ID", "Pilot ID:")
+    def new_pilot(self, ip='', name=None):
+        if name is None:
+            name, ok = QtGui.QInputDialog.getText(self, "Pilot ID", "Pilot ID:")
 
         # make sure we won't overwrite ourself
-        if ok and name in self.pilots.keys():
+        if name in self.pilots.keys():
             # TODO: Pop a window confirming we want to overwrite
             pass
 
-        if ok and name != '':
-            self.pilots[name] = []
+        if name != '':
+            self.pilots[name] = {'mice':[], 'ip':ip}
             self.control_panel.update_db()
             self.reset_ui()
         else:
@@ -314,7 +375,7 @@ class Terminal(QtGui.QMainWindow):
             pass
 
     def new_protocol(self):
-        self.new_protocol_window = Protocol_Wizard()
+        self.new_protocol_window = Protocol_Wizard(self.prefs)
         self.new_protocol_window.exec_()
 
         if self.new_protocol_window.result() == 1:
@@ -345,6 +406,96 @@ class Terminal(QtGui.QMainWindow):
         # TODO: Implement me...
         pass
 
+    def list_mice(self):
+        mice = []
+        for pilot, vals in self.pilots.items():
+            mice.extend(vals['mice'])
+        return mice
+
+    def mouse_weights(self):
+        mice = self.list_mice()
+
+        # open objects if not already
+        for mouse in mice:
+            if mouse not in self.mice.keys():
+                self.mice[mouse] = Mouse(mouse)
+
+        # for each mouse, get weight
+        weights = []
+        for mouse in mice:
+            weight = self.mice[mouse].get_weight(include_baseline=True)
+            weight['mouse'] = mouse
+            weights.append(weight)
+
+        self.weight_widget = Weights(weights)
+        self.weight_widget.show()
+
+    def update_protocols(self):
+        # If we change the protocol file, update the stored version in mouse files
+
+        # get list of protocol files
+        protocols = os.listdir(self.prefs['PROTOCOLDIR'])
+        protocols = [p for p in protocols if p.endswith('.json')]
+
+
+        mice = self.list_mice()
+        for mouse in mice:
+            if mouse not in self.mice.keys():
+                self.mice[mouse] = Mouse(mouse)
+
+            protocol_bool = [self.mice[mouse].protocol_name == p.strip('.json') for p in protocols]
+            if any(protocol_bool):
+                which_prot = np.where(protocol_bool)[0][0]
+                protocol = protocols[which_prot]
+                self.mice[mouse].assign_protocol(os.path.join(self.prefs['PROTOCOLDIR'], protocol), step_n=self.mice[mouse].step)
+
+        msgbox = QtGui.QMessageBox()
+        msgbox.setText("Mouse Protocols Updated")
+        msgbox.exec_()
+
+    def reassign_protocols(self):
+
+        # get list of protocol files
+        protocols = os.listdir(self.prefs['PROTOCOLDIR'])
+        protocols = [os.path.splitext(p)[0] for p in protocols if p.endswith('.json')]
+
+        # get mice and current protocols
+        mice = self.list_mice()
+        mice_protocols = {}
+        for mouse in mice:
+            if mouse not in self.mice.keys():
+                self.mice[mouse] = Mouse(mouse)
+
+            mice_protocols[mouse] = [self.mice[mouse].protocol_name, self.mice[mouse].step]
+
+        reassign_window = Reassign(mice_protocols, protocols, self.prefs['PROTOCOLDIR'])
+        reassign_window.exec_()
+
+        if reassign_window.result() == 1:
+            mouse_protocols = reassign_window.mice
+
+            for mouse, protocol in mouse_protocols.items():
+                step = protocol[1]
+                protocol = protocol[0]
+                if self.mice[mouse].protocol_name != protocol:
+                    self.logger.info('Setting {} protocol from {} to {}'.format(mouse, self.mice[mouse].protocol_name, protocol))
+                    protocol_file = os.path.join(self.prefs['PROTOCOLDIR'], protocol + '.json')
+                    self.mice[mouse].assign_protocol(protocol_file, step)
+
+            # protocol_bool = [self.mice[mouse].protocol_name == p.strip('.json') for p in protocols]
+            # if any(protocol_bool):
+            #     which_prot = np.where(protocol_bool)[0][0]
+            #     protocol = protocols[which_prot]
+            #     self.mice[mouse].assign_protocol(os.path.join(self.prefs['PROTOCOLDIR'], protocol), step_n=self.mice[mouse].step)
+
+
+
+
+
+
+
+
+
     def gui_event(self, fn, *args, **kwargs):
         # Don't ask me how this works, stolen from
         # https://stackoverflow.com/a/12127115
@@ -356,7 +507,8 @@ class Terminal(QtGui.QMainWindow):
 
         # Close all mice files
         for m in self.mice.values():
-            m.close_h5f()
+            if m.running is True:
+                m.stop_run()
 
         # Stop networking
         # send message to kill networking process

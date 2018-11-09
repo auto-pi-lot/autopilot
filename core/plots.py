@@ -62,7 +62,10 @@ class Plot_Widget(QtGui.QWidget):
         # Assemble buttons and plots
         self.layout.addWidget(self.plot_select)
         self.layout.addLayout(self.plot_layout)
+
         self.setLayout(self.layout)
+
+        self.setContentsMargins(0, 0, 0, 0)
 
     def init_plots(self, pilot_list):
         self.pilots = pilot_list
@@ -137,10 +140,11 @@ class Plot(QtGui.QWidget):
         # A little infobox to keep track of running time, trials, etc.
         self.infobox = QtGui.QFormLayout()
         self.n_trials = count()
+        self.session_trials = 0
         self.info = {
             'N Trials': QtGui.QLabel(),
             'Runtime' : Timer(),
-            'Session' : pg.ValueLabel(),
+            'Session' : QtGui.QLabel(),
             'Protocol': QtGui.QLabel(),
             'Step'    : QtGui.QLabel()
         }
@@ -206,7 +210,11 @@ class Plot(QtGui.QWidget):
 
     def handle_listen(self, msg):
         # Published as multipart target-msg messages
-        message = json.loads(msg[1])
+        try:
+            message = json.loads(msg[1])
+        except:
+            self.logger.exception('PLOT {}: Error decoding message'.format(self.pilot))
+            return
 
         if not all(i in message.keys() for i in ['key', 'value']):
             self.logger.warning('PLOT {}: LISTEN Improperly formatted - {}'.format(self.pilot, message))
@@ -216,13 +224,18 @@ class Plot(QtGui.QWidget):
                                                                               message['id'],
                                                                               message['key'],
                                                                               message['value']))
+        try:
+            # Tell the networking process that we got it
+            self.send_message('RECVD', value=message['id'])
 
-        # Tell the networking process that we got it
-        self.send_message('RECVD', value=message['id'])
+            # Get function and call it as a gui event
+            listen_funk = self.listens[message['key']]
+            self.gui_event(listen_funk, *(message['value'],))
+        except:
+            # TODO: I think the plots crash becasue json doesn't serialize integers well... make a json sanitizer method
+            pass
 
-        # Get function and call it as a gui event
-        listen_funk = self.listens[message['key']]
-        self.gui_event(listen_funk, *(message['value'],))
+
 
     def send_message(self, key, target='', value=''):
         msg = {'key': key, 'target': target, 'value': value}
@@ -236,7 +249,15 @@ class Plot(QtGui.QWidget):
         # We're sent a task dict, we extract the plot params and send them to the plot object
         self.plot_params = tasks.TASK_LIST[value['task_type']].PLOT
 
+        # set infobox stuff
+        self.n_trials = count()
+        self.session_trials = 0
+        self.info['N Trials'].setText(str(value['current_trial']))
         self.info['Runtime'].start_timer()
+        self.info['Step'].setText(str(value['step']))
+        self.info['Session'].setText(str(value['session']))
+        self.info['Protocol'].setText(value['step_name'])
+
 
         # TODO: Make this more general, make cases for each non-'data' key
         try:
@@ -259,20 +280,36 @@ class Plot(QtGui.QWidget):
                 self.data[data] = np.zeros((0,2), dtype=np.float)
 
     def l_data(self, value):
+        if 'trial_num' in value.keys():
+            v = value.pop('trial_num')
+            if v != self.last_trial:
+                self.session_trials = self.n_trials.next()
+            self.last_trial = v
+            # self.last_trial = v
+            self.info['N Trials'].setText("{}/{}".format(self.session_trials, v))
+            self.xrange = xrange(v - self.x_width + 1, v + 1)
+            self.plot.setXRange(self.xrange[0], self.xrange[-1])
 
         for k, v in value.items():
-            if k == 'trial_num':
-                self.info['N Trials'].setText(str(self.n_trials.next()))
-                self.last_trial = v
-                self.xrange = xrange(v-self.x_width+1, v+1)
-                self.plot.setXRange(self.xrange[0], self.xrange[-1])
             if k in self.data.keys():
                 self.data[k] = np.vstack((self.data[k], (self.last_trial, v)))
                 #self.gui_event(self.plots[k].update, *(self.data[k],))
                 self.plots[k].update(self.data[k])
 
     def l_stop(self, value):
-        pass
+        self.data = {}
+        self.plots = {}
+        self.plot.clear()
+        try:
+            if isinstance(value, str) or ('graduation' not in value.keys()):
+                self.info['Runtime'].stop_timer()
+        except:
+            self.info['Runtime'].stop_timer()
+
+        self.info['N Trials'].setText('')
+        self.info['Step'].setText('')
+        self.info['Session'].setText('')
+        self.info['Protocol'].setText('')
 
     def l_param(self, value):
         pass
@@ -317,13 +354,10 @@ class Segment(pg.PlotDataItem):
         data[data=="L"] = 0
         data[data=="C"] = 0.5
         data = data.astype(np.float)
-        print("SEG", data)
 
         xs = np.repeat(data[...,0],2)
         ys = np.repeat(data[...,1],2)
         ys[::2] = 0.5
-
-        print("SEG", ys)
 
         self.curve.setData(xs, ys, connect='pairs', pen='k')
 
@@ -370,11 +404,11 @@ class Timer(QtGui.QLabel):
 
     def stop_timer(self):
         self.timer.stop()
-
+        self.setText("")
 
     def update_time(self):
-        secs_elapsed = int(time()-self.start_time)
-        self.setText("{:02d}:{:02d}:{:02d}".format(secs_elapsed/3600, secs_elapsed/60, secs_elapsed%60))
+        secs_elapsed = int(np.floor(time()-self.start_time))
+        self.setText("{:02d}:{:02d}:{:02d}".format(secs_elapsed/3600, (secs_elapsed/60)%60, secs_elapsed%60))
 
 
 class Highlight():

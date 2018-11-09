@@ -7,6 +7,12 @@ except:
 
 try:
     import pigpio
+    # TODO: needs better handling, pigpio crashes sometimes and we should know
+except:
+    pass
+
+try:
+    import usb
 except:
     pass
 
@@ -60,6 +66,12 @@ class Beambreak:
         # Setup pin
         self.pig.set_mode(self.pin, pigpio.INPUT)
         self.pig.set_pull_up_down(self.pin, self.pull_ud)
+
+    def __del__(self):
+        self.pig.stop()
+
+    def release(self):
+        self.pig.stop()
 
     def assign_cb(self, callback_fn, add=False, evented=False, manual_trigger=None):
         # If we aren't adding, we clear any existing callbacks
@@ -138,6 +150,13 @@ class LED_RGB:
 
         # Blink to show we're alive
         self.color_series([[255,0,0],[0,255,0],[0,0,255],[0,0,0]], 250)
+
+    def __del__(self):
+        self.pig.stop()
+
+    def release(self):
+        self.set_color(col=[0,0,0])
+        self.pig.stop()
 
     def set_color(self, col=None, r=None, g=None, b=None, timed=None, stored=False, internal=False):
 
@@ -236,6 +255,12 @@ class Solenoid:
         #self.wave_id = None
         #self.make_wave()
 
+    def __del__(self):
+        self.pig.stop()
+
+    def release(self):
+        self.pig.stop()
+
     def make_wave(self, duration=None):
         # TODO: Is there any point in storing multiple waves?
         # Typically duration is stored as an attribute, but if we are passed one...
@@ -258,6 +283,53 @@ class Solenoid:
         self.pig.write(self.pin, 1)
         time.sleep(self.duration)
         self.pig.write(self.pin, 0)
+
+class Scale:
+    MODEL={
+        'stamps.com':{
+            'vendor_id':0x1446,
+            'product_id': 0x6a73
+
+        }
+    }
+    def __init__(self, model='stamps.com', vendor_id = None, product_id = None):
+        self.vendor_id = self.MODEL[model]['vendor_id']
+        self.product_id = self.MODEL[model]['product_id']
+
+        if vendor_id:
+            self.vendor_id = vendor_id
+        if product_id:
+            self.product_id = product_id
+
+        # find device
+        self.device = usb.core.find(idVendor=self.vendor_id,
+                                    idProduct=self.product_id)
+        # default configuration
+        self.device.set_configuration()
+
+class Pull:
+    # Pull a pin up or down
+    def __init__(self, pin, pud=1):
+        self.pig = pigpio.pi()
+        if not self.pig.connected:
+            Exception('No connection to pigpio daemon could be made')
+
+        self.pin = BOARD_TO_BCM[int(pin)]
+
+        if pud == 1:
+            self.pig.set_pull_up_down(self.pin, pigpio.PUD_UP)
+        elif pud == 0:
+            self.pig.set_pull_up_down(self.pin, pigpio.PUD_DOWN)
+
+
+
+    def __del__(self):
+        self.pig.stop()
+
+    def release(self):
+        self.pig.stop()
+
+
 
 
 
