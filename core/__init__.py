@@ -18,8 +18,8 @@ paramgui
 
 '''
 
-import sounds
-import mouse
+#import sounds
+#import mouse
 
 '''
 NOT READY

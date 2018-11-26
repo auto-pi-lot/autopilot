@@ -14,11 +14,13 @@ from time import time
 from importlib import import_module
 import json
 import numpy as np
+import pandas as pd
 import warnings
 sys.path.append('~/git/RPilot')
 import tasks
 import threading
 from sounds import STRING_PARAMS
+
 if sys.version_info >= (3,0):
     import queue
 else:
@@ -93,7 +95,6 @@ class Mouse:
         with self.lock:
             h5f.flush()
             return h5f.close()
-
 
     def new_mouse_file(self, biography):
         # If a file already exists, we open it for appending so we don't lose data.
@@ -185,7 +186,6 @@ class Mouse:
             Warning("Need either a start or a stop weight")
 
         _ = self.close_hdf(h5f)
-
 
     def update_params(self, param, value):
         # TODO: this
@@ -439,6 +439,61 @@ class Mouse:
         self.running = False
         if self.thread.is_alive():
             Warning('Data thread did not exit')
+
+    def get_trial_data(self, step=-1):
+        # step= -1 is just most recent step,
+        # step= int is an integer specified step
+        # step= [n1, n2] is from step n1 to n2 inclusive
+        # step= 'all' or anything that isn't an int or a list is all steps
+        h5f = self.open_hdf()
+        group_name = "/data/{}".format(self.protocol_name)
+        group = h5f.get_node(group_name)
+        step_groups = sorted(group._v_children.keys())
+
+        if isinstance(step, int):
+            step_groups = step_groups[step]
+        elif isinstance(step, list):
+            step_groups = step_groups[int(step[0]):int(step[1])]
+
+        for step_key in step_groups:
+            step_n = int(step_key[1:3]) # beginning of keys will be 'S##'
+            step_tab = group._v_children[step_key]._v_children['trial_data']
+            step_df = pd.DataFrame(step_tab.read())
+            step_df['step'] = step_n
+            try:
+                return_df = return_df.merge(step_df, how='outer')
+            except NameError:
+                return_df = step_df
+
+        self.close_hdf(h5f)
+
+        return return_df
+
+
+        self.close_hdf(h5f)
+
+
+    def get_step_history(self):
+        h5f = self.open_hdf()
+        history = h5f.root.history.history
+        # return a dataframe of step number, datetime and step name
+        step_df = pd.DataFrame([(x['value'], x['time'], x['name']) for x in history.iterrows() if x['type'] == 'step'])
+        step_df = step_df.rename({0: 'step_n',
+                                  1: 'timestamp',
+                                  2: 'name'}, axis='columns')
+
+        step_df['timestamp'] = pd.to_datetime(step_df['timestamp'],
+                                              format='%y%m%d-%H%M%S')
+
+        self.close_hdf(h5f)
+        return step_df
+
+
+
+
+
+
+
 
 
 
