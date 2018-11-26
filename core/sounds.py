@@ -11,7 +11,10 @@ Notes on creating functions:
 '''
 
 # TODO: make it so terminal doesn't have to import pyo just to access sound info
-import pyo
+try:
+    import pyo
+except ImportError:
+    Warning('pyo could not be loaded, sounds will be unavailable!')
 import sys
 from time import sleep
 import json

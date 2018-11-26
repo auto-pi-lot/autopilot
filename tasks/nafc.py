@@ -21,7 +21,10 @@ import tables
 import json
 import threading
 import pprint
-import pyo
+try:
+    import pyo
+except ImportError:
+    Warning('pyo could not be loaded, sounds will be unavailable!')
 from core import hardware, sounds
 from collections import OrderedDict as odict
 
