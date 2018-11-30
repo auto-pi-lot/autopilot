@@ -450,7 +450,13 @@ class Mouse:
         group = h5f.get_node(group_name)
         step_groups = sorted(group._v_children.keys())
 
-        if isinstance(step, int):
+        if step == -1:
+            # find the last trial step with data
+            for step_name in reversed(step_groups):
+                if group._v_children[step_name].trial_data.attrs['NROWS']>0:
+                    step_groups = [step_name]
+                    break
+        elif isinstance(step, int):
             step_groups = step_groups[step]
         elif isinstance(step, list):
             step_groups = step_groups[int(step[0]):int(step[1])]
@@ -461,16 +467,13 @@ class Mouse:
             step_df = pd.DataFrame(step_tab.read())
             step_df['step'] = step_n
             try:
-                return_df = return_df.merge(step_df, how='outer')
+                return_df = return_df.append(step_df, ignore_index=True)
             except NameError:
                 return_df = step_df
 
         self.close_hdf(h5f)
 
         return return_df
-
-
-        self.close_hdf(h5f)
 
 
     def get_step_history(self):
