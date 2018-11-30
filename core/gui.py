@@ -1225,6 +1225,9 @@ class Calibrate_Water(QtGui.QDialog):
             #
             pass
 
+        def query_ports(self):
+            
+
 
 
 
@@ -1233,9 +1236,6 @@ class Weights(QtGui.QTableWidget):
         super(Weights, self).__init__()
 
         self.mice_weights = mice_weights
-
-
-
 
         self.colnames = odict()
         self.colnames['mouse'] = "Mouse"
