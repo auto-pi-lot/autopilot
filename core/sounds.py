@@ -210,7 +210,7 @@ class Speech:
         self.table.reset()
         self.table.out()
         # keep thread alive
-        sleep(self.duration)
+        #sleep(self.duration)
 
 
 
