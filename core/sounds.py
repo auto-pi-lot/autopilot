@@ -206,6 +206,7 @@ class Speech:
 
 
     def play(self):
+        self.table.reset()
         self.table.out()
 
 
