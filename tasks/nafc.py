@@ -336,7 +336,6 @@ class Nafc(object):
             # TODO: Handle bailing, for example by replacing the cycle with a single function that returns the 'bail' flag
             return
 
-        self.last_pin = pin
         # if we're being punished, don't recognize the trigger
         if not self.punish_block.is_set():
             return

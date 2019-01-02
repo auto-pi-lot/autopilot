@@ -40,6 +40,7 @@ TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
 - clear last trigger on stop
 - check for dupes on mouse lists
 - unify param structure, make class
+- callbacks using http://ajaxsoundstudio.com/pyodoc/api/classes/pattern.html
 
 order of code review:
 !- terminal

@@ -192,8 +192,9 @@ class Speech:
 
         self.dtable = pyo.DataTable(size=audio.shape[0], chnls=2, init=audio.tolist())
 
-        # get server to determine sampling rate modification
+        # get server to determine sampling rate modification and duration
         server_fs = self.dtable.getServer().getSamplingRate()
+        self.duration = float(self.dtable.getSize())/float(fs)
 
         self.table = pyo.TableRead(table=self.dtable, freq=float(fs)/server_fs,
                                    loop=False, mul=self.amplitude)
@@ -206,7 +207,10 @@ class Speech:
 
 
     def play(self):
+        self.table.reset()
         self.table.out()
+        # keep thread alive
+        #sleep(self.duration)
 
 
 
