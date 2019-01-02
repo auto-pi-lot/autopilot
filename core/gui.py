@@ -1415,9 +1415,6 @@ class Weights(QtGui.QTableWidget):
 
         self.mice_weights = mice_weights
 
-
-
-
         self.colnames = odict()
         self.colnames['mouse'] = "Mouse"
         self.colnames['date'] = "Date"
