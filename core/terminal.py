@@ -1,7 +1,7 @@
 # The terminal is the user-facing GUI that controls the Pis
 
-__version__ = '0.1'
-__author__  = 'Jonny Saunders <JLSaunders987@gmail.com'
+__version__ = '0.2'
+__author__  = 'Jonny Saunders <JLSaunders987@gmail.com>'
 
 import argparse
 import json
@@ -22,11 +22,12 @@ from zmq.eventloop.zmqstream import ZMQStream
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from mouse import Mouse
 from plots import Plot_Widget
-from networking import Terminal_Networking
+from networking import Terminal_Networking, Net_Node
 import tasks
 import sounds
 from utils import InvokeEvent, Invoker
 from gui import Control_Panel, Protocol_Wizard, Popup, Weights, Reassign
+from .. import prefs
 
 # TODO: Oh holy hell just rewrite all the inter-widget communication as zmq
 # TODO: Be more complete about generating logs
@@ -63,33 +64,15 @@ class Terminal(QtGui.QMainWindow):
     widget = None
 
     def __init__(self, prefs):
-        # Initialize the superclass (QtGui.QWidget)
         super(Terminal, self).__init__()
-
-        # set central widget
-        self.widget = QtGui.QWidget()
-        self.setCentralWidget(self.widget)
-
-        # Get prefs dict
         self.prefs = prefs
 
         # Load pilots db as ordered dictionary
         with open(self.prefs['PILOT_DB']) as pilot_file:
             self.pilots = json.load(pilot_file, object_pairs_hook=odict)
 
-
-
         # Start Logging
-        timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(prefs['LOGDIR'], 'Terminal_Log_{}.log'.format(timestr))
-
-        self.logger        = logging.getLogger('main')
-        self.log_handler   = logging.FileHandler(log_file)
-        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
-        self.log_handler.setFormatter(self.log_formatter)
-        self.logger.addHandler(self.log_handler)
-        self.logger.setLevel(logging.INFO)
-        self.logger.info('Terminal Logging Initiated')
+        self.init_logging()
 
         # Listen dictionary - which methods to call for different messages
         # Methods are spawned in new threads using handle_message
@@ -101,18 +84,7 @@ class Terminal(QtGui.QMainWindow):
             'ALIVE': self.l_alive  # pi is responding to our ping, or telling us its info
         }
 
-        # Make invoker object to send GUI events back to the main thread
-        self.invoker = Invoker()
-
-        # Start GUI
-        self.layout = QtGui.QGridLayout()
-        self.layout.setSpacing(0)
-        self.layout.setContentsMargins(0,0,0,0)
-        self.widget.setLayout(self.layout)
-
-        self.setWindowTitle('Terminal')
         self.initUI() # Has to be before networking so plot listeners are caught by IOLoop
-
 
         # Start Networking
         # Networking is in two parts,
@@ -126,9 +98,34 @@ class Terminal(QtGui.QMainWindow):
         self.popups = []
         #time.sleep(1)
 
+    def init_logging(self):
+        timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
+        log_file = os.path.join(self.prefs['LOGDIR'], 'Terminal_Log_{}.log'.format(timestr))
 
+        self.logger        = logging.getLogger('main')
+        self.log_handler   = logging.FileHandler(log_file)
+        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
+        self.log_handler.setFormatter(self.log_formatter)
+        self.logger.addHandler(self.log_handler)
+        self.logger.setLevel(logging.INFO)
+        self.logger.info('Terminal Logging Initiated')
 
     def initUI(self):
+        # set central widget
+        self.widget = QtGui.QWidget()
+        self.setCentralWidget(self.widget)
+
+        # Make invoker object to send GUI events back to the main thread
+        self.invoker = Invoker()
+
+        # Start GUI
+        self.layout = QtGui.QGridLayout()
+        self.layout.setSpacing(0)
+        self.layout.setContentsMargins(0,0,0,0)
+        self.widget.setLayout(self.layout)
+
+        self.setWindowTitle('Terminal')
+
         # Main panel layout
         #self.panel_layout.setContentsMargins(0,0,0,0)
 
@@ -246,34 +243,37 @@ class Terminal(QtGui.QMainWindow):
 
     def init_network(self):
         # Start internal communications
-        self.context = zmq.Context.instance()
-        self.loop = IOLoop.instance()
-
-        # Messenger to send messages to networking class
-        # Subscriber to receive return messages
-        self.pusher      = self.context.socket(zmq.PUSH)
-        self.subscriber  = self.context.socket(zmq.SUB)
-
-        self.pusher.connect('tcp://localhost:{}'.format(prefs['MSGPORT']))
-        self.subscriber.connect('tcp://localhost:{}'.format(prefs['PUBPORT']))
-        self.subscriber.setsockopt(zmq.SUBSCRIBE, b'T') # Subscribe as "T"erminal
-        self.subscriber.setsockopt(zmq.SUBSCRIBE, b'X') # Subscribe to All
-
-        # Setup subscriber for looping
-        self.subscriber = ZMQStream(self.subscriber, self.loop)
-        self.subscriber.on_recv(self.handle_listen)
-
-        # Start IOLoop in daemon thread
-        self.loop_thread = threading.Thread(target=self.threaded_loop)
-        self.loop_thread.daemon = True
-        self.loop_thread.start()
+        self.node = Net_Node(id="_T", port=prefs.LISTENPORT, handle_fn=self.handle_listen)
+        #
+        # self.context = zmq.Context.instance()
+        # self.loop = IOLoop.instance()
+        #
+        # # Messenger to send messages to networking class
+        # # Subscriber to receive return messages
+        # self.pusher      = self.context.socket(zmq.ROUTER)
+        # # Since we are always "behind" our networking process, prepend _
+        # self.pusher.identity = '_T'.encode('utf-8')
+        #
+        # self.pusher.connect('tcp://localhost:{}'.format(prefs.LISTENPORT))
+        # self.subscriber.connect('tcp://localhost:{}'.format(prefs['PUBPORT']))
+        # self.subscriber.setsockopt(zmq.SUBSCRIBE, b'T') # Subscribe as "T"erminal
+        # self.subscriber.setsockopt(zmq.SUBSCRIBE, b'X') # Subscribe to All
+        #
+        # # Setup subscriber for looping
+        # self.subscriber = ZMQStream(self.subscriber, self.loop)
+        # self.subscriber.on_recv(self.handle_listen)
+        #
+        # # Start IOLoop in daemon thread
+        # self.loop_thread = threading.Thread(target=self.threaded_loop)
+        # self.loop_thread.daemon = True
+        # self.loop_thread.start()
 
         self.logger.info("Networking Initiated")
 
-    def threaded_loop(self):
-        while True:
-            self.logger.info("Starting IOLoop")
-            self.loop.start()
+    # def threaded_loop(self):
+    #     while True:
+    #         self.logger.info("Starting IOLoop")
+    #         self.loop.start()
 
     def handle_listen(self, msg):
         # Listens are multipart target-msg messages
@@ -537,12 +537,16 @@ if __name__ == '__main__':
     else:
         prefs_file = args.prefs
 
-    with open(prefs_file) as prefs_file_open:
-        prefs = json.load(prefs_file_open)
+    # init prefs for module access
+    # TODO: passing prefs dict for compatibility for now, but should use module
+    prefs.init(prefs_file)
+
+    #with open(prefs_file) as prefs_file_open:
+    #    prefs = json.load(prefs_file_open)
 
     app = QtGui.QApplication(sys.argv)
     app.setStyle('plastique') # Keeps some GTK errors at bay
-    ex = Terminal(prefs=prefs)
+    ex = Terminal(prefs=prefs.prefdict)
     sys.exit(app.exec_())
 
 

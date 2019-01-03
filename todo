@@ -41,6 +41,10 @@ TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
 - check for dupes on mouse lists
 - unify param structure, make class
 - callbacks using http://ajaxsoundstudio.com/pyodoc/api/classes/pattern.html
+- change data ops with database ops using psycopg http://initd.org/psycopg/
+- change prefs to use module instead of passing a dict around
+- make drop-in networking class for 'local' networking
+- networking should probably just be router-only.
 
 order of code review:
 !- terminal

@@ -18,6 +18,8 @@ from warnings import warn
 from collections import deque
 from itertools import count
 
+from .. import prefs
+
 # Message structure:
 # Messages flow from the Terminal class to the raspberry pi
 # {key: {target, value}}
@@ -146,6 +148,11 @@ class Networking(multiprocessing.Process):
             msg = json.loads(msg[0])
         elif len(msg)==2:
             # from the router
+            # connection pings are blank frames,
+            # respond to let them know we're alive
+            if msg[1] == b'':
+                self.listener.send_multipart(msg)
+                return
             sender = msg[0]
             msg    = json.loads(msg[1])
 
@@ -612,6 +619,64 @@ class Pilot_Networking(multiprocessing.Process):
 
         # If we requested a file, some poor start fn is probably waiting on us
         self.file_block.set()
+
+#####################################
+
+class Net_Node(object):
+    "pop in networking object, has to set behind some external-facing networking object"
+    def __init__(self, id, port, handle_fn, instance=True):
+        if instance:
+            self.context = zmq.Context.instance()
+            self.loop    = IOLoop.instance()
+        else:
+            self.context = zmq.Context()
+            self.loop    = IOLoop()
+
+        self.id = id.encode('utf-8')
+        self.port = int(port)
+        self.handle_fn = handle_fn
+
+        self.connected = False
+
+        self.init_networking()
+
+    def init_networking(self):
+        self.sock = self.context.socket(zmq.ROUTER)
+        self.sock.identity = self.id
+        self.sock.probe_router = 1
+
+        # net nodes are local only
+        self.sock.connect('tcp://localhost:{}'.format(self.port))
+
+        # wrap in zmqstreams and start loop thread
+        self.sock = ZMQStream(self.sock, self.loop)
+        self.sock.on_recv(self.handle_fn)
+
+        self.loop_thread = threading.Thread(target=self.threaded_loop)
+        self.loop_thread.daemon = True
+        self.loop_thread.start()
+
+    def threaded_loop(self):
+        while True:
+            self.loop.start()
+
+
+
+
+
+
+
+
+
+
+
+
+class Message(object):
+    id = None # number of message, format {sender.id}_{number}
+    to = None
+    from = None
+    key = None
+    value = None
 
 
 
