@@ -40,6 +40,7 @@ class Networking(multiprocessing.Process):
     loop         = None    # IOLoop
     push_ip      = None    # IP to push to
     push_port    = None    # Publisher Port
+    push_id      = None    # Identity of the Router we push to
     listen_port  = None    # Listener Port
     message_port = None    # Messenger Port
     pusher       = None    # pusher socket - a dealer socket that connects to other routers
@@ -83,71 +84,104 @@ class Networking(multiprocessing.Process):
 
 
     def run(self):
-        self.init_logging()
-
         # init zmq objects
         self.context = zmq.Context()
         self.loop = IOLoop()
 
-        # want one dealer to make requests and one router to reply
+        # Our networking topology is treelike:
+        # each Networking object binds one Router to
+        # send and receive messages from its descendants
+        # each Networking object may have one Dealer that
+        # connects it with its antecedents.
         self.listener  = self.context.socket(zmq.ROUTER)
+        self.listener.identity = self.id.encode('utf-8')
+        self.listener.bind('tcp://*:{}'.format(self.listen_port))
+        self.listener = ZMQStream(self.listener, self.loop)
+        self.listener.on_recv(self.handle_listen)
 
         if self.pusher is True:
             self.pusher = self.context.socket(zmq.DEALER)
-            self.pusher.setsockopt(zmq.IDENTITY, bytes(self.id))
+            self.pusher.identity = self.id.encode('utf-8')
             self.pusher.connect('tcp://{}:{}'.format(self.push_ip, self.push_port))
             self.pusher = ZMQStream(self.pusher, self.loop)
             self.pusher.on_recv(self.handle_listen)
             # TODO: Make sure handle_listen knows how to handle ID-less messages
 
-        self.listener.setsockopt(zmq.IDENTITY, bytes(self.id))
-        self.listener.bind('tcp://*:{}'.format(self.listen_port))
-        self.listener = ZMQStream(self.listener, self.loop)
-
-        self.listener.on_recv(self.handle_listen)
 
         self.logger.info('Starting IOLoop')
         self.loop.start()
 
-    def send(self, target, msg):
+    def prepare_message(self, to, key, value):
+        # TODO: This would mess up multi-hop senders. we should make sure to send the whole message thru
+        msg = Message()
+        msg.sender = self.id
+        msg.to = to
+        msg.key = key
+        msg.value = value
+
+        msg_num = self.msg_counter.next()
+        msg.id = "{}_{}".format(self.id, msg_num)
+
+        return msg
+
+
+    def send(self, to, key, value=None):
         # send message via the router
         # don't need to thread this because router sends are nonblocking
-        # Give the message a number and TTL, stash it
-        msg_num = str(self.msg_counter.next())
-        msg['id'] = msg_num
-        msg['target'] = target
+
+        msg = self.prepare_message(to, key, value)
 
         # Make sure our message has everything
-        if not all(i in msg.keys() for i in ['key', 'value']):
-            self.logger.warning('SEND {} - Improperly formatted: {}'.format(msg_num, msg))
+        if not msg.validate():
+            self.logger.error('Message Invalid:\n{}'.format(str(msg)))
+
+        # encode message
+        msg_enc = msg.serialize()
+
+        if not msg_enc:
+            self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
-        # check that we can encode
-        try:
-            msg_enc = json.dumps(msg)
-        except:
-            self.logger.error('SEND {} - Could not encode msg {}'.format(msg_num, msg))
-            return
+        self.listener.send_multipart([to, msg_enc])
 
-        self.listener.send_multipart([bytes(target), msg_enc])
-
-    def push(self, msg):
+    def push(self,  to=None, key = None, value = None):
         # send message via the dealer
-        try:
-            msg_enc = json.dumps(msg)
-        except:
-            self.logger.error('Could not encode msg {}'.format(msg))
+        # even though we only have one connection over our dealer,
+        # we still include 'to' in case we are sending further upstream
+        # but can push without 'to', just fill in with upstream id
+        # TODO: Implement forwarding when 'to' field doesn't match ID of upstream router
+        if to is None:
+            to = self.push_id
+
+        if key is None:
+            self.logger.error('Push sent without Key')
             return
 
-        self.listener.send(msg_enc)
+        msg = self.prepare_message(to, key, value)
 
-    def handle_listen(self, msg, suppress_print=False):
+        # Make sure our message has everything
+        if not msg.validate():
+            self.logger.error('Message Invalid:\n{}'.format(str(msg)))
+
+        # encode message
+        msg_enc = msg.serialize()
+
+        if not msg_enc:
+            self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
+            return
+
+        self.pusher.send_multipart([self.push_id, msg_enc])
+
+    def handle_listen(self, msg):
         # listens are always json encoded, single-part messages
+        # TODO: This check is v. fragile, pyzmq has a way of sending the stream along with the message
         if len(msg)==1:
             # from our dealer
             msg = json.loads(msg[0])
+            msg = Message(**msg)
         elif len(msg)==2:
             # from the router
+
             # connection pings are blank frames,
             # respond to let them know we're alive
             if msg[1] == b'':
@@ -155,23 +189,20 @@ class Networking(multiprocessing.Process):
                 return
             sender = msg[0]
             msg    = json.loads(msg[1])
-
-        # Check if our listen was sent properly
-        if not all(i in msg.keys() for i in ['key','value']):
-            logging.warning('LISTEN Improperly formatted: {}'.format(msg))
+            msg = Message(**msg)
+        else:
+            self.logger.error('Dont know what this message is:{}'.format(msg))
             return
 
-        if msg['key'] == 'FILE':
-            suppress_print = True
+        # Check if our listen was sent properly
+        if not msg.validate():
+            self.logger.error('Message failed to validate:\n{}'.format(str(msg)))
 
-        if not suppress_print:
-            self.logger.info('LISTEN {} - KEY: {}, VALUE: {}'.format(msg['id'], msg['key'], msg['value']))
-        else:
-            self.logger.info('LISTEN {} - KEY: {}'.format(msg['id'], msg['key']))
+        self.logger.info('RECEIVED:\n{}'.format(str(msg)))
 
         # Log and spawn thread to respond to listen
-        listen_funk = self.listens[msg['key']]
-        listen_thread = threading.Thread(target=listen_funk, args=(msg['value'],))
+        listen_funk = self.listens[msg.key]
+        listen_thread = threading.Thread(target=listen_funk, args=(msg,))
         listen_thread.start()
 
 
@@ -192,6 +223,7 @@ class Networking(multiprocessing.Process):
     def get_ip(self):
         # shamelessly stolen from https://www.w3resource.com/python-exercises/python-basic-exercise-55.php
         # variables are badly named because this is just a rough unwrapping of what was a monstrous one-liner
+        # (and i don't really understand how it works)
 
         # get ips that aren't the loopback
         unwrap00 = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1]
@@ -244,11 +276,11 @@ class Terminal_Networking(Networking):
     ##########################
     # Message Handling Methods
 
-    def m_ping(self, target, value):
+    def m_ping(self, msg):
         # Ping a specific subscriber and ask if they are alive
-        self.send(target, {'key':'PING', 'value':''})
+        self.send(msg.target, 'PING')
 
-    def m_init(self, target, value):
+    def m_init(self, msg):
         # Ping all pis that we are expecting given our pilot db until we get a response
         # Pass back who responds as they do to update the GUI.
         # We don't expect a response, so we don't send through normal publishing method
@@ -285,337 +317,183 @@ class Terminal_Networking(Networking):
 
 
 
-    def m_start_task(self, target, value):
+    def m_start_task(self, msg):
         # Just publish it
-        msg = {'key':'START', 'value':value}
-        self.send(target, msg)
+        self.send(msg.target, 'START', msg.value)
 
         # Then let the plot widget know so that it makes and starts a plot
-        self.send(bytes('P_{}'.format(target)), msg)
+        self.send(bytes('P_{}'.format(msg.target)), 'START', msg.value)
 
-    def m_change(self, target, value):
+    def m_change(self, msg):
         # TODO: Should also handle param changes to GUI objects like ntrials, etc.
         pass
 
 
-    def m_stop(self, target, value):
-        msg = {'key':'STOP', 'value':value}
-        self.send(target, msg)
+    def m_stop(self, msg):
+        self.send(msg.target, 'STOP', msg.value)
         # and the plot widget
-        self.send(bytes('P_{}'.format(target)), msg)
+        self.send('P_{}'.format(msg.target), 'STOP', msg.value)
 
         #TODO: also pop mouse value from data function dict
 
-    def m_stopall(self, target, value):
+    def m_stopall(self, msg):
         pass
 
-    def m_listening(self, target, value):
-        self.send('T',{'key':'LISTENING', 'value':''})
+    def m_listening(self, msg):
+        self.send('_T', 'LISTENING')
 
-    def m_kill(self, target, value):
+    def m_kill(self, msg):
         self.logger.info('Received kill request')
-
-        # Close sockets
-        #self.publisher.close()
-        #self.messenger.close()
-        #self.listener.close()
-
-        # Kill context
-        #self.context.term()
 
         # Stopping the loop should kill the process, as it's what's holding us in run()
         self.loop.stop()
 
 
-    def l_data(self, target, value):
+    def l_data(self, msg):
         # Send through to terminal
         msg = {'key': 'DATA', 'value':value}
-        self.send('T', msg)
+        self.send('_T', 'DATA', msg.value)
 
         # Send to plot widget, which should be listening to "P_{pilot_name}"
-        self.send('P_{}'.format(value['pilot']), msg)
+        self.send('P_{}'.format(msg.value['pilot']), 'DATA', msg.value)
 
-
-    def l_alive(self, target, value):
+    def l_alive(self, msg):
         # A pi has told us that it is alive and what its filter is
-        self.subscribers[value['pilot']] = value['ip']
-        self.logger.info('Received ALIVE from {}, ip: {}'.format(value['pilot'], value['ip']))
+        self.subscribers[msg.value['pilot']] = msg.value['ip']
+        self.logger.info('Received ALIVE from {}, ip: {}'.format(msg.value['pilot'], msg.value['ip']))
         # Tell the terminal
-        self.send('T',{'key':'ALIVE','value':value})
+        self.send('_T', 'ALIVE', msg.value)
 
-    def l_event(self, target, value):
+    def l_event(self, msg):
         pass
 
-    def l_state(self, target, value):
+    def l_state(self, msg):
         pass
 
-    def l_file(self, target, value):
+    def l_file(self, msg):
         # The <target> pi has requested some file <value> from us, let's send it back
         # This assumes the file is small, if this starts crashing we'll have to split the message...
-        print('file req received')
 
-        full_path = os.path.join(self.prefs['SOUNDDIR'], value)
+        full_path = os.path.join(self.prefs['SOUNDDIR'], msg.value)
         with open(full_path, 'rb') as open_file:
             # encode in base64 so json doesn't complain
             file_contents = base64.b64encode(open_file.read())
 
-        file_message = {'path':value, 'file':file_contents}
-        message = {'key':'FILE', 'value':file_message}
+        file_message = {'path':msg.value, 'file':file_contents}
 
-        self.send(target, message)
+        self.send(msg.target, 'FILE', file_message)
 
-        print('file sending inited')
-
-
-
-class Pilot_Networking(multiprocessing.Process):
-    # Internal Variables/Objects to the Pilot Networking Object
-    ctx          = None    # Context
-    loop         = None    # IOLoop
-    sub_port     = None    # Subscriber Port to Terminal Publisher
-    push_port    = None    # Port to push messages back to Terminal
-    message_port = None    # Port to receive messages from the Pilot
-    subscriber   = None    # Subscriber Handler - For receiving messages from the terminal
-    pusher       = None    # Pusher Handler - For pushing data back to the terminal
-    messenger    = None    # Messenger Handler - For receiving messages from the Pilot
-
-    def __init__(self, name, prefs=None):
-        super(Pilot_Networking, self).__init__()
-        self.name = name
-
-        # Prefs should be passed to us, try to load from default location if not
+class Pilot_Networking(Networking):
+    def __init__(self, prefs=None):
         if not prefs:
             try:
                 with open('/usr/rpilot/prefs.json') as op:
                     self.prefs = json.load(op)
             except:
-                logging.exception('No prefs file passed, and none found!')
+                Exception('No Prefs for networking class')
         else:
             self.prefs = prefs
 
-        self.ip = self.get_ip()
+        super(Pilot_Networking, self).__init__(self.prefs)
 
-        # Setup logging
-        timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(self.prefs['LOGDIR'], 'Networking_Log_{}.log'.format(timestr))
-
-        self.logger = logging.getLogger('networking')
-        self.log_handler = logging.FileHandler(log_file)
-        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
-        self.log_handler.setFormatter(self.log_formatter)
-        self.logger.addHandler(self.log_handler)
-        self.logger.setLevel(logging.INFO)
-        self.logger.info('Networking Logging Initiated')
-
-        self.state = None # To respond to queries without bothing the pilot
-
-        self.file_block = threading.Event() # to wait for file transfer
-
-    def run(self):
+        # Pilot has a pusher - connects back to terminal
+        self.pusher = True
+        self.push_id = 'T'
 
         # Store some prefs values
-        self.name = self.prefs['NAME']
-        self.sub_port = self.prefs['SUBPORT']
+        self.listen_port = self.prefs['LISTENPORT']
         self.push_port = self.prefs['PUSHPORT']
-        self.message_in_port = self.prefs['MSGINPORT']
-        self.message_out_port = self.prefs['MSGOUTPORT']
-        self.terminal_ip = self.prefs['TERMINALIP']
-        self.mouse = None # To store mouse name
+        self.push_ip = self.prefs['TERMINALIP']
+        self.id = self.prefs['NAME'].encode('utf-8')
+        self.pi_id = "_{}".format(self.id)
+        self.mouse = None # Store current mouse ID
 
-        # Initialize Network Objects
-        self.context = zmq.Context()
-
-        self.loop = IOLoop.instance()
-
-        # Instantiate and connect sockets
-        # Subscriber listens for publishes from terminal networking
-        # Pusher pushes data/messages back
-        # Messenger receives messages from Pilot parent
-        self.subscriber = self.context.socket(zmq.SUB)
-        self.pusher     = self.context.socket(zmq.PUSH)
-        self.message_in  = self.context.socket(zmq.PULL)
-        self.message_out = self.context.socket(zmq.PUSH)
-
-        self.subscriber.connect('tcp://{}:{}'.format(self.terminal_ip, self.sub_port))
-        self.pusher.connect('tcp://{}:{}'.format(self.terminal_ip, self.push_port))
-        self.message_in.bind('tcp://*:{}'.format(self.message_in_port))
-        self.message_out.bind('tcp://*:{}'.format(self.message_out_port))
-
-        # Set subscriber filters
-        self.subscriber.setsockopt(zmq.SUBSCRIBE, bytes(self.name))
-        self.subscriber.setsockopt(zmq.SUBSCRIBE, b'X')
-
-        # Wrap as ZMQStreams
-        self.subscriber = ZMQStream(self.subscriber, self.loop)
-        self.message_in  = ZMQStream(self.message_in, self.loop)
-
-        # Set on_recv callbacks
-        self.subscriber.on_recv(self.handle_listen)
-        self.message_in.on_recv(self.handle_message)
-
-        # Message dictionary - What method to call for messages from the parent Pilot
-        self.messages = {
-            'STATE': self.m_state, # Confirm or notify terminal of state change
+        self.listens = {
+            'STATE': self.m_state,  # Confirm or notify terminal of state change
             'DATA': self.m_data,  # Sending data back
             'COHERE': self.m_cohere, # Sending our temporary data table at the end of a run to compare w/ terminal's copy
-            'ALIVE': self.m_alive # send some initial information to the terminal
+            'ALIVE': self.m_alive,  # send some initial information to the terminal
+            'PING': self.l_ping,  # The Terminal wants to know if we're listening
+            'START': self.l_start,  # We are being sent a task to start
+            'STOP': self.l_stop,  # We are being told to stop the current task
+            'PARAM': self.l_change,  # The Terminal is changing some task parameter
+            'FILE': self.l_file,  # We are receiving a file
         }
-
-        # Listen dictionary - What method to call for PUBlishes from the Terminal
-        self.listens = {
-            'PING': self.l_ping, # The Terminal wants to know if we're listening
-            'START': self.l_start, # We are being sent a task to start
-            'STOP': self.l_stop, # We are being told to stop the current task
-            'PARAM': self.l_change, # The Terminal is changing some task parameter
-            'FILE':  self.l_file, # We are receiving a file
-        }
-
-        self.logger.info('Starting IOLoop')
-        self.loop.start()
-
-    def push(self, key, target='', value=''):
-        # Push a message back to the terminal
-        msg = {'key': key, 'target': target, 'value': value}
-
-        push_thread = threading.Thread(target=self.pusher.send_json, args=(json.dumps(msg),))
-        push_thread.start()
-
-        self.logger.info("PUSH SENT - Target: {}, Key: {}, Value: {}".format(target, key, value))
-
-    def handle_listen(self, msg, suppress_print=False):
-        # listens are always json encoded, single-part messages
-        msg = json.loads(msg[1])
-
-        # Check if our listen was sent properly
-        if not all(i in msg.keys() for i in ['key','value']):
-            logging.warning('LISTEN Improperly formatted: {}'.format(msg))
-            return
-
-        if msg['key'] == 'FILE':
-            suppress_print = True
-
-        if not suppress_print:
-            self.logger.info('LISTEN {} - KEY: {}, VALUE: {}'.format(msg['id'], msg['key'], msg['value']))
-        else:
-            self.logger.info('LISTEN {} - KEY: {}'.format(msg['id'], msg['key']))
-
-        # Log and spawn thread to respond to listen
-        listen_funk = self.listens[msg['key']]
-        listen_thread = threading.Thread(target=listen_funk, args=(msg['value'],))
-        listen_thread.start()
-
-        # Then let the terminal know we got the message
-        self.push('RECVD', value=msg['id'])
-
-    def handle_message(self, msg):
-        # Messages are always json encoded, single-part messages
-        msg = json.loads(msg[0])
-        if isinstance(msg, unicode or basestring):
-            msg = json.loads(msg)
-
-        # Check if message formatted properly
-        if not all(i in msg.keys() for i in ['key', 'target', 'value']):
-            self.logger.warning("MESSAGE IN Improperly formatted: {}".format(msg))
-            return
-
-        # Log message
-        self.logger.info('MESSAGE IN - KEY: {}, TARGET: {}, VALUE: {}'.format(msg['key'], msg['target'], msg['value']))
-
-        # Spawn thread to handle message
-        message_funk = self.messages[msg['key']]
-        message_thread = threading.Thread(target=message_funk, args=[msg['target'], msg['value']])
-        message_thread.start()
-
-    def send_message_out(self, key, value=''):
-        # send a message out to the pi
-        msg = {'key':key, 'value':value}
-
-        msg_thread = threading.Thread(target = self.message_out.send_json, args=(json.dumps(msg),))
-        msg_thread.start()
-
-        self.logger.info("MESSAGE OUT SENT - Key: {}, Value: {}".format(key, value))
-
-    def get_ip(self):
-        # shamelessly stolen from https://www.w3resource.com/python-exercises/python-basic-exercise-55.php
-        # variables are badly named because this is just a rough unwrapping of what was a monstrous one-liner
-
-        # get ips that aren't the loopback
-        unwrap00 = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1]
-        # ???
-        unwrap01 = [[(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in
-                     [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]
-
-        unwrap2 = [l for l in (unwrap00, unwrap01) if l][0][0]
-
-        return unwrap2
 
     ###########################3
     # Message/Listen handling methods
-    def m_state(self, target, value):
+    def m_state(self, msg):
         # Save locally so we can respond to queries on our own, then push 'er on through
         # Value will just have the state, we want to add our name
-        self.state = value
-        state_message = {'name': self.name, 'state': value}
-        self.push('STATE', target, state_message)
+        self.state = msg.value
+        self.push(key='STATE', value=msg.value)
 
-    def m_data(self, target, value):
+    def m_data(self, msg):
         # Just sending it along after appending the mouse name
-        value['mouse'] = self.mouse
-        value['pilot'] = self.name
-        self.push('DATA', target, value)
+        msg.value['mouse'] = self.mouse
+        msg.value['pilot'] = self.id
+        self.push(key='DATA', value=msg.value)
 
-    def m_cohere(self, target, value):
+    def m_cohere(self, msg):
         # Send our local version of the data table so the terminal can double check
         pass
 
-    def m_alive(self, target, value):
+    def m_alive(self, msg):
+        # TODO: This is probably redundant with l_ping
         # just say hello
-        self.push('ALIVE', target=target, value=value)
+        self.push(key='ALIVE', value={'pilot':self.name, 'ip':self.ip, 'state':self.state})
 
-    def l_ping(self, value):
+    def l_ping(self, msg):
         # The terminal wants to know if we are alive, respond with our name and IP
-        self.push('ALIVE', value={'pilot':self.name, 'ip':self.ip})
+        self.push(key='ALIVE', value={'pilot':self.name, 'ip':self.ip, 'state':self.state})
 
-    def l_start(self, value):
-        self.mouse = value['mouse']
+    def l_start(self, msg):
+        self.mouse = msg.value['mouse']
 
+        # TODO: Refactor into a general preflight check.
         # First make sure we have any sound files that we need
-        # nested list comprehension to get value['sounds']['L/R'][0-n]
-        if 'sounds' in value.keys():
-            f_sounds = [sound for sounds in value['sounds'].values() for sound in sounds
+        if 'sounds' in msg.value.keys():
+            # nested list comprehension to get value['sounds']['L/R'][0-n]
+            f_sounds = [sound for sounds in msg.value['sounds'].values() for sound in sounds
                         if sound['type'] in ['File', 'Speech']]
             if len(f_sounds)>0:
+                # check to see if we have these files, if not, request them
                 for sound in f_sounds:
                     full_path = os.path.join(self.prefs['SOUNDDIR'], sound['path'])
                     if not os.path.exists(full_path):
                         # We ask the terminal to send us the file and then wait.
                         self.logger.info('REQUESTING SOUND {}'.format(sound['path']))
-                        self.push(key='FILE', target=self.name, value=sound['path'])
+                        self.push(key='FILE', value=sound['path'])
+                        # wait here to get the sound,
+                        # the receiving thread will set() when we get it.
                         self.file_block.clear()
                         self.file_block.wait()
 
+        # once we make sure we have everything, tell the Pilot to start.
+        self.send(self.pi_id, 'START', msg.value)
 
-        self.send_message_out('START', value)
-
-    def l_stop(self, value):
-        self.send_message_out('STOP')
+    def l_stop(self, msg):
+        self.send(self.pi_id, 'STOP')
 
     def l_change(self, value):
+        # TODO: Changing some task parameter from the Terminal
         pass
 
-    def l_file(self, value):
+    def l_file(self, msg):
         # The file should be of the structure {'path':path, 'file':contents}
 
-        full_path = os.path.join(self.prefs['SOUNDDIR'], value['path'])
-        file_data = base64.b64decode(value['file'])
+        full_path = os.path.join(self.prefs['SOUNDDIR'], msg.value['path'])
+        # TODO: give Message full deserialization capabilities including this one
+        file_data = base64.b64decode(msg.value['file'])
         try:
             os.makedirs(os.path.dirname(full_path))
         except:
+            # TODO: Make more specific - only if dir already exists
             pass
         with open(full_path, 'wb') as open_file:
             open_file.write(file_data)
 
-        self.logger.info('SOUND RECEIVED {}'.format(value['path']))
+        self.logger.info('SOUND RECEIVED {}'.format(msg.value['path']))
 
         # If we requested a file, some poor start fn is probably waiting on us
         self.file_block.set()
@@ -660,23 +538,91 @@ class Net_Node(object):
         while True:
             self.loop.start()
 
-
-
-
-
-
-
-
-
-
-
-
 class Message(object):
+    # TODO: just make serialization handle all attributes except Files which need to be b64 encoded first.
     id = None # number of message, format {sender.id}_{number}
     to = None
-    from = None
+    sender = None
     key = None
+    # value is the only attribute that can be left None,
+    # ie. with signal-type messages like "STOP"
     value = None
+
+    def __init__(self, *args, **kwargs):
+        # Messages don't need to have all attributes on creation,
+        # but do need them to serialize
+        if len(args)>0:
+            Exception("Messages cannot be constructed with positional arguments")
+
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+    def __str__(self):
+        if self.key == 'FILE':
+            me_string = """
+            id     : {}
+            to     : {}
+            sender : {}
+            key    : {}
+            """.format(self.id, self.to, self.sender, self.key)
+        else:
+            me_string = """
+            id     : {}
+            to     : {}
+            sender : {}
+            key    : {}
+            value  : {}
+            """.format(self.id, self.to, self.sender, self.key, self.value)
+        return me_string
+
+    def __getitem__(self, key):
+        return self.__dict__[key]
+
+    def __setitem__(self, key, value):
+        self.__dict__[key] = value
+
+    def __delitem__(self, key):
+        del self.__dict__[key]
+
+    def __contains__(self, key):
+        return key in self.__dict__
+
+    def __len__(self):
+        return len(self.__dict__)
+
+    def validate(self):
+        if all([self.id, self.to, self.sender, self.key]):
+            return True
+        else:
+            return False
+
+    def serialize(self):
+        valid = self.validate()
+        if not valid:
+            Exception("""Message invalid at the time of serialization!\n {}""".format(str(self)))
+
+        msg = {
+            'id': self.id,
+            'to': self.to,
+            'sender': self.sender,
+            'key': self.key,
+            'value': self.value
+        }
+
+        try:
+            msg_enc = json.dumps(msg)
+            return msg_enc
+        except:
+            return False
+
+
+
+
+
+
+
+
+
 
 
 
