@@ -10,7 +10,8 @@ from PySide import QtGui, QtCore
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from mouse import Mouse
 import tasks
-import sounds
+from sound import sounds
+
 
 class Control_Panel(QtGui.QWidget):
     # Hosts two nested tab widgets to select pilot and mouse,

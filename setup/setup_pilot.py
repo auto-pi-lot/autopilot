@@ -21,7 +21,9 @@ parser.add_argument('-o', '--msgoutport', help="PUSH port to send messages from 
 parser.add_argument('-t', '--terminalip', help="Local IP of terminal. Default is 192.168.0.100")
 parser.add_argument('-m', '--manualpins', help="Assign pin numbers manually")
 parser.add_argument('-j', '--jackdstring', help="Specify a custom string to run jackd server")
-parser.add_argument('-a', '--naudiochannels', help="Specify the number of audio channels for the pyo server to use. Default is 2")
+parser.add_argument('-c', '--channels', help="Specify the number of audio channels for the audio server to use. Default is 2")
+parser.add_argument('-a', '--audioserver', help="Which audio server to use, jack or pyo? Default is jack")
+
 
 
 args = parser.parse_args()
@@ -91,10 +93,15 @@ if args.jackdstring:
 else:
     jackd_string = "jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -n3 -r128000 -s &"
 
-if args.naudiochannels:
+if args.channels:
     n_channels = int(args.naudiochannels)
 else:
     n_channels = 2
+
+if args.audioserver:
+    a_server = str(args.audioserver)
+else:
+    a_server = "jack"
 
 pull_pins = {7:1}
 
@@ -173,6 +180,7 @@ prefs['PINS'] = pins
 prefs['JACKDSTRING'] = jackd_string
 prefs['NCHANNELS'] = n_channels
 prefs['PULLPINS'] = pull_pins
+prefs['AUDIOSERVER'] = a_server
 
 # save prefs
 prefs_file = os.path.join(basedir, 'prefs.json')

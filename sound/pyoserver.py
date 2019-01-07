@@ -11,51 +11,27 @@ Notes on creating functions:
 '''
 
 # TODO: make it so terminal doesn't have to import pyo just to access sound info
-try:
-    import pyo
-except ImportError:
-    Warning('pyo could not be loaded, sounds will be unavailable!')
 import sys
 from time import sleep
 import json
 from scipy.io import wavfile
 import numpy as np
-import tables
-#from taskontrol.settings import rpisettings as rpiset
 
-# Sound list at bottom of file
-class Sound(object):
-    # Metaclass for sound objects
+from .. import prefs
+try:
+    server_type = prefs.AUDIOSERVER
+except:
+    # TODO: The 'attribute don't exist' type - i think NameError?
+    server_type = None
 
-    # All sounds should be cast to tables with an .out() method (eg. TableRead, Osc)
-    table = None
-
-    trigger = None
-
-    def __init__(self):
-        pass
-
-    def play(self):
-        self.table.out()
-
-    def table_wrap(self, audio, duration):
-        '''
-        Records a PyoAudio generator into a sound table, returns a tableread object which can play the audio with .out()
-        '''
-        # Duration is in ms, so divide by 1000
-        # See https://groups.google.com/forum/#!topic/pyo-discuss/N-pan7wPF-o
-        # TODO: Get chnls to be responsive to NCHANNELS in prefs. hardcoded for now
-        tab = pyo.NewTable(length=(float(duration) / 1000),
-                           chnls=1)  # Prefs should always be declared in the global namespace
-        tabrec = pyo.TableRec(audio, table=tab, fadetime=0.01).play()
-        sleep((float(duration) / 1000))
-        tabread = pyo.TableRead(tab, freq=tab.getRate(), loop=0)
-        return tabread
-
-    def set_trigger(self, trig_fn):
-        # Using table triggers, call trig_fn when table finishes playing
-        self.trigger = pyo.TrigFunc(self.table['trig'], trig_fn)
-
+if server_type == "pyo":
+    import pyo
+elif server_type == "jack":
+    # do jack stuff
+    pass
+else:
+    # just importing to query parameters, not play sounds.
+    pass
 
 
 

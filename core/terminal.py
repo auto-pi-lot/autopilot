@@ -10,23 +10,17 @@ import os
 import datetime
 import logging
 import threading
-import time
 from collections import OrderedDict as odict
 import numpy as np
 
 from PySide import QtCore, QtGui
-import zmq
-from zmq.eventloop.ioloop import IOLoop
-from zmq.eventloop.zmqstream import ZMQStream
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from mouse import Mouse
 from plots import Plot_Widget
 from networking import Terminal_Networking, Net_Node
-import tasks
-import sounds
 from utils import InvokeEvent, Invoker
-from gui import Control_Panel, Protocol_Wizard, Popup, Weights, Reassign
+from gui import Control_Panel, Protocol_Wizard, Weights, Reassign
 from .. import prefs
 
 # TODO: Oh holy hell just rewrite all the inter-widget communication as zmq

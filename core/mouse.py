@@ -11,15 +11,13 @@ import tables
 from tables.nodes import filenode
 import datetime
 from time import time
-from importlib import import_module
 import json
-import numpy as np
 import pandas as pd
 import warnings
 sys.path.append('~/git/RPilot')
 import tasks
 import threading
-from sounds import STRING_PARAMS
+from sound.sounds import STRING_PARAMS
 
 if sys.version_info >= (3,0):
     import queue

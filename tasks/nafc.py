@@ -20,12 +20,13 @@ import warnings
 import tables
 import json
 import threading
-import pprint
+
 try:
     import pyo
 except ImportError:
     Warning('pyo could not be loaded, sounds will be unavailable!')
-from core import hardware, sounds
+from core import hardware
+from sound import sounds
 from collections import OrderedDict as odict
 
 # This declaration allows Mouse to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
