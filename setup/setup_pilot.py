@@ -1,237 +1,189 @@
-import os
-import json
-import argparse
-import uuid
+import npyscreen as nps
+from collections import OrderedDict as odict
 import pprint
-import tables
+import json
+import os
 import subprocess
 
-# Check for sudo
-if os.getuid() != 0:
-    raise Exception("Need to run as root")
-
-# Argument parsing
-parser = argparse.ArgumentParser(description='Setup an RPilot')
-parser.add_argument('-n', '--name', help="The name for this pilot")
-parser.add_argument('-d', '--dir',  help="Base Directory for RPilot resources")
-parser.add_argument('-p', '--pushport', help="PUB port for publishing data to terminal. 5560 is default")
-parser.add_argument('-s', '--subport', help="SUB port for receiving commands from RPilots. 5555 is default")
-parser.add_argument('-i', '--msginport', help="PULL port to receive messages from the Pilot class. 5565 is default")
-parser.add_argument('-o', '--msgoutport', help="PUSH port to send messages from the Pilot class. 5565 is default")
-parser.add_argument('-t', '--terminalip', help="Local IP of terminal. Default is 192.168.0.100")
-parser.add_argument('-m', '--manualpins', help="Assign pin numbers manually")
-parser.add_argument('-j', '--jackdstring', help="Specify a custom string to run jackd server")
-parser.add_argument('-c', '--channels', help="Specify the number of audio channels for the audio server to use. Default is 2")
-parser.add_argument('-a', '--audioserver', help="Which audio server to use, jack or pyo? Default is jack")
-
-
-
-args = parser.parse_args()
-
-# Parse Arguments and assign defaults
-if not args.name:
-    name = str(uuid.uuid4())
-    Warning("Need to give a name to your RPilot, assigning random unique name: {}".format(name))
-else:
-    name = args.name
-
-if args.dir:
-    basedir = args.dir
-else:
-    basedir = '/usr/rpilot'
-
-if args.pushport:
-    push_port = str(args.pushport)
-else:
-    push_port = '5560'
-
-if args.subport:
-    sub_port = str(args.subport)
-else:
-    sub_port = '5555'
-
-if args.msginport:
-    msg_in_port = str(args.msginport)
-else:
-    msg_in_port = '5565'
-
-if args.msgoutport:
-    msg_out_port = str(args.msgoutport)
-else:
-    msg_out_port = '5570'
-
-if args.terminalip:
-    terminal_ip = str(args.terminalip)
-else:
-    terminal_ip = '192.168.0.100'
-
-if args.manualpins:
-    # TODO: make dialog window to set pins manually
-    NotImplementedError()
-else:
-    pins = {
-        'POKES':{
-            'L':24,
-            'C':8,
-            'R':10
-        },
-        'LEDS':{
-            # Three pins for RGB LEDs
-            'L': [11, 13, 15],
-            'C': [22, 18, 16],
-            'R': [19, 21, 23]
-        },
-        'PORTS':{
-            'L':31,
-            'C':33,
-            'R':37
-        }
-    }
-
-if args.jackdstring:
-    jackd_string = str(args.jackdstring)
-else:
-    jackd_string = "jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -n3 -r128000 -s &"
-
-if args.channels:
-    n_channels = int(args.naudiochannels)
-else:
-    n_channels = 2
-
-if args.audioserver:
-    a_server = str(args.audioserver)
-else:
-    a_server = "jack"
-
-pull_pins = {7:1}
-
-# TODO: Turn this whole thing into a command line dialog and add this to it
-pigpio_location = 'pigpiod'
-# Need to make a binary mask that excludes the pins needed for hifiberry
-# (BCM: 2, 3, 18, 19, 20, 21)
-pigpio_mask = '-x 1111110000111111111111110000'
-# Also need to use PWM rather than PCM so hifiberry can use it
-# see http://abyz.co.uk/rpi/pigpio/faq.html#Sound_isnt_working
-pigpio_device = '-t 0'
-pigpio_string = ' '.join([pigpio_location, pigpio_mask, pigpio_device])
-
-datadir = os.path.join(basedir,'data')
-sounddir = os.path.join(basedir, 'sounds')
-logdir = os.path.join(basedir,'logs')
-
-# Check for prereqs
-try:
-    import pyo
-    import zmq
-    # TODO: Test for pigpio
-    # TODO: Set pigpio to start on startup
-    # TODO: don't just test, compile pyo if missing
-except:
-    print("Error importing prerequisite packages!")
-
-# Make folders
-if not os.path.exists(basedir):
-    try:
-        os.makedirs(basedir)
-        os.chmod(basedir, 0777)
-    except:
-        print("Error making basedir: {}".format(basedir))
-if not os.path.exists(datadir):
-    os.makedirs(datadir)
-    os.chmod(datadir, 0777)
-if not os.path.exists(sounddir):
-    os.makedirs(sounddir)
-    os.chmod(sounddir, 0777)
-if not os.path.exists(logdir):
-    os.makedirs(logdir)
-    os.chmod(logdir, 0777)
-
-# make local file
-local_data = os.path.join(datadir, 'local.h5')
-if not os.path.exists(local_data):
-    h5f = tables.open_file(local_data, mode='w')
-    h5f.close()
-    os.chmod(local_data, 0777)
-
-# Get repo dir
-file_loc = os.path.realpath(__file__)
-file_loc = file_loc.split(os.sep)[:-2]
-repo_loc = os.path.join(os.sep,*file_loc)
-
-# make util scripts executable
-util_fns = os.listdir(os.path.join(repo_loc,'utils'))
-for fn in util_fns:
-    os.chmod(os.path.join(repo_loc,'utils',fn), 0444)
-
-# make prefs dict
-prefs = {}
-prefs['NAME'] = name
-prefs['BASEDIR'] = basedir
-prefs['DATADIR'] = datadir
-prefs['REPODIR'] = repo_loc
-prefs['SOUNDDIR'] = sounddir
-prefs['LOGDIR'] = logdir
-prefs['PUSHPORT'] = push_port
-prefs['SUBPORT'] = sub_port
-prefs['MSGINPORT'] = msg_in_port
-prefs['MSGOUTPORT'] = msg_out_port
-prefs['TERMINALIP'] = terminal_ip
-prefs['PINS'] = pins
-prefs['JACKDSTRING'] = jackd_string
-prefs['NCHANNELS'] = n_channels
-prefs['PULLPINS'] = pull_pins
-prefs['AUDIOSERVER'] = a_server
-
-# save prefs
-prefs_file = os.path.join(basedir, 'prefs.json')
-with open(prefs_file, 'w') as prefs_file_open:
-    json.dump(prefs, prefs_file_open)
-os.chmod(prefs_file, 0775)
+class PilotSetupForm(nps.SplitForm):
+    def create(self):
+        self.input = odict({
+            'NAME': self.add(nps.TitleText, name="Pilot Name:", value=""),
+            'BASEDIR': self.add(nps.TitleText, name="Base Directory:", value="/usr/rpilot"),
+            'PUSHPORT': self.add(nps.TitleText, name="Push Port - Router port used by the Terminal:", value="5560"),
+            'MSGPORT': self.add(nps.TitleText, name="Message Port - Our router port:", value="5565"),
+            'TERMINALIP': self.add(nps.TitleText, name="Terminal IP:", value="192.168.0.100"),
+            'PINS':{
+                'POKES':{
+                    'L':self.add(nps.TitleText, name="PINS - POKES - L", value="24"),
+                    'C': self.add(nps.TitleText, name="PINS - POKES - C", value="8"),
+                    'R': self.add(nps.TitleText, name="PINS - POKES - R", value="10"),
+                },
+                'LEDS': {
+                    'L': self.add(nps.TitleText, name="PINS - LEDS - L", value="[11, 13, 15]"),
+                    'C': self.add(nps.TitleText, name="PINS - LEDS - C", value="[22, 18, 16]"),
+                    'R': self.add(nps.TitleText, name="PINS - LEDS - R", value="[19, 21, 23]"),
+                },
+                'PORTS': {
+                    'L': self.add(nps.TitleText, name="PINS - PORTS - L", value="31"),
+                    'C': self.add(nps.TitleText, name="PINS - PORTS - C", value="33"),
+                    'R': self.add(nps.TitleText, name="PINS - PORTS - R", value="37"),
+                }},
+            'AUDIOSERVER':self.add(nps.TitleSelectOne,max_height=4,value=[0,], name="Audio Server:",
+                                   values=["jack", "pyo", "none"], scroll_exit=True),
+            'NCHANNELS':self.add(nps.TitleText, name="N Audio Channels", value="1"),
+            'FS': self.add(nps.TitleText, name="Audio Sampling Rate", value="192000"),
+            'JACKDSTRING': self.add(nps.TitleText, name="Command used to launch jackd - note that \'fs\' will be replaced with above FS",
+                                    value="jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -n3 -s &"),
+            'PIGPIOMASK': self.add(nps.TitleText, name="Binary mask to enable pigpio to access pins according to the BCM numbering",
+                                    value="1111110000111111111111110000"),
+            'PULLUPS': self.add(nps.TitleText, name="Pins to pull up on boot",
+                                    value="[7]"),
+            'PULLDOWNS': self.add(nps.TitleText, name="Pins to pull down on boot",
+                                value="[]")
 
 
-# Create .sh file to open pilot
-# Some performance tweaks (stopping services, etc.) are added from: https://github.com/autostatic/scripts/blob/rpi/jackstart
-launch_file = os.path.join(basedir, 'launch_pilot.sh')
-with open(launch_file, 'w') as launch_file_open:
-    launch_file_open.write('#!/bin/sh\n')
-    launch_file_open.write('killall jackd\n') # Try to kill any existing jackd processes
-    launch_file_open.write('sudo killall pigpiod\n')
-    launch_file_open.write('sudo service triggerhappy stop\n')
-    launch_file_open.write('sudo killall console-kit-daemon\n')
-    launch_file_open.write('sudo killall polkitd\n')
-    launch_file_open.write('sudo mount -o remount,size=128M /dev/shm\n')
-    launch_file_open.write('killall gvfsd\n')
-    launch_file_open.write('sudo ' + pigpio_string + '\n')
-    launch_file_open.write(jackd_string+'\n')    # Then launch ours
-    launch_file_open.write('sleep 5\n') # We wait a damn second to let jackd start up
-    launch_string = "python " + os.path.join(repo_loc, "core", "pilot.py") + " -f " + prefs_file
-    launch_file_open.write(launch_string)
+        })
+        #self.inName = self.add(nps.)
 
-os.chmod(launch_file, 0775)
 
-# open pilot on startup using systemd
-systemd_string = '''[Unit]
-Description=RPilot
-After=multi-user.target
+    # after we're done editing, close the input program
+    def afterEditing(self):
+        self.parentApp.setNextForm(None)
 
-[Service]
-Type=idle
-ExecStart={}
-Restart=on-failure
+class SetupApp(nps.NPSAppManaged):
+    def onStart(self):
+        self.form = self.addForm('MAIN', PilotSetupForm, name='Setup Pilot')
 
-[Install]
-WantedBy=multi-user.target'''.format(launch_file)
+def unfold_values(v):
+    if isinstance(v, dict):
+        # recurse
+        v = {k:unfold_values(v) for k, v in v.items()}
+    else:
+        try:
+            v = int(v.value)
+        except:
+            v = v.value
+    return v
 
-with open('/lib/systemd/system/rpilot.service','w') as rpilot_service:
-    rpilot_service.write(systemd_string)
+def make_dir(adir):
+    if not os.path.exists(adir):
+        os.makedirs(adir)
+        os.chmod(adir, 0777)
 
-# enable the service
-subprocess.call(['sudo', 'systemctl', 'daemon-reload'])
-subprocess.call(['sudo', 'systemctl' , 'enable', 'rpilot.service'])
 
-pp = pprint.PrettyPrinter(indent=4)
-print("Pilot set up with prefs:\r")
-pp.pprint(prefs)
+if __name__ == "__main__":
+    # Check for sudo
+    if os.getuid() != 0:
+        raise Exception("Need to run as root")
 
-# TODO: Automatically run launch_pilot.sh on startup
-# TODO: Automatically start jack on startup
+    setup = SetupApp()
+    setup.run()
+
+    # extract params
+    params = {k:unfold_values(v) for k, v in setup.form.input.items()}
+
+    ############################
+    # some inelegant manual formatting
+    # convert numerical audio server index to string
+    params['AUDIOSERVER'] = ['jack', 'pyo', 'none'][params['AUDIOSERVER'][0]]
+
+    # convert string LED pin specifier to list
+    for k, v in params['PINS']['LEDS'].items():
+        params['PINS']['LEDS'][k] = json.loads(v)
+
+    # replace fs in jackd string
+    params['JACKDSTRING'] = params['JACKDSTRING'].replace('fs', str(params['FS']))
+
+    # pigpio should be a string
+    params['PIGPIOMASK'] = str(params['PIGPIOMASK'])
+
+    # make the string a dict
+    # print(params['PULLPINS'])
+    params['PULLUPS'] = json.loads(params['PULLUPS'])
+    params['PULLDOWNS'] = json.loads(params['PULLDOWNS'])
+
+
+    ##############################
+    # Compute derived values
+    pigpio_string = 'pigpiod -t 0 -x {}'.format(params['PIGPIOMASK'])
+
+    # define and make directory structure
+    params['DATADIR'] = os.path.join(params['BASEDIR'], 'data')
+    params['SOUNDDIR'] = os.path.join(params['BASEDIR'], 'sounds')
+    params['LOGDIR'] = os.path.join(params['BASEDIR'], 'logs')
+
+    for adir in [params['BASEDIR'], params['DATADIR'], params['SOUNDDIR'], params['LOGDIR']]:
+        make_dir(adir)
+
+    # Get repo dir
+    file_loc = os.path.realpath(__file__)
+    file_loc = file_loc.split(os.sep)[:-2]
+    params['REPODIR'] = os.path.join(os.sep, *file_loc)
+
+    # save prefs
+    prefs_file = os.path.join(params['BASEDIR'], 'prefs.json')
+    with open(prefs_file, 'w') as prefs_file_open:
+        json.dump(params, prefs_file_open)
+    os.chmod(prefs_file, 0775)
+
+    print('params saved to {}\n'.format(prefs_file))
+
+    ###############################
+    # Install service or create runfile
+    launch_string = "python " + os.path.join(params['REPODIR'], "core", "pilot.py") + " -f " + prefs_file
+
+    answer = str(raw_input('Install as Systemd service? (y/n)> '))
+    if answer == 'y':
+        # open pilot on startup using systemd
+        systemd_string = '''[Unit]
+        Description=RPilot
+        After=multi-user.target
+
+        [Service]
+        Type=idle
+        ExecStartPre=-killall jackd
+        ExecStartPre=-killall pigpiod
+        ExecStartPre=mount -o remount,size=128M /dev/shm
+        ExecStartPre={pig}
+        ExecStartPre={jack}
+        ExecStart={launch_pi}
+
+        Restart=on-failure
+
+        [Install]
+        WantedBy=multi-user.target'''.format(pig=pigpio_string,
+                                             jack=params['JACKDSTRING'],
+                                             launch_pi=launch_string)
+
+        unit_loc = '/lib/systemd/system/rpilot.service'
+        with open(unit_loc, 'w') as rpilot_service:
+            rpilot_service.write(systemd_string)
+
+        # enable the service
+        subprocess.call(['sudo', 'systemctl', 'daemon-reload'])
+        subprocess.call(['sudo', 'systemctl', 'enable', 'rpilot.service'])
+        print('\nrpilot service installed and enabled, unit file located at:\n     {}\n'.format(unit_loc))
+
+    answer = str(raw_input('Create executable .sh? (y/n)> '))
+    if answer == 'y':
+        launch_file = os.path.join(params['BASEDIR'], 'launch_pilot.sh')
+        with open(launch_file, 'w') as launch_file_open:
+            launch_file_open.write('#!/bin/sh\n')
+            launch_file_open.write('killall jackd\n')  # Try to kill any existing jackd processes
+            launch_file_open.write('sudo killall pigpiod\n')
+            launch_file_open.write('sudo mount -o remount,size=128M /dev/shm\n')
+            launch_file_open.write('sudo ' + pigpio_string + '\n')
+            launch_file_open.write(params['JACKDSTRING'] + '\n')  # Then launch ours
+            launch_file_open.write('sleep 5\n')  # We wait a damn second to let jackd start up
+            launch_string = "python " + os.path.join(params['REPODIR'], "core", "pilot.py") + " -f " + prefs_file
+            launch_file_open.write(launch_string)
+
+        os.chmod(launch_file, 0775)
+
+        print('executable file created:\n     {}\n'.format(launch_file))
+
+    pp = pprint.PrettyPrinter(indent=4)
+    print('Pilot set up with prefs:\r')
+    pp.pprint(params)
+

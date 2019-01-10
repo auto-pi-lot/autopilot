@@ -40,7 +40,7 @@ class Networking(multiprocessing.Process):
     loop         = None    # IOLoop
     push_ip      = None    # IP to push to
     push_port    = None    # Publisher Port
-    push_id      = None    # Identity of the Router we push to
+    push_id      = ""    # Identity of the Router we push to
     listen_port  = None    # Listener Port
     message_port = None    # Messenger Port
     pusher       = None    # pusher socket - a dealer socket that connects to other routers
@@ -51,7 +51,7 @@ class Networking(multiprocessing.Process):
     id           = None    # What are we known as?
     ip           = None    # whatismy
     listens      = None    # Dictionary of functions to call for different types of messages
-    subscribers  = {}
+    senders      = [] # who has sent us stuff (ie. directly connected)
 
     def __init__(self, prefs=None):
         super(Networking, self).__init__()
@@ -173,7 +173,6 @@ class Networking(multiprocessing.Process):
         self.pusher.send_multipart([self.push_id, msg_enc])
 
     def handle_listen(self, msg):
-        # listens are always json encoded, single-part messages
         # TODO: This check is v. fragile, pyzmq has a way of sending the stream along with the message
         if len(msg)==1:
             # from our dealer
@@ -181,14 +180,19 @@ class Networking(multiprocessing.Process):
             msg = Message(**msg)
         elif len(msg)==2:
             # from the router
+            sender = msg[0]
+
+            # if this is a new sender, add them to the list
+            if sender not in self.senders:
+                self.senders.append(sender)
 
             # connection pings are blank frames,
             # respond to let them know we're alive
             if msg[1] == b'':
                 self.listener.send_multipart(msg)
                 return
-            sender = msg[0]
-            msg    = json.loads(msg[1])
+
+            msg = json.loads(msg[1])
             msg = Message(**msg)
         else:
             self.logger.error('Dont know what this message is:{}'.format(msg))
@@ -197,13 +201,25 @@ class Networking(multiprocessing.Process):
         # Check if our listen was sent properly
         if not msg.validate():
             self.logger.error('Message failed to validate:\n{}'.format(str(msg)))
+            return
 
         self.logger.info('RECEIVED:\n{}'.format(str(msg)))
 
-        # Log and spawn thread to respond to listen
-        listen_funk = self.listens[msg.key]
-        listen_thread = threading.Thread(target=listen_funk, args=(msg,))
-        listen_thread.start()
+        # if this message is to us, handle it.
+        if msg.to in [self.id, "_{}".format(self.id)]:
+            # Log and spawn thread to respond to listen
+            listen_funk = self.listens[msg.key]
+            listen_thread = threading.Thread(target=listen_funk, args=(msg,))
+            listen_thread.start()
+        # otherwise, if it's to someone we know about, send it there
+        elif msg.to in self.senders:
+            self.send(to=msg.to, key=msg.key, value=msg.value)
+        # otherwise, if we have a pusher, send it there
+        # it's either for them or some other upstream node we don't know about
+        elif self.pusher:
+            self.push(to=msg.to, key=msg.key, value=msg.value)
+        else:
+            self.logger.warning('Dont know how to handle message: {}'.format(str(msg)))
 
 
     def init_logging(self):
@@ -351,7 +367,6 @@ class Terminal_Networking(Networking):
 
     def l_data(self, msg):
         # Send through to terminal
-        msg = {'key': 'DATA', 'value':value}
         self.send('_T', 'DATA', msg.value)
 
         # Send to plot widget, which should be listening to "P_{pilot_name}"
@@ -394,8 +409,6 @@ class Pilot_Networking(Networking):
         else:
             self.prefs = prefs
 
-        super(Pilot_Networking, self).__init__(self.prefs)
-
         # Pilot has a pusher - connects back to terminal
         self.pusher = True
         self.push_id = 'T'
@@ -419,6 +432,9 @@ class Pilot_Networking(Networking):
             'PARAM': self.l_change,  # The Terminal is changing some task parameter
             'FILE': self.l_file,  # We are receiving a file
         }
+
+        super(Pilot_Networking, self).__init__(self.prefs)
+
 
     ###########################3
     # Message/Listen handling methods
@@ -501,8 +517,16 @@ class Pilot_Networking(Networking):
 #####################################
 
 class Net_Node(object):
+    context = None
+    loop = None
+    id = None
+    upstream = None # ID of router we connect to
+    port = None
+    listens = None
+    connected = False
+    logger = None
     "pop in networking object, has to set behind some external-facing networking object"
-    def __init__(self, id, port, handle_fn, instance=True):
+    def __init__(self, id, upstream, port, listens, instance=True):
         if instance:
             self.context = zmq.Context.instance()
             self.loop    = IOLoop.instance()
@@ -511,15 +535,23 @@ class Net_Node(object):
             self.loop    = IOLoop()
 
         self.id = id.encode('utf-8')
+        self.upstream = upstream.encode('utf-8')
         self.port = int(port)
-        self.handle_fn = handle_fn
+        self.listens = listens
 
         self.connected = False
+        self.msg_counter = count()
+
+        # try to get a logger
+        try:
+            self.logger = logging.getLogger('main')
+        except:
+            Warning("Net Node {} Couldn't get logger :(".format(self.id))
 
         self.init_networking()
 
     def init_networking(self):
-        self.sock = self.context.socket(zmq.ROUTER)
+        self.sock = self.context.socket(zmq.DEALER)
         self.sock.identity = self.id
         self.sock.probe_router = 1
 
@@ -528,15 +560,83 @@ class Net_Node(object):
 
         # wrap in zmqstreams and start loop thread
         self.sock = ZMQStream(self.sock, self.loop)
-        self.sock.on_recv(self.handle_fn)
+        self.sock.on_recv(self.handle_listen)
 
         self.loop_thread = threading.Thread(target=self.threaded_loop)
         self.loop_thread.daemon = True
         self.loop_thread.start()
 
+        self.connected = True
+
     def threaded_loop(self):
         while True:
             self.loop.start()
+
+    def handle_listen(self, msg):
+        # messages from dealers are single frames because we only have one connected partner
+        msg = json.loads(msg[0])
+        msg = Message(**msg)
+
+        # Check if our listen was sent properly
+        if not msg.validate():
+            if self.logger:
+                self.logger.error('Message failed to validate:\n{}'.format(str(msg)))
+            return
+
+        if self.logger:
+            self.logger.info('RECEIVED:\n{}'.format(str(msg)))
+
+        # Log and spawn thread to respond to listen
+        listen_funk = self.listens[msg.key]
+        listen_thread = threading.Thread(target=listen_funk, args=(msg.value,))
+        listen_thread.start()
+
+    def send(self, to=None, key=None, value=None):
+        # send message via the dealer
+        # even though we only have one connection over our dealer,
+        # we still include 'to' in case we are sending further upstream
+        # but can push without 'to', just fill in with upstream id
+        # TODO: Implement forwarding when 'to' field doesn't match ID of upstream router
+        if to is None:
+            to = self.upstream
+
+        if key is None:
+            if self.logger:
+                self.logger.error('Push sent without Key')
+            return
+
+        msg = self.prepare_message(to, key, value)
+
+        # Make sure our message has everything
+        if not msg.validate():
+            if self.logger:
+                self.logger.error('Message Invalid:\n{}'.format(str(msg)))
+            return
+
+        # encode message
+        msg_enc = msg.serialize()
+
+        if not msg_enc:
+            self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
+            return
+
+        self.sock.send_multipart([self.upstream, msg_enc])
+        if self.logger:
+            self.logger.info("MESSAGE SENT - \n{}".format(str(msg)))
+
+    def prepare_message(self, to, key, value):
+        # TODO: This would mess up multi-hop senders. we should make sure to send the whole message thru
+        msg = Message()
+        msg.sender = self.id
+        msg.to = to
+        msg.key = key
+        msg.value = value
+
+        msg_num = self.msg_counter.next()
+        msg.id = "{}_{}".format(self.id, msg_num)
+
+        return msg
+
 
 class Message(object):
     # TODO: just make serialization handle all attributes except Files which need to be b64 encoded first.
@@ -575,6 +675,7 @@ class Message(object):
             """.format(self.id, self.to, self.sender, self.key, self.value)
         return me_string
 
+    # enable dictionary-like behavior
     def __getitem__(self, key):
         return self.__dict__[key]
 
@@ -601,13 +702,14 @@ class Message(object):
         if not valid:
             Exception("""Message invalid at the time of serialization!\n {}""".format(str(self)))
 
-        msg = {
-            'id': self.id,
-            'to': self.to,
-            'sender': self.sender,
-            'key': self.key,
-            'value': self.value
-        }
+        # msg = {
+        #     'id': self.id,
+        #     'to': self.to,
+        #     'sender': self.sender,
+        #     'key': self.key,
+        #     'value': self.value
+        # }
+        msg = self.__dict__
 
         try:
             msg_enc = json.dumps(msg)

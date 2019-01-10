@@ -5,34 +5,39 @@ from __future__ import division
 from __future__ import print_function
 
 import multiprocessing as mp
-import jackserver
 import Queue as queue
+import jack
 import numpy as np
 from copy import copy
 from threading import Thread
+from itertools import cycle
+
+import prefs
 
 
 # allows us to access the audio server and some sound attributes
 SERVER = None
 FS = None
 BLOCKSIZE = None
+QUEUE = None
+PLAY = None
+Q_LOCK = None
 
 
 class JackClient(mp.Process):
-    def __init__(self, pipe, name='jack_client'):
+    def __init__(self, name='jack_client'):
         super(JackClient, self).__init__()
 
         self.name = name
-        self.pipe = pipe
+        #self.pipe = pipe
         self.q = mp.Queue()
-        self.sounds = []
-
+        self.q_lock = mp.Lock()
 
         self.play_evt = mp.Event()
         self.quit_evt = mp.Event()
 
         # we make a client that dies now so we can stash the fs and etc.
-        self.client = jackserver.Client(self.name)
+        self.client = jack.Client(self.name)
         self.blocksize = self.client.blocksize
         self.fs = self.client.samplerate
         self.zero_arr = np.zeros((self.blocksize,1),dtype='float32')
@@ -41,9 +46,12 @@ class JackClient(mp.Process):
         globals()['SERVER'] = self
         globals()['FS'] = copy(self.fs)
         globals()['BLOCKSIZE'] = copy(self.blocksize)
+        globals()['QUEUE'] = self.q
+        globals()['Q_LOCK'] = self.q_lock
+        globals()['PLAY'] = self.play_evt
 
     def boot_server(self):
-        self.client = jackserver.Client(self.name)
+        self.client = jack.Client(self.name)
         self.blocksize = self.client.blocksize
         self.fs = self.client.samplerate
         self.zero_arr = np.zeros((self.blocksize,1),dtype='float32')
@@ -55,29 +63,20 @@ class JackClient(mp.Process):
         self.client.activate()
         target_ports = self.client.get_ports(is_physical=True, is_input=True, is_audio=True)
         self.client.outports[0].connect(target_ports[0])
-        self.client.outports[0].connect(target_ports[1])
+        if prefs.NCHANNELS ==2 :
+            self.client.outports[0].connect(target_ports[1])
 
     def run(self):
-        buffered = False
-        sound_num = 0
         self.boot_server()
 
-        while not self.quit_evt.is_set():
-        # try:
-            command = self.pipe.get()
-            # except queue.Empty:
-            #     continue
-            print(command)
+        # we are just holding the process open, so wait to quit
+        try:
+            self.quit_evt.clear()
+            self.quit_evt.wait()
+        except KeyboardInterrupt:
+            # just want to kill the process, so just continue from here
+            pass
 
-            if command.startswith('BUFFER'):
-                sound_num = int(command.split('_')[1])
-                self.buffer(sound_num)
-                buffered = True
-            elif command == 'PLAY':
-                if buffered == False:
-                    self.buffer(sound_num)
-                self.play_evt.set()
-                buffered = False
 
     def close(self):
         # TODO: shut down server but also reset module level variables
@@ -120,7 +119,7 @@ class JackClient(mp.Process):
             if data is None:
                 self.play_evt.clear()
             else:
-                for channel, port in zip(data.T, self.client.outports):
+                for channel, port in zip(cycle(data.T), self.client.outports):
                     port.get_array()[:] = channel
 
 

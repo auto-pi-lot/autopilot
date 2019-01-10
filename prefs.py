@@ -12,8 +12,11 @@ import json
 prefdict = None
 
 def init(fn):
-    with open(fn, 'r') as pfile:
-        prefs = json.load(pfile)
+    if isinstance(fn, basestring):
+        with open(fn, 'r') as pfile:
+            prefs = json.load(pfile)
+    elif isinstance(fn, dict):
+        prefs = fn
 
     try:
         assert(isinstance(prefs, dict))

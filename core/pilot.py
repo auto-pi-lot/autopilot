@@ -9,7 +9,7 @@ Sets up & coordinates the multiple threads needed to function as a standalone ta
     -Communication w/ home terminal via TCP/IP
 '''
 
-__version__ = '0.1'
+__version__ = '0.2'
 __author__ = 'Jonny Saunders <jsaunder@uoregon.edu>'
 
 import os
@@ -26,18 +26,27 @@ import socket
 import pyo
 import tables
 
-import zmq
-from zmq.eventloop.ioloop import IOLoop
-from zmq.eventloop.zmqstream import ZMQStream
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from networking import Pilot_Networking
+from networking import Pilot_Networking, Net_Node, Message
 import tasks
 import hardware
+import prefs
 
 ########################################
 
 class RPilot:
+    logger = None
+    log_handler = None
+    log_formatter = None
+
+    # Events for thread handling
+    running = None
+    stage_block = None
+    file_block = None
+
+    # networking - our internal and external messengers
+    node = None
+    networking = None
 
     def __init__(self, prefs=None):
         # If we weren't handed prefs, try to load them from the default location
@@ -53,33 +62,16 @@ class RPilot:
         self.prefs = prefs
         self.name = self.prefs['NAME']
 
-        # Start Logging
-        timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(self.prefs['LOGDIR'], 'Pilots_Log_{}.log'.format(timestr))
-
-        self.logger = logging.getLogger('main')
-        self.log_handler = logging.FileHandler(log_file)
-        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
-        self.log_handler.setFormatter(self.log_formatter)
-        self.logger.addHandler(self.log_handler)
-        self.logger.setLevel(logging.INFO)
-        self.logger.info('Pilot Logging Initiated')
-
-        # Open .h5 used to store local copies of data
-        # NOTE: THESE ARE NOT TO BE RELIED ON FOR STORAGE,
-        # Their purpose is to compare with the terminal at the end of running a task
-        # in case the terminal missed us sending any events.
-        #local_file = os.path.join(self.prefs['DATADIR'], 'local.h5')
-        #self.h5f = tables.open_file(local_file, mode='a')
-        #self.logger.info('Local file opened: {}'.format(local_file))
+        self.init_logging()
 
         # Locks, etc. for threading
         self.running = threading.Event() # Are we running a task?
         self.stage_block = threading.Event() # Are we waiting on stage triggers?
-        self.file_block = threading.Event()
+        self.file_block = threading.Event() # Are we waiting on file transfer?
 
-        # Init pyo server
-        self.init_pyo()
+        # Init audio server
+        if 'AUDIOSERVER' in self.prefs.keys():
+            self.init_audio()
 
         # Init Networking
         # Listen dictionary - what do we do when we receive different messages?
@@ -89,12 +81,15 @@ class RPilot:
             'PARAM': self.l_param, # A parameter is being changes
             'LVLUP': self.l_levelup, # The mouse has leveled up! (combines stop/start)
         }
-        self.context = None
-        self.loop    = None
-        self.pusher = None
-        self.listener = None
-        self.spawn_network()
-        self.init_network()
+
+        # spawn_network gives us the independent message-handling process
+        self.networking = Pilot_Networking(prefs=self.prefs)
+        self.networking.start()
+        self.node = Net_Node(id = "_{}".format(self.name),
+                             upstream = self.name,
+                             port = self.prefs['LISTENPORT'],
+                             listens = self.listens,
+                             instance=False)
 
         # if we need to set pins pulled up or down, do that now
         if 'PULLPINS' in self.prefs.keys():
@@ -114,39 +109,22 @@ class RPilot:
 
         # TODO Synchronize system clock w/ time from terminal.
 
+    def init_logging(self):
+        # Start Logging
+        timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
+        log_file = os.path.join(self.prefs['LOGDIR'], 'Pilots_Log_{}.log'.format(timestr))
+
+        self.logger = logging.getLogger('main')
+        self.log_handler = logging.FileHandler(log_file)
+        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
+        self.log_handler.setFormatter(self.log_formatter)
+        self.logger.addHandler(self.log_handler)
+        self.logger.setLevel(logging.INFO)
+        self.logger.info('Pilot Logging Initiated')
 
     #################################################################
     # Networking
     #################################################################
-
-    def spawn_network(self):
-        # Spawn the networking object as a separate process
-        self.networking = Pilot_Networking(name=self.name, prefs=self.prefs)
-        self.networking.start()
-
-    def init_network(self):
-        # Start internal communications
-        self.context = zmq.Context()
-        self.loop = IOLoop.instance()
-
-        # Pusher sends messages to the network object
-        # listener receives them
-        self.pusher = self.context.socket(zmq.PUSH)
-        self.listener  = self.context.socket(zmq.PULL)
-
-        self.pusher.connect('tcp://localhost:{}'.format(self.prefs['MSGINPORT']))
-        self.listener.connect('tcp://localhost:{}'.format(self.prefs['MSGOUTPORT']))
-
-        # Setup listener for looping
-        self.listener = ZMQStream(self.listener, self.loop)
-        self.listener.on_recv(self.handle_listen)
-
-        # Start IOLoop in daemon thread
-        self.loop_thread = threading.Thread(target=self.loop.start)
-        self.loop_thread.daemon = True
-        self.loop_thread.start()
-
-        self.logger.info("Networking Initialized")
 
     def get_ip(self):
         # shamelessly stolen from https://www.w3resource.com/python-exercises/python-basic-exercise-55.php
@@ -164,44 +142,10 @@ class RPilot:
     def handshake(self):
         # send the terminal some information about ourselves
         hello = {'pilot':self.name, 'ip':self.ip}
-        self.send_message('ALIVE', target='T', value=hello)
+        self.node.send('T', 'ALIVE', value=hello)
 
-    def blank_LEDs(self):
-        # TODO: For some reason this dont work
-        if 'LEDS' not in self.prefs['PINS'].keys():
-            return
-
-        for position, pins in self.prefs['PINS']['LEDS'].items():
-            led = hardware.LED_RGB(pins=pins)
-            time.sleep(1.)
-            led.set_color(col=[0,0,0])
-            led.release()
-
-
-    def handle_listen(self, msg):
-        # Messages are single part json-encoded messages
-        msg = json.loads(msg[0])
-        if isinstance(msg, unicode or basestring):
-            msg = json.loads(msg)
-
-        if not all(i in msg.keys() for i in ['key', 'value']):
-            self.logger.warning('MESSAGE Improperly formatted: {}'.format(msg))
-            return
-
-        self.logger.info('MESSAGE - KEY: {}, VALUE: {}'.format(msg['key'], msg['value']))
-
-        listen_funk = self.listens[msg['key']]
-        listen_thread = threading.Thread(target=listen_funk, args=(msg['value'],))
-        listen_thread.start()
-
-    def send_message(self, key, target='', value=''):
-        msg = {'key':key, 'target':target, 'value':value}
-
-        msg_thread = threading.Thread(target=self.pusher.send_json, args=(json.dumps(msg),))
-        msg_thread.start()
-
-        self.logger.info("MESSAGE SENT - Target: {}, Key: {}, Value: {}".format(key, target, value))
-
+    def update_state(self):
+        self.node.send('T', 'STATE', self.state)
 
     def l_start(self, value):
         # TODO: If any of the sounds are 'file,' make sure we have them. If not, request them.
@@ -226,8 +170,6 @@ class RPilot:
 
         # TODO: Send a message back to the terminal with the runtime if there is one so it can handle timed stops
 
-
-
     def l_stop(self, value):
         # Let the terminal know we're stopping
         # (not stopped yet because we'll still have to sync data, etc.)
@@ -244,39 +186,34 @@ class RPilot:
         if hasattr(self, 'h5f'):
             self.h5f.close()
 
-
     def l_param(self, value):
         pass
 
     def l_levelup(self, value):
         pass
 
-
-    def update_state(self):
-        self.send_message('STATE', target='T', value = self.state)
     #################################################################
     # Hardware Init
     #################################################################
 
-    def init_pyo(self):
-        # Jackd should already be running from the launch script created by setup_pilot, we we just
-        self.pyo_server = pyo.Server(audio='jack', nchnls=int(self.prefs['NCHANNELS']),
-                                     duplex=0, buffersize=4096, sr=192000, ichnls=0)
+    def init_audio(self):
+        if self.prefs['AUDIOSERVER'] == 'pyo':
+            self.server = pyoserver.pyo_server()
+            self.logger.info("pyo server started")
+        elif self.prefs['AUDIOSERVER'] == 'jack':
+            self.server = jackclient.JackClient()
+            self.server.start()
 
-        # Deactivate MIDI because we don't use it and it's expensive
-        self.pyo_server.deactivateMidi()
+    def blank_LEDs(self):
+        # TODO: For some reason this dont work
+        if 'LEDS' not in self.prefs['PINS'].keys():
+            return
 
-        # We have to set pyo to not automatically try to connect to inputs when there aren't any
-        self.pyo_server.setJackAuto(False, True)
-
-        # debug
-        self.pyo_server.setVerbosity(8)
-
-        # Then boot and start
-        self.pyo_server.boot()
-        self.pyo_server.start()
-
-        self.logger.info("pyo server started")
+        for position, pins in self.prefs['PINS']['LEDS'].items():
+            led = hardware.LED_RGB(pins=pins)
+            time.sleep(1.)
+            led.set_color(col=[0,0,0])
+            led.release()
 
     #################################################################
     # Trial Running and Management
@@ -310,8 +247,6 @@ class RPilot:
         row = table.row
         return h5f, table, row
 
-
-
     def run_task(self):
         # Run as a separate thread, just keeps calling next() and shoveling data
 
@@ -330,11 +265,8 @@ class RPilot:
             # Calculate next stage data and prep triggers
             data = self.task.stages.next()() # Double parens because next just gives us the function, we still have to call it
 
-            print('pilot task called')
-            sys.stdout.flush()
-
             # Send data back to terminal (mouse is identified by the networking object)
-            self.send_message('DATA', target='T', value=data)
+            self.node.send('T', 'DATA', data)
 
             # Store a local copy
             # the task class has a class variable DATA that lets us know which data the row is expecting
@@ -348,13 +280,8 @@ class RPilot:
             #     row.append()
             #     table.flush()
 
-            print('pilot waiting stage block')
-            sys.stdout.flush()
             # Wait on the stage lock to clear
             self.stage_block.wait()
-
-            print('pilot wait done')
-            sys.stdout.flush()
 
             # If the running flag gets set, we're closing.
             if not self.running.is_set():
@@ -367,51 +294,6 @@ class RPilot:
 
         h5f.flush()
         h5f.close()
-
-
-class Pyo_Process(multiprocessing.Process):
-    def __init__(self, channels=2):
-        super(Pyo_Process, self).__init__()
-        self.channels = channels
-        self.daemon = False
-        self.kill_event = multiprocessing.Event()
-        self.server = None
-
-    def run(self):
-        self.start_server()
-        #self.keep_alive_thread = threading.Thread(target=self.keep_alive)
-        #self.keep_alive_thread.start()
-        #self.keep_alive_thread.join()
-        while not self.kill_event.is_set():
-            time.sleep(1)
-
-        self.server.stop()
-        print('pyo server process has been killed')
-
-
-    def start_server(self):
-        self.server = pyo.Server(audio='jack', nchnls=self.channels, duplex=0)
-        self.server.setJackAuto(False, True)
-        self.server.boot()
-        self.server.start()
-        # keep alive
-        #threading.Timer(1, self.keep_alive).start()
-        #self.live_thread = threading.Thread(target=self.keep_alive)
-        #self.live_thread.start()
-
-        #while not self.kill:
-        #    time.sleep(1)
-
-    def keep_alive(self):
-        while not self.kill_event.is_set():
-            time.sleep(1)
-
-    def kill(self):
-        self.kill_event.set()
-
-
-
-
 
 
 if __name__ == '__main__':
@@ -432,10 +314,18 @@ if __name__ == '__main__':
     else:
         prefs_file = args.prefs
 
-    with open(prefs_file) as prefs_file_open:
-        prefs = json.load(prefs_file_open)
+    prefs.init(prefs_file)
 
-    a = RPilot(prefs)
+    with open(prefs_file) as prefs_file_open:
+        prefs_dict = json.load(prefs_file_open)
+
+    if 'AUDIOSERVER' in prefs_dict.keys():
+        if prefs_dict['AUDIOSERVER'] == 'pyo':
+            from sound import pyoserver
+        elif prefs_dict['AUDIOSERVER'] == 'jack':
+            from sound import jackclient
+
+    a = RPilot(prefs_dict)
 
 
 

@@ -1,9 +1,11 @@
 # Re: The organization of this module
-# We balance two things:
+# We balance a few things:
 # 1) using two sound servers with very different approaches to
 # delivering sounds, and
 # 2) having a similar API so other modules can query sound properties
 # while still being agnostic to the sound server.
+# 3) not have our classes split into a ton of Pyo_Tone, Jack_Tone
+# copies so they have their parameters and behavior drift apart
 #
 # So, We have base classes, but they can't encapsulate all the
 # behavior for making sounds, so use an init_audio() method that
@@ -18,7 +20,7 @@ from scipy.io import wavfile
 from scipy.signal import resample
 import numpy as np
 
-from .. import prefs
+import prefs
 
 # switch behavior based on audio server type
 try:
@@ -30,7 +32,7 @@ except:
 if server_type == "pyo":
     import pyo
 elif server_type == "jack":
-    import jackserver
+    import jackclient
 else:
     # just importing to query parameters, not play sounds.
     pass
@@ -86,16 +88,21 @@ class Jack_Sound(object):
     chunks    = None # table split into a list of chunks
     trigger   = None
     nsamples  = None
-    fs        = jackserver.FS
-    blocksize = jackserver.BLOCKSIZE
-    server    = jackserver.SERVER
+    fs        = jackclient.FS
+    blocksize = jackclient.BLOCKSIZE
+    server    = jackclient.SERVER
+    q         = jackclient.QUEUE
+    q_lock    = jackclient.Q_LOCK
+    play_evt  = jackclient.PLAY
     server_type = 'jack'
+    buffered  = False
 
     def __init__(self):
         pass
 
     def chunk(self):
         # break sound into chunks
+
         sound = self.table.astype(np.float32)
         sound_list = [sound[i:i+self.blocksize] for i in range(0, sound.shape[0], self.blocksize)]
         if sound_list[-1].shape[0] < self.blocksize:
@@ -110,7 +117,29 @@ class Jack_Sound(object):
 
     def get_nsamples(self):
         # given our fs and duration, how many samples do we need?
-        self.nsamples = np.ceil((self.duration/1000.)*self.fs).as_type(np.int)
+        self.nsamples = np.ceil((self.duration/1000.)*self.fs).astype(np.int)
+
+    def buffer(self):
+        if not self.chunks:
+            self.chunk()
+
+        with self.q_lock:
+            for frame in self.chunks:
+                self.q.put_nowait(frame)
+            # The jack server looks for a None object to clear the play flag
+            self.q.put_nowait(None)
+            self.buffered = True
+
+    def play(self):
+        if not self.buffered:
+            self.buffer()
+
+        self.play_evt.set()
+        self.buffered = False
+
+
+
+
 
 
 ####################
@@ -146,7 +175,8 @@ class Tone(BASE_CLASS):
         elif self.server_type == 'jack':
             self.get_nsamples()
             t = np.arange(self.nsamples)
-            self.table = self.amplitude*np.sin(2*np.pi*self.frequency*t/self.fs)
+            self.table = (self.amplitude*np.sin(2*np.pi*self.frequency*t/self.fs)).astype(np.float32)
+            #self.table = np.column_stack((self.table, self.table))
             self.chunk()
 
 class Noise(BASE_CLASS):
@@ -220,7 +250,7 @@ class Speech(File):
         self.vowel = vowel
         self.token = token
 
-        self.init_sound()
+        # sound is init'd in the superclass
 
 
 
@@ -238,15 +268,16 @@ SOUND_LIST = {
     'speech':Speech
 }
 
+# These parameters are strings not numbers... jonny should do this better
 STRING_PARAMS = ['path', 'speaker', 'consonant', 'vowel', 'type']
 
 
 def int_to_float(audio):
     if audio.dtype == 'int16':
-        audio = audio.astype(np.float16)
+        audio = audio.astype(np.float32)
         audio = audio / (float(2 ** 16) / 2)
     elif audio.dtype == 'int32':
-        audio = audio.astype(np.float16)
+        audio = audio.astype(np.float32)
         audio = audio / (float(2 ** 32) / 2)
 
     return audio
