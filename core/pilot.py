@@ -20,14 +20,12 @@ import json
 import argparse
 import threading
 import time
-import multiprocessing
 import socket
 
-import pyo
 import tables
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from networking import Pilot_Networking, Net_Node, Message
+from networking import Pilot_Networking, Net_Node
 import tasks
 import hardware
 import prefs
@@ -321,9 +319,9 @@ if __name__ == '__main__':
 
     if 'AUDIOSERVER' in prefs_dict.keys():
         if prefs_dict['AUDIOSERVER'] == 'pyo':
-            from sound import pyoserver
+            from stim.sound import pyoserver, jackclient
         elif prefs_dict['AUDIOSERVER'] == 'jack':
-            from sound import jackclient
+            pass
 
     a = RPilot(prefs_dict)
 

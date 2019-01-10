@@ -45,6 +45,7 @@ TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
 - change prefs to use module instead of passing a dict around
 - make drop-in networking class for 'local' networking
 - networking should probably just be router-only.
+- unify parameter structure
 
 order of code review:
 !- terminal

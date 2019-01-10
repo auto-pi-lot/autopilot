@@ -10,7 +10,7 @@ from PySide import QtGui, QtCore
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from mouse import Mouse
 import tasks
-from sound import sounds
+from stim.sound import sounds
 
 
 class Control_Panel(QtGui.QWidget):

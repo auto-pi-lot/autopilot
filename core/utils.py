@@ -3,6 +3,40 @@ from PySide import QtCore
 import json
 from subprocess import call
 
+class Param(object):
+    # Class to hold and verify task and gui parameters
+    tag = None # human-readable description of parameter
+    type = None # string that describes the type of input or param
+
+    # possible types
+    types = ['int', 'check', 'list']
+
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+    # enable dictionary-like behavior
+    def __getitem__(self, key):
+        return self.__dict__[key]
+
+    def __setitem__(self, key, value):
+        self.__dict__[key] = value
+
+    def __delitem__(self, key):
+        del self.__dict__[key]
+
+    def __contains__(self, key):
+        return key in self.__dict__
+
+    def __len__(self):
+        return len(self.__dict__)
+
+    # def validate(self):
+    #     if all([self.id, self.to, self.sender, self.key]):
+    #         return True
+    #     else:
+    #         return False
+
 def dict_from_HDF5(dictGroup):
     newDict={}
     for k,v in dictGroup.iteritems():

@@ -17,7 +17,7 @@ import warnings
 sys.path.append('~/git/RPilot')
 import tasks
 import threading
-from sound.sounds import STRING_PARAMS
+from stim.sound.sounds import STRING_PARAMS
 
 if sys.version_info >= (3,0):
     import queue
