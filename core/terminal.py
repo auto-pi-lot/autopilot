@@ -21,9 +21,8 @@ from plots import Plot_Widget
 from networking import Terminal_Networking, Net_Node
 from utils import InvokeEvent, Invoker
 from gui import Control_Panel, Protocol_Wizard, Weights, Reassign
-from .. import prefs
+import prefs
 
-# TODO: Oh holy hell just rewrite all the inter-widget communication as zmq
 # TODO: Be more complete about generating logs
 # TODO: Make exit graceful
 # TODO: Make 'edit mouse' button
@@ -38,7 +37,6 @@ class Terminal(QtGui.QMainWindow):
     GUI for RPilot Terminal
     '''
     ## Declare attributes
-    prefs = None
 
     # networking
     context       = None
@@ -57,12 +55,11 @@ class Terminal(QtGui.QMainWindow):
     # gui
     widget = None
 
-    def __init__(self, prefs):
+    def __init__(self):
         super(Terminal, self).__init__()
-        self.prefs = prefs
 
         # Load pilots db as ordered dictionary
-        with open(self.prefs['PILOT_DB']) as pilot_file:
+        with open(prefs.PILOT_DB) as pilot_file:
             self.pilots = json.load(pilot_file, object_pairs_hook=odict)
 
         # Start Logging
@@ -94,7 +91,7 @@ class Terminal(QtGui.QMainWindow):
 
     def init_logging(self):
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(self.prefs['LOGDIR'], 'Terminal_Log_{}.log'.format(timestr))
+        log_file = os.path.join(prefs.LOGDIR, 'Terminal_Log_{}.log'.format(timestr))
 
         self.logger        = logging.getLogger('main')
         self.log_handler   = logging.FileHandler(log_file)
@@ -159,12 +156,10 @@ class Terminal(QtGui.QMainWindow):
         # Control panel sits on the left, controls pilots & mice
         self.control_panel = Control_Panel(pilots=self.pilots,
                                            mice=self.mice,
-                                           msg_fn=self.send_message,
-                                           prefs=self.prefs)
+                                           msg_fn=self.send_message)
 
         # Data panel sits on the right, plots stuff.
-        self.data_panel = Plot_Widget(prefs=self.prefs,
-                                      invoker=self.invoker)
+        self.data_panel = Plot_Widget(invoker=self.invoker)
         self.data_panel.init_plots(self.pilots.keys())
 
         # Set heights on control panel and data panel
@@ -173,7 +168,7 @@ class Terminal(QtGui.QMainWindow):
 
         # Logo goes up top
         self.logo = QtGui.QLabel()
-        self.logo.setPixmap(QtGui.QPixmap(prefs['REPODIR']+'/graphics/logo.png').scaled(265,40))
+        self.logo.setPixmap(QtGui.QPixmap(prefs.REPODIR+'/graphics/logo.png').scaled(265,40))
         self.logo.setFixedHeight(40)
         self.logo.setAlignment(QtCore.Qt.AlignLeft)
 
@@ -249,7 +244,7 @@ class Terminal(QtGui.QMainWindow):
         # self.pusher.identity = '_T'.encode('utf-8')
         #
         # self.pusher.connect('tcp://localhost:{}'.format(prefs.LISTENPORT))
-        # self.subscriber.connect('tcp://localhost:{}'.format(prefs['PUBPORT']))
+        # self.subscriber.connect('tcp://localhost:{}'.format(prefs.PUBPORT']))
         # self.subscriber.setsockopt(zmq.SUBSCRIBE, b'T') # Subscribe as "T"erminal
         # self.subscriber.setsockopt(zmq.SUBSCRIBE, b'X') # Subscribe to All
         #
@@ -369,7 +364,7 @@ class Terminal(QtGui.QMainWindow):
             pass
 
     def new_protocol(self):
-        self.new_protocol_window = Protocol_Wizard(self.prefs)
+        self.new_protocol_window = Protocol_Wizard()
         self.new_protocol_window.exec_()
 
         if self.new_protocol_window.result() == 1:
@@ -387,12 +382,12 @@ class Terminal(QtGui.QMainWindow):
             # Name the protocol
             name, ok = QtGui.QInputDialog.getText(self, "Name Protocol", "Protocol Name:")
             if ok and name != '':
-                protocol_file = os.path.join(prefs['PROTOCOLDIR'], name + '.json')
+                protocol_file = os.path.join(prefs.PROTOCOLDIR, name + '.json')
                 with open(protocol_file, 'w') as pfile_open:
                     json.dump(save_steps, pfile_open)
             elif name == '' or not ok:
                 placeholder_name = 'protocol_created_{}'.format(datetime.date.today().isoformat())
-                protocol_file = os.path.join(prefs['PROTOCOLDIR'], placeholder_name + '.json')
+                protocol_file = os.path.join(prefs.PROTOCOLDIR, placeholder_name + '.json')
                 with open(protocol_file, 'w') as pfile_open:
                     json.dump(save_steps, pfile_open)
 
@@ -428,7 +423,7 @@ class Terminal(QtGui.QMainWindow):
         # If we change the protocol file, update the stored version in mouse files
 
         # get list of protocol files
-        protocols = os.listdir(self.prefs['PROTOCOLDIR'])
+        protocols = os.listdir(prefs.PROTOCOLDIR)
         protocols = [p for p in protocols if p.endswith('.json')]
 
 
@@ -441,7 +436,7 @@ class Terminal(QtGui.QMainWindow):
             if any(protocol_bool):
                 which_prot = np.where(protocol_bool)[0][0]
                 protocol = protocols[which_prot]
-                self.mice[mouse].assign_protocol(os.path.join(self.prefs['PROTOCOLDIR'], protocol), step_n=self.mice[mouse].step)
+                self.mice[mouse].assign_protocol(os.path.join(prefs.PROTOCOLDIR, protocol), step_n=self.mice[mouse].step)
 
         msgbox = QtGui.QMessageBox()
         msgbox.setText("Mouse Protocols Updated")
@@ -450,7 +445,7 @@ class Terminal(QtGui.QMainWindow):
     def reassign_protocols(self):
 
         # get list of protocol files
-        protocols = os.listdir(self.prefs['PROTOCOLDIR'])
+        protocols = os.listdir(prefs.PROTOCOLDIR)
         protocols = [os.path.splitext(p)[0] for p in protocols if p.endswith('.json')]
 
         # get mice and current protocols
@@ -462,7 +457,7 @@ class Terminal(QtGui.QMainWindow):
 
             mice_protocols[mouse] = [self.mice[mouse].protocol_name, self.mice[mouse].step]
 
-        reassign_window = Reassign(mice_protocols, protocols, self.prefs['PROTOCOLDIR'])
+        reassign_window = Reassign(mice_protocols, protocols, prefs.PROTOCOLDIR)
         reassign_window.exec_()
 
         if reassign_window.result() == 1:
@@ -473,14 +468,14 @@ class Terminal(QtGui.QMainWindow):
                 protocol = protocol[0]
                 if self.mice[mouse].protocol_name != protocol:
                     self.logger.info('Setting {} protocol from {} to {}'.format(mouse, self.mice[mouse].protocol_name, protocol))
-                    protocol_file = os.path.join(self.prefs['PROTOCOLDIR'], protocol + '.json')
+                    protocol_file = os.path.join(prefs.PROTOCOLDIR, protocol + '.json')
                     self.mice[mouse].assign_protocol(protocol_file, step)
 
             # protocol_bool = [self.mice[mouse].protocol_name == p.strip('.json') for p in protocols]
             # if any(protocol_bool):
             #     which_prot = np.where(protocol_bool)[0][0]
             #     protocol = protocols[which_prot]
-            #     self.mice[mouse].assign_protocol(os.path.join(self.prefs['PROTOCOLDIR'], protocol), step_n=self.mice[mouse].step)
+            #     self.mice[mouse].assign_protocol(os.path.join(prefs.PROTOCOLDIR'], protocol), step_n=self.mice[mouse].step)
 
 
 
@@ -532,7 +527,6 @@ if __name__ == '__main__':
         prefs_file = args.prefs
 
     # init prefs for module access
-    # TODO: passing prefs dict for compatibility for now, but should use module
     prefs.init(prefs_file)
 
     #with open(prefs_file) as prefs_file_open:
@@ -540,7 +534,7 @@ if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)
     app.setStyle('plastique') # Keeps some GTK errors at bay
-    ex = Terminal(prefs=prefs.prefdict)
+    ex = Terminal()
     sys.exit(app.exec_())
 
 

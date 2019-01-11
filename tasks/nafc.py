@@ -26,8 +26,12 @@ try:
 except ImportError:
     Warning('pyo could not be loaded, sounds will be unavailable!')
 from core import hardware
+from tasks import Task
 from stim.sound import sounds
+from stim import Stim_Manager
 from collections import OrderedDict as odict
+
+import prefs
 
 # This declaration allows Mouse to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
 # TODO: Move this to __init__
@@ -35,7 +39,7 @@ TASK = 'Nafc'
 
 # TODO: Make meta task class that has logic for loading sounds, starting pyo server etc.
 
-class Nafc(object):
+class Nafc(Task):
     """
     Actually 2afc, but can't have number as first character of class.
     Template for 2afc tasks. Pass in a dict. of sounds & other parameters,
@@ -121,7 +125,7 @@ class Nafc(object):
         }
     }
 
-    def __init__(self, prefs=None, stage_block=None, sounds=None, reward=50, req_reward=False,
+    def __init__(self, stage_block=None, stim=None, reward=50, req_reward=False,
                  punish_sound=False, punish_dur=100, correction=True, pct_correction=50,
                  bias_mode=1, bias_threshold=15, timeout=10000, current_trial=0, **kwargs):
         # Sounds come in two flavors
@@ -144,20 +148,16 @@ class Nafc(object):
         #     that side will only be the target 35% of the time.
         # Pass assign as 1 to be prompted for all necessary params.
 
-        if not sounds:
-            raise RuntimeError("Cant instantiate task without sounds!")
+        super(Nafc, self).__init__()
 
-        # If we aren't passed prefs, try to load them from default location
-        if not prefs:
-            prefs_file = '/usr/rpilot/prefs.json'
-            if not os.path.exists(prefs_file):
-                raise RuntimeError("No prefs file passed and none found in {}".format(prefs_file))
 
-            with open(prefs_file) as prefs_file_open:
-                prefs = json.load(prefs_file_open)
-                raise Warning('No prefs file passed, loaded from default location. Should pass explicitly')
+        if not stim:
+            raise RuntimeError("Cant instantiate task without stimuli!")
+        else:
+            self.stim = Stim_Manager(stim)
 
-        self.prefs = prefs
+        # give the sounds a function to call when they end
+        self.stim.set_triggers(self.stim_end)
 
         # If we aren't passed an event handler
         # (used to signal that a trigger has been tripped),
@@ -167,15 +167,10 @@ class Nafc(object):
         else:
             self.stage_block = stage_block
 
-        # We use another event handler to block for punishment without blocking stage calculation
-        self.punish_block = threading.Event()
-        self.punish_block.set()
-
         # Fixed parameters
         # Because the current protocol is json.loads from a string,
         # we should explicitly type everything to be safe.
-        self.soundict       = sounds
-        self.reward         = int(reward)
+        self.reward         = float(reward)
         self.req_reward     = bool(req_reward)
         self.punish_sound   = bool(punish_sound)
         self.punish_dur     = float(punish_dur)
@@ -215,90 +210,10 @@ class Nafc(object):
         self.stages = itertools.cycle(stage_list)
 
         # Initialize hardware
-        # TODO: class subtypes with different hardware
-        self.pins = {}
-        self.pin_id = {} # Take pin numbers back to letters
         self.init_hardware()
+        self.set_reward(reward)
 
-        # Load sounds
-        #self.init_pyo()
-        self.sounds       = {}
-        self.sound_lookup = {}
-        self.load_sounds()
 
-    def init_hardware(self):
-        # We use the HARDWARE dict that specifies what we need to run the task
-        # alongside the PINS subdict in the prefs structure to tell us how they're plugged in to the pi
-        self.pins = {}
-        self.pin_id = {} # Reverse dict to identify pokes
-        pin_numbers = self.prefs['PINS']
-
-        # We first iterate through the types of hardware we need
-        for type, values in self.HARDWARE.items():
-            self.pins[type] = {}
-            # Then switch depending on the type
-            # First IR beambreak nosepokes
-            if type == 'POKES':
-                for pin, handler in values.items():
-                    try:
-                        self.pin_id[pin_numbers[type][pin]] = pin
-                        # Instantiate poke class, assign callback, and make reverse dict
-                        self.pins[type][pin] = handler(pin_numbers[type][pin])
-                        self.pins[type][pin].assign_cb(self.handle_trigger)
-                        # If center port, add an additional callback for when something leaves it
-                        # TODO: Disabling for now, make with a bounce time
-                        #if pin == 'C':
-                        #    self.pins[type][pin].assign_cb(self.center_out, manual_trigger='U', add=True)
-                    except:
-                        # TODO: More informative exception
-                        Exception('Something went wrong instantiating pins, tell jonny to handle this better!')
-
-            # Then LEDs
-            elif type == 'LEDS':
-                for pin, handler in values.items():
-                    try:
-                        self.pins[type][pin] = handler(pins=pin_numbers[type][pin])
-                    except:
-                        Exception("Something wrong instantiating LEDs")
-
-            elif type == 'PORTS':
-                for pin, handler in values.items():
-                    try:
-                        self.pins[type][pin] = handler(pin_numbers[type][pin], duration=self.reward)
-                    except:
-                        Exception('Something wrong instantiating solenoids')
-            else:
-                Exception('HARDWARE dict misspecified in class definition')
-
-    def load_sounds(self):
-        # TODO: Definitely put this in a metaclass
-
-        # Iterate through sounds and load them to memory
-        for k, v in self.soundict.items():
-            # If multiple sounds on one side, v will be a list
-            if isinstance(v, list):
-                self.sounds[k] = []
-                for sound in v:
-                    if sound['type'] in ['File', 'Speech']:
-                        # prepend sounddir
-                        sound['path'] = os.path.join(self.prefs['SOUNDDIR'], sound['path'])
-                    # We send the dict 'sound' to the function specified by 'type' and 'SOUND_LIST' as kwargs
-                    self.sounds[k].append(sounds.SOUND_LIST[sound['type']](**sound))
-                    # Then give the sound a callback to mark when it's finished
-                    self.sounds[k][-1].set_trigger(self.stim_end)
-            # If not a list, a single sound
-            else:
-                if v['type'] in ['File', 'Speech']:
-                    # prepend sounddir
-                    v['path'] = os.path.join(self.prefs['SOUNDDIR'], v['path'])
-                self.sounds[k] = sounds.SOUND_LIST[v['type']](**v)
-                self.sounds[k].set_trigger(self.stim_end)
-
-        # If we want a punishment sound...
-        if self.punish_sound:
-            self.sounds['punish'] = sounds.Noise(self.punish_dur)
-            #change_to_green = lambda: self.pins['LEDS']['C'].set_color([0, 255, 0])
-            #self.sounds['punish'].set_trigger(change_to_green)
 
     def handle_trigger(self, pin, level, tick):
         # All triggers call this function with the pin number, level (high, low), and ticks since booting pigpio

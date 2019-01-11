@@ -46,19 +46,8 @@ class RPilot:
     node = None
     networking = None
 
-    def __init__(self, prefs=None):
-        # If we weren't handed prefs, try to load them from the default location
-        if not prefs:
-            prefs_file = '/usr/rpilot/prefs.json'
-            if not os.path.exists(prefs_file):
-                raise RuntimeError("No prefs file passed and none found in {}".format(prefs_file))
-
-            with open(prefs_file) as prefs_file_open:
-                prefs = json.load(prefs_file_open)
-                raise Warning('No prefs file passed, loaded from default location. Should pass explicitly')
-
-        self.prefs = prefs
-        self.name = self.prefs['NAME']
+    def __init__(self):
+        self.name = prefs.NAME
 
         self.init_logging()
 
@@ -68,7 +57,7 @@ class RPilot:
         self.file_block = threading.Event() # Are we waiting on file transfer?
 
         # Init audio server
-        if 'AUDIOSERVER' in self.prefs.keys():
+        if hasattr(prefs,'AUDIOSERVER'):
             self.init_audio()
 
         # Init Networking
@@ -81,19 +70,22 @@ class RPilot:
         }
 
         # spawn_network gives us the independent message-handling process
-        self.networking = Pilot_Networking(prefs=self.prefs)
+        self.networking = Pilot_Networking()
         self.networking.start()
         self.node = Net_Node(id = "_{}".format(self.name),
                              upstream = self.name,
-                             port = self.prefs['LISTENPORT'],
+                             port = prefs.LISTENPORT,
                              listens = self.listens,
                              instance=False)
 
         # if we need to set pins pulled up or down, do that now
-        if 'PULLPINS' in self.prefs.keys():
-            self.pulls = []
-            for pin, updown in self.prefs['PULLPINS'].items():
-                self.pulls.append(hardware.Pull(int(pin), pud=int(updown)))
+        self.pulls = []
+        if hasattr(prefs,'PULLUPS'):
+            for pin in prefs.PULLUPS:
+                self.pulls.append(hardware.Pull(int(pin), pud=int(1)))
+        if hasattr(prefs,'PULLDOWNS'):
+            for pin in prefs.PULLDOWNS:
+                self.pulls.append(hardware.Pull(int(pin), pud=int(0)))
 
         # Set and update state
         self.state = 'IDLE' # or 'Running'
@@ -110,7 +102,7 @@ class RPilot:
     def init_logging(self):
         # Start Logging
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(self.prefs['LOGDIR'], 'Pilots_Log_{}.log'.format(timestr))
+        log_file = os.path.join(prefs.LOGDIR, 'Pilots_Log_{}.log'.format(timestr))
 
         self.logger = logging.getLogger('main')
         self.log_handler = logging.FileHandler(log_file)
@@ -154,7 +146,7 @@ class RPilot:
         task_class = tasks.TASK_LIST[value['task_type']]
         # Instantiate the task
         self.stage_block.clear()
-        self.task = task_class(prefs=self.prefs, stage_block=self.stage_block, **value)
+        self.task = task_class(stage_block=self.stage_block, **value)
 
         # Make a group for this mouse if we don't already have one
         self.mouse = value['mouse']
@@ -195,19 +187,19 @@ class RPilot:
     #################################################################
 
     def init_audio(self):
-        if self.prefs['AUDIOSERVER'] == 'pyo':
+        if prefs.AUDIOSERVER == 'pyo':
             self.server = pyoserver.pyo_server()
             self.logger.info("pyo server started")
-        elif self.prefs['AUDIOSERVER'] == 'jack':
+        elif prefs.AUDIOSERVER == 'jack':
             self.server = jackclient.JackClient()
             self.server.start()
 
     def blank_LEDs(self):
         # TODO: For some reason this dont work
-        if 'LEDS' not in self.prefs['PINS'].keys():
+        if 'LEDS' not in prefs.PINS.keys():
             return
 
-        for position, pins in self.prefs['PINS']['LEDS'].items():
+        for position, pins in prefs.PINS['LEDS'].items():
             led = hardware.LED_RGB(pins=pins)
             time.sleep(1.)
             led.set_color(col=[0,0,0])
@@ -221,7 +213,7 @@ class RPilot:
         # Get data table descriptor
         table_descriptor = self.task.TrialData
 
-        local_file = os.path.join(self.prefs['DATADIR'], 'local.h5')
+        local_file = os.path.join(prefs.DATADIR, 'local.h5')
         h5f = tables.open_file(local_file, mode='a')
 
         try:
@@ -314,16 +306,13 @@ if __name__ == '__main__':
 
     prefs.init(prefs_file)
 
-    with open(prefs_file) as prefs_file_open:
-        prefs_dict = json.load(prefs_file_open)
-
-    if 'AUDIOSERVER' in prefs_dict.keys():
-        if prefs_dict['AUDIOSERVER'] == 'pyo':
+    if hasattr(prefs_dict, 'AUDIOSERVER'):
+        if prefs.AUDIOSERVER == 'pyo':
             from stim.sound import pyoserver, jackclient
-        elif prefs_dict['AUDIOSERVER'] == 'jack':
+        elif prefs.AUDIOSERVER == 'jack':
             pass
 
-    a = RPilot(prefs_dict)
+    a = RPilot()
 
 
 

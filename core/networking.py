@@ -53,23 +53,10 @@ class Networking(multiprocessing.Process):
     listens      = None    # Dictionary of functions to call for different types of messages
     senders      = [] # who has sent us stuff (ie. directly connected)
 
-    def __init__(self, prefs=None):
+    def __init__(self):
         super(Networking, self).__init__()
         # Prefs should be passed by the terminal, if not, try to load from default locatio
-        # QtCore.QThread.__init__(self)
-        if not prefs:
-            try:
-                with open('/usr/rpilot/prefs.json') as op:
-                    self.prefs = json.load(op)
-            except:
-                Exception('No Prefs for networking class')
-        else:
-            self.prefs = prefs
 
-        # # Store some prefs values
-        # self.pub_port = self.prefs['PUBPORT']
-        # self.listen_port = self.prefs['LISTENPORT']
-        # self.message_port = self.prefs['MSGPORT']
 
         self.ip = self.get_ip()
 
@@ -226,7 +213,7 @@ class Networking(multiprocessing.Process):
 
         # Setup logging
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(self.prefs['LOGDIR'], 'Networking_Log_{}.log'.format(timestr))
+        log_file = os.path.join(prefs.LOGDIR, 'Networking_Log_{}.log'.format(timestr))
 
         self.logger = logging.getLogger('networking')
         self.log_handler = logging.FileHandler(log_file)
@@ -252,23 +239,14 @@ class Networking(multiprocessing.Process):
         return unwrap2
 
 class Terminal_Networking(Networking):
-    def __init__(self, prefs=None):
-        if not prefs:
-            try:
-                with open('/usr/rpilot/prefs.json') as op:
-                    self.prefs = json.load(op)
-            except:
-                Exception('No Prefs for networking class')
-        else:
-            self.prefs = prefs
-
-        super(Terminal_Networking, self).__init__(self.prefs)
+    def __init__(self):
+        super(Terminal_Networking, self).__init__()
 
         # by default terminal doesn't have a pusher, everything connects to it
         self.pusher = False
 
         # Store some prefs values
-        self.listen_port = self.prefs['LISTENPORT']
+        self.listen_port = prefs.LISTENPORT
         self.id = b'T'
 
         # Message dictionary - What method to call for each type of message received by the terminal class
@@ -389,7 +367,7 @@ class Terminal_Networking(Networking):
         # The <target> pi has requested some file <value> from us, let's send it back
         # This assumes the file is small, if this starts crashing we'll have to split the message...
 
-        full_path = os.path.join(self.prefs['SOUNDDIR'], msg.value)
+        full_path = os.path.join(prefs.SOUNDDIR, msg.value)
         with open(full_path, 'rb') as open_file:
             # encode in base64 so json doesn't complain
             file_contents = base64.b64encode(open_file.read())
@@ -399,25 +377,16 @@ class Terminal_Networking(Networking):
         self.send(msg.target, 'FILE', file_message)
 
 class Pilot_Networking(Networking):
-    def __init__(self, prefs=None):
-        if not prefs:
-            try:
-                with open('/usr/rpilot/prefs.json') as op:
-                    self.prefs = json.load(op)
-            except:
-                Exception('No Prefs for networking class')
-        else:
-            self.prefs = prefs
-
+    def __init__(self):
         # Pilot has a pusher - connects back to terminal
         self.pusher = True
         self.push_id = 'T'
 
         # Store some prefs values
-        self.listen_port = self.prefs['LISTENPORT']
-        self.push_port = self.prefs['PUSHPORT']
-        self.push_ip = self.prefs['TERMINALIP']
-        self.id = self.prefs['NAME'].encode('utf-8')
+        self.listen_port = prefs.LISTENPORT
+        self.push_port = prefs.PUSHPORT
+        self.push_ip = prefs.TERMINALIP
+        self.id = prefs.NAME.encode('utf-8')
         self.pi_id = "_{}".format(self.id)
         self.mouse = None # Store current mouse ID
 
@@ -433,7 +402,7 @@ class Pilot_Networking(Networking):
             'FILE': self.l_file,  # We are receiving a file
         }
 
-        super(Pilot_Networking, self).__init__(self.prefs)
+        super(Pilot_Networking, self).__init__()
 
 
     ###########################3
@@ -475,7 +444,7 @@ class Pilot_Networking(Networking):
             if len(f_sounds)>0:
                 # check to see if we have these files, if not, request them
                 for sound in f_sounds:
-                    full_path = os.path.join(self.prefs['SOUNDDIR'], sound['path'])
+                    full_path = os.path.join(prefs.SOUNDDIR, sound['path'])
                     if not os.path.exists(full_path):
                         # We ask the terminal to send us the file and then wait.
                         self.logger.info('REQUESTING SOUND {}'.format(sound['path']))
@@ -498,7 +467,7 @@ class Pilot_Networking(Networking):
     def l_file(self, msg):
         # The file should be of the structure {'path':path, 'file':contents}
 
-        full_path = os.path.join(self.prefs['SOUNDDIR'], msg.value['path'])
+        full_path = os.path.join(prefs.SOUNDDIR, msg.value['path'])
         # TODO: give Message full deserialization capabilities including this one
         file_data = base64.b64decode(msg.value['file'])
         try:
@@ -587,9 +556,12 @@ class Net_Node(object):
             self.logger.info('RECEIVED:\n{}'.format(str(msg)))
 
         # Log and spawn thread to respond to listen
-        listen_funk = self.listens[msg.key]
-        listen_thread = threading.Thread(target=listen_funk, args=(msg.value,))
-        listen_thread.start()
+        try:
+            listen_funk = self.listens[msg.key]
+            listen_thread = threading.Thread(target=listen_funk, args=(msg.value,))
+            listen_thread.start()
+        except KeyError:
+            self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
 
     def send(self, to=None, key=None, value=None):
         # send message via the dealer

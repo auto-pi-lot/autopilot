@@ -13,10 +13,12 @@
 
 # TODO: Be a whole lot more robust about handling different numbers of channels
 
+import os
 from time import sleep
 from scipy.io import wavfile
 from scipy.signal import resample
 import numpy as np
+import threading
 
 import prefs
 
@@ -92,6 +94,7 @@ class Jack_Sound(object):
     q         = jackclient.QUEUE
     q_lock    = jackclient.Q_LOCK
     play_evt  = jackclient.PLAY
+    stop_evt  = jackclient.STOP
     server_type = 'jack'
     buffered  = False
 
@@ -109,9 +112,20 @@ class Jack_Sound(object):
                                     'constant')
         self.chunks = sound_list
 
-    def set_trigger(self):
-        # TODO: Implement sound-end triggers in jack sounds
-        pass
+    def set_trigger(self, trig_fn):
+        if callable(trig_fn):
+            self.trigger = trig_fn
+        else:
+            Exception('trigger must be callable')
+
+    def wait_trigger(self):
+        # wait for our duration plus a second at most.
+        self.stop_evt.wait((self.duration+1000)/1000.)
+        # if the sound actually stopped...
+        if self.stop_evt.is_set():
+            self.trigger()
+
+
 
     def get_nsamples(self):
         # given our fs and duration, how many samples do we need?
@@ -133,7 +147,13 @@ class Jack_Sound(object):
             self.buffer()
 
         self.play_evt.set()
+        self.stop_evt.clear()
         self.buffered = False
+
+        if callable(self.trigger):
+            threading.Thread(target=self.wait_trigger).start()
+
+
 
 
 
@@ -207,7 +227,13 @@ class File(BASE_CLASS):
     def __init__(self, path, amplitude=0.01, **kwargs):
         super(File, self).__init__()
 
-        self.path = path
+        if os.path.exists(path):
+            self.path = path
+        elif os.path.exists(os.path.join(prefs.SOUNDDIR, path)):
+            self.path = os.path.join(prefs.SOUNDDIR, path)
+        else:
+            Exception('Could not find {} in current directory or sound directory'.format(path))
+
         self.amplitude = float(amplitude)
 
         self.init_sound()

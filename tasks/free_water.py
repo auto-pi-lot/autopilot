@@ -5,6 +5,7 @@ import json
 import itertools
 import random
 import datetime
+import prefs
 
 from core import hardware
 
@@ -62,20 +63,8 @@ class Free_Water:
         }
     }
 
-    def __init__(self, prefs=None, stage_block=None, current_trial=0,
+    def __init__(self, stage_block=None, current_trial=0,
                  reward=50, allow_repeat=False, **kwargs):
-
-        # Try to rescue prefs if we don't have 'em
-        if not prefs:
-            prefs_file = '/usr/rpilot/prefs.json'
-            if not os.path.exists(prefs_file):
-                raise RuntimeError("No prefs file passed and none found in {}".format(prefs_file))
-
-            with open(prefs_file) as prefs_file_open:
-                prefs = json.load(prefs_file_open)
-                raise Warning('No prefs file passed, loaded from default location. Should pass explicitly')
-
-        self.prefs = prefs
 
         if not stage_block:
             raise Warning('No stage_block Event() was passed, youll need to handle stage progression on your own')
@@ -179,7 +168,7 @@ class Free_Water:
         # alongside the PINS subdict in the prefs structure to tell us how they're plugged in to the pi
         self.pins = {}
         self.pin_id = {} # Reverse dict to identify pokes
-        pin_numbers = self.prefs['PINS']
+        pin_numbers = prefs.PINS
 
         # We first iterate through the types of hardware we need
         for type, values in self.HARDWARE.items():

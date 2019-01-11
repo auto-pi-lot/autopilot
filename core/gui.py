@@ -11,17 +11,15 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from mouse import Mouse
 import tasks
 from stim.sound import sounds
+import prefs
 
 
 class Control_Panel(QtGui.QWidget):
     # Hosts two nested tab widgets to select pilot and mouse,
     # set params, run mice, etc.
 
-    def __init__(self, pilots=None, mice=None, msg_fn=None, prefs=None):
+    def __init__(self, pilots=None, mice=None, msg_fn=None):
         super(Control_Panel, self).__init__()
-        # We should be passed a pilot odict {'pilot':[mouse1, mouse2]}
-        # If we're not, try to load prefs, and if we don't have prefs, from default loc.
-        self.prefs = prefs
 
         # We share a dict of mouse objects with the main Terminal class to avoid access conflicts
         self.mice = mice
@@ -34,7 +32,7 @@ class Control_Panel(QtGui.QWidget):
         else:
             try:
                 # Try finding prefs in the encapsulating namespaces
-                with open(prefs['PILOT_DB']) as pilot_file:
+                with open(prefs.PILOT_DB) as pilot_file:
                     self.pilots = json.load(pilot_file, object_pairs_hook=odict)
             except NameError:
                 try:
@@ -147,7 +145,7 @@ class Control_Panel(QtGui.QWidget):
 
 
     def create_mouse(self, pilot):
-        new_mouse_wizard = New_Mouse_Wizard(self.prefs['PROTOCOLDIR'])
+        new_mouse_wizard = New_Mouse_Wizard(prefs.PROTOCOLDIR)
         new_mouse_wizard.exec_()
 
         # If the wizard completed successfully, get its values
@@ -163,7 +161,7 @@ class Control_Panel(QtGui.QWidget):
             try:
                 protocol_vals = new_mouse_wizard.task_tab.values
                 if 'protocol' in protocol_vals.keys() and 'step' in protocol_vals.keys():
-                    protocol_file = os.path.join(self.prefs['PROTOCOLDIR'], protocol_vals['protocol'] + '.json')
+                    protocol_file = os.path.join(prefs.PROTOCOLDIR, protocol_vals['protocol'] + '.json')
                     mouse_obj.assign_protocol(protocol_file, int(protocol_vals['step']))
             except:
                 # the wizard couldn't find the protocol dir, so no task tab was made
@@ -212,7 +210,7 @@ class Control_Panel(QtGui.QWidget):
             self.pilots[pilot]['mice'] = mice
 
         try:
-            with open(self.prefs['PILOT_DB'], 'w') as pilot_file:
+            with open(prefs.PILOT_DB, 'w') as pilot_file:
                 json.dump(self.pilots, pilot_file)
         except NameError:
             try:
@@ -781,10 +779,8 @@ class New_Mouse_Wizard(QtGui.QDialog):
                 self.values['step'] = self.step_ind[current_step]
 
 class Protocol_Wizard(QtGui.QDialog):
-    def __init__(self, prefs):
+    def __init__(self):
         QtGui.QDialog.__init__(self)
-
-        self.prefs = prefs
 
         # Left Task List/Add Step Box
         addstep_label = QtGui.QLabel("Add Step")
@@ -933,7 +929,7 @@ class Protocol_Wizard(QtGui.QDialog):
                 self.param_layout.addRow(rowtag, input_widget)
                 self.steps[step_index][k]['value'] = False
             elif v['type'] == 'sounds':
-                self.sound_widget = Sound_Widget(self.prefs)
+                self.sound_widget = Sound_Widget()
                 self.sound_widget.setObjectName(k)
                 self.sound_widget.pass_set_param_function(self.set_sounds)
                 self.param_layout.addRow(self.sound_widget)
@@ -1102,11 +1098,10 @@ class Drag_List(QtGui.QListWidget):
             event.ignore()
 
 class Sound_Widget(QtGui.QWidget):
-    def __init__(self, prefs):
+    def __init__(self):
         QtGui.QWidget.__init__(self)
 
-        self.prefs = prefs
-        self.sounddir = self.prefs['SOUNDDIR']
+        self.sounddir = prefs.SOUNDDIR
 
         # Left sounds
         left_label = QtGui.QLabel("Left Sounds")

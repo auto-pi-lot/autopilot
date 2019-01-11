@@ -21,6 +21,7 @@ pg.setConfigOptions(antialias=True)
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import tasks
 from utils import InvokeEvent, Invoker
+import prefs
 
 ############
 # Plot list at the bottom!
@@ -28,13 +29,10 @@ from utils import InvokeEvent, Invoker
 
 class Plot_Widget(QtGui.QWidget):
     # Widget that frames multiple plots
-    def __init__(self, prefs, invoker):
+    def __init__(self, invoker):
         QtGui.QWidget.__init__(self)
 
         self.logger = logging.getLogger('main')
-
-        # store prefs
-        self.prefs = prefs
 
         # store invoker to give to children
         self.invoker = invoker
@@ -73,8 +71,8 @@ class Plot_Widget(QtGui.QWidget):
         # Make a plot for each pilot.
         for p in self.pilots:
             plot = Plot(pilot=p, invoker=self.invoker,
-                        subport=self.prefs['PUBPORT'],
-                        msgport=self.prefs['MSGPORT'])
+                        subport=prefs.PUBPORT,
+                        msgport=prefs.MSGPORT)
             self.plot_layout.addWidget(plot)
             self.plot_layout.addWidget(HLine())
             self.plots[p] = plot

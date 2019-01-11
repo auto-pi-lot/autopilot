@@ -1,6 +1,3 @@
-
-
-
 from __future__ import division
 from __future__ import print_function
 
@@ -14,15 +11,14 @@ from itertools import cycle
 
 import prefs
 
-
 # allows us to access the audio server and some sound attributes
 SERVER = None
 FS = None
 BLOCKSIZE = None
 QUEUE = None
 PLAY = None
+STOP = None
 Q_LOCK = None
-
 
 class JackClient(mp.Process):
     def __init__(self, name='jack_client'):
@@ -34,6 +30,7 @@ class JackClient(mp.Process):
         self.q_lock = mp.Lock()
 
         self.play_evt = mp.Event()
+        self.stop_evt = mp.Event()
         self.quit_evt = mp.Event()
 
         # we make a client that dies now so we can stash the fs and etc.
@@ -49,6 +46,7 @@ class JackClient(mp.Process):
         globals()['QUEUE'] = self.q
         globals()['Q_LOCK'] = self.q_lock
         globals()['PLAY'] = self.play_evt
+        globals()['STOP'] = self.stop_evt
 
     def boot_server(self):
         self.client = jack.Client(self.name)
@@ -82,28 +80,8 @@ class JackClient(mp.Process):
         # TODO: shut down server but also reset module level variables
         pass
 
-
-    def add_sound(self, sound):
-        # break into chunks
-        sound = sound.astype(np.float32)
-        sound_list = [sound[i:i+self.blocksize] for i in range(0, sound.shape[0], self.blocksize)]
-        if sound_list[-1].shape[0] < self.blocksize:
-            sound_list[-1] = np.pad(sound_list[-1],
-                                    (0, self.blocksize-sound_list[-1].shape[0]),
-                                    'constant')
-        self.sounds.append(sound_list)
-
     def quit(self):
         self.quit_evt.set()
-
-
-
-    def buffer(self, sound_num):
-        sound = self.sounds[sound_num]
-        for frame in sound:
-            self.q.put_nowait(frame)
-        self.q.put_nowait(None)
-        # put all the frames into the queue
 
     def process(self, frames):
         if not self.play_evt.is_set():
@@ -117,39 +95,16 @@ class JackClient(mp.Process):
                 data = None
                 Warning('Queue Empty')
             if data is None:
+                # sound is over
                 self.play_evt.clear()
+                self.stop_evt.set()
+                # fill with silence
+                for channel, port in zip(self.zero_arr.T, self.client.outports):
+                    port.get_array()[:] = channel
             else:
+                # use cycle so if sound is single channel it gets copied to all outports
                 for channel, port in zip(cycle(data.T), self.client.outports):
                     port.get_array()[:] = channel
-
-
-
-
-if __name__ == "__main__":
-    cmd = mp.Queue()
-
-    client = JackClient(cmd)
-
-    duration = 1.0
-    freq = 400
-    sin_1 = (np.sin(2*np.pi*np.arange(44100.0*duration)*freq/44100.0)).astype(np.float32)
-    sin_1 = sin_1*0.2
-    sin_1 = np.column_stack((sin_1, sin_1))
-
-
-    freq = 800
-    sin_2 = (np.sin(2*np.pi*np.arange(44100.0*duration)*freq/44100.0)).astype(np.float32)
-    sin_2 = sin_2*0.2
-    sin_2 = np.column_stack((sin_2, sin_2))
-
-    sin_delay = np.zeros((int(44100*0.1),2),dtype=np.float32)
-    sin_delay = np.row_stack((sin_delay, sin_2,))
-
-    client.add_sound(sin_1)
-    client.add_sound(sin_2)
-    client.add_sound(sin_delay)
-
-    client.start()
 
 
 

@@ -18,6 +18,7 @@ sys.path.append('~/git/RPilot')
 import tasks
 import threading
 from stim.sound.sounds import STRING_PARAMS
+import prefs
 
 if sys.version_info >= (3,0):
     import queue
@@ -28,13 +29,15 @@ else:
 class Mouse:
     """Mouse object for managing protocol, parameters, and data"""
 
-    def __init__(self, name, dir='/usr/rpilot/data', new=False, biography=None):
+    def __init__(self, name, dir=None, new=False, biography=None):
         # we need to use a lock to not corrupt the file, see
         # https://www.pytables.org/cookbook/threading.html
         # and https://www.pytables.org/FAQ.html#can-pytables-be-used-in-concurrent-access-scenarios
         self.lock = threading.Lock()
 
-        #TODO: Pass dir from prefs
+        if not dir:
+            dir = prefs.DATADIR
+
         self.name = str(name)
         self.file = os.path.join(dir, name + '.h5')
         if new or not os.path.isfile(self.file):

@@ -46,6 +46,7 @@ TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
 - make drop-in networking class for 'local' networking
 - networking should probably just be router-only.
 - unify parameter structure
+- give task object network node - send messages and handle task transitions directly from task.
 
 order of code review:
 !- terminal

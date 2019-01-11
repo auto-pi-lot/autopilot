@@ -18,6 +18,7 @@ except:
 
 import threading
 import time
+import prefs
 
 # pigpio only uses BCM numbers, we need to translate them
 # See https://www.element14.com/community/servlet/JiveServlet/previewBody/73950-102-11-339300/pi3_gpio.png
@@ -31,8 +32,18 @@ BOARD_TO_BCM = {
 }
 BCM_TO_BOARD = dict([reversed(i) for i in BOARD_TO_BCM.items()])
 
+def Hardware(object):
+    # metaclass for hardware objects
+    trigger = False
+    pin = None
+    type = "" # what are we known as in prefs?
+
+
+
+
 # TODO: Subclass nosepoke that knows about waiting for mouse leaving
-class Beambreak:
+class Beambreak(Hardware):
+    trigger=True
     # IR Beambreak sensor
     def __init__(self, pin, pull_ud='U', trigger_ud='D', event=None):
         # Make pigpio instance
@@ -104,7 +115,8 @@ class Beambreak:
 
     # TODO: Add cleanup so task can be closed and another opened
 
-class LED_RGB:
+class LED_RGB(Hardware):
+
     def __init__(self, pins = None, r = None, g=None, b=None, common = 'anode'):
         # Can pass RGB pins as list or as kwargs "r", "g", "b"
         # Can be configured for common anode (low turns LED on) or cathode (low turns LED off)
@@ -235,7 +247,7 @@ class LED_RGB:
         # We call the function regardless, it will switch to a color if it has one
         self.set_color(stored=True)
 
-class Solenoid:
+class Solenoid(Hardware):
     # Solenoid valves for water delivery
     def __init__(self, pin, duration=100):
         # Initialize connection to pigpio daemon
@@ -278,13 +290,22 @@ class Solenoid:
         self.pig.wave_add_generic(reward_pulse)
         self.wave_id = self.pig.wave_create()
 
-    def open(self):
+    def open(self, duration=None):
+        if duration:
+            try:
+                duration = float(duration)
+            except:
+                Warning('Need to pass a float for duration, using default dur')
+                duration = self.duration
+        else:
+            duration = self.duration
+
         #self.pig.wave_send_once(self.wave_id)
         self.pig.write(self.pin, 1)
-        time.sleep(self.duration)
+        time.sleep(duration)
         self.pig.write(self.pin, 0)
 
-class Scale:
+class Scale(Hardware):
     MODEL={
         'stamps.com':{
             'vendor_id':0x1446,
@@ -307,7 +328,8 @@ class Scale:
         # default configuration
         self.device.set_configuration()
 
-class Pull:
+class Pull(Hardware):
+    input = False
     # Pull a pin up or down
     def __init__(self, pin, pud=1):
         self.pig = pigpio.pi()
