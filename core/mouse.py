@@ -254,10 +254,10 @@ class Mouse:
                     if 'session' not in trial_descriptor.columns.keys():
                         trial_descriptor.columns.update({'session': tables.Int32Col()})
                     # if this task has sounds, make columns for them
-                    if 'sounds' in step.keys():
+                    if 'sounds' in step['stim'].keys():
                         # for now we just assume they're floats
                         sound_params = {}
-                        for side, sounds in step['sounds'].items():
+                        for side, sounds in step['stim']['sounds'].items():
                             # each side has a list of sounds
                             for sound in sounds:
                                 for k, v in sound.items():

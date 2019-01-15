@@ -1,1 +1,1 @@
-from manager import Stim_Manager
+from managers import Stim_Manager

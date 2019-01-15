@@ -30,17 +30,24 @@ class Task(object):
     # these should correspond to argument names for the task
     PARAMS = odict()
 
+    # Task Definition
     HARDWARE = {} # Hardware needed to run the task
     STAGE_NAMES = [] # list of names of stage methods
     PLOT = {} # dictionary of plotting params
     TrialData = None # tables.IsDescription class to make data table
 
+    # Task management
     stage_block = None # a threading.Event used by the pilot to manage stage transitions
     punish_block = None # holds the next stage while punishment is happening
+    punish_stim = False
     running = None # Event used to exit the run thread
+    stages = None # Some generator that continuously returns the next stage of the trial
+    triggers = {}
+    stim_manager = None
 
     trial_counter = None # will be init'd by the subtask because will use the current trial
 
+    # Hardware
     pins = {} # dict to store references to hardware
     pin_id = {} # pin numbers back to pin lettering
 
@@ -53,8 +60,6 @@ class Task(object):
         self.punish_block.set()
         self.running = threading.Event()
 
-        self.prefs = prefs
-
         # try to get logger
         self.logger = logging.getLogger('main')
 
@@ -66,7 +71,7 @@ class Task(object):
         # alongside the PINS subdict in the prefs structure to tell us how they're plugged in to the pi
         self.pins = {}
         self.pin_id = {} # Reverse dict to identify pokes
-        pin_numbers = self.prefs['PINS']
+        pin_numbers = prefs.PINS
 
         # We first iterate through the types of hardware we need
         for type, values in self.HARDWARE.items():
@@ -87,15 +92,88 @@ class Task(object):
                     self.logger.exception("Pin could not be instantiated - Type: {}, Pin: {}".format(type, pin))
 
 
-    def set_reward(self, duration):
-        for k, port in self.pins['PORTS'].items():
-            port.duration = float(duration)/1000.
+    def set_reward(self, duration, port=None):
+        if not port:
+            for k, port in self.pins['PORTS'].items():
+                port.duration = float(duration)/1000.
+        else:
+            try:
+                self.pins['PORTS'][port].duration = float(duration)/1000.
+            except KeyError:
+                Exception('No port found named {}'.format(port))
 
     def init_sound(self):
         pass
 
-    def handle_trigger(self):
-        pass
+    def handle_trigger(self, pin, level, tick):
+        # All triggers call this function with the pin number, level (high, low), and ticks since booting pigpio
+        # Triggers will be functions unless they are "TIMEUP", at which point we
+        # register a timeout and restart the trial
+
+        # We get fed pins as numbers usually, convert to board number and then back to letters
+        if isinstance(pin, int):
+            pin = hardware.BCM_TO_BOARD[pin]
+            pin = self.pin_id[pin]
+
+        if pin not in self.triggers.keys():
+            # No trigger assigned, get out without waiting
+            return
+
+        if pin == 'TIMEUP':
+            # TODO: Handle timers, reset trial
+            # TODO: Handle bailing, for example by replacing the cycle with a single function that returns the 'bail' flag
+            return
+
+        # if we're being punished, don't recognize the trigger
+        if not self.punish_block.is_set():
+            return
+
+        # Call the trigger
+        try:
+            self.triggers[pin]()
+        except TypeError:
+            # Multiple triggers, call them all
+            for trig in self.triggers[pin]:
+                trig()
+        except KeyError:
+            # If we don't have a trigger, that's fine, eg. L and R before requesting
+            return
+
+        # clear triggers
+        self.triggers = {}
+
+        # Set the stage block so the pilot calls the next stage
+        self.stage_block.set()
+
+    def punish(self):
+        # TODO: If we're not in the last stage (eg. we were timed out after stim presentation), reset stages
+        self.punish_block.clear()
+
+        if self.punish_stim:
+            self.stim_manager.play_punishment()
+
+        # self.set_leds()
+        self.flash_leds()
+        threading.Timer(self.punish_dur / 1000., self.punish_block.set).start()
+
+    def set_leds(self, color_dict=None):
+        # We are passed a dict of ['pin']:[R, G, B] to set multiple colors
+        # All others are turned off
+        if not color_dict:
+            color_dict = {}
+        for k, v in self.pins['LEDS'].items():
+            if k in color_dict.keys():
+                v.set_color(color_dict[k])
+            else:
+                v.set_color([0,0,0])
+
+    def end(self):
+        for k, v in self.pins.items():
+            for pin, obj in v.items():
+                if k == "LEDS":
+                    obj.set_color([0,0,0])
+                obj.release()
+
 
 
 
