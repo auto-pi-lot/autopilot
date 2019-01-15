@@ -76,7 +76,7 @@ class Nafc(Task):
                                 'depends':{'bias_mode':2}}
     PARAMS['timeout']        = {'tag':'Delay Timeout (ms)',
                                 'type':'int'}
-    PARAMS['sounds']         = {'tag':'Sounds',
+    PARAMS['stim']           = {'tag':'Sounds',
                                 'type':'sounds'}
 
     # Set plot params, which data should be plotted, its default shape, etc.
@@ -138,7 +138,7 @@ class Nafc(Task):
         # we should explicitly type everything to be safe.
         self.reward         = float(reward)
         self.req_reward     = bool(req_reward)
-        self.punish_stim   = bool(punish_sound)
+        self.punish_stim   = bool(punish_stim)
         self.punish_dur     = float(punish_dur)
         self.correction     = bool(correction)
         self.correction_pct = float(correction_pct)/100

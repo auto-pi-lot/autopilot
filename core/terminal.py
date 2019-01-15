@@ -108,6 +108,7 @@ class Terminal(QtGui.QMainWindow):
 
         # Make invoker object to send GUI events back to the main thread
         self.invoker = Invoker()
+        prefs.INVOKER = self.invoker
 
         # Start GUI
         self.layout = QtGui.QGridLayout()
@@ -314,16 +315,9 @@ class Terminal(QtGui.QMainWindow):
             self.send_message('STOP', value['pilot'], {'graduation':True})
             self.mice[mouse_name].stop_run()
             self.mice[mouse_name].graduate()
-            self.mice[mouse_name].prepare_run()
-
-            protocol = self.mice[mouse_name].current
-            step = self.mice[mouse_name].step
-            task = protocol[step]
-            task['mouse'] = mouse_name
+            task = self.mice[mouse_name].prepare_run()
             task['pilot'] = value['pilot']
-            task['step'] = step
-            task['current_trial'] = self.mice[mouse_name].current_trial
-            task['session'] = self.mice[mouse_name].session
+
             self.send_message('START', value['pilot'], task)
 
     def l_ping(self, value):

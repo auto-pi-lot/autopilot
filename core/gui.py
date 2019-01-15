@@ -90,24 +90,9 @@ class Control_Panel(QtGui.QWidget):
             if mouse not in self.mice.keys():
                 self.mice[mouse] = Mouse(mouse)
 
-            self.mice[mouse].prepare_run()
-
-            # Get the mouse's task info to send to the pilot
-            try:
-                protocol = self.mice[mouse].current
-                step = self.mice[mouse].step
-                task = protocol[step]
-            except:
-                # TODO: Log this error - mouse started but has no task
-                # TODO: Popup to the same effect.
-                return
-
-            # Prep task to send to pi, the pilot needs to know the mouse
-            task['mouse'] = self.mice[mouse].name
+            task = self.mice[mouse].prepare_run()
             task['pilot'] = pilot
-            task['step'] = step
-            task['current_trial'] = self.mice[mouse].current_trial
-            task['session'] = self.mice[mouse].session
+
 
             # Get Weights
             start_weight, ok = QtGui.QInputDialog.getDouble(self, "Set Starting Weight",
@@ -128,8 +113,6 @@ class Control_Panel(QtGui.QWidget):
             # so the terminal will handle closing the mouse object
             self.send_message('STOP', bytes(pilot), 'STOP')
             # TODO: Start coherence checking ritual
-            # TODO: Close mouse object
-            # TODO: Pop weight entry window
             # TODO: Auto-select the next mouse in the list.
 
             # get weight
@@ -151,6 +134,8 @@ class Control_Panel(QtGui.QWidget):
         # If the wizard completed successfully, get its values
         if new_mouse_wizard.result() == 1:
             biography_vals = new_mouse_wizard.bio_tab.values
+            # TODO: Make a "session" history table that stashes pilot, git hash, step, etc. for each session - mice might run on different pilots
+            biography_vals['pilot'] = pilot
 
             # Make a new mouse object, make it temporary because we want to close it
             mouse_obj = Mouse(biography_vals['id'], new=True,
@@ -614,12 +599,14 @@ class Popup(QtGui.QDialog):
 # TODO: Change these classes to use the update params windows
 
 class New_Mouse_Wizard(QtGui.QDialog):
+    pilot = ""
+
     def __init__(self, protocol_dir=None):
         QtGui.QDialog.__init__(self)
 
         if not protocol_dir:
             try:
-                self.protocol_dir = prefs['PROTOCOLDIR']
+                self.protocol_dir = prefs.PROTOCOLDIR
             except NameError:
                 Warning('No protocol dir found, cant assign protocols here')
         else:
@@ -995,7 +982,12 @@ class Protocol_Wizard(QtGui.QDialog):
 
     def set_sounds(self):
         current_step = self.step_list.currentRow()
-        self.steps[current_step]['sounds']['value'] = self.sound_widget.sound_dict
+        if 'stim' not in self.steps[current_step].keys():
+            self.steps[current_step]['stim'] = {}
+        if 'sounds' in self.steps[current_step]['stim'].keys():
+            self.steps[current_step]['stim']['sounds']['value'].update(self.sound_widget.sound_dict)
+        else:
+            self.steps[current_step]['stim']['sounds'] = {'value':self.sound_widget.sound_dict}
 
     def set_graduation(self):
         current_step = self.step_list.currentRow()

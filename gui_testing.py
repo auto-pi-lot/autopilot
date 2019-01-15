@@ -520,6 +520,7 @@ class Parameters(QtGui.QWidget):
         self.show_params(self.mouse)
 
     def toggle_start(self, toggled):
+        # TODO: Why does this object have toggle_start...
         # If we're stopped, start, and vice versa...
         if toggled:
             # Sets the mouse to running, makes a file to store data

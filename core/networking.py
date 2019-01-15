@@ -553,7 +553,7 @@ class Net_Node(object):
             return
 
         if self.logger:
-            self.logger.info('RECEIVED:\n{}'.format(str(msg)))
+            self.logger.info('{} - RECEIVED:\n{}'.format(self.id, str(msg)))
 
         # Log and spawn thread to respond to listen
         try:

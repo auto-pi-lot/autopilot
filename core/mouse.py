@@ -14,6 +14,7 @@ from time import time
 import json
 import pandas as pd
 import warnings
+from copy import copy
 sys.path.append('~/git/RPilot')
 import tasks
 import threading
@@ -43,14 +44,7 @@ class Mouse:
         if new or not os.path.isfile(self.file):
             self.new_mouse_file(biography)
 
-        h5f = tables.open_file(self.file, 'r+')
-
-
-
-        # Make shortcuts for direct assignation
-        self.info = h5f.root.info._v_attrs
-        self.data = h5f.root.data
-        self.history = h5f.root.history.history
+        h5f = self.open_hdf()
 
         # If mouse has a protocol, load it to a dict
         self.current = None
@@ -64,7 +58,6 @@ class Mouse:
             self.current = json.loads(protocol_string)
             self.step = int(current_node.attrs['step'])
             self.protocol_name = current_node.attrs['protocol_name']
-            self.current_group = h5f.get_node('/data',self.protocol_name)
 
         # We will get handles to trial and continuous data when we start running
         self.trial_table = None
@@ -84,9 +77,14 @@ class Mouse:
         self.thread = None
         self.did_graduate = threading.Event()
 
+        # Every time we are initialized we stash the git hash
+        history_row = h5f.root.history.hashes.row
+        history_row['time'] = self.get_timestamp()
+        history_row['hash'] = prefs.HASH
+        history_row.append()
 
         # we have to always open and close the h5f
-        h5f.close()
+        _ = self.close_hdf(h5f)
 
     def open_hdf(self, mode='r+'):
         with self.lock:
@@ -125,6 +123,9 @@ class Mouse:
             # Make table for weights
             h5f.create_table(history_group, 'weights', self.Weight_Table, "Mouse Weights")
 
+            # And another table to stash the git hash every time we're open.
+            h5f.create_table(history_group, 'hashes', self.Hash_Table, "Git commit hash history")
+
         # Save biographical information as node attributes
         if biography:
             for k, v in biography.items():
@@ -161,10 +162,11 @@ class Mouse:
         if not isinstance(value, basestring):
             value = str(value)
 
+        # log the change
         h5f = self.open_hdf()
         history_row = h5f.root.history.history.row
 
-        history_row['time'] = self.get_timestamp(string=True)
+        history_row['time'] = self.get_timestamp(simple=True)
         history_row['type'] = type
         history_row['name'] = name
         history_row['value'] = value
@@ -176,7 +178,7 @@ class Mouse:
         h5f = self.open_hdf()
         if start is not None:
             weight_row = h5f.root.history.weights.row
-            weight_row['date'] = self.get_timestamp(string=True)
+            weight_row['date'] = self.get_timestamp(simple=True)
             weight_row['session'] = self.session
             weight_row['start'] = float(start)
             weight_row.append()
@@ -193,18 +195,23 @@ class Mouse:
         pass
 
     def assign_protocol(self, protocol, step_n=0):
-        # Protocol will be passed as a .json filename in prefs['PROTOCOLDIR']
-        # The full filename is passed because we don't want to assume knowledge of prefs in the mouse data model
+        # Protocol will be passed as a .json filename in prefs.PROTOCOLDIR
 
-        # Check if there is an existing protocol, archive it if there is.
         h5f = self.open_hdf()
 
+        # Check if there is an existing protocol, archive it if there is.
         if "/current" in h5f:
-            _ = self.close_hdf(h5f) # TODO: See if this is necessary or if we can have multiple handles open
+            _ = self.close_hdf(h5f)
             self.stash_current()
             h5f = self.open_hdf()
 
         ## Assign new protocol
+        # try prepending the protocoldir if we were passed just the name
+        if not os.path.exists(protocol):
+            fullpath = os.path.join(prefs.PROTOCOLDIR, protocol)
+            if not os.path.exists(fullpath):
+                Exception('Could not find either {} or {}'.format(protocol, fullpath))
+
         # Load protocol to dict
         with open(protocol) as protocol_file:
             self.current = json.load(protocol_file)
@@ -225,9 +232,9 @@ class Mouse:
 
         # Make file group for protocol
         if "/data/{}".format(protocol_name) not in h5f:
-            self.current_group = h5f.create_group('/data', protocol_name)
+            current_group = h5f.create_group('/data', protocol_name)
         else:
-            self.current_group = h5f.get_node('/data', protocol_name)
+            current_group = h5f.get_node('/data', protocol_name)
 
         # Create groups for each step
         # There are two types of data - continuous and trialwise.
@@ -241,10 +248,10 @@ class Mouse:
             # group name is S##_'step_name'
             group_name = "S{:02d}_{}".format(i, step_name)
 
-            if group_name not in self.current_group:
-                step_group = h5f.create_group(self.current_group, group_name)
+            if group_name not in current_group:
+                step_group = h5f.create_group(current_group, group_name)
             else:
-                step_group = self.current_group._f_get_child(group_name)
+                step_group = current_group._f_get_child(group_name)
 
             # The task class *should* have at least one PyTables DataTypes descriptor
             try:
@@ -253,6 +260,9 @@ class Mouse:
                     # add a session column, everyone needs a session column
                     if 'session' not in trial_descriptor.columns.keys():
                         trial_descriptor.columns.update({'session': tables.Int32Col()})
+                    # same thing with trial_num
+                    if 'trial_num' not in trial_descriptor.columns.keys():
+                        trial_descriptor.columns.update({'trial_num': tables.Int32Col()})
                     # if this task has sounds, make columns for them
                     if 'sounds' in step['stim'].keys():
                         # for now we just assume they're floats
@@ -305,10 +315,10 @@ class Mouse:
         h5f = self.open_hdf()
         try:
             protocol_name = h5f.get_node_attr('/current', 'protocol_name')
-            archive_name = '_'.join([self.get_timestamp(string=True), protocol_name])
+            archive_name = '_'.join([self.get_timestamp(simple=True), protocol_name])
         except AttributeError:
             warnings.warn("protocol_name attribute couldn't be accessed, using timestamp to stash protocol")
-            archive_name = self.get_timestamp(string=True)
+            archive_name = self.get_timestamp(simple=True)
 
         # TODO: When would we want to prefer the .h5f copy over the live one?
         #current_node = filenode.open_node(h5f.root.current)
@@ -399,6 +409,15 @@ class Mouse:
         self.thread.start()
         self.running = True
 
+        # return a task parameter dictionary
+
+        task = copy(self.current[self.step])
+        task['mouse'] = self.name
+        task['step'] = self.step
+        task['current_trial'] = self.current_trial
+        task['session'] = self.session
+        return task
+
     def data_thread(self, queue):
 
         h5f = self.open_hdf()
@@ -416,6 +435,33 @@ class Mouse:
         # start getting data
         # stop when 'END' gets put in the queue
         for data in iter(queue.get, 'END'):
+            # Check if this is the same
+            # if we've already recorded a trial number for this row,
+            # and the trial number we just got is not the same,
+            # we edit that row if we already have some data on it or else start a new row
+            if 'trial_num' in data.keys():
+                if (trial_row['trial_num']) and (trial_row['trial_num'] != data['trial_num']):
+                    # find row with this trial number if it exists
+                    other_row = [r for r in trial_table.where("trial_num == {}".format(data['trial_num']))]
+                    # this will return a list of rows with matching trial_num.
+                    # if it's empty, we didn't receive a TRIAL_END and should create a new row
+                    if len(other_row) == 0:
+                        trial_row.append()
+                        # proceed to fill the row below
+                    elif len(other_row) == 1:
+                        # update the row and continue so we don't double write
+                        for k, v in data.items():
+                            other_row[0][k] = v
+                        other_row[0].update()
+                        continue
+                    else:
+                        # we have more than one row with this trial_num.
+                        # shouldn't happen, but we dont' want to throw any data away
+                        Warning('Found multiple rows with same trial_num: {}'.format(data['trial_num']))
+                        # continue just for data conservancy's sake
+                        trial_row.append()
+
+
             for k, v in data.items():
                 if k in trial_keys:
                     trial_row[k] = v
@@ -492,23 +538,14 @@ class Mouse:
         self.close_hdf(h5f)
         return step_df
 
-
-
-
-
-
-
-
-
-
-    def get_timestamp(self, string=False):
+    def get_timestamp(self, simple=False):
         # Timestamps have two different applications, and thus two different formats:
         # coarse timestamps that should be human-readable
         # fine timestamps for data analysis that don't need to be
-        if string:
+        if simple:
             return datetime.datetime.now().strftime('%y%m%d-%H%M%S')
         else:
-            return time()
+            return datetime.datetime.now().isoformat()
 
     def get_weight(self, which='last', include_baseline=False):
         # get either the last start/stop weights, optionally including baseline
@@ -561,6 +598,10 @@ class Mouse:
         stop  = tables.Float32Col()
         date  = tables.StringCol(256)
         session = tables.Int32Col()
+
+    class Hash_Table(tables.IsDescription):
+        time = tables.StringCol(256)
+        hash = tables.StringCol(40)
 
 
 

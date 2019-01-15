@@ -238,6 +238,7 @@ class RPilot:
         return h5f, table, row
 
     def run_task(self):
+        # TODO: give a net node to the Task class and let the task run itself.
         # Run as a separate thread, just keeps calling next() and shoveling data
 
         # do we expect TrialData?
@@ -275,7 +276,6 @@ class RPilot:
 
             # If the running flag gets set, we're closing.
             if not self.running.is_set():
-                # TODO: Call task shutdown method
                 self.task.end()
                 self.task = None
                 row.append()
@@ -308,9 +308,9 @@ if __name__ == '__main__':
 
     if hasattr(prefs_dict, 'AUDIOSERVER'):
         if prefs.AUDIOSERVER == 'pyo':
-            from stim.sound import pyoserver, jackclient
+            from stim.sound import pyoserver
         elif prefs.AUDIOSERVER == 'jack':
-            pass
+            from stim.sound import jackclient
 
     a = RPilot()
 

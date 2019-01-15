@@ -16,11 +16,13 @@ from zmq.eventloop.zmqstream import ZMQStream
 import threading
 from time import time
 from itertools import count
+import functools
 pg.setConfigOptions(antialias=True)
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import tasks
 from utils import InvokeEvent, Invoker
+from core.networking import Net_Node
 import prefs
 
 ############
@@ -118,7 +120,7 @@ class Plot_Widget(QtGui.QWidget):
 
 class Plot(QtGui.QWidget):
 
-    def __init__(self, pilot, invoker, subport, msgport, x_width=50):
+    def __init__(self, pilot, invoker, x_width=50):
         super(Plot, self).__init__()
 
         self.logger = logging.getLogger('main')
@@ -130,10 +132,6 @@ class Plot(QtGui.QWidget):
         self.pilot = pilot
 
         self.invoker = invoker
-
-        # The port that the terminal networking object will send data from
-        self.subport = subport
-        self.msgport = msgport
 
         # A little infobox to keep track of running time, trials, etc.
         self.infobox = QtGui.QFormLayout()
@@ -162,12 +160,13 @@ class Plot(QtGui.QWidget):
         self.plot.setXRange(self.xrange[0], self.xrange[-1])
 
         # Inits the basic widget settings
-        self.gui_event(self.init_plots)
+        self.init_plots
 
         self.plot_params = {}
         self.data = {} # Keep a dict of the data we are keeping track of, will be instantiated on start
         self.plots = {}
 
+        ## Networking
         # Start the listener, subscribes to terminal_networking that will broadcast data
         self.listens = {
             'START' : self.l_start, # Receiving a new task
@@ -176,12 +175,15 @@ class Plot(QtGui.QWidget):
             'PARAM': self.l_param # changing some param
         }
 
-        self.context = None
-        self.subscriber = None
-        self.pusher = None
-        self.loop = None
-        self.init_listener()
+        self.msgport = prefs.MSGPORT
+        self.node = Net_Node(id='P_{}'.format(self.pilot),
+                             upstream="T",
+                             port=self.msgport,
+                             listens=self.listens,
+                             instance=True)
 
+
+    @gui_event
     def init_plots(self):
         # This is called to make the basic plot window,
         # each task started should then send us params to populate afterwards
@@ -191,58 +193,7 @@ class Plot(QtGui.QWidget):
         self.plot.setXRange(self.xrange[0], self.xrange[1])
         self.plot.setYRange(0, 1)
 
-    def init_listener(self):
-        self.context = zmq.Context.instance()
-        self.loop = IOLoop.instance()
-
-        self.subscriber = self.context.socket(zmq.SUB)
-        self.subscriber.connect('tcp://localhost:{}'.format(self.subport))
-        sub_string = 'P_{}'.format(self.pilot)
-        self.subscriber.setsockopt(zmq.SUBSCRIBE, bytes(sub_string))
-        self.subscriber = ZMQStream(self.subscriber, self.loop)
-        self.subscriber.on_recv(self.handle_listen)
-
-        # Also make a message sender to validate receipts
-        self.pusher = self.context.socket(zmq.PUSH)
-        self.pusher.connect('tcp://localhost:{}'.format(self.msgport))
-
-    def handle_listen(self, msg):
-        # Published as multipart target-msg messages
-        try:
-            message = json.loads(msg[1])
-        except:
-            self.logger.exception('PLOT {}: Error decoding message'.format(self.pilot))
-            return
-
-        if not all(i in message.keys() for i in ['key', 'value']):
-            self.logger.warning('PLOT {}: LISTEN Improperly formatted - {}'.format(self.pilot, message))
-            return
-
-        self.logger.info('PLOT {} MSG {}: LISTEN - KEY: {}, VALUE: {}'.format(self.pilot,
-                                                                              message['id'],
-                                                                              message['key'],
-                                                                              message['value']))
-        try:
-            # Tell the networking process that we got it
-            self.send_message('RECVD', value=message['id'])
-
-            # Get function and call it as a gui event
-            listen_funk = self.listens[message['key']]
-            self.gui_event(listen_funk, *(message['value'],))
-        except:
-            # TODO: I think the plots crash becasue json doesn't serialize integers well... make a json sanitizer method
-            pass
-
-
-
-    def send_message(self, key, target='', value=''):
-        msg = {'key': key, 'target': target, 'value': value}
-
-        msg_thread = threading.Thread(target= self.pusher.send_json, args=(json.dumps(msg),))
-        msg_thread.start()
-
-        self.logger.info("MESSAGE SENT - Target: {}, Key: {}, Value: {}".format(target, key, value))
-
+    @gui_event
     def l_start(self, value):
         # We're sent a task dict, we extract the plot params and send them to the plot object
         self.plot_params = tasks.TASK_LIST[value['task_type']].PLOT
@@ -277,6 +228,7 @@ class Plot(QtGui.QWidget):
                 self.plot.addItem(self.plots[data])
                 self.data[data] = np.zeros((0,2), dtype=np.float)
 
+    @gui_event
     def l_data(self, value):
         if 'trial_num' in value.keys():
             v = value.pop('trial_num')
@@ -294,6 +246,7 @@ class Plot(QtGui.QWidget):
                 #self.gui_event(self.plots[k].update, *(self.data[k],))
                 self.plots[k].update(self.data[k])
 
+    @gui_event
     def l_stop(self, value):
         self.data = {}
         self.plots = {}
@@ -311,11 +264,18 @@ class Plot(QtGui.QWidget):
 
     def l_param(self, value):
         pass
+    #
+    # def gui_event(self, fn):
+    #     # Don't ask me how this works, stolen from
+    #     # https://stackoverflow.com/a/12127115
+    #     # turn it into a decorator so we can use Net_Node's handling function
+    #     QtCore.QCoreApplication.postEvent(self.invoker, InvokeEvent(fn, *args, **kwargs))
 
-    def gui_event(self, fn, *args, **kwargs):
-        # Don't ask me how this works, stolen from
-        # https://stackoverflow.com/a/12127115
-        QtCore.QCoreApplication.postEvent(self.invoker, InvokeEvent(fn, *args, **kwargs))
+def gui_event(fn):
+    def wrapper_gui_event(*args, **kwargs):
+        QtCore.QCoreApplication.postEvent(prefs.INVOKER, InvokeEvent(fn, *args, **kwargs))
+    return wrapper_gui_event
+
 
 
 ###################################
