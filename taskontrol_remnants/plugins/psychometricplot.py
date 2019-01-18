@@ -54,12 +54,22 @@ class PsychometricPlot(pg.PlotWidget):
         yAxis.setGrid(20)
 
     def update(self,xValues,yValues,xlim=None):
+        """
+
+        :param xValues: 
+        :param yValues: 
+        :param xlim: 
+        """
         self.mainPlot.setData(x=xValues, y=yValues)
         if xlim is not None:
             self.setXRange(*xlim)
         pass
 
     def sizeHint(self):
+        """
+
+        :return: 
+        """
         return QtCore.QSize(self.initialSize[0],self.initialSize[1])
 
 

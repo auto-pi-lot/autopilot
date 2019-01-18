@@ -5,6 +5,9 @@ from itertools import count
 
 
 class Accuracy(object):
+    """
+
+    """
     # TODO: Get the corrects that we need
     PARAMS = ['threshold', 'window']
     COLS = ['correct']
@@ -22,6 +25,11 @@ class Accuracy(object):
 
 
     def update(self, row):
+        """
+
+        :param row:
+        :return:
+        """
         try:
             self.corrects.append(int(row['correct']))
         except KeyError:
@@ -46,6 +54,11 @@ class NTrials(object):
         self.counter = count(start=int(current_trial))
 
     def update(self, row):
+        """
+
+        :param row:
+        :return:
+        """
         trials = self.counter.next()
         if trials >= self.n_trials:
             return True

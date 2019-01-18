@@ -26,6 +26,9 @@ if hasattr(prefs, "AUDIOSERVER"):
 
 
 class Task(object):
+    """
+
+    """
     # dictionary of Params needed to define task,
     # these should correspond to argument names for the task
     PARAMS = odict()
@@ -67,6 +70,9 @@ class Task(object):
 
 
     def init_hardware(self):
+        """
+
+        """
         # We use the HARDWARE dict that specifies what we need to run the task
         # alongside the PINS subdict in the prefs structure to tell us how they're plugged in to the pi
         self.pins = {}
@@ -93,6 +99,11 @@ class Task(object):
 
 
     def set_reward(self, duration, port=None):
+        """
+
+        :param duration:
+        :param port:
+        """
         if not port:
             for k, port in self.pins['PORTS'].items():
                 port.duration = float(duration)/1000.
@@ -103,9 +114,19 @@ class Task(object):
                 Exception('No port found named {}'.format(port))
 
     def init_sound(self):
+        """
+
+        """
         pass
 
     def handle_trigger(self, pin, level, tick):
+        """
+
+        :param pin:
+        :param level:
+        :param tick:
+        :return:
+        """
         # All triggers call this function with the pin number, level (high, low), and ticks since booting pigpio
         # Triggers will be functions unless they are "TIMEUP", at which point we
         # register a timeout and restart the trial
@@ -146,6 +167,9 @@ class Task(object):
         self.stage_block.set()
 
     def punish(self):
+        """
+
+        """
         # TODO: If we're not in the last stage (eg. we were timed out after stim presentation), reset stages
         self.punish_block.clear()
 
@@ -157,6 +181,10 @@ class Task(object):
         threading.Timer(self.punish_dur / 1000., self.punish_block.set).start()
 
     def set_leds(self, color_dict=None):
+        """
+
+        :param color_dict:
+        """
         # We are passed a dict of ['pin']:[R, G, B] to set multiple colors
         # All others are turned off
         if not color_dict:
@@ -168,6 +196,9 @@ class Task(object):
                 v.set_color([0,0,0])
 
     def end(self):
+        """
+
+        """
         for k, v in self.pins.items():
             for pin, obj in v.items():
                 obj.release()

@@ -21,6 +21,9 @@ STOP = None
 Q_LOCK = None
 
 class JackClient(mp.Process):
+    """
+
+    """
     def __init__(self, name='jack_client'):
         super(JackClient, self).__init__()
 
@@ -49,6 +52,9 @@ class JackClient(mp.Process):
         globals()['STOP'] = self.stop_evt
 
     def boot_server(self):
+        """
+
+        """
         self.client = jack.Client(self.name)
         self.blocksize = self.client.blocksize
         self.fs = self.client.samplerate
@@ -65,6 +71,9 @@ class JackClient(mp.Process):
             self.client.outports[0].connect(target_ports[1])
 
     def run(self):
+        """
+
+        """
         self.boot_server()
 
         # we are just holding the process open, so wait to quit
@@ -77,13 +86,23 @@ class JackClient(mp.Process):
 
 
     def close(self):
+        """
+
+        """
         # TODO: shut down server but also reset module level variables
         pass
 
     def quit(self):
+        """
+
+        """
         self.quit_evt.set()
 
     def process(self, frames):
+        """
+
+        :param frames:
+        """
         if not self.play_evt.is_set():
             for channel, port in zip(self.zero_arr.T, self.client.outports):
                 port.get_array()[:] = channel

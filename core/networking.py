@@ -36,6 +36,9 @@ import prefs
 # TODO: Periodically ping pis to check that they are still responsive
 
 class Networking(multiprocessing.Process):
+    """
+
+    """
     ctx          = None    # Context
     loop         = None    # IOLoop
     push_ip      = None    # IP to push to
@@ -71,6 +74,9 @@ class Networking(multiprocessing.Process):
 
 
     def run(self):
+        """
+
+        """
         # init zmq objects
         self.context = zmq.Context()
         self.loop = IOLoop()
@@ -99,6 +105,13 @@ class Networking(multiprocessing.Process):
         self.loop.start()
 
     def prepare_message(self, to, key, value):
+        """
+
+        :param to:
+        :param key:
+        :param value:
+        :return:
+        """
         # TODO: This would mess up multi-hop senders. we should make sure to send the whole message thru
         msg = Message()
         msg.sender = self.id
@@ -113,6 +126,13 @@ class Networking(multiprocessing.Process):
 
 
     def send(self, to, key, value=None):
+        """
+
+        :param to:
+        :param key:
+        :param value:
+        :return:
+        """
         # send message via the router
         # don't need to thread this because router sends are nonblocking
 
@@ -132,6 +152,13 @@ class Networking(multiprocessing.Process):
         self.listener.send_multipart([to, msg_enc])
 
     def push(self,  to=None, key = None, value = None):
+        """
+
+        :param to:
+        :param key:
+        :param value:
+        :return:
+        """
         # send message via the dealer
         # even though we only have one connection over our dealer,
         # we still include 'to' in case we are sending further upstream
@@ -160,6 +187,11 @@ class Networking(multiprocessing.Process):
         self.pusher.send_multipart([self.push_id, msg_enc])
 
     def handle_listen(self, msg):
+        """
+
+        :param msg:
+        :return:
+        """
         # TODO: This check is v. fragile, pyzmq has a way of sending the stream along with the message
         if len(msg)==1:
             # from our dealer
@@ -210,7 +242,9 @@ class Networking(multiprocessing.Process):
 
 
     def init_logging(self):
+        """
 
+        """
         # Setup logging
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
         log_file = os.path.join(prefs.LOGDIR, 'Networking_Log_{}.log'.format(timestr))
@@ -224,6 +258,10 @@ class Networking(multiprocessing.Process):
         self.logger.info('Networking Logging Initiated')
 
     def get_ip(self):
+        """
+
+        :return:
+        """
         # shamelessly stolen from https://www.w3resource.com/python-exercises/python-basic-exercise-55.php
         # variables are badly named because this is just a rough unwrapping of what was a monstrous one-liner
         # (and i don't really understand how it works)
@@ -239,6 +277,9 @@ class Networking(multiprocessing.Process):
         return unwrap2
 
 class Terminal_Networking(Networking):
+    """
+
+    """
     def __init__(self):
         super(Terminal_Networking, self).__init__()
 
@@ -271,10 +312,18 @@ class Terminal_Networking(Networking):
     # Message Handling Methods
 
     def m_ping(self, msg):
+        """
+
+        :param msg:
+        """
         # Ping a specific subscriber and ask if they are alive
         self.send(msg.target, 'PING')
 
     def m_init(self, msg):
+        """
+
+        :param msg:
+        """
         # Ping all pis that we are expecting given our pilot db until we get a response
         # Pass back who responds as they do to update the GUI.
         # We don't expect a response, so we don't send through normal publishing method
@@ -312,6 +361,10 @@ class Terminal_Networking(Networking):
 
 
     def m_start_task(self, msg):
+        """
+
+        :param msg:
+        """
         # Just publish it
         self.send(msg.target, 'START', msg.value)
 
@@ -319,11 +372,19 @@ class Terminal_Networking(Networking):
         self.send(bytes('P_{}'.format(msg.target)), 'START', msg.value)
 
     def m_change(self, msg):
+        """
+
+        :param msg:
+        """
         # TODO: Should also handle param changes to GUI objects like ntrials, etc.
         pass
 
 
     def m_stop(self, msg):
+        """
+
+        :param msg:
+        """
         self.send(msg.target, 'STOP', msg.value)
         # and the plot widget
         self.send('P_{}'.format(msg.target), 'STOP', msg.value)
@@ -331,12 +392,24 @@ class Terminal_Networking(Networking):
         #TODO: also pop mouse value from data function dict
 
     def m_stopall(self, msg):
+        """
+
+        :param msg:
+        """
         pass
 
     def m_listening(self, msg):
+        """
+
+        :param msg:
+        """
         self.send('_T', 'LISTENING')
 
     def m_kill(self, msg):
+        """
+
+        :param msg:
+        """
         self.logger.info('Received kill request')
 
         # Stopping the loop should kill the process, as it's what's holding us in run()
@@ -344,6 +417,10 @@ class Terminal_Networking(Networking):
 
 
     def l_data(self, msg):
+        """
+
+        :param msg:
+        """
         # Send through to terminal
         self.send('_T', 'DATA', msg.value)
 
@@ -351,6 +428,10 @@ class Terminal_Networking(Networking):
         self.send('P_{}'.format(msg.value['pilot']), 'DATA', msg.value)
 
     def l_alive(self, msg):
+        """
+
+        :param msg:
+        """
         # A pi has told us that it is alive and what its filter is
         self.subscribers[msg.value['pilot']] = msg.value['ip']
         self.logger.info('Received ALIVE from {}, ip: {}'.format(msg.value['pilot'], msg.value['ip']))
@@ -358,12 +439,24 @@ class Terminal_Networking(Networking):
         self.send('_T', 'ALIVE', msg.value)
 
     def l_event(self, msg):
+        """
+
+        :param msg:
+        """
         pass
 
     def l_state(self, msg):
+        """
+
+        :param msg:
+        """
         pass
 
     def l_file(self, msg):
+        """
+
+        :param msg:
+        """
         # The <target> pi has requested some file <value> from us, let's send it back
         # This assumes the file is small, if this starts crashing we'll have to split the message...
 
@@ -377,6 +470,9 @@ class Terminal_Networking(Networking):
         self.send(msg.target, 'FILE', file_message)
 
 class Pilot_Networking(Networking):
+    """
+
+    """
     def __init__(self):
         # Pilot has a pusher - connects back to terminal
         self.pusher = True
@@ -408,31 +504,55 @@ class Pilot_Networking(Networking):
     ###########################3
     # Message/Listen handling methods
     def m_state(self, msg):
+        """
+
+        :param msg:
+        """
         # Save locally so we can respond to queries on our own, then push 'er on through
         # Value will just have the state, we want to add our name
         self.state = msg.value
         self.push(key='STATE', value=msg.value)
 
     def m_data(self, msg):
+        """
+
+        :param msg:
+        """
         # Just sending it along after appending the mouse name
         msg.value['mouse'] = self.mouse
         msg.value['pilot'] = self.id
         self.push(key='DATA', value=msg.value)
 
     def m_cohere(self, msg):
+        """
+
+        :param msg:
+        """
         # Send our local version of the data table so the terminal can double check
         pass
 
     def m_alive(self, msg):
+        """
+
+        :param msg:
+        """
         # TODO: This is probably redundant with l_ping
         # just say hello
         self.push(key='ALIVE', value={'pilot':self.name, 'ip':self.ip, 'state':self.state})
 
     def l_ping(self, msg):
+        """
+
+        :param msg:
+        """
         # The terminal wants to know if we are alive, respond with our name and IP
         self.push(key='ALIVE', value={'pilot':self.name, 'ip':self.ip, 'state':self.state})
 
     def l_start(self, msg):
+        """
+
+        :param msg:
+        """
         self.mouse = msg.value['mouse']
 
         # TODO: Refactor into a general preflight check.
@@ -458,13 +578,25 @@ class Pilot_Networking(Networking):
         self.send(self.pi_id, 'START', msg.value)
 
     def l_stop(self, msg):
+        """
+
+        :param msg:
+        """
         self.send(self.pi_id, 'STOP')
 
     def l_change(self, value):
+        """
+
+        :param value:
+        """
         # TODO: Changing some task parameter from the Terminal
         pass
 
     def l_file(self, msg):
+        """
+
+        :param msg:
+        """
         # The file should be of the structure {'path':path, 'file':contents}
 
         full_path = os.path.join(prefs.SOUNDDIR, msg.value['path'])
@@ -486,6 +618,9 @@ class Pilot_Networking(Networking):
 #####################################
 
 class Net_Node(object):
+    """
+
+    """
     context = None
     loop = None
     id = None
@@ -520,6 +655,9 @@ class Net_Node(object):
         self.init_networking()
 
     def init_networking(self):
+        """
+
+        """
         self.sock = self.context.socket(zmq.DEALER)
         self.sock.identity = self.id
         #self.sock.probe_router = 1
@@ -538,10 +676,18 @@ class Net_Node(object):
         self.connected = True
 
     def threaded_loop(self):
+        """
+
+        """
         while True:
             self.loop.start()
 
     def handle_listen(self, msg):
+        """
+
+        :param msg:
+        :return:
+        """
         # messages from dealers are single frames because we only have one connected partner
         print(msg)
         sys.stdout.flush()
@@ -568,6 +714,13 @@ class Net_Node(object):
             self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
 
     def send(self, to=None, key=None, value=None):
+        """
+
+        :param to:
+        :param key:
+        :param value:
+        :return:
+        """
         # send message via the dealer
         # even though we only have one connection over our dealer,
         # we still include 'to' in case we are sending further upstream
@@ -601,6 +754,13 @@ class Net_Node(object):
             self.logger.info("MESSAGE SENT - \n{}".format(str(msg)))
 
     def prepare_message(self, to, key, value):
+        """
+
+        :param to:
+        :param key:
+        :param value:
+        :return:
+        """
         # TODO: This would mess up multi-hop senders. we should make sure to send the whole message thru
         msg = Message()
         msg.sender = self.id
@@ -615,6 +775,9 @@ class Net_Node(object):
 
 
 class Message(object):
+    """
+
+    """
     # TODO: just make serialization handle all attributes except Files which need to be b64 encoded first.
     id = None # number of message, format {sender.id}_{number}
     to = None
@@ -668,12 +831,20 @@ class Message(object):
         return len(self.__dict__)
 
     def validate(self):
+        """
+
+        :return:
+        """
         if all([self.id, self.to, self.sender, self.key]):
             return True
         else:
             return False
 
     def serialize(self):
+        """
+
+        :return:
+        """
         valid = self.validate()
         if not valid:
             Exception("""Message invalid at the time of serialization!\n {}""".format(str(self)))

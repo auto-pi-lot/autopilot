@@ -87,15 +87,29 @@ class Mouse:
         _ = self.close_hdf(h5f)
 
     def open_hdf(self, mode='r+'):
+        """
+
+        :param mode:
+        :return:
+        """
         with self.lock:
             return tables.open_file(self.file, mode=mode)
 
     def close_hdf(self, h5f):
+        """
+
+        :param h5f:
+        :return:
+        """
         with self.lock:
             h5f.flush()
             return h5f.close()
 
     def new_mouse_file(self, biography):
+        """
+
+        :param biography:
+        """
         # If a file already exists, we open it for appending so we don't lose data.
         # For now we are assuming that the existing file has the basic structure,
         # but that's probably a bad assumption for full reliability
@@ -134,12 +148,23 @@ class Mouse:
         self.close_hdf(h5f)
 
     def update_biography(self, params):
+        """
+
+        :param params:
+        """
         h5f = self.open_hdf()
         for k, v in params.items():
             h5f.root.info._v_attrs[k] = v
         _ = self.close_hdf(h5f)
 
     def update_history(self, type, name, value, step=None):
+        """
+
+        :param type:
+        :param name:
+        :param value:
+        :param step:
+        """
         # Make sure the updates are written to the mouse file
         if type == 'param':
             if not step:
@@ -175,6 +200,11 @@ class Mouse:
         _ = self.close_hdf(h5f)
 
     def update_weights(self, start=None, stop=None):
+        """
+
+        :param start:
+        :param stop:
+        """
         h5f = self.open_hdf()
         if start is not None:
             weight_row = h5f.root.history.weights.row
@@ -191,10 +221,20 @@ class Mouse:
         _ = self.close_hdf(h5f)
 
     def update_params(self, param, value):
+        """
+
+        :param param:
+        :param value:
+        """
         # TODO: this
         pass
 
     def assign_protocol(self, protocol, step_n=0):
+        """
+
+        :param protocol:
+        :param step_n:
+        """
         # Protocol will be passed as a .json filename in prefs.PROTOCOLDIR
 
         h5f = self.open_hdf()
@@ -296,6 +336,9 @@ class Mouse:
         self.update_history('protocol', protocol_name, self.current)
 
     def flush_current(self):
+        """
+
+        """
         # Flush the 'current' attribute in the mouse object to the .h5
         # makes sure the stored .json representation of the current task stays up to date
         # with the params set in the mouse object
@@ -308,6 +351,9 @@ class Mouse:
         _ = self.close_hdf(h5f)
 
     def stash_current(self):
+        """
+
+        """
         # Save the current protocol in the history group and delete the node
         # Typically this should only be called when assigning a new protocol but what do I know
 
@@ -331,6 +377,10 @@ class Mouse:
         self.close_hdf(h5f)
 
     def prepare_run(self):
+        """
+
+        :return:
+        """
         #trial_table = None
         cont_table = None
 
@@ -419,7 +469,10 @@ class Mouse:
         return task
 
     def data_thread(self, queue):
+        """
 
+        :param queue:
+        """
         h5f = self.open_hdf()
 
         task_params = self.current[self.step]
@@ -478,9 +531,16 @@ class Mouse:
         self.close_hdf(h5f)
 
     def save_data(self, data):
+        """
+
+        :param data:
+        """
         self.data_queue.put(data)
 
     def stop_run(self):
+        """
+
+        """
         self.data_queue.put('END')
         self.thread.join(5)
         self.running = False
@@ -488,6 +548,11 @@ class Mouse:
             Warning('Data thread did not exit')
 
     def get_trial_data(self, step=-1):
+        """
+
+        :param step:
+        :return:
+        """
         # step= -1 is just most recent step,
         # step= int is an integer specified step
         # step= [n1, n2] is from step n1 to n2 inclusive
@@ -524,6 +589,10 @@ class Mouse:
 
 
     def get_step_history(self):
+        """
+
+        :return:
+        """
         h5f = self.open_hdf()
         history = h5f.root.history.history
         # return a dataframe of step number, datetime and step name
@@ -539,6 +608,11 @@ class Mouse:
         return step_df
 
     def get_timestamp(self, simple=False):
+        """
+
+        :param simple:
+        :return:
+        """
         # Timestamps have two different applications, and thus two different formats:
         # coarse timestamps that should be human-readable
         # fine timestamps for data analysis that don't need to be
@@ -548,6 +622,12 @@ class Mouse:
             return datetime.datetime.now().isoformat()
 
     def get_weight(self, which='last', include_baseline=False):
+        """
+
+        :param which:
+        :param include_baseline:
+        :return:
+        """
         # get either the last start/stop weights, optionally including baseline
         # TODO: Get by session
         weights = {}
@@ -572,6 +652,10 @@ class Mouse:
 
 
     def graduate(self):
+        """
+
+        :return:
+        """
         if len(self.current)<=self.step+1:
             Warning('Tried to graduate from the last step!\n Task has {} steps and we are on {}'.format(len(self.current), self.step+1))
             return

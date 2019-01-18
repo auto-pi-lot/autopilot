@@ -33,6 +33,9 @@ from taskontrol.settings import rigsettings
 #NUMERIC_REGEXP = 
 
 class Container(dict):
+    """
+
+    """
     def __init__(self):
         super(Container, self).__init__()        
         self._groups = {}
@@ -67,6 +70,9 @@ class Container(dict):
         dict.__setitem__(self, paramName, paramInstance)
 
     def print_items(self):
+        """
+
+        """
         for key,item in self.iteritems():
             print '[%s] %s : %s'%(type(item),key,str(item.get_value()))
 
@@ -165,16 +171,27 @@ class Container(dict):
                 dset.attrs['Description'] = item.get_label()
 
 class ParamGroupLayout(QtGui.QGridLayout):
+    """
+
+    """
     def __init__(self,parent=None):
         super(ParamGroupLayout, self).__init__(parent)
         self.setVerticalSpacing(0)
     def add_row(self,labelWidget,editWidget):
+        """
+
+        :param labelWidget: 
+        :param editWidget: 
+        """
         currentRow = self.rowCount()
         self.addWidget(labelWidget,currentRow,0,QtCore.Qt.AlignRight)
         self.addWidget(editWidget,currentRow,1,QtCore.Qt.AlignLeft)
 
 
 class GenericParam(QtGui.QWidget):
+    """
+
+    """
     def __init__(self, labelText='', value=0, group=None,
                  history=True, labelWidth=80, parent=None):
         super(GenericParam, self).__init__(parent)
@@ -187,18 +204,39 @@ class GenericParam(QtGui.QWidget):
         self.editWidget = None
 
     def get_type(self):
+        """
+
+        :return: 
+        """
         return self._type
 
     def get_label(self):
+        """
+
+        :return: 
+        """
         return str(self.labelWidget.text())
 
     def get_group(self):
+        """
+
+        :return: 
+        """
         return self._group
 
     def in_group(self,groupName):
+        """
+
+        :param groupName: 
+        :return: 
+        """
         return self._group==groupName
 
     def history_enabled(self):
+        """
+
+        :return: 
+        """
         return self._historyEnabled
 
     def set_enabled(self,enabledStatus):
@@ -207,6 +245,9 @@ class GenericParam(QtGui.QWidget):
 
 
 class StringParam(GenericParam):
+    """
+
+    """
     def __init__(self, labelText='', value='', group=None,
                  labelWidth=80, parent=None):
         super(StringParam, self).__init__(labelText, value, group,
@@ -224,14 +265,25 @@ class StringParam(GenericParam):
         self.set_value(value)
 
     def set_value(self,value):
+        """
+
+        :param value: 
+        """
         self._value = value
         self.editWidget.setText(str(value))
 
     def get_value(self):
+        """
+
+        :return: 
+        """
         return str(self.editWidget.text())
 
 
 class NumericParam(GenericParam):
+    """
+
+    """
     def __init__(self, labelText='', value=0, units='', group=None, decimals=None,
                  history=True, labelWidth=80, enabled=True, parent=None):
         super(NumericParam, self).__init__(labelText, value, group,
@@ -251,6 +303,10 @@ class NumericParam(GenericParam):
         self._units = units
 
     def set_value(self,value):
+        """
+
+        :param value: 
+        """
         self._value = value
         if self.decimals is not None:
             strFormat = '{{0:0.{0}f}}'.format(self.decimals)
@@ -259,19 +315,34 @@ class NumericParam(GenericParam):
             self.editWidget.setText(str(value))
 
     def get_value(self):
+        """
+
+        :return: 
+        """
         try:
             return int(self.editWidget.text())
         except ValueError:
             return float(self.editWidget.text())
 
     def get_units(self):
+        """
+
+        :return: 
+        """
         return self._units
 
     def add(self,value):
+        """
+
+        :param value: 
+        """
         self.set_value(self.get_value()+value)
 
 
 class MenuParam(GenericParam):
+    """
+
+    """
     def __init__(self, labelText='', menuItems=(), value=0, group=None,
                  history=True, labelWidth=80, parent=None):
         super(MenuParam, self).__init__(labelText, value, group,
@@ -292,10 +363,18 @@ class MenuParam(GenericParam):
         self.set_value(value)
 
     def set_value(self,value):
+        """
+
+        :param value: 
+        """
         self._value = value
         self.editWidget.setCurrentIndex(value)
 
     def set_string(self,newstring):
+        """
+
+        :param newstring: 
+        """
         # XXFIXME: graceful warning if wrong string (ValueError exception)
         try:
             value = self._items.index(newstring)
@@ -306,12 +385,24 @@ class MenuParam(GenericParam):
         self.editWidget.setCurrentIndex(value)
 
     def get_value(self):
+        """
+
+        :return: 
+        """
         return self.editWidget.currentIndex()
 
     def get_string(self):
+        """
+
+        :return: 
+        """
         return str(self.editWidget.currentText())
 
     def get_items(self):
+        """
+
+        :return: 
+        """
         return self._items
 
     #def appendToFile(self,h5file,dataParent,itemsParent):
@@ -374,6 +465,10 @@ def create_app_only():
 
 
 def center_in_screen(widget):
+    """
+
+    :param widget: 
+    """
     qr = widget.frameGeometry()
     cp = QtGui.QDesktopWidget().availableGeometry().center()
     qr.moveCenter(cp)

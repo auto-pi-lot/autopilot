@@ -4,6 +4,9 @@ import json
 from subprocess import call
 
 class Param(object):
+    """
+
+    """
     # Class to hold and verify task and gui parameters
     tag = None # human-readable description of parameter
     type = None # string that describes the type of input or param
@@ -38,6 +41,11 @@ class Param(object):
     #         return False
 
 def dict_from_HDF5(dictGroup):
+    """
+
+    :param dictGroup:
+    :return:
+    """
     newDict={}
     for k,v in dictGroup.iteritems():
         newDict[k]=v[()]
@@ -49,6 +57,9 @@ def dict_from_HDF5(dictGroup):
 # https://stackoverflow.com/a/12127115
 
 class InvokeEvent(QtCore.QEvent):
+    """
+
+    """
     EVENT_TYPE = QtCore.QEvent.Type(QtCore.QEvent.registerEventType())
 
     def __init__(self, fn, *args, **kwargs):
@@ -60,11 +71,21 @@ class InvokeEvent(QtCore.QEvent):
 
 class Invoker(QtCore.QObject):
     def event(self, event):
+        """
+
+        :param event:
+        :return:
+        """
         event.fn(*event.args, **event.kwargs)
         return True
 
 
 def get_prefs(prefs_fn = '/usr/rpilot/prefs.json'):
+    """
+
+    :param prefs_fn:
+    :return:
+    """
     # convenience function to get prefs
 
     with open(prefs_fn) as prefs_file:
@@ -73,6 +94,13 @@ def get_prefs(prefs_fn = '/usr/rpilot/prefs.json'):
     return prefs
 
 def update_pis(github=True, apt=False, pilot_select = None, prefs_fn = None):
+    """
+
+    :param github:
+    :param apt:
+    :param pilot_select:
+    :param prefs_fn:
+    """
     # update github, or apt?
     # should limit pilots or use all?
     # load prefs from default location or use different?
@@ -95,6 +123,9 @@ def update_pis(github=True, apt=False, pilot_select = None, prefs_fn = None):
         call('parallel-ssh', '-H', ip_string, 'git --git-dir=/home/pi/git/RPilot/.git pull')
 
 def dummy():
+    """
+
+    """
     # testing if update pi works
     pass
 

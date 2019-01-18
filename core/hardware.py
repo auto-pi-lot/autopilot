@@ -33,6 +33,10 @@ BOARD_TO_BCM = {
 BCM_TO_BOARD = dict([reversed(i) for i in BOARD_TO_BCM.items()])
 
 class Hardware(object):
+    """
+
+    :param object:
+    """
     # metaclass for hardware objects
     trigger = False
     pin = None
@@ -43,6 +47,9 @@ class Hardware(object):
 
 # TODO: Subclass nosepoke that knows about waiting for mouse leaving
 class Beambreak(Hardware):
+    """
+
+    """
     trigger=True
     # IR Beambreak sensor
     def __init__(self, pin, pull_ud='U', trigger_ud='D', event=None):
@@ -82,9 +89,19 @@ class Beambreak(Hardware):
         self.pig.stop()
 
     def release(self):
+        """
+
+        """
         self.pig.stop()
 
     def assign_cb(self, callback_fn, add=False, evented=False, manual_trigger=None):
+        """
+
+        :param callback_fn:
+        :param add:
+        :param evented:
+        :param manual_trigger:
+        """
         # If we aren't adding, we clear any existing callbacks
         if not add:
             self.clear_cb()
@@ -106,6 +123,9 @@ class Beambreak(Hardware):
         self.callbacks.append(cb)
 
     def clear_cb(self):
+        """
+
+        """
         for cb in self.callbacks:
             try:
                 cb.cancel()
@@ -116,7 +136,9 @@ class Beambreak(Hardware):
     # TODO: Add cleanup so task can be closed and another opened
 
 class LED_RGB(Hardware):
+    """
 
+    """
     def __init__(self, pins = None, r = None, g=None, b=None, common = 'anode'):
         # Can pass RGB pins as list or as kwargs "r", "g", "b"
         # Can be configured for common anode (low turns LED on) or cathode (low turns LED off)
@@ -167,11 +189,24 @@ class LED_RGB(Hardware):
         self.pig.stop()
 
     def release(self):
+        """
+
+        """
         self.set_color(col=[0,0,0])
         self.pig.stop()
 
     def set_color(self, col=None, r=None, g=None, b=None, timed=None, stored=False, internal=False):
+        """
 
+        :param col:
+        :param r:
+        :param g:
+        :param b:
+        :param timed:
+        :param stored:
+        :param internal:
+        :return:
+        """
         if stored:
             # being called after a flash train
             # Since this is always called after a flash train, check that we were actually assigned a color
@@ -212,6 +247,12 @@ class LED_RGB(Hardware):
             offtimer.start()
 
     def flash(self, duration, frequency=20, colors=[[255,255,255],[0,0,0]]):
+        """
+
+        :param duration:
+        :param frequency:
+        :param colors:
+        """
         # Duration is total in ms, frequency in Hz
         # Get number of flashes in duration rounded down
         n_rep = int(float(duration/1000)*frequency)
@@ -222,6 +263,11 @@ class LED_RGB(Hardware):
         self.color_series(flashes, single_dur)
 
     def color_series(self, colors, duration):
+        """
+
+        :param colors:
+        :param duration:
+        """
         # Colors needs to be a list of a list of integers
         # Duration (ms) can be an int (same duration of all colors) or a list
 
@@ -230,6 +276,12 @@ class LED_RGB(Hardware):
         series_thread.start()
 
     def threaded_color_series(self, colors, duration):
+        """
+
+        :param colors:
+        :param duration:
+        :return:
+        """
         self.flash_block.clear()
         if isinstance(duration, int) or isinstance(duration, float):
             for c in colors:
@@ -248,6 +300,9 @@ class LED_RGB(Hardware):
         self.set_color(stored=True)
 
 class Solenoid(Hardware):
+    """
+
+    """
     # Solenoid valves for water delivery
     def __init__(self, pin, duration=100):
         # Initialize connection to pigpio daemon
@@ -271,9 +326,16 @@ class Solenoid(Hardware):
         self.pig.stop()
 
     def release(self):
+        """
+
+        """
         self.pig.stop()
 
     def make_wave(self, duration=None):
+        """
+
+        :param duration:
+        """
         # TODO: Is there any point in storing multiple waves?
         # Typically duration is stored as an attribute, but if we are passed one...
         if duration:
@@ -291,6 +353,10 @@ class Solenoid(Hardware):
         self.wave_id = self.pig.wave_create()
 
     def open(self, duration=None):
+        """
+
+        :param duration:
+        """
         if duration:
             try:
                 duration = float(duration)
@@ -306,6 +372,9 @@ class Solenoid(Hardware):
         self.pig.write(self.pin, 0)
 
 class Scale(Hardware):
+    """
+
+    """
     MODEL={
         'stamps.com':{
             'vendor_id':0x1446,
@@ -329,6 +398,9 @@ class Scale(Hardware):
         self.device.set_configuration()
 
 class Pull(Hardware):
+    """
+
+    """
     input = False
     # Pull a pin up or down
     def __init__(self, pin, pud=1):
@@ -349,6 +421,9 @@ class Pull(Hardware):
         self.pig.stop()
 
     def release(self):
+        """
+
+        """
         self.pig.stop()
 
 

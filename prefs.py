@@ -14,6 +14,10 @@ import os
 prefdict = None
 
 def init(fn):
+    """
+
+    :param fn:
+    """
     if isinstance(fn, basestring):
         with open(fn, 'r') as pfile:
             prefs = json.load(pfile)
@@ -38,6 +42,10 @@ def init(fn):
 
 # Return the git revision as a string
 def git_version():
+    """
+
+    :return:
+    """
     # Stolen from numpy's setup https://github.com/numpy/numpy/blob/master/setup.py#L70-L92
     # and linked by ryanjdillon on SO https://stackoverflow.com/a/40170206
     def _minimal_ext_cmd(cmd):

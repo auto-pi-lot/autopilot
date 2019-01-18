@@ -11,6 +11,9 @@ from core.mouse import Mouse
 import tasks
 
 class Control_Panel(QtGui.QWidget):
+    """
+
+    """
     # Hosts two nested tab widgets to select pilot and mouse,
     # set params, run mice, etc.
 
@@ -48,6 +51,9 @@ class Control_Panel(QtGui.QWidget):
         self.init_ui()
 
     def init_ui(self):
+        """
+
+        """
         # Layout for whole widget
         self.layout = QtGui.QVBoxLayout()
         self.layout.setContentsMargins(0,0,0,0)
@@ -87,6 +93,10 @@ class Control_Panel(QtGui.QWidget):
 
 
     def populate_tabs(self, new_mouse=False):
+        """
+
+        :param new_mouse:
+        """
         # Clear tabs if there are any
         # We can use clear even though it doesn't delete the sub-widgets because
         # adding a bunch of mice should be rare,
@@ -128,6 +138,9 @@ class Control_Panel(QtGui.QWidget):
             #self.select_mouse(new_mouse=True)
 
     def hide_tabs(self):
+        """
+
+        """
         # It does what it says it does, you want it to be the width it is,
         # and you want this to be relatively sticky
         # because drawing panels and hiding them is less expensive
@@ -138,6 +151,9 @@ class Control_Panel(QtGui.QWidget):
 
 
     def create_pilot(self):
+        """
+
+        """
         name, ok = QtGui.QInputDialog.getText(self, "Pilot ID", "Pilot ID:")
         if ok and name != '':
             self.pilots[name] = []
@@ -158,6 +174,9 @@ class Control_Panel(QtGui.QWidget):
             pass
 
     def create_mouse(self):
+        """
+
+        """
         new_mouse_wizard = New_Mouse_Wizard(self.prefs['PROTOCOLDIR'])
         new_mouse_wizard.exec_()
 
@@ -193,12 +212,20 @@ class Control_Panel(QtGui.QWidget):
 
 
     def select_pilot(self):
+        """
+
+        """
         print('called')
         self.select_mouse(index=0)
         # Probably just ping it to check its status
         #pass
 
     def select_mouse(self, index=0):
+        """
+
+        :param index:
+        :return:
+        """
         # When a mouse's button is clicked, we expand a parameters pane for it
         # This pane lets us give the mouse a protocol if it doesn't have one,
         # adjust the parameters if it does, and start the mouse running
@@ -249,6 +276,9 @@ class Control_Panel(QtGui.QWidget):
         #self.mouse = sender.text()
 
     def update_db(self):
+        """
+
+        """
         # TODO: Pretty hacky, should explicitly pass prefs or find some way of making sure every object has it
         try:
             with open(prefs['PILOT_DB'], 'w') as pilot_file:
@@ -264,6 +294,9 @@ class Control_Panel(QtGui.QWidget):
 
 
 class Parameters(QtGui.QWidget):
+    """
+
+    """
     # Reads and edits tasks parameters from a mouse's protocol
     def __init__(self, pilot, msg_fn, hide_fn):
         super(Parameters, self).__init__()
@@ -295,6 +328,10 @@ class Parameters(QtGui.QWidget):
 
         # We want to do essentially nothing on init and only populate params when asked to
     def show_params(self, mouse_obj):
+        """
+
+        :param mouse_obj:
+        """
         self.populated = True
         self.setVisible(True)
 
@@ -310,6 +347,9 @@ class Parameters(QtGui.QWidget):
             self.param_layout.addRow(assign_protocol_button)
 
     def hide_params(self):
+        """
+
+        """
         # call clear params, and also clear top panel
         self.populated = False
         if isinstance(self.param_layout, QtGui.QLayout):
@@ -332,6 +372,9 @@ class Parameters(QtGui.QWidget):
 
 
     def init_ui(self):
+        """
+
+        """
         self.param_layout = QtGui.QFormLayout()
         self.top_panel = QtGui.QHBoxLayout()
 
@@ -352,6 +395,11 @@ class Parameters(QtGui.QWidget):
         # Top bar - Label and close button
 
     def populate_params(self, protocol, step):
+        """
+
+        :param protocol:
+        :param step:
+        """
         # We want to hang on to the protocol and step
         # because they are direct references to the mouse file,
         # but we don't need to have them passed every time
@@ -439,12 +487,19 @@ class Parameters(QtGui.QWidget):
         self.param_layout.addRow(start_stop_button)
 
     def clear_layout(self, layout):
+        """
+
+        :param layout:
+        """
         while layout.count():
             child = layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
 
     def step_changed(self):
+        """
+
+        """
         # the step was changed! Change our parameters here and update the mouse object
         self.step = self.step_selection.currentIndex()
         step_name = self.step_selection.currentText()
@@ -456,6 +511,9 @@ class Parameters(QtGui.QWidget):
         # TODO: Send changes to the pi
 
     def set_param(self):
+        """
+
+        """
         # A param was changed in the window, update our values here and in the mouse object
         sender = self.sender()
         param_name = sender.objectName()
@@ -479,11 +537,18 @@ class Parameters(QtGui.QWidget):
         self.mouse.h5f.flush()
 
     def set_sounds(self):
+        """
+
+        """
         # Have to handle sounds slightly differently
         # because the sound widget updates its own parameters
         self.protocol[self.step]['sounds'] = self.sound_widget.sound_dict
 
     def assign_protocol(self):
+        """
+
+        :return:
+        """
         # Get list of available protocols
         protocol_list = os.listdir(prefs['PROTOCOLDIR'])
         protocol_list = [os.path.splitext(p)[0] for p in protocol_list]
@@ -520,6 +585,10 @@ class Parameters(QtGui.QWidget):
         self.show_params(self.mouse)
 
     def toggle_start(self, toggled):
+        """
+
+        :param toggled:
+        """
         # TODO: Why does this object have toggle_start...
         # If we're stopped, start, and vice versa...
         if toggled:
@@ -566,6 +635,9 @@ class Parameters(QtGui.QWidget):
 #         layout.addLayout(stackedLayout)
 
 class Expanding_Tabs(QtGui.QTabBar):
+    """
+
+    """
     # The expanding method of the QTabBar doesn't work,
     # we have to manually adjust the size policy and size hint
     def __init__(self, width=30):
@@ -574,6 +646,11 @@ class Expanding_Tabs(QtGui.QTabBar):
         self.width = width
 
     def tabSizeHint(self, index):
+        """
+
+        :param index:
+        :return:
+        """
         # Pretty janky, but the tab bar is two children deep from the main widget
         # First compute the size taken up by the 'new' button and the margin
         # We assume the code is unchanged that binds our width to that button's width
@@ -584,6 +661,9 @@ class Expanding_Tabs(QtGui.QTabBar):
 
 
 class Stacked_Tabs(QtGui.QTabBar):
+    """
+
+    """
     # Setting tab position to west also rotates text 90 degrees, which is dumb
     # From https://stackoverflow.com/questions/3607709/how-to-change-text-alignment-in-qtabwidget
     def __init__(self, width=150, height=30):
@@ -591,6 +671,10 @@ class Stacked_Tabs(QtGui.QTabBar):
         self.tabSize = QtCore.QSize(width, height)
 
     def paintEvent(self, event):
+        """
+
+        :param event:
+        """
         painter = QtGui.QStylePainter(self)
         option = QtGui.QStyleOptionTab()
 
@@ -606,16 +690,27 @@ class Stacked_Tabs(QtGui.QTabBar):
         painter.end()
 
     def tabSizeHint(self, index):
+        """
+
+        :param index:
+        :return:
+        """
         return self.tabSize
 
 
 class Test_App(QtGui.QWidget):
+    """
+
+    """
     def __init__(self, prefs):
         super(Test_App, self).__init__()
         self.prefs = prefs
         self.initUI()
 
     def initUI(self):
+        """
+
+        """
         #self.setWindowState(QtCore.Qt.WindowMaximized)
         self.layout = QtGui.QHBoxLayout()
         self.setLayout(self.layout)
@@ -632,6 +727,9 @@ class Test_App(QtGui.QWidget):
 
         #self.show()
     def blank_fn(self):
+        """
+
+        """
         pass
 
 

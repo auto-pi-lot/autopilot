@@ -37,6 +37,9 @@ if server_type == "pyo":
     import pyo
 
     class Pyo_Sound(object):
+        """
+
+        """
         # Metaclass for pyo sound objects
         PARAMS    = None # list of strings of parameters to be defined
         type      = None # string human readable name of sound
@@ -49,7 +52,11 @@ if server_type == "pyo":
         def __init__(self):
             pass
 
+
         def play(self):
+            """
+
+            """
             self.table.out()
 
         def table_wrap(self, audio, duration=None):
@@ -70,6 +77,10 @@ if server_type == "pyo":
             self.table = pyo.TableRead(tab, freq=tab.getRate(), loop=0)
 
         def set_trigger(self, trig_fn):
+            """
+
+            :param trig_fn:
+            """
             # Using table triggers, call trig_fn when table finishes playing
             self.trigger = pyo.TrigFunc(self.table['trig'], trig_fn)
 
@@ -213,6 +224,9 @@ class Noise(BASE_CLASS):
         self.init_sound()
 
     def init_sound(self):
+        """
+
+        """
         if self.server_type == 'pyo':
             noiser = pyo.Noise(mul=self.amplitude)
             self.table = self.table_wrap(noiser)
@@ -222,6 +236,9 @@ class Noise(BASE_CLASS):
             self.chunk()
 
 class File(BASE_CLASS):
+    """
+
+    """
     PARAMS = ['path', 'amplitude']
     type='File'
 
@@ -240,6 +257,9 @@ class File(BASE_CLASS):
         self.init_sound()
 
     def init_sound(self):
+        """
+
+        """
         fs, audio = wavfile.read(self.path)
         if audio.dtype in ['int16', 'int32']:
             audio = int_to_float(audio)
@@ -265,6 +285,9 @@ class File(BASE_CLASS):
 
 
 class Speech(File):
+    """
+
+    """
     type='Speech'
     PARAMS = ['path', 'amplitude', 'speaker', 'consonant', 'vowel', 'token']
     def __init__(self, path, speaker, consonant, vowel, token, amplitude=0.05, **kwargs):
@@ -298,6 +321,11 @@ STRING_PARAMS = ['path', 'speaker', 'consonant', 'vowel', 'type']
 
 
 def int_to_float(audio):
+    """
+
+    :param audio:
+    :return:
+    """
     if audio.dtype == 'int16':
         audio = audio.astype(np.float32)
         audio = audio / (float(2 ** 16) / 2)

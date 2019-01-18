@@ -13,12 +13,33 @@ import tasks
 from stim.sound import sounds
 import prefs
 
+"""
+Let's start by saying all the GUI code is a little screwy.
+"""
+
 
 class Control_Panel(QtGui.QWidget):
+    """
+    A :class:`QtGui.QWidget` that contains the controls for all pilots.
+
+    Specifically, for each pilot, it contains one
+    * :class:`Mouse_List`: A list of the mice that run in each pilot.
+    * :class:`Pilot_Panel`: A set of button controls for starting/stopping behavior
+
+    This class should not be instantiated outside the context of a :class:`core.Terminal` object,
+    as they share the :param mice: dictionary.
+
+
+    """
     # Hosts two nested tab widgets to select pilot and mouse,
     # set params, run mice, etc.
 
     def __init__(self, pilots=None, mice=None, msg_fn=None):
+        """
+        :param pilots: A dictionary with pilot ID's as keys and nested dictionaries containing mice, IP, etc. as values
+        :param mice: A dictionary with mouse ID's as keys and :class:`core.mouse.Mouse` objects as values. Shared with the Terminal object to manage access conflicts.
+        :param msg_fn: The :func:`core.networking.Terminal_Networking.send` function from the Terminal's Networking instance. Used to start and stop tasks running.
+        """
         super(Control_Panel, self).__init__()
 
         # We share a dict of mouse objects with the main Terminal class to avoid access conflicts
@@ -55,6 +76,11 @@ class Control_Panel(QtGui.QWidget):
         self.setSizePolicy(QtGui.QSizePolicy.Maximum,QtGui.QSizePolicy.Maximum)
 
     def init_ui(self):
+        """
+        Create the UI components.
+
+        Instantiate widgets, connect Qt signals, etc.
+        """
         self.layout.setColumnStretch(0, 1)
         self.layout.setColumnStretch(1, 5)
 
@@ -75,15 +101,18 @@ class Control_Panel(QtGui.QWidget):
             self.layout.addWidget(pilot_panel, i, 1, 1, 1)
             self.layout.addWidget(mouse_list, i, 2, 1, 1)
 
-    def reset_ui(self):
-        # TODO This don't work.
-        self.layout = QtGui.QGridLayout()
-        self.layout.setContentsMargins(0,0,0,0)
-        self.layout.setSpacing(0)
-        self.setLayout(self.layout)
-        self.init_ui()
-
     def toggle_start(self, starting, pilot, mouse=None):
+        """
+        Start or Stop running the currently selected mouse's task.
+        Sends a message containing the task information to the concerned pilot.
+
+        Each :class:`Pilot_Panel` is given a lambda function that calls this one with the arguments specified
+        See :class:`Pilot_Button`, as it is what calls this function.
+
+        :param bool starting: Does this button press mean we are starting (True) or stopping (False) the task?
+        :param pilot: Which Pilot is starting or stopping?
+        :param mouse: Which Mouse is currently selected?
+        """
         # stopping is the enemy of starting so we put them in the same function to learn about each other
         if starting is True:
             # Ope'nr up if she aint
@@ -128,6 +157,10 @@ class Control_Panel(QtGui.QWidget):
 
 
     def create_mouse(self, pilot):
+        """
+        
+        :param pilot:
+        """
         new_mouse_wizard = New_Mouse_Wizard(prefs.PROTOCOLDIR)
         new_mouse_wizard.exec_()
 
@@ -159,6 +192,11 @@ class Control_Panel(QtGui.QWidget):
             self.update_db()
 
     def edit_params(self, item):
+        """
+
+        :param item:
+        :return:
+        """
         # edit a mouse's task parameters, called when mouse double-clicked
         mouse = item.text()
         if mouse not in self.mice.keys():
@@ -187,6 +225,11 @@ class Control_Panel(QtGui.QWidget):
 
 
     def update_db(self, *args, **kwargs):
+        """
+
+        :param args:
+        :param kwargs:
+        """
         for pilot, mlist in self.mouse_lists.items():
             mice = []
             for i in range(mlist.count()):
@@ -209,6 +252,9 @@ class Control_Panel(QtGui.QWidget):
 ###################################
 
 class Mouse_List(QtGui.QListWidget):
+    """
+
+    """
     def __init__(self, mice=None, drop_fn=None):
         super(Mouse_List, self).__init__()
 
@@ -226,10 +272,17 @@ class Mouse_List(QtGui.QListWidget):
         self.drop_fn = drop_fn
 
     def populate_list(self):
+        """
+
+        """
         for m in self.mice:
             self.addItem(m)
 
     def dropEvent(self, event):
+        """
+
+        :param event:
+        """
         # call the parent dropEvent to make sure all the list ops happen
         super(Mouse_List, self).dropEvent(event)
         # then we call the drop_fn passed to us
@@ -237,6 +290,9 @@ class Mouse_List(QtGui.QListWidget):
 
 
 class Pilot_Panel(QtGui.QWidget):
+    """
+
+    """
     def __init__(self, pilot=None, mouse_list=None, toggle_fn=None, create_fn=None):
         # A little panel with the name of a pilot on top,
         # a big start/stop button, and two smaller add/remove mouse buttons at the bottom
@@ -255,6 +311,9 @@ class Pilot_Panel(QtGui.QWidget):
         self.init_ui()
 
     def init_ui(self):
+        """
+
+        """
         label = QtGui.QLabel(self.pilot)
         start_button = Pilot_Button(self.pilot, self.mouse_list, self.toggle_fn)
         add_button = QtGui.QPushButton("+")
@@ -272,16 +331,25 @@ class Pilot_Panel(QtGui.QWidget):
         self.layout.setRowStretch(2, 0)
 
     def remove_mouse(self):
+        """
+
+        """
         self.mouse_list.takeItem(self.mouse_list.currentRow())
         # the drop fn updates the db
         self.mouse_list.drop_fn()
 
     def create_mouse(self):
+        """
+
+        """
         # essentially just a decorator, just calling create_mouse w/ our name
         self.create_fn(self.pilot)
 
 
 class Pilot_Button(QtGui.QPushButton):
+    """
+
+    """
     def __init__(self, pilot=None, mouse_list=None, toggle_fn=None):
         # Just easier to add the button behavior as a class.
         super(Pilot_Button, self).__init__()
@@ -310,6 +378,10 @@ class Pilot_Button(QtGui.QPushButton):
 
 
     def toggle_start(self, toggled):
+        """
+
+        :param toggled:
+        """
         # If we're stopped, start, and vice versa...
         current_mouse = self.mouse_list.currentItem().text()
         if toggled is True: # ie
@@ -328,6 +400,9 @@ class Pilot_Button(QtGui.QPushButton):
 ######################################
 
 class Parameters(QtGui.QWidget):
+    """
+
+    """
     # Superclass to embed wherever needed
     # Subclasses will implement use as standalong dialog and as step selector
     # Reads and edits tasks parameters from a mouse's protocol
@@ -359,6 +434,10 @@ class Parameters(QtGui.QWidget):
             self.populate_params(params)
 
     def populate_params(self, params):
+        """
+
+        :param params:
+        """
         # We want to hang on to the protocol and step
         # because they are direct references to the mouse file,
         # but we don't need to have them passed every time
@@ -421,6 +500,10 @@ class Parameters(QtGui.QWidget):
                 pass
 
     def clear_layout(self, layout=None):
+        """
+
+        :param layout:
+        """
         if not layout:
             layout = self.param_layout
         while layout.count():
@@ -429,6 +512,9 @@ class Parameters(QtGui.QWidget):
                 child.widget().deleteLater()
 
     def set_param(self):
+        """
+
+        """
         # A param was changed in the window, update our values here and in the mouse object
         sender = self.sender()
         param_name = sender.objectName()
@@ -449,12 +535,18 @@ class Parameters(QtGui.QWidget):
             self.param_changes[param_name] = new_val
 
     def set_sounds(self):
+        """
+
+        """
         # Have to handle sounds slightly differently
         # because the sound widget updates its own parameters
         self.protocol[self.step]['sounds'] = self.sound_widget.sound_dict
 
 
 class Protocol_Parameters(QtGui.QWidget):
+    """
+
+    """
     # Multiple steps in a protocol, enable selection of multiple param windows
 
     def __init__(self, protocol, step, protocol_name=None):
@@ -492,6 +584,11 @@ class Protocol_Parameters(QtGui.QWidget):
 
 
     def populate_protocol(self, protocol, step=0):
+        """
+
+        :param protocol:
+        :param step:
+        """
         # clean up first
         self.clear()
 
@@ -526,12 +623,18 @@ class Protocol_Parameters(QtGui.QWidget):
 
 
     def clear(self):
+        """
+
+        """
         while self.step_selection.count():
             self.step_selection.removeItem(0)
 
         self.params_widget.clear_layout()
 
     def step_changed(self):
+        """
+
+        """
         # save any changes to last step
         if self.params_widget.params:
             self.protocol[self.step] = self.params_widget.params
@@ -545,6 +648,9 @@ class Protocol_Parameters(QtGui.QWidget):
 
 
 class Protocol_Parameters_Dialogue(QtGui.QDialog):
+    """
+
+    """
     def __init__(self, protocol, step):
         super(Protocol_Parameters_Dialogue, self).__init__()
 
@@ -572,6 +678,9 @@ class Protocol_Parameters_Dialogue(QtGui.QDialog):
         self.setWindowTitle("Edit Protocol Parameters")
 
     def accept(self):
+        """
+
+        """
         # Get the changes from the currently open params window
         self.step_changes = self.protocol_widget.step_changes
         # And any since the last time the qcombobox was changed
@@ -581,6 +690,9 @@ class Protocol_Parameters_Dialogue(QtGui.QDialog):
         super(Protocol_Parameters_Dialogue, self).accept()
 
 class Popup(QtGui.QDialog):
+    """
+
+    """
     def __init__(self, message):
         super(Popup, self,).__init__()
         self.layout = QtGui.QVBoxLayout()
@@ -599,6 +711,9 @@ class Popup(QtGui.QDialog):
 # TODO: Change these classes to use the update params windows
 
 class New_Mouse_Wizard(QtGui.QDialog):
+    """
+
+    """
     pilot = ""
 
     def __init__(self, protocol_dir=None):
@@ -633,6 +748,9 @@ class New_Mouse_Wizard(QtGui.QDialog):
         self.setWindowTitle("Setup New Mouse")
 
     class Biography_Tab(QtGui.QWidget):
+        """
+
+        """
         def __init__(self):
             QtGui.QWidget.__init__(self)
 
@@ -696,16 +814,27 @@ class New_Mouse_Wizard(QtGui.QDialog):
             self.values = {}
 
         def update_return_dict(self, key, val):
+            """
+
+            :param key:
+            :param val:
+            """
             self.values[key] = val
             # When values changed, update return dict
 
         def calc_minmass(self):
+            """
+
+            """
             # minimum mass automatically from % and baseline
             baseline = float(self.blmass.text())
             pct = float(self.minmass_pct.text()[:-1])/100
             self.minmass.setText(str(baseline*pct))
 
     class Task_Tab(QtGui.QWidget):
+        """
+
+        """
         def __init__(self, protocol_dir):
             QtGui.QWidget.__init__(self)
 
@@ -736,6 +865,9 @@ class New_Mouse_Wizard(QtGui.QDialog):
             self.values = {}
 
         def update_step_box(self):
+            """
+
+            """
             # Clear box
             while self.step_selection.count():
                 self.step_selection.removeItem(0)
@@ -756,16 +888,25 @@ class New_Mouse_Wizard(QtGui.QDialog):
             self.step_selection.setCurrentIndex(0)
 
         def protocol_changed(self):
+            """
+
+            """
             self.values['protocol'] = self.protocol_listbox.currentItem().text()
             self.update_step_box()
 
         def step_changed(self):
+            """
+
+            """
             current_step = self.step_selection.currentText()
             # Check that we have selected a step...
             if current_step is not u'':
                 self.values['step'] = self.step_ind[current_step]
 
 class Protocol_Wizard(QtGui.QDialog):
+    """
+
+    """
     def __init__(self):
         QtGui.QDialog.__init__(self)
 
@@ -833,6 +974,9 @@ class Protocol_Wizard(QtGui.QDialog):
         self.steps = []
 
     def add_step(self):
+        """
+
+        """
         task_type = self.task_list.currentItem().text()
         new_item = QtGui.QListWidgetItem()
         new_item.setText(task_type)
@@ -855,17 +999,26 @@ class Protocol_Wizard(QtGui.QDialog):
         self.step_list.setCurrentItem(new_item)
 
     def rename_step(self):
+        """
+
+        """
         sender = self.sender()
         sender_text = sender.text()
         current_step = self.step_list.item(self.step_list.currentRow())
         current_step.setText(sender_text)
 
     def remove_step(self):
+        """
+
+        """
         step_index = self.step_list.currentRow()
         del self.steps[step_index]
         self.step_list.takeItem(step_index)
 
     def populate_params(self):
+        """
+
+        """
         self.clear_params()
 
         # Get current item index
@@ -949,12 +1102,19 @@ class Protocol_Wizard(QtGui.QDialog):
         #    pass
 
     def clear_params(self):
+        """
+
+        """
         while self.param_layout.count():
             child = self.param_layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
 
     def reorder_steps(self, *args):
+        """
+
+        :param args:
+        """
         # arg positions 1 and 4 are starting and ending positions in the list, respectively
         # We reorder our step list so the params line up.
         before = args[1]
@@ -962,6 +1122,9 @@ class Protocol_Wizard(QtGui.QDialog):
         self.steps.insert(after, self.steps.pop(before))
 
     def set_param(self):
+        """
+
+        """
         sender = self.sender()
         param_name = sender.objectName()
         current_step = self.step_list.currentRow()
@@ -981,6 +1144,9 @@ class Protocol_Wizard(QtGui.QDialog):
         # pprint(dict(self.steps[current_step]))
 
     def set_sounds(self):
+        """
+
+        """
         current_step = self.step_list.currentRow()
         if 'stim' not in self.steps[current_step].keys():
             self.steps[current_step]['stim'] = {}
@@ -990,6 +1156,9 @@ class Protocol_Wizard(QtGui.QDialog):
             self.steps[current_step]['stim']['sounds'] = {'value':self.sound_widget.sound_dict}
 
     def set_graduation(self):
+        """
+
+        """
         current_step = self.step_list.currentRow()
         grad_type = self.grad_widget.type
         grad_params = self.grad_widget.param_dict
@@ -997,11 +1166,17 @@ class Protocol_Wizard(QtGui.QDialog):
 
 
     def check_depends(self):
+        """
+
+        """
         # TODO: Make dependent fields unavailable if dependencies unmet
         # I mean if it really matters
         pass
 
 class Graduation_Widget(QtGui.QWidget):
+    """
+
+    """
     def __init__(self):
         super(Graduation_Widget, self).__init__()
 
@@ -1030,6 +1205,10 @@ class Graduation_Widget(QtGui.QWidget):
         self.populate_params()
 
     def populate_params(self, params=None):
+        """
+
+        :param params:
+        """
         self.clear_params()
         self.type = self.type_selection.currentText()
         self.param_dict['type'] = self.type
@@ -1044,12 +1223,18 @@ class Graduation_Widget(QtGui.QWidget):
             self.param_layout.addRow(QtGui.QLabel(k), edit_box)
 
     def clear_params(self):
+        """
+
+        """
         while self.param_layout.count():
             child = self.param_layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
 
     def store_param(self):
+        """
+
+        """
         sender = self.sender()
         name = sender.objectName()
         self.param_dict[name] = sender.text()
@@ -1057,6 +1242,9 @@ class Graduation_Widget(QtGui.QWidget):
         self.set_graduation()
 
 class Drag_List(QtGui.QListWidget):
+    """
+
+    """
     # graciously copied from
     # https://stackoverflow.com/a/25614674
     fileDropped = QtCore.Signal(list)
@@ -1066,12 +1254,20 @@ class Drag_List(QtGui.QListWidget):
         self.setAcceptDrops(True)
 
     def dragEnterEvent(self, e):
+        """
+
+        :param e:
+        """
         if e.mimeData().hasUrls:
             e.accept()
         else:
             e.ignore()
 
     def dragMoveEvent(self, event):
+        """
+
+        :param event:
+        """
         if event.mimeData().hasUrls:
             event.setDropAction(QtCore.Qt.CopyAction)
             event.accept()
@@ -1079,6 +1275,10 @@ class Drag_List(QtGui.QListWidget):
             event.ignore()
 
     def dropEvent(self, event):
+        """
+
+        :param event:
+        """
         if event.mimeData().hasUrls:
             event.setDropAction(QtCore.Qt.CopyAction)
             event.accept()
@@ -1090,6 +1290,9 @@ class Drag_List(QtGui.QListWidget):
             event.ignore()
 
 class Sound_Widget(QtGui.QWidget):
+    """
+
+    """
     def __init__(self):
         QtGui.QWidget.__init__(self)
 
@@ -1147,9 +1350,17 @@ class Sound_Widget(QtGui.QWidget):
         # TODO:Add drag and drop for files
 
     def pass_set_param_function(self, set_param_fnxn):
+        """
+
+        :param set_param_fnxn:
+        """
         self.set_sounds = set_param_fnxn
 
     def add_sound(self, side):
+        """
+
+        :param side:
+        """
         new_sound = self.Add_Sound_Dialog()
         new_sound.exec_()
 
@@ -1162,6 +1373,10 @@ class Sound_Widget(QtGui.QWidget):
             self.set_sounds()
 
     def remove_sound(self, side):
+        """
+
+        :param side:
+        """
         if side == 'L':
             current_sound = self.left_list.currentRow()
             del self.sound_dict['L'][current_sound]
@@ -1173,6 +1388,10 @@ class Sound_Widget(QtGui.QWidget):
         self.set_sounds()
 
     def populate_lists(self, sound_dict):
+        """
+
+        :param sound_dict:
+        """
         # Populate the sound lists after re-selecting a step
         self.sound_dict = sound_dict
         for k in self.sound_dict['L']:
@@ -1181,6 +1400,10 @@ class Sound_Widget(QtGui.QWidget):
             self.right_list.addItem(k['type'])
 
     def files_dropped(self, files):
+        """
+
+        :param files:
+        """
         # TODO: Make this more general...
         msg = QtGui.QMessageBox()
         msg.setText("Are these Speech sounds in the format '/speaker/cv/cv_#.wav'?")
@@ -1222,6 +1445,9 @@ class Sound_Widget(QtGui.QWidget):
         self.set_sounds()
 
     class Add_Sound_Dialog(QtGui.QDialog):
+        """
+
+        """
         def __init__(self):
             QtGui.QDialog.__init__(self)
 
@@ -1252,6 +1478,9 @@ class Sound_Widget(QtGui.QWidget):
             self.param_dict = {}
 
         def populate_params(self):
+            """
+
+            """
             self.clear_params()
 
             self.type = self.type_selection.currentText()
@@ -1264,12 +1493,18 @@ class Sound_Widget(QtGui.QWidget):
                 self.param_layout.addRow(QtGui.QLabel(k), edit_box)
 
         def clear_params(self):
+            """
+
+            """
             while self.param_layout.count():
                 child = self.param_layout.takeAt(0)
                 if child.widget():
                     child.widget().deleteLater()
 
         def store_param(self):
+            """
+
+            """
             sender = self.sender()
             name = sender.objectName()
             self.param_dict[name] = sender.text()
@@ -1279,6 +1514,9 @@ class Sound_Widget(QtGui.QWidget):
 ######################################
 
 class Calibrate_Water(QtGui.QDialog):
+    """
+
+    """
     def __init__(self, pilots, message_fn):
         super(Calibrate_Water, self).__init__()
 
@@ -1286,6 +1524,9 @@ class Calibrate_Water(QtGui.QDialog):
         self.send_message = message_fn
 
     class Pilot_Ports(QtGui.QWidget):
+        """
+
+        """
         def __init__(self, pilot, message_fn, n_clicks=1000, click_dur=30):
             super(Pilot_Ports, self).__init__()
 
@@ -1293,11 +1534,16 @@ class Calibrate_Water(QtGui.QDialog):
             self.send_message = message_fn
 
         def init_ui(self):
+            """
+
+            """
             #
             pass
 
 class Reassign(QtGui.QDialog):
+    """
 
+    """
     def __init__(self, mice, protocols, protocol_dir):
         super(Reassign, self).__init__()
 
@@ -1307,7 +1553,9 @@ class Reassign(QtGui.QDialog):
         self.init_ui()
 
     def init_ui(self):
+        """
 
+        """
         self.grid = QtGui.QGridLayout()
 
         self.mouse_objects = {}
@@ -1356,6 +1604,10 @@ class Reassign(QtGui.QDialog):
         self.setLayout(main_layout)
 
     def populate_steps(self, mouse):
+        """
+
+        :param mouse:
+        """
         print(mouse)
         protocol_box = self.mouse_objects[mouse][0]
         step_box = self.mouse_objects[mouse][1]
@@ -1376,6 +1628,9 @@ class Reassign(QtGui.QDialog):
         step_box.insertItems(0, step_list)
 
     def set_protocol(self):
+        """
+
+        """
         mouse = self.sender().objectName()
         protocol_box = self.mouse_objects[mouse][0]
         step_box = self.mouse_objects[mouse][1]
@@ -1387,6 +1642,9 @@ class Reassign(QtGui.QDialog):
 
 
     def set_step(self):
+        """
+
+        """
         mouse = self.sender().objectName()
         protocol_box = self.mouse_objects[mouse][0]
         step_box = self.mouse_objects[mouse][1]
@@ -1398,6 +1656,9 @@ class Reassign(QtGui.QDialog):
 
 
 class Weights(QtGui.QTableWidget):
+    """
+
+    """
     def __init__(self, mice_weights):
         super(Weights, self).__init__()
 
@@ -1417,6 +1678,9 @@ class Weights(QtGui.QTableWidget):
 
 
     def init_ui(self):
+        """
+
+        """
         # set shape (rows by cols
         self.shape = (len(self.mice_weights), len(self.colnames.keys()))
         self.setRowCount(self.shape[0])
@@ -1448,6 +1712,9 @@ class Weights(QtGui.QTableWidget):
 
 
 class Expanding_Tabs(QtGui.QTabBar):
+    """
+
+    """
     # The expanding method of the QTabBar doesn't work,
     # we have to manually adjust the size policy and size hint
     def __init__(self, width=30):
@@ -1456,6 +1723,11 @@ class Expanding_Tabs(QtGui.QTabBar):
         self.width = width
 
     def tabSizeHint(self, index):
+        """
+
+        :param index:
+        :return:
+        """
         # Pretty janky, but the tab bar is two children deep from the main widget
         # First compute the size taken up by the 'new' button and the margin
         # We assume the code is unchanged that binds our width to that button's width
@@ -1469,6 +1741,9 @@ class Expanding_Tabs(QtGui.QTabBar):
         return newsize
 
 class Stacked_Tabs(QtGui.QTabBar):
+    """
+
+    """
     # Setting tab position to west also rotates text 90 degrees, which is dumb
     # From https://stackoverflow.com/questions/3607709/how-to-change-text-alignment-in-qtabwidget
     def __init__(self, width=150, height=30):
@@ -1476,6 +1751,10 @@ class Stacked_Tabs(QtGui.QTabBar):
         self.tabSize = QtCore.QSize(width, height)
 
     def paintEvent(self, event):
+        """
+
+        :param event:
+        """
         painter = QtGui.QStylePainter(self)
         option = QtGui.QStyleOptionTab()
 
@@ -1491,4 +1770,9 @@ class Stacked_Tabs(QtGui.QTabBar):
         painter.end()
 
     def tabSizeHint(self, index):
+        """
+
+        :param index:
+        :return:
+        """
         return self.tabSize

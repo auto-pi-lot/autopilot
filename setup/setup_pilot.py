@@ -7,6 +7,9 @@ import subprocess
 
 class PilotSetupForm(nps.SplitForm):
     def create(self):
+        """
+
+        """
         self.input = odict({
             'NAME': self.add(nps.TitleText, name="Pilot Name:", value=""),
             'BASEDIR': self.add(nps.TitleText, name="Base Directory:", value="/usr/rpilot"),
@@ -49,13 +52,24 @@ class PilotSetupForm(nps.SplitForm):
 
     # after we're done editing, close the input program
     def afterEditing(self):
+        """
+
+        """
         self.parentApp.setNextForm(None)
 
 class SetupApp(nps.NPSAppManaged):
     def onStart(self):
+        """
+
+        """
         self.form = self.addForm('MAIN', PilotSetupForm, name='Setup Pilot')
 
 def unfold_values(v):
+    """
+
+    :param v:
+    :return:
+    """
     if isinstance(v, dict):
         # recurse
         v = {k:unfold_values(v) for k, v in v.items()}
@@ -67,6 +81,10 @@ def unfold_values(v):
     return v
 
 def make_dir(adir):
+    """
+
+    :param adir:
+    """
     if not os.path.exists(adir):
         os.makedirs(adir)
         os.chmod(adir, 0777)

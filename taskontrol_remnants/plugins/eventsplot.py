@@ -47,9 +47,16 @@ class EventsPlot(pg.PlotWidget):
         self.setLabel('bottom', 'Time', units='s')
 
     def sizeHint(self):
+        """
+
+        :return: 
+        """
         return QtCore.QSize(self.initialSize[0],self.initialSize[1])
 
     def center_in_screen(self):
+        """
+
+        """
         qr = self.frameGeometry()
         cp = QtGui.QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
@@ -109,6 +116,10 @@ class EventsPlot(pg.PlotWidget):
             self.addItem(rect)
 
     def OLD_paintEvent(self, event):
+        """
+
+        :param event: 
+        """
         self.pW = self.pWidth()      # Update plot width
         painter = QtGui.QPainter()
         painter.begin(self)
@@ -130,10 +141,19 @@ class EventsPlot(pg.PlotWidget):
 
 
     def valueToPixel(self,xval):
+        """
+
+        :param xval: 
+        :return: 
+        """
         return (float(xval-self.xLims[0])/self.xLen)*self.pW + self.pX
 
 
     def drawAxis(self,painter):
+        """
+
+        :param painter: 
+        """
         painter.setPen(QtGui.QColor(QtCore.Qt.gray))
         painter.setBrush(QtCore.Qt.NoBrush)
         painter.drawRect(self.pX,self.pY,self.pW,self.pH)

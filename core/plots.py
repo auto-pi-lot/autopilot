@@ -35,6 +35,9 @@ def gui_event(fn):
     return wrapper_gui_event
 
 class Plot_Widget(QtGui.QWidget):
+    """
+
+    """
     # Widget that frames multiple plots
     def __init__(self, invoker):
         QtGui.QWidget.__init__(self)
@@ -73,6 +76,10 @@ class Plot_Widget(QtGui.QWidget):
         self.setContentsMargins(0, 0, 0, 0)
 
     def init_plots(self, pilot_list):
+        """
+
+        :param pilot_list:
+        """
         self.pilots = pilot_list
 
         # Make a plot for each pilot.
@@ -85,6 +92,10 @@ class Plot_Widget(QtGui.QWidget):
             self.plots[p] = plot
 
     def create_plot_buttons(self):
+        """
+
+        :return:
+        """
         groupbox = QtGui.QGroupBox()
         groupbox.setFlat(False)
         groupbox.setFixedHeight(40)
@@ -124,7 +135,9 @@ class Plot_Widget(QtGui.QWidget):
 
 
 class Plot(QtGui.QWidget):
+    """
 
+    """
     def __init__(self, pilot, invoker, x_width=50):
         super(Plot, self).__init__()
 
@@ -190,6 +203,9 @@ class Plot(QtGui.QWidget):
 
     @gui_event
     def init_plots(self):
+        """
+
+        """
         # This is called to make the basic plot window,
         # each task started should then send us params to populate afterwards
         #self.getPlotItem().hideAxis('bottom')
@@ -200,6 +216,10 @@ class Plot(QtGui.QWidget):
 
     @gui_event
     def l_start(self, value):
+        """
+
+        :param value:
+        """
         # We're sent a task dict, we extract the plot params and send them to the plot object
         self.plot_params = tasks.TASK_LIST[value['task_type']].PLOT
 
@@ -235,6 +255,10 @@ class Plot(QtGui.QWidget):
 
     @gui_event
     def l_data(self, value):
+        """
+
+        :param value:
+        """
         if 'trial_num' in value.keys():
             v = value.pop('trial_num')
             if v != self.last_trial:
@@ -253,6 +277,10 @@ class Plot(QtGui.QWidget):
 
     @gui_event
     def l_stop(self, value):
+        """
+
+        :param value:
+        """
         self.data = {}
         self.plots = {}
         self.plot.clear()
@@ -268,6 +296,10 @@ class Plot(QtGui.QWidget):
         self.info['Protocol'].setText('')
 
     def l_param(self, value):
+        """
+
+        :param value:
+        """
         pass
     #
     # def gui_event(self, fn):
@@ -283,6 +315,9 @@ class Plot(QtGui.QWidget):
 ###################################
 # Curve subclasses
 class Point(pg.PlotDataItem):
+    """
+
+    """
     def __init__(self, color=(0,0,0), size=5):
         super(Point, self).__init__()
 
@@ -291,6 +326,10 @@ class Point(pg.PlotDataItem):
         self.size  = size
 
     def update(self, data):
+        """
+
+        :param data:
+        """
         # data should come in as an n x 2 array,
         # 0th column - trial number (x), 1st - (y) value
 
@@ -304,10 +343,17 @@ class Point(pg.PlotDataItem):
 
 
 class Segment(pg.PlotDataItem):
+    """
+
+    """
     def __init__(self):
         super(Segment, self).__init__()
 
     def update(self, data):
+        """
+
+        :param data:
+        """
         # data should come in as an n x 2 array,
         # 0th column - trial number (x), 1st - (y) value
         data[data=="R"] = 1
@@ -323,6 +369,9 @@ class Segment(pg.PlotDataItem):
 
 
 class Roll_Mean(pg.PlotDataItem):
+    """
+
+    """
     def __init__(self, winsize=10):
         super(Roll_Mean, self).__init__()
 
@@ -337,6 +386,10 @@ class Roll_Mean(pg.PlotDataItem):
 
 
     def update(self, data):
+        """
+
+        :param data:
+        """
         # data should come in as an n x 2 array,
         # 0th column - trial number (x), 1st - (y) value
         data = data.astype(np.float)
@@ -350,6 +403,9 @@ class Roll_Mean(pg.PlotDataItem):
 
 
 class Timer(QtGui.QLabel):
+    """
+
+    """
     def __init__(self):
         super(Timer, self).__init__()
 
@@ -359,14 +415,24 @@ class Timer(QtGui.QLabel):
         self.start_time = None
 
     def start_timer(self, update_interval=1000):
+        """
+
+        :param update_interval:
+        """
         self.start_time = time()
         self.timer.start(update_interval)
 
     def stop_timer(self):
+        """
+
+        """
         self.timer.stop()
         self.setText("")
 
     def update_time(self):
+        """
+
+        """
         secs_elapsed = int(np.floor(time()-self.start_time))
         self.setText("{:02d}:{:02d}:{:02d}".format(secs_elapsed/3600, (secs_elapsed/60)%60, secs_elapsed%60))
 
@@ -377,6 +443,9 @@ class Highlight():
 
 
 class HLine(QtGui.QFrame):
+    """
+
+    """
     def __init__(self):
         super(HLine, self).__init__()
         self.setFrameShape(QtGui.QFrame.HLine)

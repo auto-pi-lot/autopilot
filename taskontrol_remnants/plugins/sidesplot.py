@@ -87,6 +87,12 @@ class SidesPlot(pg.PlotWidget):
         self.brushes = np.concatenate(brushesList)
 
     def update(self,sides=[],outcome=[],currentTrial=0):
+        """
+
+        :param sides: 
+        :param outcome: 
+        :param currentTrial: 
+        """
         xd = np.tile(range(self.nTrialsToPlot),3)
         maxPastTrials = (self.nTrialsToPlot*2)//3
         minTrial = max(0,currentTrial-maxPastTrials)
@@ -112,6 +118,10 @@ class SidesPlot(pg.PlotWidget):
         #print minTrial, minTrial+self.nTrialsToPlot ### DEBUG
 
     def sizeHint(self):
+        """
+
+        :return: 
+        """
         return QtCore.QSize(self.initialSize[0],self.initialSize[1])
 
 

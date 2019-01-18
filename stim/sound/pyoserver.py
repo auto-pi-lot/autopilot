@@ -22,6 +22,11 @@ import prefs
 import pyo
 
 def pyo_server(debug=False):
+    """
+
+    :param debug:
+    :return:
+    """
     # Jackd should already be running from the launch script created by setup_pilot, we we just
     pyo_server = pyo.Server(audio='jack', nchnls=int(prefs.NCHANNELS),
                             duplex=0, buffersize=4096, sr=192000, ichnls=0)

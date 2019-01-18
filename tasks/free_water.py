@@ -12,6 +12,9 @@ from core import hardware
 TASK = 'Free_water'
 
 class Free_Water:
+    """
+
+    """
     # Randomly light up one of the ports, then dispense water when the mouse pokes
     # TODO: Any reason to have any number of active ports?
     # Two stages - waiting for response, and reporting the response afterwards
@@ -93,6 +96,12 @@ class Free_Water:
         self.init_hardware()
 
     def water(self, *args, **kwargs):
+        """
+
+        :param args: 
+        :param kwargs: 
+        :return: 
+        """
         self.stage_block.clear()
 
         # If this is the first trial, release water in all three ports
@@ -122,6 +131,10 @@ class Free_Water:
 
 
     def response(self):
+        """
+
+        :return: 
+        """
         # we just have to tell the Terminal that this trial has ended
 
         # mebs also turn the light off rl quick
@@ -130,6 +143,13 @@ class Free_Water:
         return {'TRIAL_END':True}
 
     def handle_trigger(self, pin, level, tick):
+        """
+
+        :param pin: 
+        :param level: 
+        :param tick: 
+        :return: 
+        """
         # All triggers call this function with the pin number, level (high, low), and ticks since booting pigpio
         # Triggers will be functions unless they are "TIMEUP", at which point we
         # register a timeout and restart the trial
@@ -164,6 +184,9 @@ class Free_Water:
         self.stage_block.set()
 
     def init_hardware(self):
+        """
+
+        """
         # We use the HARDWARE dict that specifies what we need to run the task
         # alongside the PINS subdict in the prefs structure to tell us how they're plugged in to the pi
         self.pins = {}
@@ -205,6 +228,10 @@ class Free_Water:
                 Exception('HARDWARE dict misspecified in class definition')
 
     def set_leds(self, color_dict=None):
+        """
+
+        :param color_dict: 
+        """
         # We are passed a dict of ['pin']:[R, G, B] to set multiple colors
         # All others are turned off
         if not color_dict:
@@ -216,7 +243,9 @@ class Free_Water:
                 v.set_color([0,0,0])
 
     def end(self):
+        """
 
+        """
         for k, v in self.pins.items():
             for pin, obj in v.items():
                 if k == "LEDS":

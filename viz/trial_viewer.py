@@ -13,6 +13,11 @@ import colorcet as cc
 import numpy as np
 
 def load_mouse_data(data_dir):
+    """
+
+    :param data_dir: 
+    :return: 
+    """
     mouse_fn = [fn for fn in os.listdir(data_dir) if fn.endswith('.h5')]
     for mouse_name in tqdm(mouse_fn):
         mouse_name = os.path.splitext(mouse_name)[0]
@@ -40,6 +45,11 @@ def load_mouse_data(data_dir):
     return all_mice_steps, all_mice_grad
 
 def trial_viewer(step_data, grad_data):
+    """
+
+    :param step_data: 
+    :param grad_data: 
+    """
     step_data.loc[step_data['response'] == 'L','response'] = 0
     step_data.loc[step_data['response'] == 'R','response'] = 1
     step_data.loc[step_data['target'] == 'L','target'] = 0
