@@ -32,7 +32,7 @@ BOARD_TO_BCM = {
 }
 BCM_TO_BOARD = dict([reversed(i) for i in BOARD_TO_BCM.items()])
 
-def Hardware(object):
+class Hardware(object):
     # metaclass for hardware objects
     trigger = False
     pin = None

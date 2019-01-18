@@ -233,7 +233,7 @@ class Terminal(QtGui.QMainWindow):
 
     def init_network(self):
         # Start internal communications
-        self.node = Net_Node(id="_T", port=prefs.LISTENPORT, handle_fn=self.handle_listen)
+        self.node = Net_Node(id="_T", upstream='T', port=prefs.MSGPORT, listens=self.listens)
         #
         # self.context = zmq.Context.instance()
         # self.loop = IOLoop.instance()

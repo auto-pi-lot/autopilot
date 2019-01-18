@@ -18,7 +18,7 @@ from warnings import warn
 from collections import deque
 from itertools import count
 
-from .. import prefs
+import prefs
 
 # Message structure:
 # Messages flow from the Terminal class to the raspberry pi
@@ -246,7 +246,7 @@ class Terminal_Networking(Networking):
         self.pusher = False
 
         # Store some prefs values
-        self.listen_port = prefs.LISTENPORT
+        self.listen_port = prefs.MSGPORT
         self.id = b'T'
 
         # Message dictionary - What method to call for each type of message received by the terminal class
@@ -522,7 +522,7 @@ class Net_Node(object):
     def init_networking(self):
         self.sock = self.context.socket(zmq.DEALER)
         self.sock.identity = self.id
-        self.sock.probe_router = 1
+        #self.sock.probe_router = 1
 
         # net nodes are local only
         self.sock.connect('tcp://localhost:{}'.format(self.port))
@@ -543,7 +543,11 @@ class Net_Node(object):
 
     def handle_listen(self, msg):
         # messages from dealers are single frames because we only have one connected partner
+        print(msg)
+        sys.stdout.flush()
+
         msg = json.loads(msg[0])
+
         msg = Message(**msg)
 
         # Check if our listen was sent properly

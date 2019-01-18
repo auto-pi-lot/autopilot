@@ -29,6 +29,11 @@ import prefs
 # Plot list at the bottom!
 ###########
 
+def gui_event(fn):
+    def wrapper_gui_event(*args, **kwargs):
+        QtCore.QCoreApplication.postEvent(prefs.INVOKER, InvokeEvent(fn, *args, **kwargs))
+    return wrapper_gui_event
+
 class Plot_Widget(QtGui.QWidget):
     # Widget that frames multiple plots
     def __init__(self, invoker):
@@ -271,10 +276,7 @@ class Plot(QtGui.QWidget):
     #     # turn it into a decorator so we can use Net_Node's handling function
     #     QtCore.QCoreApplication.postEvent(self.invoker, InvokeEvent(fn, *args, **kwargs))
 
-def gui_event(fn):
-    def wrapper_gui_event(*args, **kwargs):
-        QtCore.QCoreApplication.postEvent(prefs.INVOKER, InvokeEvent(fn, *args, **kwargs))
-    return wrapper_gui_event
+
 
 
 
