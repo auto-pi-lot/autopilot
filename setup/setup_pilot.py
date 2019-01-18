@@ -155,24 +155,24 @@ if __name__ == "__main__":
     if answer == 'y':
         # open pilot on startup using systemd
         systemd_string = '''[Unit]
-        Description=RPilot
-        After=multi-user.target
+Description=RPilot
+After=multi-user.target
 
-        [Service]
-        Type=idle
-        ExecStartPre=-killall jackd
-        ExecStartPre=-killall pigpiod
-        ExecStartPre=mount -o remount,size=128M /dev/shm
-        ExecStartPre={pig}
-        ExecStartPre={jack}
-        ExecStart={launch_pi}
+[Service]
+Type=idle
+ExecStartPre=-killall jackd
+ExecStartPre=-killall pigpiod
+ExecStartPre=mount -o remount,size=128M /dev/shm
+ExecStartPre={pig}
+ExecStartPre={jack}
+ExecStart={launch_pi}
 
-        Restart=on-failure
+Restart=on-failure
 
-        [Install]
-        WantedBy=multi-user.target'''.format(pig=pigpio_string,
-                                             jack=params['JACKDSTRING'],
-                                             launch_pi=launch_string)
+[Install]
+WantedBy=multi-user.target'''.format(pig=pigpio_string,
+                                     jack=params['JACKDSTRING'],
+                                     launch_pi=launch_string)
 
         unit_loc = '/lib/systemd/system/rpilot.service'
         with open(unit_loc, 'w') as rpilot_service:
