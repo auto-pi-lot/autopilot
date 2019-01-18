@@ -148,10 +148,27 @@ if __name__ == "__main__":
     print('params saved to {}\n'.format(prefs_file))
 
     ###############################
-    # Install service or create runfile
+    # Install -  create runfile and optionally make service
     launch_string = "python " + os.path.join(params['REPODIR'], "core", "pilot.py") + " -f " + prefs_file
 
+    launch_file = os.path.join(params['BASEDIR'], 'launch_pilot.sh')
+    with open(launch_file, 'w') as launch_file_open:
+        launch_file_open.write('#!/bin/sh\n')
+        launch_file_open.write('killall jackd\n')  # Try to kill any existing jackd processes
+        launch_file_open.write('sudo killall pigpiod\n')
+        launch_file_open.write('sudo mount -o remount,size=128M /dev/shm\n') # refresh shared memory
+        launch_file_open.write('sudo ' + pigpio_string + '\n')
+        launch_file_open.write(params['JACKDSTRING'] + '\n')  # Then launch ours
+        launch_file_open.write('sleep 5\n')  # We wait a damn second to let jackd start up
+        launch_string = "python " + os.path.join(params['REPODIR'], "core", "pilot.py") + " -f " + prefs_file
+        launch_file_open.write(launch_string)
+
+    os.chmod(launch_file, 0775)
+
+    print('executable file created:\n     {}\n'.format(launch_file))
+
     answer = str(raw_input('Install as Systemd service? (y/n)> '))
+
     if answer == 'y':
         # open pilot on startup using systemd
         systemd_string = '''[Unit]
@@ -160,19 +177,12 @@ After=multi-user.target
 
 [Service]
 Type=idle
-ExecStartPre=-killall jackd
-ExecStartPre=-killall pigpiod
-ExecStartPre=mount -o remount,size=128M /dev/shm
-ExecStartPre={pig}
-ExecStartPre={jack}
 ExecStart={launch_pi}
 
 Restart=on-failure
 
 [Install]
-WantedBy=multi-user.target'''.format(pig=pigpio_string,
-                                     jack=params['JACKDSTRING'],
-                                     launch_pi=launch_string)
+WantedBy=multi-user.target'''.format(launch_pi=launch_string)
 
         unit_loc = '/lib/systemd/system/rpilot.service'
         with open(unit_loc, 'w') as rpilot_service:
@@ -183,23 +193,8 @@ WantedBy=multi-user.target'''.format(pig=pigpio_string,
         subprocess.call(['sudo', 'systemctl', 'enable', 'rpilot.service'])
         print('\nrpilot service installed and enabled, unit file located at:\n     {}\n'.format(unit_loc))
 
-    answer = str(raw_input('Create executable .sh? (y/n)> '))
-    if answer == 'y':
-        launch_file = os.path.join(params['BASEDIR'], 'launch_pilot.sh')
-        with open(launch_file, 'w') as launch_file_open:
-            launch_file_open.write('#!/bin/sh\n')
-            launch_file_open.write('killall jackd\n')  # Try to kill any existing jackd processes
-            launch_file_open.write('sudo killall pigpiod\n')
-            launch_file_open.write('sudo mount -o remount,size=128M /dev/shm\n')
-            launch_file_open.write('sudo ' + pigpio_string + '\n')
-            launch_file_open.write(params['JACKDSTRING'] + '\n')  # Then launch ours
-            launch_file_open.write('sleep 5\n')  # We wait a damn second to let jackd start up
-            launch_string = "python " + os.path.join(params['REPODIR'], "core", "pilot.py") + " -f " + prefs_file
-            launch_file_open.write(launch_string)
 
-        os.chmod(launch_file, 0775)
 
-        print('executable file created:\n     {}\n'.format(launch_file))
 
     pp = pprint.PrettyPrinter(indent=4)
     print('Pilot set up with prefs:\r')
