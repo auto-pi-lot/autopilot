@@ -122,9 +122,9 @@ class JackClient(mp.Process):
                     port.get_array()[:] = channel
             else:
                 # use cycle so if sound is single channel it gets copied to all outports
-                self.client.outports[0].get_array()[:] = data.T
-                #for channel, port in zip(cycle(data.T), self.client.outports):
-                #    port.get_array()[:] = channel
+                #self.client.outports[0].get_array()[:] = data.T
+                for channel, port in zip(cycle(data.T), self.client.outports):
+                    port.get_array()[:] = channel
 
 
 class Jack_Sound(object):
