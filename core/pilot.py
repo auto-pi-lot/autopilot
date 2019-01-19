@@ -77,7 +77,7 @@ class RPilot:
         self.networking.start()
         self.node = Net_Node(id = "_{}".format(self.name),
                              upstream = self.name,
-                             port = prefs.LISTENPORT,
+                             port = prefs.MSGPORT,
                              listens = self.listens,
                              instance=False)
 
