@@ -240,7 +240,10 @@ class Nafc(Task):
         self.triggers = {}
 
         # get next stim
-        self.target, self.distractor, self.stim = self.stim_manager.next()
+        self.target, self.distractor, self.stim = self.stim_manager.next_stim()
+
+        print(self.target, self.distractor, self.stim)
+        sys.stdout.flush()
 
         # if we're doing correction trials, check if this is one
         if self.correction:

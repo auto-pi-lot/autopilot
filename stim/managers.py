@@ -103,7 +103,7 @@ class Stim_Manager(object):
         """
         pass
 
-    def next(self):
+    def next_stim(self):
         """
 
         :return:
@@ -119,7 +119,7 @@ class Stim_Manager(object):
         # otherwise we check for bias correction
         # it will return a threshold for random choice
         if self.bias:
-            threshold = self.bias.next()
+            threshold = self.bias.next_bias()
         else:
             threshold = 0.5
 
@@ -196,7 +196,7 @@ class Bias_Correction(object):
         self.responses = deque(maxlen=self.window)
         self.targets = deque(maxlen=self.window)
 
-    def next(self):
+    def next_bias(self):
         """
 
         :return:
