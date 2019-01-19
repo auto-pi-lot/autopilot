@@ -46,3 +46,52 @@ def pyo_server(debug=False):
     pyo_server.start()
 
     return pyo_server
+
+
+class Pyo_Sound(object):
+    """
+
+    """
+    # Metaclass for pyo sound objects
+    PARAMS    = None # list of strings of parameters to be defined
+    type      = None # string human readable name of sound
+    duration  = None # duration in ms
+    amplitude = None
+    table     = None
+    trigger   = None
+    server_type = 'pyo'
+
+    def __init__(self):
+        pass
+
+
+    def play(self):
+        """
+
+        """
+        self.table.out()
+
+    def table_wrap(self, audio, duration=None):
+        '''
+        Records a PyoAudio generator into a sound table, returns a tableread object which can play the audio with .out()
+        '''
+
+        if not duration:
+            duration = self.duration
+
+        # Duration is in ms, so divide by 1000
+        # See https://groups.google.com/forum/#!topic/pyo-discuss/N-pan7wPF-o
+        # TODO: Get chnls to be responsive to NCHANNELS in prefs. hardcoded for now
+        tab = pyo.NewTable(length=(float(duration) / 1000),
+                           chnls=prefs.NCHANNELS)  # Prefs should always be declared in the global namespace
+        tabrec = pyo.TableRec(audio, table=tab, fadetime=0.005).play()
+        sleep((float(duration) / 1000))
+        self.table = pyo.TableRead(tab, freq=tab.getRate(), loop=0)
+
+    def set_trigger(self, trig_fn):
+        """
+
+        :param trig_fn:
+        """
+        # Using table triggers, call trig_fn when table finishes playing
+        self.trigger = pyo.TrigFunc(self.table['trig'], trig_fn)

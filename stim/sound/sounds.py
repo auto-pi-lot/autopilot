@@ -33,133 +33,11 @@ server_type = prefs.AUDIOSERVER
 
 if prefs.AUDIOSERVER == "pyo":
     import pyo
-
-    class Pyo_Sound(object):
-        """
-
-        """
-        # Metaclass for pyo sound objects
-        PARAMS    = None # list of strings of parameters to be defined
-        type      = None # string human readable name of sound
-        duration  = None # duration in ms
-        amplitude = None
-        table     = None
-        trigger   = None
-        server_type = 'pyo'
-
-        def __init__(self):
-            pass
-
-
-        def play(self):
-            """
-
-            """
-            self.table.out()
-
-        def table_wrap(self, audio, duration=None):
-            '''
-            Records a PyoAudio generator into a sound table, returns a tableread object which can play the audio with .out()
-            '''
-
-            if not duration:
-                duration = self.duration
-
-            # Duration is in ms, so divide by 1000
-            # See https://groups.google.com/forum/#!topic/pyo-discuss/N-pan7wPF-o
-            # TODO: Get chnls to be responsive to NCHANNELS in prefs. hardcoded for now
-            tab = pyo.NewTable(length=(float(duration) / 1000),
-                               chnls=prefs.NCHANNELS)  # Prefs should always be declared in the global namespace
-            tabrec = pyo.TableRec(audio, table=tab, fadetime=0.005).play()
-            sleep((float(duration) / 1000))
-            self.table = pyo.TableRead(tab, freq=tab.getRate(), loop=0)
-
-        def set_trigger(self, trig_fn):
-            """
-
-            :param trig_fn:
-            """
-            # Using table triggers, call trig_fn when table finishes playing
-            self.trigger = pyo.TrigFunc(self.table['trig'], trig_fn)
+    from pyoserver import Pyo_Sound as BASE_CLASS
 
 
 elif prefs.AUDIOSERVER == "jack":
-    import jackclient
-
-    class Jack_Sound(object):
-        # base class for jack audio sounds
-        PARAMS    = None # list of strings of parameters to be defined
-        type      = None # string human readable name of sound
-        duration  = None # duration in ms
-        amplitude = None
-        table     = None # numpy array of samples
-        chunks    = None # table split into a list of chunks
-        trigger   = None
-        nsamples  = None
-        fs        = jackclient.FS
-        blocksize = jackclient.BLOCKSIZE
-        server    = jackclient.SERVER
-        q         = jackclient.QUEUE
-        q_lock    = jackclient.Q_LOCK
-        play_evt  = jackclient.PLAY
-        stop_evt  = jackclient.STOP
-        server_type = 'jack'
-        buffered  = False
-
-        def __init__(self):
-            pass
-
-        def chunk(self):
-            # break sound into chunks
-
-            sound = self.table.astype(np.float32)
-            sound_list = [sound[i:i+self.blocksize] for i in range(0, sound.shape[0], self.blocksize)]
-            if sound_list[-1].shape[0] < self.blocksize:
-                sound_list[-1] = np.pad(sound_list[-1],
-                                        (0, self.blocksize-sound_list[-1].shape[0]),
-                                        'constant')
-            self.chunks = sound_list
-
-        def set_trigger(self, trig_fn):
-            if callable(trig_fn):
-                self.trigger = trig_fn
-            else:
-                Exception('trigger must be callable')
-
-        def wait_trigger(self):
-            # wait for our duration plus a second at most.
-            self.stop_evt.wait((self.duration+1000)/1000.)
-            # if the sound actually stopped...
-            if self.stop_evt.is_set():
-                self.trigger()
-
-
-
-        def get_nsamples(self):
-            # given our fs and duration, how many samples do we need?
-            self.nsamples = np.ceil((self.duration/1000.)*self.fs).astype(np.int)
-
-        def buffer(self):
-            if not self.chunks:
-                self.chunk()
-
-            with self.q_lock:
-                for frame in self.chunks:
-                    self.q.put_nowait(frame)
-                # The jack server looks for a None object to clear the play flag
-                self.q.put_nowait(None)
-                self.buffered = True
-
-        def play(self):
-            if not self.buffered:
-                self.buffer()
-
-            self.play_evt.set()
-            self.stop_evt.clear()
-            self.buffered = False
-
-            if callable(self.trigger):
-                threading.Thread(target=self.wait_trigger).start()
+    from jackclient import Jack_Sound as BASE_CLASS
 
 
 else:
@@ -173,13 +51,7 @@ sys.stdout.flush()
 
 
 ####################
-if prefs.AUDIOSERVER == "pyo":
-    BASE_CLASS = Pyo_Sound
-elif prefs.AUDIOSERVER == "jack":
-    BASE_CLASS = Jack_Sound
-else:
-    # just importing to query parameters, not play sounds.
-    BASE_CLASS = object
+
 
 
 class Tone(BASE_CLASS):

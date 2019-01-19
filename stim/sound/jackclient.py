@@ -126,6 +126,83 @@ class JackClient(mp.Process):
                     port.get_array()[:] = channel
 
 
+class Jack_Sound(object):
+    # base class for jack audio sounds
+    PARAMS    = None # list of strings of parameters to be defined
+    type      = None # string human readable name of sound
+    duration  = None # duration in ms
+    amplitude = None
+    table     = None # numpy array of samples
+    chunks    = None # table split into a list of chunks
+    trigger   = None
+    nsamples  = None
+    fs        = FS
+    blocksize = BLOCKSIZE
+    server    = SERVER
+    q         = QUEUE
+    q_lock    = Q_LOCK
+    play_evt  = PLAY
+    stop_evt  = STOP
+    server_type = 'jack'
+    buffered  = False
+
+    def __init__(self):
+        pass
+
+    def chunk(self):
+        # break sound into chunks
+
+        sound = self.table.astype(np.float32)
+        sound_list = [sound[i:i+self.blocksize] for i in range(0, sound.shape[0], self.blocksize)]
+        if sound_list[-1].shape[0] < self.blocksize:
+            sound_list[-1] = np.pad(sound_list[-1],
+                                    (0, self.blocksize-sound_list[-1].shape[0]),
+                                    'constant')
+        self.chunks = sound_list
+
+    def set_trigger(self, trig_fn):
+        if callable(trig_fn):
+            self.trigger = trig_fn
+        else:
+            Exception('trigger must be callable')
+
+    def wait_trigger(self):
+        # wait for our duration plus a second at most.
+        self.stop_evt.wait((self.duration+1000)/1000.)
+        # if the sound actually stopped...
+        if self.stop_evt.is_set():
+            self.trigger()
+
+
+
+    def get_nsamples(self):
+        # given our fs and duration, how many samples do we need?
+        self.nsamples = np.ceil((self.duration/1000.)*self.fs).astype(np.int)
+
+    def buffer(self):
+        if not self.chunks:
+            self.chunk()
+
+        with self.q_lock:
+            for frame in self.chunks:
+                self.q.put_nowait(frame)
+            # The jack server looks for a None object to clear the play flag
+            self.q.put_nowait(None)
+            self.buffered = True
+
+    def play(self):
+        if not self.buffered:
+            self.buffer()
+
+        self.play_evt.set()
+        self.stop_evt.clear()
+        self.buffered = False
+
+        if callable(self.trigger):
+            threading.Thread(target=self.wait_trigger).start()
+
+
+
 
 
 
