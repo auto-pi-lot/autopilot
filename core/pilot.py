@@ -352,7 +352,7 @@ if __name__ == '__main__':
 
     prefs.init(prefs_file)
 
-    if hasattr(prefs_dict, 'AUDIOSERVER'):
+    if hasattr(prefs, 'AUDIOSERVER'):
         if prefs.AUDIOSERVER == 'pyo':
             from stim.sound import pyoserver
         elif prefs.AUDIOSERVER == 'jack':
