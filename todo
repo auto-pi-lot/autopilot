@@ -22,4 +22,5 @@
 - give task object network node - send messages and handle task transitions directly from task.
 - make hierarchical logging
 - reinstate message receipts
+- make pilot and jackclient quit nicely
 
