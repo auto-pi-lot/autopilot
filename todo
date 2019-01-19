@@ -21,4 +21,5 @@
 - networking should probably just be router-only.
 - give task object network node - send messages and handle task transitions directly from task.
 - make hierarchical logging
+- reinstate message receipts
 

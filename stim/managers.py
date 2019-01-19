@@ -7,6 +7,7 @@ import stim
 
 
 
+
 class Stim_Manager(object):
     """
 
