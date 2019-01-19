@@ -24,6 +24,8 @@ import socket
 
 import tables
 
+# TODO: This is lazy, make the paths work.
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import prefs
 
 if __name__ == '__main__':
