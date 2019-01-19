@@ -24,11 +24,39 @@ import socket
 
 import tables
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import prefs
+
+if __name__ == '__main__':
+    # Parse arguments - this should have been called with a .json prefs file passed
+    # We'll try to look in the default location first
+    parser = argparse.ArgumentParser(description="Run an RPilot")
+    parser.add_argument('-f', '--prefs', help="Location of .json prefs file (created during setup_terminal.py)")
+    args = parser.parse_args()
+
+    if not args.prefs:
+        prefs_file = '/usr/rpilot/prefs.json'
+
+        if not os.path.exists(prefs_file):
+            raise Exception("No Prefs file passed, and file not in default location")
+
+        raise Warning('No prefs file passed, loaded from default location. Should pass explicitly with -p')
+
+    else:
+        prefs_file = args.prefs
+
+    prefs.init(prefs_file)
+
+    if hasattr(prefs, 'AUDIOSERVER'):
+        if prefs.AUDIOSERVER == 'pyo':
+            from stim.sound import pyoserver
+        elif prefs.AUDIOSERVER == 'jack':
+            from stim.sound import jackclient
+
+
 from networking import Pilot_Networking, Net_Node
 import tasks
 import hardware
-import prefs
+
 
 ########################################
 
@@ -331,32 +359,7 @@ class RPilot:
         h5f.flush()
         h5f.close()
 
-
-if __name__ == '__main__':
-    # Parse arguments - this should have been called with a .json prefs file passed
-    # We'll try to look in the default location first
-    parser = argparse.ArgumentParser(description="Run an RPilot")
-    parser.add_argument('-f', '--prefs', help="Location of .json prefs file (created during setup_terminal.py)")
-    args = parser.parse_args()
-
-    if not args.prefs:
-        prefs_file = '/usr/rpilot/prefs.json'
-
-        if not os.path.exists(prefs_file):
-            raise Exception("No Prefs file passed, and file not in default location")
-
-        raise Warning('No prefs file passed, loaded from default location. Should pass explicitly with -p')
-
-    else:
-        prefs_file = args.prefs
-
-    prefs.init(prefs_file)
-
-    if hasattr(prefs, 'AUDIOSERVER'):
-        if prefs.AUDIOSERVER == 'pyo':
-            from stim.sound import pyoserver
-        elif prefs.AUDIOSERVER == 'jack':
-            from stim.sound import jackclient
+if __name__ == "__main__":
 
     a = RPilot()
 
