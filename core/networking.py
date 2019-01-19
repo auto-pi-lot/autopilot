@@ -43,9 +43,8 @@ class Networking(multiprocessing.Process):
     loop         = None    # IOLoop
     push_ip      = None    # IP to push to
     push_port    = None    # Publisher Port
-    push_id      = ""    # Identity of the Router we push to
+    push_id      = ""      # Identity of the Router we push to
     listen_port  = None    # Listener Port
-    message_port = None    # Messenger Port
     pusher       = None    # pusher socket - a dealer socket that connects to other routers
     listener     = None    # Listener socket - a router socket to send/recv messages
     logger       = None    # Logger....
@@ -479,7 +478,7 @@ class Pilot_Networking(Networking):
         self.push_id = 'T'
 
         # Store some prefs values
-        self.listen_port = prefs.LISTENPORT
+        self.listen_port = prefs.MSGPORT
         self.push_port = prefs.PUSHPORT
         self.push_ip = prefs.TERMINALIP
         self.id = prefs.NAME.encode('utf-8')

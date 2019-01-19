@@ -157,7 +157,7 @@ if __name__ == "__main__":
         launch_file_open.write('sudo mount -o remount,size=128M /dev/shm\n') # refresh shared memory
         launch_file_open.write('sudo ' + pigpio_string + '\n')
         launch_file_open.write(params['JACKDSTRING'] + '\n')  # Then launch ours
-        launch_file_open.write('sleep 5\n')  # We wait a damn second to let jackd start up
+        launch_file_open.write('sleep 2\n')  # We wait a damn second to let jackd start up
         launch_string = "python " + os.path.join(params['REPODIR'], "core", "pilot.py") + " -f " + prefs_file
         launch_file_open.write(launch_string)
 
