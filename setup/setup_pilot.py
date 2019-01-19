@@ -149,8 +149,6 @@ if __name__ == "__main__":
 
     ###############################
     # Install -  create runfile and optionally make service
-    launch_string = "python " + os.path.join(params['REPODIR'], "core", "pilot.py") + " -f " + prefs_file
-
     launch_file = os.path.join(params['BASEDIR'], 'launch_pilot.sh')
     with open(launch_file, 'w') as launch_file_open:
         launch_file_open.write('#!/bin/sh\n')
@@ -182,7 +180,7 @@ ExecStart={launch_pi}
 Restart=on-failure
 
 [Install]
-WantedBy=multi-user.target'''.format(launch_pi=launch_string)
+WantedBy=multi-user.target'''.format(launch_pi=launch_file)
 
         unit_loc = '/lib/systemd/system/rpilot.service'
         with open(unit_loc, 'w') as rpilot_service:

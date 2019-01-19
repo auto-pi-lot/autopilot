@@ -10,9 +10,6 @@ import pandas as pd
 from PySide import QtGui
 from PySide import QtCore
 import pyqtgraph as pg
-import zmq
-from zmq.eventloop.ioloop import IOLoop
-from zmq.eventloop.zmqstream import ZMQStream
 import threading
 from time import time
 from itertools import count
@@ -39,13 +36,13 @@ class Plot_Widget(QtGui.QWidget):
 
     """
     # Widget that frames multiple plots
-    def __init__(self, invoker):
+    def __init__(self):
         QtGui.QWidget.__init__(self)
 
         self.logger = logging.getLogger('main')
 
         # store invoker to give to children
-        self.invoker = invoker
+        self.invoker = prefs.INVOKER
 
         # We should get passed a list of pilots to keep ourselves in order after initing
         self.pilots = None
@@ -64,8 +61,6 @@ class Plot_Widget(QtGui.QWidget):
 
         # Create empty plot container
         self.plot_layout = QtGui.QVBoxLayout()
-        #self.plot_layout.addStretch(1)
-        #self.container.setLayout(self.plot_layout)
 
         # Assemble buttons and plots
         self.layout.addWidget(self.plot_select)
@@ -84,9 +79,7 @@ class Plot_Widget(QtGui.QWidget):
 
         # Make a plot for each pilot.
         for p in self.pilots:
-            plot = Plot(pilot=p, invoker=self.invoker,
-                        subport=prefs.PUBPORT,
-                        msgport=prefs.MSGPORT)
+            plot = Plot(pilot=p)
             self.plot_layout.addWidget(plot)
             self.plot_layout.addWidget(HLine())
             self.plots[p] = plot
@@ -138,7 +131,7 @@ class Plot(QtGui.QWidget):
     """
 
     """
-    def __init__(self, pilot, invoker, x_width=50):
+    def __init__(self, pilot, x_width=50):
         super(Plot, self).__init__()
 
         self.logger = logging.getLogger('main')
@@ -149,7 +142,7 @@ class Plot(QtGui.QWidget):
         # The name of our pilot, used to listen for events
         self.pilot = pilot
 
-        self.invoker = invoker
+        self.invoker = prefs.INVOKER
 
         # A little infobox to keep track of running time, trials, etc.
         self.infobox = QtGui.QFormLayout()
@@ -178,7 +171,7 @@ class Plot(QtGui.QWidget):
         self.plot.setXRange(self.xrange[0], self.xrange[-1])
 
         # Inits the basic widget settings
-        self.init_plots
+        self.init_plots()
 
         self.plot_params = {}
         self.data = {} # Keep a dict of the data we are keeping track of, will be instantiated on start
@@ -193,10 +186,9 @@ class Plot(QtGui.QWidget):
             'PARAM': self.l_param # changing some param
         }
 
-        self.msgport = prefs.MSGPORT
         self.node = Net_Node(id='P_{}'.format(self.pilot),
                              upstream="T",
-                             port=self.msgport,
+                             port=prefs.MSGPORT,
                              listens=self.listens,
                              instance=True)
 

@@ -75,6 +75,10 @@ class Terminal(QtGui.QMainWindow):
             'ALIVE': self.l_alive  # pi is responding to our ping, or telling us its info
         }
 
+        # Make invoker object to send GUI events back to the main thread
+        self.invoker = Invoker()
+        prefs.INVOKER = self.invoker
+
         self.initUI() # Has to be before networking so plot listeners are caught by IOLoop
 
         # Start Networking
@@ -111,10 +115,6 @@ class Terminal(QtGui.QMainWindow):
         # set central widget
         self.widget = QtGui.QWidget()
         self.setCentralWidget(self.widget)
-
-        # Make invoker object to send GUI events back to the main thread
-        self.invoker = Invoker()
-        prefs.INVOKER = self.invoker
 
         # Start GUI
         self.layout = QtGui.QGridLayout()
@@ -163,10 +163,10 @@ class Terminal(QtGui.QMainWindow):
         # Control panel sits on the left, controls pilots & mice
         self.control_panel = Control_Panel(pilots=self.pilots,
                                            mice=self.mice,
-                                           msg_fn=self.send_message)
+                                           start_fn=self.toggle_start)
 
         # Data panel sits on the right, plots stuff.
-        self.data_panel = Plot_Widget(invoker=self.invoker)
+        self.data_panel = Plot_Widget()
         self.data_panel.init_plots(self.pilots.keys())
 
         # Set heights on control panel and data panel
@@ -305,23 +305,57 @@ class Terminal(QtGui.QMainWindow):
         listen_thread = threading.Thread(target=listen_funk, args=(message['value'],))
         listen_thread.start()
 
-        # Tell the networking process that we got it
-        self.send_message('RECVD', value=message['id'])
-
-    def send_message(self, key, target='', value=''):
+    def toggle_start(self, starting, pilot, mouse=None):
         """
+        Start or Stop running the currently selected mouse's task.
+        Sends a message containing the task information to the concerned pilot.
 
-        :param key:
-        :param target:
-        :param value:
+        Each :class:`Pilot_Panel` is given a lambda function that calls this one with the arguments specified
+        See :class:`Pilot_Button`, as it is what calls this function.
+
+        :param bool starting: Does this button press mean we are starting (True) or stopping (False) the task?
+        :param pilot: Which Pilot is starting or stopping?
+        :param mouse: Which Mouse is currently selected?
         """
-        msg = {'key': key, 'target': target, 'value': value}
+        # stopping is the enemy of starting so we put them in the same function to learn about each other
+        if starting is True:
+            # Ope'nr up if she aint
+            if mouse not in self.mice.keys():
+                self.mice[mouse] = Mouse(mouse)
 
-        # Send in own thread -- sending via pusher blocks
-        msg_thread = threading.Thread(target= self.pusher.send_json, args=(json.dumps(msg),))
-        msg_thread.start()
+            task = self.mice[mouse].prepare_run()
+            task['pilot'] = pilot
 
-        self.logger.info("MESSAGE SENT - Target: {}, Key: {}, Value: {}".format(target, key, value))
+            # Get Weights
+            start_weight, ok = QtGui.QInputDialog.getDouble(self, "Set Starting Weight",
+                                                            "Starting Weight:")
+            if ok:
+                self.mice[mouse].update_weights(start=float(start_weight))
+            else:
+                # pressed cancel, don't start
+                self.mice[mouse].stop_run()
+                return
+
+            self.send_message('START', bytes(pilot), task)
+
+        else:
+            # Send message to pilot to stop running,
+            # it should initiate a coherence checking routine to make sure
+            # its data matches what the Terminal got,
+            # so the terminal will handle closing the mouse object
+            self.send_message('STOP', bytes(pilot), 'STOP')
+            # TODO: Start coherence checking ritual
+            # TODO: Auto-select the next mouse in the list.
+
+            # get weight
+            # Get Weights
+            stop_weight, ok = QtGui.QInputDialog.getDouble(self, "Set Stopping Weight",
+                                                           "Stopping Weight:")
+
+            self.mice[mouse].stop_run()
+
+            if ok:
+                self.mice[mouse].update_weights(stop=float(stop_weight))
 
     ############################
     # MESSAGE HANDLING METHODS
@@ -346,13 +380,13 @@ class Terminal(QtGui.QMainWindow):
         mouse_name = value['mouse']
         self.mice[mouse_name].save_data(value)
         if self.mice[mouse_name].did_graduate.is_set() is True:
-            self.send_message('STOP', value['pilot'], {'graduation':True})
+            self.node.send(to=value['pilot'], key="STOP", value={'graduation':True})
             self.mice[mouse_name].stop_run()
             self.mice[mouse_name].graduate()
             task = self.mice[mouse_name].prepare_run()
             task['pilot'] = value['pilot']
 
-            self.send_message('START', value['pilot'], task)
+            self.node.send(to=value['pilot'], key="START", value=task)
 
     def l_ping(self, value):
         """
@@ -401,8 +435,8 @@ class Terminal(QtGui.QMainWindow):
             pass
 
         if name != '':
-            self.pilots[name] = {'mice':[], 'ip':ip}
-            self.control_panel.update_db()
+            new_pilot = {name:{'mice':[], 'ip':ip}}
+            self.control_panel.update_db(new=new_pilot)
             self.reset_ui()
         else:
             # Idk maybe pop a dialog window but i don't really see why
@@ -574,7 +608,7 @@ class Terminal(QtGui.QMainWindow):
 
         # Stop networking
         # send message to kill networking process
-        self.send_message('KILL')
+        self.node.send(key="KILL")
 
         #if can_exit:
         #    event.accept() # let the window close

@@ -12,7 +12,7 @@ import os
 import multiprocessing
 import base64
 import socket
-from zmq.eventloop.ioloop import IOLoop, PeriodicCallback
+from tornado.ioloop import IOLoop
 from zmq.eventloop.zmqstream import ZMQStream
 from warnings import warn
 from collections import deque
@@ -197,9 +197,9 @@ class Networking(multiprocessing.Process):
             # from our dealer
             msg = json.loads(msg[0])
             msg = Message(**msg)
-        elif len(msg)==2:
+        elif len(msg)>=2:
             # from the router
-            sender = msg[0]
+            sender = msg[-2]
 
             # if this is a new sender, add them to the list
             if sender not in self.senders:
@@ -207,11 +207,11 @@ class Networking(multiprocessing.Process):
 
             # connection pings are blank frames,
             # respond to let them know we're alive
-            if msg[1] == b'':
+            if msg[-1] == b'':
                 self.listener.send_multipart(msg)
                 return
 
-            msg = json.loads(msg[1])
+            msg = json.loads(msg[-1])
             msg = Message(**msg)
         else:
             self.logger.error('Dont know what this message is:{}'.format(msg))
@@ -633,7 +633,7 @@ class Net_Node(object):
     def __init__(self, id, upstream, port, listens, instance=True):
         if instance:
             self.context = zmq.Context.instance()
-            self.loop    = IOLoop.instance()
+            self.loop    = IOLoop.current()
         else:
             self.context = zmq.Context()
             self.loop    = IOLoop()
@@ -680,7 +680,12 @@ class Net_Node(object):
 
         """
         while True:
-            self.loop.start()
+            try:
+                self.loop.start()
+            except RuntimeError:
+                # loop already started
+                break
+
 
     def handle_listen(self, msg):
         """
@@ -751,7 +756,7 @@ class Net_Node(object):
 
         self.sock.send_multipart([self.upstream, msg_enc])
         if self.logger:
-            self.logger.info("MESSAGE SENT - \n{}".format(str(msg)))
+            self.logger.info("MESSAGE SENT - {}".format(str(msg)))
 
     def prepare_message(self, to, key, value):
         """

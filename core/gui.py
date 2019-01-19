@@ -34,11 +34,11 @@ class Control_Panel(QtGui.QWidget):
     # Hosts two nested tab widgets to select pilot and mouse,
     # set params, run mice, etc.
 
-    def __init__(self, pilots=None, mice=None, msg_fn=None):
+    def __init__(self, pilots=None, mice=None, start_fn=None):
         """
         :param pilots: A dictionary with pilot ID's as keys and nested dictionaries containing mice, IP, etc. as values
         :param mice: A dictionary with mouse ID's as keys and :class:`core.mouse.Mouse` objects as values. Shared with the Terminal object to manage access conflicts.
-        :param msg_fn: The :func:`core.networking.Terminal_Networking.send` function from the Terminal's Networking instance. Used to start and stop tasks running.
+        :param start_fn: The :func:`core.networking.Terminal_Networking.send` function from the Terminal's Networking instance. Used to start and stop tasks running.
         """
         super(Control_Panel, self).__init__()
 
@@ -46,7 +46,7 @@ class Control_Panel(QtGui.QWidget):
         self.mice = mice
 
         # We get the Terminal's send_message function so we can communicate directly from here
-        self.send_message = msg_fn
+        self.start_fn = start_fn
 
         if pilots:
             self.pilots = pilots
@@ -95,64 +95,11 @@ class Control_Panel(QtGui.QWidget):
             self.mouse_lists[pilot] = mouse_list
 
             # Make a panel for pilot control
-            pilot_panel = Pilot_Panel(pilot, mouse_list, self.toggle_start, self.create_mouse)
+            pilot_panel = Pilot_Panel(pilot, mouse_list, self.start_fn, self.create_mouse)
             pilot_panel.setFixedWidth(100)
 
             self.layout.addWidget(pilot_panel, i, 1, 1, 1)
             self.layout.addWidget(mouse_list, i, 2, 1, 1)
-
-    def toggle_start(self, starting, pilot, mouse=None):
-        """
-        Start or Stop running the currently selected mouse's task.
-        Sends a message containing the task information to the concerned pilot.
-
-        Each :class:`Pilot_Panel` is given a lambda function that calls this one with the arguments specified
-        See :class:`Pilot_Button`, as it is what calls this function.
-
-        :param bool starting: Does this button press mean we are starting (True) or stopping (False) the task?
-        :param pilot: Which Pilot is starting or stopping?
-        :param mouse: Which Mouse is currently selected?
-        """
-        # stopping is the enemy of starting so we put them in the same function to learn about each other
-        if starting is True:
-            # Ope'nr up if she aint
-            if mouse not in self.mice.keys():
-                self.mice[mouse] = Mouse(mouse)
-
-            task = self.mice[mouse].prepare_run()
-            task['pilot'] = pilot
-
-
-            # Get Weights
-            start_weight, ok = QtGui.QInputDialog.getDouble(self, "Set Starting Weight",
-                                                        "Starting Weight:" )
-            if ok:
-                self.mice[mouse].update_weights(start=float(start_weight))
-            else:
-                # pressed cancel, don't start
-                self.mice[mouse].stop_run()
-                return
-
-            self.send_message('START', bytes(pilot), task)
-
-        else:
-            # Send message to pilot to stop running,
-            # it should initiate a coherence checking routine to make sure
-            # its data matches what the Terminal got,
-            # so the terminal will handle closing the mouse object
-            self.send_message('STOP', bytes(pilot), 'STOP')
-            # TODO: Start coherence checking ritual
-            # TODO: Auto-select the next mouse in the list.
-
-            # get weight
-            # Get Weights
-            stop_weight, ok = QtGui.QInputDialog.getDouble(self, "Set Stopping Weight",
-                                                        "Stopping Weight:" )
-
-            self.mice[mouse].stop_run()
-
-            if ok:
-                self.mice[mouse].update_weights(stop=float(stop_weight))
 
 
 
@@ -230,12 +177,21 @@ class Control_Panel(QtGui.QWidget):
         :param args:
         :param kwargs:
         """
+        # gather mice from lists
         for pilot, mlist in self.mouse_lists.items():
             mice = []
             for i in range(mlist.count()):
                 mice.append(mlist.item(i).text())
 
             self.pilots[pilot]['mice'] = mice
+
+        # if we were given a new pilot, add it
+        if 'new' in kwargs.keys():
+            for pilot, value in kwargs['new'].items():
+                self.pilots[pilot] = value
+
+        print(self.pilots)
+        sys.stdout.flush()
 
         try:
             with open(prefs.PILOT_DB, 'w') as pilot_file:
@@ -293,7 +249,7 @@ class Pilot_Panel(QtGui.QWidget):
     """
 
     """
-    def __init__(self, pilot=None, mouse_list=None, toggle_fn=None, create_fn=None):
+    def __init__(self, pilot=None, mouse_list=None, start_fn=None, create_fn=None):
         # A little panel with the name of a pilot on top,
         # a big start/stop button, and two smaller add/remove mouse buttons at the bottom
         super(Pilot_Panel, self).__init__()
@@ -305,7 +261,7 @@ class Pilot_Panel(QtGui.QWidget):
 
         self.pilot = pilot
         self.mouse_list = mouse_list
-        self.toggle_fn = toggle_fn
+        self.start_fn = start_fn
         self.create_fn = create_fn
 
         self.init_ui()
@@ -315,7 +271,7 @@ class Pilot_Panel(QtGui.QWidget):
 
         """
         label = QtGui.QLabel(self.pilot)
-        start_button = Pilot_Button(self.pilot, self.mouse_list, self.toggle_fn)
+        start_button = Pilot_Button(self.pilot, self.mouse_list, self.start_fn)
         add_button = QtGui.QPushButton("+")
         add_button.clicked.connect(self.create_mouse)
         remove_button = QtGui.QPushButton("-")
@@ -350,7 +306,7 @@ class Pilot_Button(QtGui.QPushButton):
     """
 
     """
-    def __init__(self, pilot=None, mouse_list=None, toggle_fn=None):
+    def __init__(self, pilot=None, mouse_list=None, start_fn=None):
         # Just easier to add the button behavior as a class.
         super(Pilot_Button, self).__init__()
 
@@ -372,7 +328,7 @@ class Pilot_Button(QtGui.QPushButton):
         self.mouse_list = mouse_list
 
         # Passed a function to toggle start from the control panel
-        self.toggle_fn = toggle_fn
+        self.start_fn = start_fn
         # toggle_start has a little sugar on it before sending to control panel
         self.toggled.connect(self.toggle_start)
 
@@ -387,11 +343,11 @@ class Pilot_Button(QtGui.QPushButton):
         if toggled is True: # ie
 
             self.setText("STOP")
-            self.toggle_fn(True, self.pilot, current_mouse)
+            self.start_fn(True, self.pilot, current_mouse)
 
         else:
             self.setText("START")
-            self.toggle_fn(False, self.pilot, current_mouse)
+            self.start_fn(False, self.pilot, current_mouse)
 
 
 
