@@ -79,9 +79,9 @@ class Stim_Manager(object):
         :param trig_fn:
         """
         # set a callback function for when the stimulus ends
-        for k, v in self.stimuli:
-            for stim in v:
-                stim.set_trigger(trig_fn)
+        for k, v in self.stimuli.items():
+            for astim in v:
+                astim.set_trigger(trig_fn)
 
     def make_punishment(self, type, duration):
         """
