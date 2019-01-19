@@ -93,7 +93,13 @@ class Task(object):
 
                     # add to forward and backwards pin dicts
                     self.pins[type][pin] = hw
-                    self.pin_id[pin_numbers[type][pin]] = pin
+                    back_pins = pin_numbers[type][pin]
+                    if isinstance(back_pins, int) or isinstance(back_pins, basestring):
+                        self.pin_id[back_pins] = pin
+                    elif isinstance(back_pins, list):
+                        for p in back_pins:
+                            self.pin_id[p] = pin
+
                 except:
                     self.logger.exception("Pin could not be instantiated - Type: {}, Pin: {}".format(type, pin))
 
