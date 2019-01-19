@@ -20,4 +20,5 @@
 - change data ops with database ops using psycopg http://initd.org/psycopg/
 - networking should probably just be router-only.
 - give task object network node - send messages and handle task transitions directly from task.
+- make hierarchical logging
 

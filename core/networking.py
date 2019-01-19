@@ -148,7 +148,7 @@ class Networking(multiprocessing.Process):
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
-        self.listener.send_multipart([to, msg_enc])
+        self.listener.send_multipart([bytes(to), msg_enc])
 
     def push(self,  to=None, key = None, value = None):
         """
@@ -183,7 +183,7 @@ class Networking(multiprocessing.Process):
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
-        self.pusher.send_multipart([self.push_id, msg_enc])
+        self.pusher.send_multipart([bytes(self.push_id), msg_enc])
 
     def handle_listen(self, msg):
         """
@@ -237,7 +237,8 @@ class Networking(multiprocessing.Process):
         elif self.pusher:
             self.push(to=msg.to, key=msg.key, value=msg.value)
         else:
-            self.logger.warning('Dont know how to handle message: {}'.format(str(msg)))
+            self.logger.warning('Message to unconfirmed recipient, attempting to send: {}'.format(str(msg)))
+            self.send(to=msg.to, key=msg.key, value=msg.value)
 
 
     def init_logging(self):
@@ -432,7 +433,9 @@ class Terminal_Networking(Networking):
         :param msg:
         """
         # A pi has told us that it is alive and what its filter is
-        self.subscribers[msg.value['pilot']] = msg.value['ip']
+        #self.senders[msg.value['pilot']] = msg.value['ip']
+        self.senders.append(msg.value['pilot'])
+
         self.logger.info('Received ALIVE from {}, ip: {}'.format(msg.value['pilot'], msg.value['ip']))
         # Tell the terminal
         self.send('_T', 'ALIVE', msg.value)
@@ -753,7 +756,7 @@ class Net_Node(object):
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
-        self.sock.send_multipart([self.upstream, msg_enc])
+        self.sock.send_multipart([bytes(self.upstream), msg_enc])
         if self.logger:
             self.logger.info("MESSAGE SENT - {}".format(str(msg)))
 

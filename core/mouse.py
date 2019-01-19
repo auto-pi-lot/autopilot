@@ -27,6 +27,7 @@ else:
     import Queue as queue
 
 
+
 class Mouse:
     """Mouse object for managing protocol, parameters, and data"""
 
@@ -255,6 +256,8 @@ class Mouse:
         # Load protocol to dict
         with open(protocol) as protocol_file:
             self.current = json.load(protocol_file)
+
+        sys.stdout.flush()
 
         # Make filenode and save as serialized json
         current_node = filenode.new_node(h5f, where='/', name='current')

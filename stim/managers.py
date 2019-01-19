@@ -3,6 +3,7 @@ import prefs
 import os
 from collections import deque
 import numpy as np
+import stim
 
 
 
@@ -48,7 +49,7 @@ class Stim_Manager(object):
         """
         self.bias = Bias_Correction(**kwargs)
 
-    def init_sounds(self, sounds):
+    def init_sounds(self, sound_dict):
         """
 
         :param sounds:
@@ -59,16 +60,17 @@ class Stim_Manager(object):
         # 'R': [{'type':'tone',...},{...}]
         # }
         # Iterate through sounds and load them to memory
-        for k, v in sounds.items():
+        for k, v in sound_dict.items():
             # If multiple sounds on one side, v will be a list
             if isinstance(v, list):
                 self.stimuli[k] = []
                 for sound in v:
-                    # We send the dict 'sound' to the function specified by 'type' and 'SOUND_LIST' as kwargs
-                    self.stimuli[k].append(sounds.SOUND_LIST[sound['type']](**sound))
+                    # We send the dict 'sound' to the function specified by 'type' and '
+                    # ' as kwargs
+                    self.stimuli[k].append(stim.sound.SOUND_LIST[sound['type']](**sound))
             # If not a list, a single sound
             else:
-                self.stimuli[k] = [sounds.SOUND_LIST[v['type']](**v)]
+                self.stimuli[k] = [stim.sound.SOUND_LIST[v['type']](**v)]
 
     def set_triggers(self, trig_fn):
         """

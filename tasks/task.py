@@ -85,7 +85,7 @@ class Task(object):
             # then iterate through each pin and handler of this type
             for pin, handler in values.items():
                 try:
-                    hw = handler(pins=pin_numbers[type][pin])
+                    hw = handler(pin_numbers[type][pin])
 
                     # if a pin is a trigger pin (event-based input), give it the trigger handler
                     if hw.trigger:

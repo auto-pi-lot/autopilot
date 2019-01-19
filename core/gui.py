@@ -125,6 +125,8 @@ class Control_Panel(QtGui.QWidget):
             # If a protocol was selected in the mouse wizard, assign it.
             try:
                 protocol_vals = new_mouse_wizard.task_tab.values
+                print(protocol_vals)
+                sys.stdout.flush()
                 if 'protocol' in protocol_vals.keys() and 'step' in protocol_vals.keys():
                     protocol_file = os.path.join(prefs.PROTOCOLDIR, protocol_vals['protocol'] + '.json')
                     mouse_obj.assign_protocol(protocol_file, int(protocol_vals['step']))
@@ -450,7 +452,7 @@ class Parameters(QtGui.QWidget):
                 self.sound_widget.pass_set_param_function(self.set_sounds)
                 self.param_layout.addRow(self.sound_widget)
                 if k in self.params.keys():
-                    self.sound_widget.populate_lists(self.params[k])
+                    self.sound_widget.populate_lists(self.params[k]['sounds'])
             elif v['type'] == 'label':
                 # This is a .json label not for display
                 pass
@@ -496,7 +498,7 @@ class Parameters(QtGui.QWidget):
         """
         # Have to handle sounds slightly differently
         # because the sound widget updates its own parameters
-        self.protocol[self.step]['sounds'] = self.sound_widget.sound_dict
+        self.params[self.step]['sounds'] = self.sound_widget.sound_dict
 
 
 class Protocol_Parameters(QtGui.QWidget):
@@ -1029,6 +1031,7 @@ class Protocol_Wizard(QtGui.QDialog):
                 self.sound_widget.setObjectName(k)
                 self.sound_widget.pass_set_param_function(self.set_sounds)
                 self.param_layout.addRow(self.sound_widget)
+                self.steps[step_index][k]['sounds'] = {}
                 if 'value' in v.keys():
                     self.sound_widget.populate_lists(v['value'])
             elif v['type'] == 'graduation':
@@ -1104,12 +1107,10 @@ class Protocol_Wizard(QtGui.QDialog):
 
         """
         current_step = self.step_list.currentRow()
-        if 'stim' not in self.steps[current_step].keys():
-            self.steps[current_step]['stim'] = {}
-        if 'sounds' in self.steps[current_step]['stim'].keys():
-            self.steps[current_step]['stim']['sounds']['value'].update(self.sound_widget.sound_dict)
-        else:
-            self.steps[current_step]['stim']['sounds'] = {'value':self.sound_widget.sound_dict}
+        #if 'sounds' in self.steps[current_step]['stim'].keys():
+        #    self.steps[current_step][param_name]['sounds']['value'].update(self.sound_widget.sound_dict)
+        #else:
+        self.steps[current_step]['stim']['sounds'] = self.sound_widget.sound_dict
 
     def set_graduation(self):
         """
@@ -1194,7 +1195,6 @@ class Graduation_Widget(QtGui.QWidget):
         sender = self.sender()
         name = sender.objectName()
         self.param_dict[name] = sender.text()
-        print(self.param_dict)
         self.set_graduation()
 
 class Drag_List(QtGui.QListWidget):

@@ -336,14 +336,14 @@ class Terminal(QtGui.QMainWindow):
                 self.mice[mouse].stop_run()
                 return
 
-            self.send_message('START', bytes(pilot), task)
+            self.node.send(to=bytes(pilot),key="START",value=task)
 
         else:
             # Send message to pilot to stop running,
             # it should initiate a coherence checking routine to make sure
             # its data matches what the Terminal got,
             # so the terminal will handle closing the mouse object
-            self.send_message('STOP', bytes(pilot), 'STOP')
+            self.node.send(to=bytes(pilot), key="STOP")
             # TODO: Start coherence checking ritual
             # TODO: Auto-select the next mouse in the list.
 
@@ -454,11 +454,18 @@ class Terminal(QtGui.QMainWindow):
 
             # The values useful to the step functions are stored with a 'value' key in the param_dict
             save_steps = []
+            print(steps)
+            sys.stdout.flush()
             for s in steps:
                 param_values = {}
                 for k, v in s.items():
                     if 'value' in v.keys():
                         param_values[k] = v['value']
+                    elif k == 'stim':
+                        # TODO: Super hacky - don't do this. Refactor params already.
+                        param_values[k] = {}
+                        for stimtype, stim in v.items():
+                            param_values[k][stimtype] = stim
                 save_steps.append(param_values)
 
             # Name the protocol
