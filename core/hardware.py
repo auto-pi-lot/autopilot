@@ -5,10 +5,12 @@ try:
 except:
     pass
 
+try:
 
-import pigpio
+    import pigpio
 # TODO: needs better handling, pigpio crashes sometimes and we should know
-
+except:
+    pass
 
 try:
     import usb

@@ -23,15 +23,15 @@ import threading
 import prefs
 
 # switch behavior based on audio server type
-#try:
-server_type = prefs.AUDIOSERVER
-#except:
+try:
+    server_type = prefs.AUDIOSERVER
+except:
 #    # TODO: The 'attribute don't exist' type - i think NameError?
-#    server_type = None
+    server_type = None
 
 
 
-if prefs.AUDIOSERVER == "pyo":
+if server_type == "pyo":
     import pyo
 
     class Pyo_Sound(object):
@@ -83,7 +83,7 @@ if prefs.AUDIOSERVER == "pyo":
             self.trigger = pyo.TrigFunc(self.table['trig'], trig_fn)
 
 
-elif prefs.AUDIOSERVER == "jack":
+elif server_type == "jack":
     import jackclient
 
     class Jack_Sound(object):
@@ -169,15 +169,13 @@ else:
     pass
 
 
-print(prefs.AUDIOSERVER)
-import sys
-sys.stdout.flush()
+
 
 
 ####################
-if prefs.AUDIOSERVER == "pyo":
+if server_type == "pyo":
     BASE_CLASS = Pyo_Sound
-elif prefs.AUDIOSERVER == "jack":
+elif server_type == "jack":
     BASE_CLASS = Jack_Sound
 else:
     # just importing to query parameters, not play sounds.

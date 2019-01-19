@@ -114,12 +114,12 @@ class JackClient(mp.Process):
                 data = None
                 Warning('Queue Empty')
             if data is None:
-                # sound is over
-                self.play_evt.clear()
-                self.stop_evt.set()
                 # fill with silence
                 for channel, port in zip(self.zero_arr.T, self.client.outports):
                     port.get_array()[:] = channel
+                # sound is over
+                self.play_evt.clear()
+                self.stop_evt.set()
             else:
                 # use cycle so if sound is single channel it gets copied to all outports
                 #self.client.outports[0].get_array()[:] = data.T
