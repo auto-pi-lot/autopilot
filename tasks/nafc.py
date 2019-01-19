@@ -242,7 +242,7 @@ class Nafc(Task):
         # get next stim
         self.target, self.distractor, self.stim = self.stim_manager.next_stim()
 
-        print(self.target, self.distractor, self.stim)
+        print(self.stim.PARAMS)
         sys.stdout.flush()
 
         # if we're doing correction trials, check if this is one
