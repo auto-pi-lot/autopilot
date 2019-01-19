@@ -87,18 +87,20 @@ elif prefs.AUDIOSERVER == "jack":
     import jackclient
 
     class Jack_Sound(object):
+        # base class for jack audio sounds
+        PARAMS = None  # list of strings of parameters to be defined
+        type = None  # string human readable name of sound
+        duration = None  # duration in ms
+        amplitude = None
+        table = None  # numpy array of samples
+        chunks = None  # table split into a list of chunks
+        trigger = None
+        nsamples = None
+        server_type = 'jack'
 
 
         def __init__(self):
-            # base class for jack audio sounds
-            self.PARAMS = None  # list of strings of parameters to be defined
-            self.type = None  # string human readable name of sound
-            self.duration = None  # duration in ms
-            self.amplitude = None
-            self.table = None  # numpy array of samples
-            self.chunks = None  # table split into a list of chunks
-            self.trigger = None
-            self.nsamples = None
+
             self.fs = jackclient.FS
             self.blocksize = jackclient.BLOCKSIZE
             self.server = jackclient.SERVER
@@ -106,7 +108,7 @@ elif prefs.AUDIOSERVER == "jack":
             self.q_lock = jackclient.Q_LOCK
             self.play_evt = jackclient.PLAY
             self.stop_evt = jackclient.STOP
-            self.server_type = 'jack'
+
             self.buffered = False
 
         def chunk(self):
