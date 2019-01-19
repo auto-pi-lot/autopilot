@@ -22,10 +22,6 @@ import threading
 
 import prefs
 
-import pprint
-
-pprint.pprint(prefs.prefdict)
-
 # switch behavior based on audio server type
 try:
     server_type = prefs.AUDIOSERVER
