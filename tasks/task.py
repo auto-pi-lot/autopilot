@@ -16,6 +16,7 @@ from collections import OrderedDict as odict
 import threading
 import logging
 from core.networking import Net_Node
+from core import hardware
 
 import prefs
 if hasattr(prefs, "AUDIOSERVER"):
