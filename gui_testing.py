@@ -6,9 +6,10 @@ from collections import OrderedDict as odict
 from PySide import QtCore
 from PySide import QtGui
 sys.path.append('/home/jonny/git/RPilot')
-from core.terminal import New_Mouse_Wizard, Sound_Widget
-from core.mouse import Mouse
-import tasks
+from rpilot.core import New_Mouse_Wizard, Sound_Widget
+from rpilot.core.mouse import Mouse
+from rpilot import tasks
+
 
 class Control_Panel(QtGui.QWidget):
     """
