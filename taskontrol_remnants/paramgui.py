@@ -33,9 +33,6 @@ from taskontrol.settings import rigsettings
 #NUMERIC_REGEXP = 
 
 class Container(dict):
-    """
-
-    """
     def __init__(self):
         super(Container, self).__init__()        
         self._groups = {}
@@ -44,6 +41,11 @@ class Container(dict):
 
     def __setitem__(self, paramName, paramInstance):
         # -- Check if there is already a parameter with that name --
+        """
+        Args:
+            paramName:
+            paramInstance:
+        """
         if paramName in self:
             print 'There is already a parameter named %s'%paramName
             raise ValueError
@@ -70,14 +72,15 @@ class Container(dict):
         dict.__setitem__(self, paramName, paramInstance)
 
     def print_items(self):
-        """
-
-        """
         for key,item in self.iteritems():
             print '[%s] %s : %s'%(type(item),key,str(item.get_value()))
 
     def layout_group(self,groupName):
-        '''Create box and layout with all parameters of a given group'''
+        """Create box and layout with all parameters of a given group
+
+        Args:
+            groupName:
+        """
         groupBox = QtGui.QGroupBox(groupName)
         self.layoutForm = ParamGroupLayout()
         for paramkey in self._groups[groupName]:
@@ -87,7 +90,7 @@ class Container(dict):
         return groupBox
 
     def update_history(self):
-        '''Append the value of each parameter (to track) for this trial.'''
+        """Append the value of each parameter (to track) for this trial."""
         for key in self._paramsToKeepHistory:
             try:
                 self.history[key].append(self[key].get_value())
@@ -95,10 +98,12 @@ class Container(dict):
                 self.history[key] = [self[key].get_value()]
 
     def set_values(self,valuesdict):
-        '''Set the value of many parameters at once.
-        valuesDict is a dictionary of parameters and their values.
-        for example: {param1:val1, param2:val2}
-        '''
+        """Set the value of many parameters at once. valuesDict is a dictionary
+        of parameters and their values. for example: {param1:val1, param2:val2}
+
+        Args:
+            valuesdict:
+        """
         for key,val in valuesdict.iteritems():
             if key in self:
                 if isinstance(self[key],MenuParam):
@@ -109,12 +114,16 @@ class Container(dict):
                 print 'Warning! {0} is not a valid parameter.'.format(key)
 
     def from_file(self,filename,dictname='default'):
-        '''
-        Set values from a dictionary stored in a file.
-        filename: (string) file with parameters (full path)
-        dictname: (string) name of dictionary in filename containing parameters
-                  If none is given, it will attempt to load 'default'
-        '''
+        """Set values from a dictionary stored in a file. filename: (string)
+        file with parameters (full path) dictname: (string) name of dictionary
+        in filename containing parameters
+
+            If none is given, it will attempt to load 'default'
+
+        Args:
+            filename:
+            dictname:
+        """
         if filename is not None:
             paramsmodule = imp.load_source('module.name', filename)
             try:
@@ -124,8 +133,13 @@ class Container(dict):
                 raise
 
     def append_to_file(self, h5file,currentTrial):
-        '''Append parameters' history to an HDF5 file.
-        It truncates data to the trial before currentTrial '''
+        """Append parameters' history to an HDF5 file. It truncates data to the
+        trial before currentTrial
+
+        Args:
+            h5file:
+            currentTrial:
+        """
         dataParent = 'resultsData'      # Parameters from each trial
         itemsParent = 'resultsLabels'   # Items in menu parameters
         sessionParent = 'sessionData'   # Parameters for the whole session
@@ -171,17 +185,18 @@ class Container(dict):
                 dset.attrs['Description'] = item.get_label()
 
 class ParamGroupLayout(QtGui.QGridLayout):
-    """
-
-    """
     def __init__(self,parent=None):
+        """
+        Args:
+            parent:
+        """
         super(ParamGroupLayout, self).__init__(parent)
         self.setVerticalSpacing(0)
     def add_row(self,labelWidget,editWidget):
         """
-
-        :param labelWidget: 
-        :param editWidget: 
+        Args:
+            labelWidget:
+            editWidget:
         """
         currentRow = self.rowCount()
         self.addWidget(labelWidget,currentRow,0,QtCore.Qt.AlignRight)
@@ -189,11 +204,17 @@ class ParamGroupLayout(QtGui.QGridLayout):
 
 
 class GenericParam(QtGui.QWidget):
-    """
-
-    """
     def __init__(self, labelText='', value=0, group=None,
                  history=True, labelWidth=80, parent=None):
+        """
+        Args:
+            labelText:
+            value:
+            group:
+            history:
+            labelWidth:
+            parent:
+        """
         super(GenericParam, self).__init__(parent)
         self._group = group
         self._historyEnabled = history
@@ -204,52 +225,44 @@ class GenericParam(QtGui.QWidget):
         self.editWidget = None
 
     def get_type(self):
-        """
-
-        :return: 
-        """
         return self._type
 
     def get_label(self):
-        """
-
-        :return: 
-        """
         return str(self.labelWidget.text())
 
     def get_group(self):
-        """
-
-        :return: 
-        """
         return self._group
 
     def in_group(self,groupName):
         """
-
-        :param groupName: 
-        :return: 
+        Args:
+            groupName:
         """
         return self._group==groupName
 
     def history_enabled(self):
-        """
-
-        :return: 
-        """
         return self._historyEnabled
 
     def set_enabled(self,enabledStatus):
-        '''Enable/disable the widget'''
+        """Enable/disable the widget
+
+        Args:
+            enabledStatus:
+        """
         self.editWidget.setEnabled(enabledStatus)
 
 
 class StringParam(GenericParam):
-    """
-
-    """
     def __init__(self, labelText='', value='', group=None,
                  labelWidth=80, parent=None):
+        """
+        Args:
+            labelText:
+            value:
+            group:
+            labelWidth:
+            parent:
+        """
         super(StringParam, self).__init__(labelText, value, group,
                                            history=False, labelWidth=labelWidth,  parent=parent)
         self._type = 'string'
@@ -266,26 +279,31 @@ class StringParam(GenericParam):
 
     def set_value(self,value):
         """
-
-        :param value: 
+        Args:
+            value:
         """
         self._value = value
         self.editWidget.setText(str(value))
 
     def get_value(self):
-        """
-
-        :return: 
-        """
         return str(self.editWidget.text())
 
 
 class NumericParam(GenericParam):
-    """
-
-    """
     def __init__(self, labelText='', value=0, units='', group=None, decimals=None,
                  history=True, labelWidth=80, enabled=True, parent=None):
+        """
+        Args:
+            labelText:
+            value:
+            units:
+            group:
+            decimals:
+            history:
+            labelWidth:
+            enabled:
+            parent:
+        """
         super(NumericParam, self).__init__(labelText, value, group,
                                            history, labelWidth,  parent)
         self._type = 'numeric'
@@ -304,8 +322,8 @@ class NumericParam(GenericParam):
 
     def set_value(self,value):
         """
-
-        :param value: 
+        Args:
+            value:
         """
         self._value = value
         if self.decimals is not None:
@@ -315,36 +333,35 @@ class NumericParam(GenericParam):
             self.editWidget.setText(str(value))
 
     def get_value(self):
-        """
-
-        :return: 
-        """
         try:
             return int(self.editWidget.text())
         except ValueError:
             return float(self.editWidget.text())
 
     def get_units(self):
-        """
-
-        :return: 
-        """
         return self._units
 
     def add(self,value):
         """
-
-        :param value: 
+        Args:
+            value:
         """
         self.set_value(self.get_value()+value)
 
 
 class MenuParam(GenericParam):
-    """
-
-    """
     def __init__(self, labelText='', menuItems=(), value=0, group=None,
                  history=True, labelWidth=80, parent=None):
+        """
+        Args:
+            labelText:
+            menuItems:
+            value:
+            group:
+            history:
+            labelWidth:
+            parent:
+        """
         super(MenuParam, self).__init__(labelText, value, group,
                                         history, labelWidth, parent)
         self._type = 'menu'
@@ -364,16 +381,16 @@ class MenuParam(GenericParam):
 
     def set_value(self,value):
         """
-
-        :param value: 
+        Args:
+            value:
         """
         self._value = value
         self.editWidget.setCurrentIndex(value)
 
     def set_string(self,newstring):
         """
-
-        :param newstring: 
+        Args:
+            newstring:
         """
         # XXFIXME: graceful warning if wrong string (ValueError exception)
         try:
@@ -385,24 +402,12 @@ class MenuParam(GenericParam):
         self.editWidget.setCurrentIndex(value)
 
     def get_value(self):
-        """
-
-        :return: 
-        """
         return self.editWidget.currentIndex()
 
     def get_string(self):
-        """
-
-        :return: 
-        """
         return str(self.editWidget.currentText())
 
     def get_items(self):
-        """
-
-        :return: 
-        """
         return self._items
 
     #def appendToFile(self,h5file,dataParent,itemsParent):
@@ -413,10 +418,12 @@ class MenuParam(GenericParam):
 
 # -----------------------------------------------------------------------------
 def create_app(paradigmClass):
-    '''
-    The paradigm file needs to run something like:
-    (app,paradigm) = tasks.create_app(Paradigm)
-    '''
+    """The paradigm file needs to run something like: (app,paradigm) =
+    tasks.create_app(Paradigm)
+
+    Args:
+        paradigmClass:
+    """
     signal.signal(signal.SIGINT, signal.SIG_DFL) # Enable Ctrl-C
     app=QtGui.QApplication.instance() # checks if QApplication already exists 
     if not app: # create QApplication if it doesnt exist 
@@ -449,14 +456,12 @@ def create_app(paradigmClass):
 
 
 def create_app_only():
-    '''
-    NOT FINISHED
-    When using this version, the paradigm file needs to run the following:
-        app = tasks.create_app_only()
-        paradigm = Paradigm()
-        paradigm.show()
+    """NOT FINISHED When using this version, the paradigm file needs to run the
+    following:
+
+        app = tasks.create_app_only() paradigm = Paradigm() paradigm.show()
         app.exec_()
-    '''
+    """
     signal.signal(signal.SIGINT, signal.SIG_DFL) # Enable Ctrl-C
     app=QtGui.QApplication.instance() # checks if QApplication already exists 
     if not app: # create QApplication if it doesnt exist 
@@ -466,8 +471,8 @@ def create_app_only():
 
 def center_in_screen(widget):
     """
-
-    :param widget: 
+    Args:
+        widget:
     """
     qr = widget.frameGeometry()
     cp = QtGui.QDesktopWidget().availableGeometry().center()

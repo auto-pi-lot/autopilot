@@ -49,9 +49,8 @@ if hasattr(rigsettings,'SOUND_VOLUME_LEVEL'):
 
 def create_sound(soundParams):
     """
-
-    :param soundParams: 
-    :return: 
+    Args:
+        soundParams:
     """
     amplitude = soundParams['amplitude']
     if soundParams['type']=='sine':
@@ -67,8 +66,15 @@ def create_sound(soundParams):
     return soundObjList
 
 class OutputButton(QtGui.QPushButton):
-    '''Single button for manual output'''
+    """Single button for manual output"""
     def __init__(self, soundServer, soundFreq, channel=1, parent=None):
+        """
+        Args:
+            soundServer:
+            soundFreq:
+            channel:
+            parent:
+        """
         super(OutputButton, self).__init__(str(int(np.round(soundFreq))), parent)
 
         self.soundServer = soundServer
@@ -88,8 +94,8 @@ class OutputButton(QtGui.QPushButton):
         '''
     def create_sound(self,soundType):
         """
-
-        :param soundType: 
+        Args:
+            soundType:
         """
         if soundType=='sine':
             soundParams = {'type':'sine', 'frequency':self.soundFreq,
@@ -100,16 +106,13 @@ class OutputButton(QtGui.QPushButton):
         self.soundObjList = create_sound(soundParams)
 
     def toggleOutput(self):
-        """
-
-        """
         if self.isChecked():
             self.start()
         else:
             self.stop()
 
     def start(self):
-        '''Start action.'''
+        """Start action."""
         self.setChecked(True)
         stylestr = 'QPushButton {{color: {0}; font: bold}}'.format(BUTTON_COLORS['on'])
         self.setStyleSheet(stylestr)
@@ -117,16 +120,13 @@ class OutputButton(QtGui.QPushButton):
         self.play_sound()
 
     def stop(self):
-        '''Stop action.'''
+        """Stop action."""
         self.setChecked(False)
         stylestr = ''
         self.setStyleSheet(stylestr)
         self.stop_sound()
         
     def play_sound(self):
-        """
-
-        """
         #self.soundObj = pyo.Sine(freq=soundfreq,mul=0.02).mix(2).out()
         #self.soundObj.setMul(0.01) 
         for soundObj in self.soundObjList:
@@ -134,25 +134,24 @@ class OutputButton(QtGui.QPushButton):
 
     def change_amplitude(self,amplitude):
         """
-
-        :param amplitude: 
+        Args:
+            amplitude:
         """
         self.soundAmplitude = amplitude
         for soundObj in self.soundObjList:
             soundObj.setMul(amplitude)
 
     def stop_sound(self):
-        """
-
-        """
         for soundObj in self.soundObjList:
             soundObj.stop()
 
 class AmplitudeControl(QtGui.QDoubleSpinBox):
-    """
-
-    """
     def __init__(self,soundButton,parent=None):
+        """
+        Args:
+            soundButton:
+            parent:
+        """
         super(AmplitudeControl,self).__init__(parent)
         self.setRange(0,MAX_AMPLITUDE)
         self.setSingleStep(AMPLITUDE_STEP)
@@ -162,16 +161,20 @@ class AmplitudeControl(QtGui.QDoubleSpinBox):
         self.valueChanged.connect(self.change_amplitude)
     def change_amplitude(self,value):
         """
-
-        :param value: 
+        Args:
+            value:
         """
         self.soundButton.change_amplitude(value)
 
 class SoundControl(QtGui.QGroupBox):
-    """
-
-    """
     def __init__(self, soundServer, channel=0, channelName='left', parent=None):
+        """
+        Args:
+            soundServer:
+            channel:
+            channelName:
+            parent:
+        """
         super(SoundControl, self).__init__(parent)
         self.soundServer = soundServer
         self.soundFreqs = SOUND_FREQUENCIES
@@ -200,51 +203,39 @@ class SoundControl(QtGui.QGroupBox):
         self.setTitle('Speaker '+channelName)
     
     def play_all(self):
-        """
-
-        """
         for oneButton in self.outputButtons:
             oneButton.start()
 
     def stop_all(self):
-        """
-
-        """
         for oneButton in self.outputButtons:
             oneButton.stop()
 
     def amplitude_array(self):
-        """
-
-        :return: 
-        """
         amplitudeEach = np.empty(len(self.amplitudeControl))
         for indf,oneAmplitude in enumerate(self.amplitudeControl):
             amplitudeEach[indf] = oneAmplitude.value()
         return amplitudeEach
 
 class LoadButton(QtGui.QPushButton):
-    '''
-    Note: this class does not change target intensity value.
-          It load data for the saved target intensity.
-    '''
+    """Note: this class does not change target intensity value. It load data for
+    the saved target intensity.
+    """
     logMessage = QtCore.Signal(str)
     def __init__(self, soundControlArray, parent=None):
+        """
+        Args:
+            soundControlArray:
+            parent:
+        """
         super(LoadButton, self).__init__('Load data', parent)
         self.soundControlArray = soundControlArray       
         self.calData = None # Object to contain loaded data
         self.clicked.connect(self.load_data)
     def load_data(self):
-        """
-
-        """
         fname,ffilter = QtGui.QFileDialog.getOpenFileName(self,'Open calibration file',DATADIR,'*.h5')
         self.calData = Calibration(fname)
         self.update_values()
     def update_values(self):
-        """
-
-        """
         nChannels = 2 # XFIXME: hardcoded
         for indch in range(nChannels):
             for indf in range(len(self.soundControlArray[indch].outputButtons)):
@@ -258,16 +249,16 @@ class LoadButton(QtGui.QPushButton):
                 oneOutputButton.change_amplitude(thisAmp[indch])
 
 class PlotButton(QtGui.QPushButton):
-    '''
-    '''
     def __init__(self, soundControlArray, parent=None):
+        """
+        Args:
+            soundControlArray:
+            parent:
+        """
         super(PlotButton, self).__init__('Plot results', parent)
         self.soundControlArray = soundControlArray       
         self.clicked.connect(self.plot_data)
     def plot_data(self):
-        """
-
-        """
         frequencies = self.soundControlArray[0].soundFreqs
         amplitudeData = []
         for soundControl in self.soundControlArray:
@@ -280,10 +271,13 @@ class PlotButton(QtGui.QPushButton):
         plt.show()
 
 class SaveButton(QtGui.QPushButton):
-    '''
-    '''
     logMessage = QtCore.Signal(str)
     def __init__(self, soundControlArray, parent=None):
+        """
+        Args:
+            soundControlArray:
+            parent:
+        """
         super(SaveButton, self).__init__('Save calibration', parent)
         self.soundControlArray = soundControlArray       
         self.clicked.connect(self.save_data)
@@ -292,10 +286,9 @@ class SaveButton(QtGui.QPushButton):
         self.interactive = False
     def save_data(self, date=None, filename=None):
         """
-
-        :param date: 
-        :param filename: 
-        :return: 
+        Args:
+            date:
+            filename:
         """
         if filename is not None:
             defaultFileName = filename
@@ -357,10 +350,11 @@ class SaveButton(QtGui.QPushButton):
         self.logMessage.emit('Saved data to {0}'.format(fname))
     
 class VerticalLine(QtGui.QFrame):
-    """
-
-    """
     def __init__(self,parent=None):
+        """
+        Args:
+            parent:
+        """
         super(VerticalLine, self).__init__(parent)
         self.setFrameStyle(QtGui.QFrame.VLine)
         self.setFrameShadow(QtGui.QFrame.Sunken)
@@ -369,10 +363,13 @@ class VerticalLine(QtGui.QFrame):
      
     
 class SpeakerCalibration(QtGui.QMainWindow):
-    """
-
-    """
     def __init__(self, parent=None, paramfile=None, paramdictname=None):
+        """
+        Args:
+            parent:
+            paramfile:
+            paramdictname:
+        """
         super(SpeakerCalibration, self).__init__(parent)
 
         self.name = 'speakercalibration'
@@ -444,8 +441,8 @@ class SpeakerCalibration(QtGui.QMainWindow):
 
     def change_sound_type(self,soundTypeInd):
         """
-
-        :param soundTypeInd: 
+        Args:
+            soundTypeInd:
         """
         for oneOutputButton in self.soundControlL.outputButtons:
             #oneOutputButton.create_sound(self.soundTypeList[soundTypeInd])
@@ -455,15 +452,15 @@ class SpeakerCalibration(QtGui.QMainWindow):
             oneOutputButton.soundType = self.soundTypeList[soundTypeInd]
 
     def initialize_sound(self):
-        """
-
-        :return: 
-        """
         s = pyo.Server(audio='jack').boot()
         s.start()
         return s
 
     def _show_message(self,msg):
+        """
+        Args:
+            msg:
+        """
         self.statusBar().showMessage(str(msg))
         print msg
 
@@ -474,11 +471,12 @@ class SpeakerCalibration(QtGui.QMainWindow):
         self.move(qr.topLeft())
 
     def closeEvent(self, event):
-        '''
-        Executed when closing the main window.
-        This method is inherited from QtGui.QMainWindow, which explains
-        its camelCase naming.
-        '''
+        """Executed when closing the main window. This method is inherited from
+        QtGui.QMainWindow, which explains its camelCase naming.
+
+        Args:
+            event:
+        """
         #print 'ENTERED closeEvent()' # DEBUG
         #print 'Closing all connections.' # DEBUG
         self.soundServer.shutdown()
@@ -486,12 +484,15 @@ class SpeakerCalibration(QtGui.QMainWindow):
         event.accept()
 
 class Calibration(object):
-    '''
-    Reads data from file and finds appropriate amplitude for a desired
-    sound intensity at a particular frequency.
-    This class assumes two channels (left,right)
-    '''
+    """Reads data from file and finds appropriate amplitude for a desired sound
+    intensity at a particular frequency. This class assumes two channels
+    (left,right)
+    """
     def __init__(self,filename=None):
+        """
+        Args:
+            filename:
+        """
         if filename is not None:
             h5file = h5py.File(filename,'r')
             self.amplitude = h5file['amplitude'][...]
@@ -505,10 +506,13 @@ class Calibration(object):
         self.nChannels = self.amplitude.shape[0]
             
     def find_amplitude(self,frequency,intensity):
-        '''
-        Linear interpolation (in log-freq) to find appropriate amplitude
+        """Linear interpolation (in log-freq) to find appropriate amplitude
         Returns an array with the amplitude for each channel.
-        '''
+
+        Args:
+            frequency:
+            intensity:
+        """
         ampAtRef = []
         for chn in range(self.nChannels):     
             thisAmp = np.interp(np.log10(frequency),np.log10(self.frequency),

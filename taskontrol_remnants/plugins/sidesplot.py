@@ -15,7 +15,11 @@ import numpy as np
 import pyqtgraph as pg
 
 def set_pg_colors(form):
-    '''Set default BG and FG color for pyqtgraph plots.'''
+    """Set default BG and FG color for pyqtgraph plots.
+
+    Args:
+        form:
+    """
     bgColorRGBA = form.palette().color(QtGui.QPalette.ColorRole.Window)
     fgColorRGBA = form.palette().color(QtGui.QPalette.ColorRole.WindowText)
     pg.setConfigOption('background', bgColorRGBA)
@@ -24,11 +28,15 @@ def set_pg_colors(form):
     #pg.setConfigOptions(antialias=False)  ##
 
 class SidesPlot(pg.PlotWidget):
-    '''
-    FROM MATLAB: CurrentTrial, SideList, HitHistory, TrialType)
-    '''
+    """FROM MATLAB: CurrentTrial, SideList, HitHistory, TrialType)"""
     def __init__(self, parent=None, widgetSize=(200,100),nTrials=100):
 
+        """
+        Args:
+            parent:
+            widgetSize:
+            nTrials:
+        """
         super(SidesPlot, self).__init__(parent)
         self.initialSize = widgetSize
 
@@ -66,9 +74,11 @@ class SidesPlot(pg.PlotWidget):
         
 
     def make_pens(self,points):
-        '''
-        points should be a list of tuples of the form [ntrials,'colorname']
-        '''
+        """points should be a list of tuples of the form [ntrials,'colorname']
+
+        Args:
+            points:
+        """
         '''
         self.penSide = self.nTrialsToPlot*[pg.mkPen('b')]
         self.brushSide = self.nTrialsToPlot*[pg.mkBrush('b')]
@@ -88,10 +98,10 @@ class SidesPlot(pg.PlotWidget):
 
     def update(self,sides=[],outcome=[],currentTrial=0):
         """
-
-        :param sides: 
-        :param outcome: 
-        :param currentTrial: 
+        Args:
+            sides:
+            outcome:
+            currentTrial:
         """
         xd = np.tile(range(self.nTrialsToPlot),3)
         maxPastTrials = (self.nTrialsToPlot*2)//3
@@ -118,10 +128,6 @@ class SidesPlot(pg.PlotWidget):
         #print minTrial, minTrial+self.nTrialsToPlot ### DEBUG
 
     def sizeHint(self):
-        """
-
-        :return: 
-        """
         return QtCore.QSize(self.initialSize[0],self.initialSize[1])
 
 

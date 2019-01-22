@@ -16,8 +16,14 @@ import pyqtgraph as pg
 
 
 class EventsPlot(pg.PlotWidget):
-    '''Plot state matrix events and states as they happen.'''
+    """Plot state matrix events and states as they happen."""
     def __init__(self, parent=None, xlim=[0,10], initialSize=(200,40)):
+        """
+        Args:
+            parent:
+            xlim:
+            initialSize:
+        """
         super(EventsPlot, self).__init__(parent)
         self.initialSize = initialSize
 
@@ -47,29 +53,25 @@ class EventsPlot(pg.PlotWidget):
         self.setLabel('bottom', 'Time', units='s')
 
     def sizeHint(self):
-        """
-
-        :return: 
-        """
         return QtCore.QSize(self.initialSize[0],self.initialSize[1])
 
     def center_in_screen(self):
-        """
-
-        """
         qr = self.frameGeometry()
         cp = QtGui.QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
     def set_states_color(self,statesColorDict,statesNameToIndex):
-        '''
-        Set colors for each state.
+        """Set colors for each state.
 
         statesColorsDict is a dict mapping state names to colors.
-        statesNameToIndex is a dict mapping states names to indexes.
-        A valid color is a list of 3 elements in the range 0-255
-        '''
+        statesNameToIndex is a dict mapping states names to indexes. A valid
+        color is a list of 3 elements in the range 0-255
+
+        Args:
+            statesColorDict:
+            statesNameToIndex:
+        """
 
         self.statesColor = 127*np.ones((len(statesNameToIndex),3))
         for (stateName,color) in statesColorDict.iteritems():
@@ -85,11 +87,13 @@ class EventsPlot(pg.PlotWidget):
     '''
 
     def update_plot(self,timesAndStates,etime):
-        '''
-        Updates the plot.
-        This method expects a numpy array where each row is of the
-        form [time, state]
-        '''
+        """Updates the plot. This method expects a numpy array where each row is
+        of the form [time, state]
+
+        Args:
+            timesAndStates:
+            etime:
+        """
         # -- Find states to plot --
         axLims = self.viewRect().getCoords()
         earliestTime = etime-axLims[2]  #self.xLims[1]
@@ -117,8 +121,8 @@ class EventsPlot(pg.PlotWidget):
 
     def OLD_paintEvent(self, event):
         """
-
-        :param event: 
+        Args:
+            event:
         """
         self.pW = self.pWidth()      # Update plot width
         painter = QtGui.QPainter()
@@ -136,23 +140,22 @@ class EventsPlot(pg.PlotWidget):
 
 
     def pWidth(self):
-        '''Width of axes in pixels'''
+        """Width of axes in pixels"""
         return self.width()-2*self.pX
 
 
     def valueToPixel(self,xval):
         """
-
-        :param xval: 
-        :return: 
+        Args:
+            xval:
         """
         return (float(xval-self.xLims[0])/self.xLen)*self.pW + self.pX
 
 
     def drawAxis(self,painter):
         """
-
-        :param painter: 
+        Args:
+            painter:
         """
         painter.setPen(QtGui.QColor(QtCore.Qt.gray))
         painter.setBrush(QtCore.Qt.NoBrush)

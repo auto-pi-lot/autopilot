@@ -15,7 +15,11 @@ import numpy as np
 import pyqtgraph as pg
 
 def set_pg_colors(form):
-    '''Set default BG and FG color for pyqtgraph plots.'''
+    """Set default BG and FG color for pyqtgraph plots.
+
+    Args:
+        form:
+    """
     bgColorRGBA = form.palette().color(QtGui.QPalette.ColorRole.Window)
     fgColorRGBA = form.palette().color(QtGui.QPalette.ColorRole.WindowText)
     pg.setConfigOption('background', bgColorRGBA)
@@ -26,11 +30,16 @@ def set_pg_colors(form):
 MAXNTRIALS = 10000
 
 class PerformanceDynamicsPlot(pg.PlotWidget):
-    '''
-    FROM MATLAB: CurrentTrial, SideList, HitHistory, TrialType)
-    '''
+    """FROM MATLAB: CurrentTrial, SideList, HitHistory, TrialType)"""
     def __init__(self, parent=None, widgetSize=(200,140),nTrials=100,winsize=10):
 
+        """
+        Args:
+            parent:
+            widgetSize:
+            nTrials:
+            winsize:
+        """
         if parent is not None:
             set_pg_colors(parent)
             #XFIXME: when done this way, x-axis starts at -40, not 0
@@ -74,9 +83,11 @@ class PerformanceDynamicsPlot(pg.PlotWidget):
         yAxis.setGrid(20)
 
     def make_pens(self,points):
-        '''
-        points should be a list of tuples of the form [ntrials,'colorname']
-        '''
+        """points should be a list of tuples of the form [ntrials,'colorname']
+
+        Args:
+            points:
+        """
         pensList = []
         brushesList = []
         for item in points:
@@ -87,12 +98,12 @@ class PerformanceDynamicsPlot(pg.PlotWidget):
 
     def update(self,sides=[],sidesLabels={},outcome=[],outcomeLabels={},currentTrial=0):
         """
-
-        :param sides: 
-        :param sidesLabels: 
-        :param outcome: 
-        :param outcomeLabels: 
-        :param currentTrial: 
+        Args:
+            sides:
+            sidesLabels:
+            outcome:
+            outcomeLabels:
+            currentTrial:
         """
         xd = np.tile(range(self.nTrialsToPlot),3)
         validLabels = [outcomeLabels['correct'],outcomeLabels['error']]
@@ -164,10 +175,6 @@ class PerformanceDynamicsPlot(pg.PlotWidget):
         '''
 
     def sizeHint(self):
-        """
-
-        :return: 
-        """
         return QtCore.QSize(self.initialSize[0],self.initialSize[1])
 
 
