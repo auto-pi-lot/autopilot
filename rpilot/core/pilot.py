@@ -56,7 +56,7 @@ if __name__ == '__main__':
             from rpilot.stim.sound import jackclient
 
 from networking import Pilot_Networking, Net_Node
-from rpilot import tasks, prefs
+from rpilot import tasks
 import hardware
 
 
