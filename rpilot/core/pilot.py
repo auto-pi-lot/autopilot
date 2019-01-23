@@ -51,9 +51,9 @@ if __name__ == '__main__':
 
     if hasattr(prefs, 'AUDIOSERVER'):
         if prefs.AUDIOSERVER == 'pyo':
-            pass
+            from rpilot.stim.sound import pyoserver
         elif prefs.AUDIOSERVER == 'jack':
-            from rpilot.stim.sound import jackclient, pyoserver
+            from rpilot.stim.sound import jackclient
 
 from networking import Pilot_Networking, Net_Node
 from rpilot import tasks, prefs
