@@ -15,10 +15,9 @@ Stage functions should each return three dicts: data, triggers, and timers
 from collections import OrderedDict as odict
 import threading
 import logging
-from rpilot.core.networking import Net_Node
-from rpilot.core import hardware
-
-from rpilot import prefs
+# from rpilot.core.networking import Net_Node
+from core import hardware
+import prefs
 
 if hasattr(prefs, "AUDIOSERVER"):
     if prefs.AUDIOSERVER == 'pyo':

@@ -15,8 +15,12 @@ import json
 import pandas as pd
 import warnings
 from copy import copy
-sys.path.append('~/git/RPilot')
-from rpilot import tasks, prefs
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+print(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from rpilot import tasks
+from rpilot import prefs
 import threading
 from rpilot.stim.sound.sounds import STRING_PARAMS
 

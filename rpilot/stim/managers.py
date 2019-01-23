@@ -2,7 +2,6 @@
 import os
 from collections import deque
 import numpy as np
-from rpilot import stim, prefs
 from rpilot.stim.sound import sounds
 
 

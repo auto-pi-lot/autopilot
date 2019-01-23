@@ -454,12 +454,12 @@ class Terminal(QtGui.QMainWindow):
             if ok and name != '':
                 protocol_file = os.path.join(prefs.PROTOCOLDIR, name + '.json')
                 with open(protocol_file, 'w') as pfile_open:
-                    json.dump(save_steps, pfile_open)
+                    json.dump(save_steps, pfile_open, indent=4, separators=(',', ': '), sort_keys=True)
             elif name == '' or not ok:
                 placeholder_name = 'protocol_created_{}'.format(datetime.date.today().isoformat())
                 protocol_file = os.path.join(prefs.PROTOCOLDIR, placeholder_name + '.json')
                 with open(protocol_file, 'w') as pfile_open:
-                    json.dump(save_steps, pfile_open)
+                    json.dump(save_steps, pfile_open, indent=4, separators=(',', ': '), sort_keys=True)
 
     def batch_mice(self):
         # TODO: Implement me...
@@ -607,6 +607,8 @@ if __name__ == '__main__':
 
     # init prefs for module access
     prefs.init(prefs_file)
+
+    sys.path.append(prefs.REPODIR)
 
     #with open(prefs_file) as prefs_file_open:
     #    prefs = json.load(prefs_file_open)
