@@ -132,7 +132,7 @@ if __name__ == "__main__":
     # save prefs
     prefs_file = os.path.join(params['BASEDIR'], 'prefs.json')
     with open(prefs_file, 'w') as prefs_file_open:
-        json.dump(params, prefs_file_open)
+        json.dump(params, prefs_file_open, indent=4, separators=(',', ': '), sort_keys=True)
     os.chmod(prefs_file, 0775)
 
     print('params saved to {}\n'.format(prefs_file))
