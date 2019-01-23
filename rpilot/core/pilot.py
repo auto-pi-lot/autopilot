@@ -47,7 +47,7 @@ if __name__ == '__main__':
         prefs_file = args.prefs
 
     prefs.init(prefs_file)
-    sys.path.append(prefs.REPODIR)
+    sys.path.append(os.path.dirname(prefs.REPODIR))
 
     if hasattr(prefs, 'AUDIOSERVER'):
         if prefs.AUDIOSERVER == 'pyo':
