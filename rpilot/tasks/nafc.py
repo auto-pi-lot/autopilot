@@ -252,6 +252,8 @@ class Nafc(Task):
 
         # get next stim
         self.target, self.distractor, self.stim = self.stim_manager.next_stim()
+        # buffer it
+        self.stim.buffer()
 
         print(self.stim.PARAMS)
         sys.stdout.flush()
