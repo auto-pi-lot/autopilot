@@ -255,9 +255,6 @@ class Nafc(Task):
         # buffer it
         self.stim.buffer()
 
-        print(self.stim.PARAMS)
-        sys.stdout.flush()
-
         # if we're doing correction trials, check if this is one
         if self.correction:
             self.correction_trial = self.stim_manager.correction_trial

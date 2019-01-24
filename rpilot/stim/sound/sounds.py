@@ -210,7 +210,7 @@ class Tone(BASE_CLASS):
             self.get_nsamples()
             t = np.arange(self.nsamples)
             self.table = (self.amplitude*np.sin(2*np.pi*self.frequency*t/self.fs)).astype(np.float32)
-            self.table = np.column_stack((self.table, self.table))
+            #self.table = np.column_stack((self.table, self.table))
             self.chunk()
 
 class Noise(BASE_CLASS):
