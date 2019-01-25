@@ -206,13 +206,13 @@ class Bias_Correction(object):
             response:
             target:
         """
-        if isinstance(response, str):
+        if isinstance(response, basestring):
             if response == "R":
                 response = 1.0
             elif response == "L":
                 response = 0.0
 
-        if isinstance(target, str):
+        if isinstance(target, basestring):
             if target == "R":
                 target = 1.0
             elif target == "L":

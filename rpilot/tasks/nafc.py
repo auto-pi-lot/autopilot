@@ -201,7 +201,7 @@ class Nafc(Task):
         if self.correction:
             self.stim_manager.do_correction(self.correction_pct)
 
-        if self.bias_mode != "None":
+        if bias_mode != "None":
             self.stim_manager.do_bias(mode=self.bias_mode,
                                       thresh=self.bias_threshold)
 

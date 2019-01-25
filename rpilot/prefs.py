@@ -40,6 +40,9 @@ def init(fn):
     # also store as a dictionary so other modules can have one if they want it
     globals()['__dict__'] = prefs
 
+def add(param, value):
+    globals()[param] = value
+
 # Return the git revision as a string
 def git_version():
     # Stolen from numpy's setup https://github.com/numpy/numpy/blob/master/setup.py#L70-L92

@@ -75,9 +75,9 @@ class Terminal(QtGui.QMainWindow):
 
         # Make invoker object to send GUI events back to the main thread
         self.invoker = Invoker()
-        prefs.INVOKER = self.invoker
+        prefs.add('INVOKER', self.invoker)
 
-        self.initUI() # Has to be before networking so plot listeners are caught by IOLoop
+        self.initUI()
 
         # Start Networking
         # Networking is in two parts,
@@ -321,6 +321,8 @@ class Terminal(QtGui.QMainWindow):
                 return
 
             self.node.send(to=bytes(pilot),key="START",value=task)
+            # also let the plot know to start
+            self.node.send(to=bytes("P_{}".format(pilot)), key="START", value=task)
 
         else:
             # Send message to pilot to stop running,
@@ -328,6 +330,8 @@ class Terminal(QtGui.QMainWindow):
             # its data matches what the Terminal got,
             # so the terminal will handle closing the mouse object
             self.node.send(to=bytes(pilot), key="STOP")
+            # also let the plot know to start
+            self.node.send(to=bytes("P_{}".format(pilot)), key="STOP")
             # TODO: Start coherence checking ritual
             # TODO: Auto-select the next mouse in the list.
 

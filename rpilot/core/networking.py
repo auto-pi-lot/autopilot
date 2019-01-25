@@ -222,6 +222,7 @@ class Networking(multiprocessing.Process):
             listen_funk = self.listens[msg.key]
             listen_thread = threading.Thread(target=listen_funk, args=(msg,))
             listen_thread.start()
+            return
         # otherwise, if it's to someone we know about, send it there
         elif msg.to in self.senders:
             self.send(to=msg.to, key=msg.key, value=msg.value)
@@ -232,6 +233,7 @@ class Networking(multiprocessing.Process):
         else:
             self.logger.warning('Message to unconfirmed recipient, attempting to send: {}'.format(str(msg)))
             self.send(to=msg.to, key=msg.key, value=msg.value)
+
 
 
     def init_logging(self):

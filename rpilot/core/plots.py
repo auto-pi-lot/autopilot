@@ -35,6 +35,10 @@ def gui_event(fn):
         QtCore.QCoreApplication.postEvent(prefs.INVOKER, InvokeEvent(fn, *args, **kwargs))
     return wrapper_gui_event
 
+def gui_event_fn(fn, *args, **kwargs):
+    QtCore.QCoreApplication.postEvent(prefs.INVOKER, InvokeEvent(fn, *args, **kwargs))
+
+
 class Plot_Widget(QtGui.QWidget):
     # Widget that frames multiple plots
     def __init__(self):
@@ -211,6 +215,9 @@ class Plot(QtGui.QWidget):
         # We're sent a task dict, we extract the plot params and send them to the plot object
         self.plot_params = tasks.TASK_LIST[value['task_type']].PLOT
 
+        print(self.plot_params)
+        sys.stdout.flush()
+
         # set infobox stuff
         self.n_trials = count()
         self.session_trials = 0
@@ -260,8 +267,10 @@ class Plot(QtGui.QWidget):
         for k, v in value.items():
             if k in self.data.keys():
                 self.data[k] = np.vstack((self.data[k], (self.last_trial, v)))
-                #self.gui_event(self.plots[k].update, *(self.data[k],))
+                #gui_event_fn(self.plots[k].update, *(self.data[k],))
                 self.plots[k].update(self.data[k])
+
+        sys.stdout.flush()
 
     @gui_event
     def l_stop(self, value):
@@ -371,7 +380,6 @@ class Roll_Mean(pg.PlotDataItem):
 
         self.brush = pg.mkBrush((0,0,0,100))
         self.setBrush(self.brush)
-
 
     def update(self, data):
         """
