@@ -503,6 +503,8 @@ class Pilot_Networking(Networking):
         # Just sending it along after appending the mouse name
         msg.value['mouse'] = self.mouse
         msg.value['pilot'] = self.id
+        print(str(msg))
+        sys.stdout.flush()
         self.push(key='DATA', value=msg.value)
 
     def m_cohere(self, msg):
