@@ -301,6 +301,8 @@ class RPilot:
         while True:
             # Calculate next stage data and prep triggers
             data = self.task.stages.next()() # Double parens because next just gives us the function, we still have to call it
+            data['pilot'] = self.name
+            data['mouse'] = self.mouse
 
             # Send data back to terminal (mouse is identified by the networking object)
             self.node.send('T', 'DATA', data)
