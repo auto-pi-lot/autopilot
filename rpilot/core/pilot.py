@@ -162,7 +162,7 @@ class RPilot:
     def handshake(self):
         # send the terminal some information about ourselves
         hello = {'pilot':self.name, 'ip':self.ip}
-        self.node.send('T', 'ALIVE', value=hello)
+        self.node.send('T', 'HANDSHAKE', value=hello)
 
     def update_state(self):
         self.node.send('T', 'STATE', self.state)
@@ -213,6 +213,9 @@ class RPilot:
         # TODO: Cohere here before closing file
         if hasattr(self, 'h5f'):
             self.h5f.close()
+
+        self.state = 'IDLE'
+        self.update_state()
 
     def l_param(self, value):
         """

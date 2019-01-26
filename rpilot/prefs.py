@@ -31,7 +31,7 @@ def init(fn):
         Exception('prefs must return a dict')
 
     # Get the current git hash
-    prefs['HASH'] = git_version()
+    prefs['HASH'] = git_version(prefs['REPODIR'])
 
     # assign key values to module globals so can access with prefs.pref1
     for k, v in prefs.items():
@@ -44,7 +44,7 @@ def add(param, value):
     globals()[param] = value
 
 # Return the git revision as a string
-def git_version():
+def git_version(repo_dir):
     # Stolen from numpy's setup https://github.com/numpy/numpy/blob/master/setup.py#L70-L92
     # and linked by ryanjdillon on SO https://stackoverflow.com/a/40170206
     def _minimal_ext_cmd(cmd):
@@ -62,7 +62,7 @@ def git_version():
         return out
 
     try:
-        out = _minimal_ext_cmd(['git', 'rev-parse', 'HEAD'])
+        out = _minimal_ext_cmd(['git','-C',repo_dir, 'rev-parse', 'HEAD'])
         GIT_REVISION = out.strip().decode('ascii')
     except OSError:
         GIT_REVISION = "Unknown"

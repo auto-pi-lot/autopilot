@@ -192,8 +192,10 @@ class Control_Panel(QtGui.QWidget):
             for pilot, value in kwargs['new'].items():
                 self.pilots[pilot] = value
 
-        print(self.pilots)
-        sys.stdout.flush()
+        # strip any state that's been stored
+        for p, val in self.pilots.items():
+            if 'state' in val.keys():
+                del val['state']
 
         try:
             with open(prefs.PILOT_DB, 'w') as pilot_file:

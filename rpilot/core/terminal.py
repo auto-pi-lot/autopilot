@@ -68,9 +68,9 @@ class Terminal(QtGui.QMainWindow):
         self.listens = {
             'STATE': self.l_state, # A Pi has changed state
             'PING' : self.l_ping,  # Someone wants to know if we're alive
-            'FILE' : self.l_file,  # A pi needs some files to run its protocol
             'DATA' : self.l_data,   # data 4 us!
-            'ALIVE': self.l_alive  # pi is responding to our ping, or telling us its info
+            'ALIVE': self.l_alive,  # pi is responding to our ping, or telling us its info
+            'HANDSHAKE': self.l_handshake # a pi is making first contact, telling us its IP
         }
 
         # Make invoker object to send GUI events back to the main thread
@@ -190,78 +190,19 @@ class Terminal(QtGui.QMainWindow):
         self.initUI()
 
 
-    ##########################
-    # MOUSE DATA METHODS
-    #
-    # def mouse_start_toggled(self, toggled):
-    #     # Get object for current mouse
-    #     mouse = self.mice[self.current_mouse]
-    #     pilot = bytes(self.pilot_panel.pilot)
-    #
-    #     # If toggled=True we are starting the mouse
-    #     if toggled:
-    #         # Set mouse to running
-    #         mouse.prepare_run()
-    #         # Get protocol and send it to the pi
-    #         task = mouse.current[mouse.step]
-    #         # Dress up the protocol dict with some extra values that the pilot needs
-    #         task['mouse'] = mouse.name
-    #         # TODO: Get last trial number and insert in dict
-    #         self.send_message('START', pilot, task)
-    #         # TODO: Spawn timer thread to trigger stop after run duration
-    #
-    #     # Or else we are stopping the mouse
-    #     else:
-    #         mouse.running = False
-    #         self.send_message('STOP', pilot)
-    #         mouse.h5f.flush()
-    #         # TODO: Destroy dataview widget
-
-    # def stop_mouse(self):
-    #     # TODO flush table, handle coherence checking, close .h5f
-    #     pass
-
     ##########################3
     # NETWORKING METHODS
 
     def spawn_network(self):
         # Start external communications in own process
-        self.networking = Terminal_Networking()
+        self.networking = Terminal_Networking(self.pilots)
         self.networking.start()
 
     def init_network(self):
         # Start internal communications
         self.node = Net_Node(id="_T", upstream='T', port=prefs.MSGPORT, listens=self.listens)
-        #
-        # self.context = zmq.Context.instance()
-        # self.loop = IOLoop.instance()
-        #
-        # # Messenger to send messages to networking class
-        # # Subscriber to receive return messages
-        # self.pusher      = self.context.socket(zmq.ROUTER)
-        # # Since we are always "behind" our networking process, prepend _
-        # self.pusher.identity = '_T'.encode('utf-8')
-        #
-        # self.pusher.connect('tcp://localhost:{}'.format(prefs.LISTENPORT))
-        # self.subscriber.connect('tcp://localhost:{}'.format(prefs.PUBPORT']))
-        # self.subscriber.setsockopt(zmq.SUBSCRIBE, b'T') # Subscribe as "T"erminal
-        # self.subscriber.setsockopt(zmq.SUBSCRIBE, b'X') # Subscribe to All
-        #
-        # # Setup subscriber for looping
-        # self.subscriber = ZMQStream(self.subscriber, self.loop)
-        # self.subscriber.on_recv(self.handle_listen)
-        #
-        # # Start IOLoop in daemon thread
-        # self.loop_thread = threading.Thread(target=self.threaded_loop)
-        # self.loop_thread.daemon = True
-        # self.loop_thread.start()
 
         self.logger.info("Networking Initiated")
-
-    # def threaded_loop(self):
-    #     while True:
-    #         self.logger.info("Starting IOLoop")
-    #         self.loop.start()
 
     def handle_listen(self, msg):
         """
@@ -385,18 +326,17 @@ class Terminal(QtGui.QMainWindow):
         pass
         #self.send_message('ALIVE', value=b'T')
 
-    def l_file(self, value):
-        """
-        Args:
-            value:
-        """
-        pass
 
-    def l_alive(self, value):
+    def l_state(self, value):
         """
+        A Pilot has changed state, keep track of it.
         Args:
             value:
         """
+        if value['pilot'] in self.pilots.keys():
+            self.pilots[value['pilot']]['state'] = value['state']
+
+    def l_handshake(self, value):
         if value['pilot'] in self.pilots.keys():
             self.pilots[value['pilot']]['ip'] = value['ip']
 

@@ -50,8 +50,10 @@ class Networking(multiprocessing.Process):
     log_formatter = None
     id           = None    # What are we known as?
     ip           = None    # whatismy
-    listens      = None    # Dictionary of functions to call for different types of messages
-    senders      = [] # who has sent us stuff (ie. directly connected)
+    listens      = {}    # Dictionary of functions to call for different types of messages
+    senders      = {} # who has sent us stuff (ie. directly connected) and their state if they keep one
+    outbox = {}  # Messages that are out with unconfirmed delivery
+    timers = {}  # dict of timer threads that will check in on outbox messages
 
     def __init__(self):
         super(Networking, self).__init__()
@@ -67,6 +69,11 @@ class Networking(multiprocessing.Process):
 
         # number messages as we send them
         self.msg_counter = count()
+
+        # we have a few builtin listens
+        self.listens = {
+            'CONFIRM': self.l_confirm
+        }
 
 
 
@@ -105,7 +112,6 @@ class Networking(multiprocessing.Process):
             key:
             value:
         """
-        # TODO: This would mess up multi-hop senders. we should make sure to send the whole message thru
         msg = Message()
         msg.sender = self.id
         msg.to = to
@@ -118,17 +124,26 @@ class Networking(multiprocessing.Process):
         return msg
 
 
-    def send(self, to, key, value=None):
+    def send(self, to=None, key=None, value=None, msg=None):
         """
+        send message via the router
+        don't need to thread this because router sends are nonblocking
+
         Args:
             to:
             key:
             value:
+            msg:
         """
-        # send message via the router
-        # don't need to thread this because router sends are nonblocking
 
-        msg = self.prepare_message(to, key, value)
+        if not msg or all([to, key]):
+            self.logger.exception('Need either a message or \'to\' and \'key\' fields.\
+                Got\nto: {}\nkey: {}\nvalue: {}\nmsg: {}'.format(to, key, value, msg))
+            return
+
+        if not msg:
+            # we're sending this ourselves, new message.
+            msg = self.prepare_message(to, key, value)
 
         # Make sure our message has everything
         if not msg.validate():
@@ -141,28 +156,36 @@ class Networking(multiprocessing.Process):
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
-        self.listener.send_multipart([bytes(to), msg_enc])
+        self.listener.send_multipart([bytes(msg.to), msg_enc])
 
-    def push(self,  to=None, key = None, value = None):
+        # add to outbox and spawn timer to resend
+        self.outbox[msg.id] = msg
+        self.timers[msg.id] = threading.Timer(5.0, target=self.repeat, args=(msg.id,'send'))
+        self.timers[msg.id].start()
+
+    def push(self,  to=None, key = None, value = None, msg=None):
         """
         Args:
             to:
             key:
             value:
+            msg:
         """
         # send message via the dealer
         # even though we only have one connection over our dealer,
         # we still include 'to' in case we are sending further upstream
         # but can push without 'to', just fill in with upstream id
-        # TODO: Implement forwarding when 'to' field doesn't match ID of upstream router
-        if to is None:
-            to = self.push_id
 
-        if key is None:
-            self.logger.error('Push sent without Key')
-            return
+        if not msg or key:
+            self.logger.exception('Need either a message or a \'key\' field.\
+                Got\nto: {}\nkey: {}\nvalue: {}\nmsg: {}'.format(to, key, value, msg))
 
-        msg = self.prepare_message(to, key, value)
+        if not msg:
+
+            if to is None:
+                to = self.push_id
+
+            msg = self.prepare_message(to, key, value)
 
         # Make sure our message has everything
         if not msg.validate():
@@ -175,9 +198,58 @@ class Networking(multiprocessing.Process):
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
+        # Even if the message is not to our upstream node, we still send it upstream because presumably our target is upstream.
         self.pusher.send_multipart([bytes(self.push_id), msg_enc])
 
         self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
+
+    def repeat(self, msg_id, send_type):
+        # Handle repeated messages
+        # If we still have the message in our outbox...
+        if msg_id not in self.outbox.keys():
+            # TODO: Do we really need this warning? this should be normal behavior...
+            self.logger.warning('Republish called for message {}, but missing message'.format(msg_id))
+            return
+
+        # decrement ttl
+        self.outbox[msg_id].ttl -= 1
+
+        # Send the message again
+        self.logger.info('REPUBLISH {} - \n{}'.format(msg_id,str(self.outbox[msg_id])))
+        if send_type == 'send':
+            self.send(msg=self.outbox[msg_id])
+        elif send_type == 'push':
+            self.push(msg=self.outbox[msg_id])
+        else:
+            self.logger.exception('Republish called without proper send_type!')
+
+        # If our TTL is now zero, delete the message and log its failure
+        if int(self.outbox[msg_id].ttl) <= 0:
+            self.logger.warning('PUBLISH FAILED {} - {}'.format(msg_id, str(self.outbox[msg_id])))
+            del self.outbox[msg_id]
+            return
+
+
+        # Spawn a thread to check in on our message
+        self.timers[msg_id] = threading.Timer(5.0, target=self.repeat, args=(msg_id, send_type))
+        self.timers[msg_id].start()
+
+    def l_confirm(self, msg):
+        # confirmation that a published message was received
+        # value should be the message id
+
+        # delete message from outbox if we still have it
+        if msg.value in self.outbox.keys():
+            del self.outbox[msg.value]
+
+        # stop a timer thread if we have it
+        if msg.value in self.timers.keys():
+            self.timers[msg.value].cancel()
+            del self.timers[msg.value]
+
+        self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
+
+
 
     def handle_listen(self, msg):
         """
@@ -187,15 +259,18 @@ class Networking(multiprocessing.Process):
         # TODO: This check is v. fragile, pyzmq has a way of sending the stream along with the message
         if len(msg)==1:
             # from our dealer
+            send_type = 'dealer'
             msg = json.loads(msg[0])
             msg = Message(**msg)
+
         elif len(msg)>=2:
             # from the router
+            send_type = 'router'
             sender = msg[-2]
 
             # if this is a new sender, add them to the list
-            if sender not in self.senders:
-                self.senders.append(sender)
+            if sender not in self.senders.keys():
+                self.senders[sender] = ""
 
             # connection pings are blank frames,
             # respond to let them know we're alive
@@ -216,16 +291,20 @@ class Networking(multiprocessing.Process):
 
         self.logger.info('RECEIVED:\n{}'.format(str(msg)))
 
-        # if this message is to us, handle it.
+        # if this message is to us, just handle it and return
         if msg.to in [self.id, "_{}".format(self.id)]:
             # Log and spawn thread to respond to listen
             listen_funk = self.listens[msg.key]
             listen_thread = threading.Thread(target=listen_funk, args=(msg,))
             listen_thread.start()
+            if send_type == 'router':
+                self.send(msg.sender, 'CONFIRM', msg.id)
+            elif send_type == 'dealer':
+                self.push(msg.sender, 'CONFIRM', msg.id)
             return
         # otherwise, if it's to someone we know about, send it there
-        elif msg.to in self.senders:
-            self.send(to=msg.to, key=msg.key, value=msg.value)
+        elif msg.to in self.senders.keys():
+            self.send(msg=msg)
         # otherwise, if we have a pusher, send it there
         # it's either for them or some other upstream node we don't know about
         elif self.pusher:
@@ -233,6 +312,15 @@ class Networking(multiprocessing.Process):
         else:
             self.logger.warning('Message to unconfirmed recipient, attempting to send: {}'.format(str(msg)))
             self.send(to=msg.to, key=msg.key, value=msg.value)
+
+        # finally, if there's something we're supposed to do, do it
+        # even if the message is not to us,
+        # sometimes we do work en passant to reduce effort doubling
+        if msg.key in self.listens.keys():
+            listen_funk = self.listens[msg.key]
+            listen_thread = threading.Thread(target=listen_funk, args=(msg,))
+            listen_thread.start()
+
 
 
 
@@ -265,7 +353,7 @@ class Networking(multiprocessing.Process):
         return unwrap2
 
 class Terminal_Networking(Networking):
-    def __init__(self):
+    def __init__(self, pilots):
         super(Terminal_Networking, self).__init__()
 
         # by default terminal doesn't have a pusher, everything connects to it
@@ -276,21 +364,20 @@ class Terminal_Networking(Networking):
         self.id = b'T'
 
         # Message dictionary - What method to call for each type of message received by the terminal class
-        self.listens = {
-            'PING':      self.m_ping,  # We are asked to confirm that the raspberry pis are alive
+        self.listens.update({
+            'PING':      self.m_ping,  # We are asked to confirm that we are alive
             'INIT':      self.m_init,  # We should ask all the pilots to confirm that they are alive
-            'START':     self.m_start_task,  # Upload task to a pilot
             'CHANGE':    self.m_change,  # Change a parameter on the Pi
-            'STOP':      self.m_stop,
-            'STOPALL':   self.m_stopall,
-            'LISTENING': self.m_listening,  # Terminal wants to know if we're alive yet
+            'STOPALL':   self.m_stopall, # Stop all pilots and plots
             'KILL':      self.m_kill,  # Terminal wants us to die :(
             'DATA':      self.l_data,  # Stash incoming data from an rpilot
-            'ALIVE':     self.l_alive,  # A Pi is responding to our periodic query of whether it remains alive
-            # It replies with its subscription filter
             'STATE':     self.l_state,  # The Pi is confirming/notifying us that it has changed state
             'FILE':      self.l_file,  # The pi needs some file from us
-        }
+        })
+
+        # dictionary that keeps track of our pilots
+        self.pilots = pilots
+
 
 
     ##########################
@@ -301,60 +388,21 @@ class Terminal_Networking(Networking):
         Args:
             msg:
         """
-        # Ping a specific subscriber and ask if they are alive
-        self.send(msg.target, 'PING')
+        # we are being asked if we're alive
+        # respond with blank message since the terminal isn't really stateful
+        self.send(msg.sender, 'STATE')
 
     def m_init(self, msg):
         """
         Args:
             msg:
         """
-        # Ping all pis that we are expecting given our pilot db until we get a response
-        # Pass back who responds as they do to update the GUI.
-        # We don't expect a response, so we don't send through normal publishing method
+        # Ping all pis that we are expecting given our pilot db
+        # Responses will be handled with l_state so not much needed here
 
-        # TODO: Redo this
-        pass
+        for p in self.pilots.keys():
+            self.send(p, 'PING')
 
-        # # Override target if any is fed to us
-        # target = b'X' # TODO: Allow all pub/sub key to be defined in setup functions
-        #
-        # # Publish a general ping five times, m_alive will update our list of subscribers as they respond
-        # for i in range(3):
-        #     msg_id = str(self.msg_counter.next())
-        #     self.publisher.send_multipart([bytes(target), json.dumps({'key':'PING', 'value':'', 'id':msg_id})])
-        #     self.logger.info('PUBLISH {} - Target: {}, Key: {}'.format(msg_id, target, 'PING'))
-        #     time.sleep(1)
-        #
-        # # If we still haven't heard from pis that we expected to, we'll ping them a few more times
-        # pis = set(value)
-        # if not len(pis - self.subscribers) == 0:
-        #     for i in range(3):
-        #         awol_pis = pis - self.subscribers
-        #         for p in awol_pis:
-        #             msg_id = str(self.msg_counter.next())
-        #             self.publisher.send_multipart([bytes(p), json.dumps({'key': 'PING', 'value': '', 'id':msg_id})])
-        #             self.logger.info('PUBLISH {} - Target: {}, Key: {}'.format(msg_id, p, 'PING'))
-        #         time.sleep(1)
-        #
-        #     # If we still haven't heard from them, tell the terminal that
-        #     awol_pis = pis - self.subscribers
-        #     for p in awol_pis:
-        #         self.logger.warning('Requested Pilot {} was not heard from'.format(p))
-        #         self.publish(b'T',{'key':'DEAD','value':p})
-
-
-
-    def m_start_task(self, msg):
-        """
-        Args:
-            msg:
-        """
-        # Just publish it
-        self.send(msg.target, 'START', msg.value)
-
-        # Then let the plot widget know so that it makes and starts a plot
-        self.send(bytes('P_{}'.format(msg.target)), 'START', msg.value)
 
     def m_change(self, msg):
         """
@@ -364,31 +412,16 @@ class Terminal_Networking(Networking):
         # TODO: Should also handle param changes to GUI objects like ntrials, etc.
         pass
 
-
-    def m_stop(self, msg):
-        """
-        Args:
-            msg:
-        """
-        self.send(msg.target, 'STOP', msg.value)
-        # and the plot widget
-        self.send('P_{}'.format(msg.target), 'STOP', msg.value)
-
-        #TODO: also pop mouse value from data function dict
-
     def m_stopall(self, msg):
         """
         Args:
             msg:
         """
-        pass
+        # let all the pilots and plot objects know that they should stop
+        for p in self.pilots.keys():
+            self.send(p, 'STOP')
+            self.send("P_{}".format(p), 'STOP')
 
-    def m_listening(self, msg):
-        """
-        Args:
-            msg:
-        """
-        self.send('_T', 'LISTENING')
 
     def m_kill(self, msg):
         """
@@ -412,32 +445,24 @@ class Terminal_Networking(Networking):
         # Send to plot widget, which should be listening to "P_{pilot_name}"
         self.send('P_{}'.format(msg.sender), 'DATA', msg.value)
 
-    def l_alive(self, msg):
-        """
-        Args:
-            msg:
-        """
-        # A pi has told us that it is alive and what its filter is
-        #self.senders[msg.value['pilot']] = msg.value['ip']
-        self.senders.append(msg.value['pilot'])
-
-        self.logger.info('Received ALIVE from {}, ip: {}'.format(msg.value['pilot'], msg.value['ip']))
-        # Tell the terminal
-        self.send('_T', 'ALIVE', msg.value)
-
-    def l_event(self, msg):
-        """
-        Args:
-            msg:
-        """
-        pass
 
     def l_state(self, msg):
         """
+        A Pilot or someone else is letting us know they're alive
         Args:
             msg:
         """
-        pass
+        if msg.sender in self.pilots.keys():
+            self.pilots[msg.sender]['state'] = msg.value
+            # Tell the terminal so it can update the pilot_db file
+            state = {'state':msg.value, 'pilot':msg.sender}
+            self.send('_T', 'STATE', state)
+
+            # TODO: Update GUI to reflect pilot state
+
+        self.senders[msg.sender] = msg.value
+
+
 
     def l_file(self, msg):
         """
@@ -469,18 +494,17 @@ class Pilot_Networking(Networking):
         self.id = prefs.NAME.encode('utf-8')
         self.pi_id = "_{}".format(self.id)
         self.mouse = None # Store current mouse ID
+        self.state = None # store current pi state
 
-        self.listens = {
+        self.listens.update({
             'STATE': self.m_state,  # Confirm or notify terminal of state change
-            'DATA': self.m_data,  # Sending data back
             'COHERE': self.m_cohere, # Sending our temporary data table at the end of a run to compare w/ terminal's copy
-            'ALIVE': self.m_alive,  # send some initial information to the terminal
             'PING': self.l_ping,  # The Terminal wants to know if we're listening
             'START': self.l_start,  # We are being sent a task to start
             'STOP': self.l_stop,  # We are being told to stop the current task
             'PARAM': self.l_change,  # The Terminal is changing some task parameter
             'FILE': self.l_file,  # We are receiving a file
-        }
+        })
 
         super(Pilot_Networking, self).__init__()
 
@@ -495,19 +519,7 @@ class Pilot_Networking(Networking):
         # Save locally so we can respond to queries on our own, then push 'er on through
         # Value will just have the state, we want to add our name
         self.state = msg.value
-        self.push(key='STATE', value=msg.value)
 
-    def m_data(self, msg):
-        """
-        Args:
-            msg:
-        """
-        # Just sending it along after appending the mouse name
-        msg.value['mouse'] = self.mouse
-        msg.value['pilot'] = self.id
-        print(str(msg))
-        sys.stdout.flush()
-        self.push(key='DATA', value=msg.value)
 
     def m_cohere(self, msg):
         """
@@ -517,22 +529,14 @@ class Pilot_Networking(Networking):
         # Send our local version of the data table so the terminal can double check
         pass
 
-    def m_alive(self, msg):
-        """
-        Args:
-            msg:
-        """
-        # TODO: This is probably redundant with l_ping
-        # just say hello
-        self.push(key='ALIVE', value={'pilot':self.name, 'ip':self.ip, 'state':self.state})
-
     def l_ping(self, msg):
         """
         Args:
             msg:
         """
         # The terminal wants to know if we are alive, respond with our name and IP
-        self.push(key='ALIVE', value={'pilot':self.name, 'ip':self.ip, 'state':self.state})
+        # don't bother the pi
+        self.push(key='STATE', value=self.state)
 
     def l_start(self, msg):
         """
@@ -609,7 +613,7 @@ class Net_Node(object):
     id = None
     upstream = None # ID of router we connect to
     port = None
-    listens = None
+    listens = {}
     connected = False
     logger = None
     "pop in networking object, has to set behind some external-facing networking object"
@@ -628,6 +632,11 @@ class Net_Node(object):
         else:
             self.context = zmq.Context()
             self.loop    = IOLoop()
+
+        # we have a few builtin listens
+        self.listens = {
+            'CONFIRM': self.l_confirm
+        }
 
         self.id = id.encode('utf-8')
         self.upstream = upstream.encode('utf-8')
@@ -713,7 +722,6 @@ class Net_Node(object):
         # even though we only have one connection over our dealer,
         # we still include 'to' in case we are sending further upstream
         # but can push without 'to', just fill in with upstream id
-        # TODO: Implement forwarding when 'to' field doesn't match ID of upstream router
         if to is None:
             to = self.upstream
 
@@ -748,9 +756,15 @@ class Net_Node(object):
             key:
             value:
         """
-        # TODO: This would mess up multi-hop senders. we should make sure to send the whole message thru
         msg = Message()
-        msg.sender = self.id
+
+        # if our name is _{something} and our upstream is {something}, replace sender with our upstream node
+        # upstream node should handle all incoming information to those types of nodes
+        if self.id == "_{}".format(self.upstream):
+            msg.sender = self.upstream
+        else:
+            msg.sender = self.id
+
         msg.to = to
         msg.key = key
         msg.value = value
@@ -759,6 +773,10 @@ class Net_Node(object):
         msg.id = "{}_{}".format(self.id, msg_num)
 
         return msg
+
+    def l_confirm(self, msg):
+        pass
+
 
 
 class Message(object):
@@ -770,6 +788,7 @@ class Message(object):
     # value is the only attribute that can be left None,
     # ie. with signal-type messages like "STOP"
     value = None
+    ttl = 5 # every message starts with 5 retries. only relevant to the sender so not serialized.
 
     def __init__(self, *args, **kwargs):
         # Messages don't need to have all attributes on creation,
