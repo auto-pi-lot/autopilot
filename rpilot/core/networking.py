@@ -295,7 +295,7 @@ class Networking(multiprocessing.Process):
             self.logger.error('Message failed to validate:\n{}'.format(str(msg)))
             return
 
-        self.logger.info('RECEIVED:\n{}'.format(str(msg)))
+        self.logger.info('RECEIVED: {}'.format(str(msg)))
 
         # if this message is to us, just handle it and return
         if msg.to in [self.id, "_{}".format(self.id)]:
@@ -322,10 +322,10 @@ class Networking(multiprocessing.Process):
         # otherwise, if we have a pusher, send it there
         # it's either for them or some other upstream node we don't know about
         elif self.pusher:
-            self.push(to=msg.to, key=msg.key, value=msg.value)
+            self.push(msg=msg)
         else:
             self.logger.warning('Message to unconfirmed recipient, attempting to send: {}'.format(str(msg)))
-            self.send(to=msg.to, key=msg.key, value=msg.value)
+            self.send(msg=msg)
 
         # finally, if there's something we're supposed to do, do it
         # even if the message is not to us,
@@ -386,6 +386,7 @@ class Terminal_Networking(Networking):
             'KILL':      self.m_kill,  # Terminal wants us to die :(
             'DATA':      self.l_data,  # Stash incoming data from an rpilot
             'STATE':     self.l_state,  # The Pi is confirming/notifying us that it has changed state
+            'HANDSHAKE': self.l_handshake, # initial connection with some initial info
             'FILE':      self.l_file,  # The pi needs some file from us
         })
 
@@ -475,6 +476,15 @@ class Terminal_Networking(Networking):
             # TODO: Update GUI to reflect pilot state
 
         self.senders[msg.sender] = msg.value
+
+    def l_handshake(self, msg):
+        """
+        Getting some initial info
+        :param msg:
+        :return:
+        """
+        # only rly useful for our terminal object
+        self.send('_T', 'HANDSHAKE', value=msg.value)
 
 
 
