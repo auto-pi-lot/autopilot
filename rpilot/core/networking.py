@@ -308,10 +308,12 @@ class Networking(multiprocessing.Process):
                 self.logger.exception('ERROR: No function could be found for msg id {} with key: {}'.format(msg.id, msg.key))
 
             # send a return message that confirms even if we except
-            if send_type == 'router':
-                self.send(msg.sender, 'CONFIRM', msg.id)
-            elif send_type == 'dealer':
-                self.push(msg.sender, 'CONFIRM', msg.id)
+            # don't confirm confirmations
+            if msg.key != "CONFIRM":
+                if send_type == 'router':
+                    self.send(msg.sender, 'CONFIRM', msg.id)
+                elif send_type == 'dealer':
+                    self.push(msg.sender, 'CONFIRM', msg.id)
             return
 
         # otherwise, if it's to someone we know about, send it there
@@ -727,7 +729,8 @@ class Net_Node(object):
             self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
 
         # send receipt that we received it
-        self.send(msg.sender, 'CONFIRM', msg.id)
+        if msg.key != 'CONFIRM':
+            self.send(msg.sender, 'CONFIRM', msg.id)
 
     def send(self, to=None, key=None, value=None, msg=None, repeat=False):
         """
