@@ -335,6 +335,14 @@ class Networking(multiprocessing.Process):
             listen_thread = threading.Thread(target=listen_funk, args=(msg,))
             listen_thread.start()
 
+        # since we return if it's to us before, confirm is repeated down here.
+        # FIXME: Inelegant
+        if msg.key != "CONFIRM":
+            if send_type == 'router':
+                self.send(msg.sender, 'CONFIRM', msg.id)
+            elif send_type == 'dealer':
+                self.push(msg.sender, 'CONFIRM', msg.id)
+
 
 
 
