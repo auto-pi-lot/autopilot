@@ -157,7 +157,7 @@ class Networking(multiprocessing.Process):
         self.listener.send_multipart([bytes(msg.to), msg_enc])
         self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
 
-        if not repeat:
+        if not repeat and not msg.key == "CONFIRM":
             # add to outbox and spawn timer to resend
             self.outbox[msg.id] = msg
             self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,'send'))
@@ -768,7 +768,7 @@ class Net_Node(object):
         if self.logger:
             self.logger.info("MESSAGE SENT - {}".format(str(msg)))
 
-        if not repeat:
+        if not repeat and not msg.key == "CONFIRM":
             # add to outbox and spawn timer to resend
             self.outbox[msg.id] = msg
             self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,))
