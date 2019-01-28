@@ -221,11 +221,12 @@ class Networking(multiprocessing.Process):
         self.outbox[msg_id].ttl -= 1
 
         # Send the message again
-        self.logger.info('REPUBLISH {} - \n{}'.format(msg_id,str(self.outbox[msg_id])))
+        msg = self.outbox[msg_id]
+        self.logger.info('REPUBLISH {} - {}'.format(msg_id,str(self.outbox[msg_id])))
         if send_type == 'send':
-            self.send(msg=self.outbox[msg_id], repeat=True)
+            self.listener.send_multipart([bytes(msg.to), msg.serialize()])
         elif send_type == 'push':
-            self.push(msg=self.outbox[msg_id], repeat=True)
+            self.pusher.send_multipart([bytes(self.push_id), msg_enc])
         else:
             self.logger.exception('Republish called without proper send_type!')
 
@@ -807,7 +808,7 @@ class Net_Node(object):
         self.outbox[msg_id].ttl -= 1
 
         # Send the message again
-        self.logger.info('REPUBLISH {} - \n{}'.format(msg_id,str(self.outbox[msg_id])))
+        self.logger.info('REPUBLISH {} - {}'.format(msg_id,str(self.outbox[msg_id])))
         self.send(msg=self.outbox[msg_id], repeat=True)
 
         # If our TTL is now zero, delete the message and log its failure
@@ -847,10 +848,10 @@ class Net_Node(object):
 
         # if our name is _{something} and our upstream is {something}, replace sender with our upstream node
         # upstream node should handle all incoming information to those types of nodes
-        if self.id == "_{}".format(self.upstream):
-            msg.sender = self.upstream
-        else:
-            msg.sender = self.id
+        #if self.id == "_{}".format(self.upstream):
+        #    msg.sender = self.upstream
+        #else:
+        msg.sender = self.id
 
         msg.to = to
         msg.key = key
