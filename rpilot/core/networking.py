@@ -273,7 +273,10 @@ class Networking(multiprocessing.Process):
         elif len(msg)>=2:
             # from the router
             send_type = 'router'
-            sender = msg[-2]
+            sender = msg[-3]
+            print('sender: {}'.format(sender))
+            print(msg)
+            sys.stdout.flush()
 
             # if this is a new sender, add them to the list
             if sender not in self.senders.keys():
