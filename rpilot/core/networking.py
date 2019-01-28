@@ -224,7 +224,7 @@ class Networking(multiprocessing.Process):
         msg = self.outbox[msg_id]
         self.logger.info('REPUBLISH {} - {}'.format(msg_id,str(self.outbox[msg_id])))
         if send_type == 'send':
-            self.listener.send_multipart([bytes(msg.to), msg.serialize()])
+            self.listener.send_multipart([bytes(msg.sender), msg.serialize()])
         elif send_type == 'push':
             self.pusher.send_multipart([bytes(self.push_id), msg.serialize()])
         else:
@@ -312,7 +312,7 @@ class Networking(multiprocessing.Process):
             # don't confirm confirmations
             if msg.key != "CONFIRM":
                 if send_type == 'router':
-                    self.send(msg.sender, 'CONFIRM', msg.id)
+                    self.send(sender, 'CONFIRM', msg.id)
                 elif send_type == 'dealer':
                     self.push(msg.sender, 'CONFIRM', msg.id)
             return
@@ -340,7 +340,7 @@ class Networking(multiprocessing.Process):
         # FIXME: Inelegant
         if msg.key != "CONFIRM":
             if send_type == 'router':
-                self.send(msg.sender, 'CONFIRM', msg.id)
+                self.send(sender, 'CONFIRM', msg.id)
             elif send_type == 'dealer':
                 self.push(msg.sender, 'CONFIRM', msg.id)
 
@@ -806,17 +806,19 @@ class Net_Node(object):
 
         # decrement ttl
         self.outbox[msg_id].ttl -= 1
+        # If our TTL is now zero, delete the message and log its failure
+        if int(self.outbox[msg_id].ttl) <= 0:
+            self.logger.warning('PUBLISH FAILED {} - {}'.format(msg_id, str(self.outbox[msg_id])))
+            del self.outbox[msg_id]
+            return
+
 
         # Send the message again
         self.logger.info('REPUBLISH {} - {}'.format(msg_id,str(self.outbox[msg_id])))
         msg = self.outbox[msg_id]
         self.sock.send_multipart([bytes(self.upstream), msg.serialize()])
 
-        # If our TTL is now zero, delete the message and log its failure
-        if int(self.outbox[msg_id].ttl) <= 0:
-            self.logger.warning('PUBLISH FAILED {} - {}'.format(msg_id, str(self.outbox[msg_id])))
-            del self.outbox[msg_id]
-            return
+
 
         # Spawn a thread to check in on our message
         self.timers[msg_id] = threading.Timer(5.0, self.repeat, args=(msg_id,))
