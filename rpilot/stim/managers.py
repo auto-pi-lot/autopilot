@@ -195,7 +195,7 @@ class Bias_Correction(object):
         # if we are above threshold, return the bias
         bias = np.mean(self.responses)-np.mean(self.targets)
         if np.abs(bias)>self.threshold:
-            return 1.0-bias
+            return 0.5-bias
         else:
             return 0.5
 

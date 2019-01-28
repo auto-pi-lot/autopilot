@@ -123,8 +123,8 @@ class Nafc(Task):
     }
 
     def __init__(self, stage_block=None, stim=None, reward=50, req_reward=False,
-                 punish_stim=False, punish_dur=100, correction=True, correction_pct=50.,
-                 bias_mode="None", bias_threshold=20, timeout=10000, current_trial=0, **kwargs):
+                 punish_stim=False, punish_dur=100, correction=False, correction_pct=50.,
+                 bias_mode=False, bias_threshold=20, timeout=10000, current_trial=0, **kwargs):
         # Rewards, punish time, etc. in ms.
         # pct_correction is the % of trials that are correction trials
         # bias_correct is 1 or 0 whether you'd like bias correction enabled: eg. if mice are 65% biased towards one side,
@@ -157,7 +157,7 @@ class Nafc(Task):
         self.punish_dur     = float(punish_dur)
         self.correction     = bool(correction)
         self.correction_pct = float(correction_pct)/100
-        self.bias_mode      = str(bias_mode)
+        self.bias_mode      = bias_mode
         self.bias_threshold = float(bias_threshold)/100
         self.timeout        = int(timeout)
 
@@ -201,7 +201,7 @@ class Nafc(Task):
         if self.correction:
             self.stim_manager.do_correction(self.correction_pct)
 
-        if bias_mode != "None":
+        if bias_mode:
             self.stim_manager.do_bias(mode=self.bias_mode,
                                       thresh=self.bias_threshold)
 
