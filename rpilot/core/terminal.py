@@ -68,8 +68,7 @@ class Terminal(QtGui.QMainWindow):
         self.listens = {
             'STATE': self.l_state, # A Pi has changed state
             'PING' : self.l_ping,  # Someone wants to know if we're alive
-            'DATA' : self.l_data,   # data 4 us!
-            'ALIVE': self.l_alive,  # pi is responding to our ping, or telling us its info
+            'DATA' : self.l_data,
             'HANDSHAKE': self.l_handshake # a pi is making first contact, telling us its IP
         }
 

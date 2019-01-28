@@ -134,7 +134,7 @@ class Networking(multiprocessing.Process):
             msg:
         """
 
-        if not msg or all([to, key]):
+        if not msg and not all([to, key]):
             self.logger.exception('Need either a message or \'to\' and \'key\' fields.\
                 Got\nto: {}\nkey: {}\nvalue: {}\nmsg: {}'.format(to, key, value, msg))
             return
@@ -159,7 +159,7 @@ class Networking(multiprocessing.Process):
 
         # add to outbox and spawn timer to resend
         self.outbox[msg.id] = msg
-        self.timers[msg.id] = threading.Timer(5.0, target=self.repeat, args=(msg.id,'send'))
+        self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,'send'))
         self.timers[msg.id].start()
 
     def push(self,  to=None, key = None, value = None, msg=None):
@@ -175,7 +175,7 @@ class Networking(multiprocessing.Process):
         # we still include 'to' in case we are sending further upstream
         # but can push without 'to', just fill in with upstream id
 
-        if not msg or key:
+        if not msg and not key:
             self.logger.exception('Need either a message or a \'key\' field.\
                 Got\nto: {}\nkey: {}\nvalue: {}\nmsg: {}'.format(to, key, value, msg))
 
@@ -201,6 +201,11 @@ class Networking(multiprocessing.Process):
         self.pusher.send_multipart([bytes(self.push_id), msg_enc])
 
         self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
+
+        # add to outbox and spawn timer to resend
+        self.outbox[msg.id] = msg
+        self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id, 'push'))
+        self.timers[msg.id].start()
 
     def repeat(self, msg_id, send_type):
         # Handle repeated messages
@@ -230,7 +235,7 @@ class Networking(multiprocessing.Process):
 
 
         # Spawn a thread to check in on our message
-        self.timers[msg_id] = threading.Timer(5.0, target=self.repeat, args=(msg_id, send_type))
+        self.timers[msg_id] = threading.Timer(5.0, self.repeat, args=(msg_id, send_type))
         self.timers[msg_id].start()
 
     def l_confirm(self, msg):
@@ -760,7 +765,7 @@ class Net_Node(object):
 
         # add to outbox and spawn timer to resend
         self.outbox[msg.id] = msg
-        self.timers[msg.id] = threading.Timer(5.0, target=self.repeat, args=(msg.id,))
+        self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,))
         self.timers[msg.id].start()
 
     def repeat(self, msg_id):
@@ -785,7 +790,7 @@ class Net_Node(object):
             return
 
         # Spawn a thread to check in on our message
-        self.timers[msg_id] = threading.Timer(5.0, target=self.repeat, args=(msg_id, send_type))
+        self.timers[msg_id] = threading.Timer(5.0, self.repeat, args=(msg_id, send_type))
         self.timers[msg_id].start()
 
     def l_confirm(self, msg):
