@@ -203,7 +203,7 @@ class Networking(multiprocessing.Process):
 
         self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
 
-        if not repeat:
+        if not repeat and not msg.key == 'CONFIRM':
             # add to outbox and spawn timer to resend
             self.outbox[msg.id] = msg
             self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id, 'push'))
@@ -220,6 +220,12 @@ class Networking(multiprocessing.Process):
         # decrement ttl
         self.outbox[msg_id].ttl -= 1
 
+        # If our TTL is now zero, delete the message and log its failure
+        if int(self.outbox[msg_id].ttl) <= 0:
+            self.logger.warning('PUBLISH FAILED {} - {}'.format(msg_id, str(self.outbox[msg_id])))
+            del self.outbox[msg_id]
+            return
+
         # Send the message again
         msg = self.outbox[msg_id]
         self.logger.info('REPUBLISH {} - {}'.format(msg_id,str(self.outbox[msg_id])))
@@ -229,12 +235,6 @@ class Networking(multiprocessing.Process):
             self.pusher.send_multipart([bytes(self.push_id), msg.serialize()])
         else:
             self.logger.exception('Republish called without proper send_type!')
-
-        # If our TTL is now zero, delete the message and log its failure
-        if int(self.outbox[msg_id].ttl) <= 0:
-            self.logger.warning('PUBLISH FAILED {} - {}'.format(msg_id, str(self.outbox[msg_id])))
-            del self.outbox[msg_id]
-            return
 
 
         # Spawn a thread to check in on our message
@@ -274,9 +274,6 @@ class Networking(multiprocessing.Process):
             # from the router
             send_type = 'router'
             sender = msg[-3]
-            print('sender: {}'.format(sender))
-            print(msg)
-            sys.stdout.flush()
 
             # if this is a new sender, add them to the list
             if sender not in self.senders.keys():
@@ -742,18 +739,29 @@ class Net_Node(object):
         if self.logger:
             self.logger.info('{} - RECEIVED: {}'.format(self.id, str(msg)))
 
-        # Log and spawn thread to respond to listen
-        try:
-            listen_funk = self.listens[msg.key]
-            print(listen_funk)
-            sys.stdout.flush()
-            listen_thread = threading.Thread(target=listen_funk, args=(msg.value,))
-            listen_thread.start()
-        except KeyError:
-            self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
+        if msg.key == 'CONFIRM':
+            if msg.value in self.outbox.keys():
+                del self.outbox[msg.value]
 
-        # send receipt that we received it
-        if msg.key != 'CONFIRM':
+            # stop a timer thread if we have it
+            if msg.value in self.timers.keys():
+                self.timers[msg.value].cancel()
+                del self.timers[msg.value]
+
+            self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
+        else:
+            # Log and spawn thread to respond to listen
+            try:
+                listen_funk = self.listens[msg.key]
+                print(listen_funk)
+                sys.stdout.flush()
+                listen_thread = threading.Thread(target=listen_funk, args=(msg.value,))
+                listen_thread.start()
+            except KeyError:
+                self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
+
+            # send confirmation
+
             self.send(msg.sender, 'CONFIRM', msg.id)
 
     def send(self, to=None, key=None, value=None, msg=None, repeat=False):
