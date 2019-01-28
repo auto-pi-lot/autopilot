@@ -740,7 +740,7 @@ class Net_Node(object):
             return
 
         if self.logger:
-            self.logger.info('{} - RECEIVED:\n{}'.format(self.id, str(msg)))
+            self.logger.info('{} - RECEIVED: {}'.format(self.id, str(msg)))
 
         # Log and spawn thread to respond to listen
         try:
@@ -827,18 +827,18 @@ class Net_Node(object):
         self.timers[msg_id] = threading.Timer(5.0, self.repeat, args=(msg_id,))
         self.timers[msg_id].start()
 
-    def l_confirm(self, msg):
+    def l_confirm(self, value):
         # delete message from outbox if we still have it
         # msg.value should contain the if of the message that was confirmed
-        if msg.value in self.outbox.keys():
-            del self.outbox[msg.value]
+        if value in self.outbox.keys():
+            del self.outbox[value]
 
         # stop a timer thread if we have it
-        if msg.value in self.timers.keys():
-            self.timers[msg.value].cancel()
-            del self.timers[msg.value]
+        if value in self.timers.keys():
+            self.timers[value].cancel()
+            del self.timers[value]
 
-        self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
+        self.logger.info('CONFIRMED MESSAGE {}'.format(value))
 
 
 
