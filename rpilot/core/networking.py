@@ -529,6 +529,8 @@ class Pilot_Networking(Networking):
         self.mouse = None # Store current mouse ID
         self.state = None # store current pi state
 
+        super(Pilot_Networking, self).__init__()
+
         self.listens.update({
             'STATE': self.m_state,  # Confirm or notify terminal of state change
             'COHERE': self.m_cohere, # Sending our temporary data table at the end of a run to compare w/ terminal's copy
@@ -539,7 +541,7 @@ class Pilot_Networking(Networking):
             'FILE': self.l_file,  # We are receiving a file
         })
 
-        super(Pilot_Networking, self).__init__()
+
 
 
     ###########################3
