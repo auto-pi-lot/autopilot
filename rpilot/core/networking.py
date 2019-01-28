@@ -226,7 +226,7 @@ class Networking(multiprocessing.Process):
         if send_type == 'send':
             self.listener.send_multipart([bytes(msg.to), msg.serialize()])
         elif send_type == 'push':
-            self.pusher.send_multipart([bytes(self.push_id), msg_enc])
+            self.pusher.send_multipart([bytes(self.push_id), msg.serialize()])
         else:
             self.logger.exception('Republish called without proper send_type!')
 
@@ -809,7 +809,8 @@ class Net_Node(object):
 
         # Send the message again
         self.logger.info('REPUBLISH {} - {}'.format(msg_id,str(self.outbox[msg_id])))
-        self.send(msg=self.outbox[msg_id], repeat=True)
+        msg = self.outbox[msg_id]
+        self.sock.send_multipart([bytes(self.upstream), msg.serialize()])
 
         # If our TTL is now zero, delete the message and log its failure
         if int(self.outbox[msg_id].ttl) <= 0:
