@@ -62,13 +62,13 @@ class Plot_Widget(QtGui.QWidget):
 
         # Plot Selection Buttons
         # TODO: Each plot bar should have an option panel, because different tasks have different plots
-        self.plot_select = self.create_plot_buttons()
+        #self.plot_select = self.create_plot_buttons()
 
         # Create empty plot container
         self.plot_layout = QtGui.QVBoxLayout()
 
         # Assemble buttons and plots
-        self.layout.addWidget(self.plot_select)
+        #self.layout.addWidget(self.plot_select)
         self.layout.addLayout(self.plot_layout)
 
         self.setLayout(self.layout)
@@ -88,44 +88,44 @@ class Plot_Widget(QtGui.QWidget):
             self.plot_layout.addWidget(plot)
             self.plot_layout.addWidget(HLine())
             self.plots[p] = plot
-
-    def create_plot_buttons(self):
-        groupbox = QtGui.QGroupBox()
-        groupbox.setFlat(False)
-        groupbox.setFixedHeight(40)
-        groupbox.setContentsMargins(0,0,0,0)
-        #groupbox.setAlignment(QtCore.Qt.AlignBottom)
-
-        # TODO: Actually make these hooked up to something...
-        check1 = QtGui.QCheckBox("Targets")
-        check1.setChecked(True)
-        check2 = QtGui.QCheckBox("Responses")
-        check2.setChecked(True)
-        check3 = QtGui.QCheckBox("Rolling Accuracy")
-        check4 = QtGui.QCheckBox("Bias")
-        winsize = QtGui.QLineEdit("50")
-        winsize.setFixedWidth(50)
-        winsize_lab = QtGui.QLabel("Window Size")
-        n_trials = QtGui.QLineEdit("50")
-        n_trials.setFixedWidth(50)
-        n_trials_lab = QtGui.QLabel("N Trials")
-
-        hbox = QtGui.QHBoxLayout()
-        hbox.setContentsMargins(0,0,0,0)
-        hbox.addWidget(check1)
-        hbox.addWidget(check2)
-        hbox.addWidget(check3)
-        hbox.addWidget(check4)
-        hbox.addWidget(winsize)
-        hbox.addWidget(winsize_lab)
-        hbox.addStretch(1)
-        hbox.addWidget(n_trials_lab)
-        hbox.addWidget(n_trials)
-        #hbox.setAlignment(QtCore.Qt.AlignBottom)
-
-        groupbox.setLayout(hbox)
-
-        return groupbox
+    #
+    # def create_plot_buttons(self):
+    #     groupbox = QtGui.QGroupBox()
+    #     groupbox.setFlat(False)
+    #     groupbox.setFixedHeight(40)
+    #     groupbox.setContentsMargins(0,0,0,0)
+    #     #groupbox.setAlignment(QtCore.Qt.AlignBottom)
+    #
+    #     # TODO: Actually make these hooked up to something...
+    #     check1 = QtGui.QCheckBox("Targets")
+    #     check1.setChecked(True)
+    #     check2 = QtGui.QCheckBox("Responses")
+    #     check2.setChecked(True)
+    #     check3 = QtGui.QCheckBox("Rolling Accuracy")
+    #     check4 = QtGui.QCheckBox("Bias")
+    #     winsize = QtGui.QLineEdit("50")
+    #     winsize.setFixedWidth(50)
+    #     winsize_lab = QtGui.QLabel("Window Size")
+    #     n_trials = QtGui.QLineEdit("50")
+    #     n_trials.setFixedWidth(50)
+    #     n_trials_lab = QtGui.QLabel("N Trials")
+    #
+    #     hbox = QtGui.QHBoxLayout()
+    #     hbox.setContentsMargins(0,0,0,0)
+    #     hbox.addWidget(check1)
+    #     hbox.addWidget(check2)
+    #     hbox.addWidget(check3)
+    #     hbox.addWidget(check4)
+    #     hbox.addWidget(winsize)
+    #     hbox.addWidget(winsize_lab)
+    #     hbox.addStretch(1)
+    #     hbox.addWidget(n_trials_lab)
+    #     hbox.addWidget(n_trials)
+    #     #hbox.setAlignment(QtCore.Qt.AlignBottom)
+    #
+    #     groupbox.setLayout(hbox)
+    #
+    #     return groupbox
 
 
 class Plot(QtGui.QWidget):

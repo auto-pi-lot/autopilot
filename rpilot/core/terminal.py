@@ -171,9 +171,9 @@ class Terminal(QtGui.QMainWindow):
         self.logo.setAlignment(QtCore.Qt.AlignLeft)
 
         # Combine all in main layout
-        self.layout.addWidget(self.logo, 0,0,1,1)
+        self.layout.addWidget(self.logo, 0,0,1,2)
         self.layout.addWidget(self.control_panel, 1,0,1,1)
-        self.layout.addWidget(self.data_panel, 0,1,2,1)
+        self.layout.addWidget(self.data_panel, 1,1,1,1)
         self.layout.setColumnStretch(0, 2)
         self.layout.setColumnStretch(1, 10)
 
