@@ -745,6 +745,8 @@ class Net_Node(object):
         # Log and spawn thread to respond to listen
         try:
             listen_funk = self.listens[msg.key]
+            print(listen_funk)
+            sys.stdout.flush()
             listen_thread = threading.Thread(target=listen_funk, args=(msg.value,))
             listen_thread.start()
         except KeyError:
@@ -828,6 +830,8 @@ class Net_Node(object):
         self.timers[msg_id].start()
 
     def l_confirm(self, value):
+        print('value: {}'.format(value))
+        sys.stdout.flush()
         # delete message from outbox if we still have it
         # msg.value should contain the if of the message that was confirmed
         if value in self.outbox.keys():
