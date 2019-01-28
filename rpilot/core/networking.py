@@ -75,8 +75,6 @@ class Networking(multiprocessing.Process):
             'CONFIRM': self.l_confirm
         }
 
-
-
     def run(self):
         # init zmq objects
         self.context = zmq.Context()
@@ -157,6 +155,7 @@ class Networking(multiprocessing.Process):
             return
 
         self.listener.send_multipart([bytes(msg.to), msg_enc])
+        self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
 
         # add to outbox and spawn timer to resend
         self.outbox[msg.id] = msg
@@ -297,11 +296,14 @@ class Networking(multiprocessing.Process):
             listen_funk = self.listens[msg.key]
             listen_thread = threading.Thread(target=listen_funk, args=(msg,))
             listen_thread.start()
+
+            # send a return message that confirms
             if send_type == 'router':
                 self.send(msg.sender, 'CONFIRM', msg.id)
             elif send_type == 'dealer':
                 self.push(msg.sender, 'CONFIRM', msg.id)
             return
+
         # otherwise, if it's to someone we know about, send it there
         elif msg.to in self.senders.keys():
             self.send(msg=msg)
@@ -614,9 +616,12 @@ class Net_Node(object):
     upstream = None # ID of router we connect to
     port = None
     listens = {}
+    outbox = {}
+    timers = {}
     connected = False
     logger = None
     "pop in networking object, has to set behind some external-facing networking object"
+
     def __init__(self, id, upstream, port, listens, instance=True):
         """
         Args:
@@ -637,11 +642,12 @@ class Net_Node(object):
         self.listens = {
             'CONFIRM': self.l_confirm
         }
+        # then add the rest
+        self.listens.update(listens)
 
         self.id = id.encode('utf-8')
         self.upstream = upstream.encode('utf-8')
         self.port = int(port)
-        self.listens = listens
 
         self.connected = False
         self.msg_counter = count()
@@ -687,8 +693,7 @@ class Net_Node(object):
             msg:
         """
         # messages from dealers are single frames because we only have one connected partner
-        print(msg)
-        sys.stdout.flush()
+        # and that's the dealer spec lol
 
         msg = json.loads(msg[0])
 
@@ -711,7 +716,10 @@ class Net_Node(object):
         except KeyError:
             self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
 
-    def send(self, to=None, key=None, value=None):
+        # send receipt that we received it
+        self.send(msg.sender, 'CONFIRM', msg.id)
+
+    def send(self, to=None, key=None, value=None, msg=None):
         """
         Args:
             to:
@@ -725,12 +733,13 @@ class Net_Node(object):
         if to is None:
             to = self.upstream
 
-        if key is None:
+        if (key is None) and (msg is None):
             if self.logger:
                 self.logger.error('Push sent without Key')
             return
 
-        msg = self.prepare_message(to, key, value)
+        if not msg:
+            msg = self.prepare_message(to, key, value)
 
         # Make sure our message has everything
         if not msg.validate():
@@ -748,6 +757,52 @@ class Net_Node(object):
         self.sock.send_multipart([bytes(self.upstream), msg_enc])
         if self.logger:
             self.logger.info("MESSAGE SENT - {}".format(str(msg)))
+
+        # add to outbox and spawn timer to resend
+        self.outbox[msg.id] = msg
+        self.timers[msg.id] = threading.Timer(5.0, target=self.repeat, args=(msg.id,))
+        self.timers[msg.id].start()
+
+    def repeat(self, msg_id):
+        # Handle repeated messages
+        # If we still have the message in our outbox...
+        if msg_id not in self.outbox.keys():
+            # TODO: Do we really need this warning? this should be normal behavior...
+            self.logger.warning('Republish called for message {}, but missing message'.format(msg_id))
+            return
+
+        # decrement ttl
+        self.outbox[msg_id].ttl -= 1
+
+        # Send the message again
+        self.logger.info('REPUBLISH {} - \n{}'.format(msg_id,str(self.outbox[msg_id])))
+        self.send(msg=self.outbox[msg_id])
+
+        # If our TTL is now zero, delete the message and log its failure
+        if int(self.outbox[msg_id].ttl) <= 0:
+            self.logger.warning('PUBLISH FAILED {} - {}'.format(msg_id, str(self.outbox[msg_id])))
+            del self.outbox[msg_id]
+            return
+
+        # Spawn a thread to check in on our message
+        self.timers[msg_id] = threading.Timer(5.0, target=self.repeat, args=(msg_id, send_type))
+        self.timers[msg_id].start()
+
+    def l_confirm(self, msg):
+        # delete message from outbox if we still have it
+        # msg.value should contain the if of the message that was confirmed
+        if msg.value in self.outbox.keys():
+            del self.outbox[msg.value]
+
+        # stop a timer thread if we have it
+        if msg.value in self.timers.keys():
+            self.timers[msg.value].cancel()
+            del self.timers[msg.value]
+
+        self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
+
+
+
 
     def prepare_message(self, to, key, value):
         """
