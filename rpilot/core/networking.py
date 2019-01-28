@@ -122,7 +122,7 @@ class Networking(multiprocessing.Process):
         return msg
 
 
-    def send(self, to=None, key=None, value=None, msg=None):
+    def send(self, to=None, key=None, value=None, msg=None, repeat=False):
         """
         send message via the router
         don't need to thread this because router sends are nonblocking
@@ -157,12 +157,13 @@ class Networking(multiprocessing.Process):
         self.listener.send_multipart([bytes(msg.to), msg_enc])
         self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
 
-        # add to outbox and spawn timer to resend
-        self.outbox[msg.id] = msg
-        self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,'send'))
-        self.timers[msg.id].start()
+        if not repeat:
+            # add to outbox and spawn timer to resend
+            self.outbox[msg.id] = msg
+            self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,'send'))
+            self.timers[msg.id].start()
 
-    def push(self,  to=None, key = None, value = None, msg=None):
+    def push(self,  to=None, key = None, value = None, msg=None, repeat=False):
         """
         Args:
             to:
@@ -202,10 +203,11 @@ class Networking(multiprocessing.Process):
 
         self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
 
-        # add to outbox and spawn timer to resend
-        self.outbox[msg.id] = msg
-        self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id, 'push'))
-        self.timers[msg.id].start()
+        if not repeat:
+            # add to outbox and spawn timer to resend
+            self.outbox[msg.id] = msg
+            self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id, 'push'))
+            self.timers[msg.id].start()
 
     def repeat(self, msg_id, send_type):
         # Handle repeated messages
@@ -221,9 +223,9 @@ class Networking(multiprocessing.Process):
         # Send the message again
         self.logger.info('REPUBLISH {} - \n{}'.format(msg_id,str(self.outbox[msg_id])))
         if send_type == 'send':
-            self.send(msg=self.outbox[msg_id])
+            self.send(msg=self.outbox[msg_id], repeat=True)
         elif send_type == 'push':
-            self.push(msg=self.outbox[msg_id])
+            self.push(msg=self.outbox[msg_id], repeat=True)
         else:
             self.logger.exception('Republish called without proper send_type!')
 
@@ -298,11 +300,14 @@ class Networking(multiprocessing.Process):
         # if this message is to us, just handle it and return
         if msg.to in [self.id, "_{}".format(self.id)]:
             # Log and spawn thread to respond to listen
-            listen_funk = self.listens[msg.key]
-            listen_thread = threading.Thread(target=listen_funk, args=(msg,))
-            listen_thread.start()
+            try:
+                listen_funk = self.listens[msg.key]
+                listen_thread = threading.Thread(target=listen_funk, args=(msg,))
+                listen_thread.start()
+            except KeyError:
+                self.logger.exception('ERROR: No function could be found for msg id {} with key: {}'.format(msg.id, msg.key))
 
-            # send a return message that confirms
+            # send a return message that confirms even if we except
             if send_type == 'router':
                 self.send(msg.sender, 'CONFIRM', msg.id)
             elif send_type == 'dealer':
@@ -724,7 +729,7 @@ class Net_Node(object):
         # send receipt that we received it
         self.send(msg.sender, 'CONFIRM', msg.id)
 
-    def send(self, to=None, key=None, value=None, msg=None):
+    def send(self, to=None, key=None, value=None, msg=None, repeat=False):
         """
         Args:
             to:
@@ -763,10 +768,11 @@ class Net_Node(object):
         if self.logger:
             self.logger.info("MESSAGE SENT - {}".format(str(msg)))
 
-        # add to outbox and spawn timer to resend
-        self.outbox[msg.id] = msg
-        self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,))
-        self.timers[msg.id].start()
+        if not repeat:
+            # add to outbox and spawn timer to resend
+            self.outbox[msg.id] = msg
+            self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,))
+            self.timers[msg.id].start()
 
     def repeat(self, msg_id):
         # Handle repeated messages
@@ -781,7 +787,7 @@ class Net_Node(object):
 
         # Send the message again
         self.logger.info('REPUBLISH {} - \n{}'.format(msg_id,str(self.outbox[msg_id])))
-        self.send(msg=self.outbox[msg_id])
+        self.send(msg=self.outbox[msg_id], repeat=True)
 
         # If our TTL is now zero, delete the message and log its failure
         if int(self.outbox[msg_id].ttl) <= 0:
@@ -790,7 +796,7 @@ class Net_Node(object):
             return
 
         # Spawn a thread to check in on our message
-        self.timers[msg_id] = threading.Timer(5.0, self.repeat, args=(msg_id, send_type))
+        self.timers[msg_id] = threading.Timer(5.0, self.repeat, args=(msg_id,))
         self.timers[msg_id].start()
 
     def l_confirm(self, msg):
@@ -866,20 +872,9 @@ class Message(object):
 
     def __str__(self):
         if self.key == 'FILE':
-            me_string = """
-            id     : {}
-            to     : {}
-            sender : {}
-            key    : {}
-            """.format(self.id, self.to, self.sender, self.key)
+            me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}".format(self.id, self.to, self.sender, self.key)
         else:
-            me_string = """
-            id     : {}
-            to     : {}
-            sender : {}
-            key    : {}
-            value  : {}
-            """.format(self.id, self.to, self.sender, self.key, self.value)
+            me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}; VALUE: {}".format(self.id, self.to, self.sender, self.key, self.value)
         return me_string
 
     # enable dictionary-like behavior
