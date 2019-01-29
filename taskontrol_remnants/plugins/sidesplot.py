@@ -128,11 +128,6 @@ class SidesPlot(pg.PlotWidget):
         #print minTrial, minTrial+self.nTrialsToPlot ### DEBUG
 
     def sizeHint(self):
-        """
-
-        Returns:
-
-        """
         return QtCore.QSize(self.initialSize[0],self.initialSize[1])
 
 

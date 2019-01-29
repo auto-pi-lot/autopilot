@@ -35,9 +35,6 @@ if server_type == "pyo":
     import pyo
 
     class Pyo_Sound(object):
-        """
-
-        """
         # Metaclass for pyo sound objects
         PARAMS    = None # list of strings of parameters to be defined
         type      = None # string human readable name of sound
@@ -52,9 +49,6 @@ if server_type == "pyo":
 
 
         def play(self):
-            """
-
-            """
             self.table.out()
 
         def table_wrap(self, audio, duration=None):
@@ -232,9 +226,6 @@ class Tone(BASE_CLASS):
         self.init_sound()
 
     def init_sound(self):
-        """
-
-        """
         if self.server_type == 'pyo':
             sin = pyo.Sine(self.frequency, mul=self.amplitude)
             self.table = self.table_wrap(sin)
@@ -264,9 +255,6 @@ class Noise(BASE_CLASS):
         self.init_sound()
 
     def init_sound(self):
-        """
-
-        """
         if self.server_type == 'pyo':
             noiser = pyo.Noise(mul=self.amplitude)
             self.table = self.table_wrap(noiser)
@@ -276,9 +264,6 @@ class Noise(BASE_CLASS):
             self.chunk()
 
 class File(BASE_CLASS):
-    """
-
-    """
     PARAMS = ['path', 'amplitude']
     type='File'
 
@@ -303,9 +288,6 @@ class File(BASE_CLASS):
         self.init_sound()
 
     def init_sound(self):
-        """
-
-        """
         fs, audio = wavfile.read(self.path)
         if audio.dtype in ['int16', 'int32']:
             audio = int_to_float(audio)
@@ -331,9 +313,6 @@ class File(BASE_CLASS):
 
 
 class Speech(File):
-    """
-
-    """
     type='Speech'
     PARAMS = ['path', 'amplitude', 'speaker', 'consonant', 'vowel', 'token']
     def __init__(self, path, speaker, consonant, vowel, token, amplitude=0.05, **kwargs):

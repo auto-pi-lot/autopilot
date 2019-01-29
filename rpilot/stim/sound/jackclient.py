@@ -21,9 +21,6 @@ STOP = None
 Q_LOCK = None
 
 class JackClient(mp.Process):
-    """
-
-    """
     def __init__(self, name='jack_client'):
         """
         Args:
@@ -56,9 +53,6 @@ class JackClient(mp.Process):
         globals()['STOP'] = self.stop_evt
 
     def boot_server(self):
-        """
-
-        """
         self.client = jack.Client(self.name)
         self.blocksize = self.client.blocksize
         self.fs = self.client.samplerate
@@ -75,9 +69,6 @@ class JackClient(mp.Process):
             self.client.outports[0].connect(target_ports[1])
 
     def run(self):
-        """
-
-        """
         self.boot_server()
 
         # we are just holding the process open, so wait to quit
@@ -90,16 +81,10 @@ class JackClient(mp.Process):
 
 
     def close(self):
-        """
-
-        """
         # TODO: shut down server but also reset module level variables
         pass
 
     def quit(self):
-        """
-
-        """
         self.quit_evt.set()
 
     def process(self, frames):
@@ -132,9 +117,6 @@ class JackClient(mp.Process):
 
 
 class Jack_Sound(object):
-    """
-
-    """
     # base class for jack audio sounds
     PARAMS    = None # list of strings of parameters to be defined
     type      = None # string human readable name of sound
@@ -158,9 +140,6 @@ class Jack_Sound(object):
         pass
 
     def chunk(self):
-        """
-
-        """
         # break sound into chunks
 
         sound = self.table.astype(np.float32)
@@ -182,9 +161,6 @@ class Jack_Sound(object):
             Exception('trigger must be callable')
 
     def wait_trigger(self):
-        """
-
-        """
         # wait for our duration plus a second at most.
         self.stop_evt.wait((self.duration+1000)/1000.)
         # if the sound actually stopped...
@@ -194,16 +170,10 @@ class Jack_Sound(object):
 
 
     def get_nsamples(self):
-        """
-
-        """
         # given our fs and duration, how many samples do we need?
         self.nsamples = np.ceil((self.duration/1000.)*self.fs).astype(np.int)
 
     def buffer(self):
-        """
-
-        """
         if not self.chunks:
             self.chunk()
 
@@ -215,9 +185,6 @@ class Jack_Sound(object):
             self.buffered = True
 
     def play(self):
-        """
-
-        """
         if not self.buffered:
             self.buffer()
 

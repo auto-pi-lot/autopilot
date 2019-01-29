@@ -34,9 +34,6 @@ from rpilot import prefs
 
 
 class Terminal(QtGui.QMainWindow):
-    """
-
-    """
     ## Declare attributes
 
     # networking
@@ -96,9 +93,6 @@ class Terminal(QtGui.QMainWindow):
 
     def init_logging(self):
         # type: () -> None
-        """
-
-        """
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
         log_file = os.path.join(prefs.LOGDIR, 'Terminal_Log_{}.log'.format(timestr))
 
@@ -112,9 +106,6 @@ class Terminal(QtGui.QMainWindow):
 
     def initUI(self):
         # type: () -> None
-        """
-
-        """
         # set central widget
         self.widget = QtGui.QWidget()
         self.setCentralWidget(self.widget)
@@ -194,9 +185,6 @@ class Terminal(QtGui.QMainWindow):
 
     def reset_ui(self):
         # type: () -> None
-        """
-
-        """
         self.layout = QtGui.QGridLayout()
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0,0,0,0)
@@ -210,18 +198,12 @@ class Terminal(QtGui.QMainWindow):
 
     def spawn_network(self):
         # type: () -> None
-        """
-
-        """
         # Start external communications in own process
         self.networking = Terminal_Networking(self.pilots)
         self.networking.start()
 
     def init_network(self):
         # type: () -> None
-        """
-
-        """
         # Start internal communications
         self.node = Net_Node(id="_T", upstream='T', port=prefs.MSGPORT, listens=self.listens)
 
@@ -353,8 +335,8 @@ class Terminal(QtGui.QMainWindow):
 
 
     def l_state(self, value):
-        """
-        A Pilot has changed state, keep track of it.
+        """A Pilot has changed state, keep track of it. :param value:
+
         Args:
             value:
         """
@@ -363,9 +345,8 @@ class Terminal(QtGui.QMainWindow):
 
     def l_handshake(self, value):
         """
-
         Args:
-            value (): 
+            value:
         """
         if value['pilot'] in self.pilots.keys():
             self.pilots[value['pilot']]['ip'] = value['ip']
@@ -403,9 +384,6 @@ class Terminal(QtGui.QMainWindow):
 
     def new_protocol(self):
         # type: () -> None
-        """
-
-        """
         self.new_protocol_window = Protocol_Wizard()
         self.new_protocol_window.exec_()
 
@@ -441,19 +419,11 @@ class Terminal(QtGui.QMainWindow):
                     json.dump(save_steps, pfile_open, indent=4, separators=(',', ': '), sort_keys=True)
 
     def batch_mice(self):
-        """
-
-        """
         # TODO: Implement me...
         pass
 
     def list_mice(self):
         # type: () -> List[unicode]
-        """
-
-        Returns:
-
-        """
         mice = []
         for pilot, vals in self.pilots.items():
             mice.extend(vals['mice'])
@@ -461,9 +431,6 @@ class Terminal(QtGui.QMainWindow):
 
     def mouse_weights(self):
         # type: () -> None
-        """
-
-        """
         mice = self.list_mice()
 
         # open objects if not already
@@ -482,9 +449,6 @@ class Terminal(QtGui.QMainWindow):
         self.weight_widget.show()
 
     def update_protocols(self):
-        """
-
-        """
         # If we change the protocol file, update the stored version in mouse files
 
         # get list of protocol files
@@ -508,9 +472,6 @@ class Terminal(QtGui.QMainWindow):
         msgbox.exec_()
 
     def reassign_protocols(self):
-        """
-
-        """
         # get list of protocol files
         protocols = os.listdir(prefs.PROTOCOLDIR)
         protocols = [os.path.splitext(p)[0] for p in protocols if p.endswith('.json')]

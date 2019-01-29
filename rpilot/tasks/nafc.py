@@ -227,9 +227,6 @@ class Nafc(Task):
             self.bail_trial()
 
     def mark_playing(self):
-        """
-
-        """
         self.discrim_playing = True
 
 
@@ -359,9 +356,6 @@ class Nafc(Task):
 
 
     def stim_end(self):
-        """
-
-        """
         # Called by the discrim sound's table trigger when playback is finished
         # Used in punishing leaving early
         self.discrim_playing = False
@@ -370,9 +364,6 @@ class Nafc(Task):
 
 
     def bail_trial(self):
-        """
-
-        """
         # If a timer ends or the mouse pulls out too soon, we punish and bail
         self.bailed = 1
         self.triggers = {}
@@ -380,25 +371,16 @@ class Nafc(Task):
         self.stage_block.set()
 
     def clear_triggers(self):
-        """
-
-        """
         for pin in self.pins.values():
             pin.clear_cb()
 
 
     def flash_leds(self):
-        """
-
-        """
         for k, v in self.pins['LEDS'].items():
             v.flash(self.punish_dur)
 
 
 class Gap_2AFC(Nafc):
-    """
-
-    """
     def __init__(self, **kwargs):
 
         """
@@ -409,9 +391,6 @@ class Gap_2AFC(Nafc):
 
 
     def load_sounds(self):
-        """
-
-        """
         # TODO: Definitely put this in a metaclass
 
         # Iterate through sounds and load them to memory
@@ -439,17 +418,11 @@ class Gap_2AFC(Nafc):
                 #self.sounds[k].set_trigger(self.stim_end)
 
     def blank_trigger(self):
-        """
-
-        """
         print('blank trig')
         sys.stdout.flush()
         #pass
 
     def stim_end(self):
-        """
-
-        """
         # Called by the discrim sound's table trigger when playback is finished
         # Used in punishing leaving early
 
@@ -518,9 +491,6 @@ class Gap_2AFC(Nafc):
         return data
 
     def end(self):
-        """
-
-        """
         for k, v in self.sounds.items():
             if isinstance(v, list):
                 for sound in v:

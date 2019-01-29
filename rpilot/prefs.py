@@ -44,10 +44,9 @@ def init(fn):
 def add(param, value):
     # type: (str, rpilot.core.utils.Invoker) -> None
     """
-
     Args:
-        param (str): 
-        value (rpilot.core.utils.Invoker): 
+        param (str):
+        value (rpilot.core.utils.Invoker):
     """
     globals()[param] = value
 
@@ -55,12 +54,11 @@ def add(param, value):
 def git_version(repo_dir):
     # type: (unicode) -> unicode
     """
-
     Args:
-        repo_dir (unicode): 
+        repo_dir (unicode):
 
     Returns:
-        unicode: 
+        unicode:
     """
     # Stolen from numpy's setup https://github.com/numpy/numpy/blob/master/setup.py#L70-L92
     # and linked by ryanjdillon on SO https://stackoverflow.com/a/40170206

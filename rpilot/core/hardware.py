@@ -48,9 +48,6 @@ class Hardware(object):
 
 # TODO: Subclass nosepoke that knows about waiting for mouse leaving
 class Beambreak(Hardware):
-    """
-
-    """
     trigger=True
     # IR Beambreak sensor
     def __init__(self, pin, pull_ud='U', trigger_ud='D', event=None):
@@ -97,9 +94,6 @@ class Beambreak(Hardware):
         self.pig.stop()
 
     def release(self):
-        """
-
-        """
         self.pig.stop()
 
     def assign_cb(self, callback_fn, add=False, evented=False, manual_trigger=None):
@@ -131,9 +125,6 @@ class Beambreak(Hardware):
         self.callbacks.append(cb)
 
     def clear_cb(self):
-        """
-
-        """
         for cb in self.callbacks:
             try:
                 cb.cancel()
@@ -144,9 +135,6 @@ class Beambreak(Hardware):
     # TODO: Add cleanup so task can be closed and another opened
 
 class LED_RGB(Hardware):
-    """
-
-    """
     def __init__(self, pins = None, r = None, g=None, b=None, common = 'anode'):
         # Can pass RGB pins as list or as kwargs "r", "g", "b"
         # Can be configured for common anode (low turns LED on) or cathode (low turns LED off)
@@ -205,9 +193,6 @@ class LED_RGB(Hardware):
         self.pig.stop()
 
     def release(self):
-        """
-
-        """
         self.set_color(col=[0,0,0])
         self.pig.stop()
 
@@ -314,9 +299,6 @@ class LED_RGB(Hardware):
         self.set_color(stored=True)
 
 class Solenoid(Hardware):
-    """
-
-    """
     # Solenoid valves for water delivery
     def __init__(self, pin, duration=100):
         # Initialize connection to pigpio daemon
@@ -345,9 +327,6 @@ class Solenoid(Hardware):
         self.pig.stop()
 
     def release(self):
-        """
-
-        """
         self.pig.stop()
 
     def make_wave(self, duration=None):
@@ -391,9 +370,6 @@ class Solenoid(Hardware):
         self.pig.write(self.pin, 0)
 
 class Scale(Hardware):
-    """
-
-    """
     MODEL={
         'stamps.com':{
             'vendor_id':0x1446,
@@ -423,9 +399,6 @@ class Scale(Hardware):
         self.device.set_configuration()
 
 class Pull(Hardware):
-    """
-
-    """
     input = False
     # Pull a pin up or down
     def __init__(self, pin, pud=1):
@@ -451,9 +424,6 @@ class Pull(Hardware):
         self.pig.stop()
 
     def release(self):
-        """
-
-        """
         self.pig.stop()
 
 

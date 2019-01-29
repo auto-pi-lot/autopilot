@@ -27,9 +27,6 @@ if hasattr(prefs, "AUDIOSERVER"):
 
 
 class Task(object):
-    """
-
-    """
     # dictionary of Params needed to define task,
     # these should correspond to argument names for the task
     PARAMS = odict()
@@ -71,9 +68,6 @@ class Task(object):
 
 
     def init_hardware(self):
-        """
-
-        """
         # We use the HARDWARE dict that specifies what we need to run the task
         # alongside the PINS subdict in the prefs structure to tell us how they're plugged in to the pi
         self.pins = {}
@@ -121,9 +115,6 @@ class Task(object):
                 Exception('No port found named {}'.format(port))
 
     def init_sound(self):
-        """
-
-        """
         pass
 
     def handle_trigger(self, pin, level, tick):
@@ -173,9 +164,6 @@ class Task(object):
         self.stage_block.set()
 
     def punish(self):
-        """
-
-        """
         # TODO: If we're not in the last stage (eg. we were timed out after stim presentation), reset stages
         self.punish_block.clear()
 
@@ -202,9 +190,6 @@ class Task(object):
                 v.set_color([0,0,0])
 
     def end(self):
-        """
-
-        """
         for k, v in self.pins.items():
             for pin, obj in v.items():
                 obj.release()

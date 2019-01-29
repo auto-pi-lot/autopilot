@@ -5,9 +5,6 @@ from itertools import count
 
 
 class Accuracy(object):
-    """
-
-    """
     # TODO: Get the corrects that we need
     PARAMS = ['threshold', 'window']
     COLS = ['correct']

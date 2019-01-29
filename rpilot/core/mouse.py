@@ -351,9 +351,6 @@ class Mouse:
         self.update_history('protocol', protocol_name, self.current)
 
     def flush_current(self):
-        """
-
-        """
         # Flush the 'current' attribute in the mouse object to the .h5
         # makes sure the stored .json representation of the current task stays up to date
         # with the params set in the mouse object
@@ -366,9 +363,6 @@ class Mouse:
         _ = self.close_hdf(h5f)
 
     def stash_current(self):
-        """
-
-        """
         # Save the current protocol in the history group and delete the node
         # Typically this should only be called when assigning a new protocol but what do I know
 
@@ -394,9 +388,8 @@ class Mouse:
     def prepare_run(self):
         # type: () -> Dict[unicode, bool]
         """
-
         Returns:
-            Dict[unicode, bool]: 
+            Dict[unicode, bool]:
         """
         #trial_table = None
         cont_table = None
@@ -557,9 +550,6 @@ class Mouse:
         self.data_queue.put(data)
 
     def stop_run(self):
-        """
-
-        """
         self.data_queue.put('END')
         self.thread.join(5)
         self.running = False
@@ -607,11 +597,6 @@ class Mouse:
 
 
     def get_step_history(self):
-        """
-
-        Returns:
-
-        """
         h5f = self.open_hdf()
         history = h5f.root.history.history
         # return a dataframe of step number, datetime and step name
@@ -671,11 +656,6 @@ class Mouse:
 
 
     def graduate(self):
-        """
-
-        Returns:
-
-        """
         if len(self.current)<=self.step+1:
             Warning('Tried to graduate from the last step!\n Task has {} steps and we are on {}'.format(len(self.current), self.step+1))
             return

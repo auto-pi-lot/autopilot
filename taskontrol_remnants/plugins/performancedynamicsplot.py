@@ -175,11 +175,6 @@ class PerformanceDynamicsPlot(pg.PlotWidget):
         '''
 
     def sizeHint(self):
-        """
-
-        Returns:
-
-        """
         return QtCore.QSize(self.initialSize[0],self.initialSize[1])
 
 

@@ -48,9 +48,6 @@ def pyo_server(debug=False):
 
 
 class Pyo_Sound(object):
-    """
-
-    """
     # Metaclass for pyo sound objects
     PARAMS    = None # list of strings of parameters to be defined
     type      = None # string human readable name of sound
@@ -65,9 +62,6 @@ class Pyo_Sound(object):
 
 
     def play(self):
-        """
-
-        """
         self.table.out()
 
     def table_wrap(self, audio, duration=None):

@@ -208,9 +208,6 @@ if __name__ == "__main__":
     layoutMain.addWidget(saveData)
     form.setLayout(layoutMain)
     def onbutton():
-        """
-
-        """
         import arraycontainer
         results = arraycontainer.Container()
         results['onevar'] = [1,2,3,4]

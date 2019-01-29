@@ -12,9 +12,6 @@ from rpilot.core import hardware
 TASK = 'Free_water'
 
 class Free_Water:
-    """
-
-    """
     # Randomly light up one of the ports, then dispense water when the mouse pokes
     # TODO: Any reason to have any number of active ports?
     # Two stages - waiting for response, and reporting the response afterwards
@@ -138,11 +135,6 @@ class Free_Water:
 
 
     def response(self):
-        """
-
-        Returns:
-
-        """
         # we just have to tell the Terminal that this trial has ended
 
         # mebs also turn the light off rl quick
@@ -191,9 +183,6 @@ class Free_Water:
         self.stage_block.set()
 
     def init_hardware(self):
-        """
-
-        """
         # We use the HARDWARE dict that specifies what we need to run the task
         # alongside the PINS subdict in the prefs structure to tell us how they're plugged in to the pi
         self.pins = {}
@@ -250,9 +239,6 @@ class Free_Water:
                 v.set_color([0,0,0])
 
     def end(self):
-        """
-
-        """
         for k, v in self.pins.items():
             for pin, obj in v.items():
                 if k == "LEDS":

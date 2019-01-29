@@ -63,9 +63,6 @@ import hardware
 ########################################
 
 class RPilot:
-    """
-
-    """
     logger = None
     log_handler = None
     log_formatter = None
@@ -133,9 +130,6 @@ class RPilot:
         # TODO Synchronize system clock w/ time from terminal.
 
     def init_logging(self):
-        """
-
-        """
         # Start Logging
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
         log_file = os.path.join(prefs.LOGDIR, 'Pilots_Log_{}.log'.format(timestr))
@@ -153,11 +147,6 @@ class RPilot:
     #################################################################
 
     def get_ip(self):
-        """
-
-        Returns:
-
-        """
         # shamelessly stolen from https://www.w3resource.com/python-exercises/python-basic-exercise-55.php
         # variables are badly named because this is just a rough unwrapping of what was a monstrous one-liner
 
@@ -171,17 +160,11 @@ class RPilot:
         return unwrap2
 
     def handshake(self):
-        """
-
-        """
         # send the terminal some information about ourselves
         hello = {'pilot':self.name, 'ip':self.ip}
         self.node.send('T', 'HANDSHAKE', value=hello)
 
     def update_state(self):
-        """
-
-        """
         self.node.send('T', 'STATE', self.state)
 
     def l_start(self, value):
@@ -253,9 +236,6 @@ class RPilot:
     #################################################################
 
     def init_audio(self):
-        """
-
-        """
         if prefs.AUDIOSERVER == 'pyo':
             self.server = pyoserver.pyo_server()
             self.logger.info("pyo server started")
@@ -264,11 +244,6 @@ class RPilot:
             self.server.start()
 
     def blank_LEDs(self):
-        """
-
-        Returns:
-
-        """
         # TODO: For some reason this dont work
         if 'LEDS' not in prefs.PINS.keys():
             return
@@ -283,11 +258,6 @@ class RPilot:
     # Trial Running and Management
     #################################################################
     def open_file(self):
-        """
-
-        Returns:
-
-        """
         # Setup a table to store data locally
         # Get data table descriptor
         table_descriptor = self.task.TrialData
@@ -317,9 +287,6 @@ class RPilot:
         return h5f, table, row
 
     def run_task(self):
-        """
-
-        """
         # TODO: give a net node to the Task class and let the task run itself.
         # Run as a separate thread, just keeps calling next() and shoveling data
 

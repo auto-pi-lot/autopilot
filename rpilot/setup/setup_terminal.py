@@ -6,9 +6,6 @@ import os
 
 class TerminalSetupForm(nps.SplitForm):
     def create(self):
-        """
-
-        """
         self.input = odict({
             'BASEDIR': self.add(nps.TitleText, name="Base Directory:", value="/usr/rpilot"),
             'MSGPORT': self.add(nps.TitleText, name="Message Port - Our router port:", value="5560"),
@@ -18,16 +15,10 @@ class TerminalSetupForm(nps.SplitForm):
 
     # after we're done editing, close the input program
     def afterEditing(self):
-        """
-
-        """
         self.parentApp.setNextForm(None)
 
 class SetupApp(nps.NPSAppManaged):
     def onStart(self):
-        """
-
-        """
         self.form = self.addForm('MAIN', TerminalSetupForm, name='Setup Terminal')
 
 def unfold_values(v):

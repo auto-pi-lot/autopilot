@@ -53,17 +53,9 @@ class EventsPlot(pg.PlotWidget):
         self.setLabel('bottom', 'Time', units='s')
 
     def sizeHint(self):
-        """
-
-        Returns:
-
-        """
         return QtCore.QSize(self.initialSize[0],self.initialSize[1])
 
     def center_in_screen(self):
-        """
-
-        """
         qr = self.frameGeometry()
         cp = QtGui.QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)

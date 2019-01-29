@@ -106,9 +106,6 @@ class OutputButton(QtGui.QPushButton):
         self.soundObjList = create_sound(soundParams)
 
     def toggleOutput(self):
-        """
-
-        """
         if self.isChecked():
             self.start()
         else:
@@ -130,9 +127,6 @@ class OutputButton(QtGui.QPushButton):
         self.stop_sound()
         
     def play_sound(self):
-        """
-
-        """
         #self.soundObj = pyo.Sine(freq=soundfreq,mul=0.02).mix(2).out()
         #self.soundObj.setMul(0.01) 
         for soundObj in self.soundObjList:
@@ -148,16 +142,10 @@ class OutputButton(QtGui.QPushButton):
             soundObj.setMul(amplitude)
 
     def stop_sound(self):
-        """
-
-        """
         for soundObj in self.soundObjList:
             soundObj.stop()
 
 class AmplitudeControl(QtGui.QDoubleSpinBox):
-    """
-
-    """
     def __init__(self,soundButton,parent=None):
         """
         Args:
@@ -179,9 +167,6 @@ class AmplitudeControl(QtGui.QDoubleSpinBox):
         self.soundButton.change_amplitude(value)
 
 class SoundControl(QtGui.QGroupBox):
-    """
-
-    """
     def __init__(self, soundServer, channel=0, channelName='left', parent=None):
         """
         Args:
@@ -218,25 +203,14 @@ class SoundControl(QtGui.QGroupBox):
         self.setTitle('Speaker '+channelName)
     
     def play_all(self):
-        """
-
-        """
         for oneButton in self.outputButtons:
             oneButton.start()
 
     def stop_all(self):
-        """
-
-        """
         for oneButton in self.outputButtons:
             oneButton.stop()
 
     def amplitude_array(self):
-        """
-
-        Returns:
-
-        """
         amplitudeEach = np.empty(len(self.amplitudeControl))
         for indf,oneAmplitude in enumerate(self.amplitudeControl):
             amplitudeEach[indf] = oneAmplitude.value()
@@ -258,16 +232,10 @@ class LoadButton(QtGui.QPushButton):
         self.calData = None # Object to contain loaded data
         self.clicked.connect(self.load_data)
     def load_data(self):
-        """
-
-        """
         fname,ffilter = QtGui.QFileDialog.getOpenFileName(self,'Open calibration file',DATADIR,'*.h5')
         self.calData = Calibration(fname)
         self.update_values()
     def update_values(self):
-        """
-
-        """
         nChannels = 2 # XFIXME: hardcoded
         for indch in range(nChannels):
             for indf in range(len(self.soundControlArray[indch].outputButtons)):
@@ -281,9 +249,6 @@ class LoadButton(QtGui.QPushButton):
                 oneOutputButton.change_amplitude(thisAmp[indch])
 
 class PlotButton(QtGui.QPushButton):
-    """
-
-    """
     def __init__(self, soundControlArray, parent=None):
         """
         Args:
@@ -294,9 +259,6 @@ class PlotButton(QtGui.QPushButton):
         self.soundControlArray = soundControlArray       
         self.clicked.connect(self.plot_data)
     def plot_data(self):
-        """
-
-        """
         frequencies = self.soundControlArray[0].soundFreqs
         amplitudeData = []
         for soundControl in self.soundControlArray:
@@ -309,9 +271,6 @@ class PlotButton(QtGui.QPushButton):
         plt.show()
 
 class SaveButton(QtGui.QPushButton):
-    """
-
-    """
     logMessage = QtCore.Signal(str)
     def __init__(self, soundControlArray, parent=None):
         """
@@ -391,9 +350,6 @@ class SaveButton(QtGui.QPushButton):
         self.logMessage.emit('Saved data to {0}'.format(fname))
     
 class VerticalLine(QtGui.QFrame):
-    """
-
-    """
     def __init__(self,parent=None):
         """
         Args:
@@ -407,9 +363,6 @@ class VerticalLine(QtGui.QFrame):
      
     
 class SpeakerCalibration(QtGui.QMainWindow):
-    """
-
-    """
     def __init__(self, parent=None, paramfile=None, paramdictname=None):
         """
         Args:
@@ -499,11 +452,6 @@ class SpeakerCalibration(QtGui.QMainWindow):
             oneOutputButton.soundType = self.soundTypeList[soundTypeInd]
 
     def initialize_sound(self):
-        """
-
-        Returns:
-
-        """
         s = pyo.Server(audio='jack').boot()
         s.start()
         return s
