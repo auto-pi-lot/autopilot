@@ -514,9 +514,11 @@ class Mouse:
                         # proceed to fill the row below
                     elif len(other_row) == 1:
                         # update the row and continue so we don't double write
-                        for k, v in data.items():
-                            other_row[0][k] = v
-                        other_row[0].update()
+                        # have to be in the middle of iteration to use update()
+                        for row in trial_table.where("trial_num == {}".format(data['trial_num'])):
+                            for k, v in data.items():
+                                row[k] = v
+                            row.update()
                         continue
                     else:
                         # we have more than one row with this trial_num.
@@ -640,7 +642,10 @@ class Mouse:
         weight_table = h5f.root.history.weights
         if which == 'last':
             for column in weight_table.colnames:
-                weights[column] = weight_table.read(-1, field=column)[0]
+                try:
+                    weights[column] = weight_table.read(-1, field=column)[0]
+                except IndexError:
+                    weights[column] = None
         if include_baseline is True:
             try:
                 baseline = float(h5f.root.info._v_attrs['baseline_mass'])
@@ -652,6 +657,31 @@ class Mouse:
 
         self.close_hdf(h5f)
         return weights
+
+    def set_weight(self, date, col_name, new_value):
+        """
+
+        Args:
+            date ():
+            col_name ():
+            new_value ():
+
+        Returns:
+
+        """
+
+        h5f = self.open_hdf()
+        weight_table = h5f.root.history.weights
+        # there should only be one matching row since it includes seconds
+        for row in weight_table.where('date == b"{}"'.format(date)):
+            row[col_name] = new_value
+            row.update()
+
+
+        self.close_hdf(h5f)
+
+
+
 
 
 

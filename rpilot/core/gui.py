@@ -1560,7 +1560,7 @@ class Reassign(QtGui.QDialog):
 
 
 class Weights(QtGui.QTableWidget):
-    def __init__(self, mice_weights):
+    def __init__(self, mice_weights, mice):
         """
         Args:
             mice_weights:
@@ -1568,6 +1568,7 @@ class Weights(QtGui.QTableWidget):
         super(Weights, self).__init__()
 
         self.mice_weights = mice_weights
+        self.mice = mice # mouse objects from terminal
 
         self.colnames = odict()
         self.colnames['mouse'] = "Mouse"
@@ -1581,6 +1582,9 @@ class Weights(QtGui.QTableWidget):
 
         self.init_ui()
 
+        self.cellChanged.connect(self.set_weight)
+        self.changed_cells = [] # if we change cells, store the row, column and value so terminal can update
+
 
     def init_ui(self):
         # set shape (rows by cols
@@ -1591,25 +1595,60 @@ class Weights(QtGui.QTableWidget):
 
         for row in range(self.shape[0]):
             for j, col in enumerate(self.colnames.keys()):
-                if col == "date":
-                    format_date = datetime.datetime.strptime(self.mice_weights[row][col], '%y%m%d-%H%M%S')
-                    format_date = format_date.strftime('%b %d')
-                    item = QtGui.QTableWidgetItem(format_date)
-                elif col == "stop":
-                    stop_wt = str(self.mice_weights[row][col])
-                    minimum = float(self.mice_weights[row]['minimum_mass'])
-                    item = QtGui.QTableWidgetItem(stop_wt)
-                    if float(stop_wt) < minimum:
-                        item.setBackground(QtGui.QColor(255,0,0))
+                try:
+                    if col == "date":
+                        format_date = datetime.datetime.strptime(self.mice_weights[row][col], '%y%m%d-%H%M%S')
+                        format_date = format_date.strftime('%b %d')
+                        item = QtGui.QTableWidgetItem(format_date)
+                    elif col == "stop":
+                        stop_wt = str(self.mice_weights[row][col])
+                        minimum = float(self.mice_weights[row]['minimum_mass'])
+                        item = QtGui.QTableWidgetItem(stop_wt)
+                        if float(stop_wt) < minimum:
+                            item.setBackground(QtGui.QColor(255,0,0))
 
-                else:
+                    else:
+                        item = QtGui.QTableWidgetItem(str(self.mice_weights[row][col]))
+                except:
                     item = QtGui.QTableWidgetItem(str(self.mice_weights[row][col]))
                 self.setItem(row, j, item)
 
         # make headers
         self.setHorizontalHeaderLabels(self.colnames.values())
-
+        self.resizeColumnsToContents()
+        self.updateGeometry()
+        self.adjustSize()
         self.sortItems(0)
+
+
+    def set_weight(self, row, column):
+        """
+        Updates an internal store of changes made to mice weights.
+        Terminal updates the mouse objects when the window is closed.
+
+        Note:
+            Only the daily weight measurements can be changed this way - not mouse name, baseline weight, etc.
+
+        Args:
+            row (int): row of table
+            column (int): column of table
+
+        """
+
+        if column > 3: # if this is one of the daily weights
+            new_val = self.item(row, column).text()
+            try:
+                new_val = float(new_val)
+            except ValueError:
+                ValueError("New value must be able to be coerced to a float! input: {}".format(new_val))
+                return
+
+            # get mouse, date and column name
+            mouse_name = self.item(row, 0).text()
+            date = self.mice_weights[row]['date']
+            column_name = self.colnames.keys()[column] # recall colnames is an ordered dictionary
+            self.mice[mouse_name].set_weight(date, column_name, new_val)
+
 
 
 

@@ -445,8 +445,13 @@ class Terminal(QtGui.QMainWindow):
             weight['mouse'] = mouse
             weights.append(weight)
 
-        self.weight_widget = Weights(weights)
+        self.weight_widget = Weights(weights, self.mice)
         self.weight_widget.show()
+        #
+        # if len(self.weight_widget.changed_cells)>0:
+        #     for change in self.weight_widget.changed_cells:
+        #         # change is (mouse, date, column, new_value)
+        #         self.mice[change[0]].set_weight(change[1], change[2], change[3])
 
     def update_protocols(self):
         # If we change the protocol file, update the stored version in mouse files
