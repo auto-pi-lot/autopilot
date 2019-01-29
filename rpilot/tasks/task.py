@@ -2,7 +2,7 @@
 
 #!/usr/bin/python2.7
 
-'''
+"""
 Template handler set for a 2afc paradigm.
 Want a bundled set of functions so the RPilot can make the task from relatively few params.
 Also want it to contain details about how you should draw 2afcs in general in the terminal
@@ -11,7 +11,7 @@ Stage functions should each return three dicts: data, triggers, and timers
     -data: (field:value) all the relevant data for the stage, as named in the DATA_LIST
     -triggers: (input:action) what to do if the relevant input is triggered
     -timers: (type:{params}) like {'too_early':{'sound':too_early_sound}}
-'''
+"""
 from collections import OrderedDict as odict
 import threading
 import logging
@@ -27,6 +27,9 @@ if hasattr(prefs, "AUDIOSERVER"):
 
 
 class Task(object):
+    """
+
+    """
     # dictionary of Params needed to define task,
     # these should correspond to argument names for the task
     PARAMS = odict()
@@ -68,6 +71,9 @@ class Task(object):
 
 
     def init_hardware(self):
+        """
+
+        """
         # We use the HARDWARE dict that specifies what we need to run the task
         # alongside the PINS subdict in the prefs structure to tell us how they're plugged in to the pi
         self.pins = {}
@@ -115,6 +121,9 @@ class Task(object):
                 Exception('No port found named {}'.format(port))
 
     def init_sound(self):
+        """
+
+        """
         pass
 
     def handle_trigger(self, pin, level, tick):
@@ -164,6 +173,9 @@ class Task(object):
         self.stage_block.set()
 
     def punish(self):
+        """
+
+        """
         # TODO: If we're not in the last stage (eg. we were timed out after stim presentation), reset stages
         self.punish_block.clear()
 
@@ -190,6 +202,9 @@ class Task(object):
                 v.set_color([0,0,0])
 
     def end(self):
+        """
+
+        """
         for k, v in self.pins.items():
             for pin, obj in v.items():
                 obj.release()

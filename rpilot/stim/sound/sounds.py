@@ -35,6 +35,9 @@ if server_type == "pyo":
     import pyo
 
     class Pyo_Sound(object):
+        """
+
+        """
         # Metaclass for pyo sound objects
         PARAMS    = None # list of strings of parameters to be defined
         type      = None # string human readable name of sound
@@ -49,6 +52,9 @@ if server_type == "pyo":
 
 
         def play(self):
+            """
+
+            """
             self.table.out()
 
         def table_wrap(self, audio, duration=None):
@@ -85,6 +91,9 @@ elif server_type == "jack":
     import jackclient
 
     class Jack_Sound(object):
+        """
+
+        """
         # base class for jack audio sounds
         PARAMS = None  # list of strings of parameters to be defined
         type = None  # string human readable name of sound
@@ -110,6 +119,9 @@ elif server_type == "jack":
             self.buffered = False
 
         def chunk(self):
+            """
+
+            """
             # break sound into chunks
 
             sound = self.table.astype(np.float32)
@@ -121,12 +133,20 @@ elif server_type == "jack":
             self.chunks = sound_list
 
         def set_trigger(self, trig_fn):
+            """
+
+            Args:
+                trig_fn ():
+            """
             if callable(trig_fn):
                 self.trigger = trig_fn
             else:
                 Exception('trigger must be callable')
 
         def wait_trigger(self):
+            """
+
+            """
             # wait for our duration plus a second at most.
             self.stop_evt.wait((self.duration+1000)/1000.)
             # if the sound actually stopped...
@@ -136,10 +156,16 @@ elif server_type == "jack":
 
 
         def get_nsamples(self):
+            """
+
+            """
             # given our fs and duration, how many samples do we need?
             self.nsamples = np.ceil((self.duration/1000.)*self.fs).astype(np.int)
 
         def buffer(self):
+            """
+
+            """
             if not self.chunks:
                 self.chunk()
 
@@ -151,6 +177,9 @@ elif server_type == "jack":
                 self.buffered = True
 
         def play(self):
+            """
+
+            """
             if not self.buffered:
                 self.buffer()
 
@@ -203,6 +232,9 @@ class Tone(BASE_CLASS):
         self.init_sound()
 
     def init_sound(self):
+        """
+
+        """
         if self.server_type == 'pyo':
             sin = pyo.Sine(self.frequency, mul=self.amplitude)
             self.table = self.table_wrap(sin)
@@ -232,6 +264,9 @@ class Noise(BASE_CLASS):
         self.init_sound()
 
     def init_sound(self):
+        """
+
+        """
         if self.server_type == 'pyo':
             noiser = pyo.Noise(mul=self.amplitude)
             self.table = self.table_wrap(noiser)
@@ -241,6 +276,9 @@ class Noise(BASE_CLASS):
             self.chunk()
 
 class File(BASE_CLASS):
+    """
+
+    """
     PARAMS = ['path', 'amplitude']
     type='File'
 
@@ -265,6 +303,9 @@ class File(BASE_CLASS):
         self.init_sound()
 
     def init_sound(self):
+        """
+
+        """
         fs, audio = wavfile.read(self.path)
         if audio.dtype in ['int16', 'int32']:
             audio = int_to_float(audio)
@@ -290,6 +331,9 @@ class File(BASE_CLASS):
 
 
 class Speech(File):
+    """
+
+    """
     type='Speech'
     PARAMS = ['path', 'amplitude', 'speaker', 'consonant', 'vowel', 'token']
     def __init__(self, path, speaker, consonant, vowel, token, amplitude=0.05, **kwargs):

@@ -1,9 +1,9 @@
 #!/usr/bin/python2.7
 
-'''
+"""
 Base Mouse Class.
 Methods for storing data like mass, DOB, etc. as well as assigned protocols and trial data
-'''
+"""
 
 import os
 import sys
@@ -35,6 +35,7 @@ class Mouse:
     """Mouse object for managing protocol, parameters, and data"""
 
     def __init__(self, name, dir=None, new=False, biography=None):
+        # type: (unicode, None, bool, None) -> None
         # we need to use a lock to not corrupt the file, see
         # https://www.pytables.org/cookbook/threading.html
         # and https://www.pytables.org/FAQ.html#can-pytables-be-used-in-concurrent-access-scenarios
@@ -98,6 +99,7 @@ class Mouse:
         _ = self.close_hdf(h5f)
 
     def open_hdf(self, mode='r+'):
+        # type: (str) -> tables.file.File
         """
         Args:
             mode:
@@ -106,6 +108,7 @@ class Mouse:
             return tables.open_file(self.file, mode=mode)
 
     def close_hdf(self, h5f):
+        # type: (tables.file.File) -> None
         """
         Args:
             h5f:
@@ -209,6 +212,7 @@ class Mouse:
         _ = self.close_hdf(h5f)
 
     def update_weights(self, start=None, stop=None):
+        # type: (float, None) -> None
         """
         Args:
             start:
@@ -347,6 +351,9 @@ class Mouse:
         self.update_history('protocol', protocol_name, self.current)
 
     def flush_current(self):
+        """
+
+        """
         # Flush the 'current' attribute in the mouse object to the .h5
         # makes sure the stored .json representation of the current task stays up to date
         # with the params set in the mouse object
@@ -359,6 +366,9 @@ class Mouse:
         _ = self.close_hdf(h5f)
 
     def stash_current(self):
+        """
+
+        """
         # Save the current protocol in the history group and delete the node
         # Typically this should only be called when assigning a new protocol but what do I know
 
@@ -382,6 +392,12 @@ class Mouse:
         self.close_hdf(h5f)
 
     def prepare_run(self):
+        # type: () -> Dict[unicode, bool]
+        """
+
+        Returns:
+            Dict[unicode, bool]: 
+        """
         #trial_table = None
         cont_table = None
 
@@ -470,6 +486,7 @@ class Mouse:
         return task
 
     def data_thread(self, queue):
+        # type: (Queue.Queue) -> object
         """
         Args:
             queue:
@@ -532,6 +549,7 @@ class Mouse:
         self.close_hdf(h5f)
 
     def save_data(self, data):
+        # type: (Dict[unicode, int]) -> None
         """
         Args:
             data:
@@ -539,6 +557,9 @@ class Mouse:
         self.data_queue.put(data)
 
     def stop_run(self):
+        """
+
+        """
         self.data_queue.put('END')
         self.thread.join(5)
         self.running = False
@@ -586,6 +607,11 @@ class Mouse:
 
 
     def get_step_history(self):
+        """
+
+        Returns:
+
+        """
         h5f = self.open_hdf()
         history = h5f.root.history.history
         # return a dataframe of step number, datetime and step name
@@ -601,6 +627,7 @@ class Mouse:
         return step_df
 
     def get_timestamp(self, simple=False):
+        # type: (bool) -> str
         """
         Args:
             simple:
@@ -614,6 +641,7 @@ class Mouse:
             return datetime.datetime.now().isoformat()
 
     def get_weight(self, which='last', include_baseline=False):
+        # type: (str, bool) -> None
         """
         Args:
             which:
@@ -643,6 +671,11 @@ class Mouse:
 
 
     def graduate(self):
+        """
+
+        Returns:
+
+        """
         if len(self.current)<=self.step+1:
             Warning('Tried to graduate from the last step!\n Task has {} steps and we are on {}'.format(len(self.current), self.step+1))
             return

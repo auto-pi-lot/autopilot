@@ -27,21 +27,40 @@ from rpilot.core.networking import Net_Node
 ###########
 
 def gui_event(fn):
+    # type: (function) -> function
     """
     Args:
         fn:
     """
     def wrapper_gui_event(*args, **kwargs):
+        # type: (object, object) -> None
+        """
+
+        Args:
+            *args (): 
+            **kwargs (): 
+        """
         QtCore.QCoreApplication.postEvent(prefs.INVOKER, InvokeEvent(fn, *args, **kwargs))
     return wrapper_gui_event
 
 def gui_event_fn(fn, *args, **kwargs):
+    """
+
+    Args:
+        fn (): 
+        *args (): 
+        **kwargs (): 
+    """
     QtCore.QCoreApplication.postEvent(prefs.INVOKER, InvokeEvent(fn, *args, **kwargs))
 
 
 class Plot_Widget(QtGui.QWidget):
+    """
+
+    """
     # Widget that frames multiple plots
     def __init__(self):
+        # type: () -> None
         QtGui.QWidget.__init__(self)
 
         self.logger = logging.getLogger('main')
@@ -76,6 +95,7 @@ class Plot_Widget(QtGui.QWidget):
         self.setContentsMargins(0, 0, 0, 0)
 
     def init_plots(self, pilot_list):
+        # type: (List[unicode]) -> None
         """
         Args:
             pilot_list:
@@ -129,7 +149,11 @@ class Plot_Widget(QtGui.QWidget):
 
 
 class Plot(QtGui.QWidget):
+    """
+
+    """
     def __init__(self, pilot, x_width=50):
+        # type: (unicode, int) -> None
         """
         Args:
             pilot:
@@ -198,6 +222,9 @@ class Plot(QtGui.QWidget):
 
     @gui_event
     def init_plots(self):
+        """
+
+        """
         # This is called to make the basic plot window,
         # each task started should then send us params to populate afterwards
         #self.getPlotItem().hideAxis('bottom')
@@ -312,7 +339,11 @@ class Plot(QtGui.QWidget):
 ###################################
 # Curve subclasses
 class Point(pg.PlotDataItem):
+    """
+
+    """
     def __init__(self, color=(0,0,0), size=5):
+        # type: (Tuple[int, int, int], int) -> None
         """
         Args:
             color:
@@ -325,6 +356,7 @@ class Point(pg.PlotDataItem):
         self.size  = size
 
     def update(self, data):
+        # type: (numpy.ndarray) -> None
         """
         Args:
             data:
@@ -342,7 +374,11 @@ class Point(pg.PlotDataItem):
 
 
 class Segment(pg.PlotDataItem):
+    """
+
+    """
     def __init__(self):
+        # type: () -> None
         super(Segment, self).__init__()
 
     def update(self, data):
@@ -365,7 +401,11 @@ class Segment(pg.PlotDataItem):
 
 
 class Roll_Mean(pg.PlotDataItem):
+    """
+
+    """
     def __init__(self, winsize=10):
+        # type: (int) -> None
         """
         Args:
             winsize:
@@ -399,7 +439,11 @@ class Roll_Mean(pg.PlotDataItem):
 
 
 class Timer(QtGui.QLabel):
+    """
+
+    """
     def __init__(self):
+        # type: () -> None
         super(Timer, self).__init__()
 
         self.timer = QtCore.QTimer()
@@ -408,6 +452,7 @@ class Timer(QtGui.QLabel):
         self.start_time = None
 
     def start_timer(self, update_interval=1000):
+        # type: (int) -> None
         """
         Args:
             update_interval:
@@ -416,21 +461,35 @@ class Timer(QtGui.QLabel):
         self.timer.start(update_interval)
 
     def stop_timer(self):
+        """
+
+        """
         self.timer.stop()
         self.setText("")
 
     def update_time(self):
+        # type: () -> None
+        """
+
+        """
         secs_elapsed = int(np.floor(time()-self.start_time))
         self.setText("{:02d}:{:02d}:{:02d}".format(secs_elapsed/3600, (secs_elapsed/60)%60, secs_elapsed%60))
 
 
 class Highlight():
     # TODO Implement me
+    def __init__(self):
+        pass
+
     pass
 
 
 class HLine(QtGui.QFrame):
+    """
+
+    """
     def __init__(self):
+        # type: () -> None
         super(HLine, self).__init__()
         self.setFrameShape(QtGui.QFrame.HLine)
         self.setFrameShadow(QtGui.QFrame.Sunken)

@@ -4,6 +4,9 @@ import json
 from subprocess import call
 
 class Param(object):
+    """
+
+    """
     # Class to hold and verify task and gui parameters
     tag = None # human-readable description of parameter
     type = None # string that describes the type of input or param
@@ -74,9 +77,13 @@ def dict_from_HDF5(dictGroup):
 # https://stackoverflow.com/a/12127115
 
 class InvokeEvent(QtCore.QEvent):
+    """
+
+    """
     EVENT_TYPE = QtCore.QEvent.Type(QtCore.QEvent.registerEventType())
 
     def __init__(self, fn, *args, **kwargs):
+        # type: (function, object, object) -> None
         """
         Args:
             fn:
@@ -91,6 +98,7 @@ class InvokeEvent(QtCore.QEvent):
 
 class Invoker(QtCore.QObject):
     def event(self, event):
+        # type: (rpilot.core.utils.InvokeEvent) -> bool
         """
         Args:
             event:
@@ -141,6 +149,9 @@ def update_pis(github=True, apt=False, pilot_select = None, prefs_fn = None):
         call('parallel-ssh', '-H', ip_string, 'git --git-dir=/home/pi/git/RPilot/.git pull')
 
 def dummy():
+    """
+
+    """
     # testing if update pi works
     pass
 

@@ -34,6 +34,9 @@ from rpilot import prefs
 
 
 class Terminal(QtGui.QMainWindow):
+    """
+
+    """
     ## Declare attributes
 
     # networking
@@ -54,6 +57,7 @@ class Terminal(QtGui.QMainWindow):
     widget = None
 
     def __init__(self):
+        # type: () -> None
         super(Terminal, self).__init__()
 
         # Load pilots db as ordered dictionary
@@ -91,6 +95,10 @@ class Terminal(QtGui.QMainWindow):
         #time.sleep(1)
 
     def init_logging(self):
+        # type: () -> None
+        """
+
+        """
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
         log_file = os.path.join(prefs.LOGDIR, 'Terminal_Log_{}.log'.format(timestr))
 
@@ -103,6 +111,10 @@ class Terminal(QtGui.QMainWindow):
         self.logger.info('Terminal Logging Initiated')
 
     def initUI(self):
+        # type: () -> None
+        """
+
+        """
         # set central widget
         self.widget = QtGui.QWidget()
         self.setCentralWidget(self.widget)
@@ -181,6 +193,10 @@ class Terminal(QtGui.QMainWindow):
         logging.info('UI Initialized')
 
     def reset_ui(self):
+        # type: () -> None
+        """
+
+        """
         self.layout = QtGui.QGridLayout()
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0,0,0,0)
@@ -193,11 +209,19 @@ class Terminal(QtGui.QMainWindow):
     # NETWORKING METHODS
 
     def spawn_network(self):
+        # type: () -> None
+        """
+
+        """
         # Start external communications in own process
         self.networking = Terminal_Networking(self.pilots)
         self.networking.start()
 
     def init_network(self):
+        # type: () -> None
+        """
+
+        """
         # Start internal communications
         self.node = Net_Node(id="_T", upstream='T', port=prefs.MSGPORT, listens=self.listens)
 
@@ -228,6 +252,7 @@ class Terminal(QtGui.QMainWindow):
         listen_thread.start()
 
     def toggle_start(self, starting, pilot, mouse=None):
+        # type: (bool, unicode, unicode) -> None
         """Start or Stop running the currently selected mouse's task. Sends a
         message containing the task information to the concerned pilot.
 
@@ -300,6 +325,7 @@ class Terminal(QtGui.QMainWindow):
         pass
 
     def l_data(self, value):
+        # type: (Dict[unicode, int]) -> None
         """
         Args:
             value:
@@ -336,6 +362,11 @@ class Terminal(QtGui.QMainWindow):
             self.pilots[value['pilot']]['state'] = value['state']
 
     def l_handshake(self, value):
+        """
+
+        Args:
+            value (): 
+        """
         if value['pilot'] in self.pilots.keys():
             self.pilots[value['pilot']]['ip'] = value['ip']
 
@@ -348,6 +379,7 @@ class Terminal(QtGui.QMainWindow):
     # GUI & etc. methods
 
     def new_pilot(self, ip='', name=None):
+        # type: (str, None) -> None
         """
         Args:
             ip:
@@ -370,6 +402,10 @@ class Terminal(QtGui.QMainWindow):
             pass
 
     def new_protocol(self):
+        # type: () -> None
+        """
+
+        """
         self.new_protocol_window = Protocol_Wizard()
         self.new_protocol_window.exec_()
 
@@ -405,16 +441,29 @@ class Terminal(QtGui.QMainWindow):
                     json.dump(save_steps, pfile_open, indent=4, separators=(',', ': '), sort_keys=True)
 
     def batch_mice(self):
+        """
+
+        """
         # TODO: Implement me...
         pass
 
     def list_mice(self):
+        # type: () -> List[unicode]
+        """
+
+        Returns:
+
+        """
         mice = []
         for pilot, vals in self.pilots.items():
             mice.extend(vals['mice'])
         return mice
 
     def mouse_weights(self):
+        # type: () -> None
+        """
+
+        """
         mice = self.list_mice()
 
         # open objects if not already
@@ -433,6 +482,9 @@ class Terminal(QtGui.QMainWindow):
         self.weight_widget.show()
 
     def update_protocols(self):
+        """
+
+        """
         # If we change the protocol file, update the stored version in mouse files
 
         # get list of protocol files
@@ -456,6 +508,9 @@ class Terminal(QtGui.QMainWindow):
         msgbox.exec_()
 
     def reassign_protocols(self):
+        """
+
+        """
         # get list of protocol files
         protocols = os.listdir(prefs.PROTOCOLDIR)
         protocols = [os.path.splitext(p)[0] for p in protocols if p.endswith('.json')]

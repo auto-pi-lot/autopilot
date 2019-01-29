@@ -37,6 +37,9 @@ from rpilot import prefs
 # TODO: Periodically ping pis to check that they are still responsive
 
 class Networking(multiprocessing.Process):
+    """
+
+    """
     ctx          = None    # Context
     loop         = None    # IOLoop
     push_ip      = None    # IP to push to
@@ -76,6 +79,9 @@ class Networking(multiprocessing.Process):
         }
 
     def run(self):
+        """
+
+        """
         # init zmq objects
         self.context = zmq.Context()
         self.loop = IOLoop()
@@ -128,6 +134,7 @@ class Networking(multiprocessing.Process):
         don't need to thread this because router sends are nonblocking
 
         Args:
+            repeat (): 
             to:
             key:
             value:
@@ -166,6 +173,7 @@ class Networking(multiprocessing.Process):
     def push(self,  to=None, key = None, value = None, msg=None, repeat=False):
         """
         Args:
+            repeat (): 
             to:
             key:
             value:
@@ -210,6 +218,15 @@ class Networking(multiprocessing.Process):
             self.timers[msg.id].start()
 
     def repeat(self, msg_id, send_type):
+        """
+
+        Args:
+            msg_id (): 
+            send_type (): 
+
+        Returns:
+
+        """
         # Handle repeated messages
         # If we still have the message in our outbox...
         if msg_id not in self.outbox.keys():
@@ -242,6 +259,11 @@ class Networking(multiprocessing.Process):
         self.timers[msg_id].start()
 
     def l_confirm(self, msg):
+        """
+
+        Args:
+            msg (): 
+        """
         # confirmation that a published message was received
         # value should be the message id
 
@@ -348,6 +370,9 @@ class Networking(multiprocessing.Process):
 
 
     def init_logging(self):
+        """
+
+        """
         # Setup logging
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
         log_file = os.path.join(prefs.LOGDIR, 'Networking_Log_{}.log'.format(timestr))
@@ -361,6 +386,11 @@ class Networking(multiprocessing.Process):
         self.logger.info('Networking Logging Initiated')
 
     def get_ip(self):
+        """
+
+        Returns:
+
+        """
         # shamelessly stolen from https://www.w3resource.com/python-exercises/python-basic-exercise-55.php
         # variables are badly named because this is just a rough unwrapping of what was a monstrous one-liner
         # (and i don't really understand how it works)
@@ -376,7 +406,11 @@ class Networking(multiprocessing.Process):
         return unwrap2
 
 class Terminal_Networking(Networking):
+    """
+
+    """
     def __init__(self, pilots):
+        # type: (collections.OrderedDict) -> None
         super(Terminal_Networking, self).__init__()
 
         # by default terminal doesn't have a pusher, everything connects to it
@@ -515,6 +549,9 @@ class Terminal_Networking(Networking):
         self.send(msg.target, 'FILE', file_message)
 
 class Pilot_Networking(Networking):
+    """
+
+    """
     def __init__(self):
         # Pilot has a pusher - connects back to terminal
         self.pusher = True
@@ -643,6 +680,9 @@ class Pilot_Networking(Networking):
 #####################################
 
 class Net_Node(object):
+    """
+
+    """
     context = None
     loop = None
     id = None
@@ -656,6 +696,7 @@ class Net_Node(object):
     "pop in networking object, has to set behind some external-facing networking object"
 
     def __init__(self, id, upstream, port, listens, instance=True):
+        # type: (str, str, int, Dict[str, instancemethod], bool) -> None
         """
         Args:
             id:
@@ -694,6 +735,10 @@ class Net_Node(object):
         self.init_networking()
 
     def init_networking(self):
+        # type: () -> None
+        """
+
+        """
         self.sock = self.context.socket(zmq.DEALER)
         self.sock.identity = self.id
         #self.sock.probe_router = 1
@@ -712,6 +757,10 @@ class Net_Node(object):
         self.connected = True
 
     def threaded_loop(self):
+        # type: () -> object
+        """
+
+        """
         while True:
             try:
                 self.loop.start()
@@ -721,6 +770,7 @@ class Net_Node(object):
 
 
     def handle_listen(self, msg):
+        # type: (List[str]) -> None
         """
         Args:
             msg:
@@ -767,8 +817,11 @@ class Net_Node(object):
             self.send(msg.sender, 'CONFIRM', msg.id)
 
     def send(self, to=None, key=None, value=None, msg=None, repeat=False):
+        # type: (str, str, Dict[unicode, bool], None, bool) -> None
         """
         Args:
+            msg (None): 
+            repeat (bool): 
             to:
             key:
             value:
@@ -812,6 +865,14 @@ class Net_Node(object):
             self.timers[msg.id].start()
 
     def repeat(self, msg_id):
+        """
+
+        Args:
+            msg_id (): 
+
+        Returns:
+
+        """
         # Handle repeated messages
         # If we still have the message in our outbox...
         if msg_id not in self.outbox.keys():
@@ -840,6 +901,11 @@ class Net_Node(object):
         self.timers[msg_id].start()
 
     def l_confirm(self, value):
+        """
+
+        Args:
+            value (): 
+        """
         print('value: {}'.format(value))
         sys.stdout.flush()
         # delete message from outbox if we still have it
@@ -858,6 +924,7 @@ class Net_Node(object):
 
 
     def prepare_message(self, to, key, value):
+        # type: (str, str, Dict[unicode, bool]) -> rpilot.core.networking.Message
         """
         Args:
             to:
@@ -883,11 +950,19 @@ class Net_Node(object):
         return msg
 
     def l_confirm(self, msg):
+        """
+
+        Args:
+            msg (): 
+        """
         pass
 
 
 
 class Message(object):
+    """
+
+    """
     # TODO: just make serialization handle all attributes except Files which need to be b64 encoded first.
     id = None # number of message, format {sender.id}_{number}
     to = None
@@ -899,6 +974,7 @@ class Message(object):
     ttl = 5 # every message starts with 5 retries. only relevant to the sender so not serialized.
 
     def __init__(self, *args, **kwargs):
+        # type: (object, object) -> None
         # Messages don't need to have all attributes on creation,
         # but do need them to serialize
         """
@@ -913,6 +989,7 @@ class Message(object):
             setattr(self, k, v)
 
     def __str__(self):
+        # type: () -> str
         if self.key == 'FILE':
             me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}".format(self.id, self.to, self.sender, self.key)
         else:
@@ -953,12 +1030,24 @@ class Message(object):
         return len(self.__dict__)
 
     def validate(self):
+        # type: () -> bool
+        """
+
+        Returns:
+            bool: 
+        """
         if all([self.id, self.to, self.sender, self.key]):
             return True
         else:
             return False
 
     def serialize(self):
+        # type: () -> str
+        """
+
+        Returns:
+            str: 
+        """
         valid = self.validate()
         if not valid:
             Exception("""Message invalid at the time of serialization!\n {}""".format(str(self)))

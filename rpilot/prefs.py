@@ -14,6 +14,7 @@ import os
 prefdict = None
 
 def init(fn):
+    # type: (str) -> None
     """
     Args:
         fn:
@@ -41,13 +42,30 @@ def init(fn):
     globals()['__dict__'] = prefs
 
 def add(param, value):
+    # type: (str, rpilot.core.utils.Invoker) -> None
+    """
+
+    Args:
+        param (str): 
+        value (rpilot.core.utils.Invoker): 
+    """
     globals()[param] = value
 
 # Return the git revision as a string
 def git_version(repo_dir):
+    # type: (unicode) -> unicode
+    """
+
+    Args:
+        repo_dir (unicode): 
+
+    Returns:
+        unicode: 
+    """
     # Stolen from numpy's setup https://github.com/numpy/numpy/blob/master/setup.py#L70-L92
     # and linked by ryanjdillon on SO https://stackoverflow.com/a/40170206
     def _minimal_ext_cmd(cmd):
+        # type: (List[str]) -> str
         # construct minimal environment
         env = {}
         for k in ['SYSTEMROOT', 'PATH']:

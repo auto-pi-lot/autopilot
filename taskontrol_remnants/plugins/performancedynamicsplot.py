@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-'''
+"""
 Plugin to show the correct choice on each trial and the outcome (reward/punishment)
-'''
+"""
 
 
 __version__ = '0.1'
@@ -175,6 +175,11 @@ class PerformanceDynamicsPlot(pg.PlotWidget):
         '''
 
     def sizeHint(self):
+        """
+
+        Returns:
+
+        """
         return QtCore.QSize(self.initialSize[0],self.initialSize[1])
 
 

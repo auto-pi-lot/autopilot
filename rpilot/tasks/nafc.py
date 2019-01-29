@@ -1,6 +1,6 @@
 #!/usr/bin/python2.7
 
-'''
+"""
 Template handler set for a 2afc paradigm.
 Want a bundled set of functions so the RPilot can make the task from relatively few params.
 Also want it to contain details about how you should draw 2afcs in general in the terminal
@@ -9,7 +9,7 @@ Stage functions should each return three dicts: data, triggers, and timers
     -data: (field:value) all the relevant data for the stage, as named in the DATA_LIST
     -triggers: (input:action) what to do if the relevant input is triggered
     -timers: (type:{params}) like {'too_early':{'sound':too_early_sound}}
-'''
+"""
 import sys
 import os
 import random
@@ -227,6 +227,9 @@ class Nafc(Task):
             self.bail_trial()
 
     def mark_playing(self):
+        """
+
+        """
         self.discrim_playing = True
 
 
@@ -356,6 +359,9 @@ class Nafc(Task):
 
 
     def stim_end(self):
+        """
+
+        """
         # Called by the discrim sound's table trigger when playback is finished
         # Used in punishing leaving early
         self.discrim_playing = False
@@ -364,6 +370,9 @@ class Nafc(Task):
 
 
     def bail_trial(self):
+        """
+
+        """
         # If a timer ends or the mouse pulls out too soon, we punish and bail
         self.bailed = 1
         self.triggers = {}
@@ -371,16 +380,25 @@ class Nafc(Task):
         self.stage_block.set()
 
     def clear_triggers(self):
+        """
+
+        """
         for pin in self.pins.values():
             pin.clear_cb()
 
 
     def flash_leds(self):
+        """
+
+        """
         for k, v in self.pins['LEDS'].items():
             v.flash(self.punish_dur)
 
 
 class Gap_2AFC(Nafc):
+    """
+
+    """
     def __init__(self, **kwargs):
 
         """
@@ -391,6 +409,9 @@ class Gap_2AFC(Nafc):
 
 
     def load_sounds(self):
+        """
+
+        """
         # TODO: Definitely put this in a metaclass
 
         # Iterate through sounds and load them to memory
@@ -418,11 +439,17 @@ class Gap_2AFC(Nafc):
                 #self.sounds[k].set_trigger(self.stim_end)
 
     def blank_trigger(self):
+        """
+
+        """
         print('blank trig')
         sys.stdout.flush()
         #pass
 
     def stim_end(self):
+        """
+
+        """
         # Called by the discrim sound's table trigger when playback is finished
         # Used in punishing leaving early
 
@@ -491,6 +518,9 @@ class Gap_2AFC(Nafc):
         return data
 
     def end(self):
+        """
+
+        """
         for k, v in self.sounds.items():
             if isinstance(v, list):
                 for sound in v:

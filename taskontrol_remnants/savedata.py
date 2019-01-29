@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-'''
+"""
 Widget to save data.
-'''
+"""
 
 __version__ = '0.2'
 __author__ = 'Santiago Jaramillo <sjara@uoregon.edu>'
@@ -208,6 +208,9 @@ if __name__ == "__main__":
     layoutMain.addWidget(saveData)
     form.setLayout(layoutMain)
     def onbutton():
+        """
+
+        """
         import arraycontainer
         results = arraycontainer.Container()
         results['onevar'] = [1,2,3,4]

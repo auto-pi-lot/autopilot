@@ -1,6 +1,6 @@
 #!/usr/bin/python2.7
 
-'''
+"""
 classes to build sounds from parameters
 use the SOUND_SWITCH to allow listing of sound types in the GUI & flexible coding from other modules
 then you can call sounds like sounds.SWITCH['tone'](freq=1000, etc.)
@@ -8,7 +8,7 @@ then you can call sounds like sounds.SWITCH['tone'](freq=1000, etc.)
 Each function should return a pyo soundTable object that can be played with its .out() method.
 Notes on creating functions:
     -You must include **kwargs in the methods statement or otherwise handle the 'type' key fed to the function
-'''
+"""
 
 # TODO: make it so terminal doesn't have to import pyo just to access sound info
 import sys
@@ -48,6 +48,9 @@ def pyo_server(debug=False):
 
 
 class Pyo_Sound(object):
+    """
+
+    """
     # Metaclass for pyo sound objects
     PARAMS    = None # list of strings of parameters to be defined
     type      = None # string human readable name of sound
@@ -62,6 +65,9 @@ class Pyo_Sound(object):
 
 
     def play(self):
+        """
+
+        """
         self.table.out()
 
     def table_wrap(self, audio, duration=None):

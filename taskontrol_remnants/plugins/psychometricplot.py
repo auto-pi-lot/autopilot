@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-'''
+"""
 Plugin to show the average fraction of correct trials for each value of a parameter.
-'''
+"""
 
 
 __version__ = '0.1'
@@ -75,6 +75,11 @@ class PsychometricPlot(pg.PlotWidget):
         pass
 
     def sizeHint(self):
+        """
+
+        Returns:
+
+        """
         return QtCore.QSize(self.initialSize[0],self.initialSize[1])
 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-'''
+"""
 Classes for graphical paradigm parameters.
 
 Two parameters classes are defined:
@@ -11,7 +11,7 @@ Two parameters classes are defined:
 TODO:
 - Make both label and text expanding horizontally
 
-'''
+"""
 
 
 __version__ = '0.1.1'
@@ -33,6 +33,9 @@ from taskontrol.settings import rigsettings
 #NUMERIC_REGEXP = 
 
 class Container(dict):
+    """
+
+    """
     def __init__(self):
         super(Container, self).__init__()        
         self._groups = {}
@@ -72,6 +75,9 @@ class Container(dict):
         dict.__setitem__(self, paramName, paramInstance)
 
     def print_items(self):
+        """
+
+        """
         for key,item in self.iteritems():
             print '[%s] %s : %s'%(type(item),key,str(item.get_value()))
 
@@ -185,6 +191,9 @@ class Container(dict):
                 dset.attrs['Description'] = item.get_label()
 
 class ParamGroupLayout(QtGui.QGridLayout):
+    """
+
+    """
     def __init__(self,parent=None):
         """
         Args:
@@ -204,6 +213,9 @@ class ParamGroupLayout(QtGui.QGridLayout):
 
 
 class GenericParam(QtGui.QWidget):
+    """
+
+    """
     def __init__(self, labelText='', value=0, group=None,
                  history=True, labelWidth=80, parent=None):
         """
@@ -225,12 +237,27 @@ class GenericParam(QtGui.QWidget):
         self.editWidget = None
 
     def get_type(self):
+        """
+
+        Returns:
+
+        """
         return self._type
 
     def get_label(self):
+        """
+
+        Returns:
+
+        """
         return str(self.labelWidget.text())
 
     def get_group(self):
+        """
+
+        Returns:
+
+        """
         return self._group
 
     def in_group(self,groupName):
@@ -241,6 +268,11 @@ class GenericParam(QtGui.QWidget):
         return self._group==groupName
 
     def history_enabled(self):
+        """
+
+        Returns:
+
+        """
         return self._historyEnabled
 
     def set_enabled(self,enabledStatus):
@@ -253,6 +285,9 @@ class GenericParam(QtGui.QWidget):
 
 
 class StringParam(GenericParam):
+    """
+
+    """
     def __init__(self, labelText='', value='', group=None,
                  labelWidth=80, parent=None):
         """
@@ -286,10 +321,18 @@ class StringParam(GenericParam):
         self.editWidget.setText(str(value))
 
     def get_value(self):
+        """
+
+        Returns:
+
+        """
         return str(self.editWidget.text())
 
 
 class NumericParam(GenericParam):
+    """
+
+    """
     def __init__(self, labelText='', value=0, units='', group=None, decimals=None,
                  history=True, labelWidth=80, enabled=True, parent=None):
         """
@@ -333,12 +376,22 @@ class NumericParam(GenericParam):
             self.editWidget.setText(str(value))
 
     def get_value(self):
+        """
+
+        Returns:
+
+        """
         try:
             return int(self.editWidget.text())
         except ValueError:
             return float(self.editWidget.text())
 
     def get_units(self):
+        """
+
+        Returns:
+
+        """
         return self._units
 
     def add(self,value):
@@ -350,6 +403,9 @@ class NumericParam(GenericParam):
 
 
 class MenuParam(GenericParam):
+    """
+
+    """
     def __init__(self, labelText='', menuItems=(), value=0, group=None,
                  history=True, labelWidth=80, parent=None):
         """
@@ -402,12 +458,27 @@ class MenuParam(GenericParam):
         self.editWidget.setCurrentIndex(value)
 
     def get_value(self):
+        """
+
+        Returns:
+
+        """
         return self.editWidget.currentIndex()
 
     def get_string(self):
+        """
+
+        Returns:
+
+        """
         return str(self.editWidget.currentText())
 
     def get_items(self):
+        """
+
+        Returns:
+
+        """
         return self._items
 
     #def appendToFile(self,h5file,dataParent,itemsParent):

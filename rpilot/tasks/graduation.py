@@ -5,6 +5,9 @@ from itertools import count
 
 
 class Accuracy(object):
+    """
+
+    """
     # TODO: Get the corrects that we need
     PARAMS = ['threshold', 'window']
     COLS = ['correct']
@@ -52,6 +55,7 @@ class NTrials(object):
     PARAMS = ['n_trials', 'current_trial']
 
     def __init__(self, n_trials, current_trial=0, **kwargs):
+        # type: (unicode, unicode, object) -> None
         """
         Args:
             n_trials:
