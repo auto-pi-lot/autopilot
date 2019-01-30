@@ -2,6 +2,6 @@ rpilot
 ======
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 5
 
    rpilot

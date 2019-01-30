@@ -16,6 +16,8 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
 sys.setrecursionlimit(1500)
+import sphinx_bootstrap_theme
+#import guzzle_sphinx_theme
 
 
 # -- Project information -----------------------------------------------------
@@ -50,7 +52,8 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
     'sphinx.ext.inheritance_diagram',
-    #'sphinxcontrib.fulltoc'
+    'sphinx.ext.autosummary',
+    #'sphinxcontrib.fulltoc',
 ]
 
 # Napoleon settings
@@ -97,13 +100,36 @@ pygments_style = None
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+#html_theme = 'sphinx_rtd_theme'
+html_theme = 'bootstrap'
+#html_theme = "basicstrap"
+html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+
+#
+# html_theme_path = guzzle_sphinx_theme.html_theme_path()
+# html_theme = 'guzzle_sphinx_theme'
+#
+# # Register the theme as an extension to generate a sitemap.xml
+# extensions.append("guzzle_sphinx_theme")
+#
+# # Guzzle theme options (see theme.conf for more information)
+# html_theme_options = {
+#     # Set the name of the project to appear in the sidebar
+#     "project_nav_name": "RPilot",
+# }
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {
+    'navbar_title': "RPilot",
+    'navbar_site_name': 'RPilot Documentation',
+    'globaltoc_depth': 2,
+    'navbar_class': "navbar navbar-inverse",
+    'bootswatch_theme': "sandstone",
+
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -207,3 +233,6 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
+
+def setup(app):
+    app.add_stylesheet("restyle.css")

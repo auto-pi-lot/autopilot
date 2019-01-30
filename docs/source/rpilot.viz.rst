@@ -1,22 +1,12 @@
-rpilot.viz package
+viz
 ==================
-
-Submodules
-----------
-
-rpilot.viz.trial\_viewer module
--------------------------------
-
-.. automodule:: rpilot.viz.trial_viewer
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
 
 .. automodule:: rpilot.viz
     :members:
     :undoc-members:
     :show-inheritance:
+
+.. toctree::
+
+   rpilot.viz.trial_viewer
+

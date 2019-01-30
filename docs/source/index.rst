@@ -7,10 +7,16 @@ Welcome to rpilot's documentation!
 ==================================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 5
    :caption: Contents:
+   :glob:
 
-   modules.rst
+   rpilot.core
+   rpilot.tasks
+   rpilot.stim
+   rpilot.viz
+   rpilot.setup
+   rpilot.prefs
 
 
 
