@@ -679,9 +679,10 @@ class Protocol_Wizard(QtGui.QDialog):
     with some graduation criterion for moving between them.
 
     This widget is composed of three windows:
-    - **left**: possible task types from :py:data:`.tasks.TASK_LIST`
-    - **center**: current steps in task
-    - **right**: :class:`.Parameters` for currently selected step.
+
+    * **left**: possible task types from :py:data:`.tasks.TASK_LIST`
+    * **center**: current steps in task
+    * **right**: :class:`.Parameters` for currently selected step.
 
     The parameters that are used are of the form used by :py:attr:`.Task.PARAMS`
     (see :py:attr:`.Nafc.PARAMS` for an example).
@@ -695,18 +696,20 @@ class Protocol_Wizard(QtGui.QDialog):
                            'type':'param_type'}}
 
     while some parameter types have extra items, eg.::
+
         {'list_param': {'tag':'Select from a List of Parameters',
                         'type': 'list',
-                         'values': {'First Option':0, 'Second Option':1}}
+                        'values': {'First Option':0, 'Second Option':1}}
 
     where k:v pairs are still used with lists to allow parameter values (0, 1) be human readable.
 
     The available types include:
-    - **int** - integer
-    - **check** - boolean checkbox
-    - **list** - a list of `values` to choose from
-    - **sounds** - a :class:`Sound_Widget` that allows sounds to be defined.
 
+    * **int** - integer
+    * **check** - boolean checkbox
+    * **list** - a list of `values` to choose from
+    * **sounds** - a :class:`.Sound_Widget` that allows sounds to be defined.
+    * **graduation** - a :class:`.Graduation_Widget` that allows graduation criteria to be defined
 
     Attributes:
         task_list (:class:`QtGui.QListWidget`): The leftmost window, lists available tasks
@@ -717,7 +720,6 @@ class Protocol_Wizard(QtGui.QDialog):
 
     """
     def __init__(self):
-        # type: () -> None
         QtGui.QDialog.__init__(self)
 
         # Left Task List/Add Step Box
@@ -959,7 +961,7 @@ class Protocol_Wizard(QtGui.QDialog):
         """
         Stores parameters that define sounds.
 
-        Sound parameters work a bit differently, speficically we have to retrieve
+        Sound parameters work a bit differently, specifically we have to retrieve
         :py:attr:`.Sound_Widget.sound_dict`.
         """
         current_step = self.step_list.currentRow()
@@ -969,7 +971,12 @@ class Protocol_Wizard(QtGui.QDialog):
         self.steps[current_step]['stim']['sounds'] = self.sound_widget.sound_dict
 
     def set_graduation(self):
-        # type: () -> None
+        """
+        Stores parameters that define graduation criteria in `self.steps`
+
+        Graduation parameters work a bit differently, specifically we have to retrieve
+        :py:attr:`.Graduation_Widget.param_dict`.
+        """
         current_step = self.step_list.currentRow()
         grad_type = self.grad_widget.type
         grad_params = self.grad_widget.param_dict
@@ -977,13 +984,39 @@ class Protocol_Wizard(QtGui.QDialog):
 
 
     def check_depends(self):
+        """
+        Handle dependencies between parameters, eg. if "correction trials" are unchecked,
+        the box that defines the correction trial percentage should be grayed out.
+
+        TODO:
+            Not implemented.
+        """
         # TODO: Make dependent fields unavailable if dependencies unmet
         # I mean if it really matters
         pass
 
 class Graduation_Widget(QtGui.QWidget):
+    """
+    A widget used in :class:`.Protocol_Wizard` to define graduation parameters.
+
+    See :py:mod:`.tasks.graduation` .
+
+    A protocol is composed of multiple tasks (steps), and graduation criteria
+    define when a mouse should progress through those steps.
+
+    eg. a mouse should graduate one stage after 300 trials, or after it reaches
+    75% accuracy over the last 500 trials.
+
+    Attributes:
+        type_selection (:class:`QtGui.QComboBox`): A box to select from the available
+            graduation types listed in :py:data:`.tasks.GRAD_LIST` . Has its `currentIndexChanged`
+            signal connected to :py:meth:`.Graduation_Widget.populate_params`
+        param_dict (dict): Stores the type of graduation and the relevant params,
+            fetched by :class:`.Protocol_Wizard` when defining a protocol.
+        set_graduation (:py:meth:`.Protocol_Wizard.set_graduation`): Passed to us after we're inited.
+    """
+
     def __init__(self):
-        # type: () -> None
         super(Graduation_Widget, self).__init__()
 
         # Grad type dropdown
@@ -1004,17 +1037,29 @@ class Graduation_Widget(QtGui.QWidget):
 
         self.param_dict = {}
 
-        # we receive a method from the protocol wizard to
-        # store the graduation params in the step dictionary
+        self.type = ""
+
         self.set_graduation = None
 
         self.populate_params()
 
     def populate_params(self, params=None):
-        # type: (None) -> None
         """
+        Repopulate the widget with fields to edit graduation parameters, fill fields
+        if we are passed `params`.
+
+        Each :class:`QtGui.QLineEdit` 's :py:meth:`.QLineEdit.editingFinished` signal is connected
+        to :py:meth:`.Graduation_Widget.store_param` .
+
+        TODO:
+            For now we assume all parameters are defined with a text edit box, so it's not
+            clear how we'd do boolean parameters for example. This will be fixed with refactoring
+            the parameter scheme, the first order of business for v0.3.
+
         Args:
-            params:
+            params (dict): In the case that :class:`.Protocol_Wizard` switches us back to
+                a step where we have already defined graduation parameters, it will pass them
+                so we can repopulate the relevant widgets with them.
         """
         self.clear_params()
         self.type = self.type_selection.currentText()
@@ -1030,22 +1075,46 @@ class Graduation_Widget(QtGui.QWidget):
             self.param_layout.addRow(QtGui.QLabel(k), edit_box)
 
     def clear_params(self):
-        # type: () -> None
+        """
+        Clear any parameter widgets we have.
+        """
         while self.param_layout.count():
             child = self.param_layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
 
     def store_param(self):
-        # type: () -> None
+        """
+        When a parameter is edited, save it in our param_dict, and also call our
+        `set_graduation` method, which should be :py:meth:`.Protocol_Wizard.set_graduation`
+        passed to us after instantiation.
+
+        If we were not passed `set_graduation`, just saves in `param_dict`.
+        """
         sender = self.sender()
         name = sender.objectName()
         self.param_dict[name] = sender.text()
+
+        if not callable(self.set_graduation):
+            Warning("Stored Graduation parameters in our param_dict, but wasn't passed a set_graduation method!")
+            return
+
         self.set_graduation()
 
 class Drag_List(QtGui.QListWidget):
-    # graciously copied from
-    # https://stackoverflow.com/a/25614674
+    """
+    A :class:`QtGui.QListWidget` that is capable of having files dragged & dropped.
+
+    copied with much gratitude from `stackoverflow <https://stackoverflow.com/a/25614674>`_
+
+    Primarily used in :class:`.Sound_Widget` to be able to drop sound files.
+
+    To use: connect `fileDropped` to a method, that method will receive a list of files
+    dragged onto this widget.
+
+    Attributes:
+        fileDropped (:class:`QtCore.Signal`): A Qt signal that takes a list
+    """
     fileDropped = QtCore.Signal(list)
 
     def __init__(self):
@@ -1055,8 +1124,11 @@ class Drag_List(QtGui.QListWidget):
 
     def dragEnterEvent(self, e):
         """
+        When files are dragged over us, if they have paths in them,
+        accept the event.
+
         Args:
-            e:
+            e (:class:`QtCore.QEvent`): containing the drag information.
         """
         if e.mimeData().hasUrls:
             e.accept()
@@ -1065,8 +1137,11 @@ class Drag_List(QtGui.QListWidget):
 
     def dragMoveEvent(self, event):
         """
+        If the `dragEnterEvent` was accepted, while the drag is being moved within us,
+        `setDropAction` to :class:`.QtCore.Qt.CopyAction`
+
         Args:
-            event:
+            event (:class:`QtCore.QEvent`): containing the drag information.
         """
         if event.mimeData().hasUrls:
             event.setDropAction(QtCore.Qt.CopyAction)
@@ -1076,8 +1151,11 @@ class Drag_List(QtGui.QListWidget):
 
     def dropEvent(self, event):
         """
+        When the files are finally dropped, if they contain paths,
+        emit the list of paths through the `fileDropped` signal.
+
         Args:
-            event:
+            event (:class:`QtCore.QEvent`): containing the drag information.
         """
         if event.mimeData().hasUrls:
             event.setDropAction(QtCore.Qt.CopyAction)
@@ -1089,12 +1167,40 @@ class Drag_List(QtGui.QListWidget):
         else:
             event.ignore()
 
+
 class Sound_Widget(QtGui.QWidget):
+    """
+    A widget that allows sounds to be parameterized.
+
+    Used in :class:`.Protocol_Wizard` .
+
+    Has two :class:`.Drag_List` s for left and right sounds (for a 2afc task), given
+    Buttons beneath them allow adding and removing sounds.
+
+    Adding a sound will open a :class:`.Add_SoundDialog`
+
+    TODO:
+        Sounds will eventually be more elegantly managed by a ... sound manager..
+        For now sound managers are rudimentary and only support random presentation
+        with correction trials and bias correction.
+
+    Attributes:
+        sound_dict (dict): Dictionary with the structure::
+
+                {'L': [{'param_1':'param_1', ... }], 'R': [...]}
+
+            where multiple sounds can be present in either 'L' or 'R' list.
+
+
+
+    """
     def __init__(self):
         # type: () -> None
         QtGui.QWidget.__init__(self)
 
         self.sounddir = prefs.SOUNDDIR
+
+        self.set_sounds = None
 
         # Left sounds
         left_label = QtGui.QLabel("Left Sounds")
@@ -1148,18 +1254,21 @@ class Sound_Widget(QtGui.QWidget):
         # TODO:Add drag and drop for files
 
     def pass_set_param_function(self, set_param_fnxn):
-        # type: (instancemethod) -> None
         """
+        Receives :py:meth:`.Protocol_Wizard.set_sounds`
+
         Args:
-            set_param_fnxn:
+            set_param_fnxn (:py:meth:`.Protocol_Wizard.set_sounds`): Called when sounds are changed.
         """
         self.set_sounds = set_param_fnxn
 
     def add_sound(self, side):
-        # type: (str) -> None
         """
+        When the "+" button on either side is pressed, open an :class:`.Add_Sound_Dialog`.
+
         Args:
-            side:
+            side (str): The buttons are connected with a lambda function, this will be either 'L' or 'R'.
+                Used to add sounds to the `sound_dict`
         """
         new_sound = self.Add_Sound_Dialog()
         new_sound.exec_()
@@ -1174,8 +1283,11 @@ class Sound_Widget(QtGui.QWidget):
 
     def remove_sound(self, side):
         """
+        When the "-" button is pressed, remove the currently highlighted sound.
+
         Args:
-            side:
+            side (str): The buttons are connected with a lambda function, this will be either 'L' or 'R'.
+                Selects that list so we can remove the currently selected row.
         """
         if side == 'L':
             current_sound = self.left_list.currentRow()
@@ -1189,8 +1301,10 @@ class Sound_Widget(QtGui.QWidget):
 
     def populate_lists(self, sound_dict):
         """
+        Populates the sound lists after re-selecting a step.
+
         Args:
-            sound_dict:
+            sound_dict (dict): passed to us by :class:`.Protocol_Wizard` upon reselecting a step.
         """
         # Populate the sound lists after re-selecting a step
         self.sound_dict = sound_dict
@@ -1201,8 +1315,21 @@ class Sound_Widget(QtGui.QWidget):
 
     def files_dropped(self, files):
         """
+        Warning:
+            This was programmed hastily and is pretty idiosyncratic to my use.
+
+            It does work for general files but has some extra logic built in to handle my stimuli.
+
+            To be made more general in v0.3
+
+        Note:
+            Sounds must be in the folder specified in `prefs.SOUNDDIR`.
+
+        When files are dropped on the lists, strips `prefs.SOUNDDIR` from them to make them
+        relative paths, adds them to the `sound_dict`
+
         Args:
-            files:
+            files (list): List of absolute paths.
         """
         # TODO: Make this more general...
         msg = QtGui.QMessageBox()
@@ -1245,6 +1372,18 @@ class Sound_Widget(QtGui.QWidget):
         self.set_sounds()
 
     class Add_Sound_Dialog(QtGui.QDialog):
+        """
+        Presents a dialog to define a new sound.
+
+        Makes a selection box to choose the sound type from
+        :py:data:`.sounds.SOUND_LIST` , and then populates edit boxes
+        so we can fill in its `PARAMS` .
+
+        Attributes:
+            type_selection (:class:`QtGui.QComboBox`): Select from a list of available sounds
+            param_dict (dict): Parameters that are retreived by the calling :class:`.Sound_Widget`.
+
+        """
         def __init__(self):
             # type: () -> None
             QtGui.QDialog.__init__(self)
@@ -1276,7 +1415,10 @@ class Sound_Widget(QtGui.QWidget):
             self.param_dict = {}
 
         def populate_params(self):
-            # type: () -> None
+            """
+            When a sound type is selected, make a :class:`.QtGui.QLineEdit` for each
+            `PARAM` in its definition.
+            """
             self.clear_params()
 
             self.type = self.type_selection.currentText()
@@ -1289,13 +1431,18 @@ class Sound_Widget(QtGui.QWidget):
                 self.param_layout.addRow(QtGui.QLabel(k), edit_box)
 
         def clear_params(self):
-            # type: () -> None
+            """
+            Clear all current widgets
+            """
             while self.param_layout.count():
                 child = self.param_layout.takeAt(0)
                 if child.widget():
                     child.widget().deleteLater()
 
         def store_param(self):
+            """
+            When one of our edit boxes is edited, stash the parameter in `param_dict`
+            """
             # type: () -> None
             sender = self.sender()
             name = sender.objectName()
@@ -1306,11 +1453,17 @@ class Sound_Widget(QtGui.QWidget):
 ######################################
 
 class Calibrate_Water(QtGui.QDialog):
+    """
+    A window to calibrate the volume of water dispensed per ms.
+
+    Warning:
+        Not Implemented
+    """
     def __init__(self, pilots, message_fn):
         """
         Args:
-            pilots:
-            message_fn:
+            pilots (:py:attr:`.Terminal.pilots`): A dictionary of pilots
+            message_fn (:py:meth:`.Net_Node.send`): The method the Terminal uses to send messages via its net node.
         """
         super(Calibrate_Water, self).__init__()
 
@@ -1318,6 +1471,9 @@ class Calibrate_Water(QtGui.QDialog):
         self.send_message = message_fn
 
     class Pilot_Ports(QtGui.QWidget):
+        """
+        Each pilot's ports and buttons to control repeated release.
+        """
         def __init__(self, pilot, message_fn, n_clicks=1000, click_dur=30):
             """
             Args:
@@ -1336,21 +1492,32 @@ class Calibrate_Water(QtGui.QDialog):
             pass
 
 class Reassign(QtGui.QDialog):
-    def __init__(self, mice, protocols, protocol_dir):
+    """
+    A dialog that lets mice be batch reassigned to new protocols or steps.
+    """
+    def __init__(self, mice, protocols):
         """
         Args:
-            mice:
-            protocols:
-            protocol_dir:
+            mice (dict): A dictionary that contains each mouse's protocol and step, ie.::
+
+                    {'mouse_id':['protocol_name', step_int], ... }
+
+            protocols (list): list of protocol files in the `prefs.PROTOCOLDIR`.
+                Not entirely sure why we don't just list them ourselves here.
         """
         super(Reassign, self).__init__()
 
         self.mice = mice
         self.protocols = protocols
-        self.protocol_dir = protocol_dir
+        self.protocol_dir = prefs.PROTOCOLDIR
         self.init_ui()
 
     def init_ui(self):
+        """
+        Initializes graphical elements.
+
+        Makes a row for each mouse where its protocol and step can be changed.
+        """
         self.grid = QtGui.QGridLayout()
 
         self.mouse_objects = {}
@@ -1400,10 +1567,11 @@ class Reassign(QtGui.QDialog):
 
     def populate_steps(self, mouse):
         """
+        When a protocol is selected, populate the selection box with the steps that can be chosen.
+
         Args:
-            mouse:
+            mouse (str): ID of mouse whose steps are being populated
         """
-        print(mouse)
         protocol_box = self.mouse_objects[mouse][0]
         step_box = self.mouse_objects[mouse][1]
 
@@ -1423,6 +1591,11 @@ class Reassign(QtGui.QDialog):
         step_box.insertItems(0, step_list)
 
     def set_protocol(self):
+        """
+        When the protocol is changed, stash that and call :py:meth:`.Reassign.populate_steps` .
+        Returns:
+
+        """
         mouse = self.sender().objectName()
         protocol_box = self.mouse_objects[mouse][0]
         step_box = self.mouse_objects[mouse][1]
@@ -1434,6 +1607,9 @@ class Reassign(QtGui.QDialog):
 
 
     def set_step(self):
+        """
+        When the step is changed, stash that.
+        """
         mouse = self.sender().objectName()
         protocol_box = self.mouse_objects[mouse][0]
         step_box = self.mouse_objects[mouse][1]
@@ -1445,10 +1621,15 @@ class Reassign(QtGui.QDialog):
 
 
 class Weights(QtGui.QTableWidget):
+    """
+    A table for viewing and editing the most recent mouse weights.
+    """
     def __init__(self, mice_weights, mice):
         """
         Args:
-            mice_weights:
+            mice_weights (list): a list of weights of the format returned by
+                :py:meth:`.Mouse.get_weight(baseline=True)`.
+            mice (dict): the Terminal's :py:attr:`.Terminal.mice` dictionary of :class:`.Mouse` objects.
         """
         super(Weights, self).__init__()
 
@@ -1472,6 +1653,9 @@ class Weights(QtGui.QTableWidget):
 
 
     def init_ui(self):
+        """
+        Initialized graphical elements. Literally just filling a table.
+        """
         # set shape (rows by cols
         self.shape = (len(self.mice_weights), len(self.colnames.keys()))
         self.setRowCount(self.shape[0])
@@ -1517,7 +1701,6 @@ class Weights(QtGui.QTableWidget):
         Args:
             row (int): row of table
             column (int): column of table
-
         """
 
         if column > 3: # if this is one of the daily weights
@@ -1533,77 +1716,6 @@ class Weights(QtGui.QTableWidget):
             date = self.mice_weights[row]['date']
             column_name = self.colnames.keys()[column] # recall colnames is an ordered dictionary
             self.mice[mouse_name].set_weight(date, column_name, new_val)
-
-
-
-
-class Expanding_Tabs(QtGui.QTabBar):
-    # The expanding method of the QTabBar doesn't work,
-    # we have to manually adjust the size policy and size hint
-    def __init__(self, width=30):
-        """
-        Args:
-            width:
-        """
-        super(Expanding_Tabs, self).__init__()
-        self.setSizePolicy(QtGui.QSizePolicy.Policy.Fixed, QtGui.QSizePolicy.Policy.Expanding)
-        self.width = width
-
-    def tabSizeHint(self, index):
-        """
-        Args:
-            index:
-        """
-        # Pretty janky, but the tab bar is two children deep from the main widget
-        # First compute the size taken up by the 'new' button and the margin
-        # We assume the code is unchanged that binds our width to that button's width
-        #ctl_panel_handle = self.parent().parent()
-        #ctl_panel_handle = self.parent().parent()
-        #margins = ctl_panel_handle.layout.getContentsMargins()
-        #nudge_size = self.width + margins[1]*2 + margins[3]*2 + 25 + ctl_panel_handle.layout.spacing() # top and bottom
-        # TODO: MAKE THIS NON JANKY, THERE IS SOME EXTRA SPACE IN THE PADDING COME BACK WHEN SOBER N PATIENT
-        #return QtCore.QSize(self.width, (ctl_panel_handle.frameGeometry().height()-nudge_size)/float(self.count()))
-        newsize = QtCore.QSize(self.width, float(self.parent().geometry().height())/float(self.count()))
-        return newsize
-
-class Stacked_Tabs(QtGui.QTabBar):
-    # Setting tab position to west also rotates text 90 degrees, which is dumb
-    # From https://stackoverflow.com/questions/3607709/how-to-change-text-alignment-in-qtabwidget
-    def __init__(self, width=150, height=30):
-        """
-        Args:
-            width:
-            height:
-        """
-        super(Stacked_Tabs, self).__init__()
-        self.tabSize = QtCore.QSize(width, height)
-
-    def paintEvent(self, event):
-        """
-        Args:
-            event:
-        """
-        painter = QtGui.QStylePainter(self)
-        option = QtGui.QStyleOptionTab()
-
-        #painter.begin(self)
-        for index in range(self.count()):
-            self.initStyleOption(option, index)
-            tabRect = self.tabRect(index)
-            tabRect.moveLeft(10)
-            painter.drawControl(QtGui.QStyle.CE_TabBarTabShape, option)
-            painter.drawText(tabRect, QtCore.Qt.AlignVCenter | QtCore.Qt.TextDontClip,
-                             self.tabText(index))
-
-        painter.end()
-
-    def tabSizeHint(self, index):
-        """
-        Args:
-            index:
-        """
-        return self.tabSize
-
 
 ###############
 # don't remove these - will be used to replace Protocol Wizard eventually

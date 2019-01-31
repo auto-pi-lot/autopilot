@@ -490,7 +490,7 @@ class Terminal(QtGui.QMainWindow):
 
             mice_protocols[mouse] = [self.mice[mouse].protocol_name, self.mice[mouse].step]
 
-        reassign_window = Reassign(mice_protocols, protocols, prefs.PROTOCOLDIR)
+        reassign_window = Reassign(mice_protocols, protocols)
         reassign_window.exec_()
 
         if reassign_window.result() == 1:
