@@ -112,10 +112,10 @@ class RPilot:
         self.pulls = []
         if hasattr(prefs, 'PULLUPS'):
             for pin in prefs.PULLUPS:
-                self.pulls.append(hardware.Pull(int(pin), pud=int(1)))
+                self.pulls.append(hardware.Pull(int(pin), pud='U'))
         if hasattr(prefs, 'PULLDOWNS'):
             for pin in prefs.PULLDOWNS:
-                self.pulls.append(hardware.Pull(int(pin), pud=int(0)))
+                self.pulls.append(hardware.Pull(int(pin), pud='D'))
 
         # Set and update state
         self.state = 'IDLE' # or 'Running'

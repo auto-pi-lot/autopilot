@@ -66,6 +66,7 @@ napoleon_include_private_with_doc = True
 napoleon_include_special_with_doc = True
 
 autoclass_content = "both"
+autodoc_member_order = "bysource"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -130,6 +131,10 @@ html_theme_options = {
     'bootswatch_theme': "sandstone",
 
 }
+#
+# html_sidebars = {
+#     '**': ['localtoc.html']
+# }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -227,12 +232,17 @@ epub_exclude_files = ['search.html']
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+intersphinx_mapping = {'python': ('https://docs.python.org/2', None),
+                       'PySide': ('http://pyside.github.io/docs/pyside/', None)}
 
 # -- Options for todo extension ----------------------------------------------
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
+
+primary_domain = "py"
+
+highlight_language = "py"
 
 def setup(app):
     app.add_stylesheet("restyle.css")

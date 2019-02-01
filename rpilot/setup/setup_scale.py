@@ -5,51 +5,53 @@ import os
 import subprocess
 import getpass
 
-if os.getuid() != 0:
-    raise Exception("Need to run as root")
+if __name__ == "__main__":
 
-parser = argparse.ArgumentParser(description="Setup a USB-HID scale for the terminal")
-parser.add_argument('-v', '--vendor', help="Vendor ID for scale, default is 0x1446 (stamps.com scale)")
-parser.add_argument('-p', '--product', help="Product ID for scale, default is 0x6a73 (stamps.com scale")
+    if os.getuid() != 0:
+        raise Exception("Need to run as root")
 
-args = parser.parse_args()
+    parser = argparse.ArgumentParser(description="Setup a USB-HID scale for the terminal")
+    parser.add_argument('-v', '--vendor', help="Vendor ID for scale, default is 0x1446 (stamps.com scale)")
+    parser.add_argument('-p', '--product', help="Product ID for scale, default is 0x6a73 (stamps.com scale")
 
-# Parse Arguments and assign defaults
-if args.vendor:
-    vendor = args.vendor
-else:
-    vendor = "0x1446"
+    args = parser.parse_args()
 
-if args.product:
-    product = args.product
-else:
-    product = "0x6a73"
+    # Parse Arguments and assign defaults
+    if args.vendor:
+        vendor = args.vendor
+    else:
+        vendor = "0x1446"
 
-# make rule string
-rule_string = 'ACTION=="add", SUBSYSTEMS=="usb", BUS=="usb", ATTR{{idVendor}}=="{}", ATTR{{idProduct}}=="{}", MODE=="0666", GROUP=="scale"'.format(vendor, product)
+    if args.product:
+        product = args.product
+    else:
+        product = "0x6a73"
 
-# create udev rule
-rule_fn = '/etc/udev/rules.d/10-local.rules'
-if os.path.exists(rule_fn):
-    mode = "r+"
-else:
-    mode = "w"
+    # make rule string
+    rule_string = 'ACTION=="add", SUBSYSTEMS=="usb", BUS=="usb", ATTR{{idVendor}}=="{}", ATTR{{idProduct}}=="{}", MODE=="0666", GROUP=="scale"'.format(vendor, product)
 
-with open(rule_fn, mode=mode) as udev_rule:
-    udev_rule.write(rule_string)
+    # create udev rule
+    rule_fn = '/etc/udev/rules.d/10-local.rules'
+    if os.path.exists(rule_fn):
+        mode = "r+"
+    else:
+        mode = "w"
 
-print('wrote rule: \n{} to file: \n{}'.format(rule_string, rule_fn))
-print('adding user to "scale" group')
+    with open(rule_fn, mode=mode) as udev_rule:
+        udev_rule.write(rule_string)
 
-username = getpass.getuser()
-subprocess.call(['adduser',username,'scale'])
+    print('wrote rule: \n{} to file: \n{}'.format(rule_string, rule_fn))
+    print('adding user to "scale" group')
+
+    username = getpass.getuser()
+    subprocess.call(['adduser',username,'scale'])
 
 
-print('added to group, restarting udev')
-subprocess.call(['sudo', 'groupadd', 'scale'])
-subprocess.call(['sudo', 'service', 'udev', 'restart'])
+    print('added to group, restarting udev')
+    subprocess.call(['sudo', 'groupadd', 'scale'])
+    subprocess.call(['sudo', 'service', 'udev', 'restart'])
 
-print('scale set up! unplug and replug your scale!')
+    print('scale set up! unplug and replug your scale!')
 
 
 
