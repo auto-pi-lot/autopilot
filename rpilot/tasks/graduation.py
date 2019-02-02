@@ -3,8 +3,15 @@ from collections import deque
 import numpy as np
 from itertools import count
 
+class Graduation(object):
+    PARAMS = []
+    COLS = []
 
-class Accuracy(object):
+    def update(self, row):
+        Exception('The update method was not redefined by the subclass!')
+
+
+class Accuracy(Graduation):
     # TODO: Get the corrects that we need
     PARAMS = ['threshold', 'window']
     COLS = ['correct']
@@ -16,6 +23,7 @@ class Accuracy(object):
             window:
             **kwargs:
         """
+        #super(Accuracy, self).__init__()
         self.threshold = float(threshold)
         self.window    = int(window)
 
@@ -47,7 +55,7 @@ class Accuracy(object):
             return False
 
 
-class NTrials(object):
+class NTrials(Graduation):
     """graduate after doing n trials"""
     PARAMS = ['n_trials', 'current_trial']
 
@@ -59,6 +67,8 @@ class NTrials(object):
             current_trial:
             **kwargs:
         """
+        #super(NTrials, self).__init__()
+
         self.n_trials = int(n_trials)
         self.counter = count(start=int(current_trial))
 

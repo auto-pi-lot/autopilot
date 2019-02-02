@@ -1,5 +1,16 @@
-# Classes for network communication.
-# Following http://zguide.zeromq.org/py:all#toc46
+"""
+Classes for network communication.
+
+There are two general types of network objects -
+
+* :class:`.Networking` and its children are independent processes that should only be instantiated once
+    per piece of hardware. They are used to distribute messages between :class:`.Net_Node` s,
+    forward messages up the networking tree, and responding to messages that don't need any input from
+    the :class:`~.pilot.Pilot` or :class:`~.terminal.Terminal`.
+* :class:`.Net_Node` is a pop-in networking class that can be given to any other object that
+    wants to send or receive messages.
+"""
+
 
 import json
 import logging
@@ -20,23 +31,47 @@ from itertools import count
 
 from rpilot import prefs
 
-
-# Message structure:
-# Messages flow from the Terminal class to the raspberry pi
-# {key: {target, value}}
-# key - what type of message is this (byte string)
-# target - where should it go (json encoded on receipt, converted to byte string)
-#          For the Pilot, target refers to the mouse so the Terminal can plot/store data
-# value - what is the message (json encoded)
-# This structure allows us to sensibly 'unwrap' messages:
-# the handler function for each socket passes the target and value to the appropriate function for a given key
-# the key function will do whatever it needs to do with value and send it on to target
-
-# Listens
-
 # TODO: Periodically ping pis to check that they are still responsive
 
 class Networking(multiprocessing.Process):
+    """
+    Independent networking class used for messaging between computers.
+
+    These objects send and handle :class:`.networking.Message`s by using a
+    dictionary of :attr:`~.networking.Networking.listens`, or methods
+    that are called to respond to different types of messages.
+
+    They can be made with or without a :attr:`~.networking.Networking.pusher`,
+    a :class:`zmq.DEALER` socket that connects to the :class:`zmq.ROUTER`
+    socket of an upstream Networking object.
+
+    This class should not be instantiated on its own, but should instead
+    be subclassed in order to provide methods used by :meth:`~.Networking.handle_listen`.
+
+    Attributes:
+        ctx (:class:`zmq.Context`):  zeromq context
+        loop (:class:`tornado.ioloop.IOLoop`): a tornado ioloop
+        pusher (:class:`zmq.Socket`): pusher socket - a dealer socket that connects to other routers
+        push_ip (str): If we have a dealer, IP to push messages to
+        push_port (str):  If we have a dealer, port to push messages to
+        push_id (str): :attr:`~zmq.Socket.identity` of the Router we push to
+        listener (:class:`zmq.Socket`): The main router socket to send/recv messages
+        listen_port (str): Port our router listens on
+        logger (:class:`logging.Logger`): Used to log messages and network events.
+        log_handler (:class:`logging.FileHandler`): Handler for logging
+        log_formatter (:class:`logging.Formatter`): Formats log entries as::
+
+            "%(asctime)s %(levelname)s : %(message)s"
+
+        id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
+        ip (str): Device IP
+        listens (dict): Dictionary of functions to call for different types of messages. keys match the :attr:`.Message.key`.
+        senders (dict): Identities of other sockets (keys, ie. directly connected) and their state (values) if they keep one
+        outbox (dict): Messages that have been sent but have not been confirmed
+        timers (dict): dict of :class:`threading.Timer` s that will check in on outbox messages
+
+
+    """
     ctx          = None    # Context
     loop         = None    # IOLoop
     push_ip      = None    # IP to push to
@@ -265,8 +300,6 @@ class Networking(multiprocessing.Process):
             del self.timers[msg.value]
 
         self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
-
-
 
     def handle_listen(self, msg):
         """

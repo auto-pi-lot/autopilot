@@ -1,12 +1,17 @@
-#!/usr/bin/python2.7
+"""
+
+Classes for managing data and protocol access and storage.
+
+Currently named mouse, but will likely be refactored to include other data
+models should the need arise.
 
 """
-Base Mouse Class.
-Methods for storing data like mass, DOB, etc. as well as assigned protocols and trial data
-"""
+
+# TODO: store pilot in biography
 
 import os
 import sys
+import threading
 import tables
 from tables.nodes import filenode
 import datetime
@@ -16,12 +21,8 @@ import pandas as pd
 import warnings
 from copy import copy
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-
-print(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from rpilot import tasks
 from rpilot import prefs
-import threading
 from rpilot.stim.sound.sounds import STRING_PARAMS
 
 if sys.version_info >= (3,0):
@@ -32,19 +33,50 @@ else:
 
 
 class Mouse:
-    """Mouse object for managing protocol, parameters, and data"""
+    """
+    Class for managing one mouse's data and protocol.
+
+    Creates a :mod:`tables` hdf5 file in `prefs.DATADIR` with the general structure::
+
+        / root
+        |--- current (tables.filenode) storing the current task as serialized JSON
+        |--- data (group)
+        |    |--- task_name  (group)
+        |         |--- S##_step_name
+        |         |    |--- trial_data
+        |         |    |--- continuous_data
+        |         |--- ...
+        |--- history (group)
+        |    |--- hashes - history of git commit hashes
+        |    |--- history - history of changes: protocols assigned, params changed, etc.
+        |    |--- weights - history of pre and post-task weights
+        |    |--- past_protocols (group) - stash past protocol params on reassign
+        |         |--- date_protocol_name - tables.filenode of a previous protocol's params.
+        |         |--- ...
+        |--- info - group with biographical information as attributes
+
+    Attributes:
+        lock (:class:`threading.Lock`): manages access to the hdf5 file
+        name (str): Mouse ID
+        file (str): Path to hdf5 file - usually `{prefs.DATADIR}/{self.name}.h5`
+        current (dict): current task parameters. loaded from
+            the 'current' :mod:`~tables.filenode` of the h5 file
+        step (int): current step
+        protocol_name (str): name of currently assigned protocol
+        current_trial (int): number of current trial
+        running (bool): Flag that signals whether the mouse is currently running a task or not.
+        data_queue (:class:`queue.Queue`): Queue to dump data while running task
+        thread (:class:`threading.Thread`): thread used to keep file open while running task
+        did_graduate (:class:`threading.Event`): Event used to signal if the mouse has graduated the current step
+    """
 
     def __init__(self, name, dir=None, new=False, biography=None):
-        # type: (unicode, None, bool, None) -> None
-        # we need to use a lock to not corrupt the file, see
-        # https://www.pytables.org/cookbook/threading.html
-        # and https://www.pytables.org/FAQ.html#can-pytables-be-used-in-concurrent-access-scenarios
         """
         Args:
-            name:
-            dir:
-            new:
-            biography:
+            name (str): mouse ID
+            dir (str): path where the .h5 file is located, if `None`, `prefs.DATADIR` is used
+            new (bool): if True, a new file is made (a new file is made if one does not exist anyway)
+            biography (dict): If making a new mouse file, a dictionary with biographical data can be passed
         """
         self.lock = threading.Lock()
 
@@ -72,12 +104,6 @@ class Mouse:
             self.protocol_name = current_node.attrs['protocol_name']
 
         # We will get handles to trial and continuous data when we start running
-        self.trial_table = None
-        self.trial_row   = None
-        self.trial_keys  = None
-        self.cont_table  = None
-        self.cont_row    = None
-        self.cont_keys   = None
         self.current_trial  = None
 
         # Is the mouse currently running (ie. we expect data to be incoming)
@@ -99,19 +125,40 @@ class Mouse:
         _ = self.close_hdf(h5f)
 
     def open_hdf(self, mode='r+'):
-        # type: (str) -> tables.file.File
         """
+        Opens the hdf5 file.
+
+        This should be called at the start of every method that access the h5 file
+        and :meth:`~.Mouse.close_hdf` should be called at the end. Otherwise
+        the file will close and we risk file corruption.
+
+        See the pytables docs
+        `here <https://www.pytables.org/cookbook/threading.html>`_ and
+        `here <https://www.pytables.org/FAQ.html#can-pytables-be-used-in-concurrent-access-scenarios>`_
+
         Args:
-            mode:
+            mode (str): a file access mode, can be:
+
+                * 'r': Read-only - no data can be modified.
+                * 'w': Write - a new file is created (an existing file with the same name would be deleted).
+                * 'a' Append - an existing file is opened for reading and writing, and if the file does not exist it is created.
+                * 'r+' (default) - Similar to 'a', but file must already exist.
+
+        Returns:
+            :class:`tables.File`: Opened hdf file.
         """
+        # TODO: Use a decorator around methods instead of explicitly calling
         with self.lock:
             return tables.open_file(self.file, mode=mode)
 
     def close_hdf(self, h5f):
         # type: (tables.file.File) -> None
         """
+        Flushes & closes the open hdf file.
+        Must be called whenever :meth:`~.Mouse.open_hdf` is used.
+
         Args:
-            h5f:
+            h5f (:class:`tables.File`): the hdf file opened by :meth:`~.Mouse.open_hdf`
         """
         with self.lock:
             h5f.flush()
@@ -119,8 +166,13 @@ class Mouse:
 
     def new_mouse_file(self, biography):
         """
+        Create a new mouse file and make the general filestructure.
+
+        If a file already exists, open it in append mode, otherwise create it.
+
         Args:
-            biography:
+            biography (dict): Biographical details like DOB, mass, etc.
+                Typically created by :class:`~.gui.New_Mouse_Wizard.Biography_Tab`.
         """
         # If a file already exists, we open it for appending so we don't lose data.
         # For now we are assuming that the existing file has the basic structure,
@@ -161,8 +213,11 @@ class Mouse:
 
     def update_biography(self, params):
         """
+        Change or make a new biographical attribute, stored as
+        attributes of the `info` group.
+
         Args:
-            params:
+            params (dict): biographical attributes to be updated.
         """
         h5f = self.open_hdf()
         for k, v in params.items():
@@ -171,11 +226,26 @@ class Mouse:
 
     def update_history(self, type, name, value, step=None):
         """
+        Update the history table when changes are made to the mouse's protocol.
+
+        The current protocol is flushed to the past_protocols group and an updated
+        filenode is created.
+
+        Note:
+            This **only** updates the history table, and does not make the changes itself.
+
         Args:
-            type:
-            name:
-            value:
-            step:
+            type (str): What type of change is being made? Can be one of
+
+                * 'param' - a parameter of one task stage
+                * 'step' - the step of the current protocol
+                * 'protocol' - the whole protocol is being updated.
+
+            name (str): the name of either the parameter being changed or the new protocol
+            value (str): the value that the parameter or step is being changed to,
+                or the protocol dictionary flattened to a string.
+            step (int): When type is 'param', changes the parameter at a particular step,
+                otherwise the current step is used.
         """
         # Make sure the updates are written to the mouse file
         if type == 'param':
@@ -211,42 +281,35 @@ class Mouse:
 
         _ = self.close_hdf(h5f)
 
-    def update_weights(self, start=None, stop=None):
-        # type: (float, None) -> None
-        """
-        Args:
-            start:
-            stop:
-        """
-        h5f = self.open_hdf()
-        if start is not None:
-            weight_row = h5f.root.history.weights.row
-            weight_row['date'] = self.get_timestamp(simple=True)
-            weight_row['session'] = self.session
-            weight_row['start'] = float(start)
-            weight_row.append()
-        elif stop is not None:
-            # TODO: Make this more robust - don't assume we got a start weight
-            h5f.root.history.weights.cols.stop[-1] = stop
-        else:
-            Warning("Need either a start or a stop weight")
 
-        _ = self.close_hdf(h5f)
-
-    def update_params(self, param, value):
-        """
-        Args:
-            param:
-            value:
-        """
-        # TODO: this
-        pass
+    # def update_params(self, param, value):
+    #     """
+    #     Args:
+    #         param:
+    #         value:
+    #     """
+    #     # TODO: this
+    #     pass
 
     def assign_protocol(self, protocol, step_n=0):
         """
+        Assign a protocol to the mouse.
+
+        If the mouse has a currently assigned task, stashes it with :meth:`~.Mouse.stash_current`
+
+        Creates groups and tables according to the data descriptions in the task class being assigned.
+        eg. as described in :class:`.Task.TrialData`.
+
+        Updates the history table.
+
         Args:
-            protocol:
-            step_n:
+            protocol (str): the protocol to be assigned. Can be one of
+
+                * the name of the protocol (its filename minus .json) if it is in `prefs.PROTOCOLDIR`
+                * filename of the protocol (its filename with .json) if it is in the `prefs.PROTOCOLDIR`
+                * the full path and filename of the protocol.
+
+            step_n (int): Which step is being assigned?
         """
         # Protocol will be passed as a .json filename in prefs.PROTOCOLDIR
 
@@ -259,6 +322,9 @@ class Mouse:
             h5f = self.open_hdf()
 
         ## Assign new protocol
+        if not protocol.endswith('.json'):
+            protocol = protocol + '.json'
+
         # try prepending the protocoldir if we were passed just the name
         if not os.path.exists(protocol):
             fullpath = os.path.join(prefs.PROTOCOLDIR, protocol)
@@ -268,8 +334,6 @@ class Mouse:
         # Load protocol to dict
         with open(protocol) as protocol_file:
             self.current = json.load(protocol_file)
-
-        sys.stdout.flush()
 
         # Make filenode and save as serialized json
         current_node = filenode.new_node(h5f, where='/', name='current')
@@ -351,22 +415,29 @@ class Mouse:
         self.update_history('protocol', protocol_name, self.current)
 
     def flush_current(self):
-        # Flush the 'current' attribute in the mouse object to the .h5
-        # makes sure the stored .json representation of the current task stays up to date
-        # with the params set in the mouse object
+        """
+        Flushes the 'current' attribute in the mouse object to the current filenode
+        in the .h5
+
+        Used to make sure the stored .json representation of the current task stays up to date
+        with the params set in the mouse object
+        """
         h5f = self.open_hdf()
         h5f.remove_node('/current')
         current_node = filenode.new_node(h5f, where='/', name='current')
         current_node.write(json.dumps(self.current))
         current_node.attrs['step'] = self.step
         current_node.attrs['protocol_name'] = self.protocol_name
-        _ = self.close_hdf(h5f)
+        self.close_hdf(h5f)
 
     def stash_current(self):
-        # Save the current protocol in the history group and delete the node
-        # Typically this should only be called when assigning a new protocol but what do I know
+        """
+        Save the current protocol in the history group and delete the node
 
-        # We store it as the date that it was changed followed by its name if it has one
+        Typically this is called when assigning a new protocol.
+
+        Stored as the date that it was changed followed by its name if it has one
+        """
         h5f = self.open_hdf()
         try:
             protocol_name = h5f.get_node_attr('/current', 'protocol_name')
@@ -386,12 +457,19 @@ class Mouse:
         self.close_hdf(h5f)
 
     def prepare_run(self):
-        # type: () -> Dict[unicode, bool]
         """
+        Prepares the Mouse object to receive data while running the task.
+
+        Gets information about current task, trial number,
+        spawns :class:`~.tasks.graduation.Graduation` object,
+        spawns :attr:`~.Mouse.data_queue` and calls :meth:`~.Mouse.data_thread`.
+
         Returns:
-            Dict[unicode, bool]:
+            Dict: the parameters for the current step, with mouse id, step number,
+                current trial, and session number included.
         """
-        #trial_table = None
+
+        trial_table = None
         cont_table = None
 
         h5f = self.open_hdf()
@@ -436,7 +514,7 @@ class Mouse:
             # add other params asked for by the task class
             grad_obj = tasks.GRAD_LIST[grad_type]
 
-            if hasattr(grad_obj, 'PARAMS'):
+            if grad_obj.PARAMS:
                 # these are params that should be set in the protocol settings
                 for param in grad_obj.PARAMS:
                     if param not in grad_params.keys():
@@ -445,15 +523,13 @@ class Mouse:
                         if hasattr(self, param):
                             grad_params.update({param:getattr(self, param)})
 
-            if hasattr(grad_obj, 'COLS'):
+            if grad_obj.COLS:
                 # these are columns in our trial table
                 for col in grad_obj.COLS:
                     try:
                         grad_params.update({col: trial_table.col(col)})
                     except KeyError:
                         Warning('Graduation object requested column {}, but it was not found in the trial table'.format(col))
-
-
 
             #grad_params['value']['current_trial'] = str(self.current_trial) # str so it's json serializable
             self.graduation = grad_obj(**grad_params)
@@ -479,10 +555,21 @@ class Mouse:
         return task
 
     def data_thread(self, queue):
-        # type: (Queue.Queue) -> object
         """
+        Thread that keeps hdf file open and receives data while task is running.
+
+        receives data through :attr:`~.Mouse.queue` as dictionaries. Data can be
+        partial-trial data (eg. each phase of a trial) as long as the task returns a dict with
+        'TRIAL_END' as a key at the end of each trial.
+
+        each dict given to the queue should have the `trial_num`, and this method can
+        properly store data without passing `TRIAL_END` if so. I recommend being explicit, however.
+
+        Checks graduation state at the end of each trial.
+
         Args:
-            queue:
+            queue (:class:`queue.Queue`): passed by :meth:`~.Mouse.prepare_run` and used by other
+                objects to pass data to be stored.
         """
         h5f = self.open_hdf()
 
@@ -544,14 +631,19 @@ class Mouse:
         self.close_hdf(h5f)
 
     def save_data(self, data):
-        # type: (Dict[unicode, int]) -> None
         """
+        Alternate and equivalent method of putting data in the queue as `Mouse.data_queue.put(data)`
+
         Args:
-            data:
+            data (dict): trial data. each should have a 'trial_num', and a dictionary with key
+                'TRIAL_END' should be passed at the end of each trial.
         """
         self.data_queue.put(data)
 
     def stop_run(self):
+        """
+        puts 'END' in the data_queue, which causes :meth:`~.Mouse.data_thread` to end.
+        """
         self.data_queue.put('END')
         self.thread.join(5)
         self.running = False
@@ -560,8 +652,18 @@ class Mouse:
 
     def get_trial_data(self, step=-1):
         """
+        Get trial data from the current task.
+
         Args:
-            step:
+            step (int, list, 'all'): Step that should be returned, can be one of
+
+                * -1: most recent step
+                * int: a single step
+                * list of two integers eg. [0, 5], an inclusive range of steps.
+                * anything else, eg. 'all': all steps.
+
+        Returns:
+            :class:`pandas.DataFrame`: DataFrame of requested steps' trial data.
         """
         # step= -1 is just most recent step,
         # step= int is an integer specified step
@@ -599,6 +701,14 @@ class Mouse:
 
 
     def get_step_history(self):
+        """
+        Gets a dataframe of step numbers, timestamps, and step names
+        as a coarse view of training status.
+
+        Returns:
+            :class:`pandas.DataFrame`
+
+        """
         h5f = self.open_hdf()
         history = h5f.root.history.history
         # return a dataframe of step number, datetime and step name
@@ -616,8 +726,17 @@ class Mouse:
     def get_timestamp(self, simple=False):
         # type: (bool) -> str
         """
+        Makes a timestamp.
+
         Args:
-            simple:
+            simple (bool):
+                if True:
+                    returns as format '%y%m%d-%H%M%S', eg '190201-170811'
+                if False:
+                    returns in isoformat, eg. '2019-02-01T17:08:02.058808'
+
+        Returns:
+            basestring
         """
         # Timestamps have two different applications, and thus two different formats:
         # coarse timestamps that should be human-readable
@@ -628,11 +747,18 @@ class Mouse:
             return datetime.datetime.now().isoformat()
 
     def get_weight(self, which='last', include_baseline=False):
-        # type: (str, bool) -> None
         """
+        Gets start and stop weights.
+
+        TODO:
+            add ability to get weights by session number, dates, and ranges.
+
         Args:
-            which:
-            include_baseline:
+            which (str):  if 'last', gets most recent weights. Otherwise returns all weights.
+            include_baseline (bool): if True, includes baseline and minimum mass.
+
+        Returns:
+            dict
         """
         # get either the last start/stop weights, optionally including baseline
         # TODO: Get by session
@@ -646,6 +772,13 @@ class Mouse:
                     weights[column] = weight_table.read(-1, field=column)[0]
                 except IndexError:
                     weights[column] = None
+        else:
+            for column in weight_table.colnames:
+                try:
+                    weights[column] = weight_table.read(field=column)
+                except IndexError:
+                    weights[column] = None
+
         if include_baseline is True:
             try:
                 baseline = float(h5f.root.info._v_attrs['baseline_mass'])
@@ -660,14 +793,15 @@ class Mouse:
 
     def set_weight(self, date, col_name, new_value):
         """
+        Updates an existing weight in the weight table.
+
+        TODO:
+            Yes, i know this is bad. Merge with update_weights
 
         Args:
-            date ():
-            col_name ():
-            new_value ():
-
-        Returns:
-
+            date (str): date in the 'simple' format, %y%m%d-%H%M%S
+            col_name ('start', 'stop'): are we updating a pre-task or post-task weight?
+            new_value (float): New mass.
         """
 
         h5f = self.open_hdf()
@@ -677,15 +811,39 @@ class Mouse:
             row[col_name] = new_value
             row.update()
 
-
         self.close_hdf(h5f)
 
 
+    def update_weights(self, start=None, stop=None):
+        """
+        Store either a starting or stopping mass.
 
+        `start` and `stop` can be passed simultaneously, `start` can be given in one
+        call and `stop` in a later call, but `stop` should not be given before `start`.
 
+        Args:
+            start (float): Mass before running task in grams
+            stop (float): Mass after running task in grams.
+        """
+        h5f = self.open_hdf()
+        if start is not None:
+            weight_row = h5f.root.history.weights.row
+            weight_row['date'] = self.get_timestamp(simple=True)
+            weight_row['session'] = self.session
+            weight_row['start'] = float(start)
+            weight_row.append()
+        elif stop is not None:
+            # TODO: Make this more robust - don't assume we got a start weight
+            h5f.root.history.weights.cols.stop[-1] = stop
+        else:
+            Warning("Need either a start or a stop weight")
 
+        _ = self.close_hdf(h5f)
 
     def graduate(self):
+        """
+        Increase the current step by one, unless it is the last step.
+        """
         if len(self.current)<=self.step+1:
             Warning('Tried to graduate from the last step!\n Task has {} steps and we are on {}'.format(len(self.current), self.step+1))
             return
@@ -696,102 +854,44 @@ class Mouse:
         self.update_history('step', name, step)
 
     class History_Table(tables.IsDescription):
-        # Class to describe parameter and protocol change history
-        # Columns:
-            # Timestamp
-            # Type of change - protocol, parameter, step
-            # Name - Which parameter was changed, name of protocol, manual vs. graduation step change
-            # Value - What was the parameter/protocol/etc. changed to, step if protocol.
+        """
+        Class to describe parameter and protocol change history
+
+        Attributes:
+            time (str): timestamps
+            type (str): Type of change - protocol, parameter, step
+            name (str): Name - Which parameter was changed, name of protocol, manual vs. graduation step change
+            value (str): Value - What was the parameter/protocol/etc. changed to, step if protocol.
+        """
+
         time = tables.StringCol(256)
         type = tables.StringCol(256)
         name = tables.StringCol(256)
         value = tables.StringCol(4028)
 
     class Weight_Table(tables.IsDescription):
+        """
+        Class to describe table for weight history
+
+        Attributes:
+            start (float): Pre-task mass
+            stop (float): Post-task mass
+            date (str): Timestamp in simple format
+            session (int): Session number
+        """
         start = tables.Float32Col()
         stop  = tables.Float32Col()
         date  = tables.StringCol(256)
         session = tables.Int32Col()
 
     class Hash_Table(tables.IsDescription):
+        """
+        Class to describe table for hash history
+
+        Attributes:
+            time (str): Timestamps
+            hash (str): Hash of the currently checked out commit of the git repository.
+        """
         time = tables.StringCol(256)
         hash = tables.StringCol(40)
 
-
-
-############################################################################################
-# Utility functions and classes
-
-
-def flatten_dict(d, parent_key=''):
-    """h5py has trouble with nested dicts which are likely to be common w/ complex params. Flatten a dict s.t.:
-        {
-
-    Lifted from :
-    http://stackoverflow.com/questions/6027558/flatten-nested-python-dictionaries-compressing-keys/6043835#6043835
-
-    Args:
-        d:
-        parent_key:
-    """
-    items = []
-    for k, v in d.items():
-        try:
-            if type(v) == type([]):
-                for n, l in enumerate(v):
-                    items.extend(flatten_dict(l, '%s%s.%s.' % (parent_key, k, n)).items())
-            else:
-                items.extend(flatten_dict(v, '%s%s.' % (parent_key, k)).items())
-        except AttributeError:
-            items.append(('%s%s' % (parent_key, k), v))
-    return dict(items)
-
-
-def expand_dict(d):
-    """Recover flattened dicts
-
-    Args:
-        d:
-    """
-    items = dict()
-    for k,v in d.items():
-        if len(k.split('.'))>1:
-            current_level = items
-            for i in k.split('.')[:-1]: #all but the last entry
-                try:
-                    # If we come across an integer, we make a list of dictionaries
-                    i_int = int(i)
-                    if not isinstance(current_level[j],list):
-                        current_level[j] = list() # get the last entry and make it a list
-                    if i_int >= len(current_level[j]): # If we haven't populated this part of the list yet, fill.
-                        current_level[j].extend(None for _ in range(len(current_level[j]),i_int+1))
-                    if not isinstance(current_level[j][i_int],dict):
-                        current_level[j][i_int] = dict()
-                    current_level = current_level[j][i_int]
-                except ValueError:
-                    # Otherwise, we make a sub-dictionary
-                    try:
-                        current_level = current_level[j]
-                    except:
-                        pass
-                    if i not in current_level:
-                        current_level[i] = {}
-                    j = i #save this entry so we can enter it next round if it's not a list
-                    # If the last entry, enter the dict
-                    if i == k.split('.')[-2]:
-                        current_level = current_level[i]
-            current_level[k.split('.')[-1]] = v
-        else:
-            items[k] = v
-    return items
-
-class Biography(tables.IsDescription):
-    """pytables descriptor class for biographical information."""
-    name = tables.StringCol(32)
-    start_date = tables.StringCol(10)
-    baseline_mass = tables.Float32Col()
-    minimum_mass = tables.Float32Col()
-    box = tables.Int32Col()
-
-class DataTest(tables.IsDescription):
-    test = tables.StringCol(32)
