@@ -92,7 +92,6 @@ class InvokeEvent(QtCore.QEvent):
 
 class Invoker(QtCore.QObject):
     def event(self, event):
-        # type: (rpilot.core.utils.InvokeEvent) -> bool
         """
         Args:
             event:
@@ -100,18 +99,6 @@ class Invoker(QtCore.QObject):
         event.fn(*event.args, **event.kwargs)
         return True
 
-
-def get_prefs(prefs_fn = '/usr/rpilot/prefs.json'):
-    """
-    Args:
-        prefs_fn:
-    """
-    # convenience function to get prefs
-
-    with open(prefs_fn) as prefs_file:
-        prefs = json.load(prefs_file)
-
-    return prefs
 
 def update_pis(github=True, apt=False, pilot_select = None, prefs_fn = None):
     """
@@ -142,9 +129,6 @@ def update_pis(github=True, apt=False, pilot_select = None, prefs_fn = None):
         ip_string = " ".join(ips)
         call('parallel-ssh', '-H', ip_string, 'git --git-dir=/home/pi/git/RPilot/.git pull')
 
-def dummy():
-    # testing if update pi works
-    pass
 
 
 

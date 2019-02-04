@@ -16,7 +16,6 @@ import json
 import logging
 import threading
 import zmq
-import time
 import sys
 import datetime
 import os
@@ -25,8 +24,6 @@ import base64
 import socket
 from tornado.ioloop import IOLoop
 from zmq.eventloop.zmqstream import ZMQStream
-from warnings import warn
-from collections import deque
 from itertools import count
 
 from rpilot import prefs
@@ -37,11 +34,19 @@ class Networking(multiprocessing.Process):
     """
     Independent networking class used for messaging between computers.
 
-    These objects send and handle :class:`.networking.Message`s by using a
+    These objects send and handle :class:`.networking.Message` s by using a
     dictionary of :attr:`~.networking.Networking.listens`, or methods
     that are called to respond to different types of messages.
 
-    They can be made with or without a :attr:`~.networking.Networking.pusher`,
+    Each sent message is given an ID, and a thread is spawned to periodically
+    resend it (up until some time-to-live, typically 5 times) until confirmation
+    is received.
+
+    By default, the only listen these objects have is :meth:`.l_confirm`,
+    which responds to message confirmations. Accordingly, `listens` should be added
+    by using :meth:`dict.update` rather than reassigning the attribute.
+
+    Networking objects can be made with or without a :attr:`~.networking.Networking.pusher`,
     a :class:`zmq.DEALER` socket that connects to the :class:`zmq.ROUTER`
     socket of an upstream Networking object.
 
@@ -69,6 +74,8 @@ class Networking(multiprocessing.Process):
         senders (dict): Identities of other sockets (keys, ie. directly connected) and their state (values) if they keep one
         outbox (dict): Messages that have been sent but have not been confirmed
         timers (dict): dict of :class:`threading.Timer` s that will check in on outbox messages
+        msg_counter (:class:`itertools.count`): counter to index our sent messages
+        file_block (class:`threading.Event`): Event to signal when a file is being received.
 
 
     """
@@ -94,7 +101,6 @@ class Networking(multiprocessing.Process):
         super(Networking, self).__init__()
         # Prefs should be passed by the terminal, if not, try to load from default locatio
 
-
         self.ip = self.get_ip()
 
         # Setup logging
@@ -111,6 +117,14 @@ class Networking(multiprocessing.Process):
         }
 
     def run(self):
+        """
+        A :class:`zmq.Context` and :class:`tornado.IOLoop` are spawned,
+        the listener and optionally the pusher are instantiated and
+        connected to :meth:`~.Networking.handle_listen` using
+        :meth:`~zmq.eventloop.zmqstream.ZMQStream.on_recv` .
+
+        The process is kept open by the :class:`tornado.IOLoop` .
+        """
         # init zmq objects
         self.context = zmq.Context()
         self.loop = IOLoop()
@@ -134,16 +148,20 @@ class Networking(multiprocessing.Process):
             self.pusher.on_recv(self.handle_listen)
             # TODO: Make sure handle_listen knows how to handle ID-less messages
 
-
         self.logger.info('Starting IOLoop')
         self.loop.start()
 
     def prepare_message(self, to, key, value):
         """
+        If a message originates with us, a :class:`.Message` class
+        is instantiated, given an ID and the rest of its attributes.
+
         Args:
-            to:
-            key:
-            value:
+            to (str): The identity of the socket this message is to
+            key (str): The type of message - used to select which method the receiver
+                uses to process this message.
+            value: Any information this message should contain. Can be any type, but
+                must be JSON serializable.
         """
         msg = Message()
         msg.sender = self.id
@@ -157,16 +175,25 @@ class Networking(multiprocessing.Process):
         return msg
 
 
-    def send(self, to=None, key=None, value=None, msg=None, repeat=False):
-        """send message via the router don't need to thread this because router
-        sends are nonblocking
+    def send(self, to=None, key=None, value=None, msg=None, repeat=True):
+        """
+        Send a message via our :attr:`~.Networking.listener` , ROUTER socket.
+
+        Either an already created :class:`.Message` should be passed as `msg`,
+        or at least `to` and `key` must be provided for a new message created
+        by :meth:`~.Networking.prepare_message` .
+
+        A :class:`threading.Timer` is created to resend the message using
+        :meth:`~.Networking.repeat` unless `repeat` is False.
 
         Args:
-            to:
-            key:
-            value:
-            msg:
-            repeat:
+            to (str): The identity of the socket this message is to
+            key (str): The type of message - used to select which method the receiver
+                uses to process this message.
+            value: Any information this message should contain. Can be any type, but
+                must be JSON serializable.
+            msg (`.Message`): An already created message.
+            repeat (bool): Should this message be resent if confirmation is not received?
         """
 
         if not msg and not all([to, key]):
@@ -192,20 +219,37 @@ class Networking(multiprocessing.Process):
         self.listener.send_multipart([bytes(msg.to), msg_enc])
         self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
 
-        if not repeat and not msg.key == "CONFIRM":
+        if repeat and not msg.key == "CONFIRM":
             # add to outbox and spawn timer to resend
             self.outbox[msg.id] = msg
             self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,'send'))
             self.timers[msg.id].start()
 
-    def push(self,  to=None, key = None, value = None, msg=None, repeat=False):
+    def push(self,  to=None, key = None, value = None, msg=None, repeat=True):
         """
+        Send a message via our :attr:`~.Networking.pusher` , DEALER socket.
+
+        Unlike :meth:`~.Networking.send` , `to` is not required. Every message
+        is always sent to :attr:`~.Networking.push_id` . `to` can be included
+        to send a message further up the network tree to a networking object
+        we're not directly connected to.
+
+        Either an already created :class:`.Message` should be passed as `msg`,
+        or at least `key` must be provided for a new message created
+        by :meth:`~.Networking.prepare_message` .
+
+        A :class:`threading.Timer` is created to resend the message using
+        :meth:`~.Networking.repeat` unless `repeat` is False.
+
         Args:
-            to:
-            key:
-            value:
-            msg:
-            repeat:
+            to (str): The identity of the socket this message is to. If not included,
+                sent to :meth:`~.Networking.push_id` .
+            key (str): The type of message - used to select which method the receiver
+                uses to process this message.
+            value: Any information this message should contain. Can be any type, but
+                must be JSON serializable.
+            msg (`.Message`): An already created message.
+            repeat (bool): Should this message be resent if confirmation is not received?
         """
         # send message via the dealer
         # even though we only have one connection over our dealer,
@@ -217,10 +261,8 @@ class Networking(multiprocessing.Process):
                 Got\nto: {}\nkey: {}\nvalue: {}\nmsg: {}'.format(to, key, value, msg))
 
         if not msg:
-
             if to is None:
                 to = self.push_id
-
             msg = self.prepare_message(to, key, value)
 
         # Make sure our message has everything
@@ -234,12 +276,12 @@ class Networking(multiprocessing.Process):
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
-        # Even if the message is not to our upstream node, we still send it upstream because presumably our target is upstream.
+        # Even if the message is not to our upstream node, we still send it
+        # upstream because presumably our target is upstream.
         self.pusher.send_multipart([bytes(self.push_id), msg_enc])
-
         self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
 
-        if not repeat and not msg.key == 'CONFIRM':
+        if repeat and not msg.key == 'CONFIRM':
             # add to outbox and spawn timer to resend
             self.outbox[msg.id] = msg
             self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id, 'push'))
@@ -247,9 +289,16 @@ class Networking(multiprocessing.Process):
 
     def repeat(self, msg_id, send_type):
         """
+        Called by a :class:`threading.Timer` to resend a message that hasn't
+        been confirmed by its recipient.
+
+        TTL is decremented, and messages are resent until their TTL is 0.
+
         Args:
-            msg_id:
-            send_type:
+            msg_id (str): The ID of our message, the key used to store it
+                in :attr:`~.Networking.outbox` .
+            send_type ('send', 'push'): Should this message be resent with
+                our `listener` (send) or pusher?
         """
         # Handle repeated messages
         # If we still have the message in our outbox...
@@ -277,15 +326,16 @@ class Networking(multiprocessing.Process):
         else:
             self.logger.exception('Republish called without proper send_type!')
 
-
         # Spawn a thread to check in on our message
         self.timers[msg_id] = threading.Timer(5.0, self.repeat, args=(msg_id, send_type))
         self.timers[msg_id].start()
 
     def l_confirm(self, msg):
         """
+        Confirm that a message was received.
+
         Args:
-            msg:
+            msg (:class:`.Message`): The message we are confirming.
         """
         # confirmation that a published message was received
         # value should be the message id
@@ -303,8 +353,15 @@ class Networking(multiprocessing.Process):
 
     def handle_listen(self, msg):
         """
+        Upon receiving a message, call the appropriate listen method
+        in a new thread.
+
+        If the message is :attr:`~.Message.to` us, send confirmation.
+
+        If the message is not :attr:`~.Message.to` us, attempt to forward it.
+
         Args:
-            msg:
+            msg (str): JSON :meth:`.Message.serialize` d message.
         """
         # TODO: This check is v. fragile, pyzmq has a way of sending the stream along with the message
         if len(msg)==1:
@@ -374,6 +431,7 @@ class Networking(multiprocessing.Process):
         # finally, if there's something we're supposed to do, do it
         # even if the message is not to us,
         # sometimes we do work en passant to reduce effort doubling
+        # FIXME Seems like a really bad idea.
         if msg.key in self.listens.keys():
             listen_funk = self.listens[msg.key]
             listen_thread = threading.Thread(target=listen_funk, args=(msg,))
@@ -387,10 +445,10 @@ class Networking(multiprocessing.Process):
             elif send_type == 'dealer':
                 self.push(msg.sender, 'CONFIRM', msg.id)
 
-
-
-
     def init_logging(self):
+        """
+        Initialize logging to a timestamped file in `prefs.LOGDIR` .
+        """
         # Setup logging
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
         log_file = os.path.join(prefs.LOGDIR, 'Networking_Log_{}.log'.format(timestr))
@@ -404,6 +462,12 @@ class Networking(multiprocessing.Process):
         self.logger.info('Networking Logging Initiated')
 
     def get_ip(self):
+        """
+        Find our IP address
+
+        returns (str): our IPv4 address.
+        """
+
         # shamelessly stolen from https://www.w3resource.com/python-exercises/python-basic-exercise-55.php
         # variables are badly named because this is just a rough unwrapping of what was a monstrous one-liner
         # (and i don't really understand how it works)
@@ -419,11 +483,42 @@ class Networking(multiprocessing.Process):
         return unwrap2
 
 class Terminal_Networking(Networking):
+    """
+    :class:`~.networking.Networking` object used by :class:`~.Terminal`
+    objects.
+
+    Spawned without a :attr:`~.Networking.pusher`.
+
+    **Listens**
+
+    +-------------+-------------------------------------------+-----------------------------------------------+
+    | Key         | Method                                    | Description                                   |
+    +=============+===========================================+===============================================+
+    | 'PING'      | :meth:`~.Terminal_Networking.l_ping`      | We are asked to confirm that we are alive     |
+    +-------------+-------------------------------------------+-----------------------------------------------+
+    | 'INIT'      | :meth:`~.Terminal_Networking.l_init`      | Ask all pilots to confirm that they are alive |
+    +-------------+-------------------------------------------+-----------------------------------------------+
+    | 'CHANGE'    | :meth:`~.Terminal_Networking.l_change`    | Change a parameter on the Pi                  |
+    +-------------+-------------------------------------------+-----------------------------------------------+
+    | 'STOPALL'   | :meth:`~.Terminal_Networking.l_stopall`   | Stop all pilots and plots                     |
+    +-------------+-------------------------------------------+-----------------------------------------------+
+    | 'KILL'      | :meth:`~.Terminal_Networking.l_kill`      | Terminal wants us to die :(                   |
+    +-------------+-------------------------------------------+-----------------------------------------------+
+    | 'DATA'      | :meth:`~.Terminal_Networking.l_data`      | Stash incoming data from a Pilot              |
+    +-------------+-------------------------------------------+-----------------------------------------------+
+    | 'STATE'     | :meth:`~.Terminal_Networking.l_state`     | A Pilot has changed state                     |
+    +-------------+-------------------------------------------+-----------------------------------------------+
+    | 'HANDSHAKE' | :meth:`~.Terminal_Networking.l_handshake` | A Pi is telling us it's alive and its IP      |
+    +-------------+-------------------------------------------+-----------------------------------------------+
+    | 'FILE'      | :meth:`~.Terminal_Networking.l_file`      | The pi needs some file from us                |
+    +-------------+-------------------------------------------+-----------------------------------------------+
+
+    """
+
     def __init__(self, pilots):
-        # type: (collections.OrderedDict) -> None
         """
         Args:
-            pilots:
+            pilots (dict): The :attr:`.Terminal.pilots` dictionary.
         """
         super(Terminal_Networking, self).__init__()
 
@@ -436,11 +531,11 @@ class Terminal_Networking(Networking):
 
         # Message dictionary - What method to call for each type of message received by the terminal class
         self.listens.update({
-            'PING':      self.m_ping,  # We are asked to confirm that we are alive
-            'INIT':      self.m_init,  # We should ask all the pilots to confirm that they are alive
-            'CHANGE':    self.m_change,  # Change a parameter on the Pi
-            'STOPALL':   self.m_stopall, # Stop all pilots and plots
-            'KILL':      self.m_kill,  # Terminal wants us to die :(
+            'PING':      self.l_ping,  # We are asked to confirm that we are alive
+            'INIT':      self.l_init,  # We should ask all the pilots to confirm that they are alive
+            'CHANGE':    self.l_change,  # Change a parameter on the Pi
+            'STOPALL':   self.l_stopall, # Stop all pilots and plots
+            'KILL':      self.l_kill,  # Terminal wants us to die :(
             'DATA':      self.l_data,  # Stash incoming data from an rpilot
             'STATE':     self.l_state,  # The Pi is confirming/notifying us that it has changed state
             'HANDSHAKE': self.l_handshake, # initial connection with some initial info
@@ -455,19 +550,27 @@ class Terminal_Networking(Networking):
     ##########################
     # Message Handling Methods
 
-    def m_ping(self, msg):
+    def l_ping(self, msg):
         """
+        We are asked to confirm that we are alive
+
+        Respond with a blank 'STATE' message.
+
         Args:
-            msg:
+            msg (:class:`.Message`):
         """
         # we are being asked if we're alive
         # respond with blank message since the terminal isn't really stateful
         self.send(msg.sender, 'STATE')
 
-    def m_init(self, msg):
+    def l_init(self, msg):
         """
+        Ask all pilots to confirm that they are alive
+
+        Sends a "PING" to everyone in the pilots dictionary.
+
         Args:
-            msg:
+            msg (:class:`.Message`):
         """
         # Ping all pis that we are expecting given our pilot db
         # Responses will be handled with l_state so not much needed here
@@ -476,18 +579,25 @@ class Terminal_Networking(Networking):
             self.send(p, 'PING')
 
 
-    def m_change(self, msg):
+    def l_change(self, msg):
         """
+        Change a parameter on the Pi
+
+        Warning:
+            Not Implemented
+
         Args:
-            msg:
+            msg (:class:`.Message`):
         """
         # TODO: Should also handle param changes to GUI objects like ntrials, etc.
         pass
 
-    def m_stopall(self, msg):
+    def l_stopall(self, msg):
         """
+        Stop all pilots and plots
+
         Args:
-            msg:
+            msg (:class:`.Message`):
         """
         # let all the pilots and plot objects know that they should stop
         for p in self.pilots.keys():
@@ -495,10 +605,14 @@ class Terminal_Networking(Networking):
             self.send("P_{}".format(p), 'STOP')
 
 
-    def m_kill(self, msg):
+    def l_kill(self, msg):
         """
+        Terminal wants us to die :(
+
+        Stop the :attr:`.Networking.loop`
+
         Args:
-            msg:
+            msg (:class:`.Message`):
         """
         self.logger.info('Received kill request')
 
@@ -508,8 +622,13 @@ class Terminal_Networking(Networking):
 
     def l_data(self, msg):
         """
+        Stash incoming data from a Pilot
+
+        Just forward this along to the internal terminal object ('_T')
+        and a copy to the relevant plot.
+
         Args:
-            msg:
+            msg (:class:`.Message`):
         """
         # Send through to terminal
         self.send('_T', 'DATA', msg.value)
@@ -519,10 +638,13 @@ class Terminal_Networking(Networking):
 
 
     def l_state(self, msg):
-        """A Pilot or someone else is letting us know they're alive :param msg:
+        """
+        A Pilot has changed state.
+
+        Stash in 'state' field of pilot dict and send along to _T
 
         Args:
-            msg:
+            msg (:class:`.Message`):
         """
         if msg.sender in self.pilots.keys():
             self.pilots[msg.sender]['state'] = msg.value
@@ -535,10 +657,13 @@ class Terminal_Networking(Networking):
         self.senders[msg.sender] = msg.value
 
     def l_handshake(self, msg):
-        """Getting some initial info :param msg: :return:
+        """
+        A Pi is telling us it's alive and its IP.
+
+        Send along to _T
 
         Args:
-            msg:
+            msg (:class:`.Message`):
         """
         # only rly useful for our terminal object
         self.send('_T', 'HANDSHAKE', value=msg.value)
@@ -547,8 +672,17 @@ class Terminal_Networking(Networking):
 
     def l_file(self, msg):
         """
+        A Pilot needs some file from us.
+
+        Send it back after :meth:`base64.b64encode` ing it.
+
+        TODO:
+            Split large files into multiple messages...
+
         Args:
-            msg:
+            msg (:class:`.Message`): The value field of the message should contain some
+                relative path to a file contained within `prefs.SOUNDDIR` . eg.
+                `'/songs/sadone.wav'` would return `'os.path.join(prefs.SOUNDDIR/songs.sadone.wav'`
         """
         # The <target> pi has requested some file <value> from us, let's send it back
         # This assumes the file is small, if this starts crashing we'll have to split the message...
@@ -563,6 +697,28 @@ class Terminal_Networking(Networking):
         self.send(msg.target, 'FILE', file_message)
 
 class Pilot_Networking(Networking):
+    """
+    :class:`~.networking.Networking` object used by :class:`~.Pilot`
+    objects.
+
+    Spawned with a :attr:`~.Networking.pusher` connected back to the 
+    :class:`~.Terminal` .
+
+    **Listens**
+    
+    +-------------+-------------------------------------+-----------------------------------------------+
+    | Key         | Method                              | Description                                   |
+    +=============+=====================================+===============================================+
+    | 'STATE'     | :meth:`~.Pilot_Networking.l_state`  | Pilot has changed state                       |
+    | 'COHERE'    | :meth:`~.Pilot_Networking.l_cohere` | Make sure our data and the Terminal's match.  |
+    | 'PING'      | :meth:`~.Pilot_Networking.l_ping`   | The Terminal wants to know if we're listening |
+    | 'START'     | :meth:`~.Pilot_Networking.l_start`  | We are being sent a task to start             |
+    | 'STOP'      | :meth:`~.Pilot_Networking.l_stop`   | We are being told to stop the current task    |
+    | 'PARAM'     | :meth:`~.Pilot_Networking.l_change` | The Terminal is changing some task parameter  |
+    | 'FILE'      | :meth:`~.Pilot_Networking.l_file`   | We are receiving a file                       |
+    +-------------+-------------------------------------+-----------------------------------------------+
+
+    """
     def __init__(self):
         # Pilot has a pusher - connects back to terminal
         self.pusher = True
@@ -580,8 +736,8 @@ class Pilot_Networking(Networking):
         super(Pilot_Networking, self).__init__()
 
         self.listens.update({
-            'STATE': self.m_state,  # Confirm or notify terminal of state change
-            'COHERE': self.m_cohere, # Sending our temporary data table at the end of a run to compare w/ terminal's copy
+            'STATE': self.l_state,  # Confirm or notify terminal of state change
+            'COHERE': self.l_cohere, # Sending our temporary data table at the end of a run to compare w/ terminal's copy
             'PING': self.l_ping,  # The Terminal wants to know if we're listening
             'START': self.l_start,  # We are being sent a task to start
             'STOP': self.l_stop,  # We are being told to stop the current task
@@ -589,33 +745,45 @@ class Pilot_Networking(Networking):
             'FILE': self.l_file,  # We are receiving a file
         })
 
-
-
-
     ###########################3
     # Message/Listen handling methods
-    def m_state(self, msg):
+    def l_state(self, msg):
         """
+        Pilot has changed state
+
+        Stash it and alert the Terminal
+
         Args:
-            msg:
+            msg (:class:`.Message`):
         """
         # Save locally so we can respond to queries on our own, then push 'er on through
         # Value will just have the state, we want to add our name
         self.state = msg.value
 
+        self.push(to="T", key='STATE', value=msg.value)
 
-    def m_cohere(self, msg):
+
+    def l_cohere(self, msg):
         """
+        Send our local version of the data table so the terminal can double check
+
+        Warning:
+            Not Implemented
+
         Args:
-            msg:
+            msg (:class:`.Message`):
         """
-        # Send our local version of the data table so the terminal can double check
+
         pass
 
     def l_ping(self, msg):
         """
+        The Terminal wants to know our status
+
+        Push back our current state.
+
         Args:
-            msg:
+            msg (:class:`.Message`):
         """
         # The terminal wants to know if we are alive, respond with our name and IP
         # don't bother the pi
@@ -623,8 +791,15 @@ class Pilot_Networking(Networking):
 
     def l_start(self, msg):
         """
+        We are being sent a task to start
+
+        If we need any files, request them.
+
+        Then send along to the pilot.
+
         Args:
-            msg:
+            msg (:class:`.Message`): value will contain a dictionary containing a task
+                description.
         """
         self.mouse = msg.value['mouse']
 
@@ -652,23 +827,36 @@ class Pilot_Networking(Networking):
 
     def l_stop(self, msg):
         """
+        Tell the pi to stop the task
+
         Args:
-            msg:
+            msg (:class:`.Message`):
         """
         self.send(self.pi_id, 'STOP')
 
-    def l_change(self, value):
+    def l_change(self, msg):
         """
+        The terminal is changing a parameter
+
+        Warning:
+            Not implemented
+
         Args:
-            value:
+            msg (:class:`.Message`):
         """
         # TODO: Changing some task parameter from the Terminal
         pass
 
     def l_file(self, msg):
         """
+        We are receiving a file.
+
+        Decode from b64 and save. Set the file_block.
+
         Args:
-            msg:
+            msg (:class:`.Message`): value will have 'path' and 'file',
+                where the path determines where in `prefs.SOUNDDIR` the
+                b64 encoded 'file' will be saved.
         """
         # The file should be of the structure {'path':path, 'file':contents}
 
@@ -691,6 +879,13 @@ class Pilot_Networking(Networking):
 #####################################
 
 class Net_Node(object):
+    """
+    Drop in networking object to be given to any sub-object
+    behind some external-facing :class:`.Networking` object.
+
+    Attributes:
+
+    """
     context = None
     loop = None
     id = None
@@ -701,7 +896,6 @@ class Net_Node(object):
     timers = {}
     connected = False
     logger = None
-    "pop in networking object, has to set behind some external-facing networking object"
 
     def __init__(self, id, upstream, port, listens, instance=True):
         # type: (str, str, int, Dict[str, instancemethod], bool) -> None
@@ -818,8 +1012,7 @@ class Net_Node(object):
 
             self.send(msg.sender, 'CONFIRM', msg.id)
 
-    def send(self, to=None, key=None, value=None, msg=None, repeat=False):
-        # type: (str, str, Dict[unicode, bool], None, bool) -> None
+    def send(self, to=None, key=None, value=None, msg=None, repeat=True):
         """
         Args:
             to:
@@ -860,7 +1053,7 @@ class Net_Node(object):
         if self.logger:
             self.logger.info("MESSAGE SENT - {}".format(str(msg)))
 
-        if not repeat and not msg.key == "CONFIRM":
+        if repeat and not msg.key == "CONFIRM":
             # add to outbox and spawn timer to resend
             self.outbox[msg.id] = msg
             self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,))
