@@ -1,19 +1,23 @@
+"""
+Classes to plot data in the GUI.
+
+Note:
+    Plot objects need to be added to :data:`~.plots.PLOT_LIST` in order to be reachable.
+"""
+
 # Classes for plots
 import sys
-import json
 import logging
 import os
-from collections import deque as dq
 import numpy as np
-import PySide
+import PySide # have to import to tell pyqtgraph to use it
 import pandas as pd
 from PySide import QtGui
 from PySide import QtCore
 import pyqtgraph as pg
-import threading
 from time import time
 from itertools import count
-import functools
+from functools import wraps
 pg.setConfigOptions(antialias=True)
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -27,11 +31,14 @@ from rpilot.core.networking import Net_Node
 ###########
 
 def gui_event(fn):
-    # type: (function) -> function
     """
+    Wrapper/decorator around an event that posts GUI events back to the main
+    thread that our window is running in.
+
     Args:
-        fn:
+        fn (callable): a function that does something to the GUI
     """
+    @wraps(fn)
     def wrapper_gui_event(*args, **kwargs):
         # type: (object, object) -> None
         """
@@ -43,17 +50,18 @@ def gui_event(fn):
         QtCore.QCoreApplication.postEvent(prefs.INVOKER, InvokeEvent(fn, *args, **kwargs))
     return wrapper_gui_event
 
-def gui_event_fn(fn, *args, **kwargs):
-    """
-    Args:
-        fn:
-        *args:
-        **kwargs:
-    """
-    QtCore.QCoreApplication.postEvent(prefs.INVOKER, InvokeEvent(fn, *args, **kwargs))
-
 
 class Plot_Widget(QtGui.QWidget):
+    """
+    Main plot widget that holds plots for all pilots
+
+    Essentially just a container to give plots a layout and handle any
+    logic that should apply to all plots.
+
+    Attributes:
+        logger (`logging.Logger`): The 'main' logger
+        plots (dict): mapping from pilot name to :class:`.Plot`
+    """
     # Widget that frames multiple plots
     def __init__(self):
         # type: () -> None
@@ -61,8 +69,6 @@ class Plot_Widget(QtGui.QWidget):
 
         self.logger = logging.getLogger('main')
 
-        # store invoker to give to children
-        self.invoker = prefs.INVOKER
 
         # We should get passed a list of pilots to keep ourselves in order after initing
         self.pilots = None
@@ -91,10 +97,11 @@ class Plot_Widget(QtGui.QWidget):
         self.setContentsMargins(0, 0, 0, 0)
 
     def init_plots(self, pilot_list):
-        # type: (List[unicode]) -> None
         """
+        For each pilot, instantiate a :class:`.Plot` and add to layout.
+
         Args:
-            pilot_list:
+            pilot_list (list): the keys from :attr:`.Terminal.pilots`
         """
         self.pilots = pilot_list
 
@@ -145,24 +152,106 @@ class Plot_Widget(QtGui.QWidget):
 
 
 class Plot(QtGui.QWidget):
+    """
+    Widget that hosts a :class:`pyqtgraph.PlotWidget` and manages
+    graphical objects for one pilot depending on the task.
+
+    **listens**
+
+    +-------------+------------------------+-------------------------+
+    | Key         | Method                 | Description             |
+    +=============+========================+=========================+
+    | **'START'** | :meth:`~.Plot.l_start` | starting a new task     |
+    +-------------+------------------------+-------------------------+
+    | **'DATA'**  | :meth:`~.Plot.l_data`  | getting a new datapoint |
+    +-------------+------------------------+-------------------------+
+    | **'STOP'**  | :meth:`~.Plot.l_stop`  | stop the task           |
+    +-------------+------------------------+-------------------------+
+    | **'PARAM'** | :meth:`~.Plot.l_param` | change some parameter   |
+    +-------------+------------------------+-------------------------+
+
+    Attributes:
+        pilot (str): The name of our pilot, used to set the identity of our socket, specifically::
+
+            'P_{pilot}'
+
+        infobox (:class:`QtGui.QFormLayout`): Box to plot basic task information like trial number, etc.
+        info (dict): Widgets in infobox:
+
+            * 'N Trials': :class:`QtGui.QLabel`,
+            * 'Runtime' : :class:`.Timer`,
+            * 'Session' : :class:`QtGui.QLabel`,
+            * 'Protocol': :class:`QtGui.QLabel`,
+            * 'Step'    : :class:`QtGui.QLabel`
+
+        plot (:class:`pyqtgraph.PlotWidget`): The widget where we draw our plots
+        plot_params (dict): A dictionary of plot parameters we receive from the Task class
+        data (dict): A dictionary of the data we've received
+        plots (dict): The collection of plots we instantiate based on `plot_params`
+        node (:class:`.Net_Node`): Our local net node where we listen for data.
+    """
+
     def __init__(self, pilot, x_width=50):
-        # type: (unicode, int) -> None
         """
         Args:
-            pilot:
-            x_width:
+            pilot (str): The name of our pilot
+            x_width (int): How many trials in the past should we plot?
         """
         super(Plot, self).__init__()
 
         self.logger = logging.getLogger('main')
 
-        self.layout = QtGui.QHBoxLayout()
-        self.setLayout(self.layout)
+        self.layout = None
+        self.infobox = None
+        self.n_trials = None
+        self.session_trials = 0
+        self.info = {}
+        self.plot = None
+        self.xrange = None
+        self.plot_params = {}
+        self.data = {} # Keep a dict of the data we are keeping track of, will be instantiated on start
+        self.plots = {}
+
+        self.invoker = prefs.INVOKER
 
         # The name of our pilot, used to listen for events
         self.pilot = pilot
 
-        self.invoker = prefs.INVOKER
+        # Set initial x-value, will update when data starts coming in
+        self.x_width = x_width
+        self.last_trial = self.x_width
+
+        # Inits the basic widget settings
+        self.init_plots()
+
+        ## Networking
+        # Start the listener, subscribes to terminal_networking that will broadcast data
+        self.listens = {
+            'START' : self.l_start, # Receiving a new task
+            'DATA' : self.l_data, # Receiving a new datapoint
+            'STOP' : self.l_stop,
+            'PARAM': self.l_param # changing some param
+        }
+
+        self.node = Net_Node(id='P_{}'.format(self.pilot),
+                             upstream="T",
+                             port=prefs.MSGPORT,
+                             listens=self.listens,
+                             instance=True)
+
+
+    @gui_event
+    def init_plots(self):
+        """
+        Make pre-task GUI objects and set basic visual parameters of `self.plot`
+        """
+
+        # This is called to make the basic plot window,
+        # each task started should then send us params to populate afterwards
+        #self.getPlotItem().hideAxis('bottom')
+
+        self.layout = QtGui.QHBoxLayout()
+        self.setLayout(self.layout)
 
         # A little infobox to keep track of running time, trials, etc.
         self.infobox = QtGui.QFormLayout()
@@ -184,40 +273,9 @@ class Plot(QtGui.QWidget):
         self.plot = pg.PlotWidget()
         self.layout.addWidget(self.plot, 8)
 
-        # Set initial x-value, will update when data starts coming in
-        self.x_width = x_width
-        self.last_trial = self.x_width
-        self.xrange = xrange(self.last_trial-self.x_width+1, self.last_trial+1)
+        self.xrange = xrange(self.last_trial - self.x_width + 1, self.last_trial + 1)
         self.plot.setXRange(self.xrange[0], self.xrange[-1])
 
-        # Inits the basic widget settings
-        self.init_plots()
-
-        self.plot_params = {}
-        self.data = {} # Keep a dict of the data we are keeping track of, will be instantiated on start
-        self.plots = {}
-
-        ## Networking
-        # Start the listener, subscribes to terminal_networking that will broadcast data
-        self.listens = {
-            'START' : self.l_start, # Receiving a new task
-            'DATA' : self.l_data, # Receiving a new datapoint
-            'STOP' : self.l_stop,
-            'PARAM': self.l_param # changing some param
-        }
-
-        self.node = Net_Node(id='P_{}'.format(self.pilot),
-                             upstream="T",
-                             port=prefs.MSGPORT,
-                             listens=self.listens,
-                             instance=True)
-
-
-    @gui_event
-    def init_plots(self):
-        # This is called to make the basic plot window,
-        # each task started should then send us params to populate afterwards
-        #self.getPlotItem().hideAxis('bottom')
         self.plot.getPlotItem().hideAxis('left')
         self.plot.setBackground(None)
         self.plot.setXRange(self.xrange[0], self.xrange[1])
@@ -226,14 +284,27 @@ class Plot(QtGui.QWidget):
     @gui_event
     def l_start(self, value):
         """
+        Starting a task, initialize task-specific plot objects described in the
+        :attr:`.Task.PLOT` attribute.
+
+        Matches the data field name (keys of :attr:`.Task.PLOT` ) to the plot object
+        that represents it, eg, to make the standard nafc plot::
+
+            {'target'   : 'point',
+             'response' : 'segment',
+             'correct'  : 'rollmean'}
+
         Args:
-            value:
+            value (dict): The same parameter dictionary sent by :meth:`.Terminal.toggle_start`, including
+
+                * current_trial
+                * step
+                * session
+                * step_name
+                * task_type
         """
         # We're sent a task dict, we extract the plot params and send them to the plot object
         self.plot_params = tasks.TASK_LIST[value['task_type']].PLOT
-
-        print(self.plot_params)
-        sys.stdout.flush()
 
         # set infobox stuff
         self.n_trials = count()
@@ -268,8 +339,11 @@ class Plot(QtGui.QWidget):
     @gui_event
     def l_data(self, value):
         """
+        Receive some data, if we were told to plot it, stash the data
+        and update the assigned plot.
+
         Args:
-            value:
+            value (dict): Value field of a data message sent during a task.
         """
         if 'trial_num' in value.keys():
             v = value.pop('trial_num')
@@ -292,8 +366,10 @@ class Plot(QtGui.QWidget):
     @gui_event
     def l_stop(self, value):
         """
+        Clean up the plot objects.
+
         Args:
-            value:
+            value (dict): if "graduation" is a key, don't stop the timer.
         """
         self.data = {}
         self.plots = {}
@@ -311,30 +387,31 @@ class Plot(QtGui.QWidget):
 
     def l_param(self, value):
         """
+        Warning:
+            Not implemented
+
         Args:
             value:
         """
         pass
-    #
-    # def gui_event(self, fn):
-    #     # Don't ask me how this works, stolen from
-    #     # https://stackoverflow.com/a/12127115
-    #     # turn it into a decorator so we can use Net_Node's handling function
-    #     QtCore.QCoreApplication.postEvent(self.invoker, InvokeEvent(fn, *args, **kwargs))
-
-
-
 
 
 ###################################
 # Curve subclasses
 class Point(pg.PlotDataItem):
+    """
+    A simple point.
+
+    Attributes:
+        brush (:class:`QtGui.QBrush`)
+        pen (:class:`QtGui.QPen`)
+    """
+
     def __init__(self, color=(0,0,0), size=5):
-        # type: (Tuple[int, int, int], int) -> None
         """
         Args:
-            color:
-            size:
+            color (tuple): RGB color of points
+            size (int): width in px.
         """
         super(Point, self).__init__()
 
@@ -343,10 +420,11 @@ class Point(pg.PlotDataItem):
         self.size  = size
 
     def update(self, data):
-        # type: (numpy.ndarray) -> None
         """
         Args:
-            data:
+            data (:class:`numpy.ndarray`): an x_width x 2 array where
+                column 0 is trial number and column 1 is the value,
+                where value can be "L", "C", "R" or a float.
         """
         # data should come in as an n x 2 array,
         # 0th column - trial number (x), 1st - (y) value
@@ -361,14 +439,23 @@ class Point(pg.PlotDataItem):
 
 
 class Segment(pg.PlotDataItem):
+    """
+    A line segment that draws from 0.5 to some endpoint.
+    """
     def __init__(self):
         # type: () -> None
         super(Segment, self).__init__()
 
     def update(self, data):
         """
+        data is doubled and then every other value is set to 0.5,
+        then :meth:`~pyqtgraph.PlotDataItem.curve.setData` is used with
+        `connect='pairs'` to make line segments.
+
         Args:
-            data:
+            data (:class:`numpy.ndarray`): an x_width x 2 array where
+                column 0 is trial number and column 1 is the value,
+                where value can be "L", "C", "R" or a float.
         """
         # data should come in as an n x 2 array,
         # 0th column - trial number (x), 1st - (y) value
@@ -385,11 +472,14 @@ class Segment(pg.PlotDataItem):
 
 
 class Roll_Mean(pg.PlotDataItem):
+    """
+    Shaded area underneath a rolling average.
+    """
     def __init__(self, winsize=10):
         # type: (int) -> None
         """
         Args:
-            winsize:
+            winsize (int): number of trials in the past to take a rolling mean of
         """
         super(Roll_Mean, self).__init__()
 
@@ -405,7 +495,8 @@ class Roll_Mean(pg.PlotDataItem):
     def update(self, data):
         """
         Args:
-            data:
+            data (:class:`numpy.ndarray`): an x_width x 2 array where
+                column 0 is trial number and column 1 is the value.
         """
         # data should come in as an n x 2 array,
         # 0th column - trial number (x), 1st - (y) value
@@ -420,6 +511,11 @@ class Roll_Mean(pg.PlotDataItem):
 
 
 class Timer(QtGui.QLabel):
+    """
+    A simple timer that counts... time...
+
+    Uses a :class:`QtCore.QTimer` connected to :meth:`.Timer.update_time` .
+    """
     def __init__(self):
         # type: () -> None
         super(Timer, self).__init__()
@@ -430,42 +526,51 @@ class Timer(QtGui.QLabel):
         self.start_time = None
 
     def start_timer(self, update_interval=1000):
-        # type: (int) -> None
         """
         Args:
-            update_interval:
+            update_interval (float): How often (in ms) the timer should be updated.
         """
         self.start_time = time()
         self.timer.start(update_interval)
 
     def stop_timer(self):
+        """
+        you can read the sign ya punk
+        """
         self.timer.stop()
         self.setText("")
 
     def update_time(self):
-        # type: () -> None
+        """
+        Called every (update_interval) milliseconds to set the text of the timer.
+
+        """
         secs_elapsed = int(np.floor(time()-self.start_time))
         self.setText("{:02d}:{:02d}:{:02d}".format(secs_elapsed/3600, (secs_elapsed/60)%60, secs_elapsed%60))
 
 
-class Highlight():
-    # TODO Implement me
-    def __init__(self):
-        pass
-
-    pass
+# class Highlight():
+#     # TODO Implement me
+#     def __init__(self):
+#         pass
+#
+#     pass
 
 
 class HLine(QtGui.QFrame):
+    """
+    A Horizontal line.
+    """
     def __init__(self):
         # type: () -> None
         super(HLine, self).__init__()
         self.setFrameShape(QtGui.QFrame.HLine)
         self.setFrameShadow(QtGui.QFrame.Sunken)
 
+
 PLOT_LIST = {
     'point':Point,
     'segment':Segment,
     'rollmean':Roll_Mean,
-    'highlight':Highlight
+    # 'highlight':Highlight
 }

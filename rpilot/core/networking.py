@@ -75,7 +75,7 @@ class Networking(multiprocessing.Process):
         outbox (dict): Messages that have been sent but have not been confirmed
         timers (dict): dict of :class:`threading.Timer` s that will check in on outbox messages
         msg_counter (:class:`itertools.count`): counter to index our sent messages
-        file_block (class:`threading.Event`): Event to signal when a file is being received.
+        file_block (:class:`threading.Event`): Event to signal when a file is being received.
 
 
     """
@@ -883,8 +883,31 @@ class Net_Node(object):
     Drop in networking object to be given to any sub-object
     behind some external-facing :class:`.Networking` object.
 
-    Attributes:
+    These objects are intended to communicate locally, within a piece of hardware,
+    though not necessarily within the same process.
 
+    To minimize the complexity of the network topology, Net_Nodes
+    must communicate through a :class:`.Networking` ROUTER, rather than
+    address each other directly.
+
+    Attributes:
+        context (:class:`zmq.Context`):  zeromq context
+        loop (:class:`tornado.ioloop.IOLoop`): a tornado ioloop
+        sock (:class:`zmq.Socket`): Our DEALER socket.
+        id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
+        upstream (str): The identity of the ROUTER socket used by our upstream :class:`.Networking` object.
+        port (int): The port that our upstream ROUTER socket is bound to
+        listens (dict): Dictionary of functions to call for different types of messages. keys match the :attr:`.Message.key`.
+        outbox (dict): Messages that have been sent but have not been confirmed
+        timers (dict): dict of :class:`threading.Timer` s that will check in on outbox messages
+        logger (:class:`logging.Logger`): Used to log messages and network events.
+        log_handler (:class:`logging.FileHandler`): Handler for logging
+        log_formatter (:class:`logging.Formatter`): Formats log entries as::
+
+            "%(asctime)s %(levelname)s : %(message)s"
+
+        msg_counter (:class:`itertools.count`): counter to index our sent messages
+        loop_thread (:class:`threading.Thread`): Thread that holds our loop. initialized with `daemon=True`
     """
     context = None
     loop = None
@@ -894,18 +917,22 @@ class Net_Node(object):
     listens = {}
     outbox = {}
     timers = {}
-    connected = False
+    #connected = False
     logger = None
+    log_handler = None
+    log_formatter = None
+    sock = None
+    loop_thread = None
 
     def __init__(self, id, upstream, port, listens, instance=True):
-        # type: (str, str, int, Dict[str, instancemethod], bool) -> None
         """
         Args:
-            id:
-            upstream:
-            port:
-            listens:
-            instance:
+            id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
+            upstream (str): The identity of the ROUTER socket used by our upstream :class:`.Networking` object.
+            port (int): The port that our upstream ROUTER socket is bound to
+            listens (dict): Dictionary of functions to call for different types of messages.
+                keys match the :attr:`.Message.key`.
+            instance (bool): Should the node try and use the existing zmq context and tornado loop?
         """
         if instance:
             self.context = zmq.Context.instance()
@@ -925,19 +952,19 @@ class Net_Node(object):
         self.upstream = upstream.encode('utf-8')
         self.port = int(port)
 
-        self.connected = False
+        # self.connected = False
         self.msg_counter = count()
 
         # try to get a logger
-        try:
-            self.logger = logging.getLogger('main')
-        except:
-            Warning("Net Node {} Couldn't get logger :(".format(self.id))
+        self.init_logging()
 
         self.init_networking()
 
     def init_networking(self):
-        # type: () -> None
+        """
+        Creates socket, connects to specified port on localhost,
+        and starts the :meth:`~Net_Node.threaded_loop` as a daemon thread.
+        """
         self.sock = self.context.socket(zmq.DEALER)
         self.sock.identity = self.id
         #self.sock.probe_router = 1
@@ -953,10 +980,15 @@ class Net_Node(object):
         self.loop_thread.daemon = True
         self.loop_thread.start()
 
-        self.connected = True
+        #self.connected = True
 
     def threaded_loop(self):
-        # type: () -> object
+        """
+        Run in a thread, either starts the IOLoop, or if it
+        is already started (ie. running in another thread),
+        breaks.
+        """
+
         while True:
             try:
                 self.loop.start()
@@ -964,12 +996,18 @@ class Net_Node(object):
                 # loop already started
                 break
 
-
     def handle_listen(self, msg):
-        # type: (List[str]) -> None
         """
+        Upon receiving a message, call the appropriate listen method
+        in a new thread and send confirmation it was received.
+
+        Note:
+            Unlike :meth:`.Networking.handle_listen` , only the :attr:`.Message.value`
+            is given to listen methods. This was initially intended to simplify these
+            methods, but this might change in the future to unify the messaging system.
+
         Args:
-            msg:
+            msg (str): JSON :meth:`.Message.serialize` d message.
         """
         # messages from dealers are single frames because we only have one connected partner
         # and that's the dealer spec lol
@@ -987,39 +1025,54 @@ class Net_Node(object):
         if self.logger:
             self.logger.info('{} - RECEIVED: {}'.format(self.id, str(msg)))
 
-        if msg.key == 'CONFIRM':
-            if msg.value in self.outbox.keys():
-                del self.outbox[msg.value]
+        # if msg.key == 'CONFIRM':
+        #     if msg.value in self.outbox.keys():
+        #         del self.outbox[msg.value]
+        #
+        #     # stop a timer thread if we have it
+        #     if msg.value in self.timers.keys():
+        #         self.timers[msg.value].cancel()
+        #         del self.timers[msg.value]
+        #
+        #     self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
+        # else:
+        # Log and spawn thread to respond to listen
+        try:
+            listen_funk = self.listens[msg.key]
+            listen_thread = threading.Thread(target=listen_funk, args=(msg.value,))
+            listen_thread.start()
+        except KeyError:
+            self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
 
-            # stop a timer thread if we have it
-            if msg.value in self.timers.keys():
-                self.timers[msg.value].cancel()
-                del self.timers[msg.value]
-
-            self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
-        else:
-            # Log and spawn thread to respond to listen
-            try:
-                listen_funk = self.listens[msg.key]
-                print(listen_funk)
-                sys.stdout.flush()
-                listen_thread = threading.Thread(target=listen_funk, args=(msg.value,))
-                listen_thread.start()
-            except KeyError:
-                self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
-
+        if msg.key != "CONFIRM":
             # send confirmation
-
             self.send(msg.sender, 'CONFIRM', msg.id)
 
     def send(self, to=None, key=None, value=None, msg=None, repeat=True):
         """
+        Send a message via our :attr:`~.Net_Node.sock` , DEALER socket.
+
+        `to` is not required. Every message
+        is always sent to :attr:`~.Net_Node.upstream` . `to` can be included
+        to send a message further up the network tree to a networking object
+        we're not directly connected to.
+
+        Either an already created :class:`.Message` should be passed as `msg`,
+        or at least `key` must be provided for a new message created
+        by :meth:`~.Net_Node.prepare_message` .
+
+        A :class:`threading.Timer` is created to resend the message using
+        :meth:`~.Net_Node.repeat` unless `repeat` is False.
+
         Args:
-            to:
-            key:
-            value:
-            msg (None):
-            repeat (bool):
+            to (str): The identity of the socket this message is to. If not included,
+                sent to :meth:`~.Net_Node.upstream` .
+            key (str): The type of message - used to select which method the receiver
+                uses to process this message.
+            value: Any information this message should contain. Can be any type, but
+                must be JSON serializable.
+            msg (`.Message`): An already created message.
+            repeat (bool): Should this message be resent if confirmation is not received?
         """
         # send message via the dealer
         # even though we only have one connection over our dealer,
@@ -1061,8 +1114,14 @@ class Net_Node(object):
 
     def repeat(self, msg_id):
         """
+        Called by a :class:`threading.Timer` to resend a message that hasn't
+        been confirmed by its recipient.
+
+        TTL is decremented, and messages are resent until their TTL is 0.
+
         Args:
-            msg_id:
+            msg_id (str): The ID of our message, the key used to store it
+                in :attr:`~.Net_Node.outbox` .
         """
         # Handle repeated messages
         # If we still have the message in our outbox...
@@ -1085,19 +1144,17 @@ class Net_Node(object):
         msg = self.outbox[msg_id]
         self.sock.send_multipart([bytes(self.upstream), msg.serialize()])
 
-
-
         # Spawn a thread to check in on our message
         self.timers[msg_id] = threading.Timer(5.0, self.repeat, args=(msg_id,))
         self.timers[msg_id].start()
 
     def l_confirm(self, value):
         """
+        Confirm that a message was received.
+
         Args:
-            value:
+            value (str): The ID of the message we are confirming.
         """
-        print('value: {}'.format(value))
-        sys.stdout.flush()
         # delete message from outbox if we still have it
         # msg.value should contain the if of the message that was confirmed
         if value in self.outbox.keys():
@@ -1110,16 +1167,17 @@ class Net_Node(object):
 
         self.logger.info('CONFIRMED MESSAGE {}'.format(value))
 
-
-
-
     def prepare_message(self, to, key, value):
-        # type: (str, str, Dict[unicode, bool]) -> rpilot.core.networking.Message
         """
+        Instantiate a :class:`.Message` class, give it an ID and
+        the rest of its attributes.
+
         Args:
-            to:
-            key:
-            value:
+            to (str): The identity of the socket this message is to
+            key (str): The type of message - used to select which method the receiver
+                uses to process this message.
+            value: Any information this message should contain. Can be any type, but
+                must be JSON serializable.
         """
         msg = Message()
 
@@ -1139,16 +1197,46 @@ class Net_Node(object):
 
         return msg
 
-    def l_confirm(self, msg):
+    def init_logging(self):
         """
-        Args:
-            msg:
+        Initialize logging to a timestamped file in `prefs.LOGDIR` .
+
+        The logger name will be `'node.{id}'` .
         """
-        pass
+        timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
+        log_file = os.path.join(prefs.LOGDIR, 'NetNode_{}_{}.log'.format(self.id, timestr))
+
+        self.logger = logging.getLogger('node.{}'.format(self.id))
+        self.log_handler = logging.FileHandler(log_file)
+        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
+        self.log_handler.setFormatter(self.log_formatter)
+        self.logger.addHandler(self.log_handler)
+        self.logger.setLevel(logging.INFO)
+        self.logger.info('{} Logging Initiated'.format(self.id))
 
 
 
 class Message(object):
+    """
+    A formatted message.
+
+    `id`, `to`, `sender`, and `key` are required attributes,
+    but any other key-value pair passed on init is added to the message's attributes
+    and included in the message.
+
+    Can be indexed and set like a dictionary (message['key'], etc.)
+
+    Attributes:
+        id (str): ID that uniquely identifies a message.
+            format {sender.id}_{number}
+        to (str): ID of socket this message is addressed to
+        sender (str): ID of socket where this message originates
+        key (str): Type of message, used to select a listen method to process it
+        value: Body of message, can be any type but must be JSON serializable.
+        ttl (int): Time-To-Live, each message is sent this many times at max,
+            each send decrements ttl.
+    """
+
     # TODO: just make serialization handle all attributes except Files which need to be b64 encoded first.
     id = None # number of message, format {sender.id}_{number}
     to = None
@@ -1216,10 +1304,11 @@ class Message(object):
         return len(self.__dict__)
 
     def validate(self):
-        # type: () -> bool
         """
+        Checks if `id`, `to`, `sender`, and `key` are all defined.
+
         Returns:
-            bool:
+            bool (True): Does message have all required attributes set?
         """
         if all([self.id, self.to, self.sender, self.key]):
             return True
@@ -1227,10 +1316,11 @@ class Message(object):
             return False
 
     def serialize(self):
-        # type: () -> str
         """
+        Serializes all attributes in `__dict__` using json.
+
         Returns:
-            str:
+            str: JSON serialized message.
         """
         valid = self.validate()
         if not valid:

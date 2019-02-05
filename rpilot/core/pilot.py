@@ -1,12 +1,7 @@
 #!/usr/bin/python2.7
 
 """
-Drives the Raspberry Pi
 
-Sets up & coordinates the multiple threads needed to function as a standalone taskontrol client
-    -State Control: Managing box I/O and the state matrix
-    -Audio Server
-    -Communication w/ home terminal via TCP/IP
 """
 
 __version__ = '0.2'
@@ -16,7 +11,6 @@ import os
 import sys
 import datetime
 import logging
-import json
 import argparse
 import threading
 import time
@@ -63,6 +57,71 @@ import hardware
 ########################################
 
 class RPilot:
+    """
+    Drives the Raspberry Pi
+
+    Coordinates the hardware and networking objects to run tasks.
+
+    Typically used with a connection to a :class:`.Terminal` object to
+    coordinate multiple mice and tasks, but a high priority for future releases
+    is to do the (trivial amount of) work to make this class optionally
+    standalone.
+
+    Called as a module with the -f flag to give the location of a prefs file, eg::
+
+        python pilot.py -f prefs_file.json
+
+    if the -f flag is not passed, looks in the default location for prefs
+    (ie. `/usr/rpilot/prefs.json`)
+
+    Needs the following prefs (typically established by :mod:`.setup.setup_pilot`):
+
+    * **NAME** - The name used by networking objects to address this Pilot
+    * **BASEDIR** - The base directory for rpilot files (/usr/rpilot)
+    * **PUSHPORT** - Router port used by the Terminal we connect to.
+    * **TERMINALIP** - IP Address of our upstream Terminal.
+    * **MSGPORT** - Port used by our own networking object
+    * **PINS** - Any hardware and its mapping to GPIO pins. No pins are required to be set, instead each
+      task defines which pins it needs. Currently the default configuration asks for
+
+        * POKES - :class:`.hardware.Beambreak`
+        * LEDS - :class:`.hardware.LED_RGB`
+        * PORTS - :class:`.hardware.Solenoid`
+
+    * **AUDIOSERVER** - Which type, if any, audio server to use (`'jack'`, `'pyo'`, or `'none'`)
+    * **NCHANNELS** - Number of audio channels
+    * **FS** - Sampling rate of audio output
+    * **JACKDSTRING** - string used to start the jackd server, see `the jack manpages <https://linux.die.net/man/1/jackd>`_ eg::
+
+        jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -n3 -s &
+
+    * **PIGPIOMASK** - Binary mask of pins for pigpio to control, see `the pigpio docs <http://abyz.me.uk/rpi/pigpio/pigpiod.html>`_ , eg::
+
+        1111110000111111111111110000
+
+    * **PULLUPS** - Pin (board) numbers to pull up on boot
+    * **PULLDOWNS** - Pin (board) numbers to pull down on boot.
+
+    Attributes:
+        name (str): The name used to identify ourselves in :mod:`.networking`
+        task (:class:`.tasks.Task`): The currently instantiated task
+        running (:class:`threading.Event`): Flag used to control task running state
+        stage_block (:class:`threading.Event`): Flag given to a task to signal when task stages finish
+        file_block (:class:`threading.Event`): Flag used to wait for file transfers
+        state (str): 'RUNNING', 'STOPPING', 'IDLE' - signals what this pilot is up to
+        pulls (list): list of :class:`~.hardware.Pull` objects to keep pins pulled up or down
+        server: Either a :func:`~.sound.pyoserver.pyo_server` or :class:`~.jackclient.JackClient` , sound server.
+        node (:class:`.networking.Net_Node`): Our Net_Node we use to communicate with our main networking object
+        networking (:class:`.networking.Pilot_Networking`): Our networking object to communicate with the outside world
+        ip (str): Our IPv4 address
+        listens (dict): Dictionary mapping message keys to methods used to process them.
+        logger (:class:`logging.Logger`): Used to log messages and network events.
+        log_handler (:class:`logging.FileHandler`): Handler for logging
+        log_formatter (:class:`logging.Formatter`): Formats log entries as::
+
+            "%(asctime)s %(levelname)s : %(message)s"
+    """
+
     logger = None
     log_handler = None
     log_formatter = None
@@ -75,6 +134,9 @@ class RPilot:
     # networking - our internal and external messengers
     node = None
     networking = None
+
+    # audio server
+    server = None
 
     def __init__(self):
         self.name = prefs.NAME
@@ -95,8 +157,7 @@ class RPilot:
         self.listens = {
             'START': self.l_start, # We are being passed a task and asked to start it
             'STOP' : self.l_stop, # We are being asked to stop running our task
-            'PARAM': self.l_param, # A parameter is being changes
-            'LVLUP': self.l_levelup, # The mouse has leveled up! (combines stop/start)
+            'PARAM': self.l_param, # A parameter is being changed
         }
 
         # spawn_network gives us the independent message-handling process
@@ -130,7 +191,10 @@ class RPilot:
         # TODO Synchronize system clock w/ time from terminal.
 
     def init_logging(self):
-        # Start Logging
+        """
+        Start logging to a timestamped file in `prefs.LOGDIR`
+        """
+
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
         log_file = os.path.join(prefs.LOGDIR, 'Pilots_Log_{}.log'.format(timestr))
 
@@ -147,6 +211,10 @@ class RPilot:
     #################################################################
 
     def get_ip(self):
+        """
+        Get our IP
+        """
+
         # shamelessly stolen from https://www.w3resource.com/python-exercises/python-basic-exercise-55.php
         # variables are badly named because this is just a rough unwrapping of what was a monstrous one-liner
 
@@ -160,17 +228,33 @@ class RPilot:
         return unwrap2
 
     def handshake(self):
+        """
+        Send the terminal our name and IP to signal that we are alive
+        """
         # send the terminal some information about ourselves
         hello = {'pilot':self.name, 'ip':self.ip}
         self.node.send('T', 'HANDSHAKE', value=hello)
 
     def update_state(self):
+        """
+        Send our current state to the Terminal,
+        our Networking object will cache this and will handle any
+        future requests.
+        """
         self.node.send('T', 'STATE', self.state)
 
     def l_start(self, value):
         """
+        Start running a task.
+
+        Get the task object by using `value['task_type']` to select from
+        :data:`.tasks.TASK_LIST` , then feed the rest of `value` as kwargs
+        into the task object.
+
+        Calls :meth:`.RPilot.run_task` in a new thread
+
         Args:
-            value:
+            value (dict): A dictionary of task parameters
         """
         # TODO: If any of the sounds are 'file,' make sure we have them. If not, request them.
         # Value should be a dict of protocol params
@@ -196,8 +280,15 @@ class RPilot:
 
     def l_stop(self, value):
         """
+        Stop the task.
+
+        Clear the running event, set the stage block.
+
+        TODO:
+            Do a coherence check between our local file and the Terminal's data.
+
         Args:
-            value:
+            value: ignored
         """
         # Let the terminal know we're stopping
         # (not stopped yet because we'll still have to sync data, etc.)
@@ -219,13 +310,11 @@ class RPilot:
 
     def l_param(self, value):
         """
-        Args:
-            value:
-        """
-        pass
+        Change a task parameter mid-run
 
-    def l_levelup(self, value):
-        """
+        Warning:
+            Not Implemented
+
         Args:
             value:
         """
@@ -236,6 +325,13 @@ class RPilot:
     #################################################################
 
     def init_audio(self):
+        """
+        Initialize an audio server depending on the value of
+        `prefs.AUDIOSERVER`
+
+        * 'pyo' = :func:`.pyoserver.pyo_server`
+        * 'jack' = :class:`.jackclient.JackClient`
+        """
         if prefs.AUDIOSERVER == 'pyo':
             self.server = pyoserver.pyo_server()
             self.logger.info("pyo server started")
@@ -244,7 +340,11 @@ class RPilot:
             self.server.start()
 
     def blank_LEDs(self):
-        # TODO: For some reason this dont work
+        """
+        If any 'LEDS' are defined in `prefs.PINS` ,
+        instantiate them, set their color to [0,0,0],
+        and then release them.
+        """
         if 'LEDS' not in prefs.PINS.keys():
             return
 
@@ -258,7 +358,16 @@ class RPilot:
     # Trial Running and Management
     #################################################################
     def open_file(self):
-        # Setup a table to store data locally
+        """
+        Setup a table to store data locally.
+
+        Opens `prefs.DATADIR/local.h5`, creates a group for the current mouse,
+        a new table for the current day.
+
+        Returns:
+            (:class:`tables.File`, :class:`tables.Table`,
+            :class:`tables.tableextension.Row`): The file, table, and row for the local data table
+        """
         # Get data table descriptor
         table_descriptor = self.task.TrialData
 
@@ -287,6 +396,16 @@ class RPilot:
         return h5f, table, row
 
     def run_task(self):
+        """
+        Called in a new thread, run the task.
+
+        Opens a file with :meth:`~.RPilot.open_file` , then
+        continually calls `task.stages.next` to process stages.
+
+        Sends data back to the terminal between every stage.
+
+        Waits for the task to clear `stage_block` between stages.
+        """
         # TODO: give a net node to the Task class and let the task run itself.
         # Run as a separate thread, just keeps calling next() and shoveling data
 
@@ -299,7 +418,6 @@ class RPilot:
         h5f, table, row = self.open_file()
 
         # TODO: Init sending continuous data here
-
 
         while True:
             # Calculate next stage data and prep triggers
@@ -335,6 +453,7 @@ class RPilot:
 
         h5f.flush()
         h5f.close()
+
 
 if __name__ == "__main__":
 

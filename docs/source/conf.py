@@ -125,10 +125,10 @@ html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 #
 html_theme_options = {
     'navbar_title': "RPilot",
-    'navbar_site_name': 'RPilot Documentation',
-    'globaltoc_depth': 2,
+    'navbar_site_name': 'RPilot Docs',
+    'globaltoc_depth': -1,
     'navbar_class': "navbar navbar-inverse",
-    'bootswatch_theme': "sandstone",
+    'bootswatch_theme': "readable",
 
 }
 #
@@ -237,7 +237,9 @@ intersphinx_mapping = {'python': ('https://docs.python.org/2', None),
                        'tables': ('https://pytables.readthedocs.io/en/latest/', None),
                        'pandas': ('http://pandas.pydata.org/pandas-docs/stable/', None),
                        'zmq': ('https://pyzmq.readthedocs.io/en/latest/', None),
-                       'tornado': ('https://www.tornadoweb.org/en/stable/', None)}
+                       'tornado': ('https://www.tornadoweb.org/en/stable/', None),
+                       'pyqtgraph': ('https://pyqtgraph.readthedocs.io/en/latest/', None),
+                       'numpy': ('https://numpy.readthedocs.io/en/latest/', None)}
 
 # -- Options for todo extension ----------------------------------------------
 
