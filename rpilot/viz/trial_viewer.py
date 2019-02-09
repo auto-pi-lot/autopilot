@@ -1,3 +1,8 @@
+"""
+Warning:
+    this module is unfinished, so it is undocumented.
+"""
+
 # renders a standalone webpage with bokeh of trial data for all mice in the data folder
 import sys
 import os

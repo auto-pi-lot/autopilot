@@ -1,3 +1,25 @@
+"""
+Module to hold module-global variables as preferences.
+
+Warning:
+    DO NOT hardcode prefs here.
+
+A prefs.json file should be generated with an appropriate :mod:`rpilot.setup` routine
+
+Before importing any other RPilot module,
+
+Examples:
+
+    from rpilot import prefs
+    prefs_file = '/usr/rpilot/prefs.json' # or some .json prefs file
+    prefs.init(prefs_file)
+
+And to add a pref
+
+Examples:
+    prefs.add('PARAM', 'VALUE")
+"""
+
 # this is strictly a placeholder module to
 # allow global access to prefs without explicit passing.
 #
@@ -11,13 +33,17 @@ import json
 import subprocess
 import os
 
-prefdict = None
+prefdict = {}
+"""
+stores a dictionary of preferences that mirrors the global variables.
+"""
 
 def init(fn):
-    # type: (str) -> None
     """
+    Initialize prefs on rpilot start.
+
     Args:
-        fn:
+        fn (str, dict): a path to `prefs.json` or a dictionary of preferences
     """
     if isinstance(fn, basestring):
         with open(fn, 'r') as pfile:
@@ -34,33 +60,45 @@ def init(fn):
     # Get the current git hash
     prefs['HASH'] = git_version(prefs['REPODIR'])
 
+    global prefdict
+
     # assign key values to module globals so can access with prefs.pref1
     for k, v in prefs.items():
         globals()[k] = v
+        prefdict[k] = v
 
     # also store as a dictionary so other modules can have one if they want it
     globals()['__dict__'] = prefs
 
 def add(param, value):
     """
+    Add a pref after init
+
     Args:
-        param (str):
-        value (rpilot.core.utils.Invoker):
+        param (str): Allcaps parameter name
+        value: Value of the pref
     """
     globals()[param] = value
 
+    global prefdict
+    prefdict[param] = value
+
 # Return the git revision as a string
 def git_version(repo_dir):
-    # type: (unicode) -> unicode
     """
+    Get the git hash of the current commit.
+
+    Stolen from `numpy's setup <https://github.com/numpy/numpy/blob/master/setup.py#L70-L92>`_
+
+    and linked by ryanjdillon on `SO <https://stackoverflow.com/a/40170206>`_
+
+
     Args:
-        repo_dir (unicode):
+        repo_dir (str): directory of the git repository.
 
     Returns:
-        unicode:
+        unicode: git commit hash.
     """
-    # Stolen from numpy's setup https://github.com/numpy/numpy/blob/master/setup.py#L70-L92
-    # and linked by ryanjdillon on SO https://stackoverflow.com/a/40170206
     def _minimal_ext_cmd(cmd):
         # type: (List[str]) -> str
         # construct minimal environment

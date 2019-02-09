@@ -71,6 +71,8 @@ autodoc_member_order = "bysource"
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
+autosummary_genera
+
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
@@ -132,9 +134,9 @@ html_theme_options = {
 
 }
 #
-# html_sidebars = {
-#     '**': ['localtoc.html']
-# }
+html_sidebars = {
+    '**': ['localtoc.html']
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

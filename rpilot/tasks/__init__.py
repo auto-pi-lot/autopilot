@@ -6,6 +6,6 @@ from graduation import GRAD_LIST
 
 
 TASK_LIST = {'2AFC':Nafc,
-             'Free Water':Free_Water,
-             'Gap 2AFC':Gap_2AFC}
+             'Free Water':Free_Water}
+             #'Gap 2AFC':Gap_2AFC}
 

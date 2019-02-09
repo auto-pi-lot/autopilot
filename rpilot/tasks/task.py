@@ -1,17 +1,6 @@
 # Base class for tasks
 
 #!/usr/bin/python2.7
-
-"""
-Template handler set for a 2afc paradigm.
-Want a bundled set of functions so the RPilot can make the task from relatively few params.
-Also want it to contain details about how you should draw 2afcs in general in the terminal
-Remember: have to put class name in __init__ file to import directly.
-Stage functions should each return three dicts: data, triggers, and timers
-    -data: (field:value) all the relevant data for the stage, as named in the DATA_LIST
-    -triggers: (input:action) what to do if the relevant input is triggered
-    -timers: (type:{params}) like {'too_early':{'sound':too_early_sound}}
-"""
 from collections import OrderedDict as odict
 import threading
 import logging
@@ -27,6 +16,66 @@ if hasattr(prefs, "AUDIOSERVER"):
 
 
 class Task(object):
+    """
+    Generic Task metaclass
+
+    Attributes:
+        PARAMS (:class:`collections.OrderedDict`): Params to define task, like::
+
+            PARAMS = odict()
+            PARAMS['reward']         = {'tag':'Reward Duration (ms)',
+                                        'type':'int'}
+            PARAMS['req_reward']     = {'tag':'Request Rewards',
+                                        'type':'check'}
+
+        HARDWARE (dict): dict for necessary hardware, like::
+
+            HARDWARE = {
+                'POKES':{
+                    'L': hardware.Beambreak, ...
+                },
+                'PORTS':{
+                    'L': hardware.Solenoid, ...
+                }
+            }
+
+        PLOT (dict): Dict of plotting parameters, like::
+
+                PLOT = {
+                    'data': {
+                        'target'   : 'point',
+                        'response' : 'segment',
+                        'correct'  : 'rollmean'
+                    },
+                    'chance_bar'  : True, # Draw a red bar at 50%
+                    'roll_window' : 50 # number of trials to roll window over
+                }
+
+        Trial_Data (:class:`tables.IsDescription`): Data table description, like::
+
+            class TrialData(tables.IsDescription):
+                trial_num = tables.Int32Col()
+                target = tables.StringCol(1)
+                response = tables.StringCol(1)
+                correct = tables.Int32Col()
+                correction = tables.Int32Col()
+                RQ_timestamp = tables.StringCol(26)
+                DC_timestamp = tables.StringCol(26)
+                bailed = tables.Int32Col()
+
+        STAGE_NAMES (list): List of stage method names
+        stage_block (:class:`threading.Event`): Signal when task stages complete.
+        punish_stim (bool): Do a punishment stimulus
+        stages (iterator): Some generator or iterator that continuously returns the next stage method of a trial
+        triggers (dict): Some mapping of some pin to callback methods
+        pins (dict): Dict to store references to hardware
+        pin_id (dict): Reverse dictionary, pin numbers back to pin letters.
+        punish_block (:class:`threading.Event`): Event to mark when punishment is occuring
+        logger (:class:`logging.Logger`): gets the 'main' logger for now.
+
+
+
+    """
     # dictionary of Params needed to define task,
     # these should correspond to argument names for the task
     PARAMS = odict()
@@ -37,29 +86,28 @@ class Task(object):
     PLOT = {} # dictionary of plotting params
     TrialData = None # tables.IsDescription class to make data table
 
-    # Task management
-    stage_block = None # a threading.Event used by the pilot to manage stage transitions
-    punish_block = None # holds the next stage while punishment is happening
-    punish_stim = False
-    running = None # Event used to exit the run thread
-    stages = None # Some generator that continuously returns the next stage of the trial
-    triggers = {}
-    stim_manager = None
-
-    trial_counter = None # will be init'd by the subtask because will use the current trial
-
-    # Hardware
-    pins = {} # dict to store references to hardware
-    pin_id = {} # pin numbers back to pin lettering
-
-    logger = None
 
 
 
     def __init__(self):
+
+        # Task management
+        self.stage_block = None  # a threading.Event used by the pilot to manage stage transitions
+        self.punish_stim = False
+        #self.running = None  # Event used to exit the run thread
+        self.stages = None  # Some generator that continuously returns the next stage of the trial
+        self.triggers = {}
+        self.stim_manager = None
+
+        self.trial_counter = None  # will be init'd by the subtask because will use the current trial
+
+        # Hardware
+        self.pins = {}  # dict to store references to hardware
+        self.pin_id = {}  # pin numbers back to pin lettering
+
         self.punish_block = threading.Event()
         self.punish_block.set()
-        self.running = threading.Event()
+        #self.running = threading.Event()
 
         # try to get logger
         self.logger = logging.getLogger('main')
@@ -68,6 +116,14 @@ class Task(object):
 
 
     def init_hardware(self):
+        """
+        Use the HARDWARE dict that specifies what we need to run the task
+        alongside the PINS subdict in :mod:`prefs` to tell us how
+        they're plugged in to the pi
+
+        Instantiate the hardware, assign it :meth:`.Task.handle_trigger`
+        as a callback if it is a trigger.
+        """
         # We use the HARDWARE dict that specifies what we need to run the task
         # alongside the PINS subdict in the prefs structure to tell us how they're plugged in to the pi
         self.pins = {}
@@ -101,9 +157,12 @@ class Task(object):
 
     def set_reward(self, duration, port=None):
         """
+        Set the reward value for each of the 'PORTS'.
+
         Args:
-            duration:
-            port:
+            duration (float): Duration to open port in ms
+            port (None, Port_ID): If `None`, set everything in 'PORTS', otherwise
+                only set `port`
         """
         if not port:
             for k, port in self.pins['PORTS'].items():
@@ -114,15 +173,21 @@ class Task(object):
             except KeyError:
                 Exception('No port found named {}'.format(port))
 
-    def init_sound(self):
-        pass
+    # def init_sound(self):
+    #     pass
 
     def handle_trigger(self, pin, level, tick):
         """
+        All GPIO triggers call this function with the pin number, level (high, low),
+        and ticks since booting pigpio.
+
+        Calls any trigger assigned to the pin in `self.triggers` ,
+        unless during punishment (returns).
+
         Args:
-            pin:
-            level:
-            tick:
+            pin (int): BCM Pin number
+            level (bool): True, False high/low
+            tick (int): ticks since booting pigpio
         """
         # All triggers call this function with the pin number, level (high, low), and ticks since booting pigpio
         # Triggers will be functions unless they are "TIMEUP", at which point we
@@ -163,21 +228,18 @@ class Task(object):
         # Set the stage block so the pilot calls the next stage
         self.stage_block.set()
 
-    def punish(self):
-        # TODO: If we're not in the last stage (eg. we were timed out after stim presentation), reset stages
-        self.punish_block.clear()
-
-        if self.punish_stim:
-            self.stim_manager.play_punishment()
-
-        # self.set_leds()
-        self.flash_leds()
-        threading.Timer(self.punish_dur / 1000., self.punish_block.set).start()
 
     def set_leds(self, color_dict=None):
         """
+        Set the color of all LEDs at once.
+
         Args:
-            color_dict:
+            color_dict (dict): If None, turn LEDs off, otherwise like:
+
+                {'pin': [R,G,B],
+                'pin2: [R,G,B]}
+
+
         """
         # We are passed a dict of ['pin']:[R, G, B] to set multiple colors
         # All others are turned off
@@ -190,6 +252,9 @@ class Task(object):
                 v.set_color([0,0,0])
 
     def end(self):
+        """
+        Release all hardware objects
+        """
         for k, v in self.pins.items():
             for pin, obj in v.items():
                 obj.release()
