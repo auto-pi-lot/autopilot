@@ -8,13 +8,27 @@ import datetime
 from rpilot import prefs
 
 from rpilot.core import hardware
+from rpilot.tasks.task import Task
 
 TASK = 'Free_water'
 
-class Free_Water:
-    # Randomly light up one of the ports, then dispense water when the mouse pokes
-    # TODO: Any reason to have any number of active ports?
-    # Two stages - waiting for response, and reporting the response afterwards
+class Free_Water(Task):
+    """
+    Randomly light up one of the ports, then dispense water when the mouse pokes there
+
+    Two stages:
+
+    * waiting for response, and
+    * reporting the response afterwards
+
+    Attributes:
+        target ('L', 'C', 'R'): The correct port
+        trial_counter (:class:`itertools.count`): Counts trials starting from current_trial specified as argument
+        triggers (dict): Dictionary mapping triggered pins to callable methods.
+        num_stages (int): number of stages in task (2)
+        stages (:class:`itertools.cycle`): iterator to cycle indefinitely through task stages.
+    """
+
     STAGE_NAMES = ["water", "response"]
 
     # Params
@@ -65,15 +79,16 @@ class Free_Water:
 
     def __init__(self, stage_block=None, current_trial=0,
                  reward=50, allow_repeat=False, **kwargs):
-
         """
         Args:
-            stage_block:
-            current_trial:
-            reward:
-            allow_repeat:
+            stage_block (:class:`threading.Event`): used to signal to the carrying Pilot that the current trial stage is over
+            current_trial (int): If not zero, initial number of `trial_counter`
+            reward (int): ms to open solenoids
+            allow_repeat (bool): Whether the correct port is allowed to repeat between trials
             **kwargs:
         """
+        super(Free_Water, self).__init__()
+
         if not stage_block:
             raise Warning('No stage_block Event() was passed, youll need to handle stage progression on your own')
         else:
@@ -85,10 +100,8 @@ class Free_Water:
 
         # Variable parameters
         self.target = random.choice(['L', 'C', 'R'])
-        self.current_stage = None
         self.trial_counter = itertools.count(int(current_trial))
         self.triggers = {}
-        self.first_trial = True
 
         # Stage list to iterate
         stage_list = [self.water, self.response]
@@ -102,18 +115,16 @@ class Free_Water:
 
     def water(self, *args, **kwargs):
         """
-        Args:
-            args:
-            kwargs:
+        First stage of task - open a port if it's poked.
+
+        Returns:
+            dict: Data dictionary containing::
+
+                'target': ('L', 'C', 'R') - correct response
+                'timestamp': isoformatted timestamp
+                'trial_num': number of current trial
         """
         self.stage_block.clear()
-
-        # If this is the first trial, release water in all three ports
-        #if self.first_trial:
-        #    self.first_trial = False
-        #    self.pins['PORTS']['L'].open()
-        #    self.pins['PORTS']['C'].open()
-        #    self.pins['PORTS']['R'].open()
 
         # Choose random port
         if self.allow_repeat:
@@ -122,10 +133,11 @@ class Free_Water:
             other_ports = [t for t in ['L', 'C', 'R'] if t is not self.target]
             self.target = random.choice(other_ports)
 
-        print(self.pins['PORTS'])
+        # Set triggers and set the target LED to green.
         self.triggers[self.target] = self.pins['PORTS'][self.target].open
         self.set_leds({self.target: [0, 255, 0]})
 
+        # Return data
         data = {
             'target': self.target,
             'timestamp': datetime.datetime.now().isoformat(),
@@ -135,6 +147,10 @@ class Free_Water:
 
 
     def response(self):
+        """
+        Just have to alert the Terminal that the current trial has ended
+        and turn off any lights.
+        """
         # we just have to tell the Terminal that this trial has ended
 
         # mebs also turn the light off rl quick
@@ -142,103 +158,12 @@ class Free_Water:
 
         return {'TRIAL_END':True}
 
-    def handle_trigger(self, pin, level, tick):
-        """
-        Args:
-            pin:
-            level:
-            tick:
-        """
-        # All triggers call this function with the pin number, level (high, low), and ticks since booting pigpio
-        # Triggers will be functions unless they are "TIMEUP", at which point we
-        # register a timeout and restart the trial
 
-        # We get fed pins as numbers usually, convert to board number and then back to letters
-        if isinstance(pin, int):
-            pin = hardware.BCM_TO_BOARD[pin]
-            pin = self.pin_id[pin]
-
-        if not pin in self.triggers.keys():
-            # No trigger assigned, get out without waiting
-            return
-
-        # stash last pin
-        self.last_pin = pin
-
-        # Call the trigger
-        try:
-            self.triggers[pin]()
-        except TypeError:
-            # Multiple triggers, call them all
-            for trig in self.triggers[pin]:
-                trig()
-        except KeyError:
-            # If we don't have a trigger, that's fine, eg. L and R before requesting
-            return
-
-        # clear triggers
-        self.triggers = {}
-
-        # Set the stage block so the pilot calls the next stage
-        self.stage_block.set()
-
-    def init_hardware(self):
-        # We use the HARDWARE dict that specifies what we need to run the task
-        # alongside the PINS subdict in the prefs structure to tell us how they're plugged in to the pi
-        self.pins = {}
-        self.pin_id = {} # Reverse dict to identify pokes
-        pin_numbers = prefs.PINS
-
-        # We first iterate through the types of hardware we need
-        for type, values in self.HARDWARE.items():
-            self.pins[type] = {}
-            # Then switch depending on the type
-            # First IR beambreak nosepokes
-            if type == 'POKES':
-                for pin, handler in values.items():
-                    try:
-                        self.pin_id[pin_numbers[type][pin]] = pin
-                        # Instantiate poke class, assign callback, and make reverse dict
-                        self.pins[type][pin] = handler(pin_numbers[type][pin])
-                        self.pins[type][pin].assign_cb(self.handle_trigger)
-                    except:
-                        # TODO: More informative exception
-                        Exception('Something went wrong instantiating pins, tell jonny to handle this better!')
-
-            # Then LEDs
-            elif type == 'LEDS':
-                print('reached LEDs')
-                for pin, handler in values.items():
-                    try:
-                        self.pins[type][pin] = handler(pins=pin_numbers[type][pin])
-                    except:
-                        Exception("Something wrong instantiating LEDs")
-
-            elif type == 'PORTS':
-                for pin, handler in values.items():
-                    try:
-                        self.pins[type][pin] = handler(pin_numbers[type][pin], duration=self.reward)
-                    except:
-                        Exception('Something wrong instantiating solenoids')
-            else:
-                Exception('HARDWARE dict misspecified in class definition')
-
-    def set_leds(self, color_dict=None):
-        """
-        Args:
-            color_dict:
-        """
-        # We are passed a dict of ['pin']:[R, G, B] to set multiple colors
-        # All others are turned off
-        if not color_dict:
-            color_dict = {}
-        for k, v in self.pins['LEDS'].items():
-            if k in color_dict.keys():
-                v.set_color(color_dict[k])
-            else:
-                v.set_color([0,0,0])
 
     def end(self):
+        """
+        When shutting down, release all hardware objects and turn LEDs off.
+        """
         for k, v in self.pins.items():
             for pin, obj in v.items():
                 if k == "LEDS":

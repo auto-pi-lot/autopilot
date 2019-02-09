@@ -1,3 +1,42 @@
+"""
+Run as a module as root.
+
+Creates a :class:`npyscreen.SplitForm` to prompt the user in the command line
+for parameters to set up a :class:`~.pilot.Pilot`'
+
+Prompts user to create a run script or a systemd service.
+
+Sets the following params:
+
+* **NAME** - The name used by networking objects to address this Pilot
+* **BASEDIR** - The base directory for rpilot files (/usr/rpilot)
+* **PUSHPORT** - Router port used by the Terminal we connect to.
+* **TERMINALIP** - IP Address of our upstream Terminal.
+* **MSGPORT** - Port used by our own networking object
+* **PINS** - Any hardware and its mapping to GPIO pins. No pins are required to be set, instead each
+  task defines which pins it needs. Currently the default configuration asks for
+
+    * POKES - :class:`.hardware.Beambreak`
+    * LEDS - :class:`.hardware.LED_RGB`
+    * PORTS - :class:`.hardware.Solenoid`
+
+* **AUDIOSERVER** - Which type, if any, audio server to use (`'jack'`, `'pyo'`, or `'none'`)
+* **NCHANNELS** - Number of audio channels
+* **FS** - Sampling rate of audio output
+* **JACKDSTRING** - string used to start the jackd server, see `the jack manpages <https://linux.die.net/man/1/jackd>`_ eg::
+
+    jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -n3 -s &
+
+* **PIGPIOMASK** - Binary mask of pins for pigpio to control, see `the pigpio docs <http://abyz.me.uk/rpi/pigpio/pigpiod.html>`_ , eg::
+
+    1111110000111111111111110000
+
+* **PULLUPS** - Pin (board) numbers to pull up on boot
+* **PULLDOWNS** - Pin (board) numbers to pull down on boot.
+
+
+"""
+
 import npyscreen as nps
 from collections import OrderedDict as odict
 import pprint
@@ -55,14 +94,17 @@ class SetupApp(nps.NPSAppManaged):
     def onStart(self):
         self.form = self.addForm('MAIN', PilotSetupForm, name='Setup Pilot')
 
+
 def unfold_values(v):
     """
+    Unfold nested values from the SetupForm. Called recursively.
+
     Args:
-        v:
+        v (dict): unfolded values
     """
     if isinstance(v, dict):
         # recurse
-        v = {k:unfold_values(v) for k, v in v.items()}
+        v = {k: unfold_values(v) for k, v in v.items()}
     else:
         try:
             v = int(v.value)
@@ -70,15 +112,17 @@ def unfold_values(v):
             v = v.value
     return v
 
+
 def make_dir(adir):
     """
+    Make a directory if it doesn't exist and set its permissions to `0777`
+
     Args:
-        adir:
+        adir (str): Path to the directory
     """
     if not os.path.exists(adir):
         os.makedirs(adir)
         os.chmod(adir, 0777)
-
 
 if __name__ == "__main__":
     # Check for sudo

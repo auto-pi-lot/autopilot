@@ -1,5 +1,3 @@
-# The terminal is the user-facing GUI that controls the Pis
-
 __version__ = '0.2'
 __author__  = 'Jonny Saunders <JLSaunders987@gmail.com>'
 
@@ -34,28 +32,86 @@ from rpilot import prefs
 
 
 class Terminal(QtGui.QMainWindow):
-    ## Declare attributes
+    """
+    Central host to a fleet of :class:`.Pilot` s and user-facing
+    :mod:`~.core.gui` objects.
 
-    # networking
-    context       = None
-    loop          = None
-    pusher        = None
-    listener      = None
-    networking    = None
-    networking_ok = False
+    Called as a module with the -f flag to give the location of a prefs file, eg::
 
-    # data
-    rows = None  # handles to row writing functions
-    mice = {}  # Dict of our open mouse objects
-    current_mouse = None  # ID of mouse currently in params panel
-    pilots = None
+        python terminal.py -f prefs_file.json
 
-    # gui
-    widget = None
+    if the -f flag is not passed, looks in the default location for prefs
+    (ie. `/usr/rpilot/prefs.json`)
+
+    **Listens used by the internal :class:`.Net_Node` **
+
+    +---------------+--------------------------------+--------------------------------------------------------+
+    | Key           | Method                         | Description                                            |
+    +===============+================================+========================================================+
+    | `'STATE'`     | :meth:`~.Terminal.l_state`     | A Pi has changed state                                 |
+    +---------------+--------------------------------+--------------------------------------------------------+
+    | `'PING'`      | :meth:`~.Terminal.l_ping`      |  Someone wants to know if we're alive                  |
+    +---------------+--------------------------------+--------------------------------------------------------+
+    | `'DATA'`      | :meth:`~.Terminal.l_data`      | Receiving data to store                                |
+    +---------------+--------------------------------+--------------------------------------------------------+
+    | `'HANDSHAKE'` | :meth:`~.Terminal.l_handshake` | Pilot first contact, telling us it's alive and its IP  |
+    +---------------+--------------------------------+--------------------------------------------------------+
+
+    ** Prefs needed by Terminal **
+    Typically set by :mod:`.setup.setup_terminal`
+
+    * **BASEDIR** - Base directory for all local rpilot data, typically `/usr/rpilot`
+    * **MSGPORT** - Port to use for our ROUTER listener, default `5560`
+    * **DATADIR** -  `os.path.join(params['BASEDIR'], 'data')`
+    * **SOUNDDIR** - `os.path.join(params['BASEDIR'], 'sounds')`
+    * **PROTOCOLDIR** - `os.path.join(params['BASEDIR'], 'protocols')`
+    * **LOGDIR** - `os.path.join(params['BASEDIR'], 'logs')`
+    * **REPODIR** - Path to RPilot git repo
+    * **PILOT_DB** - Location of `pilot_db.json` used to populate :attr:`~.Terminal.pilots`
+
+    Attributes:
+        node (:class:`~.networking.Net_Node`): Our Net_Node we use to communicate with our main networking object
+        networking (:class:`~.networking.Terminal_Networking`): Our networking object to communicate with the outside world
+        mice (dict): A dictionary mapping mouse ID to :class:`~.mouse.Mouse` object.
+        pilots (dict): A dictionary mapping pilot ID to a list of its mice, its IP, and any other pilot attributes.
+        layout (:class:`QtGui.QGridLayout`): Layout used to organize widgets
+        control_panel (:class:`~.gui.Control_Panel`): Control Panel to manage pilots and mice
+        data_panel (:class:`~.plots.Plot_Widget`): Plots for each pilot and mouse.
+        logo (:class:`QtGui.QLabel`): Label holding our beautiful logo ;X
+        logger (:class:`logging.Logger`): Used to log messages and network events.
+        log_handler (:class:`logging.FileHandler`): Handler for logging
+        log_formatter (:class:`logging.Formatter`): Formats log entries as::
+
+            "%(asctime)s %(levelname)s : %(message)s"
+
+    """
 
     def __init__(self):
         # type: () -> None
         super(Terminal, self).__init__()
+
+        # networking
+        self.node = None
+        self.networking = None
+
+        # data
+        self.mice = {}  # Dict of our open mouse objects
+        self.pilots = None
+
+        # gui
+        self.layout = None
+        self.widget = None
+        self.file_menu = None
+        self.tool_menu = None
+        self.control_panel = None
+        self.data_panel = None
+        self.logo = None
+
+
+        # logging
+        self.logger        = None
+        self.log_handler   = None
+        self.log_formatter = None
 
         # Load pilots db as ordered dictionary
         with open(prefs.PILOT_DB) as pilot_file:
@@ -85,14 +141,21 @@ class Terminal(QtGui.QMainWindow):
         # "external" networking for messages to and from all the other components,
         # The split is so the external networking can run in another process, do potentially time-consuming tasks
         # like resending & confirming message delivery without blocking or missing messages
-        self.init_network()  # start "internal" networking
-        self.spawn_network() # Has to be after init_network so it makes a new context
 
-        self.popups = []
-        #time.sleep(1)
+        self.node = Net_Node(id="_T", upstream='T', port=prefs.MSGPORT, listens=self.listens)
+        self.logger.info("Net Node Initialized")
+
+        # Start external communications in own process
+        # Has to be after init_network so it makes a new context
+        self.networking = Terminal_Networking(self.pilots)
+        self.networking.start()
+        self.logger.info("Networking object Initialized")
 
     def init_logging(self):
-        # type: () -> None
+        """
+        Start logging to a timestamped file in `prefs.LOGDIR`
+        """
+
         timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
         log_file = os.path.join(prefs.LOGDIR, 'Terminal_Log_{}.log'.format(timestr))
 
@@ -105,7 +168,16 @@ class Terminal(QtGui.QMainWindow):
         self.logger.info('Terminal Logging Initiated')
 
     def initUI(self):
-        # type: () -> None
+        """
+        Initializes graphical elements of Terminal.
+
+        Including...
+
+        * Toolbar
+        * :class:`.gui.Control_Panel`
+        * :class:`.plots.Plot_Widget`
+        """
+
         # set central widget
         self.widget = QtGui.QWidget()
         self.setCentralWidget(self.widget)
@@ -184,6 +256,10 @@ class Terminal(QtGui.QMainWindow):
         logging.info('UI Initialized')
 
     def reset_ui(self):
+        """
+        Clear Layout and call :meth:`~.Terminal.initUI` again
+        """
+
         # type: () -> None
         self.layout = QtGui.QGridLayout()
         self.layout.setSpacing(0)
@@ -194,44 +270,7 @@ class Terminal(QtGui.QMainWindow):
 
 
     ##########################3
-    # NETWORKING METHODS
-
-    def spawn_network(self):
-        # type: () -> None
-        # Start external communications in own process
-        self.networking = Terminal_Networking(self.pilots)
-        self.networking.start()
-
-    def init_network(self):
-        # type: () -> None
-        # Start internal communications
-        self.node = Net_Node(id="_T", upstream='T', port=prefs.MSGPORT, listens=self.listens)
-
-        self.logger.info("Networking Initiated")
-
-    def handle_listen(self, msg):
-        """
-        Args:
-            msg:
-        """
-        # Listens are multipart target-msg messages
-        # target = msg[0]
-        # 'key' determines which method is called, 'value' is passed to the method.
-        try:
-            message = json.loads(msg[1])
-        except ValueError:
-            self.logger.exception('TERMINAL: Error decoding message')
-            return
-
-        if not all(i in message.keys() for i in ['key', 'value']):
-            self.logger.warning('LISTEN Improperly formatted: {}'.format(msg))
-            return
-
-        self.logger.info('LISTEN {} - KEY: {}, VALUE: {}'.format(message['id'], message['key'], message['value']))
-
-        listen_funk = self.listens[message['key']]
-        listen_thread = threading.Thread(target=listen_funk, args=(message['value'],))
-        listen_thread.start()
+    # Listens & inter-object methods
 
     def toggle_start(self, starting, pilot, mouse=None):
         # type: (bool, unicode, unicode) -> None
@@ -295,22 +334,19 @@ class Terminal(QtGui.QMainWindow):
     ############################
     # MESSAGE HANDLING METHODS
 
-    def l_state(self, value):
-        """
-        Args:
-            value:
-        """
-        # A Pi has changed state
-        # TODO: If we are stopping, we enter into a cohere state
-        # TODO: If we are stopped, close the mouse object.
-        # TODO: Also tell the relevant dataview to clear
-        pass
-
     def l_data(self, value):
-        # type: (Dict[unicode, int]) -> None
         """
+        A Pilot has sent us data.
+
+        `value` field of message should have `mouse` and `pilot` added to dictionary for identification.
+
+        Any key in `value` that matches a column in the mouse's trial data table will be saved.
+
+        If the mouse graduates after receiving this piece of data, stop the current
+        task running on the Pilot and send the new one.
+
         Args:
-            value:
+            value (dict): A dict of field-value pairs to save
         """
         # A Pi has sent us data, let's save it huh?
         mouse_name = value['mouse']
@@ -326,30 +362,52 @@ class Terminal(QtGui.QMainWindow):
 
     def l_ping(self, value):
         """
+        TODO:
+            Reminder to implement heartbeating.
+
+        Note:
+            Currently unused, as Terminal Net_Node stability hasn't been
+            a problem and no universal system of heartbeating has been
+            established (global stability has not been an issue).
+
         Args:
-            value:
+            value: (unused)
         """
-        # TODO Not this
+        # Only our Networking object should ever ping us, because
+        # we otherwise want it handling any pings on our behalf.
+
+        # self.send_message('ALIVE', value=b'T')
         pass
-        #self.send_message('ALIVE', value=b'T')
+
 
 
     def l_state(self, value):
-        """A Pilot has changed state, keep track of it. :param value:
+        """A Pilot has changed state, keep track of it.
 
         Args:
-            value:
+            value (dict): dict containing `state` .
         """
+        # TODO: If we are stopping, we enter into a cohere state
+        # TODO: If we are stopped, close the mouse object.
+        # TODO: Also tell the relevant dataview to clear
         if value['pilot'] in self.pilots.keys():
             self.pilots[value['pilot']]['state'] = value['state']
 
     def l_handshake(self, value):
         """
+        Pilot is sending its IP and state on startup.
+
+        If we haven't heard of this pilot before, make a new entry in :attr:`~.Terminal.pilots`
+        and :meth:`.gui.Control_Panel.update_db` .
+
         Args:
-            value:
+            value (dict): dict containing `ip` and `state`
         """
         if value['pilot'] in self.pilots.keys():
-            self.pilots[value['pilot']]['ip'] = value['ip']
+            if 'ip' in value.keys():
+                self.pilots[value['pilot']]['ip'] = value['ip']
+            if 'state' in value.keys():
+                self.pilots[value['pilot']]['state'] = value['state']
 
         else:
             self.new_pilot(name=value['pilot'], ip=value['ip'])
@@ -360,11 +418,13 @@ class Terminal(QtGui.QMainWindow):
     # GUI & etc. methods
 
     def new_pilot(self, ip='', name=None):
-        # type: (str, None) -> None
         """
+        Make a new entry in :attr:`.Terminal.pilots` and make appropriate
+        GUI elements.
+
         Args:
-            ip:
-            name:
+            ip (str): Optional. if given, stored in db.
+            name (str): If None, prompted for a name, otherwise used for entry in pilot DB.
         """
         if name is None:
             name, ok = QtGui.QInputDialog.getText(self, "Pilot ID", "Pilot ID:")
@@ -383,7 +443,11 @@ class Terminal(QtGui.QMainWindow):
             pass
 
     def new_protocol(self):
-        # type: () -> None
+        """
+        Open a :class:`.gui.Protocol_Wizard` to create a new protocol.
+
+        Prompts for name of protocol, then saves in `prefs.PROTOCOLDIR`
+        """
         self.new_protocol_window = Protocol_Wizard()
         self.new_protocol_window.exec_()
 
@@ -392,8 +456,6 @@ class Terminal(QtGui.QMainWindow):
 
             # The values useful to the step functions are stored with a 'value' key in the param_dict
             save_steps = []
-            print(steps)
-            sys.stdout.flush()
             for s in steps:
                 param_values = {}
                 for k, v in s.items():
@@ -418,19 +480,23 @@ class Terminal(QtGui.QMainWindow):
                 with open(protocol_file, 'w') as pfile_open:
                     json.dump(save_steps, pfile_open, indent=4, separators=(',', ': '), sort_keys=True)
 
-    def batch_mice(self):
-        # TODO: Implement me...
-        pass
-
     def list_mice(self):
-        # type: () -> List[unicode]
+        """
+        Get a list of all mouse IDs
+
+        Returns:
+            list: list of all mouse IDs present in :attr:`.Terminal.pilots`
+        """
         mice = []
         for pilot, vals in self.pilots.items():
             mice.extend(vals['mice'])
         return mice
 
     def mouse_weights(self):
-        # type: () -> None
+        """
+        Gets recent weights from all :attr:`~.Terminal.mice` and
+        open a :class:`.gui.Weights` window to view or set weights.
+        """
         mice = self.list_mice()
 
         # open objects if not already
@@ -447,15 +513,12 @@ class Terminal(QtGui.QMainWindow):
 
         self.weight_widget = Weights(weights, self.mice)
         self.weight_widget.show()
-        #
-        # if len(self.weight_widget.changed_cells)>0:
-        #     for change in self.weight_widget.changed_cells:
-        #         # change is (mouse, date, column, new_value)
-        #         self.mice[change[0]].set_weight(change[1], change[2], change[3])
 
     def update_protocols(self):
-        # If we change the protocol file, update the stored version in mouse files
-
+        """
+        If we change the protocol file, update the stored version in mouse files
+        """
+        #
         # get list of protocol files
         protocols = os.listdir(prefs.PROTOCOLDIR)
         protocols = [p for p in protocols if p.endswith('.json')]
@@ -477,6 +540,12 @@ class Terminal(QtGui.QMainWindow):
         msgbox.exec_()
 
     def reassign_protocols(self):
+        """
+        Batch reassign protocols and steps.
+
+        Opens a :class:`.gui.Reassign` window after getting protocol data,
+        and applies any changes made in the window.
+        """
         # get list of protocol files
         protocols = os.listdir(prefs.PROTOCOLDIR)
         protocols = [os.path.splitext(p)[0] for p in protocols if p.endswith('.json')]
@@ -504,37 +573,20 @@ class Terminal(QtGui.QMainWindow):
                     protocol_file = os.path.join(prefs.PROTOCOLDIR, protocol + '.json')
                     self.mice[mouse].assign_protocol(protocol_file, step)
 
-            # protocol_bool = [self.mice[mouse].protocol_name == p.strip('.json') for p in protocols]
-            # if any(protocol_bool):
-            #     which_prot = np.where(protocol_bool)[0][0]
-            #     protocol = protocols[which_prot]
-            #     self.mice[mouse].assign_protocol(os.path.join(prefs.PROTOCOLDIR'], protocol), step_n=self.mice[mouse].step)
-
-
-
-
-
-
-
-
-
-    def gui_event(self, fn, *args, **kwargs):
-        """
-        Args:
-            fn:
-            args:
-            kwargs:
-        """
-        # Don't ask me how this works, stolen from
-        # https://stackoverflow.com/a/12127115
-        QtCore.QCoreApplication.postEvent(self.invoker, InvokeEvent(fn, *args, **kwargs))
+                if self.mice[mouse].step != step:
+                    self.logger.info('Setting {} step from {} to {}'.format(mouse, self.mice[mouse].step, step))
+                    protocol_file = os.path.join(prefs.PROTOCOLDIR, protocol + '.json')
+                    self.mice[mouse].assign_protocol(protocol_file, step)
 
     def closeEvent(self, event):
         """
-        Args:
-            event:
+        When Closing the Terminal Window, close any running mouse objects,
+        'KILL' our networking object.
+
+        Since the `:class:`.Net_Node` keeping us alive is a `daemon`, no need
+        to explicitly kill it.
+
         """
-        # do stuff
         # TODO: Check if any mice are currently running, pop dialog asking if we want to stop
 
         # Close all mice files
@@ -546,10 +598,6 @@ class Terminal(QtGui.QMainWindow):
         # send message to kill networking process
         self.node.send(key="KILL")
 
-        #if can_exit:
-        #    event.accept() # let the window close
-        #else:
-        #    event.ignore()
 
 if __name__ == '__main__':
     # Parse arguments - this should have been called with a .json prefs file passed

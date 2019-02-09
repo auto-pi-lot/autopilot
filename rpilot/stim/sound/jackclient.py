@@ -1,3 +1,7 @@
+"""
+Client that dumps samples directly to the jack client with the :mod:`jack` package.
+"""
+
 from __future__ import division
 from __future__ import print_function
 
@@ -13,20 +17,70 @@ from rpilot import prefs
 
 # allows us to access the audio server and some sound attributes
 SERVER = None
+"""
+:class:`.JackClient`: After initializing, JackClient will register itself with this variable.
+"""
+
 FS = None
+"""
+int: Sampling rate of the active server
+"""
+
 BLOCKSIZE = None
+"""
+int: Blocksize, or the amount of samples processed by jack per each :meth:`.JackClient.process` call.
+"""
+
 QUEUE = None
+"""
+:class:`multiprocessing.Queue`: Queue to be loaded with frames of BLOCKSIZE audio.
+"""
+
 PLAY = None
+"""
+:class:`multiprocessing.Event`: Event used to trigger loading samples from `QUEUE`, ie. playing.
+"""
+
 STOP = None
+"""
+:class:`multiprocessing.Event`: Event that is triggered on the end of buffered audio.
+
+Note:
+    NOT an event used to stop audio.
+"""
+
 Q_LOCK = None
+"""
+:class:`multiprocessing.Lock`: Lock that enforces a single writer to the `QUEUE` at a time.
+"""
 
 class JackClient(mp.Process):
+    """
+    Client that dumps frames of audio directly into a running jackd client.
+
+    When first initialized, sets module level variables above.
+
+    Attributes:
+        name (str): name of client, default "jack_client"
+        q (:class:`~.multiprocessing.Queue`): Queue that stores buffered frames of audio
+        q_lock (:class:`~.multiprocessing.Lock`): Lock that manages access to the Queue
+        play_evt (:class:`multiprocessing.Event`): Event used to trigger loading samples from `QUEUE`, ie. playing.
+        stop_evt (:class:`multiprocessing.Event`): Event that is triggered on the end of buffered audio.
+        quit_evt (:class:`multiprocessing.Event`): Event that causes the process to be terminated.
+
+        client (:class:`jack.Client`): Client to interface with jackd
+        blocksize (int): The blocksize - ie. samples processed per :meth:`.JackClient.process` call.
+        fs (int): Sampling rate of client
+        zero_arr (:class:`numpy.ndarray`): cached array of zeroes used to fill jackd pipe when not processing audio.
+    """
     def __init__(self, name='jack_client'):
         """
         Args:
             name:
         """
         super(JackClient, self).__init__()
+
+        # TODO: If global client variable is set, just return that one.
 
         self.name = name
         #self.pipe = pipe
@@ -53,6 +107,16 @@ class JackClient(mp.Process):
         globals()['STOP'] = self.stop_evt
 
     def boot_server(self):
+        """
+        Called by :meth:`.JackClient.run` to boot the server upon starting the process.
+
+        Activates the client and connects it to the number of outports
+        determined by `prefs.NCHANNELS`
+
+        :class:`jack.Client` s can't be kept alive, so this must be called just before
+        processing sample starts.
+        """
+
         self.client = jack.Client(self.name)
         self.blocksize = self.client.blocksize
         self.fs = self.client.samplerate
@@ -65,10 +129,15 @@ class JackClient(mp.Process):
         self.client.activate()
         target_ports = self.client.get_ports(is_physical=True, is_input=True, is_audio=True)
         self.client.outports[0].connect(target_ports[0])
-        if prefs.NCHANNELS ==2 :
+        if prefs.NCHANNELS == 2:
+            # TODO: Limited, obvs. want to handle arbitrary output arrangements.
             self.client.outports[0].connect(target_ports[1])
 
     def run(self):
+        """
+        Start the process, boot the server, start processing frames and wait for the end.
+        """
+
         self.boot_server()
 
         # we are just holding the process open, so wait to quit
@@ -80,17 +149,31 @@ class JackClient(mp.Process):
             pass
 
 
-    def close(self):
-        # TODO: shut down server but also reset module level variables
-        pass
+    # def close(self):
+    #     # TODO: shut down server but also reset module level variables
+    #     pass
 
     def quit(self):
+        """
+        Set the :attr:`.JackClient.quit_evt`
+        """
         self.quit_evt.set()
 
     def process(self, frames):
         """
+        Process a frame of audio.
+
+        If the :attr:`.JackClient.play_evt` is not set, fill port buffers with zeroes.
+
+        Otherwise, pull frames of audio from the :attr:`.JackClient.q` until it's empty.
+
+        When it's empty, set the :attr:`.JackClient.stop_evt` and clear the :attr:`.JackClient.play_evt` .
+
+        Warning:
+            Handling multiple outputs is a little screwy right now. v0.2 effectively only supports one channel output.
+
         Args:
-            frames:
+            frames: Unused - frames of input audio, but there shouldn't be any.
         """
         if not self.play_evt.is_set():
             for channel, port in zip(self.zero_arr.T, self.client.outports):
@@ -110,93 +193,11 @@ class JackClient(mp.Process):
                 self.play_evt.clear()
                 self.stop_evt.set()
             else:
+                #TODO: Fix the multi-output situation so it doesn't get all grumbly.
                 # use cycle so if sound is single channel it gets copied to all outports
                 self.client.outports[0].get_array()[:] = data.T
                 #for channel, port in zip(cycle(data.T), self.client.outports):
                 #    port.get_array()[:] = channel
-
-
-class Jack_Sound(object):
-    # base class for jack audio sounds
-    PARAMS    = None # list of strings of parameters to be defined
-    type      = None # string human readable name of sound
-    duration  = None # duration in ms
-    amplitude = None
-    table     = None # numpy array of samples
-    chunks    = None # table split into a list of chunks
-    trigger   = None
-    nsamples  = None
-    fs        = FS
-    blocksize = BLOCKSIZE
-    server    = SERVER
-    q         = QUEUE
-    q_lock    = Q_LOCK
-    play_evt  = PLAY
-    stop_evt  = STOP
-    server_type = 'jack'
-    buffered  = False
-
-    def __init__(self):
-        pass
-
-    def chunk(self):
-        # break sound into chunks
-
-        sound = self.table.astype(np.float32)
-        sound_list = [sound[i:i+self.blocksize] for i in range(0, sound.shape[0], self.blocksize)]
-        if sound_list[-1].shape[0] < self.blocksize:
-            sound_list[-1] = np.pad(sound_list[-1],
-                                    (0, self.blocksize-sound_list[-1].shape[0]),
-                                    'constant')
-        self.chunks = sound_list
-
-    def set_trigger(self, trig_fn):
-        """
-        Args:
-            trig_fn:
-        """
-        if callable(trig_fn):
-            self.trigger = trig_fn
-        else:
-            Exception('trigger must be callable')
-
-    def wait_trigger(self):
-        # wait for our duration plus a second at most.
-        self.stop_evt.wait((self.duration+1000)/1000.)
-        # if the sound actually stopped...
-        if self.stop_evt.is_set():
-            self.trigger()
-
-
-
-    def get_nsamples(self):
-        # given our fs and duration, how many samples do we need?
-        self.nsamples = np.ceil((self.duration/1000.)*self.fs).astype(np.int)
-
-    def buffer(self):
-        if not self.chunks:
-            self.chunk()
-
-        with self.q_lock:
-            for frame in self.chunks:
-                self.q.put_nowait(frame)
-            # The jack server looks for a None object to clear the play flag
-            self.q.put_nowait(None)
-            self.buffered = True
-
-    def play(self):
-        if not self.buffered:
-            self.buffer()
-
-        self.play_evt.set()
-        self.stop_evt.clear()
-        self.buffered = False
-
-        if callable(self.trigger):
-            threading.Thread(target=self.wait_trigger).start()
-
-
-
 
 
 

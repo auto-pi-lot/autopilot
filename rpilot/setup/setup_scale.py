@@ -1,4 +1,9 @@
-# optional setup routine for setting up a USB-HID scale for the terminal
+"""
+Setup a digital scale...
+
+Warning:
+    Not implemented yet
+"""
 
 import argparse
 import os

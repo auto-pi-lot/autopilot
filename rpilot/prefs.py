@@ -42,7 +42,6 @@ def init(fn):
     globals()['__dict__'] = prefs
 
 def add(param, value):
-    # type: (str, rpilot.core.utils.Invoker) -> None
     """
     Args:
         param (str):

@@ -1,3 +1,26 @@
+"""
+Run as a module as root.
+
+Run as a module as root.
+
+Creates a :class:`npyscreen.SplitForm` to prompt the user in the command line
+for parameters to set up a :class:`~.terminal.Terminal` .
+
+Sets the following prefs:
+
+* **BASEDIR** - Base directory for all local rpilot data, typically `/usr/rpilot`
+* **MSGPORT** - Port to use for our ROUTER listener, default `5560`
+* **DATADIR** -  `os.path.join(params['BASEDIR'], 'data')`
+* **SOUNDDIR** - `os.path.join(params['BASEDIR'], 'sounds')`
+* **PROTOCOLDIR** - `os.path.join(params['BASEDIR'], 'protocols')`
+* **LOGDIR** - `os.path.join(params['BASEDIR'], 'logs')`
+* **REPODIR** - Path to RPilot git repo
+* **PILOT_DB** - Location of `pilot_db.json` used to populate :attr:`~.Terminal.pilots`
+
+
+
+"""
+
 import npyscreen as nps
 from collections import OrderedDict as odict
 import pprint
@@ -21,14 +44,17 @@ class SetupApp(nps.NPSAppManaged):
     def onStart(self):
         self.form = self.addForm('MAIN', TerminalSetupForm, name='Setup Terminal')
 
+
 def unfold_values(v):
     """
+    Unfold nested values from the SetupForm. Called recursively.
+
     Args:
-        v:
+        v (dict): unfolded values
     """
     if isinstance(v, dict):
         # recurse
-        v = {k:unfold_values(v) for k, v in v.items()}
+        v = {k: unfold_values(v) for k, v in v.items()}
     else:
         try:
             v = int(v.value)
@@ -36,10 +62,13 @@ def unfold_values(v):
             v = v.value
     return v
 
+
 def make_dir(adir):
     """
+    Make a directory if it doesn't exist and set its permissions to `0777`
+
     Args:
-        adir:
+        adir (str): Path to the directory
     """
     if not os.path.exists(adir):
         os.makedirs(adir)

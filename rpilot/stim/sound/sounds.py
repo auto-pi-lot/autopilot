@@ -1,3 +1,20 @@
+"""
+Classes to play sounds.
+
+Each sound inherits a base type depending on `prefs.AUDIOSERVER`
+
+* `prefs.AUDIOSERVER == 'jack'` : :class:`.Jack_Sound`
+* `prefs.AUDIOSERVER == 'pyo'` : :class:`.Pyo_Sound`
+
+To avoid unnecessary dependencies, `Jack_Sound` is not defined if AUDIOSERVER is `'pyo'`
+and vice versa.
+
+TODO:
+    Implement sound level and filter calibration
+
+
+"""
+
 # Re: The organization of this module
 # We balance a few things:
 # 1) using two sound servers with very different approaches to
@@ -31,21 +48,29 @@ except:
 
 
 
-if server_type == "pyo":
+if server_type in ("pyo", "docs"):
     import pyo
 
     class Pyo_Sound(object):
-        # Metaclass for pyo sound objects
-        PARAMS    = None # list of strings of parameters to be defined
-        type      = None # string human readable name of sound
-        duration  = None # duration in ms
-        amplitude = None
-        table     = None
-        trigger   = None
-        server_type = 'pyo'
+        """
+        Metaclass for pyo sound objects.
+
+        Note:
+            Use of pyo is generally discouraged due to dropout issues and
+            the general opacity of the module. As such this object is
+            intentionally left undocumented.
+
+        """
+
 
         def __init__(self):
-            pass
+            self.PARAMS = None  # list of strings of parameters to be defined
+            self.type = None  # string human readable name of sound
+            self.duration = None  # duration in ms
+            self.amplitude = None
+            self.table = None
+            self.trigger = None
+            self.server_type = 'pyo'
 
 
         def play(self):
@@ -81,26 +106,57 @@ if server_type == "pyo":
             self.trigger = pyo.TrigFunc(self.table['trig'], trig_fn)
 
 
-elif server_type == "jack":
+if server_type in ("jack", "docs"):
     import jackclient
 
     class Jack_Sound(object):
         """
+        Base class for sounds that use the :class:`~.jackclient.JackClient` audio
+        server.
+
+        Attributes:
+            PARAMS (list): List of strings of parameters that need to be defined for this sound
+            type (str): Human readable name of sound type
+            duration (float): Duration of sound in ms
+            amplitude (float): Amplitude of sound as proportion of 1 (eg 0.5 is half amplitude)
+            table (:class:`numpy.ndarray`): A Numpy array of samples
+            chunks (list): :attr:`~.Jack_Sound.table` split up into chunks of :data:`~.jackclient.BLOCKSIZE`
+            trigger (callable): A function that is called when the sound completes
+            nsamples (int): Number of samples in the sound
+            fs (int): sampling rate of client from :data:`.jackclient.FS`
+            blocksize (int): blocksize of clietn from :data:`.jackclient.BLOCKSIZE`
+            server (:class:`~.jackclient.Jack_Client`): Current Jack Client
+            q (:class:`multiprocessing.Queue`): Audio Buffer queue from :data:`.jackclient.QUEUE`
+            q_lock (:class:`multiprocessing.Lock`): Audio Buffer lock from :data:`.jackclient.Q_LOCK`
+            play_evt (:class:`multiprocessing.Event`): play event from :data:`.jackclient.PLAY`
+            stop_evt (:class:`multiprocessing.Event`): stop event from :data:`.jackclient.STOP`
+            buffered (bool): has this sound been dumped into the :attr:`~.Jack_Sound.q` ?
+
 
         """
-        # base class for jack audio sounds
-        PARAMS = None  # list of strings of parameters to be defined
-        type = None  # string human readable name of sound
-        duration = None  # duration in ms
-        amplitude = None
-        table = None  # numpy array of samples
-        chunks = None  # table split into a list of chunks
-        trigger = None
-        nsamples = None
-        server_type = 'jack'
 
+        PARAMS = []
+        """
+        list:  list of strings of parameters to be defined
+        """
+
+        type = None
+        """
+        str: string human readable name of sound
+        """
+
+        server_type = 'jack'
+        """
+        str: type of server, always 'jack' for `Jack_Sound` s.
+        """
 
         def __init__(self):
+            self.duration = None  # duration in ms
+            self.amplitude = None
+            self.table = None  # numpy array of samples
+            self.chunks = None  # table split into a list of chunks
+            self.trigger = None
+            self.nsamples = None
 
             self.fs = jackclient.FS
             self.blocksize = jackclient.BLOCKSIZE
@@ -114,7 +170,7 @@ elif server_type == "jack":
 
         def chunk(self):
             """
-
+            Split our `table` up into a list of :attr:`.Jack_Sound.blocksize` chunks.
             """
             # break sound into chunks
 
@@ -128,9 +184,10 @@ elif server_type == "jack":
 
         def set_trigger(self, trig_fn):
             """
+            Set a trigger function to be called when the :attr:`~.Jack_Sound.stop_evt` is set.
 
             Args:
-                trig_fn ():
+                trig_fn (callable): Some callable
             """
             if callable(trig_fn):
                 self.trigger = trig_fn
@@ -139,7 +196,10 @@ elif server_type == "jack":
 
         def wait_trigger(self):
             """
+            Wait for the stop_evt trigger to be set for at least a second after
+            the sound should have ended.
 
+            Call the trigger when the event is set.
             """
             # wait for our duration plus a second at most.
             self.stop_evt.wait((self.duration+1000)/1000.)
@@ -147,18 +207,20 @@ elif server_type == "jack":
             if self.stop_evt.is_set():
                 self.trigger()
 
-
-
         def get_nsamples(self):
             """
+            given our fs and duration, how many samples do we need?
+
+            literally::
+
+                np.ceil((self.duration/1000.)*self.fs).astype(np.int)
 
             """
-            # given our fs and duration, how many samples do we need?
             self.nsamples = np.ceil((self.duration/1000.)*self.fs).astype(np.int)
 
         def buffer(self):
             """
-
+            Dump chunks into the sound queue.
             """
             if not self.chunks:
                 self.chunk()
@@ -172,7 +234,13 @@ elif server_type == "jack":
 
         def play(self):
             """
+            Play ourselves.
 
+            If we're not buffered, be buffered.
+
+            Otherwise, set the play event and clear the stop event.
+
+            If we have a trigger, set a Thread to wait on it.
             """
             if not self.buffered:
                 self.buffer()
@@ -205,17 +273,17 @@ else:
 
 class Tone(BASE_CLASS):
     """The Humble Sine Wave"""
+
     PARAMS = ['frequency','duration','amplitude']
     type = 'Tone'
 
-    def __init__(self, frequency, duration, amplitude=0.01, phase=0, **kwargs):
+    def __init__(self, frequency, duration, amplitude=0.01, **kwargs):
         """
         Args:
-            frequency:
-            duration:
-            amplitude:
-            phase:
-            **kwargs:
+            frequency (float): frequency of sin in Hz
+            duration (float): duration of the sin in ms
+            amplitude (float): amplitude of the sound as a proportion of 1.
+            **kwargs: extraneous parameters that might come along with instantiating us
         """
         super(Tone, self).__init__()
 
@@ -226,6 +294,10 @@ class Tone(BASE_CLASS):
         self.init_sound()
 
     def init_sound(self):
+        """
+        Create a sine wave table using pyo or numpy, depending on the server type.
+        """
+
         if self.server_type == 'pyo':
             sin = pyo.Sine(self.frequency, mul=self.amplitude)
             self.table = self.table_wrap(sin)
@@ -237,15 +309,16 @@ class Tone(BASE_CLASS):
             self.chunk()
 
 class Noise(BASE_CLASS):
-    """White Noise straight up"""
+    """White Noise"""
+
     PARAMS = ['duration','amplitude']
     type='Noise'
     def __init__(self, duration, amplitude=0.01, **kwargs):
         """
         Args:
-            duration:
-            amplitude:
-            **kwargs:
+            duration (float): duration of the noise
+            amplitude (float): amplitude of the sound as a proportion of 1.
+            **kwargs: extraneous parameters that might come along with instantiating us
         """
         super(Noise, self).__init__()
 
@@ -255,6 +328,10 @@ class Noise(BASE_CLASS):
         self.init_sound()
 
     def init_sound(self):
+        """
+        Create a table of Noise using pyo or numpy, depending on the server_type
+        """
+
         if self.server_type == 'pyo':
             noiser = pyo.Noise(mul=self.amplitude)
             self.table = self.table_wrap(noiser)
@@ -264,15 +341,22 @@ class Noise(BASE_CLASS):
             self.chunk()
 
 class File(BASE_CLASS):
+    """
+    A .wav file.
+
+    TODO:
+        Generalize this to other audio types if needed.
+    """
+
     PARAMS = ['path', 'amplitude']
     type='File'
 
     def __init__(self, path, amplitude=0.01, **kwargs):
         """
         Args:
-            path:
-            amplitude:
-            **kwargs:
+            path (str): Path to a .wav file relative to the `prefs.SOUNDDIR`
+            amplitude (float): amplitude of the sound as a proportion of 1.
+            **kwargs: extraneous parameters that might come along with instantiating us
         """
         super(File, self).__init__()
 
@@ -288,6 +372,15 @@ class File(BASE_CLASS):
         self.init_sound()
 
     def init_sound(self):
+        """
+        Load the wavfile with :mod:`scipy.io.wavfile` ,
+        converting int to float as needed.
+
+        Create a sound table, resampling sound if needed.
+
+
+        """
+
         fs, audio = wavfile.read(self.path)
         if audio.dtype in ['int16', 'int32']:
             audio = int_to_float(audio)
@@ -313,18 +406,21 @@ class File(BASE_CLASS):
 
 
 class Speech(File):
+    """
+    Speech subclass of File sound.
+
+    Example of custom sound class - PARAMS are changed, but nothing else.
+    """
+
     type='Speech'
     PARAMS = ['path', 'amplitude', 'speaker', 'consonant', 'vowel', 'token']
     def __init__(self, path, speaker, consonant, vowel, token, amplitude=0.05, **kwargs):
         """
         Args:
-            path:
-            speaker:
-            consonant:
-            vowel:
-            token:
-            amplitude:
-            **kwargs:
+            speaker (str): Which Speaker recorded this speech token?
+            consonant (str): Which consonant is in this speech token?
+            vowel (str): Which vowel is in this speech token?
+            token (int): Which token is this for a given combination of speaker, consonant, and vowel
         """
         super(Speech, self).__init__(path, amplitude, **kwargs)
 
@@ -350,15 +446,30 @@ SOUND_LIST = {
     'Speech':Speech,
     'speech':Speech
 }
+"""
+Sounds must be added to this SOUND_LIST so they can be indexed by the string keys used elsewhere. 
+"""
 
 # These parameters are strings not numbers... jonny should do this better
 STRING_PARAMS = ['path', 'speaker', 'consonant', 'vowel', 'type']
+"""
+These parameters should be given string columns rather than float columns.
+
+Bother Jonny to do this better.
+
+v0.3 will be all about doing parameters better.
+"""
 
 
 def int_to_float(audio):
     """
+    Convert 16 or 32 bit integer audio to 32 bit float.
+
     Args:
-        audio:
+        audio (:class:`numpy.ndarray`): a numpy array of audio
+
+    Returns:
+        :class:`numpy.ndarray`: Audio that has been rescaled and converted to a 32 bit float.
     """
     if audio.dtype == 'int16':
         audio = audio.astype(np.float32)

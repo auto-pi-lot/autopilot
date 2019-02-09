@@ -574,3 +574,9 @@ PLOT_LIST = {
     'rollmean':Roll_Mean,
     # 'highlight':Highlight
 }
+"""
+A dictionary connecting plot keys to objects.
+
+TODO:
+    Just reference the plot objects.
+"""

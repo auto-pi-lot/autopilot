@@ -239,7 +239,10 @@ intersphinx_mapping = {'python': ('https://docs.python.org/2', None),
                        'zmq': ('https://pyzmq.readthedocs.io/en/latest/', None),
                        'tornado': ('https://www.tornadoweb.org/en/stable/', None),
                        'pyqtgraph': ('https://pyqtgraph.readthedocs.io/en/latest/', None),
-                       'numpy': ('https://numpy.readthedocs.io/en/latest/', None)}
+                       'numpy': ('https://numpy.readthedocs.io/en/latest/', None),
+                       'npyscreen': ('https://npyscreen.readthedocs.io/', None),
+                       'jack': ('https://jackclient-python.readthedocs.io/en/0.4.5/', None),
+                       'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),}
 
 # -- Options for todo extension ----------------------------------------------
 
@@ -252,3 +255,7 @@ highlight_language = "py"
 
 def setup(app):
     app.add_stylesheet("restyle.css")
+
+    from rpilot import prefs
+
+    prefs.add('AUDIOSERVER', 'docs')

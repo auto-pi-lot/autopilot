@@ -1692,8 +1692,7 @@ class Weights(QtGui.QTableWidget):
 
     def set_weight(self, row, column):
         """
-        Updates an internal store of changes made to mice weights.
-        Terminal updates the mouse objects when the window is closed.
+        Updates the most recent weights in :attr:`.gui.Weights.mice` objects.
 
         Note:
             Only the daily weight measurements can be changed this way - not mouse name, baseline weight, etc.
