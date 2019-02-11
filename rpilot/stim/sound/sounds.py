@@ -107,7 +107,7 @@ if server_type in ("pyo", "docs"):
 
 
 if server_type in ("jack", "docs"):
-    import jackclient
+    from rpilot.stim.sound import jackclient
 
     class Jack_Sound(object):
         """
