@@ -23,4 +23,7 @@
 - make hierarchical logging
 - reinstate message receipts
 - make pilot and jackclient quit nicely
+- use ticks from pigpio triggers instead of generating timestamps from python
+- see if can get ticks from jackd for sample processing time
+- do 'interfaces' like https://www.expyriment.org/
 

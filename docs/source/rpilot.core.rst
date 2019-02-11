@@ -8,6 +8,7 @@ core
 
 
 .. toctree::
+   :maxdepth: 10
 
    rpilot.core.gui
    rpilot.core.hardware

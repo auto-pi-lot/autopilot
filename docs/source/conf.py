@@ -14,6 +14,7 @@
 #
 import os
 import sys
+sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../..'))
 sys.setrecursionlimit(1500)
 import sphinx_bootstrap_theme
@@ -53,7 +54,9 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.autosummary',
+    'sphinx_automodapi.automodapi',
     #'sphinxcontrib.fulltoc',
+    #'localext.fulltoc',
 ]
 
 # Napoleon settings
@@ -67,11 +70,14 @@ napoleon_include_special_with_doc = True
 
 autoclass_content = "both"
 autodoc_member_order = "bysource"
+#autodoc_default_flags = ['members']
+
+automodsumm_writereprocessed = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
-autosummary_genera
+autosummary_generate = True
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -106,14 +112,13 @@ pygments_style = None
 #html_theme = 'sphinx_rtd_theme'
 html_theme = 'bootstrap'
 #html_theme = "basicstrap"
+#
+# html_theme = "sphinx_rtd_theme"
+# html_theme_path = ["_themes", ]
 html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
 #
-# html_theme_path = guzzle_sphinx_theme.html_theme_path()
-# html_theme = 'guzzle_sphinx_theme'
-#
-# # Register the theme as an extension to generate a sitemap.xml
-# extensions.append("guzzle_sphinx_theme")
+
 #
 # # Guzzle theme options (see theme.conf for more information)
 # html_theme_options = {
@@ -128,11 +133,14 @@ html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 html_theme_options = {
     'navbar_title': "RPilot",
     'navbar_site_name': 'RPilot Docs',
-    'globaltoc_depth': -1,
+    'globaltoc_depth': 10,
     'navbar_class': "navbar navbar-inverse",
     'bootswatch_theme': "readable",
+    'navbar_pagenav': True,
 
 }
+
+
 #
 html_sidebars = {
     '**': ['localtoc.html']

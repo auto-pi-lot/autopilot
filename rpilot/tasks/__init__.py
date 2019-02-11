@@ -1,6 +1,6 @@
 # from taskontrol.templates.nafc import Nafc
 from task import Task
-from nafc import Nafc, Gap_2AFC
+from nafc import Nafc
 from free_water import Free_Water
 from graduation import GRAD_LIST
 

@@ -14,9 +14,6 @@ very few design requirements:
   be taken to make any long-running operations internally threadsafe.
 
 Note:
-    A note on pin numbering
-    ************************
-
     This software was primarily developed for the Raspberry Pi, which
     has `two types of numbering schemes <https://pinout.xyz/#>`_ ,
     "board" numbering based on physical position and "bcm" numbering

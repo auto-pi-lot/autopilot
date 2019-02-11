@@ -8,9 +8,17 @@ rpilot API documentation
 
 .. toctree::
    :maxdepth: 10
+   :caption: Contents:
    :glob:
 
-   api
+   rpilot.core
+   rpilot.tasks
+   rpilot.stim
+   rpilot.viz
+   rpilot.setup
+   rpilot.prefs
+
+.. automodsumm:: rpilot.core.gui
 
 
 
