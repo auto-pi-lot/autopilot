@@ -1,1 +1,1 @@
-from sounds import SOUND_LIST
+from rpilot.stim.sound.sounds import SOUND_LIST
