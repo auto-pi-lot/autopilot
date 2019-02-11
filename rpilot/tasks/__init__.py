@@ -1,8 +1,8 @@
 # from taskontrol.templates.nafc import Nafc
-from task import Task
-from nafc import Nafc
-from free_water import Free_Water
-from graduation import GRAD_LIST
+from rpilot.tasks.task import Task
+from rpilot.tasks.nafc import Nafc
+from rpilot.tasks.free_water import Free_Water
+from rpilot.tasks.graduation import GRAD_LIST
 
 
 TASK_LIST = {'2AFC':Nafc,
