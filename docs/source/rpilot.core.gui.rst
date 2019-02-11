@@ -1,8 +1,6 @@
 gui
 ======================
 
-.. automodsumm:: rpilot.core.gui
-
 .. automodule:: rpilot.core.gui
     :members:
     :undoc-members:
