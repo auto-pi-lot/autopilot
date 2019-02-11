@@ -18,7 +18,6 @@ rpilot API documentation
    rpilot.setup
    rpilot.prefs
 
-.. automodsumm:: rpilot.core.gui
 
 
 
