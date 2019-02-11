@@ -27,3 +27,6 @@
 - see if can get ticks from jackd for sample processing time
 - do 'interfaces' like https://www.expyriment.org/
 
+.. automodsumm:: rpilot.core.gui
+    :toctree:
+
