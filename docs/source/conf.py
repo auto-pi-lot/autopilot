@@ -55,7 +55,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.autosummary',
-    'sphinx_automodapi.automodapi',
+    #'sphinx_automodapi.automodapi',
     #'sphinxcontrib.fulltoc',
     #'localext.fulltoc',
 ]
@@ -72,7 +72,7 @@ napoleon_include_special_with_doc = True
 autoclass_content = "both"
 autodoc_member_order = "bysource"
 #autodoc_default_flags = ['members']
-autodoc_mock_imports = ['tables', 'PySide', 'tables.nodes', 'pyo', 'jack']
+autodoc_mock_imports = ['tables', 'PySide', 'tables', 'pyo', 'jack']
 
 automodsumm_writereprocessed = True
 
@@ -270,8 +270,8 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
         return MagicMock()
 
-MOCK_MODULES = autodoc_mock_imports
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+#MOCK_MODULES = autodoc_mock_imports
+#sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 def setup(app):
     app.add_stylesheet("restyle.css")

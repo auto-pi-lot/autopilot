@@ -7,3 +7,4 @@ pandas>=0.19.2
 npyscreen
 scipy
 tornado
+pyqtgraph
