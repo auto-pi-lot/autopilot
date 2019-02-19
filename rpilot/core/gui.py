@@ -27,6 +27,29 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from rpilot.core.mouse import Mouse
 from rpilot import tasks, prefs
 from rpilot.stim.sound import sounds
+from functools import wraps
+from utils import InvokeEvent
+
+
+def gui_event(fn):
+    """
+    Wrapper/decorator around an event that posts GUI events back to the main
+    thread that our window is running in.
+
+    Args:
+        fn (callable): a function that does something to the GUI
+    """
+    @wraps(fn)
+    def wrapper_gui_event(*args, **kwargs):
+        # type: (object, object) -> None
+        """
+
+        Args:
+            *args ():
+            **kwargs ():
+        """
+        QtCore.QCoreApplication.postEvent(prefs.INVOKER, InvokeEvent(fn, *args, **kwargs))
+    return wrapper_gui_event
 
 
 class Control_Panel(QtGui.QWidget):
@@ -49,6 +72,7 @@ class Control_Panel(QtGui.QWidget):
                     containing mice, IP, etc. as values
         mouse_lists (dict): A dict mapping mouse ID to :py:class:`.Mouse_List`
         layout (:py:class:`~QtGui.QGridLayout`): Layout grid for widget
+        panels (dict): A dict mapping pilot name to the relevant :py:class:`.Pilot_Panel`
 
     """
     # Hosts two nested tab widgets to select pilot and mouse,
@@ -94,12 +118,13 @@ class Control_Panel(QtGui.QWidget):
         self.layout.setSpacing(0)
         self.setLayout(self.layout)
 
+        self.panels = {}
+
         self.init_ui()
 
         self.setSizePolicy(QtGui.QSizePolicy.Maximum,QtGui.QSizePolicy.Maximum)
 
     def init_ui(self):
-        # type: () -> None
         """
         Called on init, creates the UI components.
 
@@ -117,12 +142,14 @@ class Control_Panel(QtGui.QWidget):
             # Make a list of mice
             mouse_list = Mouse_List(mice, drop_fn = self.update_db)
             mouse_list.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-            mouse_list.itemDoubleClicked.connect(self.edit_params)
+            #mouse_list.itemDoubleClicked.connect(self.edit_params)
             self.mouse_lists[pilot] = mouse_list
 
             # Make a panel for pilot control
             pilot_panel = Pilot_Panel(pilot, mouse_list, self.start_fn, self.create_mouse)
             pilot_panel.setFixedWidth(100)
+
+            self.panels[pilot] = pilot_panel
 
             self.layout.addWidget(pilot_panel, i, 1, 1, 1)
             self.layout.addWidget(mouse_list, i, 2, 1, 1)
@@ -309,6 +336,7 @@ class Pilot_Panel(QtGui.QWidget):
 
     Attributes:
         layout (:py:class:`QtGui.QGridLayout`): Layout for UI elements
+        button (:class:`.Pilot_Button`): button used to control a pilot
     """
     def __init__(self, pilot=None, mouse_list=None, start_fn=None, create_fn=None):
         """
@@ -329,6 +357,7 @@ class Pilot_Panel(QtGui.QWidget):
         self.mouse_list = mouse_list
         self.start_fn = start_fn
         self.create_fn = create_fn
+        self.button = None
 
         self.init_ui()
 
@@ -339,14 +368,14 @@ class Pilot_Panel(QtGui.QWidget):
         """
         # type: () -> None
         label = QtGui.QLabel(self.pilot)
-        start_button = Pilot_Button(self.pilot, self.mouse_list, self.start_fn)
+        self.button = Pilot_Button(self.pilot, self.mouse_list, self.start_fn)
         add_button = QtGui.QPushButton("+")
         add_button.clicked.connect(self.create_mouse)
         remove_button = QtGui.QPushButton("-")
         remove_button.clicked.connect(self.remove_mouse)
 
         self.layout.addWidget(label, 0, 0, 1, 2)
-        self.layout.addWidget(start_button, 1, 0, 1, 2)
+        self.layout.addWidget(self.button, 1, 0, 1, 2)
         self.layout.addWidget(add_button, 2,0,1,1)
         self.layout.addWidget(remove_button, 2,1,1,1)
 
@@ -376,22 +405,32 @@ class Pilot_Button(QtGui.QPushButton):
         A subclass of (toggled) :class:`QtGui.QPushButton` that incorporates the style logic of a
         start/stop button - ie. color, text.
 
+        Starts grayed out, turns green if contact with a pilot is made.
+
         Args:
             pilot (str): The ID of the pilot that this button controls
             mouse_list (:py:class:`.Mouse_List`): The Mouse list used to determine which
                 mouse is starting/stopping
             start_fn (:py:meth:`~rpilot.core.terminal.Terminal.toggle_start`): The final
                 resting place of the toggle_start method
+
+        Attributes:
+            state (str): The state of our pilot, reflected in our graphical properties.
+                Mirrors :attr:`~.pilot.Pilot.state` , with an additional "DISCONNECTED"
+                state for before contact is made with the pilot.
         """
         super(Pilot_Button, self).__init__()
 
         ## GUI Settings
         self.setCheckable(True)
         self.setChecked(False)
+        self.setEnabled(False)
+
         self.setStyleSheet("QPushButton {color:white; background-color: green}"
-                           "QPushButton:checked {color:white; background-color: red}")
-        # since we're stopped when created, set our text as a start button...
-        self.setText("START")
+                           "QPushButton:checked {color:white; background-color: red}"
+                           "QPushButton:disabled {color:black; background-color: gray}")
+        # at start, set our text to no pilot and wait for the signal
+        self.setText("DISCONNECTED")
 
         # Normally buttons only expand horizontally, but these big ole ones....
         self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Maximum)
@@ -401,6 +440,9 @@ class Pilot_Button(QtGui.QPushButton):
 
         # What mice do we know about?
         self.mouse_list = mouse_list
+
+        # keep track of our visual and functional state.
+        self.state = "DISCONNECTED"
 
         # Passed a function to toggle start from the control panel
         self.start_fn = start_fn
@@ -426,6 +468,41 @@ class Pilot_Button(QtGui.QPushButton):
         else:
             self.setText("START")
             self.start_fn(False, self.pilot, current_mouse)
+
+    @gui_event
+    def set_state(self, state):
+        # if we're good, do nothing.
+        if state == self.state:
+            return
+
+        if state == "IDLE":
+            # responsive and waiting
+            self.setEnabled(True)
+            self.setText('START')
+            self.setChecked(False)
+        elif state == "RUNNING":
+            # running a task
+            self.setEnabled(True)
+            self.setText('STOP')
+            self.setChecked(False)
+        elif state == "STOPPING":
+            # stopping
+            self.setEnabled(False)
+            self.setText("STOPPING")
+            self.setChecked(False)
+        elif state == "DISCONNECTED":
+            # contact w the pi is missing or lost
+            self.setEnabled(False)
+            self.setText("DISCONNECTED")
+            self.setChecked(False)
+
+
+        if self.isChecked():
+            self.setText("STOP")
+        else:
+            self.setText("START")
+
+        self.state = state
 
 
 ##################################

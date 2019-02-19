@@ -20,6 +20,7 @@ from networking import Terminal_Networking, Net_Node
 from utils import InvokeEvent, Invoker
 from gui import Control_Panel, Protocol_Wizard, Weights, Reassign
 from rpilot import prefs
+import pdb
 
 
 # TODO: Be more complete about generating logs
@@ -151,6 +152,9 @@ class Terminal(QtGui.QMainWindow):
         self.networking.start()
         self.logger.info("Networking object Initialized")
 
+        # send an initial ping looking for our pilots
+        self.node.send('T', 'INIT')
+
     def init_logging(self):
         """
         Start logging to a timestamped file in `prefs.LOGDIR`
@@ -198,11 +202,11 @@ class Terminal(QtGui.QMainWindow):
         self.file_menu = self.menuBar().addMenu("&File")
         new_pilot_act = QtGui.QAction("New &Pilot", self, triggered=self.new_pilot)
         new_prot_act  = QtGui.QAction("New Pro&tocol", self, triggered=self.new_protocol)
-        batch_create_mice = QtGui.QAction("Batch &Create Mice", self, triggered=self.batch_mice)
+        #batch_create_mice = QtGui.QAction("Batch &Create Mice", self, triggered=self.batch_mice)
         # TODO: Update pis
         self.file_menu.addAction(new_pilot_act)
         self.file_menu.addAction(new_prot_act)
-        self.file_menu.addAction(batch_create_mice)
+        #self.file_menu.addAction(batch_create_mice)
 
         # Tools menu
         self.tool_menu = self.menuBar().addMenu("&Tools")
@@ -213,17 +217,6 @@ class Terminal(QtGui.QMainWindow):
         self.tool_menu.addAction(update_protocol_act)
         self.tool_menu.addAction(reassign_act)
 
-        # Set size of window to be fullscreen without maximization
-        # Until a better solution is found, if not set large enough, the pilot tabs will
-        # expand into infinity. See the Expandable_Tabs class
-        titleBarHeight = self.style().pixelMetric(QtGui.QStyle.PM_TitleBarHeight,
-            QtGui.QStyleOptionTitleBar(), self)
-        winsize = app.desktop().availableGeometry()
-        # Then subtract height of titlebar
-        winheight = winsize.height()-titleBarHeight*2
-        winsize.setHeight(winheight)
-        self.setGeometry(winsize)
-        self.setSizePolicy(QtGui.QSizePolicy.Maximum,QtGui.QSizePolicy.Maximum)
 
         ## Init main panels and add to layout
         # Control panel sits on the left, controls pilots & mice
@@ -235,13 +228,13 @@ class Terminal(QtGui.QMainWindow):
         self.data_panel = Plot_Widget()
         self.data_panel.init_plots(self.pilots.keys())
 
-        # Set heights on control panel and data panel
-        self.control_panel.setMaximumHeight(winheight)
-        self.data_panel.setMaximumHeight(winheight)
+
 
         # Logo goes up top
+        pixmap_path = os.path.join(os.path.dirname(prefs.REPODIR), 'graphics', 'logo.png')
         self.logo = QtGui.QLabel()
-        self.logo.setPixmap(QtGui.QPixmap(prefs.REPODIR + '/graphics/logo.png').scaled(265, 40))
+        pixmap = QtGui.QPixmap(pixmap_path).scaled(265,40)
+        self.logo.setPixmap(pixmap)
         self.logo.setFixedHeight(40)
         self.logo.setAlignment(QtCore.Qt.AlignLeft)
 
@@ -251,6 +244,29 @@ class Terminal(QtGui.QMainWindow):
         self.layout.addWidget(self.data_panel, 1,1,1,1)
         self.layout.setColumnStretch(0, 2)
         self.layout.setColumnStretch(1, 10)
+
+        # Set size of window to be fullscreen without maximization
+        # Until a better solution is found, if not set large enough, the pilot tabs will
+        # expand into infinity. See the Expandable_Tabs class
+        winsize = app.desktop().availableGeometry()
+
+        # want to subtract bounding title box, our title bar, and logo height.
+        # our y offset will be the size of the bounding title box
+        window_title_height = winsize.y()
+        # Then our tilebar
+        titleBarHeight = self.style().pixelMetric(QtGui.QStyle.PM_TitleBarHeight,
+                                                  QtGui.QStyleOptionTitleBar(), self)
+        # finally our logo
+        logo_height = self.logo.height()
+
+        winheight = winsize.height() - window_title_height - titleBarHeight - logo_height  # also subtract logo height
+        winsize.setHeight(winheight)
+        self.setGeometry(winsize)
+        self.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+
+        # Set heights on control panel and data panel
+        self.control_panel.setMaximumHeight(winheight)
+        self.data_panel.setMaximumHeight(winheight)
 
         self.show()
         logging.info('UI Initialized')
@@ -392,6 +408,10 @@ class Terminal(QtGui.QMainWindow):
         # TODO: Also tell the relevant dataview to clear
         if value['pilot'] in self.pilots.keys():
             self.pilots[value['pilot']]['state'] = value['state']
+
+        # update the pilot button
+        if value['pilot'] in self.control_panel.panels.keys():
+            self.control_panel.panels[value['pilot']].button.set_state(value['state'])
 
     def l_handshake(self, value):
         """

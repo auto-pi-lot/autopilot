@@ -78,8 +78,8 @@ class Nafc(Task):
     PARAMS['bias_threshold'] = {'tag': 'Bias Correction Threshold (%)',
                                 'type':'int',
                                 'depends':{'bias_mode':2}}
-    PARAMS['timeout']        = {'tag':'Delay Timeout (ms)',
-                                'type':'int'}
+    #PARAMS['timeout']        = {'tag':'Delay Timeout (ms)',
+    #                            'type':'int'}
     PARAMS['stim']           = {'tag':'Sounds',
                                 'type':'sounds'}
 
@@ -165,7 +165,7 @@ class Nafc(Task):
         self.correction_pct = float(correction_pct)/100
         self.bias_mode      = bias_mode
         self.bias_threshold = float(bias_threshold)/100
-        self.timeout        = int(timeout)
+        #self.timeout        = int(timeout)
 
         # Variable Parameters
         self.target = None

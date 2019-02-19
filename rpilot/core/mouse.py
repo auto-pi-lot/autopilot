@@ -8,7 +8,7 @@ models should the need arise.
 """
 
 # TODO: store pilot in biography
-
+import pdb
 import os
 import sys
 import threading
@@ -68,7 +68,18 @@ class Mouse:
         data_queue (:class:`queue.Queue`): Queue to dump data while running task
         thread (:class:`threading.Thread`): thread used to keep file open while running task
         did_graduate (:class:`threading.Event`): Event used to signal if the mouse has graduated the current step
+        STRUCTURE (list): list of tuples with order:
+
+            * full path, eg. '/history/weights'
+            * relative path, eg. '/history'
+            * name, eg. 'weights'
+            * type, eg. :class:`.Mouse.Weight_Table` or 'group'
+
+        node locations (eg. '/data') to types, either 'group' for groups or a
+            :class:`tables.IsDescriptor` for tables.
     """
+
+
 
     def __init__(self, name, dir=None, new=False, biography=None):
         """
@@ -78,6 +89,16 @@ class Mouse:
             new (bool): if True, a new file is made (a new file is made if one does not exist anyway)
             biography (dict): If making a new mouse file, a dictionary with biographical data can be passed
         """
+        self.STRUCTURE = [
+            ('/data', '/', 'data', 'group'),
+            ('/history', '/', 'history' 'group'),
+            ('/history/hashes', '/history', 'hashes', self.Hash_Table),
+            ('/history/history', '/history', 'history', self.History_Table),
+            ('/history/weights', '/history', 'weights', self.Weight_Table),
+            ('/history/past_protocols', '/history', 'past_protocols', 'group'),
+            ('/info', '/', 'info', 'group')
+        ]
+
         self.lock = threading.Lock()
 
         if not dir:
@@ -87,6 +108,9 @@ class Mouse:
         self.file = os.path.join(dir, name + '.h5')
         if new or not os.path.isfile(self.file):
             self.new_mouse_file(biography)
+
+        # before we open, make sure we have the stuff we need
+        self.ensure_structure()
 
         h5f = self.open_hdf()
 
@@ -210,6 +234,29 @@ class Mouse:
                 h5f.root.info._v_attrs[k] = v
 
         self.close_hdf(h5f)
+
+    def ensure_structure(self):
+        """
+        Ensure that our h5f has the appropriate baseline structure as defined in `self.STRUCTURE`
+
+        Checks that all groups and tables are made, makes them if not
+        """
+        h5f = self.open_hdf()
+
+        for node in self.STRUCTURE:
+            try:
+                node = h5f.get_node(node[0])
+            except tables.exceptions.NoSuchNodeError:
+                #pdb.set_trace()
+                # try to make it
+                if isinstance(node[3], basestring):
+                    if node[3] == 'group':
+                        h5f.create_group(node[1], node[2])
+                elif issubclass(node[3], tables.IsDescription):
+                    h5f.create_table(node[1], node[2], description=node[3])
+
+        self.close_hdf(h5f)
+
 
     def update_biography(self, params):
         """
