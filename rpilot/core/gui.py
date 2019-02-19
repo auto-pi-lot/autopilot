@@ -163,7 +163,7 @@ class Control_Panel(QtGui.QWidget):
         Args:
             pilot (str): Pilot name passed from :py:class:`.Pilot_Panel`, added to the created Mouse object.
         """
-        new_mouse_wizard = New_Mouse_Wizard(prefs.PROTOCOLDIR)
+        new_mouse_wizard = New_Mouse_Wizard()
         new_mouse_wizard.exec_()
 
         # If the wizard completed successfully, get its values
@@ -430,7 +430,10 @@ class Pilot_Button(QtGui.QPushButton):
                            "QPushButton:checked {color:white; background-color: red}"
                            "QPushButton:disabled {color:black; background-color: gray}")
         # at start, set our text to no pilot and wait for the signal
-        self.setText("DISCONNECTED")
+        self.setText("?")
+
+        # keep track of our visual and functional state.
+        self.state = "DISCONNECTED"
 
         # Normally buttons only expand horizontally, but these big ole ones....
         self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Maximum)
@@ -441,8 +444,7 @@ class Pilot_Button(QtGui.QPushButton):
         # What mice do we know about?
         self.mouse_list = mouse_list
 
-        # keep track of our visual and functional state.
-        self.state = "DISCONNECTED"
+
 
         # Passed a function to toggle start from the control panel
         self.start_fn = start_fn
@@ -540,7 +542,7 @@ class New_Mouse_Wizard(QtGui.QDialog):
         tabWidget.addTab(self.bio_tab, "Biography")
 
         if self.protocol_dir:
-            self.task_tab = self.Task_Tab(self.protocol_dir)
+            self.task_tab = self.Task_Tab()
             tabWidget.addTab(self.task_tab, "Protocol")
 
         buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)

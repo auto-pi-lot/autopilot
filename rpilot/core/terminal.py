@@ -432,6 +432,11 @@ class Terminal(QtGui.QMainWindow):
         else:
             self.new_pilot(name=value['pilot'], ip=value['ip'])
 
+        # update the pilot button
+        if value['pilot'] in self.control_panel.panels.keys():
+            self.control_panel.panels[value['pilot']].button.set_state(value['state'])
+
+
         self.control_panel.update_db()
 
     #############################
@@ -549,7 +554,7 @@ class Terminal(QtGui.QMainWindow):
             if mouse not in self.mice.keys():
                 self.mice[mouse] = Mouse(mouse)
 
-            protocol_bool = [self.mice[mouse].protocol_name == p.strip('.json') for p in protocols]
+            protocol_bool = [self.mice[mouse].protocol_name == p.rstrip('.json') for p in protocols]
             if any(protocol_bool):
                 which_prot = np.where(protocol_bool)[0][0]
                 protocol = protocols[which_prot]

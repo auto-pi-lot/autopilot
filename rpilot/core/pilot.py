@@ -232,7 +232,7 @@ class RPilot:
         Send the terminal our name and IP to signal that we are alive
         """
         # send the terminal some information about ourselves
-        hello = {'pilot':self.name, 'ip':self.ip}
+        hello = {'pilot':self.name, 'ip':self.ip, 'state':self.state}
         self.node.send('T', 'HANDSHAKE', value=hello)
 
     def update_state(self):

@@ -362,11 +362,7 @@ class Mouse:
 
         h5f = self.open_hdf()
 
-        # Check if there is an existing protocol, archive it if there is.
-        if "/current" in h5f:
-            _ = self.close_hdf(h5f)
-            self.stash_current()
-            h5f = self.open_hdf()
+
 
         ## Assign new protocol
         if not protocol.endswith('.json'):
@@ -378,18 +374,29 @@ class Mouse:
             if not os.path.exists(fullpath):
                 Exception('Could not find either {} or {}'.format(protocol, fullpath))
 
-        # Load protocol to dict
-        with open(protocol) as protocol_file:
-            self.current = json.load(protocol_file)
-
-        # Make filenode and save as serialized json
-        current_node = filenode.new_node(h5f, where='/', name='current')
-        current_node.write(json.dumps(self.current))
-        h5f.flush()
-
         # Set name and step
         # Strip off path and extension to get the protocol name
         protocol_name = os.path.splitext(protocol)[0].split(os.sep)[-1]
+
+        # Load protocol to dict
+        with open(protocol) as protocol_file:
+            prot_dict = json.load(protocol_file)
+
+        # Check if there is an existing protocol, archive it if there is.
+        if "/current" in h5f:
+            _ = self.close_hdf(h5f)
+            self.update_history(type='protocol', name=protocol_name, value = prot_dict)
+            self.stash_current()
+            h5f = self.open_hdf()
+
+        # Make filenode and save as serialized json
+        current_node = filenode.new_node(h5f, where='/', name='current')
+        current_node.write(json.dumps(prot_dict))
+        h5f.flush()
+
+        # save some protocol attributes
+        self.current = prot_dict
+
         current_node.attrs['protocol_name'] = protocol_name
         self.protocol_name = protocol_name
 
@@ -430,18 +437,19 @@ class Mouse:
                     if 'trial_num' not in trial_descriptor.columns.keys():
                         trial_descriptor.columns.update({'trial_num': tables.Int32Col()})
                     # if this task has sounds, make columns for them
-                    if 'sounds' in step['stim'].keys():
-                        # for now we just assume they're floats
-                        sound_params = {}
-                        for side, sounds in step['stim']['sounds'].items():
-                            # each side has a list of sounds
-                            for sound in sounds:
-                                for k, v in sound.items():
-                                    if k in STRING_PARAMS:
-                                        sound_params[k] = tables.StringCol(1024)
-                                    else:
-                                        sound_params[k] = tables.Float64Col()
-                        trial_descriptor.columns.update(sound_params)
+                    if 'stim' in step.keys():
+                        if 'sounds' in step['stim'].keys():
+                            # for now we just assume they're floats
+                            sound_params = {}
+                            for side, sounds in step['stim']['sounds'].items():
+                                # each side has a list of sounds
+                                for sound in sounds:
+                                    for k, v in sound.items():
+                                        if k in STRING_PARAMS:
+                                            sound_params[k] = tables.StringCol(1024)
+                                        else:
+                                            sound_params[k] = tables.Float64Col()
+                            trial_descriptor.columns.update(sound_params)
 
                     h5f.create_table(step_group, "trial_data", trial_descriptor)
             except tables.NodeError:
