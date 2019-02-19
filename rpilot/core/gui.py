@@ -490,7 +490,7 @@ class Pilot_Button(QtGui.QPushButton):
             # running a task
             self.setEnabled(True)
             self.setText('STOP')
-            self.setChecked(False)
+            self.setChecked(True)
         elif state == "STOPPING":
             # stopping
             self.setEnabled(False)

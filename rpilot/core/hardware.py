@@ -159,7 +159,7 @@ class Beambreak(Hardware):
     type = 'POKES'
     input = True
 
-    def __init__(self, pin, pull_ud='U', trigger_ud='D', event=None):
+    def __init__(self, pin, pull_ud='D', trigger_ud='U', event=None):
         """
         Args:
             pin (int): Board-numbered pin, converted to BCM numbering during instantiation.
