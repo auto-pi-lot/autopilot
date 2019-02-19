@@ -449,10 +449,13 @@ class Pilot_Button(QtGui.QPushButton):
         # Passed a function to toggle start from the control panel
         self.start_fn = start_fn
         # toggle_start has a little sugar on it before sending to control panel
-        self.toggled.connect(self.toggle_start)
+        # use the clicked rather than toggled signal, clicked only triggers on user
+        # interaction, toggle is whenever the state is toggled - so programmatically
+        # toggling the button - ie. responding to pilot state changes - double triggers.
+        self.clicked.connect(self.toggle_start)
 
 
-    def toggle_start(self, toggled):
+    def toggle_start(self):
         """
         Minor window dressing to call the :py:meth:`~.Pilot_Button.start_fn` with the
         appropriate pilot, mouse, and whether the task is starting or stopping
@@ -462,7 +465,8 @@ class Pilot_Button(QtGui.QPushButton):
         """
         # If we're stopped, start, and vice versa...
         current_mouse = self.mouse_list.currentItem().text()
-        if toggled is True: # ie
+        toggled = self.isChecked()
+        if toggled is True: # ie button is already down, already running.
 
             self.setText("STOP")
             self.start_fn(True, self.pilot, current_mouse)

@@ -8,6 +8,8 @@ import logging
 from rpilot.core import hardware
 from rpilot import prefs
 
+import sys
+
 if hasattr(prefs, "AUDIOSERVER"):
     if prefs.AUDIOSERVER == 'pyo':
         pass
@@ -189,11 +191,11 @@ class Task(object):
             level (bool): True, False high/low
             tick (int): ticks since booting pigpio
         """
+        print("triggered pin {}".format(pin))
+        sys.stdout.flush()
         # All triggers call this function with the pin number, level (high, low), and ticks since booting pigpio
-        # Triggers will be functions unless they are "TIMEUP", at which point we
-        # register a timeout and restart the trial
 
-        # We get fed pins as numbers usually, convert to board number and then back to letters
+        # We get fed pins as BCM numbers, convert to board number and then back to letters
         if isinstance(pin, int):
             pin = hardware.BCM_TO_BOARD[pin]
             pin = self.pin_id[pin]

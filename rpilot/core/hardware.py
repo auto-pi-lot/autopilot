@@ -39,21 +39,21 @@ Warning:
 # except:
 #     pass
 
-try:
-    import pigpio
+#try:
+import pigpio
 
-    TRIGGER_MAP = {
-        'U': pigpio.RISING_EDGE,
-        'D': pigpio.FALLING_EDGE,
-        'B': pigpio.EITHER_EDGE
-    }
-    """
-    dict: Maps strings ('U', 'D', 'B') to pigpio edge types
-    (RISING_EDGE, FALLING_EDGE, EITHER_EDGE), respectively.
-    """
+TRIGGER_MAP = {
+    'U': pigpio.RISING_EDGE,
+    'D': pigpio.FALLING_EDGE,
+    'B': pigpio.EITHER_EDGE
+}
+"""
+dict: Maps strings ('U', 'D', 'B') to pigpio edge types
+(RISING_EDGE, FALLING_EDGE, EITHER_EDGE), respectively.
+"""
 # TODO: needs better handling, pigpio crashes sometimes and we should know
-except ImportError:
-    pass
+#except ImportError:
+#    pass
 
 try:
     import usb
@@ -168,6 +168,10 @@ class Beambreak(Hardware):
             event (:class:`threading.Event`): We can be passed an Event object if we want to handle
                 stage transition logic here instead of the :class:`.Task` object, as is typical.
         """
+
+        self.trigger = True
+        self.type = 'POKES'
+        self.input = True
 
         # Make pigpio instance
         self.pig = pigpio.pi()
