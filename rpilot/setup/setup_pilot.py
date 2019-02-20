@@ -137,6 +137,10 @@ if __name__ == "__main__":
 
     ############################
     # some inelegant manual formatting
+
+    # we are known as a pilot
+    params['AGENT'] = "pilot"
+
     # convert numerical audio server index to string
     params['AUDIOSERVER'] = ['jack', 'pyo', 'none'][params['AUDIOSERVER'][0]]
 

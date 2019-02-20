@@ -40,17 +40,20 @@ Warning:
 #     pass
 
 #try:
-import pigpio
 
-TRIGGER_MAP = {
-    'U': pigpio.RISING_EDGE,
-    'D': pigpio.FALLING_EDGE,
-    'B': pigpio.EITHER_EDGE
-}
-"""
-dict: Maps strings ('U', 'D', 'B') to pigpio edge types
-(RISING_EDGE, FALLING_EDGE, EITHER_EDGE), respectively.
-"""
+from rpilot import prefs
+if prefs.AGENT in ['pilot']:
+    import pigpio
+
+    TRIGGER_MAP = {
+        'U': pigpio.RISING_EDGE,
+        'D': pigpio.FALLING_EDGE,
+        'B': pigpio.EITHER_EDGE
+    }
+    """
+    dict: Maps strings ('U', 'D', 'B') to pigpio edge types
+    (RISING_EDGE, FALLING_EDGE, EITHER_EDGE), respectively.
+    """
 # TODO: needs better handling, pigpio crashes sometimes and we should know
 #except ImportError:
 #    pass
@@ -62,7 +65,7 @@ except ImportError:
 
 import threading
 import time
-from rpilot import prefs
+
 
 # pigpio only uses BCM numbers, we need to translate them
 # See https://www.element14.com/community/servlet/JiveServlet/previewBody/73950-102-11-339300/pi3_gpio.png
@@ -159,7 +162,7 @@ class Beambreak(Hardware):
     type = 'POKES'
     input = True
 
-    def __init__(self, pin, pull_ud='D', trigger_ud='U', event=None):
+    def __init__(self, pin, pull_ud='U', trigger_ud='D', event=None):
         """
         Args:
             pin (int): Board-numbered pin, converted to BCM numbering during instantiation.

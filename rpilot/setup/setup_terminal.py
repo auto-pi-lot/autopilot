@@ -90,6 +90,10 @@ if __name__ == "__main__":
 
     ##############################
     # Compute derived values
+
+    # we are known as a terminal
+    params['AGENT'] = 'terminal'
+
     # define and make directory structure
     params['DATADIR'] = os.path.join(params['BASEDIR'], 'data')
     params['SOUNDDIR'] = os.path.join(params['BASEDIR'], 'sounds')

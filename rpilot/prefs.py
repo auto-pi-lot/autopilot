@@ -23,7 +23,7 @@ Examples:
 # this is strictly a placeholder module to
 # allow global access to prefs without explicit passing.
 #
-# DO NOT hardcode prefs here.
+# DO NOT hardcode prefs here. only add placeholder values for certain 'universal' params
 #
 # A prefs.json file should be generated with an appropriate setup routine
 # (see setup dir)
@@ -124,4 +124,10 @@ def git_version(repo_dir):
 
 
 
+#######################3
+##########################
+# SECTION OF NOT HARDCODED PARAMS
+# null values of params that every agent should have
+if 'AGENT' not in globals().keys():
+    add('AGENT', '')
 
