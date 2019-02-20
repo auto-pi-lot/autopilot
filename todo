@@ -27,6 +27,7 @@
 - see if can get ticks from jackd for sample processing time
 - do 'interfaces' like https://www.expyriment.org/
 - add Cython typing to jack client - https://cython.readthedocs.io/en/latest/src/userguide/parallelism.html
+- store pilot name in mouse object
 
 .. automodsumm:: rpilot.core.gui
     :toctree:

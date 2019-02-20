@@ -142,7 +142,10 @@ class Mouse:
         # Every time we are initialized we stash the git hash
         history_row = h5f.root.history.hashes.row
         history_row['time'] = self.get_timestamp()
-        history_row['hash'] = prefs.HASH
+        try:
+            history_row['hash'] = prefs.HASH
+        except AttributeError:
+            history_row['hash'] = ''
         history_row.append()
 
         # we have to always open and close the h5f
