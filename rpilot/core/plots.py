@@ -189,6 +189,7 @@ class Plot(QtGui.QWidget):
         data (dict): A dictionary of the data we've received
         plots (dict): The collection of plots we instantiate based on `plot_params`
         node (:class:`.Net_Node`): Our local net node where we listen for data.
+        state (str): state of the pilot, used to keep plot synchronized.
     """
 
     def __init__(self, pilot, x_width=50):
@@ -211,6 +212,7 @@ class Plot(QtGui.QWidget):
         self.plot_params = {}
         self.data = {} # Keep a dict of the data we are keeping track of, will be instantiated on start
         self.plots = {}
+        self.state = "IDLE"
 
         self.invoker = prefs.INVOKER
 
@@ -230,7 +232,8 @@ class Plot(QtGui.QWidget):
             'START' : self.l_start, # Receiving a new task
             'DATA' : self.l_data, # Receiving a new datapoint
             'STOP' : self.l_stop,
-            'PARAM': self.l_param # changing some param
+            'PARAM': self.l_param, # changing some param
+            'STATE': self.l_state
         }
 
         self.node = Net_Node(id='P_{}'.format(self.pilot),
@@ -336,6 +339,8 @@ class Plot(QtGui.QWidget):
                 self.plot.addItem(self.plots[data])
                 self.data[data] = np.zeros((0,2), dtype=np.float)
 
+        self.state = 'RUNNING'
+
     @gui_event
     def l_data(self, value):
         """
@@ -385,6 +390,8 @@ class Plot(QtGui.QWidget):
         self.info['Session'].setText('')
         self.info['Protocol'].setText('')
 
+        self.state = 'IDLE'
+
     def l_param(self, value):
         """
         Warning:
@@ -394,6 +401,22 @@ class Plot(QtGui.QWidget):
             value:
         """
         pass
+
+    def l_state(self, value):
+        """
+        Pilot letting us know its state has changed. Mostly for the case where
+        we think we're running but the pi doesn't.
+
+        Args:
+            value (:attr:`.Pilot.state`): the state of our pilot
+
+        """
+
+        if (value in ('STOPPING', 'IDLE')) and self.state == 'RUNNING':
+            self.l_stop({})
+
+
+
 
 
 ###################################

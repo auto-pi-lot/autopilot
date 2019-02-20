@@ -413,6 +413,7 @@ class Terminal(QtGui.QMainWindow):
         if value['pilot'] in self.control_panel.panels.keys():
             self.control_panel.panels[value['pilot']].button.set_state(value['state'])
 
+
     def l_handshake(self, value):
         """
         Pilot is sending its IP and state on startup.

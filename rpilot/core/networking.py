@@ -652,11 +652,13 @@ class Terminal_Networking(Networking):
                     # if we've already gotten this one, don't send to terminal
                     return
             self.pilots[msg.sender]['state'] = msg.value
+
             # Tell the terminal so it can update the pilot_db file
             state = {'state':msg.value, 'pilot':msg.sender}
             self.send('_T', 'STATE', state)
 
-            # TODO: Update GUI to reflect pilot state
+            # Tell the plot
+            self.send("P_{}".format(msg.sender), 'STATE', msg.value)
 
         self.senders[msg.sender] = msg.value
 
