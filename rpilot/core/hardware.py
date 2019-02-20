@@ -54,6 +54,11 @@ if prefs.AGENT in ['pilot']:
     dict: Maps strings ('U', 'D', 'B') to pigpio edge types
     (RISING_EDGE, FALLING_EDGE, EITHER_EDGE), respectively.
     """
+
+    PULL_MAP = {
+        'U': pigpio.PUD_UP,
+        'D': pigpio.PUD_DOWN
+    }
 # TODO: needs better handling, pigpio crashes sometimes and we should know
 #except ImportError:
 #    pass
@@ -183,9 +188,9 @@ class Beambreak(Hardware):
         self.pin = BOARD_TO_BCM[int(pin)]
 
         try:
-            self.pull_ud = TRIGGER_MAP[pull_ud]
+            self.pull_ud = PULL_MAP[pull_ud]
         except KeyError:
-            Exception('pull_ud must be one of {}, was given {}'.format(TRIGGER_MAP.keys(), pull_ud))
+            Exception('pull_ud must be one of {}, was given {}'.format(PULL_MAP.keys(), pull_ud))
 
         try:
             self.trigger_ud = TRIGGER_MAP[trigger_ud]

@@ -465,6 +465,12 @@ class Pilot_Button(QtGui.QPushButton):
         """
         # If we're stopped, start, and vice versa...
         current_mouse = self.mouse_list.currentItem().text()
+
+        if current_mouse is None:
+            Warning("Start button clicked, but no mouse selected.")
+            return
+
+
         toggled = self.isChecked()
         if toggled is True: # ie button is already down, already running.
 
