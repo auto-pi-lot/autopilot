@@ -28,6 +28,11 @@
 - do 'interfaces' like https://www.expyriment.org/
 - add Cython typing to jack client - https://cython.readthedocs.io/en/latest/src/userguide/parallelism.html
 - store pilot name in mouse object
+- https://stackoverflow.com/a/54405162
+- https://pypi.org/project/psutil/
+- https://scipy-cookbook.readthedocs.io/items/C_Extensions_NumPy_arrays.html
+- https://www.egenix.com/products/python/mxBase/mxQueue/mxQueue.pdf
+- https://sarge.readthedocs.io/en/latest/tutorial.html#buffering-issues
 
 .. automodsumm:: rpilot.core.gui
     :toctree:

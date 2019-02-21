@@ -594,15 +594,22 @@ class Terminal(QtGui.QMainWindow):
             for mouse, protocol in mouse_protocols.items():
                 step = protocol[1]
                 protocol = protocol[0]
+
+                # since assign_protocol also changes the step, stash the step number here to tell if it's changed
+                mouse_orig_step = self.mice[mouse].step
+
+
+
                 if self.mice[mouse].protocol_name != protocol:
                     self.logger.info('Setting {} protocol from {} to {}'.format(mouse, self.mice[mouse].protocol_name, protocol))
                     protocol_file = os.path.join(prefs.PROTOCOLDIR, protocol + '.json')
                     self.mice[mouse].assign_protocol(protocol_file, step)
 
-                if self.mice[mouse].step != step:
-                    self.logger.info('Setting {} step from {} to {}'.format(mouse, self.mice[mouse].step, step))
-                    protocol_file = os.path.join(prefs.PROTOCOLDIR, protocol + '.json')
-                    self.mice[mouse].assign_protocol(protocol_file, step)
+                if mouse_orig_step != step:
+                    self.logger.info('Setting {} step from {} to {}'.format(mouse, mouse_orig_step, step))
+                    step_name = self.mice[mouse].current[step]['step_name']
+                    #update history also flushes current - aka it also actually changes the step number
+                    self.mice[mouse].update_history('step', step_name, step)
 
     def closeEvent(self, event):
         """

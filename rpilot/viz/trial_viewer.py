@@ -23,7 +23,60 @@ import colorcet as cc
 import numpy as np
 import json
 
-def load_mouse_data(data_dir, steps=True, grad=True):
+def load_pilot_db(fn, reverse=False):
+    with open(fn) as pilot_file:
+        pilot_db = json.load(pilot_file)
+
+    if reverse:
+        # simplify pilot db
+        pilot_db = {k: v['mice'] for k, v in pilot_db.items()}
+        pilot_dict = {}
+        for pilot, mouselist in pilot_db.items():
+            for ms in mouselist:
+                pilot_dict[ms] = pilot
+        pilot_db = pilot_dict
+
+    return pilot_db
+
+
+def load_mouse_data(data_dir, mouse_name, steps=True, grad=True):
+
+    pilot_db_fn = [fn for fn in os.listdir(data_dir) if fn == 'pilot_db.json'][0]
+    pilot_db_fn = os.path.join(data_dir, pilot_db_fn)
+    pilot_db = load_pilot_db(pilot_db_fn, reverse=True)
+
+    # find pilot for mouse
+    pilot_name = pilot_db[mouse_name]
+
+    amus = mouse.Mouse(mouse_name, dir=data_dir)
+
+    step_data = None
+    grad_data = None
+
+    if steps:
+        step_data = amus.get_trial_data()
+        step_data['mouse'] = mouse_name
+        step_data['pilot'] = pilot_name
+
+    if grad:
+        # get historical graduation data
+        try:
+            grad_data = amus.get_step_history()
+        except:
+            grad_data = amus.get_step_history(use_history=False)
+
+        grad_data['mouse'] = mouse_name
+        grad_data['pilot'] = pilot_name
+
+    return step_data, grad_data
+
+
+
+
+
+
+
+def load_mouse_dir(data_dir, steps=True, grad=True, which = None):
     """
     Args:
         data_dir (str): A path to a directory with :class:`~.core.mouse.Mouse` style hdf5 files
@@ -31,53 +84,35 @@ def load_mouse_data(data_dir, steps=True, grad=True):
         grad (bool): Whether to return summarized step graduation data.
 
     """
-    mouse_fn = [fn for fn in os.listdir(data_dir) if fn.endswith('.h5')]
 
-    pilot_db = [fn for fn in os.listdir(data_dir) if fn == 'pilot_db.json'][0]
-    pilot_db = os.path.join(data_dir, pilot_db)
-    with open(pilot_db) as pilot_file:
-        pilot_db = json.load(pilot_file)
+    mouse_fn = [os.path.splitext(fn)[0] for fn in os.listdir(data_dir) if fn.endswith('.h5')]
 
-    # simplify pilot db
-    pilot_db = {k:v['mice'] for k, v in pilot_db.items()}
-    pilot_dict = {}
-    for pilot, mouselist in pilot_db.items():
-        for ms in mouselist:
-            pilot_dict[ms] = pilot
+    if isinstance(which, list):
+        mouse_fn = [fn for fn in mouse_fn if fn in which]
+
+    all_mice_steps = None
+    all_mice_grad = None
 
     for mouse_name in tqdm(mouse_fn):
         mouse_name = os.path.splitext(mouse_name)[0]
-        amus = mouse.Mouse(mouse_name, dir=data_dir)
+        step_data, grad_data = load_mouse_data(data_dir, mouse_name, steps, grad)
 
-        # get trial data - corrects, targets, etc.
-        if steps:
-            step_data = amus.get_trial_data()
-            step_data['mouse'] = mouse_name
-            step_data['pilot'] = pilot_dict[mouse_name]
-            try:
+        if step_data is not None:
+            if all_mice_steps is not None:
                 all_mice_steps = all_mice_steps.append(step_data)
-            except NameError:
+            else:
                 all_mice_steps = step_data
 
-        if grad:
-            try:
-                # get historical graduation data
-                grad_data = amus.get_step_history()
-                grad_data['mouse'] = mouse_name
-                grad_data['pilot'] = pilot_dict[mouse_name]
-                try:
-                    all_mice_grad = all_mice_grad.append(grad_data)
-                except NameError:
-                    all_mice_grad = grad_data
-            except:
-                pass
+        if grad_data is not None:
+            if all_mice_grad is not None:
+                all_mice_grad = all_mice_grad.append(grad_data)
+            else:
+                all_mice_grad = grad_data
 
-    if steps and not grad:
-        return all_mice_steps
-    elif grad and not steps:
-        return all_mice_grad
-    elif grad and steps:
-        return all_mice_steps, all_mice_grad
+    return all_mice_steps, all_mice_grad
+
+
+
 
 def step_viewer(grad_data):
     mice = sorted(grad_data['mouse'].unique())
@@ -162,7 +197,7 @@ if __name__ == '__main__':
     # load mouse data
     print('loading mouse data...')
     #step_data, grad_data = load_mouse_data(data_dir)
-    grad_data = load_mouse_data(data_dir, steps=False, grad=True)
+    _, grad_data = load_mouse_dir(data_dir, steps=False, grad=True)
 
     step_viewer(grad_data)
 

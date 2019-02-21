@@ -9,6 +9,7 @@ models should the need arise.
 
 # TODO: store pilot in biography
 import pdb
+import pdb
 import os
 import sys
 import threading
@@ -758,25 +759,69 @@ class Mouse:
         return return_df
 
 
-    def get_step_history(self):
+    def get_step_history(self, use_history=True):
         """
         Gets a dataframe of step numbers, timestamps, and step names
         as a coarse view of training status.
+
+        Args:
+            use_history (bool): whether to use the history table or to reconstruct steps and dates from the trial table itself.
+                compatibility fix for old versions that didn't stash step changes when the whole protocol was updated.
 
         Returns:
             :class:`pandas.DataFrame`
 
         """
         h5f = self.open_hdf()
-        history = h5f.root.history.history
-        # return a dataframe of step number, datetime and step name
-        step_df = pd.DataFrame([(x['value'], x['time'], x['name']) for x in history.iterrows() if x['type'] == 'step'])
-        step_df = step_df.rename({0: 'step_n',
-                                  1: 'timestamp',
-                                  2: 'name'}, axis='columns')
+        if use_history:
+            history = h5f.root.history.history
+            # return a dataframe of step number, datetime and step name
+            step_df = pd.DataFrame([(x['value'], x['time'], x['name']) for x in history.iterrows() if x['type'] == 'step'])
 
-        step_df['timestamp'] = pd.to_datetime(step_df['timestamp'],
-                                              format='%y%m%d-%H%M%S')
+            step_df = step_df.rename({0: 'step_n',
+                                      1: 'timestamp',
+                                      2: 'name'}, axis='columns')
+
+            step_df['timestamp'] = pd.to_datetime(step_df['timestamp'],
+                                                  format='%y%m%d-%H%M%S')
+
+        else:
+            group_name = "/data/{}".format(self.protocol_name)
+            group = h5f.get_node(group_name)
+            step_groups = sorted(group._v_children.keys())
+
+            # find the last trial step with data
+            for step_name in reversed(step_groups):
+                if group._v_children[step_name].trial_data.attrs['NROWS']>0:
+                    step_groups = [step_name]
+                    break
+
+            # Iterate through steps, find first timestamp, use that.
+            for step_key in step_groups:
+                step_n = int(step_key[1:3])  # beginning of keys will be 'S##'
+                step_name = self.current[step_n]['step_name']
+                step_tab = group._v_children[step_key]._v_children['trial_data']
+                # find name of column that is a timestamp
+                colnames = step_tab.cols._v_colnames
+                try:
+                    ts_column = [col for col in colnames if "timestamp" in col][0]
+                    ts = step_tab.read(start=0, stop=1, field=ts_column)
+
+                except IndexError:
+                    Warning('No Timestamp column found, only returning step numbers and named that were reached')
+                    ts = 0
+
+                step_df = pd.DataFrame(
+                    {'step_n':step_n,
+                     'timestamp':ts,
+                     'name':step_name
+                    })
+                try:
+                    return_df = return_df.append(step_df, ignore_index=True)
+                except NameError:
+                    return_df = step_df
+
+            step_df = return_df
 
         self.close_hdf(h5f)
         return step_df
