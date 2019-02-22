@@ -34,6 +34,7 @@
 - https://www.egenix.com/products/python/mxBase/mxQueue/mxQueue.pdf
 - https://sarge.readthedocs.io/en/latest/tutorial.html#buffering-issues
 - https://coverage.readthedocs.io/en/v4.5.x/
+- add pi to 'input' group on setup.
 
 .. automodsumm:: rpilot.core.gui
     :toctree:

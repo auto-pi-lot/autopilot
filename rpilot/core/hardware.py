@@ -42,6 +42,7 @@ Warning:
 #try:
 
 from rpilot import prefs
+from rpilot.core.networking import Net_Node
 if prefs.AGENT in ['pilot']:
     import pigpio
 
@@ -68,8 +69,12 @@ try:
 except ImportError:
     pass
 
+from inputs import devices
+
+
 import threading
 import time
+from Queue import Queue, Empty
 
 
 # pigpio only uses BCM numbers, we need to translate them
@@ -577,6 +582,79 @@ class Solenoid(Hardware):
         self.pig.write(self.pin, 1)
         time.sleep(duration)
         self.pig.write(self.pin, 0)
+
+
+class Wheel(Hardware):
+    """
+    A continuously measured mouse wheel.
+
+    Uses a USB computer mouse.
+    """
+    input   = True
+    type    = "Wheel"
+    trigger = True
+
+    def __init__(self, mouse_idx=0, fs=20, thresh=100, start=True):
+
+        # try to get mouse from inputs
+        # TODO: More robust - specify mouse by hardware attrs
+        try:
+            self.mouse = devices.mice[mouse_idx]
+        except IndexError:
+            Warning('Could not find requested mouse with index {}\nAttempting to use mouse idx 0'.format(mouse_idx))
+            self.mouse = devices.mice[0]
+
+        self.fs = fs
+        self.thresh = thresh
+
+        # event to signal quitting
+        self.quit_evt = threading.Event()
+        self.quit_evt.set()
+        # event to signal when to start accumulating movements to trigger
+        self.measure_evt = threading.Event()
+        # queue to I/O mouse movements summarized at fs Hz
+        self.q = Queue()
+
+        self.listens = {'MEASURE':self.l_measure}
+        self.node = Net_Node('wheel_{}'.format(mouse_idx),
+                             upstream=prefs.NAME,
+                             port=prefs.MSGPORT,
+                             listens=self.listens,
+                             )
+
+
+        if start:
+            self.start()
+
+
+    def start(self):
+        pass
+
+    def _record(self):
+        while self.quit_evt:
+
+            if self.measure_evt:
+                # add 
+                pass
+
+
+    def assign_cb(self, trigger_fn):
+        # want to have callback write an output pin -- so callback should go back to
+        # the task to write a GPIO pin.
+        pass
+
+    def l_measure(self, value):
+        """
+        Task has signaled that we need to start measuring movements for a trigger
+
+
+        Args:
+            value ():
+        """
+
+        self.measure_evt.set()
+
+
 
 class Scale(Hardware):
     """
