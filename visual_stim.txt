@@ -1,0 +1,42 @@
+psychopy on raspberry pi
+
+https://groups.google.com/forum/#!topic/psychopy-users/1mPwJqDVy1c
+https://devblogs.nvidia.com/linking-opengl-server-side-rendering/
+https://stackoverflow.com/questions/3326641/opengl-without-x-org-in-linux
+https://github.com/matusnovak/rpi-opengl-without-x
+https://pyglet.readthedocs.io/en/pyglet-1.3-maintenance/programming_guide/context.html
+https://medium.com/@daddycat/setting-up-raspberry-pi-to-launch-python-gui-app-without-raspbian-desktop-5022a90e5b63
+https://raspberrypi.stackexchange.com/questions/57128/how-to-boot-into-own-python-script-gui-only
+https://www.raspberrypi.org/forums/viewtopic.php?t=73489
+https://www.irif.fr/~jch//software/kdrive.html
+https://die-antwort.eu/techblog/2017-12-setup-raspberry-pi-for-kiosk-mode/
+http://www.karoltomala.com/blog/?p=679
+https://github.com/ssvb/xf86-video-fbturbo/wiki/Installation
+
+psychopy depends:
+pyopengl
+pyglet
+pillow
+moviepy
+configobj
+psychopy
+json_tricks
+
+sudo apt-get install mesa-utils
+
+using X11-
+- sudo apt-get install xserver-xorg-legacy
+- do this https://gist.github.com/alepez/6273dc5220c1c5ec5f3f126e739d58bf
+- edit /etc/X11/Xwrapper.config
+- allowed_users=anybody
+- needs_root_rights=yes
+- (or dont) update libdrm https://github.com/anholt/mesa/wiki/VC4-complete-Raspbian-upgrade
+
+- https://discourse.psychopy.org/t/gamma-problem-in-v1-90-2/4549/11
+
+- sudo gpasswd -a pi tty
+- install xterm
+- call xinit
+
+to investigate:
+- lxde, lightweight window server?
