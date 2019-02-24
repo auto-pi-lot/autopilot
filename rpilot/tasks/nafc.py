@@ -192,7 +192,10 @@ class Nafc(Task):
 
         # Initialize hardware
         self.init_hardware()
-        self.set_reward(reward)
+        try:
+            self.set_reward(reward)
+        except:
+            pass
 
         # Initialize stim manager
         if not stim:
