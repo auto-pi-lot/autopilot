@@ -462,7 +462,7 @@ class Networking(multiprocessing.Process):
         self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
         self.log_handler.setFormatter(self.log_formatter)
         self.logger.addHandler(self.log_handler)
-        self.logger.setLevel(logging.INFO)
+        self.logger.setLevel(logging.WARNING)
         self.logger.info('Networking Logging Initiated')
 
     def get_ip(self):
@@ -1289,7 +1289,7 @@ class Net_Node(object):
         self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
         self.log_handler.setFormatter(self.log_formatter)
         self.logger.addHandler(self.log_handler)
-        self.logger.setLevel(logging.INFO)
+        self.logger.setLevel(logging.WARNING)
         self.logger.info('{} Logging Initiated'.format(self.id))
 
 
