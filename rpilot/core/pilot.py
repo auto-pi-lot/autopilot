@@ -167,7 +167,7 @@ class RPilot:
         }
 
         # spawn_network gives us the independent message-handling process
-        self.networking = Pilot_Networking(child=self.child)
+        self.networking = Pilot_Networking()
         self.networking.start()
         self.node = Net_Node(id = "_{}".format(self.name),
                              upstream = self.name,
