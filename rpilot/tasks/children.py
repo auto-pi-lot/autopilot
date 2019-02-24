@@ -19,7 +19,7 @@ class Wheel_Child(object):
     def __init__(self, stage_block=None, **kwargs):
 
         self.mouse = Wheel(gpio_trig=True, pins=prefs.PINS['OUTPUT'])
-        self.stages = cycle(self.noop)
+        self.stages = cycle([self.noop])
 
     def noop(self):
         # just fitting in with the task structure.
