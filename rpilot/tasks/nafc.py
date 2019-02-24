@@ -466,7 +466,15 @@ class Nafc_Wheel(Nafc):
 
 
     def __init__(self, **kwargs):
+        self.init_networking(kwargs)
+
         super(Nafc_Wheel, self).__init__(**kwargs)
+
+
+        # TODO: Update PARAMS with wheel params
+
+        # TODO: Send start to child, include 'child' {'parent':'our_id', 'mouse':'mouse_id'}
+    def init_networking(self, kwargs):
 
         self.node = Net_Node(id="T_{}".format(prefs.NAME),
                              upstream=prefs.NAME,
@@ -478,10 +486,6 @@ class Nafc_Wheel(Nafc):
         value['task_type'] = 'Wheel Child'
         self.node.send(key='CHILD', value=value)
 
-
-        # TODO: Update PARAMS with wheel params
-
-        # TODO: Send start to child, include 'child' {'parent':'our_id', 'mouse':'mouse_id'}
 
 
 
