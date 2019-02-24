@@ -48,6 +48,7 @@ class PilotSetupForm(nps.SplitForm):
     def create(self):
         self.input = odict({
             'NAME': self.add(nps.TitleText, name="Pilot Name:", value=""),
+            'LINEAGE': self.add(nps.TitleText, name="Are we a parent or a child?", value=""),
             'CHILDID': self.add(nps.TitleText, name="Child ID:", value=""),
             'PARENTID': self.add(nps.TitleText, name="Parent ID:", value=""),
             'PARENTIP': self.add(nps.TitleText, name="Parent IP:", value=""),
