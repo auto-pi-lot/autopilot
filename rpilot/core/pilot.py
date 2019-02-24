@@ -140,6 +140,12 @@ class RPilot:
 
     def __init__(self):
         self.name = prefs.NAME
+        if prefs.LINEAGE == "CHILD":
+            self.child = True
+            self.parentid = prefs.PARENTID
+        else:
+            self.child = False
+            self.parentid = 'T'
 
         self.init_logging()
 
@@ -161,7 +167,7 @@ class RPilot:
         }
 
         # spawn_network gives us the independent message-handling process
-        self.networking = Pilot_Networking()
+        self.networking = Pilot_Networking(child=self.child)
         self.networking.start()
         self.node = Net_Node(id = "_{}".format(self.name),
                              upstream = self.name,
@@ -233,7 +239,8 @@ class RPilot:
         """
         # send the terminal some information about ourselves
         hello = {'pilot':self.name, 'ip':self.ip, 'state':self.state}
-        self.node.send('T', 'HANDSHAKE', value=hello)
+
+        self.node.send(self.parentid, 'HANDSHAKE', value=hello)
 
     def update_state(self):
         """
@@ -241,7 +248,7 @@ class RPilot:
         our Networking object will cache this and will handle any
         future requests.
         """
-        self.node.send('T', 'STATE', self.state)
+        self.node.send(self.parentid, 'STATE', self.state)
 
     def l_start(self, value):
         """

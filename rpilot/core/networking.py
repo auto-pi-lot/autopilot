@@ -96,6 +96,7 @@ class Networking(multiprocessing.Process):
     senders      = {} # who has sent us stuff (ie. directly connected) and their state if they keep one
     outbox = {}  # Messages that are out with unconfirmed delivery
     timers = {}  # dict of timer threads that will check in on outbox messages
+    child = False
 
     def __init__(self):
         super(Networking, self).__init__()
@@ -418,6 +419,9 @@ class Networking(multiprocessing.Process):
             return
 
         # otherwise, if it's to someone we know about, send it there
+        elif self.child and (msg.to == 'T'):
+            # FIXME UGLY HACK
+            self.push(msg=msg)
         elif msg.to in self.senders.keys():
             self.send(msg=msg)
         # otherwise, if we have a pusher, send it there
@@ -732,11 +736,13 @@ class Pilot_Networking(Networking):
             self.push_id = prefs.PARENTID
             self.push_port = prefs.PARENTPORT
             self.push_ip = prefs.PARENTIP
+            self.child = True
 
         else:
             self.push_id = 'T'
             self.push_port = prefs.PUSHPORT
             self.push_ip = prefs.TERMINALIP
+            self.child - False
 
         # Store some prefs values
         self.listen_port = prefs.MSGPORT
