@@ -213,6 +213,7 @@ class Plot(QtGui.QWidget):
         self.data = {} # Keep a dict of the data we are keeping track of, will be instantiated on start
         self.plots = {}
         self.state = "IDLE"
+        self.continuous = False
 
         self.invoker = prefs.INVOKER
 
@@ -309,6 +310,14 @@ class Plot(QtGui.QWidget):
         # We're sent a task dict, we extract the plot params and send them to the plot object
         self.plot_params = tasks.TASK_LIST[value['task_type']].PLOT
 
+        if 'continuous' in self.plot_params.keys():
+            if self.plot_params['continuous']:
+                self.continuous = True
+            else:
+                self.continuous = False
+        else:
+            self.continuous = False
+
         # set infobox stuff
         self.n_trials = count()
         self.session_trials = 0
@@ -335,7 +344,7 @@ class Plot(QtGui.QWidget):
                 self.plot.addItem(self.plots[data])
                 self.data[data] = np.zeros((0,2), dtype=np.float)
             else:
-                self.plots[data] = PLOT_LIST[plot]()
+                self.plots[data] = PLOT_LIST[plot](continuous=self.continuous)
                 self.plot.addItem(self.plots[data])
                 self.data[data] = np.zeros((0,2), dtype=np.float)
 
@@ -357,14 +366,31 @@ class Plot(QtGui.QWidget):
             self.last_trial = v
             # self.last_trial = v
             self.info['N Trials'].setText("{}/{}".format(self.session_trials, v))
-            self.xrange = xrange(v - self.x_width + 1, v + 1)
-            self.plot.setXRange(self.xrange[0], self.xrange[-1])
+            if not self.continuous:
+                self.xrange = xrange(v - self.x_width + 1, v + 1)
+                self.plot.setXRange(self.xrange[0], self.xrange[-1])
+
+
+        if 't' in value.keys():
+            self.last_time = value.pop('t')
+            if self.continuous:
+                self.plot.setXRange(self.last_time-self.x_width, self.last_time+1)
+
+
+        if self.continuous:
+            x_val = self.last_time
+        else:
+            x_val = self.last_trial
 
         for k, v in value.items():
             if k in self.data.keys():
-                self.data[k] = np.vstack((self.data[k], (self.last_trial, v)))
-                #gui_event_fn(self.plots[k].update, *(self.data[k],))
+                self.data[k] = np.vstack((self.data[k], (x_val, v)))
+                # gui_event_fn(self.plots[k].update, *(self.data[k],))
                 self.plots[k].update(self.data[k])
+
+
+
+
 
         sys.stdout.flush()
 
@@ -430,13 +456,17 @@ class Point(pg.PlotDataItem):
         pen (:class:`QtGui.QPen`)
     """
 
-    def __init__(self, color=(0,0,0), size=5):
+    def __init__(self, color=(0,0,0), size=5, **kwargs):
         """
         Args:
             color (tuple): RGB color of points
             size (int): width in px.
         """
         super(Point, self).__init__()
+
+        self.continuous = False
+        if 'continuous' in kwargs.keys():
+            self.continuous = kwargs['continuous']
 
         self.brush = pg.mkBrush(color)
         self.pen   = pg.mkPen(color, width=size)
@@ -465,7 +495,7 @@ class Segment(pg.PlotDataItem):
     """
     A line segment that draws from 0.5 to some endpoint.
     """
-    def __init__(self):
+    def __init__(self, **kwargs):
         # type: () -> None
         super(Segment, self).__init__()
 
@@ -497,8 +527,10 @@ class Segment(pg.PlotDataItem):
 class Roll_Mean(pg.PlotDataItem):
     """
     Shaded area underneath a rolling average.
+
+    Typically used as a rolling mean of corrects, so area above and below 0.5 is drawn.
     """
-    def __init__(self, winsize=10):
+    def __init__(self, winsize=10, **kwargs):
         # type: (int) -> None
         """
         Args:
@@ -531,6 +563,45 @@ class Roll_Mean(pg.PlotDataItem):
         #print(ys)
 
         self.curve.setData(data[...,0], ys, fillLevel=0.5)
+
+class Shaded(pg.PlotDataItem):
+    """
+    Shaded area for a continuous plot
+    """
+
+    def __init__(self, **kwargs):
+        super(Shaded, self).__init__()
+
+        #self.dur = float(dur) # duration of time to display points in seconds
+        self.setFillLevel(0)
+        self.series = pd.Series()
+
+
+        self.brush = pg.mkBrush((0,0,0,100))
+        self.setBrush(self.brush)
+
+        self.max_num = 0
+
+
+    def update(self, data):
+        """
+        Args:
+            data (:class:`numpy.ndarray`): an x_width x 2 array where
+                column 0 is time and column 1 is the value.
+        """
+        # data should come in as an n x 2 array,
+        # 0th column - trial number (x), 1st - (y) value
+        data = data.astype(np.float)
+
+        self.max_num = float(np.abs(np.max(data[:,1])))
+
+        if self.max_num > 1.0:
+            data[:,1] = data[:,1]/self.max_num
+        #print(ys)
+
+        self.curve.setData(data[...,0], data[...,1], fillLevel=0)
+
+
 
 
 class Timer(QtGui.QLabel):
@@ -595,6 +666,7 @@ PLOT_LIST = {
     'point':Point,
     'segment':Segment,
     'rollmean':Roll_Mean,
+    'shaded':Shaded
     # 'highlight':Highlight
 }
 """

@@ -48,6 +48,9 @@ class PilotSetupForm(nps.SplitForm):
     def create(self):
         self.input = odict({
             'NAME': self.add(nps.TitleText, name="Pilot Name:", value=""),
+            'CHILDID': self.add(nps.TitleText, name="Child ID:", value=""),
+            'PARENTIP': self.add(nps.TitleText, name="Parent IP:", value=""),
+            'PARENTPORT': self.add(nps.TitleText, name="Parent Port:", value=""),
             'BASEDIR': self.add(nps.TitleText, name="Base Directory:", value="/usr/rpilot"),
             'PUSHPORT': self.add(nps.TitleText, name="Push Port - Router port used by the Terminal:", value="5560"),
             'MSGPORT': self.add(nps.TitleText, name="Message Port - Our router port:", value="5565"),
@@ -67,6 +70,10 @@ class PilotSetupForm(nps.SplitForm):
                     'L': self.add(nps.TitleText, name="PINS - PORTS - L", value="31"),
                     'C': self.add(nps.TitleText, name="PINS - PORTS - C", value="33"),
                     'R': self.add(nps.TitleText, name="PINS - PORTS - R", value="37"),
+                },
+                'FLAGS': {
+                    'L': self.add(nps.TitleText, name="PINS - FLAGS - L", value=""),
+                    'R': self.add(nps.TitleText, name="PINS - FLAGS - R", value="")
                 }},
             'AUDIOSERVER':self.add(nps.TitleSelectOne,max_height=4,value=[0,], name="Audio Server:",
                                    values=["jack", "pyo", "none"], scroll_exit=True),

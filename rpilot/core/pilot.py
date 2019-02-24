@@ -422,23 +422,25 @@ class RPilot:
         while True:
             # Calculate next stage data and prep triggers
             data = self.task.stages.next()() # Double parens because next just gives us the function, we still have to call it
-            data['pilot'] = self.name
-            data['mouse'] = self.mouse
 
-            # Send data back to terminal (mouse is identified by the networking object)
-            self.node.send('T', 'DATA', data)
+            if data:
+                data['pilot'] = self.name
+                data['mouse'] = self.mouse
 
-            # Store a local copy
-            # the task class has a class variable DATA that lets us know which data the row is expecting
-            if trial_data:
-                for k, v in data.items():
-                    if k in self.task.TrialData.columns.keys():
-                        row[k] = v
+                # Send data back to terminal (mouse is identified by the networking object)
+                self.node.send('T', 'DATA', data)
 
-            # If the trial is over (either completed or bailed), flush the row
-            if 'TRIAL_END' in data.keys():
-                row.append()
-                table.flush()
+                # Store a local copy
+                # the task class has a class variable DATA that lets us know which data the row is expecting
+                if trial_data:
+                    for k, v in data.items():
+                        if k in self.task.TrialData.columns.keys():
+                            row[k] = v
+
+                # If the trial is over (either completed or bailed), flush the row
+                if 'TRIAL_END' in data.keys():
+                    row.append()
+                    table.flush()
 
             # Wait on the stage lock to clear
             self.stage_block.wait()

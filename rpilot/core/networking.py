@@ -728,16 +728,25 @@ class Pilot_Networking(Networking):
     def __init__(self):
         # Pilot has a pusher - connects back to terminal
         self.pusher = True
-        self.push_id = 'T'
+        if hasattr(prefs, 'PARENTID'):
+            self.push_id = prefs.PARENTID
+            self.push_port = prefs.PARENTPORT
+            self.push_ip = prefs.PARENTIP
+
+        else:
+            self.push_id = 'T'
+            self.push_port = prefs.PUSHPORT
+            self.push_ip = prefs.TERMINALIP
 
         # Store some prefs values
         self.listen_port = prefs.MSGPORT
-        self.push_port = prefs.PUSHPORT
-        self.push_ip = prefs.TERMINALIP
+
         self.id = prefs.NAME.encode('utf-8')
         self.pi_id = "_{}".format(self.id)
         self.mouse = None # Store current mouse ID
         self.state = None # store current pi state
+        self.child = False # Are we acting as a child right now?
+        self.parent = False # Are we acting as a parent right now?
 
         super(Pilot_Networking, self).__init__()
 
@@ -749,6 +758,8 @@ class Pilot_Networking(Networking):
             'STOP': self.l_stop,  # We are being told to stop the current task
             'PARAM': self.l_change,  # The Terminal is changing some task parameter
             'FILE': self.l_file,  # We are receiving a file
+            'CONTINUOUS': self.l_continuous, # we are sending continuous data to the terminal
+            'CHILD': self.l_child
         })
 
     ###########################3
@@ -816,7 +827,23 @@ class Pilot_Networking(Networking):
             f_sounds = [sound for sounds in msg.value['sounds'].values() for sound in sounds
                         if sound['type'] in ['File', 'Speech']]
             if len(f_sounds)>0:
-                # check to see if we have these files, if not, request them
+                # check to see if we have these files, if not
+                #     def update(self, data):
+                #         """
+                #         Args:
+                #             data (:class:`numpy.ndarray`): an x_width x 2 array where
+                #                 column 0 is trial number and column 1 is the value.
+                #         """
+                #         # data should come in as an n x 2 array,
+                #         # 0th column - trial number (x), 1st - (y) value
+                #         data = data.astype(np.float)
+                #
+                #         self.series = pd.Series(data[...,1])
+                #         ys = self.series.rolling(self.winsize, min_periods=0).mean().as_matrix()
+                #
+                #         #print(ys)
+                #
+                #         self.curve.setData(data[...,0], ys, fillLevel=0.5), request them
                 for sound in f_sounds:
                     full_path = os.path.join(prefs.SOUNDDIR, sound['path'])
                     if not os.path.exists(full_path):
@@ -827,6 +854,16 @@ class Pilot_Networking(Networking):
                         # the receiving thread will set() when we get it.
                         self.file_block.clear()
                         self.file_block.wait()
+
+        # If we're starting the task as a child, stash relevant params
+        if 'child' in msg.value.keys():
+            self.child = True
+            self.parent_id = msg.value['child']['parent']
+            self.mouse = msg.value['child']['mouse']
+
+        else:
+            self.child = False
+
 
         # once we make sure we have everything, tell the Pilot to start.
         self.send(self.pi_id, 'START', msg.value)
@@ -881,6 +918,29 @@ class Pilot_Networking(Networking):
 
         # If we requested a file, some poor start fn is probably waiting on us
         self.file_block.set()
+
+    def l_continuous(self, msg):
+        if self.child:
+            msg.value['pilot'] = self.parent_id
+            msg.value['mouse'] = self.mouse
+            self.send(to='T', key='DATA', value=msg.value, repeat=False)
+
+    def l_child(self, msg):
+        """
+        Telling our child to run a task.
+
+        Args:
+            msg ():
+
+        Returns:
+
+        """
+
+        self.send(to=prefs.CHILDID, key='START', msg.value)
+
+
+
+
 
 #####################################
 

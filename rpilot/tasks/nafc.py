@@ -19,6 +19,7 @@ from rpilot.tasks import Task
 from rpilot.stim.sound import sounds
 from rpilot.stim import Stim_Manager
 from collections import OrderedDict as odict
+from rpilot.core.networking import Net_Node
 
 from rpilot import prefs
 
@@ -429,6 +430,61 @@ class Nafc(Task):
         """
         for k, v in self.pins['LEDS'].items():
             v.flash(self.punish_dur)
+
+
+class Nafc_Wheel(Nafc):
+    """
+    2afc using a wheel run on a child pi as the input device
+    """
+
+    HARDWARE = {
+        'POKES': {
+            'C': hardware.Beambreak,
+        },
+        'FLAGS': {
+            'L': hardware.Flag,
+            'R': hardware.Flag
+        },
+        'LEDS': {
+            # TODO: use LEDs, RGB vs. white LED option in init
+            'L': hardware.LED_RGB,
+            'C': hardware.LED_RGB,
+            'R': hardware.LED_RGB
+        }
+    }
+
+    PLOT = {
+        'data': {
+            'x':'shaded'
+        },
+        'continuous' : True
+    }
+
+    PARAMS = Nafc.PARAMS
+    PARAMS['child_ip'] = {'tag':'IP of Child Pilot',
+                          'type':'string'}
+
+
+
+    def __init__(self, **kwargs):
+        super(Nafc_Wheel, self).__init__(**kwargs)
+
+        self.node = Net_Node(id="T_{}".format(prefs.NAME),
+                             upstream=prefs.NAME,
+                             port=prefs.MSGPORT,
+                             listens = {})
+
+        value = kwargs
+        value['child'] = {'parent':prefs.NAME, 'mouse':kwargs['mouse']}
+        self.node.send(key='CHILD', value=value)
+
+
+        # TODO: Update PARAMS with wheel params
+
+        # TODO: Send start to child, include 'child' {'parent':'our_id', 'mouse':'mouse_id'}
+
+
+
 
 #
 # class Gap_2AFC(Nafc):

@@ -74,6 +74,8 @@ from inputs import devices
 
 import threading
 import time
+from datetime import datetime
+import numpy as np
 from Queue import Queue, Empty
 
 
@@ -266,6 +268,21 @@ class Beambreak(Hardware):
             except:
                 pass
         self.callbacks = []
+
+class Flag(Beambreak):
+    """
+    Trivial Reclass of the Beambreak class with the default directions reversed.
+
+    TODO:
+        Need to add argument passing into hardware spec so we don't need stuff like this
+
+
+    """
+
+    def __init__(self, pin):
+        super(Flag, self).__init__(pin, pull_ud="D", trigger_ud="U")
+
+
 
 
 class LED_RGB(Hardware):
@@ -589,12 +606,20 @@ class Wheel(Hardware):
     A continuously measured mouse wheel.
 
     Uses a USB computer mouse.
+
+    Warning:
+        'vel' thresh_type not implemented
     """
+
     input   = True
     type    = "Wheel"
-    trigger = True
+    trigger = False # even though this is a triggerable option, typically don't want to assign a cb and instead us a GPIO
+    # TODO: Make the standard-style trigger.
+    # TODO: Make wheel movements available locally with a deque
 
-    def __init__(self, mouse_idx=0, fs=20, thresh=100, start=True):
+    THRESH_TYPES = ['dist', 'x', 'y', 'vel']
+
+    def __init__(self, mouse_idx=0, fs=20, thresh=100, thresh_type='x', start=True, gpio_trig=False, pins=None, mode='vel_total'):
 
         # try to get mouse from inputs
         # TODO: More robust - specify mouse by hardware attrs
@@ -604,8 +629,23 @@ class Wheel(Hardware):
             Warning('Could not find requested mouse with index {}\nAttempting to use mouse idx 0'.format(mouse_idx))
             self.mouse = devices.mice[0]
 
+        # frequency of our updating
         self.fs = fs
+        # time between updates
+        self.update_dur = 1./float(self.fs)
+
         self.thresh = thresh
+
+        # thresh type can be 'dist', 'x', 'y', or 'vel'
+        if thresh_type not in self.THRESH_TYPES:
+            ValueError('thresh_type must be one of {}, given {}'.format(self.THRESH_TYPES, thresh_type))
+        self.thresh_type = thresh_type
+
+        # mode can be 'vel_total', 'vel_x', 'vel_y' or 'dist' - report either velocity or distance
+        # TODO: Do two parameters - type 'vel' or 'dist' and measure 'x', 'y', 'total'
+        self.mode = mode
+        # TODO: Implement this
+
 
         # event to signal quitting
         self.quit_evt = threading.Event()
@@ -614,6 +654,8 @@ class Wheel(Hardware):
         self.measure_evt = threading.Event()
         # queue to I/O mouse movements summarized at fs Hz
         self.q = Queue()
+        # lock to prevent race between putting and getting
+        self.qlock = threading.Lock()
 
         self.listens = {'MEASURE':self.l_measure}
         self.node = Net_Node('wheel_{}'.format(mouse_idx),
@@ -622,26 +664,125 @@ class Wheel(Hardware):
                              listens=self.listens,
                              )
 
+        # if we are being used in a child object, we send our trigger via a GPIO pin
+        self.gpio_trig = gpio_trig
+        self.pins = pins
+        if self.gpio_trig:
+            self.pig = pigpio.pi()
+
+            pins_temp = pins
+            self.pins = {}
+            for k, v in pins_temp.items():
+                self.pins[k] = BOARD_TO_BCM[int(v)]
+                self.pig.set_mode(self.pins[k], pigpio.OUTPUT)
+                self.pig.write(self.pins[k], 0)
+
+
+
+
+        self.thread = None
 
         if start:
             self.start()
 
 
     def start(self):
-        pass
+        self.thread = threading.Thread(target=self._record)
+        self.thread.daemon = True
+        self.thread.start()
 
     def _record(self):
+        x_moves = []
+        y_moves = []
+
+        x_dist = 0
+        y_dist = 0
+        thresh_val = 0
+
+        last_update = time.time()
+
         while self.quit_evt:
 
+            events = self.mouse.read()
+
+            x_move = [int(event.state) for event in events if event.code == "REL_X"]
+            y_move = [int(event.state) for event in events if event.code == "REL_Y"]
+
+            x_moves.extend(x_move)
+            y_moves.extend(y_move)
+
+
+            # If we have received a trigger...
             if self.measure_evt:
-                # add 
-                pass
+                # take the integral of velocities
+                x_dist += sum(x_move)
+                y_dist += sum(y_move)
+
+
+                # FIXME: rly inefficient
+                if self.thresh_type == 'x':
+                    thresh_val = abs(x_dist)
+                elif self.thresh_type == 'y':
+                    thresh_val = abs(y_dist)
+                elif self.thresh_type == "dist":
+                    dist = np.sqrt(float(x_dist ** 2) + float(y_dist ** 2))
+                    thresh_val = abs(dist)
+
+
+                if thresh_val > self.thresh:
+                    if self.thresh_type == 'dist':
+                        self.thresh_trig() # clears measure_evt
+                    elif self.thresh_type == 'x':
+                        if x_dist > 0:
+                            self.thresh_trig('R')
+                        else:
+                            self.thresh_trig('L')
+
+                    thresh_val = 0
+                    x_dist = 0
+                    y_dist = 0
+
+
+            # If it's time to report velocity, do it.
+            nowtime = time.time()
+            if (nowtime-last_update)>self.update_dur:
+
+                # TODO: Implement distance/position reporting
+                y_vel = sum(y_moves)
+                x_vel = sum(x_moves)
+                #dist = np.sqrt(y_vel**2)
+
+                #timestamp = datetime.fromtimestamp(nowtime).isoformat()
+
+                self.node.send(key='CONTINUOUS', value={'x':x_vel, 'y':y_vel, 't':nowtime})
+
+
+
+                y_moves = []
+                x_moves = []
+
+                last_update = nowtime
+
+
+    def thresh_trig(self, which=None):
+
+        if not which:
+            if self.gpio_trig:
+                self.pi.gpio_trigger(self.pin, 100, 1)
+
+        else:
+            if self.gpio_trig:
+                self.pi.gpio_trigger(self.pins[which], 100, 1)
+
+        self.measure_evt.clear()
+
+
 
 
     def assign_cb(self, trigger_fn):
         # want to have callback write an output pin -- so callback should go back to
         # the task to write a GPIO pin.
-        pass
+        self.trig_fn = trigger_fn
 
     def l_measure(self, value):
         """
@@ -653,6 +794,9 @@ class Wheel(Hardware):
         """
 
         self.measure_evt.set()
+
+    def release(self):
+        self.quit_evt.clear()
 
 
 
