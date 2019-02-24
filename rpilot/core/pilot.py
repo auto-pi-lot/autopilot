@@ -371,11 +371,9 @@ class RPilot:
             (:class:`tables.File`, :class:`tables.Table`,
             :class:`tables.tableextension.Row`): The file, table, and row for the local data table
         """
-        # Get data table descriptor
-        table_descriptor = self.task.TrialData
-
         local_file = os.path.join(prefs.DATADIR, 'local.h5')
         h5f = tables.open_file(local_file, mode='a')
+
 
         try:
             h5f.create_group("/", self.mouse, "Local Data for {}".format(self.mouse))
@@ -391,12 +389,22 @@ class RPilot:
             conflict_avoid += 1
             datestring = datetime.date.today().isoformat() + '-' + str(conflict_avoid)
 
-        table = h5f.create_table(mouse_group, datestring, table_descriptor,
-                                           "Mouse {} on {}".format(self.mouse, datestring))
 
-        # The Row object is what we write data into as it comes in
-        row = table.row
-        return h5f, table, row
+        # Get data table descriptor
+        if hasattr(self.task, 'TrialData'):
+            table_descriptor = self.task.TrialData
+
+
+
+            table = h5f.create_table(mouse_group, datestring, table_descriptor,
+                                               "Mouse {} on {}".format(self.mouse, datestring))
+
+            # The Row object is what we write data into as it comes in
+            row = table.row
+            return h5f, table, row
+
+        else:
+            return h5f, None, None
 
     def run_task(self):
         """
