@@ -1217,6 +1217,7 @@ class Net_Node(object):
 
         # Spawn a thread to check in on our message
         self.timers[msg_id] = threading.Timer(5.0, self.repeat, args=(msg_id,))
+        self.timers[msg_id].daemon = True
         self.timers[msg_id].start()
 
     def l_confirm(self, value):

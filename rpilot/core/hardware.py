@@ -768,11 +768,11 @@ class Wheel(Hardware):
 
         if not which:
             if self.gpio_trig:
-                self.pi.gpio_trigger(self.pin, 100, 1)
+                self.pig.gpio_trigger(self.pin, 100, 1)
 
         else:
             if self.gpio_trig:
-                self.pi.gpio_trigger(self.pins[which], 100, 1)
+                self.pig.gpio_trigger(self.pins[which], 100, 1)
 
         self.measure_evt.clear()
 
