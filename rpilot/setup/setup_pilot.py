@@ -49,6 +49,7 @@ class PilotSetupForm(nps.SplitForm):
         self.input = odict({
             'NAME': self.add(nps.TitleText, name="Pilot Name:", value=""),
             'CHILDID': self.add(nps.TitleText, name="Child ID:", value=""),
+            'PARENTID': self.add(nps.TitleText, name="Parent ID:", value=""),
             'PARENTIP': self.add(nps.TitleText, name="Parent IP:", value=""),
             'PARENTPORT': self.add(nps.TitleText, name="Parent Port:", value=""),
             'BASEDIR': self.add(nps.TitleText, name="Base Directory:", value="/usr/rpilot"),

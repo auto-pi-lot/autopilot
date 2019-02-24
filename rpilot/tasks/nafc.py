@@ -455,7 +455,8 @@ class Nafc_Wheel(Nafc):
 
     PLOT = {
         'data': {
-            'x':'shaded'
+            'x':'shaded',
+            'response':'segment'
         },
         'continuous' : True
     }
