@@ -759,11 +759,16 @@ class Pilot_Networking(Networking):
             'PARAM': self.l_change,  # The Terminal is changing some task parameter
             'FILE': self.l_file,  # We are receiving a file
             'CONTINUOUS': self.l_continuous, # we are sending continuous data to the terminal
-            'CHILD': self.l_child
+            'CHILD': self.l_child,
+            'HANDSHAKE': self.l_noop
         })
 
     ###########################3
     # Message/Listen handling methods
+
+    def l_noop(self, msg):
+        pass
+
     def l_state(self, msg):
         """
         Pilot has changed state
