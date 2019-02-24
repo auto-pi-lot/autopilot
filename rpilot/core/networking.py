@@ -728,7 +728,7 @@ class Pilot_Networking(Networking):
     def __init__(self):
         # Pilot has a pusher - connects back to terminal
         self.pusher = True
-        if hasattr(prefs, 'PARENTID'):
+        if prefs.PARENTID:
             self.push_id = prefs.PARENTID
             self.push_port = prefs.PARENTPORT
             self.push_ip = prefs.PARENTIP
