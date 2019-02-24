@@ -15,7 +15,7 @@ class Wheel_Child(object):
     PARAMS['thresh'] = {'tag': 'Distance Threshold',
                         'type': 'int'}
 
-    def __init__(self, stage_block=None):
+    def __init__(self, stage_block=None, **kwargs):
 
         self.mouse = Wheel(gpio_trig=True, pins=prefs.PINS['OUTPUT'])
 

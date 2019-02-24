@@ -484,9 +484,12 @@ class Nafc_Wheel(Nafc):
                              port=prefs.MSGPORT,
                              listens = {})
 
-        value = kwargs
-        value['child'] = {'parent':prefs.NAME, 'mouse':kwargs['mouse']}
-        value['task_type'] = 'Wheel Child'
+        value = {
+            'child': {'parent':prefs.NAME, 'mouse':kwargs['mouse']},
+            'task_type': 'Wheel Child',
+            'mouse': kwargs['mouse']
+        }
+
         self.node.send(key='CHILD', value=value)
 
 
