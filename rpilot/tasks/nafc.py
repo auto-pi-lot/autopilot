@@ -482,7 +482,8 @@ class Nafc_Wheel(Nafc):
         self.node = Net_Node(id="T_{}".format(prefs.NAME),
                              upstream=prefs.NAME,
                              port=prefs.MSGPORT,
-                             listens = {})
+                             listens = {},
+                             instance=True)
 
         value = {
             'child': {'parent':prefs.NAME, 'mouse':kwargs['mouse']},

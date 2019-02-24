@@ -214,6 +214,7 @@ class Plot(QtGui.QWidget):
         self.plots = {}
         self.state = "IDLE"
         self.continuous = False
+        self.last_time = 0
 
         self.invoker = prefs.INVOKER
 
@@ -349,6 +350,8 @@ class Plot(QtGui.QWidget):
                 self.data[data] = np.zeros((0,2), dtype=np.float)
 
         self.state = 'RUNNING'
+
+
 
     @gui_event
     def l_data(self, value):

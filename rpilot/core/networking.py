@@ -782,7 +782,7 @@ class Pilot_Networking(Networking):
         # Value will just have the state, we want to add our name
         self.state = msg.value
 
-        self.push(to="T", key='STATE', value=msg.value)
+        self.push(to=self.push_id, key='STATE', value=msg.value)
 
 
     def l_cohere(self, msg):
