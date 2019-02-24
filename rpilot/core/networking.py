@@ -936,7 +936,7 @@ class Pilot_Networking(Networking):
 
         """
 
-        self.send(to=prefs.CHILDID, key='START', msg.value)
+        self.send(to=prefs.CHILDID, key='START', value=msg.value)
 
 
 

@@ -7,7 +7,8 @@ from rpilot.tasks.children import Wheel_Child
 
 
 TASK_LIST = {'2AFC':Nafc,
-             'Free Water':Free_Water}
+             'Free Water':Free_Water},
+
              #'Gap 2AFC':Gap_2AFC}
 
 CHILDREN_LIST = {

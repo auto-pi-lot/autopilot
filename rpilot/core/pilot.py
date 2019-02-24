@@ -261,7 +261,10 @@ class RPilot:
         # The networking object should have already checked that we have all the files we need
 
         # Get the task object by its type
-        task_class = tasks.TASK_LIST[value['task_type']]
+        if 'child' in value.keys():
+            task_class = tasks.CHILDREN_LIST[value['task_type']]
+        else:
+            task_class = tasks.TASK_LIST[value['task_type']]
         # Instantiate the task
         self.stage_block.clear()
         self.task = task_class(stage_block=self.stage_block, **value)

@@ -461,8 +461,6 @@ class Nafc_Wheel(Nafc):
     }
 
     PARAMS = Nafc.PARAMS
-    PARAMS['child_ip'] = {'tag':'IP of Child Pilot',
-                          'type':'string'}
 
 
 
@@ -476,6 +474,7 @@ class Nafc_Wheel(Nafc):
 
         value = kwargs
         value['child'] = {'parent':prefs.NAME, 'mouse':kwargs['mouse']}
+        value['task_type'] = 'Wheel Child'
         self.node.send(key='CHILD', value=value)
 
 
