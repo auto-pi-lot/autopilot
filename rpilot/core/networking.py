@@ -280,7 +280,7 @@ class Networking(multiprocessing.Process):
         # Even if the message is not to our upstream node, we still send it
         # upstream because presumably our target is upstream.
         self.pusher.send_multipart([bytes(self.push_id), msg_enc])
-        self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
+        self.logger.info('MESSAGE PUSHED - {}'.format(str(msg)))
 
         if repeat and not msg.key == 'CONFIRM':
             # add to outbox and spawn timer to resend
@@ -934,7 +934,7 @@ class Pilot_Networking(Networking):
         if self.child:
             msg.value['pilot'] = self.parent_id
             msg.value['mouse'] = self.mouse
-            self.send(to='T', key='DATA', value=msg.value, repeat=False)
+            self.push(to='T', key='DATA', value=msg.value, repeat=False)
 
     def l_child(self, msg):
         """
