@@ -1,0 +1,22 @@
+reward
+-type
+-rules
+--req reward
+-punishment
+--timeout
+--punishment stim
+
+stim
+{
+'sounds':{'L':[{sound params},...], 'R':[{sound params},...]},
+'cx trials'
+'bias correction'
+
+}
+
+graduation
+{
+type
+params
+}
+

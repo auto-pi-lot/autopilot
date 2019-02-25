@@ -1,0 +1,173 @@
+from collections import OrderedDict as odict
+import tables
+import os
+import json
+import itertools
+import random
+import datetime
+from rpilot import prefs
+
+from rpilot.core import hardware
+from rpilot.tasks.task import Task
+
+TASK = 'Free_water'
+
+class Free_Water(Task):
+    """
+    Randomly light up one of the ports, then dispense water when the mouse pokes there
+
+    Two stages:
+
+    * waiting for response, and
+    * reporting the response afterwards
+
+    Attributes:
+        target ('L', 'C', 'R'): The correct port
+        trial_counter (:class:`itertools.count`): Counts trials starting from current_trial specified as argument
+        triggers (dict): Dictionary mapping triggered pins to callable methods.
+        num_stages (int): number of stages in task (2)
+        stages (:class:`itertools.cycle`): iterator to cycle indefinitely through task stages.
+    """
+
+    STAGE_NAMES = ["water", "response"]
+
+    # Params
+    PARAMS = odict()
+    PARAMS['reward'] = {'tag':'Reward Duration (ms)',
+                        'type':'int'}
+    PARAMS['allow_repeat'] = {'tag':'Allow Repeated Ports?',
+                              'type':'check'}
+
+    # Returned Data
+    DATA = {
+        'trial_num': {'type':'i32'},
+        'target': {'type':'S1', 'plot':'target'},
+        'timestamp': {'type':'S26'}, # only one timestamp, since next trial instant
+    }
+
+    # TODO: This should be generated from DATA above. Perhaps parsimoniously by using tables types rather than string descriptors
+    class TrialData(tables.IsDescription):
+        trial_num = tables.Int32Col()
+        target    = tables.StringCol(1)
+        timestamp = tables.StringCol(26)
+
+    HARDWARE = {
+        'POKES':{
+            'L': hardware.Beambreak,
+            'C': hardware.Beambreak,
+            'R': hardware.Beambreak
+        },
+        'LEDS':{
+            # TODO: use LEDs, RGB vs. white LED option in init
+            'L': hardware.LED_RGB,
+            'C': hardware.LED_RGB,
+            'R': hardware.LED_RGB
+        },
+        'PORTS':{
+            'L': hardware.Solenoid,
+            'C': hardware.Solenoid,
+            'R': hardware.Solenoid
+        }
+    }
+
+    # Plot parameters
+    PLOT = {
+        'data': {
+            'target': 'point'
+        }
+    }
+
+    def __init__(self, stage_block=None, current_trial=0,
+                 reward=50, allow_repeat=False, **kwargs):
+        """
+        Args:
+            stage_block (:class:`threading.Event`): used to signal to the carrying Pilot that the current trial stage is over
+            current_trial (int): If not zero, initial number of `trial_counter`
+            reward (int): ms to open solenoids
+            allow_repeat (bool): Whether the correct port is allowed to repeat between trials
+            **kwargs:
+        """
+        super(Free_Water, self).__init__()
+
+        if not stage_block:
+            raise Warning('No stage_block Event() was passed, youll need to handle stage progression on your own')
+        else:
+            self.stage_block = stage_block
+
+        # Fixed parameters
+        self.reward = int(reward)
+        self.allow_repeat = bool(allow_repeat)
+
+        # Variable parameters
+        self.target = random.choice(['L', 'C', 'R'])
+        self.trial_counter = itertools.count(int(current_trial))
+        self.triggers = {}
+
+        # Stage list to iterate
+        stage_list = [self.water, self.response]
+        self.num_stages = len(stage_list)
+        self.stages = itertools.cycle(stage_list)
+
+        # Init hardware
+        self.pins = {}
+        self.pin_id = {} # Inverse pin dictionary
+        self.init_hardware()
+
+    def water(self, *args, **kwargs):
+        """
+        First stage of task - open a port if it's poked.
+
+        Returns:
+            dict: Data dictionary containing::
+
+                'target': ('L', 'C', 'R') - correct response
+                'timestamp': isoformatted timestamp
+                'trial_num': number of current trial
+        """
+        self.stage_block.clear()
+
+        # Choose random port
+        if self.allow_repeat:
+            self.target = random.choice(['L', 'C', 'R'])
+        else:
+            other_ports = [t for t in ['L', 'C', 'R'] if t is not self.target]
+            self.target = random.choice(other_ports)
+
+        # Set triggers and set the target LED to green.
+        self.triggers[self.target] = self.pins['PORTS'][self.target].open
+        self.set_leds({self.target: [0, 255, 0]})
+
+        # Return data
+        data = {
+            'target': self.target,
+            'timestamp': datetime.datetime.now().isoformat(),
+            'trial_num' : self.trial_counter.next()
+        }
+        return data
+
+
+    def response(self):
+        """
+        Just have to alert the Terminal that the current trial has ended
+        and turn off any lights.
+        """
+        # we just have to tell the Terminal that this trial has ended
+
+        # mebs also turn the light off rl quick
+        self.set_leds()
+
+        return {'TRIAL_END':True}
+
+
+
+    def end(self):
+        """
+        When shutting down, release all hardware objects and turn LEDs off.
+        """
+        for k, v in self.pins.items():
+            for pin, obj in v.items():
+                if k == "LEDS":
+                    obj.set_color([0,0,0])
+                obj.release()
+
+

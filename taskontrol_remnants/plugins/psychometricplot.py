@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-'''
+"""
 Plugin to show the average fraction of correct trials for each value of a parameter.
-'''
+"""
 
 
 __version__ = '0.1'
@@ -17,7 +17,11 @@ import pyqtgraph as pg
 
 
 def set_pg_colors(form):
-    '''Set default BG and FG color for pyqtgraph plots.'''
+    """Set default BG and FG color for pyqtgraph plots.
+
+    Args:
+        form:
+    """
     bgColorRGBA = form.palette().color(QtGui.QPalette.ColorRole.Window)
     fgColorRGBA = form.palette().color(QtGui.QPalette.ColorRole.WindowText)
     pg.setConfigOption('background', bgColorRGBA)
@@ -27,10 +31,15 @@ def set_pg_colors(form):
 
 
 class PsychometricPlot(pg.PlotWidget):
-    '''
-    Plot average fraction of correct trials for each value of a parameter.
-    '''
+    """Plot average fraction of correct trials for each value of a parameter."""
     def __init__(self, parent=None, widgetSize=(200,200),xlabel='',ylabel=''):
+        """
+        Args:
+            parent:
+            widgetSize:
+            xlabel:
+            ylabel:
+        """
         if parent is not None:
             set_pg_colors(parent)
         super(PsychometricPlot, self).__init__(parent)
@@ -54,6 +63,12 @@ class PsychometricPlot(pg.PlotWidget):
         yAxis.setGrid(20)
 
     def update(self,xValues,yValues,xlim=None):
+        """
+        Args:
+            xValues:
+            yValues:
+            xlim:
+        """
         self.mainPlot.setData(x=xValues, y=yValues)
         if xlim is not None:
             self.setXRange(*xlim)

@@ -1,8 +1,0 @@
-access jack directly
-https://github.com/spatialaudio/jackclient-python/
-
-use pyo's jackd implementation:
-line 382
-https://github.com/belangeo/pyo/blob/184a48631e9fee203d856b2832e0a16b531776aa/src/engine/ad_jack.c
-
-

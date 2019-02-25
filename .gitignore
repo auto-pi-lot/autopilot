@@ -96,3 +96,5 @@ ENV/
 
 # OSX stuff
 .DS_Store
+
+# rendered docs

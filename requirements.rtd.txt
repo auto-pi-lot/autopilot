@@ -1,0 +1,11 @@
+sphinx-bootstrap-theme>=0.6.5
+sphinx-automodapi
+numpy>=1.12.1
+pyzmq>=17.1.2
+# pyo>=0.7.8
+pandas>=0.19.2
+npyscreen
+scipy
+tornado
+pigpio
+pyqtgraph

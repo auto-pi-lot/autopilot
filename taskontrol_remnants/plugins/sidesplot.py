@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-'''
+"""
 Plugin to show the correct choice on each trial and the outcome (reward/punishment)
-'''
+"""
 
 
 __version__ = '0.1'
@@ -15,7 +15,11 @@ import numpy as np
 import pyqtgraph as pg
 
 def set_pg_colors(form):
-    '''Set default BG and FG color for pyqtgraph plots.'''
+    """Set default BG and FG color for pyqtgraph plots.
+
+    Args:
+        form:
+    """
     bgColorRGBA = form.palette().color(QtGui.QPalette.ColorRole.Window)
     fgColorRGBA = form.palette().color(QtGui.QPalette.ColorRole.WindowText)
     pg.setConfigOption('background', bgColorRGBA)
@@ -24,11 +28,15 @@ def set_pg_colors(form):
     #pg.setConfigOptions(antialias=False)  ##
 
 class SidesPlot(pg.PlotWidget):
-    '''
-    FROM MATLAB: CurrentTrial, SideList, HitHistory, TrialType)
-    '''
+    """FROM MATLAB: CurrentTrial, SideList, HitHistory, TrialType)"""
     def __init__(self, parent=None, widgetSize=(200,100),nTrials=100):
 
+        """
+        Args:
+            parent:
+            widgetSize:
+            nTrials:
+        """
         super(SidesPlot, self).__init__(parent)
         self.initialSize = widgetSize
 
@@ -66,9 +74,11 @@ class SidesPlot(pg.PlotWidget):
         
 
     def make_pens(self,points):
-        '''
-        points should be a list of tuples of the form [ntrials,'colorname']
-        '''
+        """points should be a list of tuples of the form [ntrials,'colorname']
+
+        Args:
+            points:
+        """
         '''
         self.penSide = self.nTrialsToPlot*[pg.mkPen('b')]
         self.brushSide = self.nTrialsToPlot*[pg.mkBrush('b')]
@@ -87,6 +97,12 @@ class SidesPlot(pg.PlotWidget):
         self.brushes = np.concatenate(brushesList)
 
     def update(self,sides=[],outcome=[],currentTrial=0):
+        """
+        Args:
+            sides:
+            outcome:
+            currentTrial:
+        """
         xd = np.tile(range(self.nTrialsToPlot),3)
         maxPastTrials = (self.nTrialsToPlot*2)//3
         minTrial = max(0,currentTrial-maxPastTrials)

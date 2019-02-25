@@ -1,37 +1,14 @@
-- rename/restructure templates as tasks, protocols. make protocol a base class of tasks
-- Make inits and the RPilot object more generic - init hardware rather than pins, etc.
-    - Make all the hardware logic as separate objects, and have the mouse & protocol determine which hardware is present
-    - Same with load_sounds, the speakers/sound driver should be a hardware object.
-
-
 ------------------
-- drag and drop mice order
-- send sound files
 - Make verbose/nonverbose mode - either report whole trials or events
 - Backfill logging into terminal & etc.
-
-TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
->>> tabr = TableRead(SNDS_PATH + "/transparent.aif").out()
->>> trig = TrigRand(tabr['trig'])
 
 - classic mode, button that switches the UI to flickering grey screen
 - sound calibration routine
 - move all class references to __init__
-- Make meta 'subscriber' class instead of describing each subscriber separately
-- Standardize messages into class
-- simplify networking objects with metaclass
-- change GUI so params not always shown on click, and start/stop button isn't hidden in it.
-    - Instead, just scroll box with mice, start/stop button
-    - auto-open textbox to input weight then auto-advance to next mouse in list.
-    - make 'add mice' dropdown to each pilot
-    - make mice reorderable
 - make batch mouse creation window
 - add mouse infobox to left of plot
-- fix 'new mouse' button to specify pilot
 - make superclass of all "parameters-like" windows (windows that are a list of something.)
-- change pi-> terminal networking to dealer/router rather than push/pull
 - implement sending continuous data in pilot.run_task
-- make pis update libraries automatically
 - routine to update git repo and restart on command
 - make permissions safe.
 - handshaking when pi connects to terminal - check IP, store status
@@ -40,12 +17,25 @@ TO SET THE NOSEPOKE WAIT TIME, USE TABLE TRIGGERS:
 - clear last trigger on stop
 - check for dupes on mouse lists
 - unify param structure, make class
-- callbacks using http://ajaxsoundstudio.com/pyodoc/api/classes/pattern.html
+- change data ops with database ops using psycopg http://initd.org/psycopg/
+- networking should probably just be router-only.
+- give task object network node - send messages and handle task transitions directly from task.
+- make hierarchical logging
+- reinstate message receipts
+- make pilot and jackclient quit nicely
+- use ticks from pigpio triggers instead of generating timestamps from python
+- see if can get ticks from jackd for sample processing time
+- do 'interfaces' like https://www.expyriment.org/
+- add Cython typing to jack client - https://cython.readthedocs.io/en/latest/src/userguide/parallelism.html
+- store pilot name in mouse object
+- https://stackoverflow.com/a/54405162
+- https://pypi.org/project/psutil/
+- https://scipy-cookbook.readthedocs.io/items/C_Extensions_NumPy_arrays.html
+- https://www.egenix.com/products/python/mxBase/mxQueue/mxQueue.pdf
+- https://sarge.readthedocs.io/en/latest/tutorial.html#buffering-issues
+- https://coverage.readthedocs.io/en/v4.5.x/
+- add pi to 'input' group on setup.
 
-order of code review:
-!- terminal
-!- gui
-- pilot
-- networking
-!- plots
--
+.. automodsumm:: rpilot.core.gui
+    :toctree:
+

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-'''
+"""
 Widget to save data.
-'''
+"""
 
 __version__ = '0.2'
 __author__ = 'Santiago Jaramillo <sjara@uoregon.edu>'
@@ -20,20 +20,20 @@ REMOTEDIR_VERIFICATION = 'REMOTEDIR.txt'
 
 
 class SaveData(QtGui.QGroupBox):
-    '''
-    A widget to save data, transfer it to a remote repository, and update the database.
-    '''
+    """A widget to save data, transfer it to a remote repository, and update the
+    database.
+    """
     logMessage = QtCore.Signal(str)
 
     def __init__(self, datadir, remotedir=None, updatedb=True, parent=None):
-        '''
+        """
         Args:
             datadir (str): data root directory.
-            remotedir (str): remote directory of data repository.
-                If none given it will not send data to repository.
+            remotedir (str): remote directory of data repository. If none given
+                it will not send data to repository.
             updatedb (bool): [not implemented].
-
-        '''
+            parent:
+        """
         super(SaveData, self).__init__(parent)
 
         self.datadir = datadir
@@ -65,27 +65,30 @@ class SaveData(QtGui.QGroupBox):
 
     def to_file(self,containers,currentTrial=None,experimenter='',
                 subject='subject',paradigm='paradigm',date=None,suffix='a',filename=None):
-        '''
-        Saves the history of parameters, events and results to an HDF5 file.
+        """Saves the history of parameters, events and results to an HDF5 file.
+
+        The data is saved to:
+        ``datadir/experimenter/subject/subject_paradigm_YYMMDDa.h5``
+
+            or, is experimenter is empty:
+
+        ``datadir/subject/subject_paradigm_YYMMDDa.h5``
 
         Args:
             containers: a list of objects that have a method 'append_to_file'.
                 Examples of these are: paramgui.Container,
                 dispatcher.Dispatcher, statematrix.StateMatrix
-            currentTrial: limits how many elements are stored (up to currentTrial-1)
+            currentTrial: limits how many elements are stored (up to
+                currentTrial-1)
             experimenter: string (if empty, no experimenter folder is used)
             subject: string
             paradigm: string
             date: (optional) string. If none given, today's date will be used.
-            suffix: (optional) string. If none give, it will use a lowercase letter.
+            suffix: (optional) string. If none give, it will use a lowercase
+                letter.
             filename: (optional) string with full path. If a filename is given,
                 all other string parameters will be ignored.
-
-        The data is saved to:
-        ``datadir/experimenter/subject/subject_paradigm_YYMMDDa.h5``
-          or, is experimenter is empty:
-        ``datadir/subject/subject_paradigm_YYMMDDa.h5``
-        '''
+        """
 
         if filename is not None:
             defaultFileName = filename
@@ -148,10 +151,13 @@ class SaveData(QtGui.QGroupBox):
                                      'Nothing sent to repository.')
 
     def send_to_repository(self,relativePath,fileNameOnly):
-        '''
-        Send saved data to repository.
-        XFIXME: The remote subdirectories must exist, otherwise it will fail.
-        '''
+        """Send saved data to repository. XFIXME: The remote subdirectories must
+        exist, otherwise it will fail.
+
+        Args:
+            relativePath:
+            fileNameOnly:
+        """
         verificationFile = os.path.join(self.remotedir,REMOTEDIR_VERIFICATION)
         if os.path.exists(verificationFile):
             fullRemoteDir = os.path.join(self.remotedir,relativePath)
