@@ -128,10 +128,25 @@ class JackClient(mp.Process):
 
         self.client.activate()
         target_ports = self.client.get_ports(is_physical=True, is_input=True, is_audio=True)
-        self.client.outports[0].connect(target_ports[1])
-        if prefs.NCHANNELS == 2:
-            # TODO: Limited, obvs. want to handle arbitrary output arrangements.
+
+        if hasattr(prefs, 'OUTCHANNELS'):
+            if isinstance(prefs.OUTCHANNELS, list):
+                for outchan in prefs.OUTCHANNELS:
+
+                    self.client.outports[0].connect(target_ports[int(outchan)])
+            elif isinstance(prefs.OUTCHANNELS, int):
+                self.client.outports[0].connect(target_ports[prefs.OUTCHANNELS])
+            elif isinstance(prefs.OUTCHANNELS, basestring):
+                try:
+                    self.client.outports[0].connect(target_ports[int(prefs.OUTCHANNELS)])
+                except TypeError:
+                    Exception('Could not coerce prefs.OUTCHANNELS to an integer or list of ints. Connecting to port 0. got {}'.format(prefs.OUTCHANNELS))
+                    self.client.outports[0].connect(target_ports[0])
+        else:
             self.client.outports[0].connect(target_ports[0])
+            if prefs.NCHANNELS == 2:
+                # TODO: Limited, obvs. want to handle arbitrary output arrangements.
+                self.client.outports[0].connect(target_ports[1])
 
     def run(self):
         """

@@ -83,6 +83,7 @@ class PilotSetupForm(nps.SplitForm):
             'AUDIOSERVER':self.add(nps.TitleSelectOne,max_height=4,value=[0,], name="Audio Server:",
                                    values=["jack", "pyo", "none"], scroll_exit=True),
             'NCHANNELS':self.add(nps.TitleText, name="N Audio Channels", value="1"),
+            'OUTCHANNELS': self.add(nps.TitleText, name="List of output ports for jack audioserver to connect to", value="[1]"),
             'FS': self.add(nps.TitleText, name="Audio Sampling Rate", value="192000"),
             'JACKDSTRING': self.add(nps.TitleText, name="Command used to launch jackd - note that \'fs\' will be replaced with above FS",
                                     value="jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -n3 -s &"),
@@ -195,6 +196,9 @@ if __name__ == "__main__":
     # print(params['PULLPINS'])
     params['PULLUPS'] = json.loads(params['PULLUPS'])
     params['PULLDOWNS'] = json.loads(params['PULLDOWNS'])
+
+    # make outputs a list
+    params['OUTCHANNELS'] = json.loads(params['OUTCHANNELS'])
 
 
     ##############################
