@@ -37,6 +37,7 @@ Sets the following params:
 
 """
 
+import argparse
 import npyscreen as nps
 from collections import OrderedDict as odict
 import pprint
@@ -45,6 +46,8 @@ import os
 import subprocess
 
 class PilotSetupForm(nps.SplitForm):
+
+
     def create(self):
         self.input = odict({
             'NAME': self.add(nps.TitleText, name="Pilot Name:", value=""),
@@ -138,6 +141,31 @@ if __name__ == "__main__":
     if os.getuid() != 0:
         raise Exception("Need to run as root")
 
+    # TODO: Load existing prefs
+    #
+    # # parse args
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument('--pfile', help="path to prefs.json to pre-populate fields. default looks for /usr/rpilot/prefs.json")
+    # args = parser.parse_args()
+    #
+    # pfile = None
+    # if args.pfile:
+    #     pfile = str(args.pfile)
+    #     print('using passed prefs file {}'.format(pfile))
+    # elif os.path.exists('/usr/rpilot/prefs.json'):
+    #     print('found existing prefs file at default location "/usr/rpilot/prefs.json"')
+    #     usepfile = raw_input("\nUse found prefs (y) or start with defaults (n)? > ")
+    #     if usepfile == "y":
+    #         print('Using found prefs')
+    #         pfile = '/usr/rpilot/prefs.json'
+    #     else:
+    #         print('Starting with default prefs')
+
+
+
+
+
+
     setup = SetupApp()
     setup.run()
 
@@ -171,7 +199,7 @@ if __name__ == "__main__":
 
     ##############################
     # Compute derived values
-    pigpio_string = 'pigpiod -t 0 -x {}'.format(params['PIGPIOMASK'])
+    pigpio_string = 'pigpiod -t 0 -l -x {}'.format(params['PIGPIOMASK'])
 
     # define and make directory structure
     params['DATADIR'] = os.path.join(params['BASEDIR'], 'data')
@@ -239,7 +267,7 @@ WantedBy=multi-user.target'''.format(launch_pi=launch_file)
         print('\nrpilot service installed and enabled, unit file located at:\n     {}\n'.format(unit_loc))
 
 
-
+    disable_services = {'hciuart': ""}
 
     pp = pprint.PrettyPrinter(indent=4)
     print('Pilot set up with prefs:\r')
