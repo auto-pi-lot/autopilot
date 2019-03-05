@@ -128,10 +128,10 @@ class JackClient(mp.Process):
 
         self.client.activate()
         target_ports = self.client.get_ports(is_physical=True, is_input=True, is_audio=True)
-        self.client.outports[0].connect(target_ports[0])
+        self.client.outports[0].connect(target_ports[1])
         if prefs.NCHANNELS == 2:
             # TODO: Limited, obvs. want to handle arbitrary output arrangements.
-            self.client.outports[0].connect(target_ports[1])
+            self.client.outports[0].connect(target_ports[0])
 
     def run(self):
         """
