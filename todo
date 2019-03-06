@@ -35,6 +35,9 @@
 - https://sarge.readthedocs.io/en/latest/tutorial.html#buffering-issues
 - https://coverage.readthedocs.io/en/v4.5.x/
 - add pi to 'input' group on setup.
+- use 'OptionList' in npyscreen for setup forms https://npyscreen.readthedocs.io/options.html
+- get playback times from jack directly http://jackaudio.org/files/docs/html/group__TimeFunctions.html
+- pilot send hash on handshake, add column for type of hash (agent type), and write pilot hash every time run.
 
 .. automodsumm:: rpilot.core.gui
     :toctree:
