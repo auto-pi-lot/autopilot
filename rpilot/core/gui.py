@@ -27,6 +27,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from rpilot.core.mouse import Mouse
 from rpilot import tasks, prefs
 from rpilot.stim.sound import sounds
+from rpilot.core.networking import Net_Node
 from functools import wraps
 from utils import InvokeEvent
 
@@ -1548,7 +1549,7 @@ class Calibrate_Water(QtGui.QDialog):
     Warning:
         Not Implemented
     """
-    def __init__(self, pilots, message_fn):
+    def __init__(self, pilots):
         """
         Args:
             pilots (:py:attr:`.Terminal.pilots`): A dictionary of pilots
@@ -1557,28 +1558,206 @@ class Calibrate_Water(QtGui.QDialog):
         super(Calibrate_Water, self).__init__()
 
         self.pilots = pilots
-        self.send_message = message_fn
 
-    class Pilot_Ports(QtGui.QWidget):
+        self.init_ui()
+
+    def init_ui(self):
+
+        self.layout = QtGui.QVBoxLayout()
+        for p in self.pilots:
+            port_widget = Pilot_Ports(p)
+            self.layout.addWidget(port_widget)
+
+        # ok/cancel buttons
+        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+        self.layout.addWidget(buttonBox)
+
+        self.setLayout(self.layout)
+
+
+
+
+class Pilot_Ports(QtGui.QWidget):
+    """
+    Each pilot's ports and buttons to control repeated release.
+    """
+    def __init__(self, pilot, n_clicks=1000, click_dur=30):
         """
-        Each pilot's ports and buttons to control repeated release.
+        Args:
+            pilot:
+            message_fn:
+            n_clicks:
+            click_dur:
         """
-        def __init__(self, pilot, message_fn, n_clicks=1000, click_dur=30):
-            """
-            Args:
-                pilot:
-                message_fn:
-                n_clicks:
-                click_dur:
-            """
-            super(Pilot_Ports, self).__init__()
+        super(Pilot_Ports, self).__init__()
 
-            self.pilot = pilot
-            self.send_message = message_fn
+        self.pilot = pilot
 
-        def init_ui(self):
-            #
-            pass
+        # when starting, stash the duration sent to the pi in case it's changed during.
+        self.open_params = {}
+
+        # store volumes per dispense here.
+        self.volumes = {}
+
+        self.listens = {
+            'CAL_PROGRESS': self.l_progress
+        }
+
+        self.node = Net_Node(id="Cal_{}".format(self.pilot),
+                             upstream="T",
+                             port=prefs.MSGPORT,
+                             listens=self.listens)
+
+        self.init_ui()
+
+    def init_ui(self):
+        """
+        Init the layout for one pilot's ports:
+
+        * pilot name
+        * port buttons
+        * 3 times and vol dispersed
+        *
+
+        TODO:
+            Don't assume L/C/R, ask the pilot what it has
+
+        :return:
+        """
+
+        layout = QtGui.QHBoxLayout()
+        pilot_lab = QtGui.QLabel(self.pilot)
+        pilot_font = QtGui.QFont()
+        pilot_font.setBold(True)
+        pilot_font.setPointSize(14)
+        pilot_lab.setFont(pilot_font)
+        pilot_lab.setStyleSheet('border: 1px solid black')
+        layout.addWidget(pilot_lab)
+
+        # make param setting boxes
+        param_layout = QtGui.QFormLayout()
+        self.n_clicks = QtGui.QLineEdit(str(1000))
+        self.n_clicks.setValidator(QtGui.QIntValidator())
+        self.interclick_interval = QtGui.QLineEdit(str(50))
+        self.interclick_interval.setValidator(QtGui.QIntValidator())
+
+        param_layout.addRow("n clicks", self.n_clicks)
+        param_layout.addRow("interclick (ms)", self.interclick_interval)
+
+        layout.addLayout(param_layout)
+
+        # buttons and fields for each port
+
+        #button_layout = QtGui.QVBoxLayout()
+        vol_layout = QtGui.QGridLayout()
+
+        self.dur_boxes = {}
+        self.vol_boxes = {}
+        self.pbars = {}
+        self.flowrates = {}
+
+        for i, port in enumerate(['L', 'C', 'R']):
+            # init empty dict to store volumes and params later
+            self.volumes[port] = {}
+
+            # button to start calibration
+            port_button = QtGui.QPushButton(port)
+            port_button.clicked.connect(lambda: self.start_calibration(copy.copy(port)))
+            vol_layout.addWidget(port_button, i, 0)
+
+            # set click duration
+            dur_label = QtGui.QLabel("Click dur (ms)")
+            self.dur_boxes[port] = QtGui.QLineEdit(str(20))
+            self.dur_boxes[port].setValidator(QtGui.QIntValidator())
+            vol_layout.addWidget(dur_label, i, 1)
+            vol_layout.addWidget(self.dur_boxes[port], i, 2)
+
+            # Divider
+            divider = QtGui.QFrame()
+            divider.setFrameShape(QtGui.QFrame.VLine)
+            vol_layout.addWidget(divider, i, 3)
+
+            # input dispensed volume
+            vol_label = QtGui.QLabel("Dispensed volume (mL)")
+            self.vol_boxes[port] = QtGui.QLineEdit()
+            self.vol_boxes[port].setValidator(QtGui.QDoubleValidator())
+            self.vol_boxes[port].textEdited.connect(lambda: self.update_volumes(copy.copy(port)))
+            vol_layout.addWidget(vol_label, i, 4)
+            vol_layout.addWidget(self.vol_boxes[port], i, 5)
+
+            self.pbars[port] = QtGui.QProgressBar()
+            vol_layout.addWidget(self.pbars[port], i, 6)
+
+            # display flow rate
+            self.flowrates[port] = QtGui.QLabel('?uL/ms')
+            vol_layout.addWidget(self.flowrates[port], i, 7)
+
+        layout.addLayout(vol_layout)
+
+        self.setLayout(layout)
+
+
+    def update_volumes(self, port):
+        if port in self.dispensing_dur.keys():
+            open_dur = self.open_params[port]['dur']
+            n_clicks = self.open_params[port]['n_clicks']
+            click_iti = self.open_params[port]['click_iti']
+        else:
+            Warning('Volume can only be updated after a calibration has been run')
+            return
+
+        vol = float(self.vol_boxes[port].text())
+
+
+
+        self.volumes[port][open_dur] = {
+            'vol': vol,
+            'n_clicks': n_clicks,
+            'click_iti': click_iti,
+            'timestamp': datetime.datetime.now().isoformat()
+        }
+
+        # set flowrate label
+        flowrate = ((vol * 1000.0) / n_clicks) / open_dur
+        self.flowrates[port].setText("{} uL/ms".format(flowrate))
+
+    def start_calibration(self, port):
+
+        # stash params at the time of starting calibration
+        self.open_params[port] = {
+            'dur':int(self.dur_boxes[port].text()),
+            'n_clicks': int(self.n_clicks.text()),
+            'click_iti': int(self.interclick_interval.text())
+        }
+
+        self.pbars[port].setMaximum(self.open_params[port]['n_clicks'])
+        self.pbars[port].setValue(0)
+
+        msg = self.open_params[port]
+        msg.update({'port':port})
+
+        self.node.send(to=self.pilot, key="CALIBRATE_PORT",
+                       value=msg)
+
+    @gui_event
+    def l_progress(self, value):
+        """
+        Value should contain
+
+        * Pilot
+        * Port
+        * Current Click (click_num)
+
+        :param value:
+        :return:
+        """
+        self.pbars[value['port']].setValue(int(value['click_num']))
+
+
+
+
 
 class Reassign(QtGui.QDialog):
     """

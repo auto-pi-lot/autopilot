@@ -321,7 +321,7 @@ class Networking(multiprocessing.Process):
         msg = self.outbox[msg_id]
         self.logger.info('REPUBLISH {} - {}'.format(msg_id,str(self.outbox[msg_id])))
         if send_type == 'send':
-            self.listener.send_multipart([bytes(msg.sender), msg.serialize()])
+            self.listener.send_multipart([bytes(msg.to), msg.serialize()])
         elif send_type == 'push':
             self.pusher.send_multipart([bytes(self.push_id), msg.serialize()])
         else:

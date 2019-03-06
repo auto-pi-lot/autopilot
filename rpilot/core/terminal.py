@@ -18,7 +18,7 @@ from mouse import Mouse
 from plots import Plot_Widget
 from networking import Terminal_Networking, Net_Node
 from utils import InvokeEvent, Invoker
-from gui import Control_Panel, Protocol_Wizard, Weights, Reassign
+from gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water
 from rpilot import prefs
 import pdb
 
@@ -213,9 +213,11 @@ class Terminal(QtGui.QMainWindow):
         mouse_weights_act = QtGui.QAction("View Mouse &Weights", self, triggered=self.mouse_weights)
         update_protocol_act = QtGui.QAction("Update Protocols", self, triggered=self.update_protocols)
         reassign_act = QtGui.QAction("Batch Reassign Protocols", self, triggered=self.reassign_protocols)
+        calibrate_act = QtGui.QAction("Calibrate &Water Ports", self, triggered=self.calibrate_ports)
         self.tool_menu.addAction(mouse_weights_act)
         self.tool_menu.addAction(update_protocol_act)
         self.tool_menu.addAction(reassign_act)
+        self.tool_menu.addAction(calibrate_act)
 
 
         ## Init main panels and add to layout
@@ -610,6 +612,13 @@ class Terminal(QtGui.QMainWindow):
                     step_name = self.mice[mouse].current[step]['step_name']
                     #update history also flushes current - aka it also actually changes the step number
                     self.mice[mouse].update_history('step', step_name, step)
+
+    def calibrate_ports(self):
+
+        calibrate_window = Calibrate_Water(self.pilots)
+        calibrate_window.exec_()
+
+
 
     def closeEvent(self, event):
         """
