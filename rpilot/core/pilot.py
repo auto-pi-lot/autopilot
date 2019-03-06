@@ -344,7 +344,7 @@ class RPilot:
         threading.Thread(target=self.calibrate_port,args=(port, n_clicks, open_dur, iti)).start()
 
     def calibrate_port(self, port_name, n_clicks, open_dur, iti):
-        pin_num = self.prefs['PINS']['PORTS'][port_name]
+        pin_num = prefs['PINS']['PORTS'][port_name]
         port = hardware.Solenoid(pin_num, duration=int(open_dur))
         msg = {'click_num': 0,
                'pilot': self.name,
