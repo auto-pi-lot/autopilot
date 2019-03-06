@@ -257,11 +257,11 @@ class Control_Panel(QtGui.QWidget):
 
         try:
             with open(prefs.PILOT_DB, 'w') as pilot_file:
-                json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '), sort_keys=True)
+                json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
         except NameError:
             try:
                 with open('/usr/rpilot/pilot_db.json', 'w') as pilot_file:
-                    json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '), sort_keys=True)
+                    json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
             except IOError:
                 Exception('Couldnt update pilot db!')
 
