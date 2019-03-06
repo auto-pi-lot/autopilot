@@ -363,7 +363,7 @@ class RPilot:
             time.sleep(iti)
 
         port.release()
-        
+
     def l_cal_result(self, value):
         pass
 
