@@ -389,9 +389,23 @@ class Pilot_Panel(QtGui.QWidget):
         Remove the currently selected mouse in :py:attr:`Pilot_Panel.mouse_list`,
         and calls the :py:meth:`Control_Panel.update_db` method.
         """
-        self.mouse_list.takeItem(self.mouse_list.currentRow())
-        # the drop fn updates the db
-        self.mouse_list.drop_fn()
+
+        current_mouse = self.mouse_list.currentItem().text()
+        msgbox = QtGui.QMessageBox()
+        msgbox.setText("\n(only removes from pilot_db.json, data will not be deleted)".format(current_mouse))
+
+        msgBox = QtGui.QMessageBox()
+        msgBox.setText("Are you sure you would like to remove {}?".format(current_mouse))
+        msgBox.setInformativeText("'Yes' only removes from pilot_db.json, data will not be deleted")
+        msgBox.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+        msgBox.setDefaultButton(QtGui.QMessageBox.No)
+        ret = msgBox.exec_()
+
+        if ret == QMessageBox.Yes:
+
+            self.mouse_list.takeItem(self.mouse_list.currentRow())
+            # the drop fn updates the db
+            self.mouse_list.drop_fn()
 
     def create_mouse(self):
         """
