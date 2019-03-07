@@ -1558,6 +1558,7 @@ class Calibrate_Water(QtGui.QDialog):
         super(Calibrate_Water, self).__init__()
 
         self.pilots = pilots
+        self.pilot_widgets = {}
 
         self.init_ui()
 
@@ -1565,8 +1566,8 @@ class Calibrate_Water(QtGui.QDialog):
 
         self.layout = QtGui.QVBoxLayout()
         for p in self.pilots:
-            port_widget = Pilot_Ports(p)
-            self.layout.addWidget(port_widget)
+            self.pilot_widgets[p] = Pilot_Ports(p)
+            self.layout.addWidget(self.pilot_widgets[p])
 
         # ok/cancel buttons
         buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
@@ -1574,9 +1575,12 @@ class Calibrate_Water(QtGui.QDialog):
         buttonBox.rejected.connect(self.reject)
         self.layout.addWidget(buttonBox)
 
+
+
         self.setLayout(self.layout)
 
-
+        # prevent from expanding
+        self.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
 
 
 class Pilot_Ports(QtGui.QWidget):
@@ -1664,7 +1668,8 @@ class Pilot_Ports(QtGui.QWidget):
 
             # button to start calibration
             port_button = QtGui.QPushButton(port)
-            port_button.clicked.connect(lambda: self.start_calibration(copy.copy(port)))
+            port_button.setObjectName(port)
+            port_button.clicked.connect(self.start_calibration)
             vol_layout.addWidget(port_button, i, 0)
 
             # set click duration
@@ -1682,8 +1687,9 @@ class Pilot_Ports(QtGui.QWidget):
             # input dispensed volume
             vol_label = QtGui.QLabel("Dispensed volume (mL)")
             self.vol_boxes[port] = QtGui.QLineEdit()
+            self.vol_boxes[port].setObjectName(port)
             self.vol_boxes[port].setValidator(QtGui.QDoubleValidator())
-            self.vol_boxes[port].textEdited.connect(lambda: self.update_volumes(copy.copy(port)))
+            self.vol_boxes[port].textEdited.connect(self.update_volumes)
             vol_layout.addWidget(vol_label, i, 4)
             vol_layout.addWidget(self.vol_boxes[port], i, 5)
 
@@ -1699,8 +1705,10 @@ class Pilot_Ports(QtGui.QWidget):
         self.setLayout(layout)
 
 
-    def update_volumes(self, port):
-        if port in self.dispensing_dur.keys():
+    def update_volumes(self):
+        port = self.sender().objectName()
+
+        if port in self.open_params.keys():
             open_dur = self.open_params[port]['dur']
             n_clicks = self.open_params[port]['n_clicks']
             click_iti = self.open_params[port]['click_iti']
@@ -1723,7 +1731,8 @@ class Pilot_Ports(QtGui.QWidget):
         flowrate = ((vol * 1000.0) / n_clicks) / open_dur
         self.flowrates[port].setText("{} uL/ms".format(flowrate))
 
-    def start_calibration(self, port):
+    def start_calibration(self):
+        port = self.sender().objectName()
 
         # stash params at the time of starting calibration
         self.open_params[port] = {

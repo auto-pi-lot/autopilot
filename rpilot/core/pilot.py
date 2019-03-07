@@ -15,6 +15,7 @@ import argparse
 import threading
 import time
 import socket
+import json
 
 import tables
 
@@ -365,7 +366,29 @@ class RPilot:
         port.release()
 
     def l_cal_result(self, value):
-        pass
+        """
+        Save the results of a port calibration
+
+        TODO:
+            Compute the LUT/curve.
+
+        """
+
+        cal_fn = os.path.join(prefs.BASEDIR, 'port_calibration.json')
+
+        if os.path.exists(cal_fn):
+            with open(cal_fn, 'r') as cal_file:
+                calibration = json.load(cal_file)
+        else:
+            calibration = []
+
+        calibration.extend(value)
+
+        with open(cal_fn, 'w+') as cal_file:
+            json.dump(calibration)
+
+
+
 
     #################################################################
     # Hardware Init

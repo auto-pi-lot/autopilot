@@ -263,6 +263,7 @@ class Terminal(QtGui.QMainWindow):
 
         winheight = winsize.height() - window_title_height - titleBarHeight - logo_height  # also subtract logo height
         winsize.setHeight(winheight)
+        self.max_height = winheight
         self.setGeometry(winsize)
         self.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
 
@@ -617,6 +618,30 @@ class Terminal(QtGui.QMainWindow):
 
         calibrate_window = Calibrate_Water(self.pilots)
         calibrate_window.exec_()
+
+        if calibrate_window.result() == 1:
+            for pilot, p_widget in calibrate_window.pilot_widgets.items():
+                p_results = p_widget.volumes
+                # p_results are [port][dur] = {params} so running the same duration will
+                # overwrite a previous run. unnest here so pi can keep a record
+                unnested_results = {}
+                for port, result in p_results.items():
+                    unnested_results[port] = []
+                    # result is [dur] = {params}
+                    for dur, inner_result in result.items():
+                        inner_result['dur'] = dur
+                        unnested_results[port].append(inner_result)
+
+                # send to pi
+                self.node.send(to=pilot, key="CALIBRATE_RESULT",
+                               value = unnested_results)
+
+            msgbox = QtGui.QMessageBox()
+            msgbox.setText("Calibration results sent!")
+            msgbox.exec_()
+
+
+
 
 
 
