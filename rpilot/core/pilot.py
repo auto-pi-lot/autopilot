@@ -382,11 +382,15 @@ class RPilot:
                     calibration = json.load(cal_file)
             except ValueError:
                 # usually no json can be decoded, that's fine calibrations aren't expensive
-                calibration = []
+                calibration = {}
         else:
-            calibration = []
+            calibration = {}
 
-        calibration.extend(value)
+        for port, results in value.items():
+            if port in calibration.keys():
+                calibration[port].extend(results)
+            else:
+                calibration[port] = results
 
         with open(cal_fn, 'w+') as cal_file:
             json.dump(calibration, cal_file)
