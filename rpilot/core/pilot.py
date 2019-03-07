@@ -377,8 +377,12 @@ class RPilot:
         cal_fn = os.path.join(prefs.BASEDIR, 'port_calibration.json')
 
         if os.path.exists(cal_fn):
-            with open(cal_fn, 'r') as cal_file:
-                calibration = json.load(cal_file)
+            try:
+                with open(cal_fn, 'r') as cal_file:
+                    calibration = json.load(cal_file)
+            except ValueError:
+                # usually no json can be decoded, that's fine calibrations aren't expensive
+                calibration = []
         else:
             calibration = []
 
