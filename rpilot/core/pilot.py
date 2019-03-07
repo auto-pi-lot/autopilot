@@ -385,7 +385,7 @@ class RPilot:
         calibration.extend(value)
 
         with open(cal_fn, 'w+') as cal_file:
-            json.dump(calibration)
+            json.dump(calibration, cal_file)
 
 
 
