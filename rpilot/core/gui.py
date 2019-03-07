@@ -401,7 +401,7 @@ class Pilot_Panel(QtGui.QWidget):
         msgBox.setDefaultButton(QtGui.QMessageBox.No)
         ret = msgBox.exec_()
 
-        if ret == QMessageBox.Yes:
+        if ret == QtGui.QMessageBox.Yes:
 
             self.mouse_list.takeItem(self.mouse_list.currentRow())
             # the drop fn updates the db
