@@ -1577,11 +1577,33 @@ class Calibrate_Water(QtGui.QDialog):
         self.init_ui()
 
     def init_ui(self):
-
         self.layout = QtGui.QVBoxLayout()
+
+        # Container Widget
+        self.container = QtGui.QWidget()
+        # Layout of Container Widget
+        self.container_layout = QtGui.QVBoxLayout(self)
+
+        self.container.setLayout(self.container_layout)
+
+
+        screen_geom = QtGui.QDesktopWidget().availableGeometry()
+        # get max pixel value for each subwidget
+        widget_height = np.floor(screen_geom.height()-50/float(len(self.pilots)))
+
+
         for p in self.pilots:
             self.pilot_widgets[p] = Pilot_Ports(p)
-            self.layout.addWidget(self.pilot_widgets[p])
+            self.pilot_widgets[p].setMaximumHeight(widget_height)
+            self.pilot_widgets[p].setMaximumWidth(screen_geom.width())
+            self.pilot_widgets[p].setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+            self.container_layout.addWidget(self.pilot_widgets[p])
+
+        # Scroll Area Properties
+        self.scroll = QtGui.QScrollArea()
+        self.scroll.setWidgetResizable(False)
+        self.scroll.setWidget(self.container)
+        self.layout.addWidget(self.scroll)
 
         # ok/cancel buttons
         buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
@@ -1594,7 +1616,15 @@ class Calibrate_Water(QtGui.QDialog):
         self.setLayout(self.layout)
 
         # prevent from expanding
+        # set max size to screen size
+
+        self.setMaximumHeight(screen_geom.height())
+        self.setMaximumWidth(screen_geom.width())
         self.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+
+        self.scrollArea = QtGui.QScrollArea(self)
+        self.scrollArea.setWidgetResizable(True)
+
 
 
 class Pilot_Ports(QtGui.QWidget):
@@ -1715,12 +1745,17 @@ class Pilot_Ports(QtGui.QWidget):
             vol_layout.addWidget(self.pbars[port], i, 6)
 
             # display flow rate
-            self.flowrates[port] = QtGui.QLabel('?uL/ms')
-            vol_layout.addWidget(self.flowrates[port], i, 7)
+
+            #self.flowrates[port] = QtGui.QLabel('?uL/ms')
+            #self.flowrates[port].setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+            #vol_layout.addWidget(self.flowrates[port], i, 7)
 
         layout.addLayout(vol_layout)
 
+
         self.setLayout(layout)
+
+
 
 
     def update_volumes(self):
@@ -1736,8 +1771,6 @@ class Pilot_Ports(QtGui.QWidget):
 
         vol = float(self.vol_boxes[port].text())
 
-
-
         self.volumes[port][open_dur] = {
             'vol': vol,
             'n_clicks': n_clicks,
@@ -1746,8 +1779,12 @@ class Pilot_Ports(QtGui.QWidget):
         }
 
         # set flowrate label
-        flowrate = ((vol * 1000.0) / n_clicks) / open_dur
-        self.flowrates[port].setText("{} uL/ms".format(flowrate))
+        #flowrate = ((vol * 1000.0) / n_clicks) / open_dur
+        #frame_geom = self.flowrates[port].frameGeometry()
+        #self.flowrates[port].setMaximumHeight(frame_geom.height())
+
+
+        #self.flowrates[port].setText("{} uL/ms".format(flowrate))
 
     def start_calibration(self):
         port = self.sender().objectName()
