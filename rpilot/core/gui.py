@@ -1657,8 +1657,10 @@ class Pilot_Ports(QtGui.QWidget):
         # make param setting boxes
         param_layout = QtGui.QFormLayout()
         self.n_clicks = QtGui.QLineEdit(str(1000))
+        self.n_clicks.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
         self.n_clicks.setValidator(QtGui.QIntValidator())
         self.interclick_interval = QtGui.QLineEdit(str(50))
+        self.interclick_interval.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
         self.interclick_interval.setValidator(QtGui.QIntValidator())
 
         param_layout.addRow("n clicks", self.n_clicks)
@@ -1689,6 +1691,7 @@ class Pilot_Ports(QtGui.QWidget):
             # set click duration
             dur_label = QtGui.QLabel("Click dur (ms)")
             self.dur_boxes[port] = QtGui.QLineEdit(str(20))
+            self.dur_boxes[port].setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
             self.dur_boxes[port].setValidator(QtGui.QIntValidator())
             vol_layout.addWidget(dur_label, i, 1)
             vol_layout.addWidget(self.dur_boxes[port], i, 2)
@@ -1701,6 +1704,7 @@ class Pilot_Ports(QtGui.QWidget):
             # input dispensed volume
             vol_label = QtGui.QLabel("Dispensed volume (mL)")
             self.vol_boxes[port] = QtGui.QLineEdit()
+            self.vol_boxes[port].setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
             self.vol_boxes[port].setObjectName(port)
             self.vol_boxes[port].setValidator(QtGui.QDoubleValidator())
             self.vol_boxes[port].textEdited.connect(self.update_volumes)
