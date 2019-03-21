@@ -289,7 +289,6 @@ class Terminal(QtGui.QMainWindow):
     # Listens & inter-object methods
 
     def toggle_start(self, starting, pilot, mouse=None):
-        # type: (bool, unicode, unicode) -> None
         """Start or Stop running the currently selected mouse's task. Sends a
         message containing the task information to the concerned pilot.
 
@@ -305,47 +304,49 @@ class Terminal(QtGui.QMainWindow):
         """
         # stopping is the enemy of starting so we put them in the same function to learn about each other
         if starting is True:
-            # Ope'nr up if she aint
-            if mouse not in self.mice.keys():
-                self.mice[mouse] = Mouse(mouse)
-
-            task = self.mice[mouse].prepare_run()
-            task['pilot'] = pilot
-
             # Get Weights
             start_weight, ok = QtGui.QInputDialog.getDouble(self, "Set Starting Weight",
                                                             "Starting Weight:")
             if ok:
+                # Ope'nr up if she aint
+                if mouse not in self.mice.keys():
+                    self.mice[mouse] = Mouse(mouse)
+
+                task = self.mice[mouse].prepare_run()
+                task['pilot'] = pilot
                 self.mice[mouse].update_weights(start=float(start_weight))
+
+                self.node.send(to=bytes(pilot), key="START", value=task)
+                # also let the plot know to start
+                self.node.send(to=bytes("P_{}".format(pilot)), key="START", value=task)
+
             else:
                 # pressed cancel, don't start
-                self.mice[mouse].stop_run()
                 return
 
-            self.node.send(to=bytes(pilot),key="START",value=task)
-            # also let the plot know to start
-            self.node.send(to=bytes("P_{}".format(pilot)), key="START", value=task)
-
         else:
-            # Send message to pilot to stop running,
-            # it should initiate a coherence checking routine to make sure
-            # its data matches what the Terminal got,
-            # so the terminal will handle closing the mouse object
-            self.node.send(to=bytes(pilot), key="STOP")
-            # also let the plot know to start
-            self.node.send(to=bytes("P_{}".format(pilot)), key="STOP")
-            # TODO: Start coherence checking ritual
-            # TODO: Auto-select the next mouse in the list.
-
-            # get weight
             # Get Weights
             stop_weight, ok = QtGui.QInputDialog.getDouble(self, "Set Stopping Weight",
                                                            "Stopping Weight:")
-
-            self.mice[mouse].stop_run()
-
+            
             if ok:
+                # Send message to pilot to stop running,
+                # it should initiate a coherence checking routine to make sure
+                # its data matches what the Terminal got,
+                # so the terminal will handle closing the mouse object
+                self.node.send(to=bytes(pilot), key="STOP")
+                # also let the plot know to start
+                self.node.send(to=bytes("P_{}".format(pilot)), key="STOP")
+                # TODO: Start coherence checking ritual
+                # TODO: Auto-select the next mouse in the list.
+
+                self.mice[mouse].stop_run()
                 self.mice[mouse].update_weights(stop=float(stop_weight))
+
+            else:
+                # pressed cancel
+                return
+
 
     ############################
     # MESSAGE HANDLING METHODS
