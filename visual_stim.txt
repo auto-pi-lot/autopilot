@@ -37,6 +37,7 @@ using X11-
 - sudo gpasswd -a pi tty
 - install xterm
 - call xinit
+- have to enable gl driver in raspi-config
 
 to investigate:
 - lxde, lightweight window server?
