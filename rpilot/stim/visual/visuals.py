@@ -68,6 +68,7 @@ class Grating(Visual):
         self.mask = mask
         self.pos = pos
         self.size = size
+        self.duration = duration
 
         # init psychopy object
         self.ppo = visual.GratingStim(

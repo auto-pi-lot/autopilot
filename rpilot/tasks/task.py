@@ -251,6 +251,13 @@ class Task(object):
             else:
                 v.set_color([0,0,0])
 
+    def flash_leds(self):
+        """
+        flash lights for punish_dir
+        """
+        for k, v in self.pins['LEDS'].items():
+            v.flash(self.punish_dur)
+
     def end(self):
         """
         Release all hardware objects
