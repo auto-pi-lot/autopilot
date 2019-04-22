@@ -119,8 +119,8 @@ class GoNoGo(Task):
         self.stage_block.clear()
 
         # Reset all the variables that need to be
-        for v in self.resetting_variables:
-            v = None
+        #for v in self.resetting_variables:
+        #    v = None
 
         # reset triggers if there are any left
         self.triggers = {}
