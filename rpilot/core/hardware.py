@@ -704,7 +704,7 @@ class Wheel(Hardware):
         self.thread.start()
 
     def _record(self):
-        moves = np.array(dtype=self.MOVE_DTYPE)
+        moves = np.array([], dtype=self.MOVE_DTYPE)
 
         last_update = time.time()
 
@@ -740,7 +740,7 @@ class Wheel(Hardware):
 
                 self.node.send(key='CONTINUOUS', value={'x':x_vel, 'y':y_vel, 't':nowtime})
 
-                moves = np.array(dtype=self.MOVE_DTYPE)
+                moves = np.array([], dtype=self.MOVE_DTYPE)
 
                 last_update = nowtime
 
@@ -856,7 +856,7 @@ class Wheel(Hardware):
             self.thresh = float(value['thresh'])
 
         if self.mode == "steady":
-            self.thresh_val = np.array(dtype=self.MOVE_DTYPE)
+            self.thresh_val = np.array([], dtype=self.MOVE_DTYPE)
         else:
             self.thresh_val = 0.0
         self.measure_time = time.time()

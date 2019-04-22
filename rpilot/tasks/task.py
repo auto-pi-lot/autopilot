@@ -191,8 +191,6 @@ class Task(object):
             level (bool): True, False high/low
             tick (int): ticks since booting pigpio
         """
-        print("triggered pin {}".format(pin))
-        sys.stdout.flush()
         # All triggers call this function with the pin number, level (high, low), and ticks since booting pigpio
 
         # We get fed pins as BCM numbers, convert to board number and then back to letters
