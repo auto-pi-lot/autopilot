@@ -774,7 +774,10 @@ class Wheel(Hardware):
         elif self.mode == 'steady':
             # If movements in the recent past are below a certain value
             # self.thresh_val should be set to a structured array by l_measure
-            self.thresh_val = np.concatenate(self.thresh_val, move)
+            try:
+                self.thresh_val = np.concatenate(self.thresh_val, move)
+            except TypeError:
+                print('THRESH_VAL:', self.thresh_val, 'MOVE:', move)
             # trim to movements in the time window
             self.thresh_val = self.thresh_val[self.thresh_val['timestamp'] > time.time()-self.integrate_dur]
 

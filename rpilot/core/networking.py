@@ -1230,6 +1230,7 @@ class Net_Node(object):
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
+   
         self.sock.send_multipart([bytes(self.upstream), msg_enc])
         if self.logger:
             self.logger.info("MESSAGE SENT - {}".format(str(msg)))
