@@ -153,7 +153,7 @@ class Networking(multiprocessing.Process):
         self.logger.info('Starting IOLoop')
         self.loop.start()
 
-    def prepare_message(self, to, key, value):
+    def prepare_message(self, to, key, value, repeat=True):
         """
         If a message originates with us, a :class:`.Message` class
         is instantiated, given an ID and the rest of its attributes.
@@ -173,6 +173,9 @@ class Networking(multiprocessing.Process):
 
         msg_num = self.msg_counter.next()
         msg.id = "{}_{}".format(self.id, msg_num)
+
+        if not repeat:
+            msg.flags['NOREPEAT'] = True
 
         return msg
 
@@ -438,7 +441,7 @@ class Networking(multiprocessing.Process):
 
             # send a return message that confirms even if we except
             # don't confirm confirmations
-            if msg.key != "CONFIRM":
+            if (msg.key != "CONFIRM") and ('NOREPEAT' not in msg.flags.keys()):
                 if send_type == 'router':
                     self.send(sender, 'CONFIRM', msg.id)
                 elif send_type == 'dealer':
@@ -470,7 +473,7 @@ class Networking(multiprocessing.Process):
 
         # since we return if it's to us before, confirm is repeated down here.
         # FIXME: Inelegant
-        if msg.key != "CONFIRM":
+        if (msg.key != "CONFIRM") and ('NOREPEAT' not in msg.flags.keys()):
             if send_type == 'router':
                 self.send(sender, 'CONFIRM', msg.id)
             elif send_type == 'dealer':
@@ -1148,7 +1151,7 @@ class Net_Node(object):
         except KeyError:
             self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
 
-        if msg.key != "CONFIRM":
+        if (msg.key != "CONFIRM") and ('NOREPEAT' not in msg.flags.keys()) :
             # send confirmation
             self.send(msg.sender, 'CONFIRM', msg.id)
 
@@ -1191,7 +1194,7 @@ class Net_Node(object):
             return
 
         if not msg:
-            msg = self.prepare_message(to, key, value)
+            msg = self.prepare_message(to, key, value, repeat)
 
         # Make sure our message has everything
         if not msg.validate():
@@ -1272,7 +1275,7 @@ class Net_Node(object):
 
         self.logger.info('CONFIRMED MESSAGE {}'.format(value))
 
-    def prepare_message(self, to, key, value):
+    def prepare_message(self, to, key, value, repeat):
         """
         Instantiate a :class:`.Message` class, give it an ID and
         the rest of its attributes.
@@ -1299,6 +1302,9 @@ class Net_Node(object):
 
         msg_num = self.msg_counter.next()
         msg.id = "{}_{}".format(self.id, msg_num)
+
+        if not repeat:
+            msg.flags['NOREPEAT'] = True
 
         return msg
 
@@ -1350,6 +1356,7 @@ class Message(object):
     # value is the only attribute that can be left None,
     # ie. with signal-type messages like "STOP"
     value = None
+    flags = {}
     ttl = 5 # every message starts with 5 retries. only relevant to the sender so not serialized.
 
     def __init__(self, *args, **kwargs):
