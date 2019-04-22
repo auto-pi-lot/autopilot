@@ -40,6 +40,7 @@
 - pilot send hash on handshake, add column for type of hash (agent type), and write pilot hash every time run.
 - add video to pilot setup
 - implement message forwarding, eg. to=['hop 1', 'hop 2']
+- make flags for messages, like 'NOCONFIRM'
 
 .. automodsumm:: rpilot.core.gui
     :toctree:

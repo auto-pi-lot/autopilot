@@ -742,7 +742,8 @@ class Wheel(Hardware):
                 y_vel = self.calc_move(moves, 'y')
                 x_vel = self.calc_move(moves, 'x')
 
-                self.node.send(key='CONTINUOUS', value={'x':x_vel, 'y':y_vel, 't':nowtime})
+                self.node.send(key='CONTINUOUS', value={'x':x_vel, 'y':y_vel, 't':nowtime},
+                               repeat=False)
 
                 moves = np.array([], dtype=self.MOVE_DTYPE)
 

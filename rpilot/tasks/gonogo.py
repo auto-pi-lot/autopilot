@@ -84,6 +84,7 @@ class GoNoGo(Task):
         super(GoNoGo, self).__init__()
 
         self.stage_block = stage_block
+        self.trial_counter = itertools.count()
 
         self.reward = reward
         self.timeout = timeout

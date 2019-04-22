@@ -109,7 +109,7 @@ class Grating(Visual):
 
 
     def play(self):
-        threading.Thread(self._play).start()
+        threading.Thread(target=self._play).start()
 
     def _play(self):
         with self.thread_lock:
