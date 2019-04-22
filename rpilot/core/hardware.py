@@ -624,7 +624,7 @@ class Wheel(Hardware):
 
     MOVE_DTYPE = [('vel', 'i4'), ('dir', 'U5'), ('timestamp', 'f8')]
 
-    def __init__(self, mouse_idx=0, fs=20, thresh=100, thresh_type='dist', start=True,
+    def __init__(self, mouse_idx=0, fs=10, thresh=100, thresh_type='dist', start=True,
                  gpio_trig=False, pins=None, mode='vel_total', integrate_dur=3):
 
         # try to get mouse from inputs
@@ -817,7 +817,7 @@ class Wheel(Hardware):
         elif thresh_type == "dist":
             x_dist = np.sum(move['vel'][move['dir'] == "REL_X"])
             y_dist = np.sum(move['vel'][move['dir'] == "REL_Y"])
-            distance = np.sqrt(float(x_dist ** 2) + float(y_dist ** 2))
+            distance = np.abs(np.sqrt(float(x_dist ** 2) + float(y_dist ** 2)))
 
         return distance
 

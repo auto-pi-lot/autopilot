@@ -210,7 +210,10 @@ class GoNoGo(Task):
 
         self.set_leds({'C': [0, 0, 0]})
         # stop timer if it's still going
-        self.timer.stop_timer()
+        try:
+            self.timer.cancel()
+        except AttributeError:
+            pass
         self.timer = None
 
         data = {
