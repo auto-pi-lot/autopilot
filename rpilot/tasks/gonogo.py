@@ -86,7 +86,7 @@ class GoNoGo(Task):
         self.stage_block = stage_block
         self.trial_counter = itertools.count()
 
-        self.punish_dur = 5000.0
+        self.punish_dur = 500.0
 
         self.reward = reward
         self.timeout = timeout
@@ -120,6 +120,7 @@ class GoNoGo(Task):
         # wait for the mouse to hold the wheel still
         # Set the event lock
         self.stage_block.clear()
+        self.punish_block.wait()
 
         # Reset all the variables that need to be
         #for v in self.resetting_variables:
