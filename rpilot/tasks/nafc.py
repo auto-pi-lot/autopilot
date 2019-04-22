@@ -428,7 +428,6 @@ class Nafc_Wheel(Nafc):
     """
     2afc using a wheel run on a child pi as the input device
     """
-
     HARDWARE = {
         'POKES': {
             'C': hardware.Beambreak,
@@ -464,8 +463,6 @@ class Nafc_Wheel(Nafc):
 
 
         # TODO: Update PARAMS with wheel params
-
-        # TODO: Send start to child, include 'child' {'parent':'our_id', 'mouse':'mouse_id'}
     def init_networking(self, kwargs):
 
         self.node = Net_Node(id="T_{}".format(prefs.NAME),

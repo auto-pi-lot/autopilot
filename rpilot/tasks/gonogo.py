@@ -8,18 +8,17 @@ import datetime
 import itertools
 import tables
 import threading
+from random import random
+
 
 from rpilot.core import hardware
 from rpilot.tasks import Task
-from rpilot.stim.visual.visuals import Grating_Continuous
+from rpilot.stim.visual.visuals import Grating, Grating_Continuous
 from collections import OrderedDict as odict
 from rpilot.core.networking import Net_Node
 
 from rpilot import prefs
-
-# This declaration allows Mouse to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
-# TODO: Move this to __init__
-TASK = 'Nafc'
+TASK = 'GoNoGo'
 
 class GoNoGo(Task):
     STAGE_NAMES = ["request", "discrim", "reinforcement"]
@@ -51,11 +50,14 @@ class GoNoGo(Task):
     class TrialData(tables.IsDescription):
         # This class allows the Mouse object to make a data table with the correct data types. You must update it for any new data you'd like to store
         trial_num = tables.Int32Col()
-        target = tables.StringCol(1)
+        target = tables.BoolCol()
         response = tables.StringCol(1)
         correct  = tables.Int32Col()
         RQ_timestamp = tables.StringCol(26)
         DC_timestamp = tables.StringCol(26)
+        shift = tables.Float32Col()
+        angle = tables.Float32Col()
+        delay = tables.Float32Col()
 
     HARDWARE = {
         'POKES': {
@@ -66,6 +68,9 @@ class GoNoGo(Task):
         },
         'PORTS': {
             'C': hardware.Solenoid,
+        },
+        'FLAGS': {
+            'F': hardware.Flag
         }
     }
 
@@ -75,24 +80,165 @@ class GoNoGo(Task):
         }
     }
 
-    def __init__(self, stim=None, reward = 50, timeout = 1000,):
+    def __init__(self, stim=None, reward = 50, timeout = 1000,**kwargs):
         super(GoNoGo, self).__init__()
 
         self.reward = reward
         self.timeout = timeout
 
+        self.init_hardware()
+        self.set_reward(self.reward)
+
+        self.node = Net_Node(id="T_{}".format(prefs.NAME),
+                             upstream=prefs.NAME,
+                             port=prefs.MSGPORT,
+                             listens={},
+                             instance=True)
+
+        # get our child started
+        self.mouse = kwargs['mouse']
+        value = {
+            'child': {'parent': prefs.NAME, 'mouse': kwargs['mouse']},
+            'task_type': 'Wheel Child',
+            'mouse': kwargs['mouse']
+        }
+
+        self.node.send(key='CHILD', value=value)
+
         # hardcoding stimulus for testing
-        self.stim = Grating_Continuous(angle=0, freq=(4,0), rate=1)
+        self.stim = Grating(angle=0, freq=(4,0), rate=1)
 
         self.stages = itertools.cycle([self.request, self.discrim, self.reinforce])
 
 
     def request(self):
         # wait for the mouse to hold the wheel still
-        pass
+        # Set the event lock
+        self.stage_block.clear()
+
+        # Reset all the variables that need to be
+        for v in self.resetting_variables:
+            v = None
+
+        # reset triggers if there are any left
+        self.triggers = {}
+
+        # calculate orientation change
+        # half the time, don't change, otherwise, do change
+
+        if random() < 0.5:
+            self.shift = 0
+            self.target = False
+        else:
+            self.shift = random()*180.0
+            self.target = True
+
+        self.new_angle = self.shift + self.stim.ppo.ori
+
+
+        # Set sound trigger and LEDs
+        # We make two triggers to play the sound and change the light color
+        change_to_blue = lambda: self.pins['LEDS']['C'].set_color([0, 0, 255])
+
+        # set triggers
+        self.triggers['F'] = [change_to_blue, self.stim.play]
+
+        # set to green in the meantime
+        self.set_leds({'C': [0, 255, 0]})
+
+        # tell our wheel to start measuring
+        self.node.send(to=[prefs.NAME, prefs.CHILDID, 'wheel_{}'.format(self.mouse)],
+                       key="MEASURE",
+                       value={'mode':'steady',
+                              'thresh':100})
+
+        self.current_trial = self.trial_counter.next()
+        data = {
+            'target': self.target,
+            'shift': self.shift,
+            'angle': self.new_angle,
+            'trial_num': self.current_trial
+        }
+
+        self.current_stage = 0
+        return data
 
     def discrim(self):
-        pass
+        self.stage_block.clear()
+
+        # if the mouse licks on a good trial, reward.
+        # set a trigger to respond false if delay time elapses
+        if self.target:
+            self.triggers['C'] = [lambda: self.respond(True), self.pins['PORTS']['C'].open]
+            self.triggers['T'] = [lambda: self.respond(False), self.punish]
+        # otherwise punish
+        else:
+            self.triggers['C'] = [lambda: self.respond(True), self.punish]
+            self.triggers['T'] = [lambda: self.respond(False), self.pins['PORTS']['C'].open]
+
+        # the stimulus has just started playing, wait a bit and then shift it (if we're gonna
+        # choose a random delay
+        delay = 0.0
+        if self.shift != 0:
+            delay = random()*5000.0
+            self.delayed_set(delay, 'angle', self.new_angle)
+
+        self.timer = threading.Timer(5.0, self.handle_trigger, args=('T', True, None)).start()
+
+        data = {
+            'delay': delay,
+            'RQ_timestamp': datetime.datetime.now().isoformat(),
+            'trial_num': self.current_trial
+        }
+
+
+        return data
+
+
+
+
 
     def reinforcement(self):
-        pass
+        # don't clear stage block here to quickly move on
+        if self.response == self.target:
+            self.correct = 1
+        else:
+            self.correct = 0
+
+        self.set_leds({'C': [0, 0, 0]})
+        # stop timer if it's still going
+        self.timer.stop_timer()
+        self.timer = None
+
+        data = {
+            'DC_timestamp': datetime.datetime.now().isoformat(),
+            'response': self.response,
+            'correct': self.correct,
+            'trial_num': self.current_trial,
+            'TRIAL_END': True
+        }
+        return data
+
+    def respond(self, response):
+        self.response = response
+
+    def delayed_set(self, delay, attr, val):
+        threading.Timer(float(delay)/1000.0, self._delayed_shift, args=(attr,val)).start()
+
+    def _delayed_shift(self, attr, val):
+        self.stim.set(attr, val)
+
+    def punish(self):
+        """
+        Flash lights, play punishment sound if set
+        """
+        # TODO: If we're not in the last stage (eg. we were timed out after stim presentation), reset stages
+        self.punish_block.clear()
+
+        if self.punish_stim:
+            self.stim_manager.play_punishment()
+
+        # self.set_leds()
+        self.flash_leds()
+        threading.Timer(self.punish_dur / 1000., self.punish_block.set).start()
+

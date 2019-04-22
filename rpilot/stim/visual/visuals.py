@@ -11,6 +11,8 @@ import threading
 
 class Visual(object):
     """Metaclass for visual stimuli"""
+    callback = None
+
 
     def __init__(self):
         # psychopy Window
@@ -21,6 +23,8 @@ class Visual(object):
 
         self.clock = core.Clock()
         self.draw_time = 0
+
+        self.thread_lock = threading.Lock()
 
     def get_window(self):
         """
@@ -38,6 +42,8 @@ class Visual(object):
                 Exception("Couldn't get psychopy Window!")
 
 
+
+
 class Grating(Visual):
     """
     Moving grating
@@ -48,7 +54,7 @@ class Grating(Visual):
 
     def __init__(self, angle, freq, rate, phase=0,
                  mask="gauss", pos=(0., 0.), size=None,
-                 duration=1000.):
+                 duration=5000.):
         super(Grating, self).__init__()
 
         self.angle = angle
@@ -69,6 +75,26 @@ class Grating(Visual):
             ori = self.angle,
             phase = self.phase)
 
+    def set(self, attr, value):
+        """
+        Set psychopy attrs
+
+        Args:
+            attr ():
+            value ():
+
+        Returns:
+
+        """
+        attr_map = {
+            'mask':'mask', 'pos':'pos', 'size':'size',
+            'freq':'sf', 'angle':'ori', 'phase':'phase'
+        }
+
+        if attr in ('mask', 'pos', 'size', 'freq', 'angle', 'phase'):
+            setattr(self.ppo, attr_map[attr], value)
+
+
     def update(self):
         """advance the psychopy object one frame"""
 
@@ -79,18 +105,22 @@ class Grating(Visual):
 
 
     def play(self):
-        # reset stim
-        self.ppo.phase = self.phase
+        threading.Thread(self._play).start()
 
-        start_time = self.clock.getTime()
-        end_time = start_time + (self.duration/1000.0)
-        while self.clock.getTime() < end_time:
-            self.update()
-            self.ppo.draw()
+    def _play(self):
+        with self.thread_lock:
+            # reset stim
+            self.ppo.phase = self.phase
+
+            start_time = self.clock.getTime()
+            end_time = start_time + (self.duration/1000.0)
+            while self.clock.getTime() < end_time:
+                self.update()
+                self.ppo.draw()
+                self.win.flip()
+
+            # another flip clears the screen
             self.win.flip()
-
-        # another flip clears the screen
-        self.win.flip()
 
 
 class Grating_Continuous(Grating):
@@ -111,6 +141,9 @@ class Grating_Continuous(Grating):
         while self.stop_flag:
             self.play()
         self.win.flip()
+
+    def stop(self):
+        self.stop_flag.clear()
 
 
     def play(self):

@@ -97,6 +97,7 @@ class Networking(multiprocessing.Process):
     outbox = {}  # Messages that are out with unconfirmed delivery
     timers = {}  # dict of timer threads that will check in on outbox messages
     child = False
+    routes = {} # dict of 'to' addressee and the route that should be taken to reach them
 
     def __init__(self):
         super(Networking, self).__init__()
@@ -365,6 +366,9 @@ class Networking(multiprocessing.Process):
             msg (str): JSON :meth:`.Message.serialize` d message.
         """
         # TODO: This check is v. fragile, pyzmq has a way of sending the stream along with the message
+        #####################33
+        # Parse the message
+
         if len(msg)==1:
             # from our dealer
             send_type = 'dealer'
@@ -375,6 +379,10 @@ class Networking(multiprocessing.Process):
             # from the router
             send_type = 'router'
             sender = msg[-3]
+
+            # if this message was a multihop message, store the route
+            if len(msg)>3:
+                self.routes[sender] = msg[0:-2]
 
             # if this is a new sender, add them to the list
             if sender not in self.senders.keys():
@@ -399,8 +407,21 @@ class Networking(multiprocessing.Process):
 
         self.logger.info('RECEIVED: {}'.format(str(msg)))
 
+
+        ###################################
+        # Handle the message
+        # if this message has a multihop 'to' field, forward it along
+        if isinstance(msg.to, list):
+            # pop ourselves off the list
+            _ = msg.to.pop(0)
+
+            # if the next recipient in the list is our push-parent, push it
+            if msg.to[0] == self.push_id:
+                self.push(msg=msg)
+            else:
+                self.send(msg=msg)
         # if this message is to us, just handle it and return
-        if msg.to in [self.id, "_{}".format(self.id)]:
+        elif msg.to in [self.id, "_{}".format(self.id)]:
             # Log and spawn thread to respond to listen
             try:
                 listen_funk = self.listens[msg.key]
@@ -1142,7 +1163,7 @@ class Net_Node(object):
         :meth:`~.Net_Node.repeat` unless `repeat` is False.
 
         Args:
-            to (str): The identity of the socket this message is to. If not included,
+            to (str, list): The identity of the socket this message is to. If not included,
                 sent to :meth:`~.Net_Node.upstream` .
             key (str): The type of message - used to select which method the receiver
                 uses to process this message.
