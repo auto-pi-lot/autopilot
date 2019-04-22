@@ -641,8 +641,6 @@ class Wheel(Hardware):
         self.update_dur = 1./float(self.fs)
 
         self.thresh = thresh
-        self.thresh_val = 0.0
-
         # thresh type can be 'dist', 'x', 'y', or 'vel'
         if thresh_type not in self.THRESH_TYPES:
             ValueError('thresh_type must be one of {}, given {}'.format(self.THRESH_TYPES, thresh_type))
@@ -653,6 +651,11 @@ class Wheel(Hardware):
         # TODO: Do two parameters - type 'vel' or 'dist' and measure 'x', 'y', 'total'z
         self.mode = mode
         # TODO: Implement this
+
+        if self.mode == "steady":
+            self.thresh_val = np.array([], dtype=self.MOVE_DTYPE)
+        else:
+            self.thresh_val = 0.0
 
         self.integrate_dur = integrate_dur
 

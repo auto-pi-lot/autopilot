@@ -424,6 +424,11 @@ class Networking(multiprocessing.Process):
         ###################################
         # Handle the message
         # if this message has a multihop 'to' field, forward it along
+        
+        if isinstance(msg.to, list):
+            if len(msg.to) == 1:
+                msg.to = msg.to[0]
+
         if isinstance(msg.to, list):
             # pop ourselves off the list
             _ = msg.to.pop(0)
