@@ -824,7 +824,7 @@ class Wheel(Hardware):
 
         if not which:
             if self.gpio_trig:
-                for pin in self.pins.keys():
+                for pin in self.pins.values():
                     self.pig.gpio_trigger(pin, 100, 1)
 
         else:
