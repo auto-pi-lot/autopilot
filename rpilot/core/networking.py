@@ -224,7 +224,11 @@ class Networking(multiprocessing.Process):
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
-        self.listener.send_multipart([bytes(msg.to), msg_enc])
+        if isinstance(msg.to, list):
+
+            self.listener.send_multipart([bytes(msg.to[0]), msg_enc])
+        else:
+            self.listener.send_multipart([bytes(msg.to), msg_enc])
 
         if not msg.key == "CONFIRM":
             self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
