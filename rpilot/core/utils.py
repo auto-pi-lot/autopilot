@@ -1,5 +1,7 @@
 # import numpy as np
-from PySide import QtCore
+from rpilot import prefs
+if prefs.AGENT == "terminal":
+    from PySide import QtCore
 # import json
 # from subprocess import call
 from threading import Thread
