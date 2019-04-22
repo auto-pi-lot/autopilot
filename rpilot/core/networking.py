@@ -1150,6 +1150,12 @@ class Net_Node(object):
         #     self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
         # else:
         # Log and spawn thread to respond to listen
+
+        if isinstance(msg.to, list):
+            # not to us, just keep it going
+            _ = msg.to.pop(0)
+            self.send(msg=msg, repeat=False)
+
         try:
             listen_funk = self.listens[msg.key]
             listen_thread = threading.Thread(target=listen_funk, args=(msg.value,))
