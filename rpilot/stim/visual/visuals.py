@@ -5,8 +5,12 @@ Visual Stimuli -- still very alpha
 WIN = None
 
 from rpilot import prefs
-from psychopy import visual, core
+
 import threading
+
+print(prefs.prefdict.items())
+if prefs.AGENT != 'terminal':
+    from psychopy import visual, core
 
 
 class Visual(object):

@@ -5,6 +5,34 @@ import argparse
 import json
 import sys
 import os
+
+print(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+from rpilot import prefs
+
+if __name__ == '__main__':
+    # Parse arguments - this should have been called with a .json prefs file passed
+    # We'll try to look in the default location first
+    parser = argparse.ArgumentParser(description="Run an RPilot Terminal")
+    parser.add_argument('-f', '--prefs', help="Location of .json prefs file (created during setup_terminal.py)")
+    args = parser.parse_args()
+
+    if not args.prefs:
+        prefs_file = '/usr/rpilot/prefs.json'
+
+        if not os.path.exists(prefs_file):
+            raise Exception("No Prefs file passed, and file not in default location")
+
+        raise Warning('No prefs file passed, loaded from default location. Should pass explicitly with -p')
+
+    else:
+        prefs_file = args.prefs
+
+    # init prefs for module access
+    prefs.init(prefs_file)
+
+
 import datetime
 import logging
 import threading
@@ -12,14 +40,11 @@ from collections import OrderedDict as odict
 import numpy as np
 
 from PySide import QtCore, QtGui
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from mouse import Mouse
 from plots import Plot_Widget
 from networking import Terminal_Networking, Net_Node
 from utils import InvokeEvent, Invoker
 from gui import Control_Panel, Protocol_Wizard, Weights, Reassign
-from rpilot import prefs
 import pdb
 
 
@@ -632,27 +657,7 @@ class Terminal(QtGui.QMainWindow):
         # send message to kill networking process
         self.node.send(key="KILL")
 
-
-if __name__ == '__main__':
-    # Parse arguments - this should have been called with a .json prefs file passed
-    # We'll try to look in the default location first
-    parser = argparse.ArgumentParser(description="Run an RPilot Terminal")
-    parser.add_argument('-f', '--prefs', help="Location of .json prefs file (created during setup_terminal.py)")
-    args = parser.parse_args()
-
-    if not args.prefs:
-        prefs_file = '/usr/rpilot/prefs.json'
-
-        if not os.path.exists(prefs_file):
-            raise Exception("No Prefs file passed, and file not in default location")
-
-        raise Warning('No prefs file passed, loaded from default location. Should pass explicitly with -p')
-
-    else:
-        prefs_file = args.prefs
-
-    # init prefs for module access
-    prefs.init(prefs_file)
+if __name__ == "__main__":
 
     sys.path.append(prefs.REPODIR)
 

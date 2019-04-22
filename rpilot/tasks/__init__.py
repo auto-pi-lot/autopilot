@@ -1,6 +1,7 @@
 # from taskontrol.templates.nafc import Nafc
 from rpilot.tasks.task import Task
 from rpilot.tasks.nafc import Nafc, Nafc_Wheel
+from rpilot.tasks.gonogo import GoNoGo
 from rpilot.tasks.free_water import Free_Water
 from rpilot.tasks.graduation import GRAD_LIST
 from rpilot.tasks.children import Wheel_Child
@@ -8,7 +9,8 @@ from rpilot.tasks.children import Wheel_Child
 
 TASK_LIST = {'2AFC':Nafc,
              'Free Water':Free_Water,
-             '2AFC_Wheel': Nafc_Wheel}
+             '2AFC_Wheel': Nafc_Wheel,
+             'GoNoGo': GoNoGo}
              #'Gap 2AFC':Gap_2AFC}
 
 CHILDREN_LIST = {
