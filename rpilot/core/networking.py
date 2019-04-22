@@ -208,7 +208,10 @@ class Networking(multiprocessing.Process):
 
         if not msg:
             # we're sending this ourselves, new message.
-            msg = self.prepare_message(to, key, value)
+            msg = self.prepare_message(to, key, value, repeat)
+
+        if 'NOREPEAT' in msg.flags.keys():
+            repeat = False
 
         # Make sure our message has everything
         if not msg.validate():
@@ -270,7 +273,10 @@ class Networking(multiprocessing.Process):
         if not msg:
             if to is None:
                 to = self.push_id
-            msg = self.prepare_message(to, key, value)
+            msg = self.prepare_message(to, key, value, repeat)
+
+        if 'NOREPEAT' in msg.flags.keys():
+            repeat = False
 
         # Make sure our message has everything
         if not msg.validate():
