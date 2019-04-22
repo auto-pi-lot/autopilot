@@ -198,7 +198,7 @@ class GoNoGo(Task):
 
 
 
-    def reinforcement(self):
+    def reinforce(self):
         # don't clear stage block here to quickly move on
         if self.response == self.target:
             self.correct = 1
