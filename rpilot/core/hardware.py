@@ -43,6 +43,7 @@ Warning:
 
 from rpilot import prefs
 from rpilot.core.networking import Net_Node
+from rpilot.core.utils import ReturnThread
 if prefs.AGENT in ['pilot']:
     import pigpio
 
@@ -710,14 +711,17 @@ class Wheel(Hardware):
 
         while self.quit_evt:
 
-            events = self.mouse.read()
-
-
-            # make a numpy record array of events with 3 fields:
-            # velocity, dir(ection), timestamp (system seconds)
-            move = np.array([(int(event.state), event.code, float(event.timestamp))\
-                             for event in events if event.code in ('REL_X', 'REL_Y')],
-                            dtype=self.MOVE_DTYPE)
+            read_thread = ReturnThread(target=self.mouse.read)
+            read_thread.start()
+            events = read_thread.join(timeout=self.update_dur)
+            if events is None:
+                move = np.array([], dtype=self.MOVE_DTYPE)
+            else:
+                # make a numpy record array of events with 3 fields:
+                # velocity, dir(ection), timestamp (system seconds)
+                move = np.array([(int(event.state), event.code, float(event.timestamp))\
+                                 for event in events if event.code in ('REL_X', 'REL_Y')],
+                                dtype=self.MOVE_DTYPE)
             moves = np.concatenate([moves, move])
 
             # If we have been told to start measuring for a trigger...

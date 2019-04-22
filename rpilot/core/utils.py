@@ -2,6 +2,7 @@
 from PySide import QtCore
 # import json
 # from subprocess import call
+from threading import Thread
 
 class Param(object):
     """
@@ -101,6 +102,24 @@ class Invoker(QtCore.QObject):
         """
         event.fn(*event.args, **event.kwargs)
         return True
+
+
+class ReturnThread(Thread):
+    """
+    Thread whose .join() method returns the value from the function
+    thx to https://stackoverflow.com/a/6894023
+    """
+    def __init__(self, group=None, target=None, name=None,
+                 args=(), kwargs={}, Verbose=None):
+        Thread.__init__(self, group, target, name, args, kwargs, Verbose)
+        self._return = None
+    def run(self):
+        if self._Thread__target is not None:
+            self._return = self._Thread__target(*self._Thread__args,
+                                                **self._Thread__kwargs)
+    def join(self, timeout=None):
+        Thread.join(self, timeout)
+        return self._return
 
 
 
