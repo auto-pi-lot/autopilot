@@ -219,7 +219,9 @@ class Networking(multiprocessing.Process):
             return
 
         self.listener.send_multipart([bytes(msg.to), msg_enc])
-        self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
+
+        if not msg.key == "CONFIRM":
+            self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
 
         if repeat and not msg.key == "CONFIRM":
             # add to outbox and spawn timer to resend
@@ -281,7 +283,9 @@ class Networking(multiprocessing.Process):
         # Even if the message is not to our upstream node, we still send it
         # upstream because presumably our target is upstream.
         self.pusher.send_multipart([bytes(self.push_id), msg_enc])
-        self.logger.info('MESSAGE PUSHED - {}'.format(str(msg)))
+
+        if not msg.key == "CONFIRM":
+            self.logger.info('MESSAGE PUSHED - {}'.format(str(msg)))
 
         if repeat and not msg.key == 'CONFIRM':
             # add to outbox and spawn timer to resend
@@ -405,7 +409,7 @@ class Networking(multiprocessing.Process):
             self.logger.error('Message failed to validate:\n{}'.format(str(msg)))
             return
 
-        self.logger.info('RECEIVED: {}'.format(str(msg)))
+
 
 
         ###################################
@@ -422,6 +426,7 @@ class Networking(multiprocessing.Process):
                 self.send(msg=msg)
         # if this message is to us, just handle it and return
         elif msg.to in [self.id, "_{}".format(self.id)]:
+            self.logger.info('RECEIVED: {}'.format(str(msg)))
             # Log and spawn thread to respond to listen
             try:
                 listen_funk = self.listens[msg.key]

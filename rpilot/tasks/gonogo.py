@@ -80,8 +80,10 @@ class GoNoGo(Task):
         }
     }
 
-    def __init__(self, stim=None, reward = 50, timeout = 1000,**kwargs):
+    def __init__(self, stim=None, reward = 50, timeout = 1000, stage_block = None,**kwargs):
         super(GoNoGo, self).__init__()
+
+        self.stage_block = stage_block
 
         self.reward = reward
         self.timeout = timeout
