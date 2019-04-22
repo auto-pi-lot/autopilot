@@ -9,7 +9,7 @@ from rpilot import prefs
 import threading
 
 print(prefs.prefdict.items())
-if prefs.AGENT != 'terminal':
+if 'VISUAL' in prefs.CONFIG:
     from psychopy import visual, core
 
 
