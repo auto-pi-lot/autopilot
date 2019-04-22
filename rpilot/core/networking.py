@@ -355,7 +355,7 @@ class Networking(multiprocessing.Process):
             self.timers[msg.value].cancel()
             del self.timers[msg.value]
 
-        self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
+        #self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
 
     def handle_listen(self, msg):
         """
@@ -426,7 +426,8 @@ class Networking(multiprocessing.Process):
                 self.send(msg=msg)
         # if this message is to us, just handle it and return
         elif msg.to in [self.id, "_{}".format(self.id)]:
-            self.logger.info('RECEIVED: {}'.format(str(msg)))
+            if msg.key != "CONFIRM":
+                self.logger.info('RECEIVED: {}'.format(str(msg)))
             # Log and spawn thread to respond to listen
             try:
                 listen_funk = self.listens[msg.key]
