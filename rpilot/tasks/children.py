@@ -20,7 +20,8 @@ class Wheel_Child(object):
 
     def __init__(self, stage_block=None, **kwargs):
 
-        self.mouse = Wheel(gpio_trig=True, pins=prefs.PINS['OUTPUT'])
+        self.mouse = Wheel(gpio_trig=True, pins=prefs.PINS['OUTPUT'],
+                           mode="steady", thresh=100)
         self.stages = cycle([self.noop])
 
     def noop(self):
