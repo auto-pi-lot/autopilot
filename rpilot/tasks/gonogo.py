@@ -86,6 +86,8 @@ class GoNoGo(Task):
         self.stage_block = stage_block
         self.trial_counter = itertools.count()
 
+        self.punish_dur = 5000.0
+
         self.reward = reward
         self.timeout = timeout
 
