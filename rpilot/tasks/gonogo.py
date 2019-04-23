@@ -139,7 +139,6 @@ class GoNoGo(Task):
             self.shift = random()*180.0
             self.target = True
 
-        self.shift
 
 
         # Set sound trigger and LEDs
