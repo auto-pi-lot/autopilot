@@ -153,7 +153,7 @@ class GoNoGo(Task):
         self.set_leds({'C': [0, 255, 0]})
 
         # tell our wheel to start measuring
-        self.node.send(to=[prefs.NAME, prefs.CHILDID, 'wheel_{}'.format(self.mouse)],
+        self.node.send(to=[prefs.NAME, prefs.CHILDID, 'wheel_0'],
                        key="MEASURE",
                        value={'mode':'steady',
                               'thresh':100})

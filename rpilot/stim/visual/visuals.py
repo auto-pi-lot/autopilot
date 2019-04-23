@@ -24,7 +24,7 @@ class Visual(object):
         self.win = None
         self.duration = None
         self.ppo = None # psychopy object
-        self.get_window()
+        #self.get_window()
 
         self.clock = core.Clock()
         self.draw_time = 0
@@ -83,6 +83,7 @@ class Grating(Visual):
         self.thread.start()
 
     def _thread(self):
+        self.get_window()
 
         # init psychopy object
         self.ppo = visual.GratingStim(
