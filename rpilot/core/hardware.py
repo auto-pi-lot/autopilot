@@ -775,7 +775,7 @@ class Wheel(Hardware):
             # If movements in the recent past are below a certain value
             # self.thresh_val should be set to a structured array by l_measure
             try:
-                self.thresh_val = np.concatenate(self.thresh_val, move)
+                self.thresh_val = np.concatenate([self.thresh_val, move])
             except TypeError:
                 print('THRESH_VAL:', self.thresh_val, 'MOVE:', move)
             # trim to movements in the time window
