@@ -624,7 +624,7 @@ class Wheel(Hardware):
 
     MOVE_DTYPE = [('vel', 'i4'), ('dir', 'U5'), ('timestamp', 'f8')]
 
-    def __init__(self, mouse_idx=0, fs=10, thresh=100, thresh_type='dist', start=True,
+    def __init__(self, mouse_idx=0, fs=10, thresh=1000, thresh_type='dist', start=True,
                  gpio_trig=False, pins=None, mode='vel_total', integrate_dur=3):
 
         # try to get mouse from inputs
@@ -714,9 +714,7 @@ class Wheel(Hardware):
 
         while self.quit_evt:
 
-            read_thread = ReturnThread(target=self.mouse.read)
-            read_thread.start()
-            events = read_thread.join(timeout=self.update_dur)
+            events = self.mouse.read()
             if events is None:
                 move = np.array([(0, "REL_X", 0)], dtype=self.MOVE_DTYPE)
             else:

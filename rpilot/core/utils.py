@@ -121,6 +121,7 @@ class ReturnThread(Thread):
                                                 **self._Thread__kwargs)
     def join(self, timeout=None):
         Thread.join(self, timeout)
+
         return self._return
 
 
