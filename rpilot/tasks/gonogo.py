@@ -186,7 +186,7 @@ class GoNoGo(Task):
         delay = 0.0
         if self.shift != 0:
             delay = random()*5000.0
-            self.delayed_set(delay, 'angle', self.new_angle)
+            self.delayed_set(delay, 'shift', self.shift)
 
         self.timer = threading.Timer(5.0, self.handle_trigger, args=('T', True, None)).start()
 
@@ -234,7 +234,7 @@ class GoNoGo(Task):
         threading.Timer(float(delay)/1000.0, self._delayed_shift, args=(attr,val)).start()
 
     def _delayed_shift(self, attr, val):
-        self.stim.set(attr, val)
+        self.stim.q.put(('shift', val))
 
     def punish(self):
         """

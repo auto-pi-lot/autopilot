@@ -96,13 +96,6 @@ class Grating(Visual):
 
         while not self.stop_evt:
             self.play_evt.wait()
-            try:
-                attrchange= self.q.get_nowait()
-            except Empty:
-                attrchange = None
-            if attrchange is not None:
-                if attrchange[0] == 'shift':
-                    self.ppo.ori = self.ppo.ori + attrchange[1]
 
             # reset stim
             self.ppo.phase = self.phase
@@ -110,6 +103,14 @@ class Grating(Visual):
             start_time = self.clock.getTime()
             end_time = start_time + (self.duration / 1000.0)
             while self.clock.getTime() < end_time:
+                try:
+                    attrchange = self.q.get_nowait()
+                except Empty:
+                    attrchange = None
+                if attrchange is not None:
+                    if attrchange[0] == 'shift':
+                        self.ppo.ori = self.ppo.ori + attrchange[1]
+
                 self.update()
                 self.ppo.draw()
                 self.win.flip()
