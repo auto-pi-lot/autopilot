@@ -139,7 +139,7 @@ class GoNoGo(Task):
             self.shift = random()*180.0
             self.target = True
 
-        self.new_angle = self.shift + self.stim.ppo.ori
+        self.shift
 
 
         # Set sound trigger and LEDs
@@ -147,7 +147,7 @@ class GoNoGo(Task):
         change_to_blue = lambda: self.pins['LEDS']['C'].set_color([0, 0, 255])
 
         # set triggers
-        self.triggers['F'] = [change_to_blue, self.stim.play]
+        self.triggers['F'] = [change_to_blue, lambda: self.stim.play('shift', self.shift )]
 
         # set to green in the meantime
         self.set_leds({'C': [0, 255, 0]})

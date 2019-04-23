@@ -98,8 +98,8 @@ class Grating(Visual):
             self.play_evt.wait()
             attrchange= self.q.get_nowait()
             if attrchange is not None:
-
-                setattr(self, attrchange[0], attrchange[1])
+                if attrchange[0] == 'shift':
+                    self.ppo.ori = self.ppo.ori + attrchange[1]
 
             # reset stim
             self.ppo.phase = self.phase
@@ -135,7 +135,8 @@ class Grating(Visual):
         }
 
         if attr in ('mask', 'pos', 'size', 'freq', 'angle', 'phase'):
-            self.q.put_nowait(attr_map[attr], value)
+            self.q.put_nowait((attr_map[attr], value))
+
 
 
     def update(self):
@@ -147,7 +148,8 @@ class Grating(Visual):
         self.draw_time = self.clock.getTime()
 
 
-    def play(self):
+    def play(self, attr, val):
+        self.q.put((attr, val))
         self.play_evt.set()
 
 
