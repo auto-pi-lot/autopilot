@@ -7,7 +7,7 @@ WIN = None
 from rpilot import prefs
 
 import threading
-from Queue import Queue
+from Queue import Queue, Empty
 
 print(prefs.prefdict.items())
 if 'VISUAL' in prefs.CONFIG:
@@ -96,7 +96,10 @@ class Grating(Visual):
 
         while not self.stop_evt:
             self.play_evt.wait()
-            attrchange= self.q.get_nowait()
+            try:
+                attrchange= self.q.get_nowait()
+            except Empty:
+                attrchange = None
             if attrchange is not None:
                 if attrchange[0] == 'shift':
                     self.ppo.ori = self.ppo.ori + attrchange[1]

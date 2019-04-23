@@ -721,7 +721,11 @@ class Wheel(Hardware):
 
         while self.quit_evt:
 
-            events = self.q.get_nowait()
+            try:
+                events = self.q.get_nowait()
+            except Empty:
+                events = None
+
             if events is None:
                 move = np.array([(0, "REL_X", 0)], dtype=self.MOVE_DTYPE)
             else:
