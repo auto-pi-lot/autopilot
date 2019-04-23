@@ -662,7 +662,7 @@ class Wheel(Hardware):
 
         # event to signal quitting
         self.quit_evt = threading.Event()
-        self.quit_evt.set()
+        self.quit_evt.clear()
         # event to signal when to start accumulating movements to trigger
         self.measure_evt = threading.Event()
         self.measure_time = 0
@@ -719,7 +719,7 @@ class Wheel(Hardware):
 
         last_update = time.time()
 
-        while self.quit_evt:
+        while not self.quit_evt.is_set():
 
             try:
                 events = self.q.get_nowait()
@@ -737,7 +737,7 @@ class Wheel(Hardware):
             moves = np.concatenate([moves, move])
 
             # If we have been told to start measuring for a trigger...
-            if self.measure_evt:
+            if self.measure_evt.is_set():
                 do_trigger = self.check_thresh(move)
                 if do_trigger:
                     self.thresh_trig()
@@ -805,7 +805,6 @@ class Wheel(Hardware):
         else:
             Warning ("mode is not defined! mode is {}".format(self.mode))
 
-        print(thresh_update, do_trigger)
 
         return do_trigger
 
@@ -843,6 +842,7 @@ class Wheel(Hardware):
         if not which:
             if self.gpio_trig:
                 for pin in self.pins.values():
+                    print("TRIGGERING", pin)
                     self.pig.gpio_trigger(pin, 100, 1)
 
         else:
@@ -907,7 +907,7 @@ class Wheel(Hardware):
 
         """
 
-        self.measure_evt.clear()
+        self.measure_evt.set()
         self.release()
 
     def release(self):
