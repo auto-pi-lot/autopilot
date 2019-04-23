@@ -715,7 +715,7 @@ class Wheel(Hardware):
     def _record(self):
         moves = np.array([], dtype=self.MOVE_DTYPE)
 
-        threading.Thread(self._mouse).start()
+        threading.Thread(target=self._mouse).start()
 
         last_update = time.time()
 

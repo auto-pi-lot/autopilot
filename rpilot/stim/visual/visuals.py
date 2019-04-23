@@ -74,10 +74,11 @@ class Grating(Visual):
         self.play_evt = threading.Event()
         self.stop_evt = threading.Event()
         self.stop_evt.clear()
+        self.q = Queue()
 
-        self.thread()
+        self.threadfn()
 
-    def thread(self):
+    def threadfn(self):
         self.thread = threading.Thread(target=self._thread)
         self.thread.start()
 
@@ -95,6 +96,10 @@ class Grating(Visual):
 
         while not self.stop_evt:
             self.play_evt.wait()
+            attrchange= self.q.get_nowait()
+            if attrchange is not None:
+
+                setattr(self, attrchange[0], attrchange[1])
 
             # reset stim
             self.ppo.phase = self.phase
@@ -130,7 +135,7 @@ class Grating(Visual):
         }
 
         if attr in ('mask', 'pos', 'size', 'freq', 'angle', 'phase'):
-            setattr(self.ppo, attr_map[attr], value)
+            self.q.put_nowait(attr_map[attr], value)
 
 
     def update(self):
