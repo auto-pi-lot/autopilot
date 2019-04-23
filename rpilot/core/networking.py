@@ -1161,6 +1161,10 @@ class Net_Node(object):
         # Log and spawn thread to respond to listen
 
         if isinstance(msg.to, list):
+            if len(msg.to) == 1:
+                msg.to = msg.to[0]
+
+        if isinstance(msg.to, list):
             # not to us, just keep it going
             _ = msg.to.pop(0)
             self.send(msg=msg, repeat=False)
