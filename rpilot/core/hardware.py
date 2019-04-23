@@ -707,14 +707,21 @@ class Wheel(Hardware):
         self.thread.daemon = True
         self.thread.start()
 
+    def _mouse(self):
+        while self.quit_evt:
+            events = self.mouse.read()
+            self.q.put(events)
+
     def _record(self):
         moves = np.array([], dtype=self.MOVE_DTYPE)
+
+        threading.Thread(self._mouse).start()
 
         last_update = time.time()
 
         while self.quit_evt:
 
-            events = self.mouse.read()
+            events = self.q.get_nowait()
             if events is None:
                 move = np.array([(0, "REL_X", 0)], dtype=self.MOVE_DTYPE)
             else:
@@ -793,6 +800,8 @@ class Wheel(Hardware):
 
         else:
             Warning ("mode is not defined! mode is {}".format(self.mode))
+
+        print(thresh_update, do_trigger)
 
         return do_trigger
 
