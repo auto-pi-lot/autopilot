@@ -162,7 +162,6 @@ class GoNoGo(Task):
         data = {
             'target': self.target,
             'shift': self.shift,
-            'angle': self.new_angle,
             'trial_num': self.current_trial
         }
 
