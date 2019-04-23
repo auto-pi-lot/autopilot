@@ -184,7 +184,7 @@ class GoNoGo(Task):
         # choose a random delay
         delay = 0.0
         if self.shift != 0:
-            delay = random()*5000.0
+            delay = (random()*3000.0)+1000.0
             self.delayed_set(delay, 'shift', self.shift)
 
         self.timer = threading.Timer(5.0, self.handle_trigger, args=('T', True, None)).start()
