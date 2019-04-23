@@ -7,6 +7,7 @@ WIN = None
 from rpilot import prefs
 
 import threading
+from Queue import Queue
 
 print(prefs.prefdict.items())
 if 'VISUAL' in prefs.CONFIG:
@@ -70,15 +71,47 @@ class Grating(Visual):
         self.size = size
         self.duration = duration
 
+        self.play_evt = threading.Event()
+        self.stop_evt = threading.Event()
+        self.stop_evt.clear()
+
+        self.thread()
+
+    def thread(self):
+        self.thread = threading.Thread(target=self._thread)
+        self.thread.start()
+
+    def _thread(self):
+
         # init psychopy object
         self.ppo = visual.GratingStim(
             self.win,
-            mask = self.mask,
-            pos = self.pos,
-            size = self.size,
-            sf = self.freq,
-            ori = self.angle,
-            phase = self.phase)
+            mask=self.mask,
+            pos=self.pos,
+            size=self.size,
+            sf=self.freq,
+            ori=self.angle,
+            phase=self.phase)
+
+        while not self.stop_evt:
+            self.play_evt.wait()
+
+            # reset stim
+            self.ppo.phase = self.phase
+
+            start_time = self.clock.getTime()
+            end_time = start_time + (self.duration / 1000.0)
+            while self.clock.getTime() < end_time:
+                self.update()
+                self.ppo.draw()
+                self.win.flip()
+
+            # another flip clears the screen
+            self.win.flip()
+            self.play_evt.clear()
+
+
+
 
     def set(self, attr, value):
         """
@@ -110,22 +143,8 @@ class Grating(Visual):
 
 
     def play(self):
-        threading.Thread(target=self._play).start()
+        self.play_evt.set()
 
-    def _play(self):
-        with self.thread_lock:
-            # reset stim
-            self.ppo.phase = self.phase
-
-            start_time = self.clock.getTime()
-            end_time = start_time + (self.duration/1000.0)
-            while self.clock.getTime() < end_time:
-                self.update()
-                self.ppo.draw()
-                self.win.flip()
-
-            # another flip clears the screen
-            self.win.flip()
 
 
 class Grating_Continuous(Grating):
