@@ -624,8 +624,8 @@ class Wheel(Hardware):
 
     MOVE_DTYPE = [('vel', 'i4'), ('dir', 'U5'), ('timestamp', 'f8')]
 
-    def __init__(self, mouse_idx=0, fs=10, thresh=1000, thresh_type='dist', start=True,
-                 gpio_trig=False, pins=None, mode='vel_total', integrate_dur=3):
+    def __init__(self, mouse_idx=0, fs=10, thresh=100, thresh_type='dist', start=True,
+                 gpio_trig=False, pins=None, mode='vel_total', integrate_dur=5):
 
         # try to get mouse from inputs
         # TODO: More robust - specify mouse by hardware attrs
