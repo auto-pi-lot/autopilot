@@ -84,6 +84,8 @@ class Grating(Visual):
 
     def _thread(self):
         self.get_window()
+        self.clock = core.Clock()
+        self.draw_time = 0
 
         # init psychopy object
         self.ppo = visual.GratingStim(
@@ -95,7 +97,7 @@ class Grating(Visual):
             ori=self.angle,
             phase=self.phase)
 
-        while not self.stop_evt:
+        while not self.stop_evt.is_set():
             self.play_evt.wait()
 
             # reset stim
