@@ -1444,10 +1444,14 @@ class Message(object):
         Returns:
             bool (True): Does message have all required attributes set?
         """
-        if all([self.id, self.to, self.sender, self.key]):
-            return True
-        else:
-            return False
+        valid = True
+        for prop in (self.id, self.to, self.sender, self.key):
+            if prop is None:
+                valid = False
+        return valid
+
+
+
 
     def serialize(self):
         """
