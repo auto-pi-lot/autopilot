@@ -779,11 +779,11 @@ class Wheel(Hardware):
             except TypeError:
                 print('THRESH_VAL:', self.thresh_val, 'MOVE:', move)
             # trim to movements in the time window
-            self.thresh_val = self.thresh_val[self.thresh_val['timestamp'] > time.time()-self.integrate_dur]
+            thresh_val = self.thresh_val[self.thresh_val['timestamp'] > time.time()-self.integrate_dur]
 
-            thresh_update = self.calc_move(move)
+            thresh_update = self.calc_move(thresh_val)
 
-            if thresh_update < self.thresh:
+            if (thresh_update < self.thresh) and (self.measure_time+self.integrate_dur < time.time()):
                 do_trigger = True
 
         elif self.mode == 'dist':
