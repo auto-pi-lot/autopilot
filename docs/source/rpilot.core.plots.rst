@@ -1,10 +1,21 @@
 plots
 ========================
 
-.. automodapi:: rpilot.core.plots
-   :no-inherited-members:
-   :no-heading:
-   :skip: time, wraps, InvokeEvent, Invoker, Net_Node, count
+.. currentmodule:: rpilot.core.plots
+
+.. autosummary::
+   :toctree:
+
+   gui_event
+   Plot_Widget
+   Plot
+   Point
+   Segment
+   Roll_Mean
+   Shaded
+   Timer
+   HLine
+
 
 .. automodule:: rpilot.core.plots
     :members:
