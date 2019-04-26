@@ -1,10 +1,18 @@
 utils
 ========================
 
-.. automodapi:: rpilot.core.utils
-   :no-inherited-members:
-   :no-heading:
-   :skip: Thread
+.. currentmodule:: rpilot.core.utils
+
+.. autosummary::
+   :toctree:
+
+   Param
+   InvokeEvent
+   Invoker
+   ReturnThread
+   
+
+
 
 .. automodule:: rpilot.core.utils
     :members:
