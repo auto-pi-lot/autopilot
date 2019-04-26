@@ -27,6 +27,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from rpilot.core.mouse import Mouse
 from rpilot import tasks, prefs
 from rpilot.stim.sound import sounds
+from rpilot.core.networking import Net_Node
 from functools import wraps
 from utils import InvokeEvent
 
@@ -257,11 +258,11 @@ class Control_Panel(QtGui.QWidget):
 
         try:
             with open(prefs.PILOT_DB, 'w') as pilot_file:
-                json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '), sort_keys=True)
+                json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
         except NameError:
             try:
                 with open('/usr/rpilot/pilot_db.json', 'w') as pilot_file:
-                    json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '), sort_keys=True)
+                    json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
             except IOError:
                 Exception('Couldnt update pilot db!')
 
@@ -388,9 +389,23 @@ class Pilot_Panel(QtGui.QWidget):
         Remove the currently selected mouse in :py:attr:`Pilot_Panel.mouse_list`,
         and calls the :py:meth:`Control_Panel.update_db` method.
         """
-        self.mouse_list.takeItem(self.mouse_list.currentRow())
-        # the drop fn updates the db
-        self.mouse_list.drop_fn()
+
+        current_mouse = self.mouse_list.currentItem().text()
+        msgbox = QtGui.QMessageBox()
+        msgbox.setText("\n(only removes from pilot_db.json, data will not be deleted)".format(current_mouse))
+
+        msgBox = QtGui.QMessageBox()
+        msgBox.setText("Are you sure you would like to remove {}?".format(current_mouse))
+        msgBox.setInformativeText("'Yes' only removes from pilot_db.json, data will not be deleted")
+        msgBox.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+        msgBox.setDefaultButton(QtGui.QMessageBox.No)
+        ret = msgBox.exec_()
+
+        if ret == QtGui.QMessageBox.Yes:
+
+            self.mouse_list.takeItem(self.mouse_list.currentRow())
+            # the drop fn updates the db
+            self.mouse_list.drop_fn()
 
     def create_mouse(self):
         """
@@ -1548,7 +1563,7 @@ class Calibrate_Water(QtGui.QDialog):
     Warning:
         Not Implemented
     """
-    def __init__(self, pilots, message_fn):
+    def __init__(self, pilots):
         """
         Args:
             pilots (:py:attr:`.Terminal.pilots`): A dictionary of pilots
@@ -1557,28 +1572,256 @@ class Calibrate_Water(QtGui.QDialog):
         super(Calibrate_Water, self).__init__()
 
         self.pilots = pilots
-        self.send_message = message_fn
+        self.pilot_widgets = {}
 
-    class Pilot_Ports(QtGui.QWidget):
+        self.init_ui()
+
+    def init_ui(self):
+        self.layout = QtGui.QVBoxLayout()
+
+        # Container Widget
+        self.container = QtGui.QWidget()
+        # Layout of Container Widget
+        self.container_layout = QtGui.QVBoxLayout(self)
+
+        self.container.setLayout(self.container_layout)
+
+
+        screen_geom = QtGui.QDesktopWidget().availableGeometry()
+        # get max pixel value for each subwidget
+        widget_height = np.floor(screen_geom.height()-50/float(len(self.pilots)))
+
+
+        for p in self.pilots:
+            self.pilot_widgets[p] = Pilot_Ports(p)
+            self.pilot_widgets[p].setMaximumHeight(widget_height)
+            self.pilot_widgets[p].setMaximumWidth(screen_geom.width())
+            self.pilot_widgets[p].setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+            self.container_layout.addWidget(self.pilot_widgets[p])
+
+        # Scroll Area Properties
+        self.scroll = QtGui.QScrollArea()
+        self.scroll.setWidgetResizable(False)
+        self.scroll.setWidget(self.container)
+        self.layout.addWidget(self.scroll)
+
+        # ok/cancel buttons
+        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+        self.layout.addWidget(buttonBox)
+
+
+
+        self.setLayout(self.layout)
+
+        # prevent from expanding
+        # set max size to screen size
+
+        self.setMaximumHeight(screen_geom.height())
+        self.setMaximumWidth(screen_geom.width())
+        self.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+
+        self.scrollArea = QtGui.QScrollArea(self)
+        self.scrollArea.setWidgetResizable(True)
+
+
+
+class Pilot_Ports(QtGui.QWidget):
+    """
+    Each pilot's ports and buttons to control repeated release.
+    """
+    def __init__(self, pilot, n_clicks=1000, click_dur=30):
         """
-        Each pilot's ports and buttons to control repeated release.
+        Args:
+            pilot:
+            message_fn:
+            n_clicks:
+            click_dur:
         """
-        def __init__(self, pilot, message_fn, n_clicks=1000, click_dur=30):
-            """
-            Args:
-                pilot:
-                message_fn:
-                n_clicks:
-                click_dur:
-            """
-            super(Pilot_Ports, self).__init__()
+        super(Pilot_Ports, self).__init__()
 
-            self.pilot = pilot
-            self.send_message = message_fn
+        self.pilot = pilot
 
-        def init_ui(self):
-            #
-            pass
+        # when starting, stash the duration sent to the pi in case it's changed during.
+        self.open_params = {}
+
+        # store volumes per dispense here.
+        self.volumes = {}
+
+        self.listens = {
+            'CAL_PROGRESS': self.l_progress
+        }
+
+        self.node = Net_Node(id="Cal_{}".format(self.pilot),
+                             upstream="T",
+                             port=prefs.MSGPORT,
+                             listens=self.listens)
+
+        self.init_ui()
+
+    def init_ui(self):
+        """
+        Init the layout for one pilot's ports:
+
+        * pilot name
+        * port buttons
+        * 3 times and vol dispersed
+        *
+
+        TODO:
+            Don't assume L/C/R, ask the pilot what it has
+
+        :return:
+        """
+
+        layout = QtGui.QHBoxLayout()
+        pilot_lab = QtGui.QLabel(self.pilot)
+        pilot_font = QtGui.QFont()
+        pilot_font.setBold(True)
+        pilot_font.setPointSize(14)
+        pilot_lab.setFont(pilot_font)
+        pilot_lab.setStyleSheet('border: 1px solid black')
+        layout.addWidget(pilot_lab)
+
+        # make param setting boxes
+        param_layout = QtGui.QFormLayout()
+        self.n_clicks = QtGui.QLineEdit(str(1000))
+        self.n_clicks.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
+        self.n_clicks.setValidator(QtGui.QIntValidator())
+        self.interclick_interval = QtGui.QLineEdit(str(50))
+        self.interclick_interval.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
+        self.interclick_interval.setValidator(QtGui.QIntValidator())
+
+        param_layout.addRow("n clicks", self.n_clicks)
+        param_layout.addRow("interclick (ms)", self.interclick_interval)
+
+        layout.addLayout(param_layout)
+
+        # buttons and fields for each port
+
+        #button_layout = QtGui.QVBoxLayout()
+        vol_layout = QtGui.QGridLayout()
+
+        self.dur_boxes = {}
+        self.vol_boxes = {}
+        self.pbars = {}
+        self.flowrates = {}
+
+        for i, port in enumerate(['L', 'C', 'R']):
+            # init empty dict to store volumes and params later
+            self.volumes[port] = {}
+
+            # button to start calibration
+            port_button = QtGui.QPushButton(port)
+            port_button.setObjectName(port)
+            port_button.clicked.connect(self.start_calibration)
+            vol_layout.addWidget(port_button, i, 0)
+
+            # set click duration
+            dur_label = QtGui.QLabel("Click dur (ms)")
+            self.dur_boxes[port] = QtGui.QLineEdit(str(20))
+            self.dur_boxes[port].setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+            self.dur_boxes[port].setValidator(QtGui.QIntValidator())
+            vol_layout.addWidget(dur_label, i, 1)
+            vol_layout.addWidget(self.dur_boxes[port], i, 2)
+
+            # Divider
+            divider = QtGui.QFrame()
+            divider.setFrameShape(QtGui.QFrame.VLine)
+            vol_layout.addWidget(divider, i, 3)
+
+            # input dispensed volume
+            vol_label = QtGui.QLabel("Dispensed volume (mL)")
+            self.vol_boxes[port] = QtGui.QLineEdit()
+            self.vol_boxes[port].setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+            self.vol_boxes[port].setObjectName(port)
+            self.vol_boxes[port].setValidator(QtGui.QDoubleValidator())
+            self.vol_boxes[port].textEdited.connect(self.update_volumes)
+            vol_layout.addWidget(vol_label, i, 4)
+            vol_layout.addWidget(self.vol_boxes[port], i, 5)
+
+            self.pbars[port] = QtGui.QProgressBar()
+            vol_layout.addWidget(self.pbars[port], i, 6)
+
+            # display flow rate
+
+            #self.flowrates[port] = QtGui.QLabel('?uL/ms')
+            #self.flowrates[port].setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+            #vol_layout.addWidget(self.flowrates[port], i, 7)
+
+        layout.addLayout(vol_layout)
+
+
+        self.setLayout(layout)
+
+
+
+
+    def update_volumes(self):
+        port = self.sender().objectName()
+
+        if port in self.open_params.keys():
+            open_dur = self.open_params[port]['dur']
+            n_clicks = self.open_params[port]['n_clicks']
+            click_iti = self.open_params[port]['click_iti']
+        else:
+            Warning('Volume can only be updated after a calibration has been run')
+            return
+
+        vol = float(self.vol_boxes[port].text())
+
+        self.volumes[port][open_dur] = {
+            'vol': vol,
+            'n_clicks': n_clicks,
+            'click_iti': click_iti,
+            'timestamp': datetime.datetime.now().isoformat()
+        }
+
+        # set flowrate label
+        #flowrate = ((vol * 1000.0) / n_clicks) / open_dur
+        #frame_geom = self.flowrates[port].frameGeometry()
+        #self.flowrates[port].setMaximumHeight(frame_geom.height())
+
+
+        #self.flowrates[port].setText("{} uL/ms".format(flowrate))
+
+    def start_calibration(self):
+        port = self.sender().objectName()
+
+        # stash params at the time of starting calibration
+        self.open_params[port] = {
+            'dur':int(self.dur_boxes[port].text()),
+            'n_clicks': int(self.n_clicks.text()),
+            'click_iti': int(self.interclick_interval.text())
+        }
+
+        self.pbars[port].setMaximum(self.open_params[port]['n_clicks'])
+        self.pbars[port].setValue(0)
+
+        msg = self.open_params[port]
+        msg.update({'port':port})
+
+        self.node.send(to=self.pilot, key="CALIBRATE_PORT",
+                       value=msg)
+
+    @gui_event
+    def l_progress(self, value):
+        """
+        Value should contain
+
+        * Pilot
+        * Port
+        * Current Click (click_num)
+
+        :param value:
+        :return:
+        """
+        self.pbars[value['port']].setValue(int(value['click_num']))
+
+
+
+
 
 class Reassign(QtGui.QDialog):
     """

@@ -396,6 +396,8 @@ class File(BASE_CLASS):
                                        loop=False, mul=self.amplitude)
 
         elif self.server_type == 'jack':
+            # attenuate amplitude
+            audio = audio*self.amplitude
             self.duration = float(audio.shape[0]) / fs
             # resample to match our audio server's sampling rate
             if fs != self.fs:

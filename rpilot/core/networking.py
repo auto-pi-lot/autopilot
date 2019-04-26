@@ -339,7 +339,7 @@ class Networking(multiprocessing.Process):
         msg = self.outbox[msg_id]
         self.logger.info('REPUBLISH {} - {}'.format(msg_id,str(self.outbox[msg_id])))
         if send_type == 'send':
-            self.listener.send_multipart([bytes(msg.sender), msg.serialize()])
+            self.listener.send_multipart([bytes(msg.to), msg.serialize()])
         elif send_type == 'push':
             self.pusher.send_multipart([bytes(self.push_id), msg.serialize()])
         else:
@@ -453,6 +453,7 @@ class Networking(multiprocessing.Process):
                 listen_thread.start()
             except KeyError:
                 self.logger.exception('ERROR: No function could be found for msg id {} with key: {}'.format(msg.id, msg.key))
+
 
             # send a return message that confirms even if we except
             # don't confirm confirmations
@@ -811,7 +812,9 @@ class Pilot_Networking(Networking):
             'FILE': self.l_file,  # We are receiving a file
             'CONTINUOUS': self.l_continuous, # we are sending continuous data to the terminal
             'CHILD': self.l_child,
-            'HANDSHAKE': self.l_noop
+            'HANDSHAKE': self.l_noop,
+            'CALIBRATE_PORT': self.l_forward,
+            'CALIBRATE_RESULT': self.l_forward
         })
 
     ###########################3
@@ -993,6 +996,12 @@ class Pilot_Networking(Networking):
         """
 
         self.send(to=prefs.CHILDID, key='START', value=msg.value)
+
+    def l_forward(self, msg):
+        """
+        Just forward the message to the pi.
+        """
+        self.send(to=self.pi_id, key=msg.key, value=msg.value)
 
 
 

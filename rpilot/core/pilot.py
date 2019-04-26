@@ -15,6 +15,7 @@ import argparse
 import threading
 import time
 import socket
+import json
 
 import tables
 
@@ -164,6 +165,8 @@ class RPilot:
             'START': self.l_start, # We are being passed a task and asked to start it
             'STOP' : self.l_stop, # We are being asked to stop running our task
             'PARAM': self.l_param, # A parameter is being changed
+            'CALIBRATE_PORT': self.l_cal_port, # Calibrate a water port
+            'CALIBRATE_RESULT': self.l_cal_result # Compute curve and store result
         }
 
         # spawn_network gives us the independent message-handling process
@@ -238,6 +241,9 @@ class RPilot:
         Send the terminal our name and IP to signal that we are alive
         """
         # send the terminal some information about ourselves
+
+        # TODO: Report any calibrations that we have
+
         hello = {'pilot':self.name, 'ip':self.ip, 'state':self.state}
 
         self.node.send(self.parentid, 'HANDSHAKE', value=hello)
@@ -329,6 +335,68 @@ class RPilot:
             value:
         """
         pass
+
+    def l_cal_port(self, value):
+        port = value['port']
+        n_clicks = value['n_clicks']
+        open_dur = value['dur']
+        iti = value['click_iti']
+
+        threading.Thread(target=self.calibrate_port,args=(port, n_clicks, open_dur, iti)).start()
+
+    def calibrate_port(self, port_name, n_clicks, open_dur, iti):
+        pin_num = prefs.PINS['PORTS'][port_name]
+        port = hardware.Solenoid(pin_num, duration=int(open_dur))
+        msg = {'click_num': 0,
+               'pilot': self.name,
+               'port': port_name
+               }
+
+        iti = float(iti)/1000.0
+
+        cal_name = "Cal_{}".format(self.name)
+
+        for i in range(int(n_clicks)):
+            port.open()
+            msg['click_num'] = i + 1
+            self.node.send(to=cal_name, key='CAL_PROGRESS',
+                           value= msg)
+            time.sleep(iti)
+
+        port.release()
+
+    def l_cal_result(self, value):
+        """
+        Save the results of a port calibration
+
+        TODO:
+            Compute the LUT/curve.
+
+        """
+
+        cal_fn = os.path.join(prefs.BASEDIR, 'port_calibration.json')
+
+        if os.path.exists(cal_fn):
+            try:
+                with open(cal_fn, 'r') as cal_file:
+                    calibration = json.load(cal_file)
+            except ValueError:
+                # usually no json can be decoded, that's fine calibrations aren't expensive
+                calibration = {}
+        else:
+            calibration = {}
+
+        for port, results in value.items():
+            if port in calibration.keys():
+                calibration[port].extend(results)
+            else:
+                calibration[port] = results
+
+        with open(cal_fn, 'w+') as cal_file:
+            json.dump(calibration, cal_file)
+
+
+
 
     #################################################################
     # Hardware Init

@@ -44,7 +44,7 @@ from mouse import Mouse
 from plots import Plot_Widget
 from networking import Terminal_Networking, Net_Node
 from utils import InvokeEvent, Invoker
-from gui import Control_Panel, Protocol_Wizard, Weights, Reassign
+from gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water
 import pdb
 
 
@@ -238,9 +238,11 @@ class Terminal(QtGui.QMainWindow):
         mouse_weights_act = QtGui.QAction("View Mouse &Weights", self, triggered=self.mouse_weights)
         update_protocol_act = QtGui.QAction("Update Protocols", self, triggered=self.update_protocols)
         reassign_act = QtGui.QAction("Batch Reassign Protocols", self, triggered=self.reassign_protocols)
+        calibrate_act = QtGui.QAction("Calibrate &Water Ports", self, triggered=self.calibrate_ports)
         self.tool_menu.addAction(mouse_weights_act)
         self.tool_menu.addAction(update_protocol_act)
         self.tool_menu.addAction(reassign_act)
+        self.tool_menu.addAction(calibrate_act)
 
 
         ## Init main panels and add to layout
@@ -286,6 +288,7 @@ class Terminal(QtGui.QMainWindow):
 
         winheight = winsize.height() - window_title_height - titleBarHeight - logo_height  # also subtract logo height
         winsize.setHeight(winheight)
+        self.max_height = winheight
         self.setGeometry(winsize)
         self.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
 
@@ -636,6 +639,37 @@ class Terminal(QtGui.QMainWindow):
                     step_name = self.mice[mouse].current[step]['step_name']
                     #update history also flushes current - aka it also actually changes the step number
                     self.mice[mouse].update_history('step', step_name, step)
+
+    def calibrate_ports(self):
+
+        calibrate_window = Calibrate_Water(self.pilots)
+        calibrate_window.exec_()
+
+        if calibrate_window.result() == 1:
+            for pilot, p_widget in calibrate_window.pilot_widgets.items():
+                p_results = p_widget.volumes
+                # p_results are [port][dur] = {params} so running the same duration will
+                # overwrite a previous run. unnest here so pi can keep a record
+                unnested_results = {}
+                for port, result in p_results.items():
+                    unnested_results[port] = []
+                    # result is [dur] = {params}
+                    for dur, inner_result in result.items():
+                        inner_result['dur'] = dur
+                        unnested_results[port].append(inner_result)
+
+                # send to pi
+                self.node.send(to=pilot, key="CALIBRATE_RESULT",
+                               value = unnested_results)
+
+            msgbox = QtGui.QMessageBox()
+            msgbox.setText("Calibration results sent!")
+            msgbox.exec_()
+
+
+
+
+
 
     def closeEvent(self, event):
         """
