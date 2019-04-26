@@ -282,6 +282,7 @@ class Mock(MagicMock):
 
 MOCK_MODULES = autodoc_mock_imports
 MOCK_MODULES.append("tables.nodes")
+MOCK_MODULES.extend(['PySide.QtGui', 'PySide.QtCore'])
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 def setup(app):
