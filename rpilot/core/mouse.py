@@ -8,20 +8,17 @@ models should the need arise.
 """
 
 # TODO: store pilot in biography
-import pdb
-import pdb
 import os
 import sys
 import threading
 import tables
 from tables.nodes import filenode
 import datetime
-from time import time
 import json
 import pandas as pd
 import warnings
 from copy import copy
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from rpilot import tasks
 from rpilot import prefs
 from rpilot.stim.sound.sounds import STRING_PARAMS
