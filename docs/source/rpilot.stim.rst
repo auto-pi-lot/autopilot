@@ -6,10 +6,7 @@ stim
     :undoc-members:
     :show-inheritance:
 
-
-
 .. toctree::
-
     rpilot.stim.managers
     rpilot.stim.sound
 

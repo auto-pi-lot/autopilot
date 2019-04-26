@@ -7,10 +7,16 @@ rpilot API documentation
 ==================================
 
 .. toctree::
-   :maxdepth: 10
-   :glob:
+   :maxdepth: 2
+   :caption: Contents:
 
-   api
+   rpilot.core
+   rpilot.tasks
+   rpilot.stim
+   rpilot.viz
+   rpilot.setup
+   rpilot.prefs
+
 
 
 

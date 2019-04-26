@@ -29,7 +29,7 @@ from rpilot import tasks, prefs
 from rpilot.stim.sound import sounds
 from rpilot.core.networking import Net_Node
 from functools import wraps
-from utils import InvokeEvent
+from rpilot.core.utils import InvokeEvent
 
 
 def gui_event(fn):

@@ -55,7 +55,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.autosummary',
-    #'sphinx_automodapi.automodapi',
+    'sphinx_automodapi.automodapi',
     #'sphinxcontrib.fulltoc',
     #'localext.fulltoc',
 ]
@@ -72,14 +72,23 @@ napoleon_include_special_with_doc = True
 autoclass_content = "both"
 autodoc_member_order = "bysource"
 #autodoc_default_flags = ['members']
-autodoc_mock_imports = ['tables', 'PySide', 'tables', 'pyo', 'jack']
+autodoc_mock_imports = ['tables', 'PySide', 'tables', 'pyo', 'jack', 'pyqtgraph']
 
-automodsumm_writereprocessed = True
+autodoc_default_options = {
+    'member-order': 'bysource',
+    'exclude-members': '__doc__'
+}
+
+#automodsumm_writereprocessed = True
+numpydoc_show_class_members = False
+automodsumm_inherited_members = False
+automodsumm_writereprocessed = False
+automodapi_toctreedirnm = 'api'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
-autosummary_generate = True
+#autosummary_generate = True
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -118,7 +127,6 @@ html_theme = 'bootstrap'
 # html_theme = "sphinx_rtd_theme"
 # html_theme_path = ["_themes", ]
 html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
-
 #
 
 #
@@ -135,7 +143,7 @@ html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 html_theme_options = {
     'navbar_title': "RPilot",
     'navbar_site_name': 'RPilot Docs',
-    'globaltoc_depth': 10,
+    'globaltoc_depth': 3,
     'navbar_class': "navbar navbar-inverse",
     'bootswatch_theme': "readable",
     'navbar_pagenav': True,
@@ -265,10 +273,10 @@ primary_domain = "py"
 
 highlight_language = "py"
 
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-        return MagicMock()
+# class Mock(MagicMock):
+#     @classmethod
+#     def __getattr__(cls, name):
+#         return MagicMock()
 
 #MOCK_MODULES = autodoc_mock_imports
 #sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
@@ -279,3 +287,4 @@ def setup(app):
     from rpilot import prefs
 
     prefs.add('AUDIOSERVER', 'docs')
+    prefs.add('AGENT', 'docs')

@@ -9,3 +9,4 @@ scipy
 tornado
 pigpio
 pyqtgraph
+inputs

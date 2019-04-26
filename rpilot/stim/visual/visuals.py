@@ -10,8 +10,11 @@ import threading
 from Queue import Queue, Empty
 
 print(prefs.prefdict.items())
-if 'VISUAL' in prefs.CONFIG:
-    from psychopy import visual, core
+if hasattr(prefs, 'CONFIG'):
+    if 'VISUAL' in prefs.CONFIG:
+        from psychopy import visual, core
+else:
+    Warning('No CONFIG attr set in prefs, dont know if youre set up for visual stim. not importing psychopy')
 
 
 class Visual(object):

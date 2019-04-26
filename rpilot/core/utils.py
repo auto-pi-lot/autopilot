@@ -1,6 +1,6 @@
 # import numpy as np
 from rpilot import prefs
-if prefs.AGENT == "terminal":
+if prefs.AGENT in ("terminal", "docs"):
     from PySide import QtCore
 # import json
 # from subprocess import call
@@ -70,7 +70,7 @@ class Param(object):
 
 
 
-if prefs.AGENT == "terminal":
+if prefs.AGENT in ["terminal", "docs"]:
     class InvokeEvent(QtCore.QEvent):
         """
         Sends signals to the main QT thread from spawned message threads

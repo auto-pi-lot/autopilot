@@ -1,12 +1,11 @@
 mouse
 ========================
 
-.. autosummary::
-    :toctree:
+.. automodapi:: rpilot.core.mouse
+   :no-inherited-members:
+   :no-heading:
+   :skip:
 
-.. contents::
-    :local:
-    :depth: 5
 
 .. automodule:: rpilot.core.mouse
     :members:
