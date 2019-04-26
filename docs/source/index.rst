@@ -11,7 +11,7 @@ rpilot API documentation
    :caption: Contents:
 
    rpilot.core.gui
-
+   rpilot.core.hardware
 
 
 
