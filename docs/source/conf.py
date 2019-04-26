@@ -275,14 +275,14 @@ highlight_language = "py"
 
 # have to have more explicit mocking to use automodapi,
 # which doesn't seem to respect autodoc_mock_imports
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-        return MagicMock()
-
-MOCK_MODULES = autodoc_mock_imports
-MOCK_MODULES.append("tables.nodes")
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+# class Mock(MagicMock):
+#     @classmethod
+#     def __getattr__(cls, name):
+#         return MagicMock()
+#
+# MOCK_MODULES = autodoc_mock_imports
+# MOCK_MODULES.append("tables.nodes")
+# sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 def setup(app):
     app.add_stylesheet("restyle.css")
