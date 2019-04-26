@@ -1,9 +1,6 @@
 gui
 ======================
 
-.. currentmodule:: rpilot.core.plots
-
-
 .. autosummary::
    :toctree:
 
