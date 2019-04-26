@@ -72,7 +72,7 @@ napoleon_include_special_with_doc = True
 autoclass_content = "both"
 autodoc_member_order = "bysource"
 #autodoc_default_flags = ['members']
-autodoc_mock_imports = ['tables', 'pyo', 'jack', 'pyqtgraph']
+autodoc_mock_imports = ['tables', 'PySide', 'pyo', 'jack', 'pyqtgraph']
 
 autodoc_default_options = {
     'member-order': 'bysource',
