@@ -5,6 +5,34 @@ import argparse
 import json
 import sys
 import os
+
+print(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+from rpilot import prefs
+
+if __name__ == '__main__':
+    # Parse arguments - this should have been called with a .json prefs file passed
+    # We'll try to look in the default location first
+    parser = argparse.ArgumentParser(description="Run an RPilot Terminal")
+    parser.add_argument('-f', '--prefs', help="Location of .json prefs file (created during setup_terminal.py)")
+    args = parser.parse_args()
+
+    if not args.prefs:
+        prefs_file = '/usr/rpilot/prefs.json'
+
+        if not os.path.exists(prefs_file):
+            raise Exception("No Prefs file passed, and file not in default location")
+
+        raise Warning('No prefs file passed, loaded from default location. Should pass explicitly with -p')
+
+    else:
+        prefs_file = args.prefs
+
+    # init prefs for module access
+    prefs.init(prefs_file)
+
+
 import datetime
 import logging
 import threading
@@ -12,14 +40,11 @@ from collections import OrderedDict as odict
 import numpy as np
 
 from PySide import QtCore, QtGui
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from mouse import Mouse
 from plots import Plot_Widget
 from networking import Terminal_Networking, Net_Node
 from utils import InvokeEvent, Invoker
 from gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water
-from rpilot import prefs
 import pdb
 
 
@@ -292,7 +317,6 @@ class Terminal(QtGui.QMainWindow):
     # Listens & inter-object methods
 
     def toggle_start(self, starting, pilot, mouse=None):
-        # type: (bool, unicode, unicode) -> None
         """Start or Stop running the currently selected mouse's task. Sends a
         message containing the task information to the concerned pilot.
 
@@ -308,47 +332,49 @@ class Terminal(QtGui.QMainWindow):
         """
         # stopping is the enemy of starting so we put them in the same function to learn about each other
         if starting is True:
-            # Ope'nr up if she aint
-            if mouse not in self.mice.keys():
-                self.mice[mouse] = Mouse(mouse)
-
-            task = self.mice[mouse].prepare_run()
-            task['pilot'] = pilot
-
             # Get Weights
             start_weight, ok = QtGui.QInputDialog.getDouble(self, "Set Starting Weight",
                                                             "Starting Weight:")
             if ok:
+                # Ope'nr up if she aint
+                if mouse not in self.mice.keys():
+                    self.mice[mouse] = Mouse(mouse)
+
+                task = self.mice[mouse].prepare_run()
+                task['pilot'] = pilot
                 self.mice[mouse].update_weights(start=float(start_weight))
+
+                self.node.send(to=bytes(pilot), key="START", value=task)
+                # also let the plot know to start
+                self.node.send(to=bytes("P_{}".format(pilot)), key="START", value=task)
+
             else:
                 # pressed cancel, don't start
-                self.mice[mouse].stop_run()
                 return
 
-            self.node.send(to=bytes(pilot),key="START",value=task)
-            # also let the plot know to start
-            self.node.send(to=bytes("P_{}".format(pilot)), key="START", value=task)
-
         else:
-            # Send message to pilot to stop running,
-            # it should initiate a coherence checking routine to make sure
-            # its data matches what the Terminal got,
-            # so the terminal will handle closing the mouse object
-            self.node.send(to=bytes(pilot), key="STOP")
-            # also let the plot know to start
-            self.node.send(to=bytes("P_{}".format(pilot)), key="STOP")
-            # TODO: Start coherence checking ritual
-            # TODO: Auto-select the next mouse in the list.
-
-            # get weight
             # Get Weights
             stop_weight, ok = QtGui.QInputDialog.getDouble(self, "Set Stopping Weight",
                                                            "Stopping Weight:")
-
-            self.mice[mouse].stop_run()
-
+            
             if ok:
+                # Send message to pilot to stop running,
+                # it should initiate a coherence checking routine to make sure
+                # its data matches what the Terminal got,
+                # so the terminal will handle closing the mouse object
+                self.node.send(to=bytes(pilot), key="STOP")
+                # also let the plot know to start
+                self.node.send(to=bytes("P_{}".format(pilot)), key="STOP")
+                # TODO: Start coherence checking ritual
+                # TODO: Auto-select the next mouse in the list.
+
+                self.mice[mouse].stop_run()
                 self.mice[mouse].update_weights(stop=float(stop_weight))
+
+            else:
+                # pressed cancel
+                return
+
 
     ############################
     # MESSAGE HANDLING METHODS
@@ -665,27 +691,7 @@ class Terminal(QtGui.QMainWindow):
         # send message to kill networking process
         self.node.send(key="KILL")
 
-
-if __name__ == '__main__':
-    # Parse arguments - this should have been called with a .json prefs file passed
-    # We'll try to look in the default location first
-    parser = argparse.ArgumentParser(description="Run an RPilot Terminal")
-    parser.add_argument('-f', '--prefs', help="Location of .json prefs file (created during setup_terminal.py)")
-    args = parser.parse_args()
-
-    if not args.prefs:
-        prefs_file = '/usr/rpilot/prefs.json'
-
-        if not os.path.exists(prefs_file):
-            raise Exception("No Prefs file passed, and file not in default location")
-
-        raise Warning('No prefs file passed, loaded from default location. Should pass explicitly with -p')
-
-    else:
-        prefs_file = args.prefs
-
-    # init prefs for module access
-    prefs.init(prefs_file)
+if __name__ == "__main__":
 
     sys.path.append(prefs.REPODIR)
 

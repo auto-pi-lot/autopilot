@@ -1,22 +1,11 @@
 
-import sys
-import os
-import random
-# from taskontrol.settings import rpisettings as rpiset
 import datetime
 import itertools
-import warnings
 import tables
-import json
 import threading
 
-#try:
-#    import pyo
-#except ImportError:
-#    Warning('pyo could not be loaded, sounds will be unavailable!')
 from rpilot.core import hardware
 from rpilot.tasks import Task
-from rpilot.stim.sound import sounds
 from rpilot.stim import Stim_Manager
 from collections import OrderedDict as odict
 from rpilot.core.networking import Net_Node
@@ -439,7 +428,6 @@ class Nafc_Wheel(Nafc):
     """
     2afc using a wheel run on a child pi as the input device
     """
-
     HARDWARE = {
         'POKES': {
             'C': hardware.Beambreak,
@@ -475,8 +463,6 @@ class Nafc_Wheel(Nafc):
 
 
         # TODO: Update PARAMS with wheel params
-
-        # TODO: Send start to child, include 'child' {'parent':'our_id', 'mouse':'mouse_id'}
     def init_networking(self, kwargs):
 
         self.node = Net_Node(id="T_{}".format(prefs.NAME),

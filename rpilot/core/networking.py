@@ -97,6 +97,7 @@ class Networking(multiprocessing.Process):
     outbox = {}  # Messages that are out with unconfirmed delivery
     timers = {}  # dict of timer threads that will check in on outbox messages
     child = False
+    routes = {} # dict of 'to' addressee and the route that should be taken to reach them
 
     def __init__(self):
         super(Networking, self).__init__()
@@ -152,7 +153,7 @@ class Networking(multiprocessing.Process):
         self.logger.info('Starting IOLoop')
         self.loop.start()
 
-    def prepare_message(self, to, key, value):
+    def prepare_message(self, to, key, value, repeat=True):
         """
         If a message originates with us, a :class:`.Message` class
         is instantiated, given an ID and the rest of its attributes.
@@ -172,6 +173,9 @@ class Networking(multiprocessing.Process):
 
         msg_num = self.msg_counter.next()
         msg.id = "{}_{}".format(self.id, msg_num)
+
+        if not repeat:
+            msg.flags['NOREPEAT'] = True
 
         return msg
 
@@ -204,7 +208,10 @@ class Networking(multiprocessing.Process):
 
         if not msg:
             # we're sending this ourselves, new message.
-            msg = self.prepare_message(to, key, value)
+            msg = self.prepare_message(to, key, value, repeat)
+
+        if 'NOREPEAT' in msg.flags.keys():
+            repeat = False
 
         # Make sure our message has everything
         if not msg.validate():
@@ -217,8 +224,14 @@ class Networking(multiprocessing.Process):
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
-        self.listener.send_multipart([bytes(msg.to), msg_enc])
-        self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
+        if isinstance(msg.to, list):
+
+            self.listener.send_multipart([bytes(msg.to[0]), msg_enc])
+        else:
+            self.listener.send_multipart([bytes(msg.to), msg_enc])
+
+        if not msg.key == "CONFIRM":
+            self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
 
         if repeat and not msg.key == "CONFIRM":
             # add to outbox and spawn timer to resend
@@ -264,7 +277,10 @@ class Networking(multiprocessing.Process):
         if not msg:
             if to is None:
                 to = self.push_id
-            msg = self.prepare_message(to, key, value)
+            msg = self.prepare_message(to, key, value, repeat)
+
+        if 'NOREPEAT' in msg.flags.keys():
+            repeat = False
 
         # Make sure our message has everything
         if not msg.validate():
@@ -280,7 +296,9 @@ class Networking(multiprocessing.Process):
         # Even if the message is not to our upstream node, we still send it
         # upstream because presumably our target is upstream.
         self.pusher.send_multipart([bytes(self.push_id), msg_enc])
-        self.logger.info('MESSAGE PUSHED - {}'.format(str(msg)))
+
+        if not msg.key == "CONFIRM":
+            self.logger.info('MESSAGE PUSHED - {}'.format(str(msg)))
 
         if repeat and not msg.key == 'CONFIRM':
             # add to outbox and spawn timer to resend
@@ -350,7 +368,7 @@ class Networking(multiprocessing.Process):
             self.timers[msg.value].cancel()
             del self.timers[msg.value]
 
-        self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
+        #self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
 
     def handle_listen(self, msg):
         """
@@ -365,6 +383,9 @@ class Networking(multiprocessing.Process):
             msg (str): JSON :meth:`.Message.serialize` d message.
         """
         # TODO: This check is v. fragile, pyzmq has a way of sending the stream along with the message
+        #####################33
+        # Parse the message
+
         if len(msg)==1:
             # from our dealer
             send_type = 'dealer'
@@ -375,6 +396,10 @@ class Networking(multiprocessing.Process):
             # from the router
             send_type = 'router'
             sender = msg[-3]
+
+            # if this message was a multihop message, store the route
+            if len(msg)>3:
+                self.routes[sender] = msg[0:-2]
 
             # if this is a new sender, add them to the list
             if sender not in self.senders.keys():
@@ -397,10 +422,30 @@ class Networking(multiprocessing.Process):
             self.logger.error('Message failed to validate:\n{}'.format(str(msg)))
             return
 
-        self.logger.info('RECEIVED: {}'.format(str(msg)))
 
+
+
+        ###################################
+        # Handle the message
+        # if this message has a multihop 'to' field, forward it along
+        
+        if isinstance(msg.to, list):
+            if len(msg.to) == 1:
+                msg.to = msg.to[0]
+
+        if isinstance(msg.to, list):
+            # pop ourselves off the list
+            _ = msg.to.pop(0)
+
+            # if the next recipient in the list is our push-parent, push it
+            if msg.to[0] == self.push_id:
+                self.push(msg=msg)
+            else:
+                self.send(msg=msg)
         # if this message is to us, just handle it and return
-        if msg.to in [self.id, "_{}".format(self.id)]:
+        elif msg.to in [self.id, "_{}".format(self.id)]:
+            if msg.key != "CONFIRM":
+                self.logger.info('RECEIVED: {}'.format(str(msg)))
             # Log and spawn thread to respond to listen
             try:
                 listen_funk = self.listens[msg.key]
@@ -412,7 +457,7 @@ class Networking(multiprocessing.Process):
 
             # send a return message that confirms even if we except
             # don't confirm confirmations
-            if msg.key != "CONFIRM":
+            if (msg.key != "CONFIRM") and ('NOREPEAT' not in msg.flags.keys()):
                 if send_type == 'router':
                     self.send(sender, 'CONFIRM', msg.id)
                 elif send_type == 'dealer':
@@ -444,7 +489,7 @@ class Networking(multiprocessing.Process):
 
         # since we return if it's to us before, confirm is repeated down here.
         # FIXME: Inelegant
-        if msg.key != "CONFIRM":
+        if (msg.key != "CONFIRM") and ('NOREPEAT' not in msg.flags.keys()):
             if send_type == 'router':
                 self.send(sender, 'CONFIRM', msg.id)
             elif send_type == 'dealer':
@@ -1123,6 +1168,16 @@ class Net_Node(object):
         #     self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
         # else:
         # Log and spawn thread to respond to listen
+
+        if isinstance(msg.to, list):
+            if len(msg.to) == 1:
+                msg.to = msg.to[0]
+
+        if isinstance(msg.to, list):
+            # not to us, just keep it going
+            _ = msg.to.pop(0)
+            self.send(msg=msg, repeat=False)
+
         try:
             listen_funk = self.listens[msg.key]
             listen_thread = threading.Thread(target=listen_funk, args=(msg.value,))
@@ -1130,7 +1185,7 @@ class Net_Node(object):
         except KeyError:
             self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
 
-        if msg.key != "CONFIRM":
+        if (msg.key != "CONFIRM") and ('NOREPEAT' not in msg.flags.keys()) :
             # send confirmation
             self.send(msg.sender, 'CONFIRM', msg.id)
 
@@ -1151,7 +1206,7 @@ class Net_Node(object):
         :meth:`~.Net_Node.repeat` unless `repeat` is False.
 
         Args:
-            to (str): The identity of the socket this message is to. If not included,
+            to (str, list): The identity of the socket this message is to. If not included,
                 sent to :meth:`~.Net_Node.upstream` .
             key (str): The type of message - used to select which method the receiver
                 uses to process this message.
@@ -1173,7 +1228,7 @@ class Net_Node(object):
             return
 
         if not msg:
-            msg = self.prepare_message(to, key, value)
+            msg = self.prepare_message(to, key, value, repeat)
 
         # Make sure our message has everything
         if not msg.validate():
@@ -1188,6 +1243,7 @@ class Net_Node(object):
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
+   
         self.sock.send_multipart([bytes(self.upstream), msg_enc])
         if self.logger:
             self.logger.info("MESSAGE SENT - {}".format(str(msg)))
@@ -1254,7 +1310,7 @@ class Net_Node(object):
 
         self.logger.info('CONFIRMED MESSAGE {}'.format(value))
 
-    def prepare_message(self, to, key, value):
+    def prepare_message(self, to, key, value, repeat):
         """
         Instantiate a :class:`.Message` class, give it an ID and
         the rest of its attributes.
@@ -1281,6 +1337,9 @@ class Net_Node(object):
 
         msg_num = self.msg_counter.next()
         msg.id = "{}_{}".format(self.id, msg_num)
+
+        if not repeat:
+            msg.flags['NOREPEAT'] = True
 
         return msg
 
@@ -1332,6 +1391,7 @@ class Message(object):
     # value is the only attribute that can be left None,
     # ie. with signal-type messages like "STOP"
     value = None
+    flags = {}
     ttl = 5 # every message starts with 5 retries. only relevant to the sender so not serialized.
 
     def __init__(self, *args, **kwargs):
@@ -1397,10 +1457,14 @@ class Message(object):
         Returns:
             bool (True): Does message have all required attributes set?
         """
-        if all([self.id, self.to, self.sender, self.key]):
-            return True
-        else:
-            return False
+        valid = True
+        for prop in (self.id, self.to, self.sender, self.key):
+            if prop is None:
+                valid = False
+        return valid
+
+
+
 
     def serialize(self):
         """

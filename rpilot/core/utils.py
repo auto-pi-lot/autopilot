@@ -1,7 +1,10 @@
 # import numpy as np
-from PySide import QtCore
+from rpilot import prefs
+if prefs.AGENT == "terminal":
+    from PySide import QtCore
 # import json
 # from subprocess import call
+from threading import Thread
 
 class Param(object):
     """
@@ -67,40 +70,59 @@ class Param(object):
 
 
 
-
-class InvokeEvent(QtCore.QEvent):
-    """
-    Sends signals to the main QT thread from spawned message threads
-
-    See `stackoverflow <https://stackoverflow.com/a/12127115>`_
-    """
-
-    EVENT_TYPE = QtCore.QEvent.Type(QtCore.QEvent.registerEventType())
-
-    def __init__(self, fn, *args, **kwargs):
-        # type: (function, object, object) -> None
+if prefs.AGENT == "terminal":
+    class InvokeEvent(QtCore.QEvent):
         """
-        Accepts a function, its args and kwargs and wraps them as a
-        :class:`QtCore.QEvent`
+        Sends signals to the main QT thread from spawned message threads
 
+        See `stackoverflow <https://stackoverflow.com/a/12127115>`_
         """
-        QtCore.QEvent.__init__(self, InvokeEvent.EVENT_TYPE)
-        self.fn = fn
-        self.args = args
-        self.kwargs = kwargs
+
+        EVENT_TYPE = QtCore.QEvent.Type(QtCore.QEvent.registerEventType())
+
+        def __init__(self, fn, *args, **kwargs):
+            # type: (function, object, object) -> None
+            """
+            Accepts a function, its args and kwargs and wraps them as a
+            :class:`QtCore.QEvent`
+
+            """
+            QtCore.QEvent.__init__(self, InvokeEvent.EVENT_TYPE)
+            self.fn = fn
+            self.args = args
+            self.kwargs = kwargs
 
 
-class Invoker(QtCore.QObject):
+    class Invoker(QtCore.QObject):
+        """
+        Wrapper that calls an evoked event made by :class:`.InvokeEvent`
+        """
+        def event(self, event):
+            """
+            Args:
+                event:
+            """
+            event.fn(*event.args, **event.kwargs)
+            return True
+
+
+class ReturnThread(Thread):
     """
-    Wrapper that calls an evoked event made by :class:`.InvokeEvent`
+    Thread whose .join() method returns the value from the function
+    thx to https://stackoverflow.com/a/6894023
     """
-    def event(self, event):
-        """
-        Args:
-            event:
-        """
-        event.fn(*event.args, **event.kwargs)
-        return True
+    def __init__(self, group=None, target=None, name=None,
+                 args=(), kwargs={}, Verbose=None):
+        Thread.__init__(self, group, target, name, args, kwargs, Verbose)
+        self._return = None
+    def run(self):
+        if self._Thread__target is not None:
+            self._return = self._Thread__target(*self._Thread__args,
+                                                **self._Thread__kwargs)
+    def join(self, timeout=None):
+        Thread.join(self, timeout)
+
+        return self._return
 
 
 

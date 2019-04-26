@@ -43,6 +43,7 @@ Warning:
 
 from rpilot import prefs
 from rpilot.core.networking import Net_Node
+from rpilot.core.utils import ReturnThread
 if prefs.AGENT in ['pilot']:
     import pigpio
 
@@ -619,7 +620,12 @@ class Wheel(Hardware):
 
     THRESH_TYPES = ['dist', 'x', 'y', 'vel']
 
-    def __init__(self, mouse_idx=0, fs=20, thresh=100, thresh_type='x', start=True, gpio_trig=False, pins=None, mode='vel_total'):
+    MODES = ('vel_total', 'steady', 'dist', 'timed')
+
+    MOVE_DTYPE = [('vel', 'i4'), ('dir', 'U5'), ('timestamp', 'f8')]
+
+    def __init__(self, mouse_idx=0, fs=10, thresh=100, thresh_type='dist', start=True,
+                 gpio_trig=False, pins=None, mode='vel_total', integrate_dur=5):
 
         # try to get mouse from inputs
         # TODO: More robust - specify mouse by hardware attrs
@@ -635,29 +641,39 @@ class Wheel(Hardware):
         self.update_dur = 1./float(self.fs)
 
         self.thresh = thresh
-
         # thresh type can be 'dist', 'x', 'y', or 'vel'
         if thresh_type not in self.THRESH_TYPES:
             ValueError('thresh_type must be one of {}, given {}'.format(self.THRESH_TYPES, thresh_type))
         self.thresh_type = thresh_type
 
         # mode can be 'vel_total', 'vel_x', 'vel_y' or 'dist' - report either velocity or distance
-        # TODO: Do two parameters - type 'vel' or 'dist' and measure 'x', 'y', 'total'
+        # mode can also be '
+        # TODO: Do two parameters - type 'vel' or 'dist' and measure 'x', 'y', 'total'z
         self.mode = mode
         # TODO: Implement this
+
+        if self.mode == "steady":
+            self.thresh_val = np.array([(0, "REL_X", 0)], dtype=self.MOVE_DTYPE)
+        else:
+            self.thresh_val = 0.0
+
+        self.integrate_dur = integrate_dur
 
 
         # event to signal quitting
         self.quit_evt = threading.Event()
-        self.quit_evt.set()
+        self.quit_evt.clear()
         # event to signal when to start accumulating movements to trigger
         self.measure_evt = threading.Event()
+        self.measure_time = 0
         # queue to I/O mouse movements summarized at fs Hz
         self.q = Queue()
         # lock to prevent race between putting and getting
         self.qlock = threading.Lock()
 
-        self.listens = {'MEASURE':self.l_measure}
+        self.listens = {'MEASURE':self.l_measure,
+                        'CLEAR':self.l_clear,
+                        'STOP':self.l_stop}
         self.node = Net_Node('wheel_{}'.format(mouse_idx),
                              upstream=prefs.NAME,
                              port=prefs.MSGPORT,
@@ -691,56 +707,43 @@ class Wheel(Hardware):
         self.thread.daemon = True
         self.thread.start()
 
-    def _record(self):
-        x_moves = []
-        y_moves = []
+    def _mouse(self):
+        while self.quit_evt:
+            events = self.mouse.read()
+            self.q.put(events)
 
-        x_dist = 0
-        y_dist = 0
-        thresh_val = 0
+    def _record(self):
+        moves = np.array([], dtype=self.MOVE_DTYPE)
+
+        threading.Thread(target=self._mouse).start()
 
         last_update = time.time()
 
-        while self.quit_evt:
+        while not self.quit_evt.is_set():
 
-            events = self.mouse.read()
+            try:
+                events = self.q.get_nowait()
+            except Empty:
+                events = None
 
-            x_move = [int(event.state) for event in events if event.code == "REL_X"]
-            y_move = [int(event.state) for event in events if event.code == "REL_Y"]
+            if events is None:
+                move = np.array([(0, "REL_X", 0)], dtype=self.MOVE_DTYPE)
+            else:
+                # make a numpy record array of events with 3 fields:
+                # velocity, dir(ection), timestamp (system seconds)
+                move = np.array([(int(event.state), event.code, float(event.timestamp))\
+                                 for event in events if event.code in ('REL_X', 'REL_Y')],
+                                dtype=self.MOVE_DTYPE)
+            moves = np.concatenate([moves, move])
 
-            x_moves.extend(x_move)
-            y_moves.extend(y_move)
-
-
-            # If we have received a trigger...
-            if self.measure_evt:
+            # If we have been told to start measuring for a trigger...
+            if self.measure_evt.is_set():
+                do_trigger = self.check_thresh(move)
+                if do_trigger:
+                    self.thresh_trig()
+                    self.measure_evt.clear()
                 # take the integral of velocities
-                x_dist += sum(x_move)
-                y_dist += sum(y_move)
 
-
-                # FIXME: rly inefficient
-                if self.thresh_type == 'x':
-                    thresh_val = abs(x_dist)
-                elif self.thresh_type == 'y':
-                    thresh_val = abs(y_dist)
-                elif self.thresh_type == "dist":
-                    dist = np.sqrt(float(x_dist ** 2) + float(y_dist ** 2))
-                    thresh_val = abs(dist)
-
-
-                if thresh_val > self.thresh:
-                    if self.thresh_type == 'dist':
-                        self.thresh_trig() # clears measure_evt
-                    elif self.thresh_type == 'x':
-                        if x_dist > 0:
-                            self.thresh_trig('R')
-                        else:
-                            self.thresh_trig('L')
-
-                    thresh_val = 0
-                    x_dist = 0
-                    y_dist = 0
 
 
             # If it's time to report velocity, do it.
@@ -748,27 +751,99 @@ class Wheel(Hardware):
             if (nowtime-last_update)>self.update_dur:
 
                 # TODO: Implement distance/position reporting
-                y_vel = sum(y_moves)
-                x_vel = sum(x_moves)
-                #dist = np.sqrt(y_vel**2)
+                y_vel = self.calc_move(moves, 'y')
+                x_vel = self.calc_move(moves, 'x')
 
-                #timestamp = datetime.fromtimestamp(nowtime).isoformat()
+                self.node.send(key='CONTINUOUS', value={'x':x_vel, 'y':y_vel, 't':nowtime},
+                               repeat=False)
 
-                self.node.send(key='CONTINUOUS', value={'x':x_vel, 'y':y_vel, 't':nowtime})
-
-
-
-                y_moves = []
-                x_moves = []
+                moves = np.array([], dtype=self.MOVE_DTYPE)
 
                 last_update = nowtime
 
+    def check_thresh(self, move):
+        """
+        Updates thresh_val and checks whether it's above/below threshold
+
+        Args:
+            move (np.array): Structured array with fields ('vel', 'dir', 'timestamp')
+
+        Returns:
+
+        """
+
+        # Determine whether the threshold was surpassed
+        do_trigger = False
+        if self.mode == 'vel_total':
+            thresh_update = self.calc_move(move)
+            # If instantaneous velocity is above thresh...
+            if thresh_update > self.thresh:
+                do_trigger = True
+
+        elif self.mode == 'steady':
+            # If movements in the recent past are below a certain value
+            # self.thresh_val should be set to a structured array by l_measure
+            try:
+                self.thresh_val = np.concatenate([self.thresh_val, move])
+            except TypeError:
+                print('THRESH_VAL:', self.thresh_val, 'MOVE:', move)
+            # trim to movements in the time window
+            thresh_val = self.thresh_val[self.thresh_val['timestamp'] > time.time()-self.integrate_dur]
+
+            thresh_update = self.calc_move(thresh_val)
+
+            if (thresh_update < self.thresh) and (self.measure_time+self.integrate_dur < time.time()):
+                do_trigger = True
+
+        elif self.mode == 'dist':
+            thresh_update = self.calc_move(move)
+            self.thresh_val += thresh_update
+
+            if self.thresh_val > self.thresh:
+                do_trigger = True
+
+        else:
+            Warning ("mode is not defined! mode is {}".format(self.mode))
+
+
+        return do_trigger
+
+    def calc_move(self, move, thresh_type=None):
+        """
+        Calculate distance move depending on type (x, y, total dist)
+
+        Args:
+            move ():
+            thresh_type ():
+
+        Returns:
+
+        """
+
+        if thresh_type is None:
+            thresh_type = self.thresh_type
+
+        # FIXME: rly inefficient
+        # get the value of the movement depending on what we're measuring
+        if thresh_type == 'x':
+
+            distance = np.sum(move['vel'][move['dir'] == "REL_X"])
+        elif thresh_type == 'y':
+            distance = np.sum(move['vel'][move['dir'] == "REL_Y"])
+        elif thresh_type == "dist":
+            x_dist = np.sum(move['vel'][move['dir'] == "REL_X"])
+            y_dist = np.sum(move['vel'][move['dir'] == "REL_Y"])
+            distance = np.abs(np.sqrt(float(x_dist ** 2) + float(y_dist ** 2)))
+
+        return distance
 
     def thresh_trig(self, which=None):
 
         if not which:
             if self.gpio_trig:
-                self.pig.gpio_trigger(self.pin, 100, 1)
+                for pin in self.pins.values():
+                    print("TRIGGERING", pin)
+                    self.pig.gpio_trigger(pin, 100, 1)
 
         else:
             if self.gpio_trig:
@@ -793,7 +868,47 @@ class Wheel(Hardware):
             value ():
         """
 
+        if 'mode' in value.keys():
+            if value['mode'] in self.MODES:
+                self.mode = value['mode']
+            else:
+                Warning('incorrect mode sent: {}, needs to be one of {}'.format(value['mode'], self.MODES))
+
+        if 'thresh' in value.keys():
+            self.thresh = float(value['thresh'])
+
+        if self.mode == "steady":
+            self.thresh_val = np.array([(0, "REL_X", 0)], dtype=self.MOVE_DTYPE)
+        else:
+            self.thresh_val = 0.0
+        self.measure_time = time.time()
+
         self.measure_evt.set()
+
+    def l_clear(self, value):
+        """
+        Stop measuring!
+
+        Args:
+            value ():
+
+        Returns:
+
+        """
+        self.measure_evt.clear()
+
+    def l_stop(self, value):
+        """
+        Stop measuring and clear system resources
+        Args:
+            value ():
+
+        Returns:
+
+        """
+
+        self.measure_evt.set()
+        self.release()
 
     def release(self):
         self.quit_evt.clear()
