@@ -1,0 +1,33 @@
+Pilot_Ports
+===========
+
+.. currentmodule:: rpilot.core.gui
+
+.. autoclass:: Pilot_Ports
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Pilot_Ports.staticMetaObject
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Pilot_Ports.init_ui
+      ~Pilot_Ports.l_progress
+      ~Pilot_Ports.start_calibration
+      ~Pilot_Ports.update_volumes
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: staticMetaObject
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: init_ui
+   .. automethod:: l_progress
+   .. automethod:: start_calibration
+   .. automethod:: update_volumes

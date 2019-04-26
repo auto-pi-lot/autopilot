@@ -1,0 +1,41 @@
+Jack_Sound
+==========
+
+.. currentmodule:: rpilot.stim.sound.sounds
+
+.. autoclass:: Jack_Sound
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Jack_Sound.PARAMS
+      ~Jack_Sound.server_type
+      ~Jack_Sound.type
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Jack_Sound.buffer
+      ~Jack_Sound.chunk
+      ~Jack_Sound.get_nsamples
+      ~Jack_Sound.play
+      ~Jack_Sound.set_trigger
+      ~Jack_Sound.wait_trigger
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: PARAMS
+   .. autoattribute:: server_type
+   .. autoattribute:: type
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: buffer
+   .. automethod:: chunk
+   .. automethod:: get_nsamples
+   .. automethod:: play
+   .. automethod:: set_trigger
+   .. automethod:: wait_trigger

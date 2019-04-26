@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>rpilot.core.hardware &#8212; rpilot 0.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/restyle.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          RPilot</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">RPilot Docs <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpilot.core.html">core</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.gui.html">gui</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.gui.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.gui.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.gui.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.hardware.html">hardware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.hardware.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.hardware.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.mouse.html">mouse</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.mouse.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.mouse.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.networking.html">networking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.networking.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.networking.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.pilot.html">pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.pilot.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.pilot.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.plots.html">plots</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.plots.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.plots.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.plots.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.terminal.html">terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.terminal.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.terminal.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.utils.html">utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.utils.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.utils.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpilot.tasks.html">tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.tasks.free_water.html">free_water</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.free_water.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.free_water.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.tasks.graduation.html">graduation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.graduation.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.graduation.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.tasks.nafc.html">nafc</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.nafc.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.nafc.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.tasks.task.html">task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.task.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.task.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpilot.stim.html">stim</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.stim.managers.html">managers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.stim.managers.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.stim.managers.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.stim.sound.html">sound</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.stim.sound.jackclient.html">jackclient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.stim.sound.pyoserver.html">pyoserver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.stim.sound.sounds.html">sounds</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpilot.viz.html">viz</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.viz.trial_viewer.html">trial_viewer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpilot.setup.html">setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.setup.setup_pilot.html">setup_pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.setup.setup_scale.html">setup_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.setup.setup_terminal.html">setup_terminal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpilot.prefs.html">prefs</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+        </div>
+      </div>
+    <div class="col-md-9 content">
+      
+  <h1>Source code for rpilot.core.hardware</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">Classes that manage hardware logic.</span>
+
+<span class="sd">Each hardware class should be able to operate independently - ie. not</span>
+<span class="sd">be dependent on a particular task class, etc. Other than that there are</span>
+<span class="sd">very few design requirements:</span>
+
+<span class="sd">* Every class should have a .release() method that releases any system</span>
+<span class="sd">  resources in use by the object, eg. objects that use pigpio must have</span>
+<span class="sd">  their `pigpio.pi` client stopped; LEDs should be explicitly turned off.</span>
+<span class="sd">* The very minimal class attributes are described in the :class:`Hardware` metaclass.</span>
+<span class="sd">* Hardware methods are typically called in their own threads, so care should</span>
+<span class="sd">  be taken to make any long-running operations internally threadsafe.</span>
+
+<span class="sd">Note:</span>
+<span class="sd">    This software was primarily developed for the Raspberry Pi, which</span>
+<span class="sd">    has `two types of numbering schemes &lt;https://pinout.xyz/#&gt;`_ ,</span>
+<span class="sd">    &quot;board&quot; numbering based on physical position and &quot;bcm&quot; numbering</span>
+<span class="sd">    based on the broadcom chip numbering scheme.</span>
+
+<span class="sd">    Board numbering is easier to use, but `pigpio &lt;http://abyz.me.uk/rpi/pigpio/&gt;`_</span>
+<span class="sd">    , which we use as a bridge between Python and the GPIOs, uses the BCM scheme.</span>
+<span class="sd">    As such each class that uses the GPIOs takes a board number as its argument</span>
+<span class="sd">    and converts it to a BCM number in the __init__ method.</span>
+
+<span class="sd">    If there is sufficient demand to make this more flexible, we can implement</span>
+<span class="sd">    an additional `pref` to set the numbering scheme, but the current solution</span>
+<span class="sd">    works without getting too muddy.</span>
+
+<span class="sd">Warning:</span>
+<span class="sd">    In order to use pigpio, the pigpio daemon must be running. See `the docs &lt;http://abyz.me.uk/rpi/pigpio/python.html&gt;`_</span>
+<span class="sd">    Usually :class:`~.core.pilot.Pilot` s should be started by the bash script or systemd service</span>
+<span class="sd">    generated by :mod:`.setup.setup_pilot`, which starts pigpiod.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1"># try:</span>
+<span class="c1">#     import RPi.GPIO as GPIO</span>
+<span class="c1"># except:</span>
+<span class="c1">#     pass</span>
+
+<span class="c1">#try:</span>
+
+<span class="kn">from</span> <span class="nn">rpilot</span> <span class="kn">import</span> <span class="n">prefs</span>
+<span class="kn">from</span> <span class="nn">rpilot.core.networking</span> <span class="kn">import</span> <span class="n">Net_Node</span>
+<span class="kn">from</span> <span class="nn">rpilot.core.utils</span> <span class="kn">import</span> <span class="n">ReturnThread</span>
+<span class="k">if</span> <span class="n">prefs</span><span class="o">.</span><span class="n">AGENT</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]:</span>
+    <span class="kn">import</span> <span class="nn">pigpio</span>
+
+    <span class="n">TRIGGER_MAP</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;U&#39;</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">RISING_EDGE</span><span class="p">,</span>
+        <span class="s1">&#39;D&#39;</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">FALLING_EDGE</span><span class="p">,</span>
+        <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">EITHER_EDGE</span>
+    <span class="p">}</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    dict: Maps strings (&#39;U&#39;, &#39;D&#39;, &#39;B&#39;) to pigpio edge types</span>
+<span class="sd">    (RISING_EDGE, FALLING_EDGE, EITHER_EDGE), respectively.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">PULL_MAP</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;U&#39;</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_UP</span><span class="p">,</span>
+        <span class="s1">&#39;D&#39;</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_DOWN</span>
+    <span class="p">}</span>
+<span class="c1"># TODO: needs better handling, pigpio crashes sometimes and we should know</span>
+<span class="c1">#except ImportError:</span>
+<span class="c1">#    pass</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">usb</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="kn">from</span> <span class="nn">inputs</span> <span class="kn">import</span> <span class="n">devices</span>
+
+
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">Queue</span> <span class="kn">import</span> <span class="n">Queue</span><span class="p">,</span> <span class="n">Empty</span>
+
+
+<span class="c1"># pigpio only uses BCM numbers, we need to translate them</span>
+<span class="c1"># See https://www.element14.com/community/servlet/JiveServlet/previewBody/73950-102-11-339300/pi3_gpio.png</span>
+<span class="n">BOARD_TO_BCM</span> <span class="o">=</span> <span class="p">{</span>
+     <span class="mi">3</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>   <span class="mi">5</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>   <span class="mi">7</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>   <span class="mi">8</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">12</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">13</span><span class="p">:</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">15</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">16</span><span class="p">:</span> <span class="mi">23</span><span class="p">,</span>
+    <span class="mi">18</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">19</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">21</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>  <span class="mi">22</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">23</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+    <span class="mi">24</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>  <span class="mi">26</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>  <span class="mi">29</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>  <span class="mi">31</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>  <span class="mi">32</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="mi">33</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">35</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">36</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">37</span><span class="p">:</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">38</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="mi">40</span><span class="p">:</span> <span class="mi">21</span>
+<span class="p">}</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">dict: Mapping from board (physical) numbering to BCM numbering. </span>
+
+<span class="sd">See `this pinout &lt;https://pinout.xyz/#&gt;`_.</span>
+
+<span class="sd">Hardware objects take board numbered pins and convert them to BCM </span>
+<span class="sd">numbers for use with `pigpio`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">BCM_TO_BOARD</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([</span><span class="nb">reversed</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">BOARD_TO_BCM</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">dict: The inverse of :const:`BOARD_TO_BCM`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+
+<div class="viewcode-block" id="Hardware"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Hardware">[docs]</a><span class="k">class</span> <span class="nc">Hardware</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic class inherited by all hardware. Should not be instantiated</span>
+<span class="sd">    on its own (but it won&#39;t do anything bad so go nuts i guess).</span>
+
+<span class="sd">    Primarily for the purpose of defining necessary attributes.</span>
+
+<span class="sd">    Also defines `__del__` to call `release()` so objects are always released</span>
+<span class="sd">    even if not explicitly.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        trigger (bool): Is this object a discrete event input device?</span>
+<span class="sd">            or, will this device be used to trigger some event? If `True`,</span>
+<span class="sd">            will be given a callback by :class:`.Task`, and :meth:`.assign_cb`</span>
+<span class="sd">            must be redefined.</span>
+<span class="sd">        pin (int): The BCM pin used by this device, or None if no pin is used.</span>
+<span class="sd">        type (str): What is this device known as in `.prefs`? Not required.</span>
+<span class="sd">        input (bool): Is this an input device?</span>
+<span class="sd">        output (bool): Is this an output device?</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># metaclass for hardware objects</span>
+    <span class="n">trigger</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">pin</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="c1"># what are we known as in prefs?</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="bp">False</span>
+
+<div class="viewcode-block" id="Hardware.release"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Hardware.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Every hardware device needs to redefine `release()`, and must</span>
+
+<span class="sd">        * Safely unload any system resources used by the object, and</span>
+<span class="sd">        * Return the object to a neutral state - eg. LEDs turn off.</span>
+
+<span class="sd">        When not redefined, a warning is given.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;The release method was not overridden by the subclass!&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hardware.assign_cb"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Hardware.assign_cb">[docs]</a>    <span class="k">def</span> <span class="nf">assign_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger_fn</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Every hardware device that is a :attr:`~Hardware.trigger` must redefine this</span>
+<span class="sd">        to accept a function (typically :meth:`.Task.handle_trigger`) that</span>
+<span class="sd">        is called when that trigger is activated.</span>
+
+<span class="sd">        When not redefined, a warning is given.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger</span><span class="p">:</span>
+            <span class="ne">Warning</span><span class="p">(</span><span class="s2">&quot;The assign_cb method was not overridden by the subclass!&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
+
+<span class="c1"># TODO: Subclass nosepoke that knows about waiting for mouse leaving</span>
+<div class="viewcode-block" id="Beambreak"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Beambreak">[docs]</a><span class="k">class</span> <span class="nc">Beambreak</span><span class="p">(</span><span class="n">Hardware</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An IR Beambreak sensor.</span>
+
+<span class="sd">    A phototransistor that changes voltage from &#39;high&#39; to &#39;low&#39; or vice versa</span>
+<span class="sd">    when light is blocked.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        pig (:meth:`pigpio.pi`): The pigpio connection.</span>
+<span class="sd">        pin (int): Broadcom-numbered pin, converted from the argument given on instantiation</span>
+<span class="sd">        callbacks (list): A list of :meth:`pigpio.callback`s kept to clear them on exit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">trigger</span><span class="o">=</span><span class="bp">True</span>
+    <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;POKES&#39;</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="p">,</span> <span class="n">pull_ud</span><span class="o">=</span><span class="s1">&#39;U&#39;</span><span class="p">,</span> <span class="n">trigger_ud</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="n">event</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            pin (int): Board-numbered pin, converted to BCM numbering during instantiation.</span>
+<span class="sd">            pull_ud (&#39;U&#39;, &#39;D&#39;, &#39;B&#39;): Should this beambreak be pulled up or down?</span>
+<span class="sd">            trigger_ud (&#39;U&#39;, &#39;D&#39;, &#39;B&#39;): Is the trigger event up (low to high) or down (high to low)?</span>
+<span class="sd">            event (:class:`threading.Event`): We can be passed an Event object if we want to handle</span>
+<span class="sd">                stage transition logic here instead of the :class:`.Task` object, as is typical.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">trigger</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;POKES&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="c1"># Make pigpio instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span> <span class="o">=</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">pi</span><span class="p">()</span>
+
+        <span class="c1"># Convert pin from board to bcm numbering</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin</span> <span class="o">=</span> <span class="n">BOARD_TO_BCM</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">)]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pull_ud</span> <span class="o">=</span> <span class="n">PULL_MAP</span><span class="p">[</span><span class="n">pull_ud</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;pull_ud must be one of {}, was given {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">PULL_MAP</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">pull_ud</span><span class="p">))</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trigger_ud</span> <span class="o">=</span> <span class="n">TRIGGER_MAP</span><span class="p">[</span><span class="n">trigger_ud</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;trigger_ud must be one of {}, was given {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">TRIGGER_MAP</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">trigger_ud</span><span class="p">))</span>
+
+        <span class="c1"># We can be passed a threading.Event object if we want to handle stage logic here</span>
+        <span class="c1"># rather than in the parent as is typical.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event</span> <span class="o">=</span> <span class="n">event</span>
+
+        <span class="c1"># List to store callback handles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Setup pin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">INPUT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_pull_up_down</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pull_ud</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Beambreak.release"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Beambreak.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simply calls `self.pig.stop()` to release pigpio resources.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Beambreak.assign_cb"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Beambreak.assign_cb">[docs]</a>    <span class="k">def</span> <span class="nf">assign_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_fn</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">evented</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">manual_trigger</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets `callback_fn` to be called when triggered.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            callback_fn (callable): The function to be called when triggered</span>
+<span class="sd">            add (bool): Are we adding another callback?</span>
+<span class="sd">                If False, the previous callbacks are cleared.</span>
+<span class="sd">            evented (bool): Should triggering this event also set the internal :attr:`~.Beambreak.event`?</span>
+<span class="sd">                Note that :attr:`.Beambreak.event` must have been passed.</span>
+<span class="sd">            manual_trigger (&#39;U&#39;, &#39;D&#39;, &#39;B&#39;): We can override :attr:`.Beambreak.trigger_ud` if needed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If we aren&#39;t adding, we clear any existing callbacks</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">add</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear_cb</span><span class="p">()</span>
+
+        <span class="c1"># We can set the direction of the trigger manually,</span>
+        <span class="c1"># for example if we want to set &#39;BOTH&#39; only sometimes</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">manual_trigger</span><span class="p">:</span>
+            <span class="n">trigger_ud</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger_ud</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">trigger_ud</span> <span class="o">=</span> <span class="n">TRIGGER_MAP</span><span class="p">[</span><span class="n">manual_trigger</span><span class="p">]</span>
+
+        <span class="c1"># We can handle eventing (blocking) here if we want (usually this is handled in the parent)</span>
+        <span class="c1"># This won&#39;t work if we weren&#39;t init&#39;d with an event.</span>
+        <span class="k">if</span> <span class="n">evented</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">event</span><span class="p">:</span>
+            <span class="n">cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="n">trigger_ud</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">set</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">evented</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">event</span><span class="p">:</span>
+            <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;We have no internal event to set!&#39;</span><span class="p">)</span>
+
+        <span class="n">cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="n">trigger_ud</span><span class="p">,</span> <span class="n">callback_fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Beambreak.clear_cb"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Beambreak.clear_cb">[docs]</a>    <span class="k">def</span> <span class="nf">clear_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tries to call `.cancel()` on each of the callbacks in :attr:`Beambreak.callbacks`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">cb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">cb</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span> <span class="o">=</span> <span class="p">[]</span></div></div>
+
+<div class="viewcode-block" id="Flag"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Flag">[docs]</a><span class="k">class</span> <span class="nc">Flag</span><span class="p">(</span><span class="n">Beambreak</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Trivial Reclass of the Beambreak class with the default directions reversed.</span>
+
+<span class="sd">    TODO:</span>
+<span class="sd">        Need to add argument passing into hardware spec so we don&#39;t need stuff like this</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Flag</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="n">pull_ud</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">trigger_ud</span><span class="o">=</span><span class="s2">&quot;U&quot;</span><span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="LED_RGB"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.LED_RGB">[docs]</a><span class="k">class</span> <span class="nc">LED_RGB</span><span class="p">(</span><span class="n">Hardware</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An RGB LED.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        pig (:meth:`pigpio.pi`): The pigpio connection.</span>
+<span class="sd">        flash_block (:class:`threading.Event`): An Event to wait on setting further colors</span>
+<span class="sd">            if we are currently in a threaded flash train</span>
+<span class="sd">        pins (dict): After init, pin numbers are kept in a dict like::</span>
+
+<span class="sd">            {&#39;r&#39;:bcm_number, &#39;g&#39;:...}</span>
+
+<span class="sd">        stored_color (dict): A color we store to restore after we do a flash train.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;LEDS&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pins</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">common</span> <span class="o">=</span> <span class="s1">&#39;anode&#39;</span><span class="p">,</span> <span class="n">blink</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            pins (list): A list of (board) pin numbers.</span>
+<span class="sd">                Either `pins` OR all `r`, `g`, `b` must be passed.</span>
+<span class="sd">            r (int): Board number of Red pin - must be passed with `g` and `b`</span>
+<span class="sd">            g (int): Board number of Green pin - must be passed with `r` and `b`</span>
+<span class="sd">            b (int): Board number of Blue pin - must be passed with `r` and `g`:</span>
+<span class="sd">            common (&#39;anode&#39;, &#39;cathode&#39;): Is this LED common anode (low turns LED on)</span>
+<span class="sd">                or cathode (low turns LED off)</span>
+<span class="sd">            blink (bool): Flash RGB at the end of init to show we&#39;re alive.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">common</span> <span class="o">=</span> <span class="n">common</span>
+
+        <span class="c1"># Dict to store color for after flash trains</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stored_color</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Event to wait on setting colors if we&#39;re flashing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flash_block</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flash_block</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+        <span class="c1"># Initialize connection to pigpio daemon</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span> <span class="o">=</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">pi</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+            <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;No connection to pigpio daemon could be made&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Unpack input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pins</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="ow">and</span> <span class="n">g</span> <span class="ow">and</span> <span class="n">b</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pins</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pins</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pins</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pins</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Dont know how to handle input to LED_RGB&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Convert to BCM numbers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pins</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">BOARD_TO_BCM</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="c1"># set pin mode to output and make sure they&#39;re turned off</span>
+        <span class="k">for</span> <span class="n">pin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">OUTPUT</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">common</span> <span class="o">==</span> <span class="s1">&#39;anode&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_PWM_dutycycle</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">common</span> <span class="o">==</span> <span class="s1">&#39;cathode&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_PWM_dutycycle</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Common passed to LED_RGB not anode or cathode&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Blink to show we&#39;re alive</span>
+        <span class="k">if</span> <span class="n">blink</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">color_series</span><span class="p">([[</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]],</span> <span class="mi">250</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+<div class="viewcode-block" id="LED_RGB.release"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.LED_RGB.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Turns LED off and releases pigpio.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="LED_RGB.set_color"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.LED_RGB.set_color">[docs]</a>    <span class="k">def</span> <span class="nf">set_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">timed</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stored</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">internal</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the color of the LED.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            if called during a :meth:`LED_RGB.color_series`, the color will be stashed and set when the train is over.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            col (list, tuple): an RGB color trio ranging from 0-255. Either `col` or all of `r`, `g`, `b` must be provided</span>
+<span class="sd">            r (int): Red intensity 0-255. Must be passed with `g` and `b`</span>
+<span class="sd">            g (int): Green intensity 0-255. Must be passed with `r` and `b`</span>
+<span class="sd">            b (int): Blue intensity 0-255. Must be passed with `r` and `g`</span>
+<span class="sd">            timed (float): Duration to change to this color before turning off in ms.</span>
+<span class="sd">            stored (bool): Called internally to change back to the color that preceded a flash train. Restores :attr:`LED_RGB.stored_color`.</span>
+<span class="sd">            internal (bool): True if being called inside a flash train.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">stored</span><span class="p">:</span>
+            <span class="c1"># being called after a flash train</span>
+            <span class="c1"># Since this is always called after a flash train, check that we were actually assigned a color</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stored_color</span><span class="p">:</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stored_color</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stored_color</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># It&#39;s fine not to have a color, just return quietly.</span>
+                <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Unpack input</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="ow">and</span> <span class="n">g</span> <span class="ow">and</span> <span class="n">b</span><span class="p">:</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;r&#39;</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="s1">&#39;g&#39;</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">g</span><span class="p">),</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">b</span><span class="p">)}</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;r&#39;</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s1">&#39;g&#39;</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">2</span><span class="p">])}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;Color improperly formatted&#39;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+        <span class="c1"># If we&#39;re flashing or doing a color series, stash the color and we&#39;ll set it after the flash is done</span>
+        <span class="c1"># the &#39;internal&#39; flag checks if this is being called within a flash train</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">internal</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">flash_block</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stored_color</span> <span class="o">=</span> <span class="n">color</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Set PWM dutycycle</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">common</span> <span class="o">==</span> <span class="s1">&#39;anode&#39;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">color</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_PWM_dutycycle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="mi">255</span><span class="o">-</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">common</span> <span class="o">==</span> <span class="s1">&#39;cathode&#39;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">color</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_PWM_dutycycle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="c1"># If this is is a timed blink, start thread to turn led off</span>
+        <span class="k">if</span> <span class="n">timed</span><span class="p">:</span>
+            <span class="c1"># timed should be a float or int specifying the delay in ms</span>
+            <span class="n">offtimer</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">timed</span><span class="p">)</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_color</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;col&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]})</span>
+            <span class="n">offtimer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="LED_RGB.flash"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.LED_RGB.flash">[docs]</a>    <span class="k">def</span> <span class="nf">flash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="p">[[</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Specify a color series by total duration and flash frequency.</span>
+
+<span class="sd">        Largely a convenience function for on/off flashes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            duration (int, float): Duration of flash in ms.</span>
+<span class="sd">            frequency (int, float): Frequency of flashes in Hz</span>
+<span class="sd">            colors (list): A list of RGB values 0-255 like::</span>
+
+<span class="sd">                [[255,255,255],[0,0,0]]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Duration is total in ms, frequency in Hz</span>
+        <span class="c1"># Get number of flashes in duration rounded down</span>
+        <span class="n">n_rep</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span><span class="o">/</span><span class="mf">1000.</span><span class="o">*</span><span class="nb">float</span><span class="p">(</span><span class="n">frequency</span><span class="p">))</span>
+        <span class="n">flashes</span> <span class="o">=</span> <span class="n">colors</span><span class="o">*</span><span class="n">n_rep</span>
+
+        <span class="c1"># Invert frequency to duration for single flash</span>
+        <span class="n">single_dur</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="n">frequency</span><span class="p">)</span><span class="o">*</span><span class="mi">1000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color_series</span><span class="p">(</span><span class="n">flashes</span><span class="p">,</span> <span class="n">single_dur</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LED_RGB.color_series"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.LED_RGB.color_series">[docs]</a>    <span class="k">def</span> <span class="nf">color_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change color through a series for a fixed duration.</span>
+
+<span class="sd">        Wrapper around :meth:`LED_RGB.threaded_color_series`</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            colors (list): A list of RGB values 0-255 like::</span>
+
+<span class="sd">                [[255,255,255],[0,0,0]]</span>
+
+<span class="sd">            duration (int, list): Either a single duration (int, ms)</span>
+<span class="sd">                or list of ints of equal length to `colors` to define</span>
+<span class="sd">                duration for each.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Just a wrapper to make threaded</span>
+        <span class="n">series_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">threaded_color_series</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;colors&#39;</span><span class="p">:</span><span class="n">colors</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="n">duration</span><span class="p">})</span>
+        <span class="n">series_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="LED_RGB.threaded_color_series"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.LED_RGB.threaded_color_series">[docs]</a>    <span class="k">def</span> <span class="nf">threaded_color_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should only be called by :meth:`.LED_RGB.color_series` because it blocks.</span>
+
+<span class="sd">        Clears :attr:`.LED_RGB.flash_block` , sets colors, sleeps, sets the block, and</span>
+<span class="sd">        then sets any color that was passed during the train.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            colors (list): A list of RGB values 0-255 like::</span>
+
+<span class="sd">                [[255,255,255],[0,0,0]]</span>
+
+<span class="sd">            duration (int, list): Either a single duration (int, ms)</span>
+<span class="sd">                or list of ints of equal length to `colors` to define</span>
+<span class="sd">                duration for each.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flash_block</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">colors</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">internal</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span><span class="o">/</span><span class="mi">1000</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">duration</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">colors</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">internal</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">duration</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">/</span><span class="mi">1000</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Dont know how to handle your color series&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flash_block</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="c1"># If we received a color command while we were doing the series, set it now.</span>
+        <span class="c1"># We call the function regardless, it will switch to a color if it has one</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="n">stored</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="Solenoid"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Solenoid">[docs]</a><span class="k">class</span> <span class="nc">Solenoid</span><span class="p">(</span><span class="n">Hardware</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solenoid valves for water delivery.</span>
+
+<span class="sd">    Only NC solenoids should be used, as there is no way to guarantee</span>
+<span class="sd">    that a pin will maintain its voltage when it is released, and you will</span>
+<span class="sd">    spill water all over the place.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        pigpio has a function to send waveforms, which would make solenoid</span>
+<span class="sd">        opening far more accurate. If you are using an audio device, however,</span>
+<span class="sd">        creating and sending waveforms disables it. Waveforms are thus not</span>
+<span class="sd">        implemented here, but their implementation is left, skeleton-like,</span>
+<span class="sd">        in the source should you do an experiment without audio that</span>
+<span class="sd">        needs more precision.</span>
+
+<span class="sd">        It&#39;s hard to see why submillisecond precision</span>
+<span class="sd">        would matter all that much for reward delivery, but such is the</span>
+<span class="sd">        obsessiveness of scientists.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;PORTS&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            pin (int): Board pin number, converted to BCM on init.</span>
+<span class="sd">            duration (int, float): duration of open, ms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Initialize connection to pigpio daemon</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span> <span class="o">=</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">pi</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+            <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;No connection to pigpio daemon could be made&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Setup port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin</span> <span class="o">=</span> <span class="n">BOARD_TO_BCM</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">OUTPUT</span><span class="p">)</span>
+
+        <span class="c1"># Pigpio has us create waves to deliver timed output</span>
+        <span class="c1"># Since we typically only use one duration,</span>
+        <span class="c1"># we make the wave once and only make it again when asked to</span>
+        <span class="c1"># We start with passed or default duration (ms)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span><span class="o">/</span><span class="mi">1000</span>
+        <span class="c1">#self.wave_id = None</span>
+        <span class="c1">#self.make_wave()</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Solenoid.release"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Solenoid.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simply releases the pigpio resources</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+    <span class="c1">#</span>
+    <span class="c1"># def make_wave(self, duration=None):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         duration:</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#</span>
+    <span class="c1">#     # Typically duration is stored as an attribute, but if we are passed one...</span>
+    <span class="c1">#     if duration:</span>
+    <span class="c1">#         self.duration = int(duration)</span>
+    <span class="c1">#</span>
+    <span class="c1">#     # Make a pulse (duration is in microseconds for pigpio, ours is in milliseconds</span>
+    <span class="c1">#     # Pulses are (pin to turn on, pin to turn off, delay)</span>
+    <span class="c1">#     # So we add two pulses, one to turn the pin on with a delay,</span>
+    <span class="c1">#     # then a second to turn the pin off with no delay.</span>
+    <span class="c1">#     reward_pulse = []</span>
+    <span class="c1">#     reward_pulse.append(pigpio.pulse(1&lt;&lt;self.pin, 0, self.duration*1000))</span>
+    <span class="c1">#     reward_pulse.append(pigpio.pulse(0, 1&lt;&lt;self.pin, 0))</span>
+    <span class="c1">#</span>
+    <span class="c1">#     self.pig.wave_add_generic(reward_pulse)</span>
+    <span class="c1">#     self.wave_id = self.pig.wave_create()</span>
+
+<div class="viewcode-block" id="Solenoid.open"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Solenoid.open">[docs]</a>    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Open the valve.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            duration (float): If provided, open for this duration instead of</span>
+<span class="sd">                the duration stored on instantiation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">duration</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">duration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;Need to pass a float for duration, using default dur&#39;</span><span class="p">)</span>
+                <span class="n">duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span>
+
+        <span class="c1">#self.pig.wave_send_once(self.wave_id)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Wheel"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Wheel">[docs]</a><span class="k">class</span> <span class="nc">Wheel</span><span class="p">(</span><span class="n">Hardware</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A continuously measured mouse wheel.</span>
+
+<span class="sd">    Uses a USB computer mouse.</span>
+
+<span class="sd">    Warning:</span>
+<span class="sd">        &#39;vel&#39; thresh_type not implemented</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">input</span>   <span class="o">=</span> <span class="bp">True</span>
+    <span class="nb">type</span>    <span class="o">=</span> <span class="s2">&quot;Wheel&quot;</span>
+    <span class="n">trigger</span> <span class="o">=</span> <span class="bp">False</span> <span class="c1"># even though this is a triggerable option, typically don&#39;t want to assign a cb and instead us a GPIO</span>
+    <span class="c1"># TODO: Make the standard-style trigger.</span>
+    <span class="c1"># TODO: Make wheel movements available locally with a deque</span>
+
+    <span class="n">THRESH_TYPES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;dist&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;vel&#39;</span><span class="p">]</span>
+
+    <span class="n">MODES</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;vel_total&#39;</span><span class="p">,</span> <span class="s1">&#39;steady&#39;</span><span class="p">,</span> <span class="s1">&#39;dist&#39;</span><span class="p">,</span> <span class="s1">&#39;timed&#39;</span><span class="p">)</span>
+
+    <span class="n">MOVE_DTYPE</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;vel&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;dir&#39;</span><span class="p">,</span> <span class="s1">&#39;U5&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;timestamp&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mouse_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">thresh</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">thresh_type</span><span class="o">=</span><span class="s1">&#39;dist&#39;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                 <span class="n">gpio_trig</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">pins</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;vel_total&#39;</span><span class="p">,</span> <span class="n">integrate_dur</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+
+        <span class="c1"># try to get mouse from inputs</span>
+        <span class="c1"># TODO: More robust - specify mouse by hardware attrs</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mouse</span> <span class="o">=</span> <span class="n">devices</span><span class="o">.</span><span class="n">mice</span><span class="p">[</span><span class="n">mouse_idx</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;Could not find requested mouse with index {}</span><span class="se">\n</span><span class="s1">Attempting to use mouse idx 0&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mouse_idx</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mouse</span> <span class="o">=</span> <span class="n">devices</span><span class="o">.</span><span class="n">mice</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># frequency of our updating</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">fs</span>
+        <span class="c1"># time between updates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_dur</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span> <span class="o">=</span> <span class="n">thresh</span>
+        <span class="c1"># thresh type can be &#39;dist&#39;, &#39;x&#39;, &#39;y&#39;, or &#39;vel&#39;</span>
+        <span class="k">if</span> <span class="n">thresh_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">THRESH_TYPES</span><span class="p">:</span>
+            <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;thresh_type must be one of {}, given {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">THRESH_TYPES</span><span class="p">,</span> <span class="n">thresh_type</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thresh_type</span> <span class="o">=</span> <span class="n">thresh_type</span>
+
+        <span class="c1"># mode can be &#39;vel_total&#39;, &#39;vel_x&#39;, &#39;vel_y&#39; or &#39;dist&#39; - report either velocity or distance</span>
+        <span class="c1"># mode can also be &#39;</span>
+        <span class="c1"># TODO: Do two parameters - type &#39;vel&#39; or &#39;dist&#39; and measure &#39;x&#39;, &#39;y&#39;, &#39;total&#39;z</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="c1"># TODO: Implement this</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;steady&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;REL_X&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MOVE_DTYPE</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">integrate_dur</span> <span class="o">=</span> <span class="n">integrate_dur</span>
+
+
+        <span class="c1"># event to signal quitting</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quit_evt</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quit_evt</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="c1"># event to signal when to start accumulating movements to trigger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">measure_evt</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">measure_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># queue to I/O mouse movements summarized at fs Hz</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+        <span class="c1"># lock to prevent race between putting and getting</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qlock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">listens</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;MEASURE&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">l_measure</span><span class="p">,</span>
+                        <span class="s1">&#39;CLEAR&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">l_clear</span><span class="p">,</span>
+                        <span class="s1">&#39;STOP&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">l_stop</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="n">Net_Node</span><span class="p">(</span><span class="s1">&#39;wheel_{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mouse_idx</span><span class="p">),</span>
+                             <span class="n">upstream</span><span class="o">=</span><span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span>
+                             <span class="n">port</span><span class="o">=</span><span class="n">prefs</span><span class="o">.</span><span class="n">MSGPORT</span><span class="p">,</span>
+                             <span class="n">listens</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">listens</span><span class="p">,</span>
+                             <span class="p">)</span>
+
+        <span class="c1"># if we are being used in a child object, we send our trigger via a GPIO pin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpio_trig</span> <span class="o">=</span> <span class="n">gpio_trig</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pins</span> <span class="o">=</span> <span class="n">pins</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpio_trig</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pig</span> <span class="o">=</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">pi</span><span class="p">()</span>
+
+            <span class="n">pins_temp</span> <span class="o">=</span> <span class="n">pins</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pins</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pins_temp</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">BOARD_TO_BCM</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">OUTPUT</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+
+
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="n">start</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Wheel.start"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_record</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_mouse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">quit_evt</span><span class="p">:</span>
+            <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mouse</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_record</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">moves</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MOVE_DTYPE</span><span class="p">)</span>
+
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_mouse</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="n">last_update</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">quit_evt</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">get_nowait</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">Empty</span><span class="p">:</span>
+                <span class="n">events</span> <span class="o">=</span> <span class="bp">None</span>
+
+            <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">move</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;REL_X&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MOVE_DTYPE</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># make a numpy record array of events with 3 fields:</span>
+                <span class="c1"># velocity, dir(ection), timestamp (system seconds)</span>
+                <span class="n">move</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="nb">int</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">state</span><span class="p">),</span> <span class="n">event</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">timestamp</span><span class="p">))</span>\
+                                 <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span> <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">code</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;REL_X&#39;</span><span class="p">,</span> <span class="s1">&#39;REL_Y&#39;</span><span class="p">)],</span>
+                                <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MOVE_DTYPE</span><span class="p">)</span>
+            <span class="n">moves</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">moves</span><span class="p">,</span> <span class="n">move</span><span class="p">])</span>
+
+            <span class="c1"># If we have been told to start measuring for a trigger...</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">measure_evt</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                <span class="n">do_trigger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_thresh</span><span class="p">(</span><span class="n">move</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">do_trigger</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">thresh_trig</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">measure_evt</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="c1"># take the integral of velocities</span>
+
+
+
+            <span class="c1"># If it&#39;s time to report velocity, do it.</span>
+            <span class="n">nowtime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">nowtime</span><span class="o">-</span><span class="n">last_update</span><span class="p">)</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">update_dur</span><span class="p">:</span>
+
+                <span class="c1"># TODO: Implement distance/position reporting</span>
+                <span class="n">y_vel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_move</span><span class="p">(</span><span class="n">moves</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">)</span>
+                <span class="n">x_vel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_move</span><span class="p">(</span><span class="n">moves</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;CONTINUOUS&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="n">x_vel</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span><span class="n">y_vel</span><span class="p">,</span> <span class="s1">&#39;t&#39;</span><span class="p">:</span><span class="n">nowtime</span><span class="p">},</span>
+                               <span class="n">repeat</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+                <span class="n">moves</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MOVE_DTYPE</span><span class="p">)</span>
+
+                <span class="n">last_update</span> <span class="o">=</span> <span class="n">nowtime</span>
+
+<div class="viewcode-block" id="Wheel.check_thresh"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.check_thresh">[docs]</a>    <span class="k">def</span> <span class="nf">check_thresh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">move</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates thresh_val and checks whether it&#39;s above/below threshold</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            move (np.array): Structured array with fields (&#39;vel&#39;, &#39;dir&#39;, &#39;timestamp&#39;)</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Determine whether the threshold was surpassed</span>
+        <span class="n">do_trigger</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;vel_total&#39;</span><span class="p">:</span>
+            <span class="n">thresh_update</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_move</span><span class="p">(</span><span class="n">move</span><span class="p">)</span>
+            <span class="c1"># If instantaneous velocity is above thresh...</span>
+            <span class="k">if</span> <span class="n">thresh_update</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span><span class="p">:</span>
+                <span class="n">do_trigger</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;steady&#39;</span><span class="p">:</span>
+            <span class="c1"># If movements in the recent past are below a certain value</span>
+            <span class="c1"># self.thresh_val should be set to a structured array by l_measure</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span><span class="p">,</span> <span class="n">move</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s1">&#39;THRESH_VAL:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span><span class="p">,</span> <span class="s1">&#39;MOVE:&#39;</span><span class="p">,</span> <span class="n">move</span><span class="p">)</span>
+            <span class="c1"># trim to movements in the time window</span>
+            <span class="n">thresh_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">integrate_dur</span><span class="p">]</span>
+
+            <span class="n">thresh_update</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_move</span><span class="p">(</span><span class="n">thresh_val</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">thresh_update</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">measure_time</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">integrate_dur</span> <span class="o">&lt;</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()):</span>
+                <span class="n">do_trigger</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;dist&#39;</span><span class="p">:</span>
+            <span class="n">thresh_update</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_move</span><span class="p">(</span><span class="n">move</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span> <span class="o">+=</span> <span class="n">thresh_update</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span><span class="p">:</span>
+                <span class="n">do_trigger</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">Warning</span> <span class="p">(</span><span class="s2">&quot;mode is not defined! mode is {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">))</span>
+
+
+        <span class="k">return</span> <span class="n">do_trigger</span></div>
+
+<div class="viewcode-block" id="Wheel.calc_move"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.calc_move">[docs]</a>    <span class="k">def</span> <span class="nf">calc_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">move</span><span class="p">,</span> <span class="n">thresh_type</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate distance move depending on type (x, y, total dist)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            move ():</span>
+<span class="sd">            thresh_type ():</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">thresh_type</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">thresh_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh_type</span>
+
+        <span class="c1"># FIXME: rly inefficient</span>
+        <span class="c1"># get the value of the movement depending on what we&#39;re measuring</span>
+        <span class="k">if</span> <span class="n">thresh_type</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span>
+
+            <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">move</span><span class="p">[</span><span class="s1">&#39;vel&#39;</span><span class="p">][</span><span class="n">move</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;REL_X&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">thresh_type</span> <span class="o">==</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">move</span><span class="p">[</span><span class="s1">&#39;vel&#39;</span><span class="p">][</span><span class="n">move</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;REL_Y&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">thresh_type</span> <span class="o">==</span> <span class="s2">&quot;dist&quot;</span><span class="p">:</span>
+            <span class="n">x_dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">move</span><span class="p">[</span><span class="s1">&#39;vel&#39;</span><span class="p">][</span><span class="n">move</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;REL_X&quot;</span><span class="p">])</span>
+            <span class="n">y_dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">move</span><span class="p">[</span><span class="s1">&#39;vel&#39;</span><span class="p">][</span><span class="n">move</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;REL_Y&quot;</span><span class="p">])</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">x_dist</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">y_dist</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">distance</span></div>
+
+<div class="viewcode-block" id="Wheel.thresh_trig"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.thresh_trig">[docs]</a>    <span class="k">def</span> <span class="nf">thresh_trig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">which</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpio_trig</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">pin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;TRIGGERING&quot;</span><span class="p">,</span> <span class="n">pin</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">gpio_trigger</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpio_trig</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">gpio_trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="n">which</span><span class="p">],</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">measure_evt</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+
+
+
+<div class="viewcode-block" id="Wheel.assign_cb"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.assign_cb">[docs]</a>    <span class="k">def</span> <span class="nf">assign_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger_fn</span><span class="p">):</span>
+        <span class="c1"># want to have callback write an output pin -- so callback should go back to</span>
+        <span class="c1"># the task to write a GPIO pin.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trig_fn</span> <span class="o">=</span> <span class="n">trigger_fn</span></div>
+
+<div class="viewcode-block" id="Wheel.l_measure"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.l_measure">[docs]</a>    <span class="k">def</span> <span class="nf">l_measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Task has signaled that we need to start measuring movements for a trigger</span>
+
+
+<span class="sd">        Args:</span>
+<span class="sd">            value ():</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="s1">&#39;mode&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;mode&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">MODES</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;mode&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;incorrect mode sent: {}, needs to be one of {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;mode&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">MODES</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="s1">&#39;thresh&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;thresh&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;steady&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;REL_X&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MOVE_DTYPE</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">measure_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">measure_evt</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Wheel.l_clear"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.l_clear">[docs]</a>    <span class="k">def</span> <span class="nf">l_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop measuring!</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value ():</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">measure_evt</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Wheel.l_stop"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.l_stop">[docs]</a>    <span class="k">def</span> <span class="nf">l_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop measuring and clear system resources</span>
+<span class="sd">        Args:</span>
+<span class="sd">            value ():</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">measure_evt</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Wheel.release"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quit_evt</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div></div>
+
+
+
+<div class="viewcode-block" id="Scale"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Scale">[docs]</a><span class="k">class</span> <span class="nc">Scale</span><span class="p">(</span><span class="n">Hardware</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Note:</span>
+<span class="sd">        Not implemented, working on using a digital scale to</span>
+<span class="sd">        make weighing faster.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">MODEL</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;stamps.com&#39;</span><span class="p">:{</span>
+            <span class="s1">&#39;vendor_id&#39;</span><span class="p">:</span><span class="mh">0x1446</span><span class="p">,</span>
+            <span class="s1">&#39;product_id&#39;</span><span class="p">:</span> <span class="mh">0x6a73</span>
+
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;stamps.com&#39;</span><span class="p">,</span> <span class="n">vendor_id</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">product_id</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            model:</span>
+<span class="sd">            vendor_id:</span>
+<span class="sd">            product_id:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vendor_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MODEL</span><span class="p">[</span><span class="n">model</span><span class="p">][</span><span class="s1">&#39;vendor_id&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">product_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MODEL</span><span class="p">[</span><span class="n">model</span><span class="p">][</span><span class="s1">&#39;product_id&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">vendor_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vendor_id</span> <span class="o">=</span> <span class="n">vendor_id</span>
+        <span class="k">if</span> <span class="n">product_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">product_id</span> <span class="o">=</span> <span class="n">product_id</span>
+
+        <span class="c1"># find device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">usb</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">idVendor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vendor_id</span><span class="p">,</span>
+                                    <span class="n">idProduct</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">product_id</span><span class="p">)</span>
+        <span class="c1"># default configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">set_configuration</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Pull"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Pull">[docs]</a><span class="k">class</span> <span class="nc">Pull</span><span class="p">(</span><span class="n">Hardware</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pull a pin up or down. Called by the :class:`~.pilot.Pilot` instead of by</span>
+<span class="sd">    a :class:`~.task.Task` as is usual.</span>
+
+<span class="sd">    If a pin should be pulled up or down always, regardless of task,</span>
+<span class="sd">    use this. For example, the `otherwise wonderful HiFiBerry Amp 2 &lt;https://www.hifiberry.com/shop/boards/hifiberry-amp2/&gt;`_</span>
+<span class="sd">    has an undocumented ... feature ... : the (board) pin 8 mutes output when low.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="p">,</span> <span class="n">pud</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            pin (int): (Board) pin number</span>
+<span class="sd">            pud (&#39;U&#39;, &#39;D&#39;): Pull the pin &#39;U&#39;p or &#39;D&#39;own.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span> <span class="o">=</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">pi</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+            <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;No connection to pigpio daemon could be made&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin</span> <span class="o">=</span> <span class="n">BOARD_TO_BCM</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="n">pud</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_pull_up_down</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_UP</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">pud</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_pull_up_down</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_DOWN</span><span class="p">)</span>
+
+
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Pull.release"><a class="viewcode-back" href="../../../rpilot.core.hardware.html#rpilot.core.hardware.Pull.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simply releases the pigpio client.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div></div>
+
+
+
+
+
+
+
+
+
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Jonny Saunders.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

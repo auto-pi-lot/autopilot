@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>rpilot.viz.trial_viewer &#8212; rpilot 0.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/restyle.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          RPilot</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">RPilot Docs <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpilot.core.html">core</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.gui.html">gui</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.gui.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.gui.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.gui.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.hardware.html">hardware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.hardware.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.hardware.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.mouse.html">mouse</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.mouse.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.mouse.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.networking.html">networking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.networking.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.networking.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.pilot.html">pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.pilot.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.pilot.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.plots.html">plots</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.plots.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.plots.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.plots.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.terminal.html">terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.terminal.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.terminal.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.utils.html">utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.utils.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.utils.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpilot.tasks.html">tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.tasks.free_water.html">free_water</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.free_water.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.free_water.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.tasks.graduation.html">graduation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.graduation.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.graduation.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.tasks.nafc.html">nafc</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.nafc.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.nafc.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.tasks.task.html">task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.task.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.task.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpilot.stim.html">stim</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.stim.managers.html">managers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.stim.managers.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.stim.managers.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.stim.sound.html">sound</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.stim.sound.jackclient.html">jackclient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.stim.sound.pyoserver.html">pyoserver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.stim.sound.sounds.html">sounds</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpilot.viz.html">viz</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.viz.trial_viewer.html">trial_viewer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpilot.setup.html">setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.setup.setup_pilot.html">setup_pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.setup.setup_scale.html">setup_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.setup.setup_terminal.html">setup_terminal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpilot.prefs.html">prefs</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+        </div>
+      </div>
+    <div class="col-md-9 content">
+      
+  <h1>Source code for rpilot.viz.trial_viewer</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Warning:</span>
+<span class="sd">    this module is unfinished, so it is undocumented.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># renders a standalone webpage with bokeh of trial data for all mice in the data folder</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))))</span>
+
+
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">figure</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="kn">import</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="kn">import</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">Legend</span><span class="p">,</span> <span class="n">LegendItem</span>
+<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="kn">import</span> <span class="n">gridplot</span>
+<span class="kn">from</span> <span class="nn">bokeh.transform</span> <span class="kn">import</span> <span class="n">factor_cmap</span>
+<span class="kn">from</span> <span class="nn">bokeh.palettes</span> <span class="kn">import</span> <span class="n">Spectral10</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">rpilot.core</span> <span class="kn">import</span> <span class="n">mouse</span>
+<span class="kn">import</span> <span class="nn">colorcet</span> <span class="kn">as</span> <span class="nn">cc</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<div class="viewcode-block" id="load_pilot_db"><a class="viewcode-back" href="../../../rpilot.viz.trial_viewer.html#rpilot.viz.trial_viewer.load_pilot_db">[docs]</a><span class="k">def</span> <span class="nf">load_pilot_db</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span> <span class="k">as</span> <span class="n">pilot_file</span><span class="p">:</span>
+        <span class="n">pilot_db</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">pilot_file</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
+        <span class="c1"># simplify pilot db</span>
+        <span class="n">pilot_db</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;mice&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pilot_db</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">pilot_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">pilot</span><span class="p">,</span> <span class="n">mouselist</span> <span class="ow">in</span> <span class="n">pilot_db</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">ms</span> <span class="ow">in</span> <span class="n">mouselist</span><span class="p">:</span>
+                <span class="n">pilot_dict</span><span class="p">[</span><span class="n">ms</span><span class="p">]</span> <span class="o">=</span> <span class="n">pilot</span>
+        <span class="n">pilot_db</span> <span class="o">=</span> <span class="n">pilot_dict</span>
+
+    <span class="k">return</span> <span class="n">pilot_db</span></div>
+
+
+<div class="viewcode-block" id="load_mouse_data"><a class="viewcode-back" href="../../../rpilot.viz.trial_viewer.html#rpilot.viz.trial_viewer.load_mouse_data">[docs]</a><span class="k">def</span> <span class="nf">load_mouse_data</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">mouse_name</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+
+    <span class="n">pilot_db_fn</span> <span class="o">=</span> <span class="p">[</span><span class="n">fn</span> <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">data_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">fn</span> <span class="o">==</span> <span class="s1">&#39;pilot_db.json&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">pilot_db_fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">pilot_db_fn</span><span class="p">)</span>
+    <span class="n">pilot_db</span> <span class="o">=</span> <span class="n">load_pilot_db</span><span class="p">(</span><span class="n">pilot_db_fn</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="c1"># find pilot for mouse</span>
+    <span class="n">pilot_name</span> <span class="o">=</span> <span class="n">pilot_db</span><span class="p">[</span><span class="n">mouse_name</span><span class="p">]</span>
+
+    <span class="n">amus</span> <span class="o">=</span> <span class="n">mouse</span><span class="o">.</span><span class="n">Mouse</span><span class="p">(</span><span class="n">mouse_name</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="n">data_dir</span><span class="p">)</span>
+
+    <span class="n">step_data</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">grad_data</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">if</span> <span class="n">steps</span><span class="p">:</span>
+        <span class="n">step_data</span> <span class="o">=</span> <span class="n">amus</span><span class="o">.</span><span class="n">get_trial_data</span><span class="p">()</span>
+        <span class="n">step_data</span><span class="p">[</span><span class="s1">&#39;mouse&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mouse_name</span>
+        <span class="n">step_data</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pilot_name</span>
+
+    <span class="k">if</span> <span class="n">grad</span><span class="p">:</span>
+        <span class="c1"># get historical graduation data</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">grad_data</span> <span class="o">=</span> <span class="n">amus</span><span class="o">.</span><span class="n">get_step_history</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">grad_data</span> <span class="o">=</span> <span class="n">amus</span><span class="o">.</span><span class="n">get_step_history</span><span class="p">(</span><span class="n">use_history</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="n">grad_data</span><span class="p">[</span><span class="s1">&#39;mouse&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mouse_name</span>
+        <span class="n">grad_data</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pilot_name</span>
+
+    <span class="k">return</span> <span class="n">step_data</span><span class="p">,</span> <span class="n">grad_data</span></div>
+
+
+
+
+
+
+
+<div class="viewcode-block" id="load_mouse_dir"><a class="viewcode-back" href="../../../rpilot.viz.trial_viewer.html#rpilot.viz.trial_viewer.load_mouse_dir">[docs]</a><span class="k">def</span> <span class="nf">load_mouse_dir</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">which</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        data_dir (str): A path to a directory with :class:`~.core.mouse.Mouse` style hdf5 files</span>
+<span class="sd">        steps (bool): Whether to return full trial-level data for each step</span>
+<span class="sd">        grad (bool): Whether to return summarized step graduation data.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mouse_fn</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fn</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">data_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.h5&#39;</span><span class="p">)]</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">which</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">mouse_fn</span> <span class="o">=</span> <span class="p">[</span><span class="n">fn</span> <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">mouse_fn</span> <span class="k">if</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">which</span><span class="p">]</span>
+
+    <span class="n">all_mice_steps</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">all_mice_grad</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">for</span> <span class="n">mouse_name</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">mouse_fn</span><span class="p">):</span>
+        <span class="n">mouse_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">mouse_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">step_data</span><span class="p">,</span> <span class="n">grad_data</span> <span class="o">=</span> <span class="n">load_mouse_data</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">mouse_name</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">grad</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">step_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">all_mice_steps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">all_mice_steps</span> <span class="o">=</span> <span class="n">all_mice_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">all_mice_steps</span> <span class="o">=</span> <span class="n">step_data</span>
+
+        <span class="k">if</span> <span class="n">grad_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">all_mice_grad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">all_mice_grad</span> <span class="o">=</span> <span class="n">all_mice_grad</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">grad_data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">all_mice_grad</span> <span class="o">=</span> <span class="n">grad_data</span>
+
+    <span class="k">return</span> <span class="n">all_mice_steps</span><span class="p">,</span> <span class="n">all_mice_grad</span></div>
+
+
+
+
+<div class="viewcode-block" id="step_viewer"><a class="viewcode-back" href="../../../rpilot.viz.trial_viewer.html#rpilot.viz.trial_viewer.step_viewer">[docs]</a><span class="k">def</span> <span class="nf">step_viewer</span><span class="p">(</span><span class="n">grad_data</span><span class="p">):</span>
+    <span class="n">mice</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">grad_data</span><span class="p">[</span><span class="s1">&#39;mouse&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+    <span class="n">palette</span> <span class="o">=</span> <span class="p">[</span><span class="n">cc</span><span class="o">.</span><span class="n">rainbow</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">grad_data</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()))]</span>
+
+    <span class="n">current_step</span> <span class="o">=</span> <span class="n">grad_data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;mouse&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+    <span class="n">current_step</span> <span class="o">=</span> <span class="n">current_step</span><span class="p">[[</span><span class="s1">&#39;mouse&#39;</span><span class="p">,</span> <span class="s1">&#39;step_n&#39;</span><span class="p">,</span> <span class="s1">&#39;pilot&#39;</span><span class="p">]]</span>
+
+    <span class="n">pilots</span> <span class="o">=</span> <span class="n">current_step</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+    <span class="n">pilot_colors</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="p">:</span><span class="n">palette</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pilots</span><span class="p">)</span> <span class="p">}</span>
+    <span class="n">pilot_colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">pilot_colors</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">current_step</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]]</span>
+    <span class="n">current_step</span><span class="p">[</span><span class="s1">&#39;colors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pilot_colors</span>
+
+
+
+
+    <span class="n">p</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">x_range</span><span class="o">=</span><span class="n">current_step</span><span class="p">[</span><span class="s1">&#39;mouse&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">(),</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Mouse Steps&#39;</span><span class="p">,</span>
+               <span class="n">plot_height</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span>
+               <span class="n">plot_width</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">major_label_orientation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">bars</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">vbar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;mouse&#39;</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="s1">&#39;step_n&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+           <span class="n">fill_color</span><span class="o">=</span><span class="n">factor_cmap</span><span class="p">(</span><span class="s1">&#39;pilot&#39;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">Spectral10</span><span class="p">,</span> <span class="n">factors</span><span class="o">=</span><span class="n">pilots</span><span class="p">),</span>
+           <span class="n">legend</span><span class="o">=</span><span class="s1">&#39;pilot&#39;</span><span class="p">,</span>
+           <span class="n">source</span><span class="o">=</span><span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">current_step</span><span class="p">))</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="s1">&#39;top_center&#39;</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">orientation</span> <span class="o">=</span> <span class="s1">&#39;horizontal&#39;</span>
+    <span class="c1">#p.add_layout(legend,&#39;below&#39;)</span>
+
+    <span class="n">show</span><span class="p">(</span><span class="n">p</span><span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="trial_viewer"><a class="viewcode-back" href="../../../rpilot.viz.trial_viewer.html#rpilot.viz.trial_viewer.trial_viewer">[docs]</a><span class="k">def</span> <span class="nf">trial_viewer</span><span class="p">(</span><span class="n">step_data</span><span class="p">,</span> <span class="n">grad_data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        step_data:</span>
+<span class="sd">        grad_data:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">step_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">step_data</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span><span class="s1">&#39;response&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">step_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">step_data</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span><span class="s1">&#39;response&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">step_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">step_data</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">step_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">step_data</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="n">palette</span> <span class="o">=</span> <span class="p">[</span><span class="n">cc</span><span class="o">.</span><span class="n">rainbow</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">step_data</span><span class="p">[</span><span class="s1">&#39;mouse&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()))]</span>
+    <span class="n">palette</span> <span class="o">=</span> <span class="p">[</span><span class="n">cc</span><span class="o">.</span><span class="n">rainbow</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">15</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
+
+    <span class="n">mice</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">step_data</span><span class="p">[</span><span class="s1">&#39;mouse&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+    <span class="n">current_step</span> <span class="o">=</span> <span class="n">step_data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;mouse&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+    <span class="n">current_step</span> <span class="o">=</span> <span class="n">current_step</span><span class="p">[[</span><span class="s1">&#39;mouse&#39;</span><span class="p">,</span><span class="s1">&#39;step&#39;</span><span class="p">]]</span>
+
+    <span class="n">plots</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">x_range</span><span class="o">=</span><span class="n">step_data</span><span class="p">[</span><span class="s1">&#39;mouse&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">(),</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Mouse Steps&#39;</span><span class="p">,</span>
+               <span class="n">plot_height</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">major_label_orientation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">vbar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">current_step</span><span class="p">[</span><span class="s1">&#39;mouse&#39;</span><span class="p">],</span> <span class="n">top</span><span class="o">=</span><span class="n">current_step</span><span class="p">[</span><span class="s1">&#39;step&#39;</span><span class="p">],</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+    <span class="n">plots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">mus</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">step_data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;mouse&#39;</span><span class="p">)):</span>
+        <span class="n">meancx</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;correct&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">ewm</span><span class="p">(</span><span class="n">span</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">ignore_na</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">plot_height</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">y_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">title</span><span class="o">=</span><span class="n">mus</span><span class="p">)</span>
+
+        <span class="n">p</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;trial_num&#39;</span><span class="p">],</span> <span class="n">meancx</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">palette</span><span class="p">[</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;step&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">plots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">gridplot</span><span class="p">(</span><span class="n">plots</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">show</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Visualize Trial Data&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-d&#39;</span><span class="p">,</span> <span class="s1">&#39;--dir&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Data directory&quot;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">dir</span><span class="p">:</span>
+        <span class="n">data_dir</span> <span class="o">=</span> <span class="s1">&#39;/usr/rpilot/data&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">data_dir</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No directory file passed, and default location doesn&#39;t exist&quot;</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;No directory passed, loading from default location. Should pass explicitly with -d&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data_dir</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">dir</span>
+
+    <span class="c1"># load mouse data</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;loading mouse data...&#39;</span><span class="p">)</span>
+    <span class="c1">#step_data, grad_data = load_mouse_data(data_dir)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">grad_data</span> <span class="o">=</span> <span class="n">load_mouse_dir</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">step_viewer</span><span class="p">(</span><span class="n">grad_data</span><span class="p">)</span>
+
+
+
+
+
+
+
+
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Jonny Saunders.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

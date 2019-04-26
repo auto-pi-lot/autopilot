@@ -1,0 +1,31 @@
+Timer
+=====
+
+.. currentmodule:: rpilot.core.plots
+
+.. autoclass:: Timer
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Timer.staticMetaObject
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Timer.start_timer
+      ~Timer.stop_timer
+      ~Timer.update_time
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: staticMetaObject
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: start_timer
+   .. automethod:: stop_timer
+   .. automethod:: update_time

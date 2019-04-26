@@ -1,0 +1,29 @@
+Accuracy
+========
+
+.. currentmodule:: rpilot.tasks.graduation
+
+.. autoclass:: Accuracy
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Accuracy.COLS
+      ~Accuracy.PARAMS
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Accuracy.update
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: COLS
+   .. autoattribute:: PARAMS
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: update

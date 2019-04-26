@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Drag_List &#8212; rpilot 0.2 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/restyle.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Graduation_Widget" href="rpilot.core.gui.Graduation_Widget.html" />
+    <link rel="prev" title="Control_Panel" href="rpilot.core.gui.Control_Panel.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          RPilot</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">RPilot Docs <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../rpilot.core.html">core</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../rpilot.core.gui.html">gui</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.gui.html#functions">Functions</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../rpilot.core.gui.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.gui.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.core.hardware.html">hardware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.hardware.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.hardware.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.core.mouse.html">mouse</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.mouse.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.mouse.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.core.networking.html">networking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.networking.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.networking.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.core.pilot.html">pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.pilot.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.pilot.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.core.plots.html">plots</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.plots.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.plots.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.plots.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.core.terminal.html">terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.terminal.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.terminal.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.core.utils.html">utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.utils.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.utils.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.tasks.html">tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.tasks.free_water.html">free_water</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.tasks.free_water.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.tasks.free_water.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.tasks.graduation.html">graduation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.tasks.graduation.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.tasks.graduation.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.tasks.nafc.html">nafc</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.tasks.nafc.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.tasks.nafc.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.tasks.task.html">task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.tasks.task.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.tasks.task.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.stim.html">stim</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.stim.managers.html">managers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.managers.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.managers.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.stim.sound.html">sound</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.sound.jackclient.html">jackclient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.sound.pyoserver.html">pyoserver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.sound.sounds.html">sounds</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.viz.html">viz</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.viz.trial_viewer.html">trial_viewer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.setup.html">setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.setup.setup_pilot.html">setup_pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.setup.setup_scale.html">setup_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.setup.setup_terminal.html">setup_terminal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.prefs.html">prefs</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Drag_List</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="rpilot.core.gui.Control_Panel.html" title="Previous Chapter: Control_Panel"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Control_Panel</span>
+    </a>
+  </li>
+  <li>
+    <a href="rpilot.core.gui.Graduation_Widget.html" title="Next Chapter: Graduation_Widget"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Graduation_Widget &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/api/rpilot.core.gui.Drag_List.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">Drag_List</a></li>
+</ul>
+
+        </div>
+      </div>
+    <div class="col-md-9 content">
+      
+  <div class="section" id="drag-list">
+<h1>Drag_List<a class="headerlink" href="#drag-list" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="rpilot.core.gui.Drag_List">
+<em class="property">class </em><code class="descclassname">rpilot.core.gui.</code><code class="descname">Drag_List</code><a class="reference internal" href="../_modules/rpilot/core/gui.html#Drag_List"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.gui.Drag_List" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://pyside.github.io/docs/pyside/PySide/QtGui/QListWidget.html#PySide.QtGui.QListWidget" title="(in PySide v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySide.QtGui.QListWidget</span></code></a></p>
+<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">QtGui.QListWidget</span></code> that is capable of having files dragged &amp; dropped.</p>
+<p>copied with much gratitude from <a class="reference external" href="https://stackoverflow.com/a/25614674">stackoverflow</a></p>
+<p>Primarily used in <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Sound_Widget" title="rpilot.core.gui.Sound_Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sound_Widget</span></code></a> to be able to drop sound files.</p>
+<p>To use: connect <cite>fileDropped</cite> to a method, that method will receive a list of files
+dragged onto this widget.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Drag_List.fileDropped" title="rpilot.core.gui.Drag_List.fileDropped"><strong>fileDropped</strong></a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QtCore.Signal</span></code>) – A Qt signal that takes a list</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes Summary</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Drag_List.fileDropped" title="rpilot.core.gui.Drag_List.fileDropped"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fileDropped</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Drag_List.staticMetaObject" title="rpilot.core.gui.Drag_List.staticMetaObject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">staticMetaObject</span></code></a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods Summary</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Drag_List.dragEnterEvent" title="rpilot.core.gui.Drag_List.dragEnterEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dragEnterEvent</span></code></a>(e)</td>
+<td>When files are dragged over us, if they have paths in them, accept the event.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Drag_List.dragMoveEvent" title="rpilot.core.gui.Drag_List.dragMoveEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dragMoveEvent</span></code></a>(event)</td>
+<td>If the <cite>dragEnterEvent</cite> was accepted, while the drag is being moved within us, <cite>setDropAction</cite> to <code class="xref py py-class docutils literal notranslate"><span class="pre">QtCore.Qt.CopyAction</span></code></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Drag_List.dropEvent" title="rpilot.core.gui.Drag_List.dropEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dropEvent</span></code></a>(event)</td>
+<td>When the files are finally dropped, if they contain paths, emit the list of paths through the <cite>fileDropped</cite> signal.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes Documentation</p>
+<dl class="attribute">
+<dt id="rpilot.core.gui.Drag_List.fileDropped">
+<code class="descname">fileDropped</code><em class="property"> = &lt;PySide.QtCore.Signal object&gt;</em><a class="headerlink" href="#rpilot.core.gui.Drag_List.fileDropped" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rpilot.core.gui.Drag_List.staticMetaObject">
+<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#rpilot.core.gui.Drag_List.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods Documentation</p>
+<dl class="method">
+<dt id="rpilot.core.gui.Drag_List.dragEnterEvent">
+<code class="descname">dragEnterEvent</code><span class="sig-paren">(</span><em>e</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/gui.html#Drag_List.dragEnterEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.gui.Drag_List.dragEnterEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>When files are dragged over us, if they have paths in them,
+accept the event.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>e</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QtCore.QEvent</span></code>) – containing the drag information.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rpilot.core.gui.Drag_List.dragMoveEvent">
+<code class="descname">dragMoveEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/gui.html#Drag_List.dragMoveEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.gui.Drag_List.dragMoveEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the <cite>dragEnterEvent</cite> was accepted, while the drag is being moved within us,
+<cite>setDropAction</cite> to <code class="xref py py-class docutils literal notranslate"><span class="pre">QtCore.Qt.CopyAction</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QtCore.QEvent</span></code>) – containing the drag information.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rpilot.core.gui.Drag_List.dropEvent">
+<code class="descname">dropEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/gui.html#Drag_List.dropEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.gui.Drag_List.dropEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>When the files are finally dropped, if they contain paths,
+emit the list of paths through the <cite>fileDropped</cite> signal.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QtCore.QEvent</span></code>) – containing the drag information.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Jonny Saunders.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

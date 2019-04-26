@@ -1,0 +1,8 @@
+<map id="inheritance4221f46f79" name="inheritance4221f46f79">
+<area shape="rect" id="node1" href="#rpilot.stim.sound.sounds.File" target="_top" title="A .wav file." alt="" coords="17,197,89,221"/>
+<area shape="rect" id="node5" href="#rpilot.stim.sound.sounds.Speech" target="_top" title="Speech subclass of File sound." alt="" coords="148,197,220,221"/>
+<area shape="rect" id="node2" href="#rpilot.stim.sound.sounds.Jack_Sound" target="_top" title="Base class for sounds that use the :class:`~.jackclient.JackClient` audio" alt="" coords="5,149,100,173"/>
+<area shape="rect" id="node3" href="#rpilot.stim.sound.sounds.Noise" target="_top" title="White Noise" alt="" coords="17,101,89,125"/>
+<area shape="rect" id="node4" href="#rpilot.stim.sound.sounds.Pyo_Sound" target="_top" title="Metaclass for pyo sound objects." alt="" coords="8,53,98,77"/>
+<area shape="rect" id="node6" href="#rpilot.stim.sound.sounds.Tone" target="_top" title="The Humble Sine Wave" alt="" coords="17,5,89,29"/>
+</map>

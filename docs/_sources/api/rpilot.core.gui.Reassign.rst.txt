@@ -1,0 +1,33 @@
+Reassign
+========
+
+.. currentmodule:: rpilot.core.gui
+
+.. autoclass:: Reassign
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Reassign.staticMetaObject
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Reassign.init_ui
+      ~Reassign.populate_steps
+      ~Reassign.set_protocol
+      ~Reassign.set_step
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: staticMetaObject
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: init_ui
+   .. automethod:: populate_steps
+   .. automethod:: set_protocol
+   .. automethod:: set_step

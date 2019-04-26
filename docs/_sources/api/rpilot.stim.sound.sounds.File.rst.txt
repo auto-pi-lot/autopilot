@@ -1,0 +1,29 @@
+File
+====
+
+.. currentmodule:: rpilot.stim.sound.sounds
+
+.. autoclass:: File
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~File.PARAMS
+      ~File.type
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~File.init_sound
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: PARAMS
+   .. autoattribute:: type
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: init_sound

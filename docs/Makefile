@@ -17,6 +17,7 @@ help:
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	mv $(BUILDDIR)/html/* ./
 
 buildapi:
 	sphinx-apidoc -e -M -d 5 -o source/rst/ ../rpilot/

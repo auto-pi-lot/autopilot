@@ -1,0 +1,4 @@
+<map id="inheritance09988bea3e" name="inheritance09988bea3e">
+<area shape="rect" id="node1" href="#rpilot.stim.sound.jackclient.JackClient" target="_top" title="Client that dumps frames of audio directly into a running jackd client." alt="" coords="125,5,208,29"/>
+<area shape="rect" id="node2" title="Process objects represent activity that is run in a separate process" alt="" coords="5,5,77,29"/>
+</map>

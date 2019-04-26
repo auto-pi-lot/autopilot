@@ -1,0 +1,31 @@
+Control_Panel
+=============
+
+.. currentmodule:: rpilot.core.gui
+
+.. autoclass:: Control_Panel
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Control_Panel.staticMetaObject
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Control_Panel.create_mouse
+      ~Control_Panel.init_ui
+      ~Control_Panel.update_db
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: staticMetaObject
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: create_mouse
+   .. automethod:: init_ui
+   .. automethod:: update_db

@@ -1,0 +1,17 @@
+Pull
+====
+
+.. currentmodule:: rpilot.core.hardware
+
+.. autoclass:: Pull
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Pull.release
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: release

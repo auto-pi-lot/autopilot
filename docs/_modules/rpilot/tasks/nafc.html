@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>rpilot.tasks.nafc &#8212; rpilot 0.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/restyle.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          RPilot</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">RPilot Docs <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpilot.core.html">core</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.gui.html">gui</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.gui.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.gui.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.gui.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.hardware.html">hardware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.hardware.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.hardware.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.mouse.html">mouse</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.mouse.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.mouse.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.networking.html">networking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.networking.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.networking.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.pilot.html">pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.pilot.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.pilot.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.plots.html">plots</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.plots.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.plots.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.plots.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.terminal.html">terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.terminal.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.terminal.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.core.utils.html">utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.utils.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.core.utils.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpilot.tasks.html">tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.tasks.free_water.html">free_water</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.free_water.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.free_water.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.tasks.graduation.html">graduation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.graduation.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.graduation.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.tasks.nafc.html">nafc</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.nafc.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.nafc.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.tasks.task.html">task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.task.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.tasks.task.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpilot.stim.html">stim</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.stim.managers.html">managers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.stim.managers.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.stim.managers.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.stim.sound.html">sound</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.stim.sound.jackclient.html">jackclient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.stim.sound.pyoserver.html">pyoserver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../rpilot.stim.sound.sounds.html">sounds</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpilot.viz.html">viz</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.viz.trial_viewer.html">trial_viewer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpilot.setup.html">setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.setup.setup_pilot.html">setup_pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.setup.setup_scale.html">setup_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpilot.setup.setup_terminal.html">setup_terminal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rpilot.prefs.html">prefs</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+        </div>
+      </div>
+    <div class="col-md-9 content">
+      
+  <h1>Source code for rpilot.tasks.nafc</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">tables</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="kn">from</span> <span class="nn">rpilot.core</span> <span class="kn">import</span> <span class="n">hardware</span>
+<span class="kn">from</span> <span class="nn">rpilot.tasks</span> <span class="kn">import</span> <span class="n">Task</span>
+<span class="kn">from</span> <span class="nn">rpilot.stim</span> <span class="kn">import</span> <span class="n">Stim_Manager</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span> <span class="k">as</span> <span class="n">odict</span>
+<span class="kn">from</span> <span class="nn">rpilot.core.networking</span> <span class="kn">import</span> <span class="n">Net_Node</span>
+
+<span class="kn">from</span> <span class="nn">rpilot</span> <span class="kn">import</span> <span class="n">prefs</span>
+
+<span class="c1"># This declaration allows Mouse to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.</span>
+<span class="c1"># TODO: Move this to __init__</span>
+<span class="n">TASK</span> <span class="o">=</span> <span class="s1">&#39;Nafc&#39;</span>
+
+<div class="viewcode-block" id="Nafc"><a class="viewcode-back" href="../../../rpilot.tasks.nafc.html#rpilot.tasks.nafc.Nafc">[docs]</a><span class="k">class</span> <span class="nc">Nafc</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A Two-alternative forced choice task.</span>
+
+<span class="sd">    *(can&#39;t have number as first character of class.)*</span>
+
+<span class="sd">    **Stages**</span>
+
+<span class="sd">    * **request** - compute stimulus, set request trigger in center port.</span>
+<span class="sd">    * **discrim** - respond to input, set reward/punishment triggers on target/distractor ports</span>
+<span class="sd">    * **reinforcement** - deliver reward/punishment, end trial.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        target (&quot;L&quot;, &quot;R&quot;): Correct response</span>
+<span class="sd">        distractor (&quot;L&quot;, &quot;R&quot;): Incorrect response</span>
+<span class="sd">        stim : Current stimulus</span>
+<span class="sd">        response (&quot;L&quot;, &quot;R&quot;): Response to discriminand</span>
+<span class="sd">        correct (0, 1): Current trial was correct/incorrect</span>
+<span class="sd">        correction_trial (bool): If using correction trials, last trial was a correction trial</span>
+<span class="sd">        trial_counter (:class:`itertools.count`): Which trial are we on?</span>
+<span class="sd">        discrim_playing (bool): Is the stimulus playing?</span>
+<span class="sd">        bailed (0, 1): Mouse answered before stimulus was finished playing.</span>
+<span class="sd">        current_stage (int): As each stage is reached, update for asynchronous event reference</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">STAGE_NAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;request&quot;</span><span class="p">,</span> <span class="s2">&quot;discrim&quot;</span><span class="p">,</span> <span class="s2">&quot;reinforcement&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Class attributes</span>
+
+
+    <span class="c1"># List of needed params, returned data and data format.</span>
+    <span class="c1"># Params are [name]={&#39;tag&#39;: Human Readable Tag, &#39;type&#39;: &#39;int&#39;, &#39;float&#39;, &#39;check&#39;, etc.}</span>
+    <span class="n">PARAMS</span> <span class="o">=</span> <span class="n">odict</span><span class="p">()</span>
+    <span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;reward&#39;</span><span class="p">]</span>         <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span><span class="s1">&#39;Reward Duration (ms)&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;int&#39;</span><span class="p">}</span>
+    <span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;req_reward&#39;</span><span class="p">]</span>     <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span><span class="s1">&#39;Request Rewards&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;check&#39;</span><span class="p">}</span>
+    <span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;punish_stim&#39;</span><span class="p">]</span>   <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span><span class="s1">&#39;White Noise Punishment&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;check&#39;</span><span class="p">}</span>
+    <span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;punish_dur&#39;</span><span class="p">]</span>     <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span><span class="s1">&#39;Punishment Duration (ms)&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;int&#39;</span><span class="p">}</span>
+    <span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;correction&#39;</span><span class="p">]</span>     <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span><span class="s1">&#39;Correction Trials&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;check&#39;</span><span class="p">}</span>
+    <span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;correction_pct&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span><span class="s1">&#39;% Correction Trials&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;int&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;depends&#39;</span><span class="p">:{</span><span class="s1">&#39;correction&#39;</span><span class="p">:</span><span class="bp">True</span><span class="p">}}</span>
+    <span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;bias_mode&#39;</span><span class="p">]</span>      <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span><span class="s1">&#39;Bias Correction Mode&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;list&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;values&#39;</span><span class="p">:{</span><span class="s1">&#39;None&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Proportional&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Thresholded Proportional&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">}}</span>
+    <span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;bias_threshold&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span> <span class="s1">&#39;Bias Correction Threshold (%)&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;int&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;depends&#39;</span><span class="p">:{</span><span class="s1">&#39;bias_mode&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">}}</span>
+    <span class="c1">#PARAMS[&#39;timeout&#39;]        = {&#39;tag&#39;:&#39;Delay Timeout (ms)&#39;,</span>
+    <span class="c1">#                            &#39;type&#39;:&#39;int&#39;}</span>
+    <span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;stim&#39;</span><span class="p">]</span>           <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span><span class="s1">&#39;Sounds&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;sounds&#39;</span><span class="p">}</span>
+
+    <span class="c1"># Set plot params, which data should be plotted, its default shape, etc.</span>
+    <span class="c1"># TODO: Plots should take the default type, but options panel should be able to set - eg. corrects are done by rolling mean as default, but can be made points</span>
+    <span class="n">PLOT</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;target&#39;</span>   <span class="p">:</span> <span class="s1">&#39;point&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;response&#39;</span> <span class="p">:</span> <span class="s1">&#39;segment&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;correct&#39;</span>  <span class="p">:</span> <span class="s1">&#39;rollmean&#39;</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;chance_bar&#39;</span>  <span class="p">:</span> <span class="bp">True</span><span class="p">,</span> <span class="c1"># Draw a red bar at 50%</span>
+        <span class="s1">&#39;roll_window&#39;</span> <span class="p">:</span> <span class="mi">50</span> <span class="c1"># number of trials to roll window over</span>
+    <span class="p">}</span>
+
+    <span class="c1"># PyTables Data descriptor</span>
+    <span class="c1"># for numpy data types see http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html#arrays-dtypes-constructing</span>
+    <span class="k">class</span> <span class="nc">TrialData</span><span class="p">(</span><span class="n">tables</span><span class="o">.</span><span class="n">IsDescription</span><span class="p">):</span>
+        <span class="c1"># This class allows the Mouse object to make a data table with the correct data types. You must update it for any new data you&#39;d like to store</span>
+        <span class="n">trial_num</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Int32Col</span><span class="p">()</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">StringCol</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">StringCol</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">correct</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Int32Col</span><span class="p">()</span>
+        <span class="n">correction</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Int32Col</span><span class="p">()</span>
+        <span class="n">RQ_timestamp</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">StringCol</span><span class="p">(</span><span class="mi">26</span><span class="p">)</span>
+        <span class="n">DC_timestamp</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">StringCol</span><span class="p">(</span><span class="mi">26</span><span class="p">)</span>
+        <span class="n">bailed</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Int32Col</span><span class="p">()</span>
+
+    <span class="n">HARDWARE</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;POKES&#39;</span><span class="p">:{</span>
+            <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Beambreak</span><span class="p">,</span>
+            <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Beambreak</span><span class="p">,</span>
+            <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Beambreak</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;LEDS&#39;</span><span class="p">:{</span>
+            <span class="c1"># TODO: use LEDs, RGB vs. white LED option in init</span>
+            <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">,</span>
+            <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">,</span>
+            <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">LED_RGB</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;PORTS&#39;</span><span class="p">:{</span>
+            <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Solenoid</span><span class="p">,</span>
+            <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Solenoid</span><span class="p">,</span>
+            <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Solenoid</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_block</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">reward</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">req_reward</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                 <span class="n">punish_stim</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">punish_dur</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">correction</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">correction_pct</span><span class="o">=</span><span class="mf">50.</span><span class="p">,</span>
+                 <span class="n">bias_mode</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">bias_threshold</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">current_trial</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            stage_block (:class:`threading.Event`): Signal when task stages complete.</span>
+<span class="sd">            stim (dict): Stimuli like::</span>
+
+
+<span class="sd">                &quot;sounds&quot;: {</span>
+<span class="sd">                    &quot;L&quot;: [{&quot;type&quot;: &quot;Tone&quot;, ...}],</span>
+<span class="sd">                    &quot;R&quot;: [{&quot;type&quot;: &quot;Tone&quot;, ...}]</span>
+<span class="sd">                }</span>
+
+<span class="sd">            reward (float): duration of solenoid open in ms</span>
+<span class="sd">            req_reward (bool): Whether to give a water reward in the center port for requesting trials</span>
+<span class="sd">            punish_stim (bool): Do a white noise punishment stimulus</span>
+<span class="sd">            punish_dur (float): Duration of white noise in ms</span>
+<span class="sd">            correction (bool): Should we do correction trials?</span>
+<span class="sd">            correction_pct (float):  (0-1), What proportion of trials should randomly be correction trials?</span>
+<span class="sd">            bias_mode (False, &quot;thresholded_linear&quot;): False, or some bias correction type (see :class:`.managers.Bias_Correction` )</span>
+<span class="sd">            bias_threshold (float): If using a bias correction mode, what threshold should bias be corrected for?</span>
+<span class="sd">            current_trial (int): If starting at nonzero trial number, which?</span>
+<span class="sd">            **kwargs:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Nafc</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Fixed parameters</span>
+        <span class="c1"># Because the current protocol is json.loads from a string,</span>
+        <span class="c1"># we should explicitly type everything to be safe.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reward</span>         <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">reward</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">req_reward</span>     <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">req_reward</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">punish_stim</span>   <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">punish_stim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">punish_dur</span>     <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">punish_dur</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">correction</span>     <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">correction</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">correction_pct</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">correction_pct</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias_mode</span>      <span class="o">=</span> <span class="n">bias_mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias_threshold</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">bias_threshold</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span>
+        <span class="c1">#self.timeout        = int(timeout)</span>
+
+        <span class="c1"># Variable Parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distractor</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stim</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">correct</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">correction_trial</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trial_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">current_trial</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_trial</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">current_trial</span><span class="p">)</span>
+        <span class="c1">#self.discrim_finished = False # Set to true once the discrim stim has finished, used for punishing leaving C early</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">discrim_playing</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_stage</span> <span class="o">=</span> <span class="bp">None</span> <span class="c1"># Keep track of stages so some asynchronous callbacks know when it&#39;s their turn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bailed</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># We make a list of the variables that need to be reset each trial so it&#39;s easier to do so</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resetting_variables</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bailed</span><span class="p">]</span>
+
+        <span class="c1"># This allows us to cycle through the task by just repeatedly calling self.stages.next()</span>
+        <span class="n">stage_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">discrim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reinforcement</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_stages</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">stage_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stages</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">cycle</span><span class="p">(</span><span class="n">stage_list</span><span class="p">)</span>
+
+        <span class="c1"># Initialize hardware</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_hardware</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_reward</span><span class="p">(</span><span class="n">reward</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="c1"># Initialize stim manager</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stim</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Cant instantiate task without stimuli!&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stim_manager</span> <span class="o">=</span> <span class="n">Stim_Manager</span><span class="p">(</span><span class="n">stim</span><span class="p">)</span>
+
+        <span class="c1"># give the sounds a function to call when they end</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stim_manager</span><span class="o">.</span><span class="n">set_triggers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stim_end</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">correction</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stim_manager</span><span class="o">.</span><span class="n">do_correction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">correction_pct</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">bias_mode</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stim_manager</span><span class="o">.</span><span class="n">do_bias</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_mode</span><span class="p">,</span>
+                                      <span class="n">thresh</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_threshold</span><span class="p">)</span>
+
+        <span class="c1"># If we aren&#39;t passed an event handler</span>
+        <span class="c1"># (used to signal that a trigger has been tripped),</span>
+        <span class="c1"># we should warn whoever called us that things could get a little screwy</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stage_block</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;No stage_block Event() was passed, youll need to handle stage progression on your own&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span> <span class="o">=</span> <span class="n">stage_block</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># def center_out(self, pin, level, tick):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     # Called when something leaves the center pin,</span>
+    <span class="c1">#     # We use this to handle the mouse leaving the port early</span>
+    <span class="c1">#     if self.discrim_playing:</span>
+    <span class="c1">#         self.bail_trial()</span>
+
+
+    <span class="c1">##################################################################################</span>
+    <span class="c1"># Stage Functions</span>
+    <span class="c1">##################################################################################</span>
+<div class="viewcode-block" id="Nafc.request"><a class="viewcode-back" href="../../../rpilot.tasks.nafc.html#rpilot.tasks.nafc.Nafc.request">[docs]</a>    <span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stage 0: compute stimulus, set request trigger in center port.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            data (dict): With fields::</span>
+
+<span class="sd">                {</span>
+<span class="sd">                &#39;target&#39;: self.target,</span>
+<span class="sd">                &#39;trial_num&#39; : self.current_trial,</span>
+<span class="sd">                &#39;correction&#39;: self.correction_trial,</span>
+<span class="sd">                &#39;type&#39;: stimulus type,</span>
+<span class="sd">                **stim.PARAMS</span>
+<span class="sd">                }</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Set the event lock</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="c1"># Reset all the variables that need to be</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">resetting_variables</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c1"># reset triggers if there are any left</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># get next stim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">distractor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_manager</span><span class="o">.</span><span class="n">next_stim</span><span class="p">()</span>
+        <span class="c1"># buffer it</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stim</span><span class="o">.</span><span class="n">buffer</span><span class="p">()</span>
+
+        <span class="c1"># if we&#39;re doing correction trials, check if this is one</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">correction</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">correction_trial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_manager</span><span class="o">.</span><span class="n">correction_trial</span>
+
+        <span class="c1"># Set sound trigger and LEDs</span>
+        <span class="c1"># We make two triggers to play the sound and change the light color</span>
+        <span class="n">change_to_blue</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s1">&#39;LEDS&#39;</span><span class="p">][</span><span class="s1">&#39;C&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">])</span>
+
+        <span class="c1"># set triggers</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">req_reward</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">change_to_blue</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s1">&#39;PORTS&#39;</span><span class="p">][</span><span class="s1">&#39;C&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">open</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim</span><span class="o">.</span><span class="n">play</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">change_to_blue</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim</span><span class="o">.</span><span class="n">play</span><span class="p">]</span>
+
+        <span class="c1"># set to green in the meantime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_leds</span><span class="p">({</span><span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">]})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_trial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trial_counter</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;target&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span>
+            <span class="s1">&#39;trial_num&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_trial</span><span class="p">,</span>
+            <span class="s1">&#39;correction&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">correction_trial</span>
+        <span class="p">}</span>
+        <span class="c1"># get stim info and add to data dict</span>
+        <span class="n">sound_info</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stim</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim</span><span class="o">.</span><span class="n">PARAMS</span><span class="p">}</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">sound_info</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">stim</span><span class="o">.</span><span class="n">type</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_stage</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="Nafc.discrim"><a class="viewcode-back" href="../../../rpilot.tasks.nafc.html#rpilot.tasks.nafc.Nafc.discrim">[docs]</a>    <span class="k">def</span> <span class="nf">discrim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stage 1:  respond to input, set reward/punishment triggers on target/distractor ports</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            data (dict): With fields::</span>
+<span class="sd">                {</span>
+<span class="sd">                &#39;RQ_timestamp&#39;: datetime.datetime.now().isoformat(),</span>
+<span class="sd">                &#39;trial_num&#39;: self.current_trial,</span>
+<span class="sd">                }</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># moust just poked in center, set response triggers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s1">&#39;PORTS&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">open</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">distractor</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">distractor</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">punish</span><span class="p">]</span>
+
+        <span class="c1"># TODO: Handle timeout</span>
+
+        <span class="c1"># Only data is the timestamp</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;RQ_timestamp&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                <span class="s1">&#39;trial_num&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_trial</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_stage</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="Nafc.reinforcement"><a class="viewcode-back" href="../../../rpilot.tasks.nafc.html#rpilot.tasks.nafc.Nafc.reinforcement">[docs]</a>    <span class="k">def</span> <span class="nf">reinforcement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stage 2 - deliver reward/punishment, end trial.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            data (dict): With fields::</span>
+
+<span class="sd">                 {</span>
+<span class="sd">                &#39;DC_timestamp&#39;: datetime.datetime.now().isoformat(),</span>
+<span class="sd">                &#39;response&#39;: self.response,</span>
+<span class="sd">                &#39;correct&#39;: self.correct,</span>
+<span class="sd">                &#39;bailed&#39;: self.bailed,</span>
+<span class="sd">                &#39;trial_num&#39;: self.current_trial,</span>
+<span class="sd">                &#39;TRIAL_END&#39;: True</span>
+<span class="sd">                }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># We do NOT clear the task event flag here because we want</span>
+        <span class="c1"># the pi to call the next stage immediately</span>
+        <span class="c1"># We are just filling in the last data</span>
+        <span class="c1"># and performing any calculations we need for the next trial</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bailed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bailed</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;DC_timestamp&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                <span class="s1">&#39;bailed&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
+                <span class="s1">&#39;trial_num&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_trial</span><span class="p">,</span>
+                <span class="s1">&#39;TRIAL_END&#39;</span><span class="p">:</span><span class="bp">True</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">data</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">correct</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">correct</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># update stim manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stim_manager</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">correct</span><span class="p">)</span>
+
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;DC_timestamp&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+            <span class="s1">&#39;response&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span>
+            <span class="s1">&#39;correct&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">correct</span><span class="p">,</span>
+            <span class="s1">&#39;bailed&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;trial_num&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_trial</span><span class="p">,</span>
+            <span class="s1">&#39;TRIAL_END&#39;</span><span class="p">:</span><span class="bp">True</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_stage</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="Nafc.punish"><a class="viewcode-back" href="../../../rpilot.tasks.nafc.html#rpilot.tasks.nafc.Nafc.punish">[docs]</a>    <span class="k">def</span> <span class="nf">punish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Flash lights, play punishment sound if set</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: If we&#39;re not in the last stage (eg. we were timed out after stim presentation), reset stages</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">punish_block</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">punish_stim</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stim_manager</span><span class="o">.</span><span class="n">play_punishment</span><span class="p">()</span>
+
+        <span class="c1"># self.set_leds()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flash_leds</span><span class="p">()</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">punish_dur</span> <span class="o">/</span> <span class="mf">1000.</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">punish_block</span><span class="o">.</span><span class="n">set</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Nafc.respond"><a class="viewcode-back" href="../../../rpilot.tasks.nafc.html#rpilot.tasks.nafc.Nafc.respond">[docs]</a>    <span class="k">def</span> <span class="nf">respond</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set self.response</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pin: Pin to set response to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">pin</span></div>
+
+<div class="viewcode-block" id="Nafc.stim_start"><a class="viewcode-back" href="../../../rpilot.tasks.nafc.html#rpilot.tasks.nafc.Nafc.stim_start">[docs]</a>    <span class="k">def</span> <span class="nf">stim_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        mark discrim_playing = true</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">discrim_playing</span> <span class="o">=</span> <span class="bp">True</span></div>
+
+
+<div class="viewcode-block" id="Nafc.stim_end"><a class="viewcode-back" href="../../../rpilot.tasks.nafc.html#rpilot.tasks.nafc.Nafc.stim_end">[docs]</a>    <span class="k">def</span> <span class="nf">stim_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        called by stimulus callback</span>
+
+<span class="sd">        set outside lights blue</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Called by the discrim sound&#39;s table trigger when playback is finished</span>
+        <span class="c1"># Used in punishing leaving early</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">discrim_playing</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="c1">#if not self.bailed and self.current_stage == 1:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_leds</span><span class="p">({</span><span class="s1">&#39;L&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;R&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">]})</span></div>
+
+    <span class="c1"># def bail_trial(self):</span>
+    <span class="c1">#     # If a timer ends or the mouse pulls out too soon, we punish and bail</span>
+    <span class="c1">#     self.bailed = 1</span>
+    <span class="c1">#     self.triggers = {}</span>
+    <span class="c1">#     self.punish()</span>
+    <span class="c1">#     self.stage_block.set()</span>
+
+    <span class="c1"># def clear_triggers(self):</span>
+    <span class="c1">#     for pin in self.pins.values():</span>
+    <span class="c1">#         pin.clear_cb()</span>
+
+<div class="viewcode-block" id="Nafc.flash_leds"><a class="viewcode-back" href="../../../rpilot.tasks.nafc.html#rpilot.tasks.nafc.Nafc.flash_leds">[docs]</a>    <span class="k">def</span> <span class="nf">flash_leds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        flash lights for punish_dir</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s1">&#39;LEDS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">v</span><span class="o">.</span><span class="n">flash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">punish_dur</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Nafc_Wheel"><a class="viewcode-back" href="../../../rpilot.tasks.nafc.html#rpilot.tasks.nafc.Nafc_Wheel">[docs]</a><span class="k">class</span> <span class="nc">Nafc_Wheel</span><span class="p">(</span><span class="n">Nafc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    2afc using a wheel run on a child pi as the input device</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">HARDWARE</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;POKES&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Beambreak</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;FLAGS&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Flag</span><span class="p">,</span>
+            <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Flag</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;LEDS&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1"># TODO: use LEDs, RGB vs. white LED option in init</span>
+            <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">,</span>
+            <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">,</span>
+            <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">LED_RGB</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">PLOT</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="s1">&#39;shaded&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;response&#39;</span><span class="p">:</span><span class="s1">&#39;segment&#39;</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;continuous&#39;</span> <span class="p">:</span> <span class="bp">True</span>
+    <span class="p">}</span>
+
+    <span class="n">PARAMS</span> <span class="o">=</span> <span class="n">Nafc</span><span class="o">.</span><span class="n">PARAMS</span>
+
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_networking</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Nafc_Wheel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+        <span class="c1"># TODO: Update PARAMS with wheel params</span>
+<div class="viewcode-block" id="Nafc_Wheel.init_networking"><a class="viewcode-back" href="../../../rpilot.tasks.nafc.html#rpilot.tasks.nafc.Nafc_Wheel.init_networking">[docs]</a>    <span class="k">def</span> <span class="nf">init_networking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="n">Net_Node</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;T_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span><span class="p">),</span>
+                             <span class="n">upstream</span><span class="o">=</span><span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span>
+                             <span class="n">port</span><span class="o">=</span><span class="n">prefs</span><span class="o">.</span><span class="n">MSGPORT</span><span class="p">,</span>
+                             <span class="n">listens</span> <span class="o">=</span> <span class="p">{},</span>
+                             <span class="n">instance</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="n">value</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;child&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;parent&#39;</span><span class="p">:</span><span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span> <span class="s1">&#39;mouse&#39;</span><span class="p">:</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;mouse&#39;</span><span class="p">]},</span>
+            <span class="s1">&#39;task_type&#39;</span><span class="p">:</span> <span class="s1">&#39;Wheel Child&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;mouse&#39;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;mouse&#39;</span><span class="p">]</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;CHILD&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div></div>
+
+
+
+
+
+<span class="c1">#</span>
+<span class="c1"># class Gap_2AFC(Nafc):</span>
+<span class="c1">#     def __init__(self, **kwargs):</span>
+<span class="c1">#</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         Args:</span>
+<span class="c1">#             **kwargs:</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         super(Gap_2AFC, self).__init__(**kwargs)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#     def load_sounds(self):</span>
+<span class="c1">#         # TODO: Definitely put this in a metaclass</span>
+<span class="c1">#</span>
+<span class="c1">#         # Iterate through sounds and load them to memory</span>
+<span class="c1">#         for k, v in self.soundict.items():</span>
+<span class="c1">#             # If multiple sounds on one side, v will be a list</span>
+<span class="c1">#             if isinstance(v, list):</span>
+<span class="c1">#                 self.sounds[k] = []</span>
+<span class="c1">#                 for sound in v:</span>
+<span class="c1">#                     if float(sound[&#39;duration&#39;]) == 0:</span>
+<span class="c1">#                         self.sounds[k].append(None)</span>
+<span class="c1">#                         continue</span>
+<span class="c1">#                         # a zero duration gap doesn&#39;t change the continuous noise object</span>
+<span class="c1">#</span>
+<span class="c1">#                     # We send the dict &#39;sound&#39; to the function specified by &#39;type&#39; and &#39;SOUND_LIST&#39; as kwargs</span>
+<span class="c1">#                     self.sounds[k].append(sounds.SOUND_LIST[sound[&#39;type&#39;]](**sound))</span>
+<span class="c1">#                     # Then give the sound a callback to mark when it&#39;s finished</span>
+<span class="c1">#                     #self.sounds[k][-1].set_trigger(self.stim_end)</span>
+<span class="c1">#             # If not a list, a single sound</span>
+<span class="c1">#             else:</span>
+<span class="c1">#                 if v[&#39;duration&#39;] == 0:</span>
+<span class="c1">#                     self.sounds[k] = [None]</span>
+<span class="c1">#                     continue</span>
+<span class="c1">#</span>
+<span class="c1">#                 self.sounds[k] = sounds.SOUND_LIST[v[&#39;type&#39;]](**v)</span>
+<span class="c1">#                 #self.sounds[k].set_trigger(self.stim_end)</span>
+<span class="c1">#</span>
+<span class="c1">#     def blank_trigger(self):</span>
+<span class="c1">#         print(&#39;blank trig&#39;)</span>
+<span class="c1">#         sys.stdout.flush()</span>
+<span class="c1">#         #pass</span>
+<span class="c1">#</span>
+<span class="c1">#     def stim_end(self):</span>
+<span class="c1">#         # Called by the discrim sound&#39;s table trigger when playback is finished</span>
+<span class="c1">#         # Used in punishing leaving early</span>
+<span class="c1">#</span>
+<span class="c1">#         self.set_leds({&#39;L&#39;:[0,255,0], &#39;R&#39;:[0,255,0]})</span>
+<span class="c1">#</span>
+<span class="c1">#     def request(self,*args,**kwargs):</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         Args:</span>
+<span class="c1">#             args:</span>
+<span class="c1">#             kwargs:</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         # Set the event lock</span>
+<span class="c1">#         self.stage_block.clear()</span>
+<span class="c1">#</span>
+<span class="c1">#         # Reset all the variables that need to be</span>
+<span class="c1">#         for v in self.resetting_variables:</span>
+<span class="c1">#             v = None</span>
+<span class="c1">#</span>
+<span class="c1">#         self.triggers = {}</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#         # Attempt to identify target sound</span>
+<span class="c1">#         #TODO: Implement sound ID&#39;s better</span>
+<span class="c1">#         #try:</span>
+<span class="c1">#         #    self.target_sound_id = self.target_sound.id</span>
+<span class="c1">#         #except AttributeError:</span>
+<span class="c1">#         #    warnings.warn(&quot;Sound ID not defined! Sounds cannot be uniquely identified!&quot;)</span>
+<span class="c1">#         #    self.target_sound_id = None</span>
+<span class="c1">#</span>
+<span class="c1">#         # Set sound trigger and LEDs</span>
+<span class="c1">#         # We make two triggers to play the sound and change the light color</span>
+<span class="c1">#</span>
+<span class="c1">#         # set triggers</span>
+<span class="c1">#         if self.target_sound is None:</span>
+<span class="c1">#             sound_trigger = self.blank_trigger</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             sound_trigger = self.target_sound.play</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#         if self.req_reward is True:</span>
+<span class="c1">#             self.triggers[&#39;C&#39;] = [self.pins[&#39;PORTS&#39;][&#39;C&#39;].open, sound_trigger, self.stim_end]</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             self.triggers[&#39;C&#39;] = [sound_trigger, self.stim_end]</span>
+<span class="c1">#         self.set_leds({&#39;C&#39;: [0, 255, 0]})</span>
+<span class="c1">#</span>
+<span class="c1">#         self.current_trial = self.trial_counter.next()</span>
+<span class="c1">#         data = {</span>
+<span class="c1">#             &#39;target&#39;:self.target,</span>
+<span class="c1">#             #&#39;target_sound_id&#39;:self.target_sound_id,</span>
+<span class="c1">#             &#39;RQ_timestamp&#39;:datetime.datetime.now().isoformat(),</span>
+<span class="c1">#             &#39;trial_num&#39; : self.current_trial</span>
+<span class="c1">#             #&#39;correction&#39;:self.correction_trial</span>
+<span class="c1">#         }</span>
+<span class="c1">#         # get sound info and add to data dict</span>
+<span class="c1">#         if self.target_sound is None:</span>
+<span class="c1">#             sound_info = {&#39;duration&#39;:0, &#39;amplitude&#39;:0.01}</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             sound_info = {k:getattr(self.target_sound, k) for k in self.target_sound.PARAMS}</span>
+<span class="c1">#             data.update({&#39;type&#39;: self.target_sound.type})</span>
+<span class="c1">#</span>
+<span class="c1">#         data.update(sound_info)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#         self.current_stage = 0</span>
+<span class="c1">#         return data</span>
+<span class="c1">#</span>
+<span class="c1">#     def end(self):</span>
+<span class="c1">#         for k, v in self.sounds.items():</span>
+<span class="c1">#             if isinstance(v, list):</span>
+<span class="c1">#                 for sound in v:</span>
+<span class="c1">#                     try:</span>
+<span class="c1">#                         sound.stop()</span>
+<span class="c1">#                     except:</span>
+<span class="c1">#                         pass</span>
+<span class="c1">#             else:</span>
+<span class="c1">#                 try:</span>
+<span class="c1">#                     v.stop()</span>
+<span class="c1">#                 except:</span>
+<span class="c1">#                     pass</span>
+<span class="c1">#</span>
+<span class="c1">#         for k, v in self.pins.items():</span>
+<span class="c1">#             for pin, obj in v.items():</span>
+<span class="c1">#                 if k == &quot;LEDS&quot;:</span>
+<span class="c1">#                     obj.set_color([0,0,0])</span>
+<span class="c1">#                 obj.release()</span>
+
+
+
+
+
+
+
+
+
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Jonny Saunders.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

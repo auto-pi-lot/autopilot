@@ -1,0 +1,35 @@
+Sound_Widget
+============
+
+.. currentmodule:: rpilot.core.gui
+
+.. autoclass:: Sound_Widget
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Sound_Widget.staticMetaObject
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Sound_Widget.add_sound
+      ~Sound_Widget.files_dropped
+      ~Sound_Widget.pass_set_param_function
+      ~Sound_Widget.populate_lists
+      ~Sound_Widget.remove_sound
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: staticMetaObject
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: add_sound
+   .. automethod:: files_dropped
+   .. automethod:: pass_set_param_function
+   .. automethod:: populate_lists
+   .. automethod:: remove_sound

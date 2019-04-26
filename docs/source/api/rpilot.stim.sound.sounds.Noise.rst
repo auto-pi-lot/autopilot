@@ -1,0 +1,29 @@
+Noise
+=====
+
+.. currentmodule:: rpilot.stim.sound.sounds
+
+.. autoclass:: Noise
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Noise.PARAMS
+      ~Noise.type
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Noise.init_sound
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: PARAMS
+   .. autoattribute:: type
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: init_sound

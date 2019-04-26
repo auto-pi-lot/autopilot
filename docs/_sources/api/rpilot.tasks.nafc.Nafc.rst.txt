@@ -1,0 +1,47 @@
+Nafc
+====
+
+.. currentmodule:: rpilot.tasks.nafc
+
+.. autoclass:: Nafc
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Nafc.HARDWARE
+      ~Nafc.PARAMS
+      ~Nafc.PLOT
+      ~Nafc.STAGE_NAMES
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Nafc.discrim
+      ~Nafc.flash_leds
+      ~Nafc.punish
+      ~Nafc.reinforcement
+      ~Nafc.request
+      ~Nafc.respond
+      ~Nafc.stim_end
+      ~Nafc.stim_start
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: HARDWARE
+   .. autoattribute:: PARAMS
+   .. autoattribute:: PLOT
+   .. autoattribute:: STAGE_NAMES
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: discrim
+   .. automethod:: flash_leds
+   .. automethod:: punish
+   .. automethod:: reinforcement
+   .. automethod:: request
+   .. automethod:: respond
+   .. automethod:: stim_end
+   .. automethod:: stim_start

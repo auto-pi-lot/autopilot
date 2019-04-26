@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>utils &#8212; rpilot 0.2 documentation</title>
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="_static/restyle.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="InvokeEvent" href="api/rpilot.core.utils.InvokeEvent.html" />
+    <link rel="prev" title="Terminal" href="api/rpilot.core.terminal.Terminal.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          RPilot</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">RPilot Docs <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="rpilot.core.html">core</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="rpilot.core.gui.html">gui</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.core.gui.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.core.gui.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.core.gui.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rpilot.core.hardware.html">hardware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.core.hardware.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.core.hardware.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rpilot.core.mouse.html">mouse</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.core.mouse.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.core.mouse.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rpilot.core.networking.html">networking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.core.networking.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.core.networking.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rpilot.core.pilot.html">pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.core.pilot.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.core.pilot.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rpilot.core.plots.html">plots</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.core.plots.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.core.plots.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.core.plots.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rpilot.core.terminal.html">terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.core.terminal.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.core.terminal.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rpilot.tasks.html">tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rpilot.tasks.free_water.html">free_water</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.tasks.free_water.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.tasks.free_water.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rpilot.tasks.graduation.html">graduation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.tasks.graduation.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.tasks.graduation.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rpilot.tasks.nafc.html">nafc</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.tasks.nafc.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.tasks.nafc.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rpilot.tasks.task.html">task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.tasks.task.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.tasks.task.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rpilot.stim.html">stim</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rpilot.stim.managers.html">managers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.stim.managers.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.stim.managers.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rpilot.stim.sound.html">sound</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.stim.sound.jackclient.html">jackclient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.stim.sound.pyoserver.html">pyoserver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rpilot.stim.sound.sounds.html">sounds</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rpilot.viz.html">viz</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rpilot.viz.trial_viewer.html">trial_viewer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rpilot.setup.html">setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rpilot.setup.setup_pilot.html">setup_pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rpilot.setup.setup_scale.html">setup_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rpilot.setup.setup_terminal.html">setup_terminal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rpilot.prefs.html">prefs</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">utils</a><ul>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="api/rpilot.core.terminal.Terminal.html" title="Previous Chapter: Terminal"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Terminal</span>
+    </a>
+  </li>
+  <li>
+    <a href="api/rpilot.core.utils.InvokeEvent.html" title="Next Chapter: InvokeEvent"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">InvokeEvent &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/rpilot.core.utils.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">utils</a><ul>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    <div class="col-md-9 content">
+      
+  <div class="section" id="module-rpilot.core.utils">
+<span id="utils"></span><h1>utils<a class="headerlink" href="#module-rpilot.core.utils" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#rpilot.core.utils.InvokeEvent" title="rpilot.core.utils.InvokeEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a>(fn,&nbsp;*args,&nbsp;**kwargs)</td>
+<td>Sends signals to the main QT thread from spawned message threads</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#rpilot.core.utils.Invoker" title="rpilot.core.utils.Invoker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Invoker</span></code></a></td>
+<td>Wrapper that calls an evoked event made by <a class="reference internal" href="#rpilot.core.utils.InvokeEvent" title="rpilot.core.utils.InvokeEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#rpilot.core.utils.Param" title="rpilot.core.utils.Param"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Param</span></code></a>(**kwargs)</td>
+<td>In the future, we will implement a coherent Parameter management system</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#rpilot.core.utils.ReturnThread" title="rpilot.core.utils.ReturnThread"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReturnThread</span></code></a>([group,&nbsp;target,&nbsp;name,&nbsp;args,&nbsp;…])</td>
+<td>Thread whose .join() method returns the value from the function thx to <a class="reference external" href="https://stackoverflow.com/a/6894023">https://stackoverflow.com/a/6894023</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="class-inheritance-diagram">
+<h2>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Permalink to this headline">¶</a></h2>
+<div class="graphviz"><img src="_images/inheritance-9300f0e30a918d77a8f845f003cbb5181e567d30.png" alt="Inheritance diagram of rpilot.core.utils.InvokeEvent, rpilot.core.utils.Invoker, rpilot.core.utils.Param, rpilot.core.utils.ReturnThread" usemap="#inheritancee6e6b46106" class="inheritance graphviz" /></div>
+<map id="inheritancee6e6b46106" name="inheritancee6e6b46106">
+<area shape="rect" id="node1" href="#rpilot.core.utils.InvokeEvent" target="_top" title="Sends signals to the main QT thread from spawned message threads" alt="" coords="255,53,350,77"/>
+<area shape="rect" id="node3" href="#rpilot.core.utils.Invoker" target="_top" title="Wrapper that calls an evoked event made by :class:`.InvokeEvent`" alt="" coords="267,101,339,125"/>
+<area shape="rect" id="node6" href="#rpilot.core.utils.Param" target="_top" title="In the future, we will implement a coherent Parameter management system" alt="" coords="8,53,80,77"/>
+<area shape="rect" id="node7" href="#rpilot.core.utils.ReturnThread" target="_top" title="Thread whose .join() method returns the value from the function" alt="" coords="251,5,355,29"/>
+</map><span class="target" id="module-rpilot.core.utils"></span><dl class="class">
+<dt id="rpilot.core.utils.Param">
+<em class="property">class </em><code class="descclassname">rpilot.core.utils.</code><code class="descname">Param</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rpilot/core/utils.html#Param"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.utils.Param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>In the future, we will implement a coherent Parameter management system</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Not Implemented.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>**kwargs</strong> – </td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="rpilot.core.utils.Param.tag">
+<code class="descname">tag</code><em class="property"> = None</em><a class="headerlink" href="#rpilot.core.utils.Param.tag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rpilot.core.utils.Param.type">
+<code class="descname">type</code><em class="property"> = None</em><a class="headerlink" href="#rpilot.core.utils.Param.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rpilot.core.utils.Param.types">
+<code class="descname">types</code><em class="property"> = ['int', 'check', 'list']</em><a class="headerlink" href="#rpilot.core.utils.Param.types" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rpilot.core.utils.Param.__getitem__">
+<code class="descname">__getitem__</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rpilot/core/utils.html#Param.__getitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.utils.Param.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> – </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rpilot.core.utils.Param.__setitem__">
+<code class="descname">__setitem__</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rpilot/core/utils.html#Param.__setitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.utils.Param.__setitem__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> – </li>
+<li><strong>value</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rpilot.core.utils.Param.__delitem__">
+<code class="descname">__delitem__</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rpilot/core/utils.html#Param.__delitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.utils.Param.__delitem__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> – </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rpilot.core.utils.Param.__contains__">
+<code class="descname">__contains__</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rpilot/core/utils.html#Param.__contains__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.utils.Param.__contains__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> – </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rpilot.core.utils.InvokeEvent">
+<em class="property">class </em><code class="descclassname">rpilot.core.utils.</code><code class="descname">InvokeEvent</code><span class="sig-paren">(</span><em>fn</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rpilot/core/utils.html#InvokeEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.utils.InvokeEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://pyside.github.io/docs/pyside/PySide/QtCore/QEvent.html#PySide.QtCore.QEvent" title="(in PySide v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySide.QtCore.QEvent</span></code></a></p>
+<p>Sends signals to the main QT thread from spawned message threads</p>
+<p>See <a class="reference external" href="https://stackoverflow.com/a/12127115">stackoverflow</a></p>
+<p>Accepts a function, its args and kwargs and wraps them as a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">QtCore.QEvent</span></code></p>
+<dl class="attribute">
+<dt id="rpilot.core.utils.InvokeEvent.EVENT_TYPE">
+<code class="descname">EVENT_TYPE</code><em class="property"> = PySide.QtCore.QEvent.Type.MaxUser</em><a class="headerlink" href="#rpilot.core.utils.InvokeEvent.EVENT_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rpilot.core.utils.Invoker">
+<em class="property">class </em><code class="descclassname">rpilot.core.utils.</code><code class="descname">Invoker</code><a class="reference internal" href="_modules/rpilot/core/utils.html#Invoker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.utils.Invoker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://pyside.github.io/docs/pyside/PySide/QtCore/QObject.html#PySide.QtCore.QObject" title="(in PySide v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySide.QtCore.QObject</span></code></a></p>
+<p>Wrapper that calls an evoked event made by <a class="reference internal" href="#rpilot.core.utils.InvokeEvent" title="rpilot.core.utils.InvokeEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a></p>
+<dl class="method">
+<dt id="rpilot.core.utils.Invoker.event">
+<code class="descname">event</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rpilot/core/utils.html#Invoker.event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.utils.Invoker.event" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> – </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="rpilot.core.utils.Invoker.staticMetaObject">
+<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#rpilot.core.utils.Invoker.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rpilot.core.utils.ReturnThread">
+<em class="property">class </em><code class="descclassname">rpilot.core.utils.</code><code class="descname">ReturnThread</code><span class="sig-paren">(</span><em>group=None</em>, <em>target=None</em>, <em>name=None</em>, <em>args=()</em>, <em>kwargs={}</em>, <em>Verbose=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rpilot/core/utils.html#ReturnThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.utils.ReturnThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Thread" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code></a></p>
+<p>Thread whose .join() method returns the value from the function
+thx to <a class="reference external" href="https://stackoverflow.com/a/6894023">https://stackoverflow.com/a/6894023</a></p>
+<dl class="method">
+<dt id="rpilot.core.utils.ReturnThread.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/rpilot/core/utils.html#ReturnThread.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.utils.ReturnThread.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method representing the thread’s activity.</p>
+<p>You may override this method in a subclass. The standard run() method
+invokes the callable object passed to the object’s constructor as the
+target argument, if any, with sequential and keyword arguments taken
+from the args and kwargs arguments, respectively.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rpilot.core.utils.ReturnThread.join">
+<code class="descname">join</code><span class="sig-paren">(</span><em>timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rpilot/core/utils.html#ReturnThread.join"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.utils.ReturnThread.join" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait until the thread terminates.</p>
+<p>This blocks the calling thread until the thread whose join() method is
+called terminates – either normally or through an unhandled exception
+or until the optional timeout occurs.</p>
+<p>When the timeout argument is present and not None, it should be a
+floating point number specifying a timeout for the operation in seconds
+(or fractions thereof). As join() always returns None, you must call
+isAlive() after join() to decide whether a timeout happened – if the
+thread is still alive, the join() call timed out.</p>
+<p>When the timeout argument is not present or None, the operation will
+block until the thread terminates.</p>
+<p>A thread can be join()ed many times.</p>
+<p>join() raises a RuntimeError if an attempt is made to join the current
+thread as that would cause a deadlock. It is also an error to join() a
+thread before it has been started and attempts to do so raises the same
+exception.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Jonny Saunders.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
