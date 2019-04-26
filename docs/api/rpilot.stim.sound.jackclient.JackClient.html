@@ -5,23 +5,24 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>JackClient &#8212; rpilot 0.2 documentation</title>
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="/../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="/../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/restyle.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pyoserver" href="../rpilot.stim.sound.pyoserver.html" />
-    <link rel="prev" title="jackclient" href="../rpilot.stim.sound.jackclient.html" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="/../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="/../_static/jquery.js"></script>
+    <script type="text/javascript" src="/../_static/underscore.js"></script>
+    <script type="text/javascript" src="/../_static/doctools.js"></script>
+    <script type="text/javascript" src="/../_static/language_data.js"></script>
+    <script type="text/javascript" src="/../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="/../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="/../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/../_static/bootstrap-sphinx.js"></script>
+    <link rel="canonical" href="http://docs.rpilot.net/api/rpilot.stim.sound.jackclient.JackClient.html" />
+    <link rel="index" title="Index" href="/../genindex.html" />
+    <link rel="search" title="Search" href="/../search.html" />
+    <link rel="next" title="pyoserver" href="/../rpilot.stim.sound.pyoserver.html" />
+    <link rel="prev" title="jackclient" href="/../rpilot.stim.sound.jackclient.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -214,6 +215,14 @@
 <li><a class="reference internal" href="#">JackClient</a></li>
 </ul>
 
+  <li>
+    <a href="../rpilot.stim.sound.jackclient.html" title="Previous Chapter: jackclient"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; jackclient</span>
+    </a>
+  </li>
+  <li>
+    <a href="../rpilot.stim.sound.pyoserver.html" title="Next Chapter: pyoserver"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">pyoserver &raquo;</span>
+    </a>
+  </li>
         </div>
       </div>
     <div class="col-md-9 content">
@@ -231,16 +240,16 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first simple">
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – name of client, default “jack_client”</li>
-<li><strong>q</strong> (<a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Queue</span></code></a>) – Queue that stores buffered frames of audio</li>
-<li><strong>q_lock</strong> (<a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Lock" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lock</span></code></a>) – Lock that manages access to the Queue</li>
-<li><strong>play_evt</strong> (<a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Event</span></code></a>) – Event used to trigger loading samples from <cite>QUEUE</cite>, ie. playing.</li>
-<li><strong>stop_evt</strong> (<a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Event</span></code></a>) – Event that is triggered on the end of buffered audio.</li>
-<li><strong>quit_evt</strong> (<a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Event</span></code></a>) – Event that causes the process to be terminated.</li>
-<li><strong>client</strong> (<a class="reference external" href="https://jackclient-python.readthedocs.io/en/0.4.5/index.html#jack.Client" title="(in JACK Audio Connection Kit (JACK) Client for Python)"><code class="xref py py-class docutils literal notranslate"><span class="pre">jack.Client</span></code></a>) – Client to interface with jackd</li>
-<li><strong>blocksize</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – The blocksize - ie. samples processed per <a class="reference internal" href="../rpilot.stim.sound.jackclient.html#rpilot.stim.sound.jackclient.JackClient.process" title="rpilot.stim.sound.jackclient.JackClient.process"><code class="xref py py-meth docutils literal notranslate"><span class="pre">JackClient.process()</span></code></a> call.</li>
-<li><strong>fs</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Sampling rate of client</li>
-<li><strong>zero_arr</strong> (<a class="reference external" href="https://numpy.readthedocs.io/en/latest/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – cached array of zeroes used to fill jackd pipe when not processing audio.</li>
+<li><strong>name</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – name of client, default “jack_client”</li>
+<li><strong>q</strong> (<a class="reference external" href="/https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Queue</span></code></a>) – Queue that stores buffered frames of audio</li>
+<li><strong>q_lock</strong> (<a class="reference external" href="/https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Lock" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lock</span></code></a>) – Lock that manages access to the Queue</li>
+<li><strong>play_evt</strong> (<a class="reference external" href="/https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Event</span></code></a>) – Event used to trigger loading samples from <cite>QUEUE</cite>, ie. playing.</li>
+<li><strong>stop_evt</strong> (<a class="reference external" href="/https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Event</span></code></a>) – Event that is triggered on the end of buffered audio.</li>
+<li><strong>quit_evt</strong> (<a class="reference external" href="/https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Event</span></code></a>) – Event that causes the process to be terminated.</li>
+<li><strong>client</strong> (<a class="reference external" href="/https://jackclient-python.readthedocs.io/en/0.4.5/index.html#jack.Client" title="(in JACK Audio Connection Kit (JACK) Client for Python)"><code class="xref py py-class docutils literal notranslate"><span class="pre">jack.Client</span></code></a>) – Client to interface with jackd</li>
+<li><strong>blocksize</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – The blocksize - ie. samples processed per <a class="reference internal" href="../rpilot.stim.sound.jackclient.html#rpilot.stim.sound.jackclient.JackClient.process" title="rpilot.stim.sound.jackclient.JackClient.process"><code class="xref py py-meth docutils literal notranslate"><span class="pre">JackClient.process()</span></code></a> call.</li>
+<li><strong>fs</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Sampling rate of client</li>
+<li><strong>zero_arr</strong> (<a class="reference external" href="/https://numpy.readthedocs.io/en/latest/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – cached array of zeroes used to fill jackd pipe when not processing audio.</li>
 </ul>
 </td>
 </tr>
@@ -277,7 +286,7 @@
 <dd><p>Called by <a class="reference internal" href="../rpilot.stim.sound.jackclient.html#rpilot.stim.sound.jackclient.JackClient.run" title="rpilot.stim.sound.jackclient.JackClient.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">JackClient.run()</span></code></a> to boot the server upon starting the process.</p>
 <p>Activates the client and connects it to the number of outports
 determined by <cite>prefs.NCHANNELS</cite></p>
-<p><a class="reference external" href="https://jackclient-python.readthedocs.io/en/0.4.5/index.html#jack.Client" title="(in JACK Audio Connection Kit (JACK) Client for Python)"><code class="xref py py-class docutils literal notranslate"><span class="pre">jack.Client</span></code></a> s can’t be kept alive, so this must be called just before
+<p><a class="reference external" href="/https://jackclient-python.readthedocs.io/en/0.4.5/index.html#jack.Client" title="(in JACK Audio Connection Kit (JACK) Client for Python)"><code class="xref py py-class docutils literal notranslate"><span class="pre">jack.Client</span></code></a> s can’t be kept alive, so this must be called just before
 processing sample starts.</p>
 </dd></dl>
 
@@ -331,7 +340,7 @@ processing sample starts.</p>
     </p>
     <p>
         &copy; Copyright 2019, Jonny Saunders.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.<br/>
+      Created using <a href="/http://sphinx-doc.org/">Sphinx</a> 1.8.3.<br/>
     </p>
   </div>
 </footer>

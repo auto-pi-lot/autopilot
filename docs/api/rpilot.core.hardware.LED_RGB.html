@@ -5,23 +5,24 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>LED_RGB &#8212; rpilot 0.2 documentation</title>
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="/../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="/../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../_static/restyle.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Pull" href="rpilot.core.hardware.Pull.html" />
-    <link rel="prev" title="Hardware" href="rpilot.core.hardware.Hardware.html" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="/../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="/../_static/jquery.js"></script>
+    <script type="text/javascript" src="/../_static/underscore.js"></script>
+    <script type="text/javascript" src="/../_static/doctools.js"></script>
+    <script type="text/javascript" src="/../_static/language_data.js"></script>
+    <script type="text/javascript" src="/../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="/../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="/../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/../_static/bootstrap-sphinx.js"></script>
+    <link rel="canonical" href="http://docs.rpilot.net/api/rpilot.core.hardware.LED_RGB.html" />
+    <link rel="index" title="Index" href="/../genindex.html" />
+    <link rel="search" title="Search" href="/../search.html" />
+    <link rel="next" title="Pull" href="/rpilot.core.hardware.Pull.html" />
+    <link rel="prev" title="Hardware" href="/rpilot.core.hardware.Hardware.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -173,11 +174,11 @@
               
                 
   <li>
-    <a href="rpilot.core.hardware.Hardware.html" title="Previous Chapter: Hardware"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Hardware</span>
+    <a href="/rpilot.core.hardware.Hardware.html" title="Previous Chapter: Hardware"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Hardware</span>
     </a>
   </li>
   <li>
-    <a href="rpilot.core.hardware.Pull.html" title="Next Chapter: Pull"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Pull &raquo;</span>
+    <a href="/rpilot.core.hardware.Pull.html" title="Next Chapter: Pull"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Pull &raquo;</span>
     </a>
   </li>
               
@@ -214,6 +215,14 @@
 <li><a class="reference internal" href="#">LED_RGB</a></li>
 </ul>
 
+  <li>
+    <a href="/rpilot.core.hardware.Hardware.html" title="Previous Chapter: Hardware"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Hardware</span>
+    </a>
+  </li>
+  <li>
+    <a href="/rpilot.core.hardware.Pull.html" title="Next Chapter: Pull"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Pull &raquo;</span>
+    </a>
+  </li>
         </div>
       </div>
     <div class="col-md-9 content">
@@ -231,26 +240,26 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first simple">
 <li><strong>pig</strong> (<code class="xref py py-meth docutils literal notranslate"><span class="pre">pigpio.pi()</span></code>) – The pigpio connection.</li>
-<li><strong>flash_block</strong> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – An Event to wait on setting further colors
+<li><strong>flash_block</strong> (<a class="reference external" href="/https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – An Event to wait on setting further colors
 if we are currently in a threaded flash train</li>
-<li><strong>pins</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>After init, pin numbers are kept in a dict like:</p>
+<li><strong>pins</strong> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>After init, pin numbers are kept in a dict like:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;r&#39;</span><span class="p">:</span><span class="n">bcm_number</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">:</span><span class="o">...</span><span class="p">}</span>
 </pre></div>
 </div>
 </li>
-<li><strong>stored_color</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A color we store to restore after we do a flash train.</li>
+<li><strong>stored_color</strong> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A color we store to restore after we do a flash train.</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>pins</strong> (<em>list</em>) – A list of (board) pin numbers.
 Either <cite>pins</cite> OR all <cite>r</cite>, <cite>g</cite>, <cite>b</cite> must be passed.</li>
-<li><strong>r</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Board number of Red pin - must be passed with <cite>g</cite> and <cite>b</cite></li>
-<li><strong>g</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Board number of Green pin - must be passed with <cite>r</cite> and <cite>b</cite></li>
-<li><strong>b</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Board number of Blue pin - must be passed with <cite>r</cite> and <cite>g</cite>:</li>
+<li><strong>r</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Board number of Red pin - must be passed with <cite>g</cite> and <cite>b</cite></li>
+<li><strong>g</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Board number of Green pin - must be passed with <cite>r</cite> and <cite>b</cite></li>
+<li><strong>b</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Board number of Blue pin - must be passed with <cite>r</cite> and <cite>g</cite>:</li>
 <li><strong>common</strong> (<em>'anode'</em><em>, </em><em>'cathode'</em>) – Is this LED common anode (low turns LED on)
 or cathode (low turns LED off)</li>
-<li><strong>blink</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Flash RGB at the end of init to show we’re alive.</li>
+<li><strong>blink</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Flash RGB at the end of init to show we’re alive.</li>
 </ul>
 </td>
 </tr>
@@ -322,7 +331,7 @@ or cathode (low turns LED off)</li>
 </pre></div>
 </div>
 </li>
-<li><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>list</em>) – Either a single duration (int, ms)
+<li><strong>duration</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>list</em>) – Either a single duration (int, ms)
 or list of ints of equal length to <cite>colors</cite> to define
 duration for each.</li>
 </ul>
@@ -342,8 +351,8 @@ duration for each.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Duration of flash in ms.</li>
-<li><strong>frequency</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Frequency of flashes in Hz</li>
+<li><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><a class="reference external" href="/https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Duration of flash in ms.</li>
+<li><strong>frequency</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><a class="reference external" href="/https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Frequency of flashes in Hz</li>
 <li><strong>colors</strong> (<em>list</em>) – <p>A list of RGB values 0-255 like:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
 </pre></div>
@@ -376,12 +385,12 @@ duration for each.</li>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>col</strong> (<em>list</em><em>, </em><em>tuple</em>) – an RGB color trio ranging from 0-255. Either <cite>col</cite> or all of <cite>r</cite>, <cite>g</cite>, <cite>b</cite> must be provided</li>
-<li><strong>r</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Red intensity 0-255. Must be passed with <cite>g</cite> and <cite>b</cite></li>
-<li><strong>g</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Green intensity 0-255. Must be passed with <cite>r</cite> and <cite>b</cite></li>
-<li><strong>b</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Blue intensity 0-255. Must be passed with <cite>r</cite> and <cite>g</cite></li>
-<li><strong>timed</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Duration to change to this color before turning off in ms.</li>
-<li><strong>stored</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Called internally to change back to the color that preceded a flash train. Restores <code class="xref py py-attr docutils literal notranslate"><span class="pre">LED_RGB.stored_color</span></code>.</li>
-<li><strong>internal</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – True if being called inside a flash train.</li>
+<li><strong>r</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Red intensity 0-255. Must be passed with <cite>g</cite> and <cite>b</cite></li>
+<li><strong>g</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Green intensity 0-255. Must be passed with <cite>r</cite> and <cite>b</cite></li>
+<li><strong>b</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Blue intensity 0-255. Must be passed with <cite>r</cite> and <cite>g</cite></li>
+<li><strong>timed</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Duration to change to this color before turning off in ms.</li>
+<li><strong>stored</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Called internally to change back to the color that preceded a flash train. Restores <code class="xref py py-attr docutils literal notranslate"><span class="pre">LED_RGB.stored_color</span></code>.</li>
+<li><strong>internal</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – True if being called inside a flash train.</li>
 </ul>
 </td>
 </tr>
@@ -405,7 +414,7 @@ then sets any color that was passed during the train.</p>
 </pre></div>
 </div>
 </li>
-<li><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>list</em>) – Either a single duration (int, ms)
+<li><strong>duration</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>list</em>) – Either a single duration (int, ms)
 or list of ints of equal length to <cite>colors</cite> to define
 duration for each.</li>
 </ul>
@@ -432,7 +441,7 @@ duration for each.</li>
     </p>
     <p>
         &copy; Copyright 2019, Jonny Saunders.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.<br/>
+      Created using <a href="/http://sphinx-doc.org/">Sphinx</a> 1.8.3.<br/>
     </p>
   </div>
 </footer>

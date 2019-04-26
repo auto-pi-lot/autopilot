@@ -14,6 +14,9 @@
 #
 import os
 import sys
+import re
+from time import time
+import pdb
 from mock import MagicMock
 sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../..'))
@@ -94,7 +97,7 @@ automodapi_toctreedirnm = 'api'
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
-#autosummary_generate = True
+autosummary_generate = True
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -159,13 +162,15 @@ html_theme_options = {
 
 #
 html_sidebars = {
-    '**': ['localtoc.html']
+    '**': ['localtoc.html', 'relations.html']
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+html_baseurl = 'http://docs.rpilot.net/'
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -373,6 +378,38 @@ highlight_language = "py"
 # MOCK_MODULES.append("tables.nodes")
 # sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
+def fix_html_links(app, exception):
+    print('fixing html links...')
+    start = time()
+    base_dir = os.getcwd()
+    # walk directories, prepending '/' to all links in html files
+    for root, dirs, files in os.walk(base_dir):
+        #pdb.set_trace()
+        html_files = [f for f in files if f.endswith('.html')]
+        for hf in html_files:
+            fullfile = os.path.join(root, hf)
+            with open(fullfile) as hfile:
+                txt = hfile.read()
+            # prepend / to links, we have a few flavors...
+            # js <script> imports use src
+            txt = re.sub(r'(<script type="text/javascript".{0,100}src=")', r'\1/', txt)
+            # stylesheets
+            txt = re.sub(r'(<link rel="stylesheet" href=")', r'\1/', txt)
+            # general links
+            txt = re.sub(r'(<link rel=.{0,50}title=.{0,50}href=")(?!http)', r'\1/', txt)
+            # and finally and <a> links that aren't # links on that page or ../ links
+            txt = re.sub(r'(<a.*href=")(?!#)(?!\.+/)', r'\1/', txt)
+
+            with open(fullfile, 'w') as hfile:
+                hfile.write(txt)
+    finish = time()
+    print('finished fixing html in {} seconds'.format(finish-start))
+
+
+
+
+
+
 def setup(app):
     app.add_stylesheet("restyle.css")
 
@@ -380,3 +417,5 @@ def setup(app):
 
     prefs.add('AUDIOSERVER', 'docs')
     prefs.add('AGENT', 'docs')
+
+    app.connect('build-finished', fix_html_links)
