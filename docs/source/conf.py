@@ -273,6 +273,8 @@ primary_domain = "py"
 
 highlight_language = "py"
 
+# have to have more explicit mocking to use automodapi,
+# which doesn't seem to respect autodoc_mock_imports
 class Mock(MagicMock):
     @classmethod
     def __getattr__(cls, name):
