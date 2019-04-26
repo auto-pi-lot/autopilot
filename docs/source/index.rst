@@ -10,12 +10,8 @@ rpilot API documentation
    :maxdepth: 2
    :caption: Contents:
 
-   rpilot.core
-   rpilot.tasks
-   rpilot.stim
-   rpilot.viz
-   rpilot.setup
-   rpilot.prefs
+   rpilot.core.gui
+
 
 
 
