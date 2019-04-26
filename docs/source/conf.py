@@ -279,6 +279,7 @@ class Mock(MagicMock):
         return MagicMock()
 
 MOCK_MODULES = autodoc_mock_imports
+MOCK_MODULES.append("tables.nodes")
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 def setup(app):
