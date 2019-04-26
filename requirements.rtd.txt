@@ -10,4 +10,5 @@ tornado
 pigpio
 pyqtgraph
 inputs
+cmake
 PySide
