@@ -11,3 +11,4 @@ pigpio
 pyqtgraph
 inputs
 cmake
+PySide
