@@ -41,6 +41,7 @@
 - add video to pilot setup
 - implement message forwarding, eg. to=['hop 1', 'hop 2']
 - make flags for messages, like 'NOCONFIRM'
+- git send-email for classic mode.....
 
 .. automodsumm:: rpilot.core.gui
     :toctree:
