@@ -119,7 +119,11 @@ class NTrials(Graduation):
         Returns:
             bool: Did we graduate or not?
         """
-        trials = self.counter.next()
+        if 'trial_num' in row:
+            trials = row['trial_num']
+        else:
+            trials = self.counter.next()
+
         if trials >= self.n_trials:
             return True
         else:

@@ -28,6 +28,7 @@ if sys.version_info >= (3,0):
 else:
     import Queue as queue
 
+import pdb
 
 
 class Mouse:
@@ -575,7 +576,6 @@ class Mouse:
 
         if not any([cont_table, trial_table]):
             Exception("No data tables exist for step {}! Is there a Trial or Continuous data descriptor in the task class?".format(self.step))
-
         # TODO: Spawn graduation checking object!
         if 'graduation' in task_params.keys():
             grad_type = task_params['graduation']['type']
@@ -587,11 +587,11 @@ class Mouse:
             if grad_obj.PARAMS:
                 # these are params that should be set in the protocol settings
                 for param in grad_obj.PARAMS:
-                    if param not in grad_params.keys():
-                        # for now, try to find it in our attributes
-                        # TODO: See where else we would want to get these from
-                        if hasattr(self, param):
-                            grad_params.update({param:getattr(self, param)})
+                    #if param not in grad_params.keys():
+                    # for now, try to find it in our attributes
+                    # TODO: See where else we would want to get these from
+                    if hasattr(self, param):
+                        grad_params.update({param:getattr(self, param)})
 
             if grad_obj.COLS:
                 # these are columns in our trial table
