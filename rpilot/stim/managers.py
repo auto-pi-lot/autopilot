@@ -74,7 +74,8 @@ class Stim_Manager(object):
             # check if there is a subtype we should be instead
             if 'manager' in stim.keys():
                 if stim['manager'] in MANAGER_MAP.keys():
-                    return MANAGER_MAP['manager'](stim)
+                    manager = stim['manager']
+                    return MANAGER_MAP[manager](stim)
                 else:
                     Exception('Couldnt find stim manager of type: {}'.format(stim['type']))
 
