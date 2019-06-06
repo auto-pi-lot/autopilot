@@ -299,7 +299,7 @@ class Proportional(Stim_Manager):
 
         self.store_groups(stim)
 
-    def init_sounds(self, sounds):
+    def init_sounds(self, sound_stim):
         """
         Instantiate sound objects similarly to :class:`.Stim_Manager`, just organizes them into groups.
 
@@ -324,8 +324,8 @@ class Proportional(Stim_Manager):
         # Iterate through sounds and load them to memory
         self.stimuli = {}
 
-        if isinstance(sounds, tuple) or isinstance(sounds, list):
-            for group in sounds:
+        if isinstance(sound_stim, tuple) or isinstance(sound_stim, list):
+            for group in sound_stim:
                 group_name = group['name']
 
                 # instantiate sounds
