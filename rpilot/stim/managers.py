@@ -330,7 +330,7 @@ class Proportional(Stim_Manager):
 
                 # instantiate sounds
                 self.stimuli[group_name] = {}
-                for k, v in group['sounds']:
+                for k, v in group['sounds'].items():
                     if isinstance(v, list):
                         self.stimuli[group_name][k] = []
                         for sound in v:
