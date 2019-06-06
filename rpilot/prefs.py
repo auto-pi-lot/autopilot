@@ -145,6 +145,7 @@ def compute_calibration(path=None, calibration=None, do_return=False):
 
     # FIXME: UGLY HACK - move this function to another module
     import pandas as pd
+    from scipy.stats import linregress
 
     if not calibration:
         # if we weren't given calibration results, load them
