@@ -60,6 +60,16 @@ def init(fn):
     # Get the current git hash
     prefs['HASH'] = git_version(prefs['REPODIR'])
 
+    # Load any calibration data
+    cal_path = os.path.join(prefs['BASEDIR'], 'port_calibration_fit.json')
+    if os.path.exists(cal_path):
+        with open(cal_path, 'r') as calf:
+            cal_fns = json.load(calf)
+        prefs['PORT_CALIBRATION'] = cal_fns
+
+
+    ###########################
+
     global prefdict
 
     # assign key values to module globals so can access with prefs.pref1

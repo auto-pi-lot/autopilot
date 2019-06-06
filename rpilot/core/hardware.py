@@ -40,7 +40,7 @@ Warning:
 #     pass
 
 #try:
-
+import os
 from rpilot import prefs
 from rpilot.core.networking import Net_Node
 from rpilot.core.utils import ReturnThread
@@ -154,6 +154,19 @@ class Hardware(object):
         """
         if self.trigger:
             Warning("The assign_cb method was not overridden by the subclass!")
+
+    def get_name(self):
+        """
+        Usually Hardware is only instantiated with its pin number,
+        but we can get its name from prefs
+        """
+
+        our_type = prefs.PINS[self.type]
+        for name, pin in our_type.items():
+            if pin == BCM_TO_BOARD[self.pin]:
+                return name
+
+
 
     def __del__(self):
         self.release()
@@ -524,12 +537,14 @@ class Solenoid(Hardware):
 
     output = True
     type = "PORTS"
+    mode = "DURATION" # whether we dispense a fixed duration or fixed volume
 
-    def __init__(self, pin, duration=100):
+    def __init__(self, pin, duration=20, vol=None):
         """
         Args:
             pin (int): Board pin number, converted to BCM on init.
             duration (int, float): duration of open, ms.
+            vol (int, float): desired volume of reward in uL, must have computed calibration results, see :method:`~rpilot.core.terminal.Terminal.calibrate_ports`
         """
 
         # Initialize connection to pigpio daemon
@@ -545,9 +560,35 @@ class Solenoid(Hardware):
         # Since we typically only use one duration,
         # we make the wave once and only make it again when asked to
         # We start with passed or default duration (ms)
-        self.duration = float(duration)/1000
-        #self.wave_id = None
-        #self.make_wave()
+        if vol:
+            self.dur_from_vol(vol)
+
+        else:
+            self.duration = float(duration)/1000
+            #self.wave_id = None
+            #self.make_wave()
+
+    def dur_from_vol(self, vol):
+        """
+        Given a desired volume, set our open duration.
+
+        Args:
+            vol (float, int): desired reward volume in uL
+
+        Returns:
+
+        """
+        # find our pin name
+        self.name = self.get_name()
+        # prefs should have loaded any calibration
+        self.calibration = prefs.PORT_CALIBRATION[self.name]
+        # compute duration from slope and intercept
+        self.duration = float(self.calibration['intercept'] + self.calibration['slope'] * vol) / 1000
+        # some bottom limit to this stuff
+        if self.duration < .002:
+            self.duration = 0.002
+
+        self.mode = "VOLUME"
 
     def __del__(self):
         self.pig.stop()

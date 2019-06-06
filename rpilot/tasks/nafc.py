@@ -49,6 +49,7 @@ class Nafc(Task):
     # List of needed params, returned data and data format.
     # Params are [name]={'tag': Human Readable Tag, 'type': 'int', 'float', 'check', etc.}
     PARAMS = odict()
+    # TODO: Reward no longer just duration -- fix with parameter structure
     PARAMS['reward']         = {'tag':'Reward Duration (ms)',
                                 'type':'int'}
     PARAMS['req_reward']     = {'tag':'Request Rewards',
@@ -147,7 +148,11 @@ class Nafc(Task):
         # Fixed parameters
         # Because the current protocol is json.loads from a string,
         # we should explicitly type everything to be safe.
-        self.reward         = float(reward)
+        if isinstance(reward, dict):
+            self.reward = reward
+        else:
+            self.reward         = {'type':'duration',
+                                   'value': float(reward)}
         self.req_reward     = bool(req_reward)
         self.punish_stim   = bool(punish_stim)
         self.punish_dur     = float(punish_dur)
@@ -181,10 +186,13 @@ class Nafc(Task):
 
         # Initialize hardware
         self.init_hardware()
-        try:
-            self.set_reward(reward)
-        except:
-            pass
+
+        # Set reward values for solenoids
+        # TODO: Super inelegant, implement better with reward manager
+        if self.reward['type'] == "volume":
+            self.set_reward(vol=self.reward['value'])
+        else:
+            self.set_reward(duration=self.reward['value'])
 
         # Initialize stim manager
         if not stim:

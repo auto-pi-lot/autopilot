@@ -16,6 +16,9 @@ import threading
 import time
 import socket
 import json
+import numpy as np
+import pandas as pd
+from scipy.stats import linregress
 
 import tables
 
@@ -369,11 +372,9 @@ class RPilot:
         """
         Save the results of a port calibration
 
-        TODO:
-            Compute the LUT/curve.
-
         """
 
+        # files for storing raw and fit calibration results
         cal_fn = os.path.join(prefs.BASEDIR, 'port_calibration.json')
 
         if os.path.exists(cal_fn):
@@ -394,6 +395,49 @@ class RPilot:
 
         with open(cal_fn, 'w+') as cal_file:
             json.dump(calibration, cal_file)
+
+    def calibration_curve(self, path=None, calibration=None):
+        """
+        # compute curve to compute duration from desired volume
+
+        Args:
+            path: If present, use calibration file specified, otherwise use default.
+        """
+
+        lut_fn = os.path.join(prefs.BASEDIR, 'port_calibration_fit.json')
+
+        if not calibration:
+            # if we weren't given calibration results, load them
+            if path:
+                open_fn = path
+            else:
+                open_fn = os.path.join(prefs.BASEDIR, "port_calibration.json")
+
+            with open(open_fn, 'r') as open_f:
+                calibration = json.load(open_f)
+
+        luts = {}
+        for port, samples in calibration.items():
+            sample_df = pd.DataFrame(samples)
+            # TODO: Filter for only most recent timestamps
+
+            # volumes are saved in mL because of how they are measured, durations are stored in ms
+            # but reward volumes are typically in the uL range, so we make the conversion
+            # by multiplying by 1000
+            line_fit = linregress((sample_df['vol']/sample_df['n_clicks'])*1000., sample_df['dur'])
+            luts[port] = {'intercept': line_fit.intercept,
+                          'slope': line_fit.slope}
+
+        # write to file, overwriting any previous
+        with open(lut_fn, 'w') as lutf:
+            json.dump(luts, lutf)
+
+
+
+
+
+
+
 
 
 

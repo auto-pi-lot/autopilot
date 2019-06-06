@@ -157,21 +157,33 @@ class Task(object):
                     self.logger.exception("Pin could not be instantiated - Type: {}, Pin: {}".format(type, pin))
 
 
-    def set_reward(self, duration, port=None):
+    def set_reward(self, vol=None, duration=None, port=None):
         """
         Set the reward value for each of the 'PORTS'.
 
         Args:
+            vol(float, int): Volume of reward in uL
             duration (float): Duration to open port in ms
             port (None, Port_ID): If `None`, set everything in 'PORTS', otherwise
                 only set `port`
         """
+        if not vol and not duration:
+            Exception("Need to have duration or volume!!")
+        if vol and duration:
+            Warning('given both volume and duration, using volume.')
+
         if not port:
             for k, port in self.pins['PORTS'].items():
-                port.duration = float(duration)/1000.
+                if vol:
+                    port.dur_from_vol(vol)
+                else:
+                    port.duration = float(duration)/1000.
         else:
             try:
-                self.pins['PORTS'][port].duration = float(duration)/1000.
+                if vol:
+                    self.pins['PORTS'][port].dur_from_vol(vol)
+                else:
+                    self.pins['PORTS'][port].duration = float(duration)/1000.
             except KeyError:
                 Exception('No port found named {}'.format(port))
 
