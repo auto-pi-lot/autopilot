@@ -41,6 +41,7 @@ Warning:
 
 #try:
 import os
+import sys
 from rpilot import prefs
 from rpilot.core.networking import Net_Node
 from rpilot.core.utils import ReturnThread
@@ -587,6 +588,9 @@ class Solenoid(Hardware):
         # some bottom limit to this stuff
         if self.duration < .002:
             self.duration = 0.002
+
+        print('USING OPEN TIME {} FOR PORT {}'.format(self.duration, self.name))
+        sys.stdout.flush()
 
         self.mode = "VOLUME"
 

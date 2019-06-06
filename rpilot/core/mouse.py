@@ -438,8 +438,22 @@ class Mouse:
                     if 'trial_num' not in trial_descriptor.columns.keys():
                         trial_descriptor.columns.update({'trial_num': tables.Int32Col()})
                     # if this task has sounds, make columns for them
+                    # TODO: Make stim managers return a list of properties for their sounds
                     if 'stim' in step.keys():
-                        if 'sounds' in step['stim'].keys():
+                        if 'manager' in step['stim'].keys():
+                            # managers have stim nested within groups, but this is still really ugly
+                            sound_params = {}
+                            for g in step['stim']['groups']:
+                                for side, sounds in g['sounds'].items():
+                                    for sound in sounds:
+                                        for k, v in sound.items():
+                                            if k in STRING_PARAMS:
+                                                sound_params[k] = tables.StringCol(1024)
+                                            else:
+                                                sound_params[k] = tables.Float64Col()
+                            trial_descriptor.columns.update(sound_params)
+
+                        elif 'sounds' in step['stim'].keys():
                             # for now we just assume they're floats
                             sound_params = {}
                             for side, sounds in step['stim']['sounds'].items():
