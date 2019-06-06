@@ -32,6 +32,7 @@ Examples:
 import json
 import subprocess
 import os
+from rpilot.core import utils
 
 prefdict = {}
 """
@@ -62,10 +63,18 @@ def init(fn):
 
     # Load any calibration data
     cal_path = os.path.join(prefs['BASEDIR'], 'port_calibration_fit.json')
+    cal_raw = os.path.join(prefs['BASEDIR'], 'port_calibration.json')
     if os.path.exists(cal_path):
         with open(cal_path, 'r') as calf:
             cal_fns = json.load(calf)
         prefs['PORT_CALIBRATION'] = cal_fns
+    elif os.path.exists(cal_raw):
+        # aka raw calibration results exist but no fit has been computed
+        luts = utils.compute_calibration(path=cal_raw, do_return=True)
+        with open(cal_path, 'w') as calf:
+            json.dump(luts, calf)
+        prefs['PORT_CALIBRATION'] = luts
+
 
 
     ###########################
