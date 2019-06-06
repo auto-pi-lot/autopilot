@@ -127,42 +127,6 @@ class ReturnThread(Thread):
 
         return self._return
 
-def compute_calibration(path=None, calibration=None, do_return=False):
-
-
-    if not calibration:
-        # if we weren't given calibration results, load them
-        if path:
-            open_fn = path
-        else:
-            open_fn = os.path.join(prefs.BASEDIR, "port_calibration.json")
-
-        with open(open_fn, 'r') as open_f:
-            calibration = json.load(open_f)
-
-    luts = {}
-    for port, samples in calibration.items():
-        sample_df = pd.DataFrame(samples)
-        # TODO: Filter for only most recent timestamps
-
-        # volumes are saved in mL because of how they are measured, durations are stored in ms
-        # but reward volumes are typically in the uL range, so we make the conversion
-        # by multiplying by 1000
-        line_fit = linregress((sample_df['vol'] / sample_df['n_clicks']) * 1000., sample_df['dur'])
-        luts[port] = {'intercept': line_fit.intercept,
-                      'slope': line_fit.slope}
-
-    # write to file, overwriting any previous
-    if do_return:
-        return luts
-
-    else:
-        # do write
-        lut_fn = os.path.join(prefs.BASEDIR, 'port_calibration_fit.json')
-        with open(lut_fn, 'w') as lutf:
-            json.dump(luts, lutf)
-
-
 
 #
 # def update_pis(github=True, apt=False, pilot_select = None, prefs_fn = None):
