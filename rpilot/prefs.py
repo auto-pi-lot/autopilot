@@ -143,13 +143,15 @@ def git_version(repo_dir):
 
 def compute_calibration(path=None, calibration=None, do_return=False):
 
+    # FIXME: UGLY HACK - move this function to another module
+    import pandas as pd
 
     if not calibration:
         # if we weren't given calibration results, load them
         if path:
             open_fn = path
         else:
-            open_fn = os.path.join(prefs.BASEDIR, "port_calibration.json")
+            open_fn = "/usr/rpilot/port_calibration.json"
 
         with open(open_fn, 'r') as open_f:
             calibration = json.load(open_f)
