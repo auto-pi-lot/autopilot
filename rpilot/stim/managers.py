@@ -12,6 +12,16 @@ from collections import deque
 import numpy as np
 from rpilot.stim.sound import sounds
 
+def init_manager(stim):
+    if 'manager' in stim.keys():
+        if stim['manager'] in MANAGER_MAP.keys():
+            manager = stim['manager']
+            return MANAGER_MAP[manager](stim)
+        else:
+            Exception('Couldnt find stim manager of type: {}'.format(stim['type']))
+    else:
+        return Stim_Manager(stim)
+
 
 class Stim_Manager(object):
     """
@@ -71,13 +81,6 @@ class Stim_Manager(object):
 
         # if we're being init'd as a superclass, no stim passed.
         if stim:
-            # check if there is a subtype we should be instead
-            if 'manager' in stim.keys():
-                if stim['manager'] in MANAGER_MAP.keys():
-                    manager = stim['manager']
-                    return MANAGER_MAP[manager](stim)
-                else:
-                    Exception('Couldnt find stim manager of type: {}'.format(stim['type']))
 
             # if we're doing sounds init them here
             # TODO: Make SoundManger subclass

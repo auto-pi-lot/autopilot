@@ -6,7 +6,7 @@ import threading
 
 from rpilot.core import hardware
 from rpilot.tasks import Task
-from rpilot.stim import Stim_Manager
+from rpilot.stim import init_manager
 from collections import OrderedDict as odict
 from rpilot.core.networking import Net_Node
 
@@ -198,7 +198,7 @@ class Nafc(Task):
         if not stim:
             raise RuntimeError("Cant instantiate task without stimuli!")
         else:
-            self.stim_manager = Stim_Manager(stim)
+            self.stim_manager = init_manager(stim)
 
         # give the sounds a function to call when they end
         self.stim_manager.set_triggers(self.stim_end)
