@@ -42,7 +42,7 @@ class Stim_Manager(object):
     """
 
     # Metaclass for managing stimuli...
-    def __init__(self, stim):
+    def __init__(self, stim=None):
         """
         Args:
             stim (dict): Dictionary describing sound stimuli, in a format like::
@@ -64,13 +64,24 @@ class Stim_Manager(object):
         self.correction = False  # Are we doing correction trials
         self.correction_trial = False  # Is this a correction trial?
         self.last_was_correction = False  # Was the last trial a correction trial?
-        self.correction_pct = 0.5  # proportion of trials that are correction trials
+        self.correction_pct = 0.1  # proportion of trials that are correction trials
 
         # Bias correction
         self.bias = False  # or a bias correction mode
 
-        if 'sounds' in stim.keys():
-            self.init_sounds(stim['sounds'])
+        # if we're being init'd as a superclass, no stim passed.
+        if stim:
+            # check if there is a subtype we should be instead
+            if 'manager' in stim.keys():
+                if stim['manager'] in MANAGER_MAP.keys():
+                    return MANAGER_MAP['manager'](stim)
+                else:
+                    Exception('Couldnt find stim manager of type: {}'.format(stim['type']))
+
+            # if we're doing sounds init them here
+            # TODO: Make SoundManger subclass
+            if 'sounds' in stim.keys():
+                self.init_sounds(stim['sounds'])
 
     def do_correction(self, correction_pct = 0.5):
         """
@@ -168,7 +179,6 @@ class Stim_Manager(object):
 
         Returns:
             ('L'/'R' Target, 'L'/'R' distractor, Stimulus to present)
-
         """
         # compute and return the next stim
 
@@ -244,6 +254,180 @@ class Stim_Manager(object):
         self.correct = correct
         if self.bias:
             self.bias.update(response, self.target)
+
+class Proportional(Stim_Manager):
+    """
+    Present groups of stimuli with a particular frequency.
+
+    Frequencies do not need to add up to 1, groups will be selected with the frequency
+    (frequency)/(sum(frequencies)).
+
+    Arguments:
+        stim (dict): Dictionary with the structure::
+
+            {'manager': 'proportional',
+             'type': 'sounds',
+             'groups': (
+                 {'name':'group_name',
+                  'frequency': 0.2,
+                  'sounds':{
+                      'L': [{Tone1_params}, {Tone2_params}...],
+                      'R': [{Tone3_params}, {Tone4_params}...]
+                  }
+                },
+                {'name':'second_group',
+                  'frequency': 0.8,
+                  'sounds':{
+                      'L': [{Tone1_params}, {Tone2_params}...],
+                      'R': [{Tone3_params}, {Tone4_params}...]
+                  }
+                })
+            }
+
+    Attributes:
+        stimuli (dict): A dictionary of stimuli organized into groups
+        groups (dict): A dictionary mapping group names to frequencies
+
+    """
+
+    def __init__(self, stim):
+        super(Proportional, self).__init__()
+
+        if stim['type'] == 'sounds':
+            self.init_sounds(stim['groups'])
+
+        self.store_groups(stim)
+
+    def init_sounds(self, sounds):
+        """
+        Instantiate sound objects similarly to :class:`.Stim_Manager`, just organizes them into groups.
+
+        Args:
+            sound_dict (tuple, list): an iterator like::
+                (
+                 {'name':'group_name',
+                  'frequency': 0.2,
+                  'sounds': {
+                      'L': [{Tone1_params}, {Tone2_params}...],
+                      'R': [{Tone3_params}, {Tone4_params}...]
+                    }
+                },
+                {'name':'second_group',
+                  'frequency': 0.8,
+                  'sounds':{
+                      'L': [{Tone1_params}, {Tone2_params}...],
+                      'R': [{Tone3_params}, {Tone4_params}...]
+                  }
+                })
+        """
+        # Iterate through sounds and load them to memory
+        self.stimuli = {}
+
+        if isinstance(sounds, tuple) or isinstance(sounds, list):
+            for group in sounds:
+                group_name = group['name']
+
+                # instantiate sounds
+                self.stimuli[group_name] = {}
+                for k, v in group['sounds']:
+                    if isinstance(v, list):
+                        self.stimuli[group_name][k] = []
+                        for sound in v:
+                            # We send the dict 'sound' to the function specified by 'type' and '
+                            # ' as kwargs
+                            self.stimuli[group_name][k].append(sounds.SOUND_LIST[sound['type']](**sound))
+                    # If not a list, a single sound
+                    else:
+                        self.stimuli[group_name][k] = [sounds.SOUND_LIST[v['type']](**v)]
+
+    def store_groups(self, stim):
+        """
+        store groups and frequencies
+        """
+        self.groups = {}
+        # also store (later) as tuples for choice b/c dicts are unordered
+        group_names = []
+        group_freqs = []
+        for group in stim['groups']:
+            group_name = group['name']
+            frequency = float(group['frequency'])
+            self.groups[group_name] = frequency
+            group_names.append(group_name)
+            group_freqs.append(frequency)
+
+        self.group_names = tuple(group_names)
+        group_freqs = np.array(group_freqs).astype(np.float)
+        group_freqs = group_freqs/np.sum(group_freqs)
+
+        self.group_freqs = tuple(group_freqs)
+
+
+
+    def set_triggers(self, trig_fn):
+        """
+        Give a callback function to all of our stimuli for when the stimulus ends.
+
+        Note:
+            Stimuli need a `set_trigger` method.
+
+        Args:
+            trig_fn (callable): A function to be given to stimuli via `set_trigger`
+        """
+        # set a callback function for when the stimulus ends
+        for _, group in self.stimuli.items():
+            for _, v in group.items():
+                for astim in v:
+                    astim.set_trigger(trig_fn)
+
+
+    def next_stim(self):
+        """
+        Compute and return the next stimulus
+
+        If we are doing correction trials, compute that.
+
+        Same thing with bias correction.
+
+        Otherwise, randomly select a stimulus to present, weighted by its group frequency.
+
+        Returns:
+            ('L'/'R' Target, 'L'/'R' distractor, Stimulus to present)
+        """
+        # compute and return the next stim
+
+        # first: if we're doing correction trials, compute that
+        if self.correction:
+            self.correction_trial = self.compute_correction()
+            if self.correction_trial:
+                return self.target, self.distractor, self.last_stim
+
+        # otherwise we check for bias correction
+        # it will return a threshold for random choice
+        if self.bias:
+            threshold = self.bias.next_bias()
+        else:
+            threshold = 0.5
+
+        # choose side
+        if np.random.rand()<threshold:
+            self.target = 'L'
+        else:
+            self.target = 'R'
+
+        if self.target == 'L':
+            self.distractor = 'R'
+        elif self.target == 'R':
+            self.distractor = 'L'
+
+        # pick a stimulus based on group frequency
+        group = np.random.choice(self.group_names, p=self.group_freqs)
+        # within that group pick a random stimulus
+        self.last_stim = np.random.choice(self.stimuli[group][self.target])
+
+        return self.target, self.distractor, self.last_stim
+
+
+
 
 
 class Bias_Correction(object):
@@ -327,7 +511,9 @@ class Bias_Correction(object):
         self.responses.append(float(response))
         self.targets.append(float(target))
 
-
+MANAGER_MAP = {
+    'proportional': Proportional
+}
 
 
 
