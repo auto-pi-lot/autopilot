@@ -584,10 +584,11 @@ class Solenoid(Hardware):
         # prefs should have loaded any calibration
         self.calibration = prefs.PORT_CALIBRATION[self.name]
         # compute duration from slope and intercept
-        self.duration = float(self.calibration['intercept'] + self.calibration['slope'] * vol) / 1000
-        # some bottom limit to this stuff
+        self.duration = float(self.calibration['intercept']) + float(self.calibration['slope']) * float(vol) / 1000.0
+        # some limits to this stuff
         if self.duration < .002:
             self.duration = 0.002
+
 
         print('USING OPEN TIME {} FOR PORT {}'.format(self.duration, self.name))
         sys.stdout.flush()
