@@ -102,14 +102,7 @@ class Free_Water(Task):
                                    'value': float(reward)}
 
 
-        # Set reward values for solenoids
-        # TODO: Super inelegant, implement better with reward manager
-        if self.reward['type'] == "volume":
-            self.set_reward(vol=self.reward['value'])
-        else:
-            self.set_reward(duration=self.reward['value'])
 
-        self.allow_repeat = bool(allow_repeat)
 
         # Variable parameters
         self.target = random.choice(['L', 'C', 'R'])
@@ -125,6 +118,15 @@ class Free_Water(Task):
         self.pins = {}
         self.pin_id = {} # Inverse pin dictionary
         self.init_hardware()
+
+        # Set reward values for solenoids
+        # TODO: Super inelegant, implement better with reward manager
+        if self.reward['type'] == "volume":
+            self.set_reward(vol=self.reward['value'])
+        else:
+            self.set_reward(duration=self.reward['value'])
+
+        self.allow_repeat = bool(allow_repeat)
 
     def water(self, *args, **kwargs):
         """
