@@ -750,7 +750,7 @@ class Terminal_Networking(Networking):
 
         file_message = {'path':msg.value, 'file':file_contents}
 
-        self.send(msg.target, 'FILE', file_message)
+        self.send(msg.sender, 'FILE', file_message)
 
 class Pilot_Networking(Networking):
     """
