@@ -95,7 +95,20 @@ class Free_Water(Task):
             self.stage_block = stage_block
 
         # Fixed parameters
-        self.reward = int(reward)
+        if isinstance(reward, dict):
+            self.reward = reward
+        else:
+            self.reward         = {'type':'duration',
+                                   'value': float(reward)}
+
+
+        # Set reward values for solenoids
+        # TODO: Super inelegant, implement better with reward manager
+        if self.reward['type'] == "volume":
+            self.set_reward(vol=self.reward['value'])
+        else:
+            self.set_reward(duration=self.reward['value'])
+
         self.allow_repeat = bool(allow_repeat)
 
         # Variable parameters
