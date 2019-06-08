@@ -881,10 +881,21 @@ class Pilot_Networking(Networking):
 
         # TODO: Refactor into a general preflight check.
         # First make sure we have any sound files that we need
-        if 'sounds' in msg.value.keys():
-            # nested list comprehension to get value['sounds']['L/R'][0-n]
-            f_sounds = [sound for sounds in msg.value['sounds'].values() for sound in sounds
-                        if sound['type'] in ['File', 'Speech']]
+        # TODO: stim managers need to be able to return list of stimuli and this is a prime reason why
+        if 'stim' in msg.value.keys():
+            if 'sounds' in msg.value['stim'].keys():
+
+                # nested list comprehension to get value['sounds']['L/R'][0-n]
+                f_sounds = [sound for sounds in msg.value['stim']['sounds'].values() for sound in sounds
+                            if sound['type'] in ['File', 'Speech']]
+            elif 'manager' in msg.value['stim'].keys():
+                # we have a manager
+                if msg.value['stim']['type'] == 'sounds':
+                    f_sounds = []
+                    for group in msg.value['stim']['groups']:
+                        f_sounds.extend([sound for sounds in group['sounds'].values() for sound in sounds
+                                        if sound['type'] in ['File', 'Speech']])
+
             if len(f_sounds)>0:
                 # check to see if we have these files, if not
                 #     def update(self, data):
