@@ -494,8 +494,8 @@ class RPilot:
         try:
             h5f = tables.open_file(local_file, mode='a')
         except IOError as e:
-            self.logger.Warning("local file was broken, making new")
-            self.logger.Warning(e)
+            self.logger.warning("local file was broken, making new")
+            self.logger.warning(e)
             h5f = tables.open_file(local_file, mode='w')
 
 
