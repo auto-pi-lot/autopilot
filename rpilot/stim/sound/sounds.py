@@ -226,7 +226,9 @@ if server_type in ("jack", "docs"):
                 self.chunk()
 
             with self.q_lock:
-                self.q.queue.clear()
+                # empty queue
+                while not self.q.empty():
+                    _ = self.q.get()
                 for frame in self.chunks:
                     self.q.put_nowait(frame)
                 # The jack server looks for a None object to clear the play flag
