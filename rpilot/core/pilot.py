@@ -491,7 +491,12 @@ class RPilot:
             :class:`tables.tableextension.Row`): The file, table, and row for the local data table
         """
         local_file = os.path.join(prefs.DATADIR, 'local.h5')
-        h5f = tables.open_file(local_file, mode='a')
+        try:
+            h5f = tables.open_file(local_file, mode='a')
+        except IOError as e:
+            self.logger.Warning("local file was broken, making new")
+            self.logger.Warning(e)
+            h5f = tables.open_file(local_file, mode='w')
 
 
         try:
