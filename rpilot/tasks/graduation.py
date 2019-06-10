@@ -121,6 +121,15 @@ class NTrials(Graduation):
         """
         if 'trial_num' in row:
             trials = row['trial_num']
+            # be robust -- if we're using information from the trial row,
+            # make sure our internal model is kept up to date
+            # counter's don't have a good way of changing their n,
+            # so we just remake it
+            try:
+                self.counter = count(int(trials))
+            except:
+                # TODO: Logging here
+                pass
         else:
             trials = self.counter.next()
 

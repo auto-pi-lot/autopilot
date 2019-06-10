@@ -686,8 +686,15 @@ class Mouse:
 
 
             for k, v in data.items():
+                # some bug where some columns are not always detected,
+                # rather than failing out here, just log error
                 if k in trial_keys:
-                    trial_row[k] = v
+                    try:
+                        trial_row[k] = v
+                    except KeyError:
+                        # TODO: Logging here
+                        Warning("Data dropped: key: {}, value: {}".format(k, v))
+
             if 'TRIAL_END' in data.keys():
                 trial_row['session'] = self.session
                 trial_row.append()
@@ -697,6 +704,9 @@ class Mouse:
                     did_graduate = self.graduation.update(trial_row)
                     if did_graduate is True:
                         self.did_graduate.set()
+
+            # always flush so that our row iteration routines above will find what they're looking for
+            trial_table.flush()
 
         self.close_hdf(h5f)
 

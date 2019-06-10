@@ -496,7 +496,9 @@ class RPilot:
         except IOError as e:
             self.logger.warning("local file was broken, making new")
             self.logger.warning(e)
+            os.remove(local_file)
             h5f = tables.open_file(local_file, mode='w')
+            os.chmod(local_file, 0777)
 
 
         try:
