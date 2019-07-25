@@ -259,6 +259,19 @@ class Stim_Manager(object):
         if self.bias:
             self.bias.update(response, self.target)
 
+    def end(self):
+        """
+        End all of our stim. Stim should have an `.end()` method of their own
+
+        """
+
+        for k, v in self.stimuli.items():
+            for stim in v:
+                try:
+                    stim.end()
+                except AttributeError:
+                    print('stim does not have an end method! \n{}'.format(str(stim)))
+
 class Proportional(Stim_Manager):
     """
     Present groups of stimuli with a particular frequency.

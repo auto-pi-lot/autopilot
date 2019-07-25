@@ -158,6 +158,7 @@ if server_type in ("jack", "docs"):
             self.trigger = None
             self.nsamples = None
 
+
             self.fs = jackclient.FS
             self.blocksize = jackclient.BLOCKSIZE
             self.server = jackclient.SERVER
@@ -166,6 +167,7 @@ if server_type in ("jack", "docs"):
             self.play_evt = jackclient.PLAY
             self.stop_evt = jackclient.STOP
 
+            self.initialized = False
             self.buffered = False
 
         def chunk(self):
@@ -222,6 +224,15 @@ if server_type in ("jack", "docs"):
             """
             Dump chunks into the sound queue.
             """
+
+            if not self.initialized and not self.table:
+                try:
+                    self.init_sound()
+                    self.initialized = True
+                except:
+                    pass
+                    #TODO: Log this, better error handling here
+
             if not self.chunks:
                 self.chunk()
 
@@ -254,6 +265,22 @@ if server_type in ("jack", "docs"):
 
             if callable(self.trigger):
                 threading.Thread(target=self.wait_trigger).start()
+
+        def end(self):
+            """
+            Release any resources held by this sound
+
+            """
+
+            if self.play_evt.is_set():
+                self.play_evt.clear()
+
+            if not self.stop_evt.is_set():
+                self.stop_evt.set()
+
+            self.table = None
+
+
 
 
 else:
@@ -311,6 +338,8 @@ class Tone(BASE_CLASS):
             #self.table = np.column_stack((self.table, self.table))
             self.chunk()
 
+        self.initialized = True
+
 class Noise(BASE_CLASS):
     """White Noise"""
 
@@ -343,6 +372,8 @@ class Noise(BASE_CLASS):
             self.table = self.amplitude * np.random.rand(self.nsamples)
             self.chunk()
 
+        self.initialized = True
+
 class File(BASE_CLASS):
     """
     A .wav file.
@@ -372,7 +403,11 @@ class File(BASE_CLASS):
 
         self.amplitude = float(amplitude)
 
-        self.init_sound()
+        # because files can be v memory intensive, we only load the sound once we're called to buffer them
+        # store our initialization status
+        self.initialized = False
+
+        #self.init_sound()
 
     def init_sound(self):
         """
@@ -408,6 +443,8 @@ class File(BASE_CLASS):
                 audio = resample(audio, new_samples)
 
             self.table = audio
+
+        self.initialized = True
 
 
 class Speech(File):

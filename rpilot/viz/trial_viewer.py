@@ -25,7 +25,6 @@ import numpy as np
 import json
 
 
-
 def load_mouse_data(data_dir, mouse_name, steps=True, grad=True):
 
     # pilot_db_fn = [fn for fn in os.listdir(data_dir) if fn == 'pilot_db.json'][0]
@@ -163,7 +162,10 @@ def trial_viewer(step_data, roll_type = "ewm", roll_span=100, bar=False):
             meancx = group['correct'].ewm(span=roll_span,ignore_na=True).mean()
         else:
             meancx = group['correct'].rolling(window=roll_span).mean()
-        p = figure(plot_height=100,y_range=(0,1),title=mus)
+
+        title_str = "{}, step: {}".format(mus, group.step.iloc[-1])
+
+        p = figure(plot_height=100,y_range=(0,1),title=title_str)
 
         if bar:
             hline = Span(location=bar, dimension="width", line_color='red', line_width=1)
