@@ -277,9 +277,6 @@ class Nafc(Task):
         else:
             self.triggers['C'] = [change_to_blue, self.stim_start, self.stim.play]
 
-        # set to green in the meantime
-        self.set_leds({'C': [0, 255, 0]})
-
         self.current_trial = self.trial_counter.next()
         data = {
             'target':self.target,
@@ -292,6 +289,15 @@ class Nafc(Task):
         data.update({'type':self.stim.type})
 
         self.current_stage = 0
+
+        # wait on punish block
+        # FIXME: Only waiting to test whether this is where the bug that hangs after this stage is
+        self.punish_block.wait(20)
+
+        # set to green in the meantime
+        self.set_leds({'C': [0, 255, 0]})
+
+
         return data
 
     def discrim(self,*args,**kwargs):

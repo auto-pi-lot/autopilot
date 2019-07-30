@@ -238,8 +238,13 @@ if server_type in ("jack", "docs"):
 
             with self.q_lock:
                 # empty queue
+                # FIXME: Testing whether this is where we get held up on the 'fail after sound play' bug
+                n_gets = 0
                 while not self.q.empty():
-                    _ = self.q.get()
+                    _ = self.q.get_nowait()
+                    n_gets += 1
+                    if n_gets > 100000:
+                        break
                 for frame in self.chunks:
                     self.q.put_nowait(frame)
                 # The jack server looks for a None object to clear the play flag
