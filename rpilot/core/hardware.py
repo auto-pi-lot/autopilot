@@ -308,6 +308,7 @@ class LED_RGB(Hardware):
         pig (:meth:`pigpio.pi`): The pigpio connection.
         flash_block (:class:`threading.Event`): An Event to wait on setting further colors
             if we are currently in a threaded flash train
+        end_thread (:class:`threading.Event`): Set this event to stop a flash train - usually called during object cleanup
         pins (dict): After init, pin numbers are kept in a dict like::
 
             {'r':bcm_number, 'g':...}
@@ -339,6 +340,10 @@ class LED_RGB(Hardware):
         # Event to wait on setting colors if we're flashing
         self.flash_block = threading.Event()
         self.flash_block.set()
+
+        # Event to kill the flash thread if the object is deleted
+        self.end_thread = threading.Event()
+        self.end_thread.clear()
 
         # Initialize connection to pigpio daemon
         self.pig = pigpio.pi()
@@ -376,12 +381,14 @@ class LED_RGB(Hardware):
             self.color_series([[255,0,0],[0,255,0],[0,0,255],[0,0,0]], 250)
 
     def __del__(self):
-        self.pig.stop()
+        self.release()
+
 
     def release(self):
         """
         Turns LED off and releases pigpio.
         """
+        self.end_thread.set()
         self.set_color(col=[0,0,0])
         self.pig.stop()
 
@@ -427,12 +434,19 @@ class LED_RGB(Hardware):
             return
 
         # Set PWM dutycycle
-        if self.common == 'anode':
-            for k, v in color.items():
-                self.pig.set_PWM_dutycycle(self.pins[k], 255-v)
-        elif self.common == 'cathode':
-            for k, v in color.items():
-                self.pig.set_PWM_dutycycle(self.pins[k], v)
+        try:
+            if self.common == 'anode':
+                for k, v in color.items():
+                    self.pig.set_PWM_dutycycle(self.pins[k], 255-v)
+            elif self.common == 'cathode':
+                for k, v in color.items():
+                    self.pig.set_PWM_dutycycle(self.pins[k], v)
+        except AttributeError:
+            # if object has been cleaned up and a lingering set_color command remains,
+            # pigpio will throw an attribute error because its interface has been deleted
+            # we can return peacefully
+            # TODO: Log this
+            return
 
         # If this is is a timed blink, start thread to turn led off
         if timed:
@@ -501,10 +515,14 @@ class LED_RGB(Hardware):
         self.flash_block.clear()
         if isinstance(duration, int) or isinstance(duration, float):
             for c in colors:
+                if self.end_thread.is_set():
+                    return
                 self.set_color(c, internal=True)
                 time.sleep(float(duration)/1000)
         elif isinstance(duration, list) and (len(colors) == len(duration)):
             for i, c in enumerate(colors):
+                if self.end_thread.is_set():
+                    return
                 self.set_color(c, internal=True)
                 time.sleep(float(duration[i])/1000)
         else:
