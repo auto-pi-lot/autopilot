@@ -37,6 +37,8 @@ from scipy.signal import resample
 import numpy as np
 import threading
 import logging
+from Queue import Empty
+
 
 from rpilot import prefs
 
@@ -249,7 +251,11 @@ if server_type in ("jack", "docs"):
                 # FIXME: Testing whether this is where we get held up on the 'fail after sound play' bug
                 n_gets = 0
                 while not self.q.empty():
-                    _ = self.q.get_nowait()
+                    try:
+                        _ = self.q.get_nowait()
+                    except Empty:
+                        # normal, get until it's empty
+                        break
                     n_gets += 1
                     if n_gets > 100000:
                         break

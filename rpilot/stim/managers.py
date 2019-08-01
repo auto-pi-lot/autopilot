@@ -265,7 +265,7 @@ class Stim_Manager(object):
 
         """
 
-        for k, v in self.stimuli.items():
+        for side, v in self.stimuli.items():
             for stim in v:
                 try:
                     stim.end()
