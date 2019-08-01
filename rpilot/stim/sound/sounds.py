@@ -36,6 +36,7 @@ from scipy.io import wavfile
 from scipy.signal import resample
 import numpy as np
 import threading
+import logging
 
 from rpilot import prefs
 
@@ -170,6 +171,10 @@ if server_type in ("jack", "docs"):
             self.initialized = False
             self.buffered = False
 
+            # FIXME: debugging sound file playback by logging which sounds loaded before crash
+            self.logger = logging.getLogger('main')
+
+
         def chunk(self):
             """
             Split our `table` up into a list of :attr:`.Jack_Sound.blocksize` chunks.
@@ -225,6 +230,9 @@ if server_type in ("jack", "docs"):
             Dump chunks into the sound queue.
             """
 
+            if hasattr(self, 'path'):
+                self.logger.info('BUFFERING SOUND {}'.format(self.path))
+
             if not self.initialized and not self.table:
                 try:
                     self.init_sound()
@@ -263,6 +271,9 @@ if server_type in ("jack", "docs"):
             """
             if not self.buffered:
                 self.buffer()
+
+            if hasattr(self, 'path'):
+                self.logger.info('PLAYING SOUND {}'.format(self.path))
 
             self.play_evt.set()
             self.stop_evt.clear()
