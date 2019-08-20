@@ -1,17 +1,18 @@
-#!/bin/sh
+#!/bin/bash
 
 ############
 # user args
 
 read -p "If you haven't changed it, you should change the default raspberry pi password. Change it now? (y/n): " changepw
-
-if ["$changepw" == "y"]; then
+if [ "$changepw" == "y" ]; then
     passwd
+else
+    echo "not changing password\n"
 fi
 
 read -p "Would you like to set your locale? Use the space bar to select/deselect items on the screen (y/n): " changelocale
 
-if ["$changelocale" == "y"]; then
+if [ "$changelocale" == "y" ]; then
     sudo dpkg-reconfigure locales
     sudo dpkg-reconfigure keyboard-configuration
 fi
@@ -27,7 +28,7 @@ read -p "Disable bluetooth? (y/n): " disablebt
 
 # create git folder if it don't already exist
 GITDIR=$HOME/git
-if [-d "$GITDIR"]; then
+if [ -d "$GITDIR" ]; then
     echo "\nmaking git directory at $HOME/git"
     mkdir $GITDIR
 fi
@@ -43,7 +44,7 @@ sudo apt-get install -y \
     cmake \
     git \
     python-pip \
-    python2.7-dev 
+    python2.7-dev \
     libsamplerate0-dev \
     libsndfile1-dev \
     libreadline-dev \
@@ -88,7 +89,7 @@ sudo systemctl disable raspi-config
 
 sed -i '/^exit 0/i echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor' /etc/rc.local
 
-if ["$disablebt" == "y"]; then
+if [ "$disablebt" == "y" ]; then
     echo "\nDisabling bluetooth.."
     sudo sed -i '$s/$/\ndtoverlay=pi3-disable-bt/' /boot/config.txt
     sudo systemctl disable hciuart.service
@@ -101,7 +102,7 @@ fi
 ############
 # audio
 
-if ["$installjack" == "y"]; then
+if [ "$installjack" == "y" ]; then
     echo "\nInstalling jack audio"
     cd $HOME/git
     git clone git://github.com/jackaudio/jack2 --depth 1
@@ -120,7 +121,7 @@ if ["$installjack" == "y"]; then
     sudo -H pip install JACK-Client
 fi
 
-if ["$setuphifi" == "y"]; then
+if [ "$setuphifi" == "y" ]; then
     # add pi user to i2c group
     sudo adduser pi i2c
 
