@@ -656,57 +656,64 @@ class Mouse:
         # start getting data
         # stop when 'END' gets put in the queue
         for data in iter(queue.get, 'END'):
-            # Check if this is the same
-            # if we've already recorded a trial number for this row,
-            # and the trial number we just got is not the same,
-            # we edit that row if we already have some data on it or else start a new row
-            if 'trial_num' in data.keys():
-                if (trial_row['trial_num']) and (trial_row['trial_num'] != data['trial_num']):
-                    # find row with this trial number if it exists
-                    other_row = [r for r in trial_table.where("trial_num == {}".format(data['trial_num']))]
-                    # this will return a list of rows with matching trial_num.
-                    # if it's empty, we didn't receive a TRIAL_END and should create a new row
-                    if len(other_row) == 0:
-                        trial_row.append()
-                        # proceed to fill the row below
-                    elif len(other_row) == 1:
-                        # update the row and continue so we don't double write
-                        # have to be in the middle of iteration to use update()
-                        for row in trial_table.where("trial_num == {}".format(data['trial_num'])):
-                            for k, v in data.items():
-                                row[k] = v
-                            row.update()
-                        continue
-                    else:
-                        # we have more than one row with this trial_num.
-                        # shouldn't happen, but we dont' want to throw any data away
-                        Warning('Found multiple rows with same trial_num: {}'.format(data['trial_num']))
-                        # continue just for data conservancy's sake
-                        trial_row.append()
+            # wrap everything in try because this thread shouldn't crash
+            try:
+                # Check if this is the same
+                # if we've already recorded a trial number for this row,
+                # and the trial number we just got is not the same,
+                # we edit that row if we already have some data on it or else start a new row
+                if 'trial_num' in data.keys():
+                    if (trial_row['trial_num']) and (trial_row['trial_num'] != data['trial_num']):
+                        # find row with this trial number if it exists
+                        other_row = [r for r in trial_table.where("trial_num == {}".format(data['trial_num']))]
+                        # this will return a list of rows with matching trial_num.
+                        # if it's empty, we didn't receive a TRIAL_END and should create a new row
+                        if len(other_row) == 0:
+                            trial_row.append()
+                            # proceed to fill the row below
+                        elif len(other_row) == 1:
+                            # update the row and continue so we don't double write
+                            # have to be in the middle of iteration to use update()
+                            for row in trial_table.where("trial_num == {}".format(data['trial_num'])):
+                                for k, v in data.items():
+                                    row[k] = v
+                                row.update()
+                            continue
+                        else:
+                            # we have more than one row with this trial_num.
+                            # shouldn't happen, but we dont' want to throw any data away
+                            Warning('Found multiple rows with same trial_num: {}'.format(data['trial_num']))
+                            # continue just for data conservancy's sake
+                            trial_row.append()
 
 
-            for k, v in data.items():
-                # some bug where some columns are not always detected,
-                # rather than failing out here, just log error
-                if k in trial_keys:
-                    try:
-                        trial_row[k] = v
-                    except KeyError:
-                        # TODO: Logging here
-                        Warning("Data dropped: key: {}, value: {}".format(k, v))
+                for k, v in data.items():
+                    # some bug where some columns are not always detected,
+                    # rather than failing out here, just log error
+                    if k in trial_keys:
+                        try:
+                            trial_row[k] = v
+                        except KeyError:
+                            # TODO: Logging here
+                            Warning("Data dropped: key: {}, value: {}".format(k, v))
 
-            if 'TRIAL_END' in data.keys():
-                trial_row['session'] = self.session
-                trial_row.append()
+                # TODO: Or if all the values have been filled, shouldn't need explicit TRIAL_END flags
+                if 'TRIAL_END' in data.keys():
+                    trial_row['session'] = self.session
+                    trial_row.append()
+                    trial_table.flush()
+                    if self.graduation:
+                        # set our graduation flag, the terminal will get the rest rolling
+                        did_graduate = self.graduation.update(trial_row)
+                        if did_graduate is True:
+                            self.did_graduate.set()
+
+                # always flush so that our row iteration routines above will find what they're looking for
                 trial_table.flush()
-                if self.graduation:
-                    # set our graduation flag, the terminal will get the rest rolling
-                    did_graduate = self.graduation.update(trial_row)
-                    if did_graduate is True:
-                        self.did_graduate.set()
-
-            # always flush so that our row iteration routines above will find what they're looking for
-            trial_table.flush()
+            except Exception as e:
+                # TODO: Get logger and log this
+                # we shouldn't throw any exception in this thread, just log it and move on
+                print(e)
 
         self.close_hdf(h5f)
 

@@ -63,9 +63,13 @@ def init(fn):
     # Load any calibration data
     cal_path = os.path.join(prefs['BASEDIR'], 'port_calibration_fit.json')
     cal_raw = os.path.join(prefs['BASEDIR'], 'port_calibration.json')
+
+    #TODO: make fit calibration update if new calibration results received
+    # aka check if dates in raw results are more recent than date in a 'info' field, for example
     if os.path.exists(cal_path):
         with open(cal_path, 'r') as calf:
             cal_fns = json.load(calf)
+
         prefs['PORT_CALIBRATION'] = cal_fns
     elif os.path.exists(cal_raw):
         # aka raw calibration results exist but no fit has been computed

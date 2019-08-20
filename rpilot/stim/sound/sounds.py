@@ -36,6 +36,9 @@ from scipy.io import wavfile
 from scipy.signal import resample
 import numpy as np
 import threading
+import logging
+from Queue import Empty
+
 
 from rpilot import prefs
 
@@ -158,6 +161,7 @@ if server_type in ("jack", "docs"):
             self.trigger = None
             self.nsamples = None
 
+
             self.fs = jackclient.FS
             self.blocksize = jackclient.BLOCKSIZE
             self.server = jackclient.SERVER
@@ -166,7 +170,12 @@ if server_type in ("jack", "docs"):
             self.play_evt = jackclient.PLAY
             self.stop_evt = jackclient.STOP
 
+            self.initialized = False
             self.buffered = False
+
+            # FIXME: debugging sound file playback by logging which sounds loaded before crash
+            self.logger = logging.getLogger('main')
+
 
         def chunk(self):
             """
@@ -222,13 +231,34 @@ if server_type in ("jack", "docs"):
             """
             Dump chunks into the sound queue.
             """
+
+            if hasattr(self, 'path'):
+                self.logger.info('BUFFERING SOUND {}'.format(self.path))
+
+            if not self.initialized and not self.table:
+                try:
+                    self.init_sound()
+                    self.initialized = True
+                except:
+                    pass
+                    #TODO: Log this, better error handling here
+
             if not self.chunks:
                 self.chunk()
 
             with self.q_lock:
                 # empty queue
+                # FIXME: Testing whether this is where we get held up on the 'fail after sound play' bug
+                n_gets = 0
                 while not self.q.empty():
-                    _ = self.q.get()
+                    try:
+                        _ = self.q.get_nowait()
+                    except Empty:
+                        # normal, get until it's empty
+                        break
+                    n_gets += 1
+                    if n_gets > 100000:
+                        break
                 for frame in self.chunks:
                     self.q.put_nowait(frame)
                 # The jack server looks for a None object to clear the play flag
@@ -248,12 +278,31 @@ if server_type in ("jack", "docs"):
             if not self.buffered:
                 self.buffer()
 
+            if hasattr(self, 'path'):
+                self.logger.info('PLAYING SOUND {}'.format(self.path))
+
             self.play_evt.set()
             self.stop_evt.clear()
             self.buffered = False
 
             if callable(self.trigger):
                 threading.Thread(target=self.wait_trigger).start()
+
+        def end(self):
+            """
+            Release any resources held by this sound
+
+            """
+
+            if self.play_evt.is_set():
+                self.play_evt.clear()
+
+            if not self.stop_evt.is_set():
+                self.stop_evt.set()
+
+            self.table = None
+
+
 
 
 else:
@@ -311,6 +360,8 @@ class Tone(BASE_CLASS):
             #self.table = np.column_stack((self.table, self.table))
             self.chunk()
 
+        self.initialized = True
+
 class Noise(BASE_CLASS):
     """White Noise"""
 
@@ -343,6 +394,8 @@ class Noise(BASE_CLASS):
             self.table = self.amplitude * np.random.rand(self.nsamples)
             self.chunk()
 
+        self.initialized = True
+
 class File(BASE_CLASS):
     """
     A .wav file.
@@ -372,7 +425,11 @@ class File(BASE_CLASS):
 
         self.amplitude = float(amplitude)
 
-        self.init_sound()
+        # because files can be v memory intensive, we only load the sound once we're called to buffer them
+        # store our initialization status
+        self.initialized = False
+
+        #self.init_sound()
 
     def init_sound(self):
         """
@@ -408,6 +465,8 @@ class File(BASE_CLASS):
                 audio = resample(audio, new_samples)
 
             self.table = audio
+
+        self.initialized = True
 
 
 class Speech(File):

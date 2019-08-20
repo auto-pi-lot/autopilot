@@ -190,6 +190,9 @@ class RPilot:
             for pin in prefs.PULLDOWNS:
                 self.pulls.append(hardware.Pull(int(pin), pud='D'))
 
+        # check if the calibration file needs to be updated
+
+
         # Set and update state
         self.state = 'IDLE' # or 'Running'
         self.update_state()

@@ -278,6 +278,10 @@ class Task(object):
             for pin, obj in v.items():
                 obj.release()
 
+        if hasattr(self, 'stim_manager'):
+            if self.stim_manager is not None:
+                self.stim_manager.end()
+
 
 
 

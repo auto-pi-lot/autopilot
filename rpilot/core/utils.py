@@ -127,6 +127,59 @@ class ReturnThread(Thread):
 
         return self._return
 
+def list_mice(pilot_db=None):
+    """
+    Given a dictionary of a pilot_db, return the mice that are in it.
+
+    Args:
+        pilot_db (dict): a pilot_db. if None tried to load pilot_db with :method:`.load_pilotdb`
+
+    Returns:
+        mice (list): a list of currently active mice
+
+    """
+
+    if pilot_db is None:
+        pilot_db = load_pilotdb()
+
+    mice = []
+    for pilot, values in pilot_db.items():
+        if 'mice' in values.keys():
+            mice.extend(values['mice'])
+
+    return mice
+
+def load_pilotdb(file_name=None, reverse=False):
+    """
+    Try to load the file_db
+
+    Args:
+        file_name:
+
+    Returns:
+
+    """
+
+    if file_name is None:
+        file_name = '/usr/rpilot/pilot_db.json'
+
+    with open(file_name) as pilot_file:
+        pilot_db = json.load(pilot_file)
+
+    if reverse:
+        # simplify pilot db
+        pilot_db = {k: v['mice'] for k, v in pilot_db.items()}
+        pilot_dict = {}
+        for pilot, mouselist in pilot_db.items():
+            for ms in mouselist:
+                pilot_dict[ms] = pilot
+        pilot_db = pilot_dict
+
+    return pilot_db
+
+
+
+
 
 #
 # def update_pis(github=True, apt=False, pilot_select = None, prefs_fn = None):

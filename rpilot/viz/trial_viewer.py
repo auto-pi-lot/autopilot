@@ -8,12 +8,13 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
+from rpilot.core import utils
 
 from glob import glob
 import argparse
 from bokeh.plotting import figure
 from bokeh.io import show
-from bokeh.models import ColumnDataSource, Legend, LegendItem
+from bokeh.models import ColumnDataSource, Legend, LegendItem, Span
 from bokeh.layouts import gridplot
 from bokeh.transform import factor_cmap
 from bokeh.palettes import Spectral10
@@ -23,27 +24,12 @@ import colorcet as cc
 import numpy as np
 import json
 
-def load_pilot_db(fn, reverse=False):
-    with open(fn) as pilot_file:
-        pilot_db = json.load(pilot_file)
-
-    if reverse:
-        # simplify pilot db
-        pilot_db = {k: v['mice'] for k, v in pilot_db.items()}
-        pilot_dict = {}
-        for pilot, mouselist in pilot_db.items():
-            for ms in mouselist:
-                pilot_dict[ms] = pilot
-        pilot_db = pilot_dict
-
-    return pilot_db
-
 
 def load_mouse_data(data_dir, mouse_name, steps=True, grad=True):
 
-    pilot_db_fn = [fn for fn in os.listdir(data_dir) if fn == 'pilot_db.json'][0]
-    pilot_db_fn = os.path.join(data_dir, pilot_db_fn)
-    pilot_db = load_pilot_db(pilot_db_fn, reverse=True)
+    # pilot_db_fn = [fn for fn in os.listdir(data_dir) if fn == 'pilot_db.json'][0]
+    # pilot_db_fn = os.path.join(data_dir, pilot_db_fn)
+    pilot_db = utils.load_pilotdb(reverse=True)
 
     # find pilot for mouse
     pilot_name = pilot_db[mouse_name]
@@ -82,13 +68,14 @@ def load_mouse_dir(data_dir, steps=True, grad=True, which = None):
         data_dir (str): A path to a directory with :class:`~.core.mouse.Mouse` style hdf5 files
         steps (bool): Whether to return full trial-level data for each step
         grad (bool): Whether to return summarized step graduation data.
+        which (list): A list of mice to subset the loaded mice to
 
     """
 
     mouse_fn = [os.path.splitext(fn)[0] for fn in os.listdir(data_dir) if fn.endswith('.h5')]
 
     if isinstance(which, list):
-        mouse_fn = [fn for fn in mouse_fn if fn in which]
+        mouse_fn = [fn for fn in mouse_fn if (fn in which) or (fn.rstrip('.h5') in which)]
 
     all_mice_steps = None
     all_mice_grad = None
@@ -146,7 +133,7 @@ def step_viewer(grad_data):
 
 
 
-def trial_viewer(step_data, grad_data):
+def trial_viewer(step_data, roll_type = "ewm", roll_span=100, bar=False):
     """
     Args:
         step_data:
@@ -171,8 +158,18 @@ def trial_viewer(step_data, grad_data):
     p.vbar(x=current_step['mouse'], top=current_step['step'], width=0.9)
     plots.append(p)
     for i, (mus, group) in enumerate(step_data.groupby('mouse')):
-        meancx = group['correct'].ewm(span=100,ignore_na=True).mean()
-        p = figure(plot_height=100,y_range=(0,1),title=mus)
+        if roll_type == "ewm":
+            meancx = group['correct'].ewm(span=roll_span,ignore_na=True).mean()
+        else:
+            meancx = group['correct'].rolling(window=roll_span).mean()
+
+        title_str = "{}, step: {}".format(mus, group.step.iloc[-1])
+
+        p = figure(plot_height=100,y_range=(0,1),title=title_str)
+
+        if bar:
+            hline = Span(location=bar, dimension="width", line_color='red', line_width=1)
+            p.renderers.append(hline)
 
         p.line(group['trial_num'], meancx, color=palette[group['step'].iloc[0]-1])
         plots.append(p)
@@ -182,6 +179,10 @@ def trial_viewer(step_data, grad_data):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Visualize Trial Data")
     parser.add_argument('-d', '--dir', help="Data directory")
+    parser.add_argument('-t', '--type', help="Type of plot? s=steps, g=graduation")
+    parser.add_argument('-w', '--window', help="Window of trials to roll over in step plot")
+    parser.add_argument('-r', '--roll', help="Type of roll, ewm=exponentially weighted mean, anything else = equally weighted")
+    parser.add_argument('-b', '--bar', help="position to draw horizontal bar")
     args = parser.parse_args()
 
     if not args.dir:
@@ -194,12 +195,53 @@ if __name__ == '__main__':
     else:
         data_dir = args.dir
 
-    # load mouse data
-    print('loading mouse data...')
-    #step_data, grad_data = load_mouse_data(data_dir)
-    _, grad_data = load_mouse_dir(data_dir, steps=False, grad=True)
+    # TODO Make arg
+    active_mice = utils.list_mice()
 
-    step_viewer(grad_data)
+
+
+
+
+
+
+
+    if not args.type:
+        do_type = 'g' # raduation, aka what stage they're on
+    else:
+        do_type = str(args.type)
+
+    if args.bar:
+        bar_pos = float(args.bar)
+    else:
+        bar_pos = False
+
+    if do_type == 'g':
+        # load mouse data
+        print('Doing graduation plot,\nloading mouse data...')
+        # step_data, grad_data = load_mouse_data(data_dir)
+        _, grad_data = load_mouse_dir(data_dir, steps=False, grad=True, which=active_mice)
+
+        step_viewer(grad_data)
+    elif do_type == "s":
+        # load mouse data
+        print('Doing step plot,\nloading mouse data...')
+        # step_data, grad_data = load_mouse_data(data_dir)
+        step_data, _ = load_mouse_dir(data_dir, steps=True, grad=False, which=active_mice)
+
+        if args.window:
+            window = int(args.window)
+        else:
+            window = 100
+
+        if args.roll:
+            roll_type = str(args.roll)
+        else:
+            roll_type = "ewm"
+
+
+
+        trial_viewer(step_data, roll_span=window, roll_type=roll_type, bar=bar_pos)
+
 
 
 
