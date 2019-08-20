@@ -3,24 +3,24 @@
 ############
 # user args
 
-read -p "\nIf you haven't changed it, you should change the default raspberry pi password. Change it now? (y/n): " changepw
+read -p "If you haven't changed it, you should change the default raspberry pi password. Change it now? (y/n): " changepw
 
 if ["$changepw" == "y"]; then
     passwd
 fi
 
-read -p "\nWould you like to set your locale? Use the space bar to select/deselect items on the screen (y/n): " changelocale
+read -p "Would you like to set your locale? Use the space bar to select/deselect items on the screen (y/n): " changelocale
 
 if ["$changelocale" == "y"]; then
     sudo dpkg-reconfigure locales
     sudo dpkg-reconfigure keyboard-configuration
 fi
 
-read -p "\nInstall jack audio? (y/n): " installjack
+read -p "Install jack audio? (y/n): " installjack
 
-read -p "\nSetup hifiberry dac/amp? (y/n): " setuphifi
+read -p "Setup hifiberry dac/amp? (y/n): " setuphifi
 
-read -p "\nDisable bluetooth? (y/n): " disablebt
+read -p "Disable bluetooth? (y/n): " disablebt
 
 ###########
 # prelims
