@@ -138,12 +138,13 @@ if [ "$setuphifi" == "y" ]; then
 
     # edit alsa config so hifiberry is default sound card
     ALSAFILE=/etc/asound.conf
-    if [ ! -f "$ALSAFILE" ]; then
-        sudo touch $ALSAFILE
-    fi
+#    if [ ! -f "$ALSAFILE" ]; then
+#        sudo touch $ALSAFILE
+#    fi
 
-    sudo sed -i '1 i\pcm.!default {\n type hw card 0\n}\nctl.!default {\n type hw card 0\n}' $ALSAFILE
+    #sudo sed -i '1 i\pcm.!default {\n type hw card 0\n}\nctl.!default {\n type hw card 0\n}' $ALSAFILE
 
+    echo -e 'pcm.!default {\n type hw card 0\n}\nctl.!default {\n type hw card 0\n}' | sudo tee $ALSAFILE
 fi
 
 ###########

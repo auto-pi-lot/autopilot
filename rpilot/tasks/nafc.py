@@ -273,9 +273,9 @@ class Nafc(Task):
 
         # set triggers
         if self.req_reward is True:
-            self.triggers['C'] = [change_to_blue, self.stim_start, self.pins['PORTS']['C'].open, self.stim.play]
+            self.triggers['C'] = [self.stim.play, self.stim_start, change_to_blue, self.pins['PORTS']['C'].open]
         else:
-            self.triggers['C'] = [change_to_blue, self.stim_start, self.stim.play]
+            self.triggers['C'] = [self.stim.play, self.stim_start, change_to_blue]
 
         self.current_trial = self.trial_counter.next()
         data = {
