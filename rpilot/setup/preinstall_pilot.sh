@@ -34,7 +34,7 @@ read -p "Disable bluetooth? (y/n): " disablebt
 
 # create git folder if it don't already exist
 GITDIR=$HOME/git
-if [ -d "$GITDIR" ]; then
+if [ ! -d "$GITDIR" ]; then
     echo -e "\n${RED}making git directory at $HOME/git ${NC}"
     mkdir $GITDIR
 fi
@@ -66,6 +66,10 @@ sudo apt-get install -y \
     libffi-dev
 
 # install necessary python packages
+
+echo -e "\n\n${RED}Installing necessary Python packages...\n\n ${NC}"
+
+
 sudo -H pip install -U pyzmq npyscreen tornado inputs
 
 # install pigpio
@@ -86,7 +90,7 @@ echo -e "\n${RED}Changing CPU governor to performance ${NC}"
 # note that this is not the same raspi-config as you're thinking
 sudo systemctl disable raspi-config
 
-sed -i '/^exit 0/i echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor' /etc/rc.local
+sudo sed -i '/^exit 0/i echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor' /etc/rc.local
 
 if [ "$disablebt" == "y" ]; then
     echo -e "\n${RED}Disabling bluetooth.. ${NC}"
@@ -134,7 +138,7 @@ if [ "$setuphifi" == "y" ]; then
 
     # edit alsa config so hifiberry is default sound card
     ALSAFILE=/etc/asound.conf
-    if [ -f "$ALSAFILE" ]; then
+    if [ ! -f "$ALSAFILE" ]; then
         sudo touch $ALSAFILE
     fi
 
