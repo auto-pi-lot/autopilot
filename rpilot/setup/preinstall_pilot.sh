@@ -2,6 +2,7 @@
 
 # colors
 RED='\033[0;31m'
+NC='\033[0m'
 
 ############
 # user args
@@ -10,7 +11,7 @@ read -p "If you haven't changed it, you should change the default raspberry pi p
 if [ "$changepw" == "y" ]; then
     passwd
 else
-    echo -e "${RED}    not changing password\n"
+    echo -e "${RED}    not changing password\n${NC}"
 fi
 
 read -p "Would you like to set your locale? Use the space bar to select/deselect items on the screen (y/n): " changelocale
@@ -19,7 +20,7 @@ if [ "$changelocale" == "y" ]; then
     sudo dpkg-reconfigure locales
     sudo dpkg-reconfigure keyboard-configuration
 else
-    echo -e "${RED}    not changing locale\n"
+    echo -e "${RED}    not changing locale\n${NC}"
 fi
 
 read -p "Install jack audio? (y/n): " installjack
@@ -34,14 +35,14 @@ read -p "Disable bluetooth? (y/n): " disablebt
 # create git folder if it don't already exist
 GITDIR=$HOME/git
 if [ -d "$GITDIR" ]; then
-    echo -e "\n${RED}making git directory at $HOME/git"
+    echo -e "\n${RED}making git directory at $HOME/git ${NC}"
     mkdir $GITDIR
 fi
 
 
 ################
 # update and install packages
-echo -e "\n\n${RED}Installing necessary packages...\n\n"
+echo -e "\n\n${RED}Installing necessary packages...\n\n ${NC}"
 
 sudo apt-get update
 sudo apt-get install -y \
@@ -77,9 +78,9 @@ sudo -H make install
 #############
 # performance
 
-echo -e "\n\n${RED}Doing performance enhancements\n\n"
+echo -e "\n\n${RED}Doing performance enhancements\n\n ${NC}"
 
-echo -e "\n${RED}Changing CPU governor to performance"
+echo -e "\n${RED}Changing CPU governor to performance ${NC}"
 
 # disable startup script that changes cpu governor
 # note that this is not the same raspi-config as you're thinking
@@ -88,13 +89,13 @@ sudo systemctl disable raspi-config
 sed -i '/^exit 0/i echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor' /etc/rc.local
 
 if [ "$disablebt" == "y" ]; then
-    echo -e "\n${RED}Disabling bluetooth.."
+    echo -e "\n${RED}Disabling bluetooth.. ${NC}"
     sudo sed -i '$s/$/\ndtoverlay=pi3-disable-bt/' /boot/config.txt
     sudo systemctl disable hciuart.service
     sudo systemctl disable bluealsa.service
     sudo systemctl disable bluetooth.service
 else
-    echo -e "\n${RED}Not disabling bluetooth"
+    echo -e "\n${RED}Not disabling bluetooth ${NC}"
 fi
 
 
@@ -133,7 +134,7 @@ if [ "$setuphifi" == "y" ]; then
 
     # edit alsa config so hifiberry is default sound card
     ALSAFILE=/etc/asound.conf
-    if [ -f "$ALSAFILE"]; then
+    if [ -f "$ALSAFILE" ]; then
         sudo touch $ALSAFILE
     fi
 
@@ -146,7 +147,7 @@ fi
 cd $GITDIR
 git clone https://github.com/wehr-lab/RPilot.git
 
-echo -e "\n\n${RED}System needs to reboot for changes to take effect, reboot now?"
+echo -e "\n\n${RED}System needs to reboot for changes to take effect, reboot now? ${NC}"
 read -p "reboot? (y/n): " DOREBOOT
 
 if [ "$DOREBOOT" == "y" ]; then
