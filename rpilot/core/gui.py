@@ -1842,7 +1842,8 @@ class Bandwidth_Test(QtGui.QDialog):
                               payload_size))
 
         msgs_rcvd = self.msg_counter.next()
-        #self.update_pbar(msgs_rcvd)
+        # if msgs_rcvd % 10 == 0:
+        #     self.update_pbar(msgs_rcvd)
 
 
         if int(value['n_msg'])+1 == self.n_messages_test:

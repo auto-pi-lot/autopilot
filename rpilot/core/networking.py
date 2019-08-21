@@ -88,7 +88,8 @@ class Networking(multiprocessing.Process):
     pusher       = None    # pusher socket - a dealer socket that connects to other routers
     listener     = None    # Listener socket - a router socket to send/recv messages
     logger       = None    # Logger....
-    do_logging   = True    # whether we should do message-level logging
+    do_logging   = multiprocessing.Event()
+    do_logging.set()
     log_handler  = None
     log_formatter = None
     id           = None    # What are we known as?
@@ -214,6 +215,10 @@ class Networking(multiprocessing.Process):
         if 'NOREPEAT' in msg.flags.keys():
             repeat = False
 
+        # if we didn't send it, we shouldn't double-confirm it.
+        if msg.sender not in [self.name, '_'+self.name]:
+            repeat = False
+
         # Make sure our message has everything
         if not msg.validate():
             self.logger.error('Message Invalid:\n{}'.format(str(msg)))
@@ -231,7 +236,7 @@ class Networking(multiprocessing.Process):
         else:
             self.listener.send_multipart([bytes(msg.to), msg_enc])
 
-        if not (msg.key == "CONFIRM") and self.do_logging:
+        if (msg.key != "CONFIRM") and self.do_logging.is_set():
             self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
 
         if repeat and not msg.key == "CONFIRM":
@@ -298,7 +303,7 @@ class Networking(multiprocessing.Process):
         # upstream because presumably our target is upstream.
         self.pusher.send_multipart([bytes(self.push_id), msg_enc])
 
-        if not (msg.key == "CONFIRM") and self.do_logging:
+        if not (msg.key == "CONFIRM") and self.do_logging.is_set():
             self.logger.info('MESSAGE PUSHED - {}'.format(str(msg)))
 
         if repeat and not msg.key == 'CONFIRM':
@@ -338,7 +343,7 @@ class Networking(multiprocessing.Process):
 
         # Send the message again
         msg = self.outbox[msg_id]
-        if self.do_logging:
+        if self.do_logging.is_set():
             self.logger.info('REPUBLISH {} - {}'.format(msg_id,str(self.outbox[msg_id])))
 
         if send_type == 'send':
@@ -404,9 +409,10 @@ class Networking(multiprocessing.Process):
             if len(msg)>3:
                 self.routes[sender] = msg[0:-2]
 
-            # if this is a new sender, add them to the list
+            # # if this is a new sender, add them to the list
             if sender not in self.senders.keys():
                 self.senders[sender] = ""
+                self.senders['_' + sender] = ''
 
             # connection pings are blank frames,
             # respond to let them know we're alive
@@ -416,6 +422,12 @@ class Networking(multiprocessing.Process):
 
             msg = json.loads(msg[-1])
             msg = Message(**msg)
+
+            # if this is a new sender, add them to the list
+            if msg['sender'] not in self.senders.keys():
+                self.senders[msg['sender']] = ""
+                self.senders['_' + msg['sender']] = ''
+
         else:
             self.logger.error('Dont know what this message is:{}'.format(msg))
             return
@@ -447,7 +459,7 @@ class Networking(multiprocessing.Process):
                 self.send(msg=msg)
         # if this message is to us, just handle it and return
         elif msg.to in [self.id, "_{}".format(self.id)]:
-            if (msg.key != "CONFIRM") and self.do_logging:
+            if (msg.key != "CONFIRM") and self.do_logging.is_set():
                 self.logger.info('RECEIVED: {}'.format(str(msg)))
             # Log and spawn thread to respond to listen
             try:
@@ -478,7 +490,8 @@ class Networking(multiprocessing.Process):
         elif self.pusher:
             self.push(msg=msg)
         else:
-            self.logger.warning('Message to unconfirmed recipient, attempting to send: {}'.format(str(msg)))
+            if self.do_logging.is_set():
+                self.logger.warning('Message to unconfirmed recipient, attempting to send: {}'.format(str(msg)))
             self.send(msg=msg)
 
         # finally, if there's something we're supposed to do, do it
@@ -534,6 +547,12 @@ class Networking(multiprocessing.Process):
         unwrap2 = [l for l in (unwrap00, unwrap01) if l][0][0]
 
         return unwrap2
+
+    def set_logging(self, do_logging):
+        if do_logging:
+            self.do_logging.set()
+        else:
+            self.do_logging.clear()
 
 class Terminal_Networking(Networking):
     """
@@ -1065,7 +1084,8 @@ class Net_Node(object):
     timers = {}
     #connected = False
     logger = None
-    do_logging = True
+    do_logging = threading.Event()
+    do_logging.set()
     log_handler = None
     log_formatter = None
     sock = None
@@ -1103,7 +1123,8 @@ class Net_Node(object):
         self.msg_counter = count()
 
         # try to get a logger
-        self.do_logging = do_logging
+        if not do_logging:
+            self.do_logging.clear()
         self.init_logging()
 
         self.init_networking()
@@ -1170,7 +1191,7 @@ class Net_Node(object):
                 self.logger.error('Message failed to validate:\n{}'.format(str(msg)))
             return
 
-        if self.logger and self.do_logging:
+        if self.logger and self.do_logging.is_set():
             self.logger.info('{} - RECEIVED: {}'.format(self.id, str(msg)))
 
         # if msg.key == 'CONFIRM':
@@ -1262,7 +1283,7 @@ class Net_Node(object):
 
    
         self.sock.send_multipart([bytes(self.upstream), msg_enc])
-        if self.logger and self.do_logging:
+        if self.logger and self.do_logging.is_set():
             self.logger.info("MESSAGE SENT - {}".format(str(msg)))
 
         if repeat and not msg.key == "CONFIRM":
@@ -1299,7 +1320,7 @@ class Net_Node(object):
 
 
         # Send the message again
-        if self.do_logging:
+        if self.do_logging.is_set():
             self.logger.info('REPUBLISH {} - {}'.format(msg_id,str(self.outbox[msg_id])))
         msg = self.outbox[msg_id]
         self.sock.send_multipart([bytes(self.upstream), msg.serialize()])
@@ -1326,7 +1347,7 @@ class Net_Node(object):
             self.timers[value].cancel()
             del self.timers[value]
 
-        if self.do_logging:
+        if self.do_logging.is_set():
             self.logger.info('CONFIRMED MESSAGE {}'.format(value))
 
     def prepare_message(self, to, key, value, repeat):
@@ -1378,6 +1399,7 @@ class Net_Node(object):
         self.logger.addHandler(self.log_handler)
         self.logger.setLevel(logging.INFO)
         self.logger.info('{} Logging Initiated'.format(self.id))
+
 
 
 
