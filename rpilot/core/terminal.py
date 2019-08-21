@@ -43,7 +43,7 @@ from mouse import Mouse
 from plots import Plot_Widget
 from networking import Terminal_Networking, Net_Node
 from utils import InvokeEvent, Invoker
-from gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water
+from gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test
 import pdb
 
 
@@ -242,6 +242,11 @@ class Terminal(QtGui.QMainWindow):
         self.tool_menu.addAction(update_protocol_act)
         self.tool_menu.addAction(reassign_act)
         self.tool_menu.addAction(calibrate_act)
+
+        # Tests menu
+        self.tests_menu = self.menuBar().addMenu("Test&s")
+        bandwidth_test_act = QtGui.QAction("Test Bandwidth", self, triggered=self.test_bandwidth)
+        self.tests_menu.addAction(bandwidth_test_act)
 
 
         ## Init main panels and add to layout
@@ -664,6 +669,10 @@ class Terminal(QtGui.QMainWindow):
             msgbox = QtGui.QMessageBox()
             msgbox.setText("Calibration results sent!")
             msgbox.exec_()
+
+    def test_bandwidth(self):
+        bandwidth_test = Bandwidth_Test(self.pilots)
+        bandwidth_test.exec_()
 
 
 

@@ -16,6 +16,7 @@ import threading
 import time
 import socket
 import json
+import base64
 import numpy as np
 import pandas as pd
 from scipy.stats import linregress
@@ -169,7 +170,8 @@ class RPilot:
             'STOP' : self.l_stop, # We are being asked to stop running our task
             'PARAM': self.l_param, # A parameter is being changed
             'CALIBRATE_PORT': self.l_cal_port, # Calibrate a water port
-            'CALIBRATE_RESULT': self.l_cal_result # Compute curve and store result
+            'CALIBRATE_RESULT': self.l_cal_result, # Compute curve and store result
+            'BANDWIDTH': self.l_bandwidth # test our bandwidth
         }
 
         # spawn_network gives us the independent message-handling process
@@ -398,6 +400,31 @@ class RPilot:
 
         with open(cal_fn, 'w+') as cal_file:
             json.dump(calibration, cal_file)
+
+    def l_bandwidth(self, value):
+        """
+        Send messages with a poissonian process according to the settings in value
+        """
+        n_msg = int(value['n_msg'])
+        rate = float(value['rate'])
+        payload = int(value['payload'])
+        confirm = bool(value['confirm'])
+
+        payload = base64.b64encode(np.zeros(payload*1024, dtype=np.bool))
+
+        message = {
+            'pilot': self.name,
+            'payload': payload
+        }
+
+        for i in range(n_msg):
+            message['n_msg'] = i
+            message['timestamp'] = datetime.datetime.now().isoformat()
+            self.node.send(to='bandwidth',key='BANDWIDTH',
+                           message=message, repeat=confirm)
+            time.sleep(np.random.exponential(1.0/rate))
+
+
 
     def calibration_curve(self, path=None, calibration=None):
         """

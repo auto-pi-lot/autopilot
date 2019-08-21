@@ -814,7 +814,8 @@ class Pilot_Networking(Networking):
             'CHILD': self.l_child,
             'HANDSHAKE': self.l_noop,
             'CALIBRATE_PORT': self.l_forward,
-            'CALIBRATE_RESULT': self.l_forward
+            'CALIBRATE_RESULT': self.l_forward,
+            'BANDWIDTH': self.l_forward
         })
 
     ###########################3
@@ -1390,6 +1391,7 @@ class Message(object):
         sender (str): ID of socket where this message originates
         key (str): Type of message, used to select a listen method to process it
         value: Body of message, can be any type but must be JSON serializable.
+        timestamp (str): Timestamp of message creation
         ttl (int): Time-To-Live, each message is sent this many times at max,
             each send decrements ttl.
     """
@@ -1402,6 +1404,7 @@ class Message(object):
     # value is the only attribute that can be left None,
     # ie. with signal-type messages like "STOP"
     value = None
+    timestamp = None
     flags = {}
     ttl = 5 # every message starts with 5 retries. only relevant to the sender so not serialized.
 
@@ -1419,6 +1422,11 @@ class Message(object):
 
         for k, v in kwargs.items():
             setattr(self, k, v)
+
+        # check if requested not to timestamp
+        if 'timestamp' in kwargs.keys():
+            if not kwargs['timestamp'] == False:
+                self.get_timestamp()
 
     def __str__(self):
         # type: () -> str
@@ -1460,6 +1468,9 @@ class Message(object):
 
     def __len__(self):
         return len(self.__dict__)
+
+    def get_timestamp(self):
+        self.timestamp = datetime.datetime.now().isoformat()
 
     def validate(self):
         """

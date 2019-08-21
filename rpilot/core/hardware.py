@@ -44,7 +44,6 @@ import os
 import sys
 from rpilot import prefs
 from rpilot.core.networking import Net_Node
-from rpilot.core.utils import ReturnThread
 if prefs.AGENT in ['pilot']:
     import pigpio
 

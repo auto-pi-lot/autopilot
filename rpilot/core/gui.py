@@ -20,7 +20,13 @@ import copy
 import datetime
 from collections import OrderedDict as odict
 import numpy as np
+import ast
+import base64
 from PySide import QtGui, QtCore
+import pyqtgraph as pg
+import pandas as pd
+import itertools
+import threading
 
 # adding rpilot parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -1555,6 +1561,285 @@ class Sound_Widget(QtGui.QWidget):
 ###################################3
 # Tools
 ######################################
+
+class Bandwidth_Test(QtGui.QDialog):
+    """
+    Test the limits of the rate of messaging from the connected Pilots.
+
+    Asks pilots to send messages at varying rates and with varying payload sizes, and with messages with/without receipts.
+
+    Measures drop rates and message latency
+
+    Attributes:
+        rate_list (list): List of rates (Hz) to test
+        payload_list (list): List of payload sizes (KB) to test
+        messages (list): list of messages received during test
+    """
+
+    def __init__(self, pilots):
+        super(Bandwidth_Test, self).__init__()
+
+        self.pilots = pilots
+
+        self.rate_list = []
+        self.payload_list = []
+        self.test_pilots = []
+        self.finished_pilots = []
+        self.messages = []
+
+        self.end_test = threading.Event()
+
+        self.listens = {
+            'BWTEST': self.register_msg
+        }
+
+
+        self.node = Net_Node(id="bandwidth",
+                             upstream='T',
+                             port = prefs.MSGPORT,
+                             listens=self.listens)
+
+        self.init_ui()
+
+    def init_ui(self):
+        """
+        Look we're just making the stuff in the window over here alright? relax.
+        """
+
+        # two panes: left selects the pilots and sets params of the test,
+        # right plots outcomes
+
+        # main layout l/r
+        self.layout = QtGui.QHBoxLayout()
+
+        # left layout for settings
+        self.settings = QtGui.QFormLayout()
+
+        self.n_messages = QtGui.QLineEdit('1000')
+        self.n_messages.setValidator(QtGui.QIntValidator())
+
+        self.receipts = QtGui.QCheckBox('Get receipts?')
+        self.receipts.setChecked(True)
+
+        self.rates = QtGui.QLineEdit('10, 25, 50, 100')
+        self.rates.setObjectName('rates')
+        self.rates.editingFinished.connect(self.validate_list)
+
+        self.payloads = QtGui.QLineEdit('0, 64, 256, 1024')
+        self.payloads.setObjectName('payloads')
+        self.payloads.editingFinished.connect(self.validate_list)
+
+        # checkboxes for which pis to include in test
+        self.pilot_box = QtGui.QGroupBox('Pilots')
+        self.pilot_checks = {}
+        self.pilot_layout = QtGui.QVBoxLayout()
+
+        for p in self.pilots.keys():
+            cb = QtGui.QCheckBox(p)
+            cb.setChecked(True)
+            self.pilot_checks[p] = cb
+            self.pilot_layout.addWidget(cb)
+
+        # buttons to start test/save results
+        self.start_btn = QtGui.QPushButton('Start Test')
+        self.start_btn.clicked.connect(self.start)
+        self.save_btn = QtGui.QPushButton('Save Results')
+        self.save_btn.setEnabled(False)
+        self.save_btn.clicked.connect(self.save)
+
+
+        # combine settings
+        self.settings.addRow('N messages per test', self.n_messages)
+        self.settings.addRow('Confirm sent messages?', self.receipts)
+        self.settings.addRow('Message Rates per Pilot \n(in Hz, list of integers like "1, 2, 3")',
+                             self.rates)
+        self.settings.addRow('Payload sizes per message \n(in KB, list of integers like "32, 64, 128")',
+                             self.payloads)
+        self.settings.addRow('Which Pilots to include in test',
+                             self.pilot_layout)
+
+        self.settings.addRow(self.start_btn, self.save_btn)
+
+        ###########
+        # plotting widget
+        self.drop_plot = pg.PlotWidget()
+        self.delay_plot = pg.PlotWidget()
+
+        self.plot_layout = QtGui.QVBoxLayout()
+        self.plot_layout.addWidget(self.drop_plot)
+        self.plot_layout.addWidget(self.delay_plot)
+
+
+
+        # add panes
+        self.layout.addLayout(self.settings, 1)
+        self.layout.addLayout(self.plot_layout, 1)
+
+        self.setLayout(self.layout)
+
+    def start(self):
+        """
+        Start the test!!!
+        """
+
+        if len(self.rate_list) == 0:
+            warning_msg = QtGui.QMessageBox(QtGui.QMessageBox.Warning,
+                                            "No rates to test!",
+                                            "Couldn't find a list of rates to test, did you enter one?")
+            warning_msg.exec_()
+            return
+        if len(self.payload_list) ==0 :
+            warning_msg = QtGui.QMessageBox(QtGui.QMessageBox.Warning,
+                                            "No payloads to test!",
+                                            "Couldn't find a list of payloads to test, did you enter one?")
+            warning_msg.exec_()
+            return
+
+        # get list of checked pis
+        test_pilots = []
+        for pilot, p_box in self.pilot_checks.items():
+            if p_box.isChecked():
+                test_pilots.append(pilot)
+        self.test_pilots = test_pilots
+        self.finished_pilots = []
+
+        get_receipts = self.receipts.isChecked()
+        n_messages = self.n_messages.text()
+
+        self.results = []
+
+
+        for rate, payload in itertools.product(self.rate_list, self.payload_list):
+            msg = {'rate': rate,
+                   'payload': payload,
+                   'n_msg': n_messages,
+                   'confirm': get_receipts}
+
+            for p in test_pilots:
+                self.node.send(to=p, key="BANDWIDTH", value=msg)
+
+            # wait at most twice the time we're supposed to
+            timeout = rate * int(self.n_messages.text()) * 2
+            self.end_test.wait(timeout=timeout)
+
+            # process messages
+            msg_df = pd.DataFrame.from_records(self.messages,
+                                               columns=['pilot', 'n_msg', 'timestamp_sent', 'timestamp_rcvd', 'payload'],)
+            msg_df = msg_df.astype({'timestamp_sent':'datetime64', 'timestamp_rcvd':'datetime64'})
+
+            # compute summary
+            mean_delay = np.mean(msg_df['timestamp_rcvd'] - msg_df['timestamp_sent']).total_seconds()
+            drop_rate = np.mean(1.0-(msg_df.groupby('pilot').n_msg.max() / float(n_messages)))
+
+            self.delay_plot.plot(rate, mean_delay)
+            self.drop_plot.plot(rate, drop_rate)
+
+            self.results.append((rate, payload, n_messages, get_receipts, len(test_pilots), mean_delay, drop_rate))
+
+
+
+
+
+
+
+
+    def save(self):
+        pass
+
+    def register_msg(self, value):
+        """
+        Receive message from pilot, stash timestamp, number and pilot
+
+
+        Args:
+            value (dict): Value should contain
+
+                * Pilot
+                * Timestamp
+                * Message number
+                * Payload
+        """
+        payload_size = np.frombuffer(base64.b64decode(value['payload']),dtype=np.bool).nbytes
+
+        self.messages.append((value['pilot'],
+                              int(value['n_msg']),
+                              value['timestamp'],
+                              datetime.datetime.now().isoformat(),
+                              payload_size))
+
+
+
+        if int(value['n_msg'])+1 == int(self.n_messages.text()):
+            self.finished_pilots.append(value['pilot'])
+
+        if len(self.finished_pilots) == len(self.test_pilots):
+            self.end_test.set()
+
+
+
+    def validate_list(self):
+        """
+        Checks that the entries in :py:attr:`Bandwidth_Test.rates` and :py:attr:`Bandwidth_Test.payloads` are well formed.
+
+        ie. that they are of the form 'integer, integer, integer'...
+
+        pops a window that warns about ill formed entry and clears line edit if badly formed
+
+        If the list validates, stored as either :py:attr:`Bandwidth_Test.rate_list` or :py:attr:`Bandwidth_Test.payload_list`
+
+
+        """
+        sender = self.sender()
+
+        text = sender.text()
+
+        # user doesn't have to add open/close brackets in input, make sure
+        if not text.startswith('['):
+            text = '[ ' + text
+        if not text.endswith(']'):
+            text = text + ' ]'
+
+        # validate form of string
+        try:
+            a_list = ast.literal_eval(text)
+        except SyntaxError:
+            warning_msg = QtGui.QMessageBox(QtGui.QMessageBox.Warning,
+                                            "Improperly formatted list!",
+                                            "The input received wasn't a properly formatted list of integers. Make sure your input is of the form '1, 2, 3' or '[ 1, 2, 3 ]'\ninstead got : {}".format(text))
+            sender.setText('')
+            warning_msg.exec_()
+
+            return
+
+        # validate integers
+        for i in a_list:
+            if not isinstance (i, int):
+                warning_msg = QtGui.QMessageBox(QtGui.QMessageBox.Warning,
+                                                "Improperly formatted list!",
+                                                "The input received wasn't a properly formatted list of integers. Make sure your input is of the form '1, 2, 3' or '[ 1, 2, 3 ]'\ninstead got : {}".format(
+                                                    text))
+                sender.setText('')
+                warning_msg.exec_()
+
+                return
+
+        # if passes our validation, set list
+        if sender.objectName() == 'rates':
+            self.rate_list = a_list
+        elif sender.objectName() == 'payloads':
+            self.payload_list = a_list
+        else:
+            Warning('Not sure what list this is, object name is: {}'.format(sender.objectName()))
+
+
+
+
+
+
+
+
+
+
 
 class Calibrate_Water(QtGui.QDialog):
     """
