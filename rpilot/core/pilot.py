@@ -405,6 +405,8 @@ class RPilot:
         """
         Send messages with a poissonian process according to the settings in value
         """
+        print(value)
+        sys.stdout.flush()
         n_msg = int(value['n_msg'])
         rate = float(value['rate'])
         payload = int(value['payload'])
