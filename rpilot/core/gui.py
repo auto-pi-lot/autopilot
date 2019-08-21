@@ -36,6 +36,7 @@ from rpilot.stim.sound import sounds
 from rpilot.core.networking import Net_Node
 from functools import wraps
 from rpilot.core.utils import InvokeEvent
+from rpilot.core.plots import gui_event
 
 
 def gui_event(fn):
@@ -1598,7 +1599,8 @@ class Bandwidth_Test(QtGui.QDialog):
         self.node = Net_Node(id="bandwidth",
                              upstream='T',
                              port = prefs.MSGPORT,
-                             listens=self.listens)
+                             listens=self.listens,
+                             do_logging = False)
 
         self.init_ui()
 
@@ -1641,6 +1643,10 @@ class Bandwidth_Test(QtGui.QDialog):
             self.pilot_checks[p] = cb
             self.pilot_layout.addWidget(cb)
 
+        # gotta have progress bars
+        self.all_pbar = QtGui.QProgressBar()
+        self.this_pbar = QtGui.QProgressBar()
+
         # buttons to start test/save results
         self.start_btn = QtGui.QPushButton('Start Test')
         self.start_btn.clicked.connect(self.start)
@@ -1658,13 +1664,23 @@ class Bandwidth_Test(QtGui.QDialog):
                              self.payloads)
         self.settings.addRow('Which Pilots to include in test',
                              self.pilot_layout)
+        self.settings.addRow('Progress: All tests', self.all_pbar)
+        self.settings.addRow('Progress: This test', self.this_pbar)
 
         self.settings.addRow(self.start_btn, self.save_btn)
 
         ###########
         # plotting widget
-        self.drop_plot = pg.PlotWidget()
-        self.delay_plot = pg.PlotWidget()
+        self.drop_plot = pg.PlotWidget(name='Message Drop Rate')
+        self.delay_plot = pg.PlotWidget(name='Mean Delay')
+
+        # the actual graphical objects that draw stuff for us
+        self.drop_line = self.drop_plot.plot()
+        self.delay_line = self.delay_plot.plot()
+        self.drop_line.setPen((255,0,0))
+        self.delay_line.setPen((255,0,0))
+
+
 
         self.plot_layout = QtGui.QVBoxLayout()
         self.plot_layout.addWidget(self.drop_plot)
@@ -1683,6 +1699,8 @@ class Bandwidth_Test(QtGui.QDialog):
         Start the test!!!
         """
 
+
+        # first make sure we got everything we need
         if len(self.rate_list) == 0:
             warning_msg = QtGui.QMessageBox(QtGui.QMessageBox.Warning,
                                             "No rates to test!",
@@ -1704,15 +1722,33 @@ class Bandwidth_Test(QtGui.QDialog):
         self.test_pilots = test_pilots
         self.finished_pilots = []
 
+        # stash some run parameters
         get_receipts = self.receipts.isChecked()
         n_messages = self.n_messages.text()
+        # 'n messages for this test' in case user changes it during run
         self.n_messages_test = int(n_messages)
 
+        # lists to store our results for plotting and etc.
         self.results = []
+        delays = []
+        drops = []
+        rates =[]
+
+        self.save_btn.setEnabled(False)
+
+        # set pbars
+        self.all_pbar.setMaximum(len(self.rate_list)*len(self.payload_list))
+        self.this_pbar.setMaximum(self.n_messages_test)
+        self.all_pbar.reset()
 
 
-        for rate, payload in itertools.product(self.rate_list, self.payload_list):
+        for i, (rate, payload) in enumerate(itertools.product(self.rate_list, self.payload_list)):
+            # reset objects that are new each test
             self.end_test.clear()
+            self.this_pbar.reset()
+            self.msg_counter = itertools.count()
+
+
             msg = {'rate': rate,
                    'payload': payload,
                    'n_msg': n_messages,
@@ -1734,10 +1770,21 @@ class Bandwidth_Test(QtGui.QDialog):
             mean_delay = np.mean(msg_df['timestamp_rcvd'] - msg_df['timestamp_sent']).total_seconds()
             drop_rate = np.mean(1.0-(msg_df.groupby('pilot').n_msg.max() / float(n_messages)))
 
-            self.delay_plot.plot(rate, mean_delay)
-            self.drop_plot.plot(rate, drop_rate)
+            # plot
+            rates.append(rate)
+            drops.append(drop_rate)
+            delays.append(mean_delay)
+            self.delay_line.setData(x=rates, y=delays)
+            self.drop_line.setData(x=rates, y=drops)
+            self.drop_plot.setYRange(np.min(drops), np.max(drops))
+            self.delay_plot.setYRange(np.min(delays), np.max(delays))
+
+            self.all_pbar.setValue(i+1)
 
             self.results.append((rate, payload, n_messages, get_receipts, len(test_pilots), mean_delay, drop_rate))
+
+        self.save_btn.setEnabled(True)
+
 
 
 
@@ -1747,7 +1794,31 @@ class Bandwidth_Test(QtGui.QDialog):
 
 
     def save(self):
-        pass
+        """
+        Select save file location for test results (csv) and then save them there
+
+        """
+
+        fileName, filtr = QtGui.QFileDialog.getSaveFileName(self,
+                "Where should we save these results?",
+                prefs['DATADIR'],
+                "CSV files (*.csv)", "")
+
+        # make and save results df
+        try:
+            res_df = pd.DataFrame.from_records(self.results,
+                                               columns=['rate', 'payload', 'n_messages', 'confirm', 'n_pilots', 'mean_delay', 'drop_rate'])
+
+            res_df.to_csv(fileName)
+            reply = QtGui.QMessageBox.information(self,
+                                                  "Results saved!", "Results saved to {}".format(fileName))
+
+        except Exception as e:
+            reply = QtGui.QMessageBox.critical(self, "Error saving",
+                                               "Error while saving your results:\n{}".format(e))
+
+
+
 
     def register_msg(self, value):
         """
@@ -1770,6 +1841,8 @@ class Bandwidth_Test(QtGui.QDialog):
                               datetime.datetime.now().isoformat(),
                               payload_size))
 
+        msgs_rcvd = self.msg_counter.next()
+        #self.update_pbar(msgs_rcvd)
 
 
         if int(value['n_msg'])+1 == self.n_messages_test:
@@ -1777,6 +1850,10 @@ class Bandwidth_Test(QtGui.QDialog):
 
         if len(self.finished_pilots) == len(self.test_pilots):
             self.end_test.set()
+
+    @gui_event
+    def update_pbar(self, val):
+        self.this_pbar.setValue(val+1)
 
 
 

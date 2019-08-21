@@ -88,6 +88,7 @@ class Networking(multiprocessing.Process):
     pusher       = None    # pusher socket - a dealer socket that connects to other routers
     listener     = None    # Listener socket - a router socket to send/recv messages
     logger       = None    # Logger....
+    do_logging   = True    # whether we should do message-level logging
     log_handler  = None
     log_formatter = None
     id           = None    # What are we known as?
@@ -230,7 +231,7 @@ class Networking(multiprocessing.Process):
         else:
             self.listener.send_multipart([bytes(msg.to), msg_enc])
 
-        if not msg.key == "CONFIRM":
+        if not (msg.key == "CONFIRM") and self.do_logging:
             self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
 
         if repeat and not msg.key == "CONFIRM":
@@ -297,7 +298,7 @@ class Networking(multiprocessing.Process):
         # upstream because presumably our target is upstream.
         self.pusher.send_multipart([bytes(self.push_id), msg_enc])
 
-        if not msg.key == "CONFIRM":
+        if not (msg.key == "CONFIRM") and self.do_logging:
             self.logger.info('MESSAGE PUSHED - {}'.format(str(msg)))
 
         if repeat and not msg.key == 'CONFIRM':
@@ -337,7 +338,9 @@ class Networking(multiprocessing.Process):
 
         # Send the message again
         msg = self.outbox[msg_id]
-        self.logger.info('REPUBLISH {} - {}'.format(msg_id,str(self.outbox[msg_id])))
+        if self.do_logging:
+            self.logger.info('REPUBLISH {} - {}'.format(msg_id,str(self.outbox[msg_id])))
+
         if send_type == 'send':
             self.listener.send_multipart([bytes(msg.to), msg.serialize()])
         elif send_type == 'push':
@@ -444,7 +447,7 @@ class Networking(multiprocessing.Process):
                 self.send(msg=msg)
         # if this message is to us, just handle it and return
         elif msg.to in [self.id, "_{}".format(self.id)]:
-            if msg.key != "CONFIRM":
+            if (msg.key != "CONFIRM") and self.do_logging:
                 self.logger.info('RECEIVED: {}'.format(str(msg)))
             # Log and spawn thread to respond to listen
             try:
@@ -1062,12 +1065,13 @@ class Net_Node(object):
     timers = {}
     #connected = False
     logger = None
+    do_logging = True
     log_handler = None
     log_formatter = None
     sock = None
     loop_thread = None
 
-    def __init__(self, id, upstream, port, listens, instance=True):
+    def __init__(self, id, upstream, port, listens, instance=True, do_logging=True):
         """
         Args:
             id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
@@ -1099,6 +1103,7 @@ class Net_Node(object):
         self.msg_counter = count()
 
         # try to get a logger
+        self.do_logging = do_logging
         self.init_logging()
 
         self.init_networking()
@@ -1165,7 +1170,7 @@ class Net_Node(object):
                 self.logger.error('Message failed to validate:\n{}'.format(str(msg)))
             return
 
-        if self.logger:
+        if self.logger and self.do_logging:
             self.logger.info('{} - RECEIVED: {}'.format(self.id, str(msg)))
 
         # if msg.key == 'CONFIRM':
@@ -1257,7 +1262,7 @@ class Net_Node(object):
 
    
         self.sock.send_multipart([bytes(self.upstream), msg_enc])
-        if self.logger:
+        if self.logger and self.do_logging:
             self.logger.info("MESSAGE SENT - {}".format(str(msg)))
 
         if repeat and not msg.key == "CONFIRM":
@@ -1294,7 +1299,8 @@ class Net_Node(object):
 
 
         # Send the message again
-        self.logger.info('REPUBLISH {} - {}'.format(msg_id,str(self.outbox[msg_id])))
+        if self.do_logging:
+            self.logger.info('REPUBLISH {} - {}'.format(msg_id,str(self.outbox[msg_id])))
         msg = self.outbox[msg_id]
         self.sock.send_multipart([bytes(self.upstream), msg.serialize()])
 
@@ -1320,7 +1326,8 @@ class Net_Node(object):
             self.timers[value].cancel()
             del self.timers[value]
 
-        self.logger.info('CONFIRMED MESSAGE {}'.format(value))
+        if self.do_logging:
+            self.logger.info('CONFIRMED MESSAGE {}'.format(value))
 
     def prepare_message(self, to, key, value, repeat):
         """

@@ -405,8 +405,10 @@ class RPilot:
         """
         Send messages with a poissonian process according to the settings in value
         """
-        print(value)
-        sys.stdout.flush()
+        #turn off logging for now
+        self.networking.do_logging = False
+        self.node.do_logging = False
+
         n_msg = int(value['n_msg'])
         rate = float(value['rate'])
         payload = int(value['payload'])
@@ -425,6 +427,9 @@ class RPilot:
             self.node.send(to='bandwidth',key='BANDWIDTH_MSG',
                            value=message, repeat=confirm)
             time.sleep(np.random.exponential(1.0/rate))
+
+        self.networking.do_logging = True
+        self.node.do_logging = True
 
 
 
