@@ -421,7 +421,7 @@ class RPilot:
             message['n_msg'] = i
             message['timestamp'] = datetime.datetime.now().isoformat()
             self.node.send(to='bandwidth',key='BANDWIDTH',
-                           message=message, repeat=confirm)
+                           value=message, repeat=confirm)
             time.sleep(np.random.exponential(1.0/rate))
 
 
