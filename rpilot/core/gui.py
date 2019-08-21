@@ -1588,9 +1588,10 @@ class Bandwidth_Test(QtGui.QDialog):
         self.messages = []
 
         self.end_test = threading.Event()
+        self.end_test.clear()
 
         self.listens = {
-            'BWTEST': self.register_msg
+            'BANDWIDTH_MSG': self.register_msg
         }
 
 
@@ -1705,11 +1706,13 @@ class Bandwidth_Test(QtGui.QDialog):
 
         get_receipts = self.receipts.isChecked()
         n_messages = self.n_messages.text()
+        self.n_messages_test = int(n_messages)
 
         self.results = []
 
 
         for rate, payload in itertools.product(self.rate_list, self.payload_list):
+            self.end_test.clear()
             msg = {'rate': rate,
                    'payload': payload,
                    'n_msg': n_messages,
@@ -1769,7 +1772,7 @@ class Bandwidth_Test(QtGui.QDialog):
 
 
 
-        if int(value['n_msg'])+1 == int(self.n_messages.text()):
+        if int(value['n_msg'])+1 == self.n_messages_test:
             self.finished_pilots.append(value['pilot'])
 
         if len(self.finished_pilots) == len(self.test_pilots):
