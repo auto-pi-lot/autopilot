@@ -814,7 +814,7 @@ class Pilot_Networking(Networking):
             'CHILD': self.l_child,
             'HANDSHAKE': self.l_noop,
             'CALIBRATE_PORT': self.l_forward,
-            'CALIBRATE_RESULT': self.l_forward
+            'CALIBRATE_RESULT': self.l_forward,
             'BANDWIDTH': self.l_forward
         })
 
