@@ -423,6 +423,7 @@ class RPilot:
 
         spacing = 1.0/rate
         fudge = 0
+        last_message = time.clock()
         for i in range(n_msg):
             message['n_msg'] = i
             message['timestamp'] = datetime.datetime.now().isoformat()
