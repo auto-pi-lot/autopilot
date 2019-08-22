@@ -430,7 +430,7 @@ class RPilot:
             self.node.send(to='bandwidth',key='BANDWIDTH_MSG',
                            value=message, repeat=confirm)
             this_message = time.clock()
-            waitfor = np.clip(spacing-(this_message-last_message)-.01, 0, spacing)
+            waitfor = np.clip(spacing-(this_message-last_message)-0.005, 0, spacing)
 
             #time.sleep(np.random.exponential(1.0/rate))
             # just do linear spacing lol.

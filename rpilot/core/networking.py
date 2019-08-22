@@ -1269,10 +1269,10 @@ class Net_Node(object):
             msg = self.prepare_message(to, key, value, repeat)
 
         # Make sure our message has everything
-        if not msg.validate():
-            if self.logger:
-                self.logger.error('Message Invalid:\n{}'.format(str(msg)))
-            return
+        # if not msg.validate():
+        #     if self.logger:
+        #         self.logger.error('Message Invalid:\n{}'.format(str(msg)))
+        #     return
 
         # encode message
         msg_enc = msg.serialize()
@@ -1446,16 +1446,21 @@ class Message(object):
             *args:
             **kwargs:
         """
+
+        # optional attrs should be instance attributes so they are caught by _-dict__
+        self.flags = {}
+        self.timestamp = None
+        self.ttl = 5
+
         if len(args)>0:
             Exception("Messages cannot be constructed with positional arguments")
 
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-        # check if requested not to timestamp
-        if 'timestamp' in kwargs.keys():
-            if not kwargs['timestamp'] == False:
-                self.get_timestamp()
+        # if we're not a previous message being recreated, get a timestamp for our creation
+        if 'timestamp' not in kwargs.keys():
+            self.get_timestamp()
 
     def __str__(self):
         # type: () -> str
@@ -1527,6 +1532,7 @@ class Message(object):
         valid = self.validate()
         if not valid:
             Exception("""Message invalid at the time of serialization!\n {}""".format(str(self)))
+            return False
 
         # msg = {
         #     'id': self.id,
