@@ -1768,7 +1768,7 @@ class Bandwidth_Test(QtGui.QDialog):
 
             # compute summary
             mean_delay = np.mean(msg_df['timestamp_rcvd'] - msg_df['timestamp_sent']).total_seconds()
-            drop_rate = np.mean(1.0-(msg_df.groupby('pilot').n_msg.max() / float(n_messages)))
+            drop_rate = np.mean(1.0-(msg_df.groupby('pilot').n_msg.count() / float(n_messages)))
 
             # plot
             rates.append(rate)
@@ -1842,8 +1842,8 @@ class Bandwidth_Test(QtGui.QDialog):
                               payload_size))
 
         msgs_rcvd = self.msg_counter.next()
-        # if msgs_rcvd % 10 == 0:
-        #     self.update_pbar(msgs_rcvd)
+        if msgs_rcvd % round(self.n_messages_test/100.0) == 0:
+             self.update_pbar(msgs_rcvd)
 
 
         if int(value['n_msg'])+1 == self.n_messages_test:
