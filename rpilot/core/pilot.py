@@ -422,15 +422,16 @@ class RPilot:
         }
 
         spacing = 1.0/rate
-
-        last_message = time.clock()
+        fudge = 0
         for i in range(n_msg):
             message['n_msg'] = i
             message['timestamp'] = datetime.datetime.now().isoformat()
             self.node.send(to='bandwidth',key='BANDWIDTH_MSG',
                            value=message, repeat=confirm)
             this_message = time.clock()
-            waitfor = np.clip(spacing-(this_message-last_message), 0, spacing)
+            waitfor = np.clip(spacing-(this_message-last_message)-fudge, 0, spacing)
+
+            fudge += ((spacing-waitfor)-fudge)*0.2
 
             #time.sleep(np.random.exponential(1.0/rate))
             # just do linear spacing lol.
