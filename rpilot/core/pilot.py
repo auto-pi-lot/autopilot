@@ -406,8 +406,8 @@ class RPilot:
         Send messages with a poissonian process according to the settings in value
         """
         #turn off logging for now
-        self.networking.set_logging(False)
-        self.node.do_logging.clear()
+        #self.networking.set_logging(False)
+        #self.node.do_logging.clear()
 
         n_msg = int(value['n_msg'])
         rate = float(value['rate'])
@@ -428,8 +428,8 @@ class RPilot:
                            value=message, repeat=confirm)
             time.sleep(np.random.exponential(1.0/rate))
 
-        self.networking.set_logging(True)
-        self.node.do_logging.set()
+        #self.networking.set_logging(True)
+        #self.node.do_logging.set()
 
 
 
