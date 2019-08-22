@@ -18,6 +18,7 @@ import threading
 import zmq
 import sys
 import datetime
+import time
 import os
 import multiprocessing
 import base64
@@ -25,6 +26,7 @@ import socket
 from tornado.ioloop import IOLoop
 from zmq.eventloop.zmqstream import ZMQStream
 from itertools import count
+import Queue as queue
 
 from rpilot import prefs
 
@@ -96,10 +98,12 @@ class Networking(multiprocessing.Process):
     ip           = None    # whatismy
     listens      = {}    # Dictionary of functions to call for different types of messages
     senders      = {} # who has sent us stuff (ie. directly connected) and their state if they keep one
-    outbox = {}  # Messages that are out with unconfirmed delivery
+    push_outbox = {}  # Messages that are out with unconfirmed delivery
+    send_outbox = {}  # Messages that are out with unconfirmed delivery
     timers = {}  # dict of timer threads that will check in on outbox messages
     child = False
     routes = {} # dict of 'to' addressee and the route that should be taken to reach them
+    repeat_interval = 5.0 # seconds to wait before retrying messages
 
     def __init__(self):
         super(Networking, self).__init__()
@@ -151,6 +155,11 @@ class Networking(multiprocessing.Process):
             self.pusher = ZMQStream(self.pusher, self.loop)
             self.pusher.on_recv(self.handle_listen)
             # TODO: Make sure handle_listen knows how to handle ID-less messages
+
+        # start thread that periodically resends messages
+        self.repeat_thread = threading.Thread(target=self.repeat)
+        self.repeat_thread.setDaemon(True)
+        self.repeat_thread.start()
 
         self.logger.info('Starting IOLoop')
         self.loop.start()
@@ -241,9 +250,10 @@ class Networking(multiprocessing.Process):
 
         if repeat and not msg.key == "CONFIRM":
             # add to outbox and spawn timer to resend
-            self.outbox[msg.id] = msg
-            self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,'send'))
-            self.timers[msg.id].start()
+            self.send_outbox[msg.id] = (time.time(), msg)
+            # self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,'send'))
+            # self.timers[msg.id].start()
+            #self.outbox.put((msg.id))
 
     def push(self,  to=None, key = None, value = None, msg=None, repeat=True):
         """
@@ -308,73 +318,68 @@ class Networking(multiprocessing.Process):
 
         if repeat and not msg.key == 'CONFIRM':
             # add to outbox and spawn timer to resend
-            self.outbox[msg.id] = msg
-            self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id, 'push'))
-            self.timers[msg.id].start()
+            self.push_outbox[msg.id] = (time.time(), msg)
+            #self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id, 'push'))
+            #self.timers[msg.id].start()
 
-    def repeat(self, msg_id, send_type):
+    def repeat(self):
         """
-        Called by a :class:`threading.Timer` to resend a message that hasn't
-        been confirmed by its recipient.
+        Periodically (according to :attr:`~.repeat_interval`) resend messages that haven't been confirmed
 
         TTL is decremented, and messages are resent until their TTL is 0.
 
-        Args:
-            msg_id (str): The ID of our message, the key used to store it
-                in :attr:`~.Networking.outbox` .
-            send_type ('send', 'push'): Should this message be resent with
-                our `listener` (send) or pusher?
         """
-        # Handle repeated messages
-        # If we still have the message in our outbox...
-        if msg_id not in self.outbox.keys():
-            # TODO: Do we really need this warning? this should be normal behavior...
-            self.logger.warning('Republish called for message {}, but missing message'.format(msg_id))
-            return
+        while True:
+            # try to send any outstanding messages and delete if too old
+            if len(self.push_outbox)>0:
+                for id in self.push_outbox.keys():
+                    if self.push_outbox[id][1].ttl <= 0:
+                        self.logger.warning('PUBLISH FAILED {} - {}'.format(id, str(self.push_outbox[id][1])))
+                        del self.push_outbox[id]
+                    else:
+                        # if we didn't just put this message in our outbox
+                        if (time.time() - self.push_outbox[id][0]) > self.repeat_interval:
+                            if self.do_logging.is_set():
+                                self.logger.info('REPUBLISH {} - {}'.format(id, str(self.push_outbox[id][1])))
+                            self.pusher.send_multipart([bytes(self.push_id), self.push_outbox[id][1].serialize()])
+                            self.push_outbox[id][1].ttl -= 1
 
-        # decrement ttl
-        self.outbox[msg_id].ttl -= 1
 
-        # If our TTL is now zero, delete the message and log its failure
-        if int(self.outbox[msg_id].ttl) <= 0:
-            self.logger.warning('PUBLISH FAILED {} - {}'.format(msg_id, str(self.outbox[msg_id])))
-            del self.outbox[msg_id]
-            return
+            
+            if len(self.send_outbox)>0:
+                for id in self.push_outbox.keys():
+                    if self.send_outbox[id][1].ttl <= 0:
+                        self.logger.warning('PUBLISH FAILED {} - {}'.format(id, str(self.send_outbox[id][1])))
+                        del self.send_outbox[id]
+                    else:
+                        # if we didn't just put this message in our outbox
+                        if (time.time() - self.send_outbox[id][0]) > self.repeat_interval:
+                            if self.do_logging.is_set():
+                                self.logger.info('REPUBLISH {} - {}'.format(id, str(self.send_outbox[id][1])))
+                            self.listener.send_multipart([bytes(self.send_outbox[id][1].to), self.send_outbox[id][1].serialize()])
+                            self.push_outbox[id][1].ttl -= 1
+                    
+            # wait to do it again
+            time.sleep(self.repeat_interval)
 
-        # Send the message again
-        msg = self.outbox[msg_id]
-        if self.do_logging.is_set():
-            self.logger.info('REPUBLISH {} - {}'.format(msg_id,str(self.outbox[msg_id])))
 
-        if send_type == 'send':
-            self.listener.send_multipart([bytes(msg.to), msg.serialize()])
-        elif send_type == 'push':
-            self.pusher.send_multipart([bytes(self.push_id), msg.serialize()])
-        else:
-            self.logger.exception('Republish called without proper send_type!')
-
-        # Spawn a thread to check in on our message
-        self.timers[msg_id] = threading.Timer(5.0, self.repeat, args=(msg_id, send_type))
-        self.timers[msg_id].start()
 
     def l_confirm(self, msg):
         """
         Confirm that a message was received.
 
         Args:
-            msg (:class:`.Message`): The message we are confirming.
+            msg (:class:`.Message`): A confirmation message - note that this message has its own unique ID, so the value of this message contains the ID of the message that is being confirmed
         """
         # confirmation that a published message was received
         # value should be the message id
 
         # delete message from outbox if we still have it
-        if msg.value in self.outbox.keys():
-            del self.outbox[msg.value]
+        if msg.value in self.send_outbox.keys():
+            del self.send_outbox[msg.id]
+        elif msg.value in self.push_outbox.keys():
+            del self.push_outbox[msg.id]
 
-        # stop a timer thread if we have it
-        if msg.value in self.timers.keys():
-            self.timers[msg.value].cancel()
-            del self.timers[msg.value]
 
         #self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
 
@@ -1090,6 +1095,7 @@ class Net_Node(object):
     log_formatter = None
     sock = None
     loop_thread = None
+    repeat_interval = 5 # how many seconds to wait before trying to repeat a message
 
     def __init__(self, id, upstream, port, listens, instance=True, do_logging=True):
         """
@@ -1148,6 +1154,10 @@ class Net_Node(object):
         self.loop_thread = threading.Thread(target=self.threaded_loop)
         self.loop_thread.daemon = True
         self.loop_thread.start()
+
+        self.repeat_thread = threading.Thread(target=self.repeat)
+        self.repeat_thread.daemon = True
+        self.repeat_thread.start()
 
         #self.connected = True
 
@@ -1288,47 +1298,35 @@ class Net_Node(object):
 
         if repeat and not msg.key == "CONFIRM":
             # add to outbox and spawn timer to resend
-            self.outbox[msg.id] = msg
-            self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,))
-            self.timers[msg.id].start()
+            self.outbox[msg.id] = (time.time(), msg)
+            # self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,))
+            # self.timers[msg.id].start()
 
-    def repeat(self, msg_id):
+    def repeat(self):
         """
-        Called by a :class:`threading.Timer` to resend a message that hasn't
-        been confirmed by its recipient.
+        Periodically (according to :attr:`~.repeat_interval`) resend messages that haven't been confirmed
 
         TTL is decremented, and messages are resent until their TTL is 0.
 
-        Args:
-            msg_id (str): The ID of our message, the key used to store it
-                in :attr:`~.Net_Node.outbox` .
         """
-        # Handle repeated messages
-        # If we still have the message in our outbox...
-        if msg_id not in self.outbox.keys():
-            # TODO: Do we really need this warning? this should be normal behavior...
-            self.logger.warning('Republish called for message {}, but missing message'.format(msg_id))
-            return
+        while True:
+            # try to send any outstanding messages and delete if too old
+            if len(self.outbox) > 0:
+                for id in self.outbox.keys():
+                    if self.outbox[id][1].ttl <= 0:
+                        self.logger.warning('PUBLISH FAILED {} - {}'.format(id, str(self.outbox[id][1])))
+                        del self.outbox[id]
+                    else:
+                        # if we didn't just put this message in the outbox...
+                        if (time.time() - self.outbox[id][0]) > self.repeat_interval:
+                            if self.do_logging.is_set():
+                                self.logger.info('REPUBLISH {} - {}'.format(id, str(self.outbox[id][1])))
+                            self.sock.send_multipart([bytes(self.upstream), self.outbox[id][1].serialize()])
+                            self.outbox[id][1].ttl -= 1
 
-        # decrement ttl
-        self.outbox[msg_id].ttl -= 1
-        # If our TTL is now zero, delete the message and log its failure
-        if int(self.outbox[msg_id].ttl) <= 0:
-            self.logger.warning('PUBLISH FAILED {} - {}'.format(msg_id, str(self.outbox[msg_id])))
-            del self.outbox[msg_id]
-            return
 
-
-        # Send the message again
-        if self.do_logging.is_set():
-            self.logger.info('REPUBLISH {} - {}'.format(msg_id,str(self.outbox[msg_id])))
-        msg = self.outbox[msg_id]
-        self.sock.send_multipart([bytes(self.upstream), msg.serialize()])
-
-        # Spawn a thread to check in on our message
-        self.timers[msg_id] = threading.Timer(5.0, self.repeat, args=(msg_id,))
-        self.timers[msg_id].daemon = True
-        self.timers[msg_id].start()
+            # wait to do it again
+            time.sleep(self.repeat_interval)
 
     def l_confirm(self, value):
         """
@@ -1342,10 +1340,10 @@ class Net_Node(object):
         if value in self.outbox.keys():
             del self.outbox[value]
 
-        # stop a timer thread if we have it
-        if value in self.timers.keys():
-            self.timers[value].cancel()
-            del self.timers[value]
+        # # stop a timer thread if we have it
+        # if value in self.timers.keys():
+        #     self.timers[value].cancel()
+        #     del self.timers[value]
 
         if self.do_logging.is_set():
             self.logger.info('CONFIRMED MESSAGE {}'.format(value))

@@ -1877,16 +1877,18 @@ class Bandwidth_Test(QtGui.QDialog):
                 * Payload
         """
 
+        payload_size = sys.getsizeof(value)
+
         if 'test_end' in value.keys():
             self.finished_pilots.append(value['pilot'])
 
             if len(self.finished_pilots) == len(self.test_pilots):
-                self.process_test(value['rate'], value['payload'], value['n_msg'], value['confirm'])
+                self.process_test(value['rate'], payload_size, value['n_msg'], value['confirm'])
 
             return
 
 
-        payload_size = np.frombuffer(base64.b64decode(value['payload']),dtype=np.bool).nbytes
+        #payload_size = np.frombuffer(base64.b64decode(value['payload']),dtype=np.bool).nbytes
 
         self.messages.append((value['pilot'],
                               int(value['n_msg']),
