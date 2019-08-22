@@ -455,11 +455,14 @@ class Terminal(QtGui.QMainWindow):
         # TODO: Also tell the relevant dataview to clear
 
         # update the pilot button
-        if value['pilot'] in self.control_panel.panels.keys() and value['pilot'] in self.pilots.keys():
-            if value['pilot'] != self.pilots[value['pilot']]['state']:
-
+        if value['pilot'] in self.pilots.keys():
+            if 'state' not in self.pilots[value['pilot']].keys():
+                self.pilots[value['pilot']]['state'] = value['state']
+                self.control_panel.panels[value['pilot']].button.set_state(value['state'])
+            elif value['state'] != self.pilots[value['pilot']]['state']:
                 self.control_panel.panels[value['pilot']].button.set_state(value['state'])
                 self.pilots[value['pilot']]['state'] = value['state']
+
             
 
 
