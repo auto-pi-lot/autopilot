@@ -443,8 +443,8 @@ class RPilot:
                                                                   'n_msg':n_msg, 'confirm':confirm},
                        flags={'MINPRINT':True})
 
-        self.networking.set_logging(True)
-        self.node.do_logging.set()
+        #self.networking.set_logging(True)
+        #self.node.do_logging.set()
 
 
 
