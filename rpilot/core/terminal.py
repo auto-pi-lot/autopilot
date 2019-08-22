@@ -453,12 +453,16 @@ class Terminal(QtGui.QMainWindow):
         # TODO: If we are stopping, we enter into a cohere state
         # TODO: If we are stopped, close the mouse object.
         # TODO: Also tell the relevant dataview to clear
-        if value['pilot'] in self.pilots.keys():
-            self.pilots[value['pilot']]['state'] = value['state']
 
         # update the pilot button
-        if value['pilot'] in self.control_panel.panels.keys():
-            self.control_panel.panels[value['pilot']].button.set_state(value['state'])
+        if value['pilot'] in self.control_panel.panels.keys() and value['pilot'] in self.pilots.keys():
+            if value['pilot'] != self.pilots[value['pilot']]['state']:
+
+                self.control_panel.panels[value['pilot']].button.set_state(value['state'])
+                self.pilots[value['pilot']]['state'] = value['state']
+            
+
+
 
 
     def l_handshake(self, value):

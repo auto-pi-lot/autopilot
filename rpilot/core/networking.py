@@ -753,10 +753,10 @@ class Terminal_Networking(Networking):
             msg (:class:`.Message`):
         """
         if msg.sender in self.pilots.keys():
-            if 'state' in self.pilots[msg.sender].keys():
-                if msg.value == self.pilots[msg.sender]['state']:
-                    # if we've already gotten this one, don't send to terminal
-                    return
+            #if 'state' in self.pilots[msg.sender].keys():
+                # if msg.value == self.pilots[msg.sender]['state']:
+                #     # if we've already gotten this one, don't send to terminal
+                #     return
             self.pilots[msg.sender]['state'] = msg.value
 
             # Tell the terminal so it can update the pilot_db file
