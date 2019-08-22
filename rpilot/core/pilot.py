@@ -406,8 +406,8 @@ class RPilot:
         Send messages with a poissonian process according to the settings in value
         """
         #turn off logging for now
-        #self.networking.set_logging(False)
-        #self.node.do_logging.clear()
+        self.networking.set_logging(False)
+        self.node.do_logging.clear()
 
         n_msg = int(value['n_msg'])
         rate = float(value['rate'])
@@ -423,28 +423,28 @@ class RPilot:
         }
 
         spacing = 1.0/rate
-        last_message = time.clock()
+        #last_message = time.clock()
         for i in range(n_msg):
             message['n_msg'] = i
             message['timestamp'] = datetime.datetime.now().isoformat()
             self.node.send(to='bandwidth',key='BANDWIDTH_MSG',
                            value=message, repeat=confirm, flags={'MINPRINT':True})
-            this_message = time.clock()
-            waitfor = np.clip(spacing-(this_message-last_message), 0, spacing)
+            #this_message = time.clock()
+            #waitfor = np.clip(spacing-(this_message-last_message), 0, spacing)
 
             #time.sleep(np.random.exponential(1.0/rate))
             # just do linear spacing lol.
 
-            time.sleep(waitfor)
-            last_message = time.clock()
+            time.sleep(spacing)
+            #last_message = time.clock()
 
         self.node.send(to='bandwidth',key='BANDWIDTH_MSG', value={'pilot':self.name, 'test_end':True,
                                                                   'rate': rate, 'payload':payload,
                                                                   'n_msg':n_msg, 'confirm':confirm},
                        flags={'MINPRINT':True})
 
-        #self.networking.set_logging(True)
-        #self.node.do_logging.set()
+        self.networking.set_logging(True)
+        self.node.do_logging.set()
 
 
 
