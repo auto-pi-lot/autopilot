@@ -423,6 +423,10 @@ class RPilot:
         }
 
         spacing = 1.0/rate
+
+        # wait for half a second to let the terminal get messages out
+        time.sleep(0.25)
+
         last_message = time.clock()
         for i in range(n_msg):
             message['n_msg'] = i

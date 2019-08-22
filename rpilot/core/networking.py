@@ -125,10 +125,19 @@ class Networking(multiprocessing.Process):
             'CONFIRM': self.l_confirm
         }
 
+        # even tthat signals when we are closing
+        self.closing = threading.Event()
+        self.closing.clear()
+
         # start thread that periodically resends messages
         self.repeat_thread = threading.Thread(target=self.repeat)
         self.repeat_thread.setDaemon(True)
         self.repeat_thread.start()
+
+    def __del__(self):
+        self.closing.set()
+        # Stopping the loop should kill the process, as it's what's holding us in run()
+        self.loop.stop()
 
     def run(self):
         """
@@ -330,7 +339,7 @@ class Networking(multiprocessing.Process):
         TTL is decremented, and messages are resent until their TTL is 0.
 
         """
-        while True:
+        while not self.closing.is_set():
             # make local copies
             push_outbox = copy(self.push_outbox)
             send_outbox = copy(self.send_outbox)
@@ -710,6 +719,8 @@ class Terminal_Networking(Networking):
             msg (:class:`.Message`):
         """
         self.logger.info('Received kill request')
+
+        self.closing.set()
 
         # Stopping the loop should kill the process, as it's what's holding us in run()
         self.loop.stop()
@@ -1132,6 +1143,9 @@ class Net_Node(object):
             self.context = zmq.Context()
             self.loop    = IOLoop()
 
+        self.closing = threading.Event()
+        self.closing.clear()
+
         # we have a few builtin listens
         self.listens = {
             'CONFIRM': self.l_confirm
@@ -1152,6 +1166,9 @@ class Net_Node(object):
         self.init_logging()
 
         self.init_networking()
+
+    def __del__(self):
+        self.closing.set()
 
     def init_networking(self):
         """
@@ -1327,7 +1344,7 @@ class Net_Node(object):
         TTL is decremented, and messages are resent until their TTL is 0.
 
         """
-        while True:
+        while not self.closing.is_set():
             # try to send any outstanding messages and delete if too old
             # make a local copy of dict
             outbox = copy(self.outbox)
@@ -1467,7 +1484,7 @@ class Message(object):
     value = None
     timestamp = None
     flags = {}
-    ttl = 5 # every message starts with 5 retries. only relevant to the sender so not serialized.
+    ttl = 2 # every message starts with 2 retries. only relevant to the sender so not serialized.
 
     def __init__(self, *args, **kwargs):
         # type: (object, object) -> None

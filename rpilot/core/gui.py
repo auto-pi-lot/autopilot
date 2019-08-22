@@ -1767,11 +1767,22 @@ class Bandwidth_Test(QtGui.QDialog):
 
 
 
-        first_test = self.tests_todo.pop()
 
+        # used to update pbar
         self.test_counter = itertools.count()
 
-        self.send_test(*first_test)
+
+        self.current_test = self.tests_todo.pop()
+        self.send_test(*self.current_test)
+        # start a timer that continues the test if messages are dropped
+        try:
+            self.repeat_timer.cancel()
+        except:
+            pass
+
+        self.repeat_timer = threading.Timer(self.current_test[0] * self.current_test[2] * 3,
+                                            self.process_test, args=self.current_test)
+        self.repeat_timer.start()
 
 
 
@@ -1807,7 +1818,7 @@ class Bandwidth_Test(QtGui.QDialog):
         drop_rate = np.mean(1.0-(msg_df.groupby('pilot').n_msg.count() / float(n_msg)))
         mean_speed = 1.0/msg_df.groupby('pilot').timestamp_rcvd.diff().mean().total_seconds()
 
-        print(msg_df.groupby('pilot').timestamp_rcvd.diff())
+        #print(msg_df.groupby('pilot').timestamp_rcvd.diff())
 
         # plot
         self.rates.append(rate)
@@ -1831,7 +1842,19 @@ class Bandwidth_Test(QtGui.QDialog):
             self.save_btn.setEnabled(True)
             self.start_btn.setEnabled(True)
         else:
-            self.send_test(*self.tests_todo.pop())
+            self.current_test = self.tests_todo.pop()
+            self.send_test(*self.current_test)
+            # start a timer that continues the test if messages are dropped
+            try:
+                self.repeat_timer.cancel()
+            except:
+                pass
+
+            self.repeat_timer = threading.Timer(self.current_test[0]*self.current_test[2]*5,
+                                                self.process_test, args=self.current_test)
+            self.repeat_timer.start()
+
+
 
     @gui_event
     def save(self):
@@ -1898,7 +1921,7 @@ class Bandwidth_Test(QtGui.QDialog):
 
         msgs_rcvd = self.msg_counter.next()
         if msgs_rcvd % round(self.n_messages_test/100.0) < 1.0:
-             self.update_pbar(msgs_rcvd)
+             self.update_pbar(msgs_rcvd+1)
 
 
 
