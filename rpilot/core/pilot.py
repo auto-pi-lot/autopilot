@@ -427,6 +427,9 @@ class RPilot:
             self.node.send(to='bandwidth',key='BANDWIDTH_MSG',
                            value=message, repeat=confirm)
             time.sleep(np.random.exponential(1.0/rate))
+        self.node.send(to='bandwidth',key='BANDWIDTH_MSG', value={'pilot':self.name, 'test_end':True,
+                                                                  'rate': rate, 'payload':payload,
+                                                                  'n_msg':n_msg, 'confirm':confirm})
 
         #self.networking.set_logging(True)
         #self.node.do_logging.set()
