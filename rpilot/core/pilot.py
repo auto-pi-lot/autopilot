@@ -418,7 +418,7 @@ class RPilot:
 
         message = {
             'pilot': self.name,
-            'payload': payload
+            'payload': payload,
         }
 
         spacing = 1.0/rate
@@ -428,7 +428,7 @@ class RPilot:
             message['n_msg'] = i
             message['timestamp'] = datetime.datetime.now().isoformat()
             self.node.send(to='bandwidth',key='BANDWIDTH_MSG',
-                           value=message, repeat=confirm)
+                           value=message, repeat=confirm, flags={'MINPRINT':True})
             this_message = time.clock()
             waitfor = np.clip(spacing-(this_message-last_message), 0, spacing)
 

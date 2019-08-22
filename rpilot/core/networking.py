@@ -1464,7 +1464,7 @@ class Message(object):
 
     def __str__(self):
         # type: () -> str
-        if self.key == 'FILE':
+        if self.key == 'FILE' or ('MINPRINT' in self.flags.keys()):
             me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}".format(self.id, self.to, self.sender, self.key)
         else:
             me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}; VALUE: {}".format(self.id, self.to, self.sender, self.key, self.value)

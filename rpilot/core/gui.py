@@ -1802,6 +1802,8 @@ class Bandwidth_Test(QtGui.QDialog):
 
         # compute summary
         mean_delay = np.mean(msg_df['timestamp_rcvd'] - msg_df['timestamp_sent']).total_seconds()
+        send_jitter = np.std(msg_df.groupby('pilot').timestamp_sent.diff()).total_seconds()
+        delay_jitter = np.std(msg_df['timestamp_rcvd'] - msg_df['timestamp_sent']).total_seconds()
         drop_rate = np.mean(1.0-(msg_df.groupby('pilot').n_msg.count() / float(n_msg)))
         mean_speed = 1.0/msg_df.groupby('pilot').timestamp_rcvd.diff().mean().total_seconds()
 
@@ -1817,11 +1819,11 @@ class Bandwidth_Test(QtGui.QDialog):
         self.speed_line.setData(x=self.rates, y=self.speeds)
         self.drop_plot.setYRange(np.min(self.drops), np.max(self.drops), padding=(np.max(self.drops)-np.min(self.drops))*.1)
         self.delay_plot.setYRange(np.min(self.delays), np.max(self.delays), padding=(np.max(self.delays)-np.min(self.delays))*.1)
-        self.speed_plot.setYRange(np.min(self.speeds), np.max(self.speeds),padding=(np.max(self.speeds)-np.min(self.speeds))*.1)
+        self.speed_plot.setYRange(np.min(self.speeds), np.max(self.speeds))
 
-        self.all_pbar.setValue(self.test_counter.next())
+        self.all_pbar.setValue(self.test_counter.next()+1)
 
-        self.results.append((rate, payload, n_msg, confirm, len(self.test_pilots), mean_delay, drop_rate, mean_speed))
+        self.results.append((rate, payload, n_msg, confirm, len(self.test_pilots), mean_delay, drop_rate, mean_speed, send_jitter, delay_jitter))
 
         self.repaint()
 
@@ -1831,14 +1833,7 @@ class Bandwidth_Test(QtGui.QDialog):
         else:
             self.send_test(*self.tests_todo.pop())
 
-
-
-
-
-
-
-
-
+    @gui_event
     def save(self):
         """
         Select save file location for test results (csv) and then save them there
@@ -1847,13 +1842,15 @@ class Bandwidth_Test(QtGui.QDialog):
 
         fileName, filtr = QtGui.QFileDialog.getSaveFileName(self,
                 "Where should we save these results?",
-                prefs['DATADIR'],
+                prefs.DATADIR,
                 "CSV files (*.csv)", "")
 
         # make and save results df
         try:
             res_df = pd.DataFrame.from_records(self.results,
-                                               columns=['rate', 'payload', 'n_messages', 'confirm', 'n_pilots', 'mean_delay', 'drop_rate'])
+                                               columns=['rate', 'payload', 'n_messages', 'confirm',
+                                                        'n_pilots', 'mean_delay', 'drop_rate',
+                                                        'actual_rate', 'send_jitter', 'delay_jitter'])
 
             res_df.to_csv(fileName)
             reply = QtGui.QMessageBox.information(self,
