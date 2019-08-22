@@ -1759,7 +1759,7 @@ class Bandwidth_Test(QtGui.QDialog):
         else:
             payload_len = len(self.payload_list)
         self.all_pbar.setMaximum(len(self.rate_list)*payload_len)
-        self.this_pbar.setMaximum(self.n_messages_test)
+        self.this_pbar.setMaximum(self.n_messages_test*len(test_pilots))
         self.all_pbar.reset()
 
         # save tests to do, disable play button, and get to doing it
@@ -1774,15 +1774,16 @@ class Bandwidth_Test(QtGui.QDialog):
 
         self.current_test = self.tests_todo.pop()
         self.send_test(*self.current_test)
-        # start a timer that continues the test if messages are dropped
-        try:
-            self.repeat_timer.cancel()
-        except:
-            pass
-
-        self.repeat_timer = threading.Timer(self.current_test[0] * self.current_test[2] * 3,
-                                            self.process_test, args=self.current_test)
-        self.repeat_timer.start()
+        # # start a timer that continues the test if messages are dropped
+        # try:
+        #     self.repeat_timer.cancel()
+        # except:
+        #     pass
+        #
+        # self.repeat_timer = threading.Timer(self.current_test[0] * self.current_test[2] * 20,
+        #                                     self.process_test, args=self.current_test)
+        # self.repeat_timer.daemon = True
+        # self.repeat_timer.start()
 
 
 
@@ -1806,17 +1807,40 @@ class Bandwidth_Test(QtGui.QDialog):
     @gui_event
     def process_test(self, rate, payload, n_msg, confirm):
 
+        # start a timer that continues the test if messages are dropped
+        try:
+            self.repeat_timer.cancel()
+        except:
+            pass
+
         # process messages
         msg_df = pd.DataFrame.from_records(self.messages,
                                            columns=['pilot', 'n_msg', 'timestamp_sent', 'timestamp_rcvd', 'payload'])
         msg_df = msg_df.astype({'timestamp_sent':'datetime64', 'timestamp_rcvd':'datetime64'})
 
         # compute summary
-        mean_delay = np.mean(msg_df['timestamp_rcvd'] - msg_df['timestamp_sent']).total_seconds()
-        send_jitter = np.std(msg_df.groupby('pilot').timestamp_sent.diff()).total_seconds()
-        delay_jitter = np.std(msg_df['timestamp_rcvd'] - msg_df['timestamp_sent']).total_seconds()
+        try:
+            mean_delay = np.mean(msg_df['timestamp_rcvd'] - msg_df['timestamp_sent']).total_seconds()
+        except AttributeError:
+            mean_delay = np.mean(msg_df['timestamp_rcvd'] - msg_df['timestamp_sent'])
+
+        try:
+            send_jitter = np.std(msg_df.groupby('pilot').timestamp_sent.diff()).total_seconds()
+        except AttributeError:
+            print(np.std(msg_df.groupby('pilot').timestamp_sent.diff()))
+            send_jitter = np.std(msg_df.groupby('pilot').timestamp_sent.diff())
+
+        try:
+            delay_jitter = np.std(msg_df['timestamp_rcvd'] - msg_df['timestamp_sent']).total_seconds()
+        except AttributeError:
+            delay_jitter = np.std(msg_df['timestamp_rcvd'] - msg_df['timestamp_sent'])
+
         drop_rate = np.mean(1.0-(msg_df.groupby('pilot').n_msg.count() / float(n_msg)))
-        mean_speed = 1.0/msg_df.groupby('pilot').timestamp_rcvd.diff().mean().total_seconds()
+
+        try:
+            mean_speed = 1.0/msg_df.groupby('pilot').timestamp_rcvd.diff().mean().total_seconds()
+        except AttributeError:
+            mean_speed = 1.0/msg_df.groupby('pilot').timestamp_rcvd.diff().mean()
 
         #print(msg_df.groupby('pilot').timestamp_rcvd.diff())
 
@@ -1825,18 +1849,22 @@ class Bandwidth_Test(QtGui.QDialog):
         self.drops.append(drop_rate)
         self.delays.append(mean_delay)
         self.speeds.append(mean_speed)
-        self.delay_line.setData(x=self.rates, y=self.delays)
-        self.drop_line.setData(x=self.rates, y=self.drops)
-        self.speed_line.setData(x=self.rates, y=self.speeds)
-        self.drop_plot.setYRange(np.min(self.drops), np.max(self.drops), padding=(np.max(self.drops)-np.min(self.drops))*.1)
-        self.delay_plot.setYRange(np.min(self.delays), np.max(self.delays), padding=(np.max(self.delays)-np.min(self.delays))*.1)
-        self.speed_plot.setYRange(np.min(self.speeds), np.max(self.speeds))
 
-        self.all_pbar.setValue(self.test_counter.next()+1)
 
         self.results.append((rate, payload, n_msg, confirm, len(self.test_pilots), mean_delay, drop_rate, mean_speed, send_jitter, delay_jitter))
 
-        self.repaint()
+        self.delay_line.setData(x=self.rates, y=self.delays)
+        self.drop_line.setData(x=self.rates, y=self.drops)
+        self.speed_line.setData(x=self.rates, y=self.speeds)
+        # self.drop_plot.setYRange(np.min(self.drops), np.max(self.drops),
+        #                          padding=(np.max(self.drops) - np.min(self.drops)) * .1)
+        # self.delay_plot.setYRange(np.min(self.delays), np.max(self.delays),
+        #                           padding=(np.max(self.delays) - np.min(self.delays)) * .1)
+        # self.speed_plot.setYRange(np.min(self.speeds), np.max(self.speeds))
+
+        self.all_pbar.setValue(self.test_counter.next() + 1)
+
+
 
         if len(self.tests_todo) == 0:
             self.save_btn.setEnabled(True)
@@ -1844,15 +1872,12 @@ class Bandwidth_Test(QtGui.QDialog):
         else:
             self.current_test = self.tests_todo.pop()
             self.send_test(*self.current_test)
-            # start a timer that continues the test if messages are dropped
-            try:
-                self.repeat_timer.cancel()
-            except:
-                pass
 
-            self.repeat_timer = threading.Timer(self.current_test[0]*self.current_test[2]*5,
-                                                self.process_test, args=self.current_test)
-            self.repeat_timer.start()
+            # self.repeat_timer = threading.Timer(self.current_test[0]*self.current_test[2]*20,
+            #                                     self.process_test, args=self.current_test)
+            # self.repeat_timer.daemon = True
+            # self.repeat_timer.start()
+        self.repaint()
 
 
 

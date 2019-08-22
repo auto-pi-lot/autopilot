@@ -118,6 +118,7 @@ class Terminal(QtGui.QMainWindow):
         # networking
         self.node = None
         self.networking = None
+        self.heartbeat_dur = 10 # check every n seconds whether our pis are around still
 
         # data
         self.mice = {}  # Dict of our open mouse objects
@@ -178,6 +179,11 @@ class Terminal(QtGui.QMainWindow):
 
         # send an initial ping looking for our pilots
         self.node.send('T', 'INIT')
+
+        # start beating ur heart
+        self.heartbeat_timer = threading.Timer(self.heartbeat_dur, self.heartbeat)
+        self.heartbeat_timer.daemon = True
+        self.heartbeat_timer.start()
 
     def init_logging(self):
         """
@@ -319,6 +325,14 @@ class Terminal(QtGui.QMainWindow):
 
     ##########################3
     # Listens & inter-object methods
+
+    def heartbeat(self):
+        self.node.send('T', 'INIT', repeat=False)
+
+        self.heartbeat_timer = threading.Timer(self.heartbeat_dur, self.heartbeat)
+        self.heartbeat_timer.daemon = True
+        self.heartbeat_timer.start()
+
 
     def toggle_start(self, starting, pilot, mouse=None):
         """Start or Stop running the currently selected mouse's task. Sends a
@@ -672,8 +686,8 @@ class Terminal(QtGui.QMainWindow):
 
     def test_bandwidth(self):
         # turn off logging while we run
-        #self.networking.set_logging(False)
-        #self.node.do_logging.clear()
+        self.networking.set_logging(False)
+        self.node.do_logging.clear()
 
         bandwidth_test = Bandwidth_Test(self.pilots)
         bandwidth_test.exec_()
