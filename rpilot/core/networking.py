@@ -23,6 +23,7 @@ import os
 import multiprocessing
 import base64
 import socket
+from copy import copy
 from tornado.ioloop import IOLoop
 from zmq.eventloop.zmqstream import ZMQStream
 from itertools import count
@@ -124,6 +125,11 @@ class Networking(multiprocessing.Process):
             'CONFIRM': self.l_confirm
         }
 
+        # start thread that periodically resends messages
+        self.repeat_thread = threading.Thread(target=self.repeat)
+        self.repeat_thread.setDaemon(True)
+        self.repeat_thread.start()
+
     def run(self):
         """
         A :class:`zmq.Context` and :class:`tornado.IOLoop` are spawned,
@@ -155,11 +161,6 @@ class Networking(multiprocessing.Process):
             self.pusher = ZMQStream(self.pusher, self.loop)
             self.pusher.on_recv(self.handle_listen)
             # TODO: Make sure handle_listen knows how to handle ID-less messages
-
-        # start thread that periodically resends messages
-        self.repeat_thread = threading.Thread(target=self.repeat)
-        self.repeat_thread.setDaemon(True)
-        self.repeat_thread.start()
 
         self.logger.info('Starting IOLoop')
         self.loop.start()
@@ -330,34 +331,47 @@ class Networking(multiprocessing.Process):
 
         """
         while True:
+            # make local copies
+            push_outbox = copy(self.push_outbox)
+            send_outbox = copy(self.send_outbox)
+
             # try to send any outstanding messages and delete if too old
-            if len(self.push_outbox)>0:
-                for id in self.push_outbox.keys():
-                    if self.push_outbox[id][1].ttl <= 0:
-                        self.logger.warning('PUBLISH FAILED {} - {}'.format(id, str(self.push_outbox[id][1])))
-                        del self.push_outbox[id]
+            if len(push_outbox)>0:
+                for id in push_outbox.keys():
+                    if push_outbox[id][1].ttl <= 0:
+                        self.logger.warning('PUBLISH FAILED {} - {}'.format(id, str(push_outbox[id][1])))
+                        try:
+                            del self.push_outbox[id]
+                        except KeyError:
+                            # fine, already deleted
+                            pass
                     else:
                         # if we didn't just put this message in our outbox
-                        if (time.time() - self.push_outbox[id][0]) > self.repeat_interval:
+                        if (time.time() - push_outbox[id][0]) > self.repeat_interval:
                             if self.do_logging.is_set():
-                                self.logger.info('REPUBLISH {} - {}'.format(id, str(self.push_outbox[id][1])))
-                            self.pusher.send_multipart([bytes(self.push_id), self.push_outbox[id][1].serialize()])
+                                self.logger.info('REPUBLISH {} - {}'.format(id, str(push_outbox[id][1])))
+                            self.pusher.send_multipart([bytes(self.push_id), push_outbox[id][1].serialize()])
                             self.push_outbox[id][1].ttl -= 1
 
 
             
-            if len(self.send_outbox)>0:
-                for id in self.push_outbox.keys():
-                    if self.send_outbox[id][1].ttl <= 0:
-                        self.logger.warning('PUBLISH FAILED {} - {}'.format(id, str(self.send_outbox[id][1])))
-                        del self.send_outbox[id]
+            if len(send_outbox)>0:
+                for id in send_outbox.keys():
+                    if send_outbox[id][1].ttl <= 0:
+                        self.logger.warning('PUBLISH FAILED {} - {}'.format(id, str(send_outbox[id][1])))
+                        try:
+                            del self.send_outbox[id]
+                        except KeyError:
+                            # fine, already deleted
+                            pass
+
                     else:
                         # if we didn't just put this message in our outbox
-                        if (time.time() - self.send_outbox[id][0]) > self.repeat_interval:
+                        if (time.time() - send_outbox[id][0]) > self.repeat_interval:
                             if self.do_logging.is_set():
-                                self.logger.info('REPUBLISH {} - {}'.format(id, str(self.send_outbox[id][1])))
-                            self.listener.send_multipart([bytes(self.send_outbox[id][1].to), self.send_outbox[id][1].serialize()])
-                            self.push_outbox[id][1].ttl -= 1
+                                self.logger.info('REPUBLISH {} - {}'.format(id, str(send_outbox[id][1])))
+                            self.listener.send_multipart([bytes(send_outbox[id][1].to), send_outbox[id][1].serialize()])
+                            self.send_outbox[id][1].ttl -= 1
                     
             # wait to do it again
             time.sleep(self.repeat_interval)
@@ -375,10 +389,14 @@ class Networking(multiprocessing.Process):
         # value should be the message id
 
         # delete message from outbox if we still have it
-        if msg.value in self.send_outbox.keys():
-            del self.send_outbox[msg.id]
-        elif msg.value in self.push_outbox.keys():
-            del self.push_outbox[msg.id]
+        try:
+            if msg.value in self.send_outbox.keys():
+                del self.send_outbox[msg.id]
+            elif msg.value in self.push_outbox.keys():
+                del self.push_outbox[msg.id]
+        except KeyError:
+            # fine, already deleted
+            pass
 
 
         #self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
@@ -1311,17 +1329,24 @@ class Net_Node(object):
         """
         while True:
             # try to send any outstanding messages and delete if too old
-            if len(self.outbox) > 0:
-                for id in self.outbox.keys():
-                    if self.outbox[id][1].ttl <= 0:
-                        self.logger.warning('PUBLISH FAILED {} - {}'.format(id, str(self.outbox[id][1])))
-                        del self.outbox[id]
+            # make a local copy of dict
+            outbox = copy(self.outbox)
+
+            if len(outbox) > 0:
+                for id in outbox.keys():
+                    if outbox[id][1].ttl <= 0:
+                        self.logger.warning('PUBLISH FAILED {} - {}'.format(id, str(outbox[id][1])))
+                        try:
+                            del self.outbox[id]
+                        except KeyError:
+                            # fine, already deleted
+                            pass
                     else:
                         # if we didn't just put this message in the outbox...
-                        if (time.time() - self.outbox[id][0]) > self.repeat_interval:
+                        if (time.time() - outbox[id][0]) > self.repeat_interval:
                             if self.do_logging.is_set():
-                                self.logger.info('REPUBLISH {} - {}'.format(id, str(self.outbox[id][1])))
-                            self.sock.send_multipart([bytes(self.upstream), self.outbox[id][1].serialize()])
+                                self.logger.info('REPUBLISH {} - {}'.format(id, str(outbox[id][1])))
+                            self.sock.send_multipart([bytes(self.upstream), outbox[id][1].serialize()])
                             self.outbox[id][1].ttl -= 1
 
 
@@ -1337,8 +1362,12 @@ class Net_Node(object):
         """
         # delete message from outbox if we still have it
         # msg.value should contain the if of the message that was confirmed
-        if value in self.outbox.keys():
-            del self.outbox[value]
+        try:
+            if value in self.outbox.keys():
+                del self.outbox[value]
+        except KeyError:
+            # already deleted
+            pass
 
         # # stop a timer thread if we have it
         # if value in self.timers.keys():
