@@ -1713,6 +1713,12 @@ class Bandwidth_Test(QtGui.QDialog):
         Start the test!!!
         """
 
+        # lists to store our results for plotting and etc.
+        self.results = []
+        self.delays = []
+        self.drops = []
+        self.speeds = []
+        self.rates =[]
 
         # first make sure we got everything we need
         if len(self.rate_list) == 0:
@@ -1771,12 +1777,8 @@ class Bandwidth_Test(QtGui.QDialog):
 
     def send_test(self, rate, payload, n_msg, confirm):
         self.finished_pilots = []
-        # lists to store our results for plotting and etc.
-        self.results = []
-        self.delays = []
-        self.drops = []
-        self.speeds = []
-        self.rates =[]
+        self.messages = []
+
 
         msg = {'rate': rate,
                'payload': payload,
@@ -1803,7 +1805,7 @@ class Bandwidth_Test(QtGui.QDialog):
         drop_rate = np.mean(1.0-(msg_df.groupby('pilot').n_msg.count() / float(n_msg)))
         mean_speed = 1.0/msg_df.groupby('pilot').timestamp_rcvd.diff().mean().total_seconds()
 
-        print(mean_delay, drop_rate, mean_speed)
+        print(msg_df.groupby('pilot').timestamp_rcvd.diff())
 
         # plot
         self.rates.append(rate)
