@@ -54,7 +54,7 @@ if __name__ == '__main__':
         elif prefs.AUDIOSERVER == 'jack':
             from rpilot.stim.sound import jackclient
 
-from networking import Pilot_Networking, Net_Node
+from networking import Pilot_Networking, Net_Node, Message
 from rpilot import tasks
 import hardware
 
@@ -416,13 +416,13 @@ class RPilot:
 
         payload = base64.b64encode(np.zeros(payload*1024, dtype=np.bool))
 
+
         message = {
             'pilot': self.name,
             'payload': payload,
         }
 
         spacing = 1.0/rate
-        fudge = 0
         last_message = time.clock()
         for i in range(n_msg):
             message['n_msg'] = i

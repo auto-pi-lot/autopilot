@@ -1227,7 +1227,7 @@ class Net_Node(object):
             # send confirmation
             self.send(msg.sender, 'CONFIRM', msg.id)
 
-    def send(self, to=None, key=None, value=None, msg=None, repeat=True):
+    def send(self, to=None, key=None, value=None, msg=None, repeat=True, flags = None):
         """
         Send a message via our :attr:`~.Net_Node.sock` , DEALER socket.
 
@@ -1266,7 +1266,7 @@ class Net_Node(object):
             return
 
         if not msg:
-            msg = self.prepare_message(to, key, value, repeat)
+            msg = self.prepare_message(to, key, value, repeat, flags)
 
         # Make sure our message has everything
         # if not msg.validate():
@@ -1350,7 +1350,7 @@ class Net_Node(object):
         if self.do_logging.is_set():
             self.logger.info('CONFIRMED MESSAGE {}'.format(value))
 
-    def prepare_message(self, to, key, value, repeat):
+    def prepare_message(self, to, key, value, repeat, flags=None):
         """
         Instantiate a :class:`.Message` class, give it an ID and
         the rest of its attributes.
@@ -1380,6 +1380,11 @@ class Net_Node(object):
 
         if not repeat:
             msg.flags['NOREPEAT'] = True
+
+        if flags:
+            for k, v in flags.items():
+                msg.flags[k] = v
+
 
         return msg
 
