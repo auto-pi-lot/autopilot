@@ -1734,7 +1734,7 @@ class Bandwidth_Test(QtGui.QDialog):
             if p_box.isChecked():
                 test_pilots.append(pilot)
         self.test_pilots = test_pilots
-        self.finished_pilots = []
+
 
         # stash some run parameters
         get_receipts = self.receipts.isChecked()
@@ -1742,14 +1742,10 @@ class Bandwidth_Test(QtGui.QDialog):
         # 'n messages for this test' in case user changes it during run
         self.n_messages_test = int(n_messages)
 
-        # lists to store our results for plotting and etc.
-        self.results = []
-        self.delays = []
-        self.drops = []
-        self.speeds = []
-        self.rates =[]
+
 
         self.save_btn.setEnabled(False)
+        self.start_btn.setEnabled(False)
 
         # set pbars
         if len(self.payload_list) == 0:
@@ -1763,10 +1759,9 @@ class Bandwidth_Test(QtGui.QDialog):
         # save tests to do, disable play button, and get to doing it
         self.tests_todo = [x for x in itertools.product(self.rate_list, self.payload_list, [self.n_messages_test], [get_receipts])]
 
-        self.start_btn.setEnabled(False)
+
 
         first_test = self.tests_todo.pop()
-        print(first_test)
 
         self.test_counter = itertools.count()
 
@@ -1775,6 +1770,14 @@ class Bandwidth_Test(QtGui.QDialog):
 
 
     def send_test(self, rate, payload, n_msg, confirm):
+        self.finished_pilots = []
+        # lists to store our results for plotting and etc.
+        self.results = []
+        self.delays = []
+        self.drops = []
+        self.speeds = []
+        self.rates =[]
+
         msg = {'rate': rate,
                'payload': payload,
                'n_msg': n_msg,
@@ -1787,6 +1790,7 @@ class Bandwidth_Test(QtGui.QDialog):
         for p in self.test_pilots:
             self.node.send(to=p, key="BANDWIDTH", value=msg)
 
+    @gui_event
     def process_test(self, rate, payload, n_msg, confirm):
 
         # process messages
@@ -1822,6 +1826,8 @@ class Bandwidth_Test(QtGui.QDialog):
         if len(self.tests_todo) == 0:
             self.save_btn.setEnabled(True)
             self.start_btn.setEnabled(True)
+        else:
+            self.send_test(*self.tests_todo.pop())
 
 
 

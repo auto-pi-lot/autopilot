@@ -426,7 +426,10 @@ class RPilot:
             message['timestamp'] = datetime.datetime.now().isoformat()
             self.node.send(to='bandwidth',key='BANDWIDTH_MSG',
                            value=message, repeat=confirm)
-            time.sleep(np.random.exponential(1.0/rate))
+
+            #time.sleep(np.random.exponential(1.0/rate))
+            # just do linear spacing lol.
+            time.sleep(1.0/rate)
         self.node.send(to='bandwidth',key='BANDWIDTH_MSG', value={'pilot':self.name, 'test_end':True,
                                                                   'rate': rate, 'payload':payload,
                                                                   'n_msg':n_msg, 'confirm':confirm})
