@@ -51,6 +51,7 @@ sudo apt-get install -y \
     git \
     python-pip \
     python2.7-dev \
+    python3-distutils \
     libsamplerate0-dev \
     libsndfile1-dev \
     libreadline-dev \
@@ -70,7 +71,7 @@ sudo apt-get install -y \
 echo -e "\n\n${RED}Installing necessary Python packages...\n\n ${NC}"
 
 
-sudo -H pip install -U pyzmq npyscreen tornado inputs
+sudo -H pip install -U pyzmq npyscreen tornado inputs distutil
 
 # install pigpio
 cd $GITDIR

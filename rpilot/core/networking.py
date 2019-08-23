@@ -952,6 +952,8 @@ class Pilot_Networking(Networking):
                     for group in msg.value['stim']['groups']:
                         f_sounds.extend([sound for sounds in group['sounds'].values() for sound in sounds
                                         if sound['type'] in ['File', 'Speech']])
+            else:
+                f_sounds = []
 
             if len(f_sounds)>0:
                 # check to see if we have these files, if not
