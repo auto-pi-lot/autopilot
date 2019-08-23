@@ -44,7 +44,7 @@ class Visual(object):
         else:
             try:
                 global WIN
-                WIN = visual.Window(winType="pyglet")
+                WIN = visual.Window(winType="pygame")
                 self.win = WIN
             except:
                 Exception("Couldn't get psychopy Window!")

@@ -751,6 +751,10 @@ class Wheel(Hardware):
         if self.gpio_trig:
             self.pig = pigpio.pi()
 
+            # FIXME: This doesn't make a whole hell of a lot of sense to me
+            # why would we want a wheel with all the power of god to trigger whatever pins it wants
+            # probably should be a single pin, or at least flexible.
+
             pins_temp = pins
             self.pins = {}
             for k, v in pins_temp.items():

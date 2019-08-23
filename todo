@@ -46,6 +46,7 @@
 - separate task description generation from GUI
 - option to prebuffer all sounds or buffer on demand
 - must add "CONFIG" value to prefs - ie. "CONFIG": "VISUAL" as required by visuals module
+- be better about capitalization: ie. "LINEAGE" needs to be "CHILD" not "child", always test against .lower() or .upper()
 
 .. automodsumm:: rpilot.core.gui
     :toctree:
