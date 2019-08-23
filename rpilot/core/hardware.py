@@ -292,6 +292,7 @@ class Flag(Beambreak):
 
 
     """
+    trigger = True
 
     def __init__(self, pin):
         super(Flag, self).__init__(pin, pull_ud="D", trigger_ud="U")
