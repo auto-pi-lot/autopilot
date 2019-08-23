@@ -111,7 +111,7 @@ class GoNoGo(Task):
         self.node.send(to=prefs.NAME, key='CHILD', value=value)
 
         # hardcoding stimulus for testing
-        self.stim = Grating(angle=0, freq=(1,0), rate=1, size=(4,4))
+        self.stim = Grating(angle=0, freq=(1,0), rate=10, size=(4,4))
 
         self.stages = itertools.cycle([self.request, self.discrim, self.reinforce])
 
