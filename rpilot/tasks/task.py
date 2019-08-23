@@ -179,7 +179,7 @@ class Task(object):
                         port.dur_from_vol(vol)
                     except AttributeError:
                         Warning('No calibration found, using duration = 20ms instead')
-                        port.duration = float(duration)/1000.
+                        port.duration = 0.02
                 else:
                     port.duration = float(duration)/1000.
         else:
@@ -189,7 +189,7 @@ class Task(object):
                         self.pins['PORTS'][port].dur_from_vol(vol)
                     except AttributeError:
                         Warning('No calibration found, using duration = 20ms instead')
-                        port.duration = float(duration)/1000.
+                        port.duration = 0.02
 
                 else:
                     self.pins['PORTS'][port].duration = float(duration)/1000.
