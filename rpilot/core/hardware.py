@@ -954,6 +954,9 @@ class Wheel(Hardware):
 
         self.measure_evt.set()
 
+        print('MEASURING!!!!!')
+        sys.stdout.flush()
+
     def l_clear(self, value):
         """
         Stop measuring!

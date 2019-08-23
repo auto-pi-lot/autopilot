@@ -579,6 +579,8 @@ class Shaded(pg.PlotDataItem):
         self.setFillLevel(0)
         self.series = pd.Series()
 
+        self.getBoundingParents()
+
 
         self.brush = pg.mkBrush((0,0,0,100))
         self.setBrush(self.brush)
@@ -599,7 +601,7 @@ class Shaded(pg.PlotDataItem):
         self.max_num = float(np.abs(np.max(data[:,1])))
 
         if self.max_num > 1.0:
-            data[:,1] = data[:,1]/self.max_num
+            data[:,1] = (data[:,1]/(self.max_num*2.0))+0.5
         #print(ys)
 
         self.curve.setData(data[...,0], data[...,1], fillLevel=0)
