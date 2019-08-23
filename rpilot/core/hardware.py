@@ -915,7 +915,10 @@ class Wheel(Hardware):
                 for pin in self.pins.values():
                     print("TRIGGERING", pin)
                     sys.stdout.flush()
-                    self.pig.gpio_trigger(pin, 100, 1)
+                    #self.pig.gpio_trigger(pin, 100, 1)
+                    self.pig.write(pin, 1)
+                    time.sleep(0.5)
+                    self.pig.write(pin, 0)
 
         else:
             if self.gpio_trig:
