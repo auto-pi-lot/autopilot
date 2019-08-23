@@ -44,7 +44,7 @@ class Visual(object):
         else:
             try:
                 global WIN
-                WIN = visual.Window(winType="pygame", color=(-1., -1., -1.))
+                WIN = visual.Window(winType="pygame", color=(-1., -1., -1.), fullscr=True)
                 self.win = WIN
             except:
                 Exception("Couldn't get psychopy Window!")
