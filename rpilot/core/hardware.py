@@ -860,6 +860,8 @@ class Wheel(Hardware):
             thresh_val = self.thresh_val[self.thresh_val['timestamp'] > time.time()-self.integrate_dur]
 
             thresh_update = self.calc_move(thresh_val)
+            print(thresh_update)
+            sys.stdout.flush()
 
             if (thresh_update < self.thresh) and (self.measure_time+self.integrate_dur < time.time()):
                 do_trigger = True
