@@ -912,6 +912,7 @@ class Wheel(Hardware):
             if self.gpio_trig:
                 for pin in self.pins.values():
                     print("TRIGGERING", pin)
+                    sys.stdout.flush()
                     self.pig.gpio_trigger(pin, 100, 1)
 
         else:
