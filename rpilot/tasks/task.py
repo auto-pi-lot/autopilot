@@ -175,13 +175,22 @@ class Task(object):
         if not port:
             for k, port in self.pins['PORTS'].items():
                 if vol:
-                    port.dur_from_vol(vol)
+                    try:
+                        port.dur_from_vol(vol)
+                    except AttributeError:
+                        Warning('No calibration found, using duration = 20ms instead')
+                        port.duration = float(duration)/1000.
                 else:
                     port.duration = float(duration)/1000.
         else:
             try:
                 if vol:
-                    self.pins['PORTS'][port].dur_from_vol(vol)
+                    try:
+                        self.pins['PORTS'][port].dur_from_vol(vol)
+                    except AttributeError:
+                        Warning('No calibration found, using duration = 20ms instead')
+                        port.duration = float(duration)/1000.
+
                 else:
                     self.pins['PORTS'][port].duration = float(duration)/1000.
             except KeyError:
