@@ -101,11 +101,22 @@ class Grating(Visual):
             phase=self.phase)
 
         while not self.stop_evt.is_set():
-            self.play_evt.wait()
-
             # reset stim
             self.ppo.phase = self.phase
 
+            # prepare next stim
+            self.update()
+
+            # draw first frame
+            self.ppo.draw()
+
+            # wait for play
+            self.play_evt.wait()
+
+            # flip first stim
+            self.win.flip()
+
+            # keep drawing...
             start_time = self.clock.getTime()
             end_time = start_time + (self.duration / 1000.0)
             while self.clock.getTime() < end_time:
