@@ -66,8 +66,8 @@ class Grating(Visual):
 
     def __init__(self, angle, freq, rate, phase=0,
                  mask="gauss", pos=(0., 0.), size=(2,2),
-                 duration=5000.):
-        super(Grating, self).__init__()
+                 duration=5000., debug=False):
+        super(Grating, self).__init__(debug=debug)
 
         self.angle = angle
         self.freq = freq
