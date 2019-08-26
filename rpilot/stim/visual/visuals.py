@@ -7,6 +7,8 @@ WIN = None
 from rpilot import prefs
 
 import threading
+import os
+import datetime
 from Queue import Queue, Empty
 
 print(prefs.prefdict.items())
@@ -22,12 +24,14 @@ class Visual(object):
     callback = None
 
 
-    def __init__(self):
+    def __init__(self, debug=False):
         # psychopy Window
         self.win = None
         self.duration = None
         self.ppo = None # psychopy object
         #self.get_window()
+
+        self.debug = debug
 
         self.clock = core.Clock()
         self.draw_time = 0
@@ -103,6 +107,9 @@ class Grating(Visual):
         while not self.stop_evt.is_set():
             self.play_evt.wait()
 
+            if self.debug:
+                self.winRecordFrameIntervals = True
+
             # reset stim
             self.ppo.phase = self.phase
 
@@ -124,6 +131,11 @@ class Grating(Visual):
             # another flip clears the screen
             self.win.flip()
             self.play_evt.clear()
+
+            if self.debug:
+                path = os.path.join(prefs.DATADIR, 'frameintervals_'+datetime.datetime.now().isoformat()+'.csv')
+                self.saveFrameIntervals(path)
+                self.winRecordFrameIntervals = False
 
 
 
