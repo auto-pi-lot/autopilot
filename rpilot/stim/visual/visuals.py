@@ -108,7 +108,7 @@ class Grating(Visual):
             self.play_evt.wait()
 
             if self.debug:
-                self.winRecordFrameIntervals = True
+                self.win.recordFrameIntervals = True
 
             # reset stim
             self.ppo.phase = self.phase
@@ -134,8 +134,8 @@ class Grating(Visual):
 
             if self.debug:
                 path = os.path.join(prefs.DATADIR, 'frameintervals_'+datetime.datetime.now().isoformat()+'.csv')
-                self.saveFrameIntervals(path)
-                self.winRecordFrameIntervals = False
+                self.win.saveFrameIntervals(path)
+                self.win.recordFrameIntervals = False
 
 
 
