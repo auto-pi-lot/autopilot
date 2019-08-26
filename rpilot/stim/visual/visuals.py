@@ -48,7 +48,7 @@ class Visual(object):
         else:
             try:
                 global WIN
-                WIN = visual.Window(winType="glfw", color=(-1., -1., -1.), fullscr=True)
+                WIN = visual.Window(winType="glfw", color=(-1., -1., -1.), fullscr=True, size=(1280,720))
                 self.win = WIN
             except:
                 Exception("Couldn't get psychopy Window!")
