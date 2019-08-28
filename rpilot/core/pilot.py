@@ -262,7 +262,7 @@ class RPilot:
         our Networking object will cache this and will handle any
         future requests.
         """
-        self.node.send(self.parentid, 'STATE', self.state)
+        self.node.send(self.parentid, 'STATE', self.state, flags={'NOLOG':True})
 
     def l_start(self, value):
         """

@@ -1805,7 +1805,7 @@ class Bandwidth_Test(QtGui.QDialog):
             self.node.send(to=p, key="BANDWIDTH", value=msg)
 
     @gui_event
-    def process_test(self, rate, payload, n_msg, confirm):
+    def process_test(self, rate, n_msg, confirm):
 
         # start a timer that continues the test if messages are dropped
         try:
@@ -1842,6 +1842,8 @@ class Bandwidth_Test(QtGui.QDialog):
         except AttributeError:
             mean_speed = 1.0/msg_df.groupby('pilot').timestamp_rcvd.diff().mean()
 
+        mean_payload = msg_df.payload.mean()
+
         #print(msg_df.groupby('pilot').timestamp_rcvd.diff())
 
         # plot
@@ -1851,7 +1853,7 @@ class Bandwidth_Test(QtGui.QDialog):
         self.speeds.append(mean_speed)
 
 
-        self.results.append((rate, payload, n_msg, confirm, len(self.test_pilots), mean_delay, drop_rate, mean_speed, send_jitter, delay_jitter))
+        self.results.append((rate, mean_payload, n_msg, confirm, len(self.test_pilots), mean_delay, drop_rate, mean_speed, send_jitter, delay_jitter))
 
         self.delay_line.setData(x=self.rates, y=self.delays)
         self.drop_line.setData(x=self.rates, y=self.drops)
@@ -1931,7 +1933,7 @@ class Bandwidth_Test(QtGui.QDialog):
             self.finished_pilots.append(value['pilot'])
 
             if len(self.finished_pilots) == len(self.test_pilots):
-                self.process_test(value['rate'], payload_size, value['n_msg'], value['confirm'])
+                self.process_test(value['rate'], value['n_msg'], value['confirm'])
 
             return
 

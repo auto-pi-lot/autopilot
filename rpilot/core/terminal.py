@@ -327,7 +327,7 @@ class Terminal(QtGui.QMainWindow):
     # Listens & inter-object methods
 
     def heartbeat(self):
-        self.node.send('T', 'INIT', repeat=False)
+        self.node.send('T', 'INIT', repeat=False, flags={'NOREPEAT': True})
 
         self.heartbeat_timer = threading.Timer(self.heartbeat_dur, self.heartbeat)
         self.heartbeat_timer.daemon = True
