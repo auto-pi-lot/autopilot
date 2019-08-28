@@ -184,6 +184,8 @@ class Terminal(QtGui.QMainWindow):
         self.heartbeat_timer = threading.Timer(self.heartbeat_dur, self.heartbeat)
         self.heartbeat_timer.daemon = True
         self.heartbeat_timer.start()
+        #self.heartbeat(once=True)
+
 
     def init_logging(self):
         """
@@ -326,12 +328,13 @@ class Terminal(QtGui.QMainWindow):
     ##########################3
     # Listens & inter-object methods
 
-    def heartbeat(self):
+    def heartbeat(self, once=False):
         self.node.send('T', 'INIT', repeat=False, flags={'NOREPEAT': True})
 
-        self.heartbeat_timer = threading.Timer(self.heartbeat_dur, self.heartbeat)
-        self.heartbeat_timer.daemon = True
-        self.heartbeat_timer.start()
+        if not once:
+            self.heartbeat_timer = threading.Timer(self.heartbeat_dur, self.heartbeat)
+            self.heartbeat_timer.daemon = True
+            self.heartbeat_timer.start()
 
 
     def toggle_start(self, starting, pilot, mouse=None):

@@ -39,6 +39,7 @@ from rpilot.core.utils import InvokeEvent
 from rpilot.core.plots import gui_event
 
 import pdb
+import time
 
 
 def gui_event(fn):
@@ -1875,10 +1876,11 @@ class Bandwidth_Test(QtGui.QDialog):
             self.save_btn.setEnabled(True)
             self.start_btn.setEnabled(True)
         else:
+            time.sleep(2.5)
             self.current_test = self.tests_todo.pop()
             self.send_test(*self.current_test)
 
-            # self.repeat_timer = threading.Timer(self.current_test[0]*self.current_test[2]*20,
+            # self.repeat_timer = threading.Timer(self.current_test[0]*self.current_test[2]*10,
             #                                     self.process_test, args=self.current_test)
             # self.repeat_timer.daemon = True
             # self.repeat_timer.start()
@@ -1955,7 +1957,7 @@ class Bandwidth_Test(QtGui.QDialog):
                               value['message_size']))
 
         msgs_rcvd = self.msg_counter.next()
-        if msgs_rcvd % round(self.n_messages_test/100.0) < 1.0:
+        if msgs_rcvd % float(round(self.n_messages_test/100.0)) < 1.0:
              self.update_pbar(msgs_rcvd+1)
 
 
