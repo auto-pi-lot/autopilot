@@ -423,7 +423,8 @@ class RPilot:
         }
 
         # make a fake message to test how large the serialized message is
-        test_msg = Message(to='bandwith', key='BANDWIDTH_MSG', value=message, repeat=confirm, flags={'MINPRINT':True})
+        test_msg = Message(to='bandwith', key='BANDWIDTH_MSG', value=message, repeat=confirm, flags={'MINPRINT':True},
+                           id="test_message", sender="test_sender")
         msg_size = sys.getsizeof(test_msg.serialize())
 
         message['message_size'] = msg_size

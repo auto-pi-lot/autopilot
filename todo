@@ -48,6 +48,8 @@
 - must add "CONFIG" value to prefs - ie. "CONFIG": "VISUAL" as required by visuals module
 - be better about capitalization: ie. "LINEAGE" needs to be "CHILD" not "child", always test against .lower() or .upper()
 - setup terminal to be a ntp server by default https://help.ubuntu.com/lts/serverguide/NTP.html https://opensource.com/article/18/12/manage-ntp-chrony https://raspberrytips.com/time-sync-raspberry-pi/
+- set status of pis to unknown if no response from pings
+
 
 .. automodsumm:: rpilot.core.gui
     :toctree:
