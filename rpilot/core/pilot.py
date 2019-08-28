@@ -422,6 +422,12 @@ class RPilot:
             'payload': payload,
         }
 
+        # make a fake message to test how large the serialized message is
+        test_msg = Message(to='bandwith', key='BANDWIDTH_MSG', value=message, repeat=confirm, flags={'MINPRINT':True})
+        msg_size = sys.getsizeof(test_msg.serialize())
+
+        message['message_size'] = msg_size
+
         spacing = 1.0/rate
 
         # wait for half a second to let the terminal get messages out

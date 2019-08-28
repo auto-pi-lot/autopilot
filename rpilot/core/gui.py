@@ -38,6 +38,8 @@ from functools import wraps
 from rpilot.core.utils import InvokeEvent
 from rpilot.core.plots import gui_event
 
+import pdb
+
 
 def gui_event(fn):
     """
@@ -1815,7 +1817,7 @@ class Bandwidth_Test(QtGui.QDialog):
 
         # process messages
         msg_df = pd.DataFrame.from_records(self.messages,
-                                           columns=['pilot', 'n_msg', 'timestamp_sent', 'timestamp_rcvd', 'payload'])
+                                           columns=['pilot', 'n_msg', 'timestamp_sent', 'timestamp_rcvd', 'payload_size', 'message_size'])
         msg_df = msg_df.astype({'timestamp_sent':'datetime64', 'timestamp_rcvd':'datetime64'})
 
         # compute summary
@@ -1842,7 +1844,8 @@ class Bandwidth_Test(QtGui.QDialog):
         except AttributeError:
             mean_speed = 1.0/msg_df.groupby('pilot').timestamp_rcvd.diff().mean()
 
-        mean_payload = msg_df.payload.mean()
+        mean_payload = msg_df.payload_size.mean()
+        mean_message = msg_df.message_size.mean()
 
         #print(msg_df.groupby('pilot').timestamp_rcvd.diff())
 
@@ -1853,7 +1856,7 @@ class Bandwidth_Test(QtGui.QDialog):
         self.speeds.append(mean_speed)
 
 
-        self.results.append((rate, mean_payload, n_msg, confirm, len(self.test_pilots), mean_delay, drop_rate, mean_speed, send_jitter, delay_jitter))
+        self.results.append((rate, mean_payload, mean_message, n_msg, confirm, len(self.test_pilots), mean_delay, drop_rate, mean_speed, send_jitter, delay_jitter))
 
         self.delay_line.setData(x=self.rates, y=self.delays)
         self.drop_line.setData(x=self.rates, y=self.drops)
@@ -1898,7 +1901,7 @@ class Bandwidth_Test(QtGui.QDialog):
         # make and save results df
         try:
             res_df = pd.DataFrame.from_records(self.results,
-                                               columns=['rate', 'payload', 'n_messages', 'confirm',
+                                               columns=['rate', 'payload_size', 'message_size', 'n_messages', 'confirm',
                                                         'n_pilots', 'mean_delay', 'drop_rate',
                                                         'actual_rate', 'send_jitter', 'delay_jitter'])
 
@@ -1926,8 +1929,12 @@ class Bandwidth_Test(QtGui.QDialog):
                 * Message number
                 * Payload
         """
+        # have to iterate over contents to get true size,
+        # and then add size of container itself.
+        # payload size is distinct from the serialized message size, this is the end size
+        # as it ends up on the disk of the receiver
+        payload_size = np.sum([sys.getsizeof(v) for k, v in value.items()]) + sys.getsizeof(value)
 
-        payload_size = sys.getsizeof(value)
 
         if 'test_end' in value.keys():
             self.finished_pilots.append(value['pilot'])
@@ -1944,7 +1951,8 @@ class Bandwidth_Test(QtGui.QDialog):
                               int(value['n_msg']),
                               value['timestamp'],
                               datetime.datetime.now().isoformat(),
-                              payload_size))
+                              payload_size,
+                              value['message_size']))
 
         msgs_rcvd = self.msg_counter.next()
         if msgs_rcvd % round(self.n_messages_test/100.0) < 1.0:
