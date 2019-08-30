@@ -27,7 +27,10 @@ from copy import copy
 from tornado.ioloop import IOLoop
 from zmq.eventloop.zmqstream import ZMQStream
 from itertools import count
-import Queue as queue
+if sys.version_info >= (3,0):
+    import queue
+else:
+    import Queue as queue
 
 from rpilot import prefs
 

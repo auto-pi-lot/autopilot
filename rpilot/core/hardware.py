@@ -77,7 +77,10 @@ import threading
 import time
 from datetime import datetime
 import numpy as np
-from Queue import Queue, Empty
+if sys.version_info >= (3,0):
+    from queue import Queue, Empty
+else:
+    from Queue import Queue, Empty
 
 
 # pigpio only uses BCM numbers, we need to translate them

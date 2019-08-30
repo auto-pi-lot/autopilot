@@ -19,7 +19,7 @@ import pandas as pd
 import warnings
 from copy import copy
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from rpilot import tasks
+from rpilot.tasks import GRAD_LIST, TASK_LIST
 from rpilot import prefs
 from rpilot.stim.sound.sounds import STRING_PARAMS
 
@@ -80,11 +80,12 @@ class Mouse:
 
 
 
-    def __init__(self, name, dir=None, new=False, biography=None):
+    def __init__(self, name=None, dir=None, file=None, new=False, biography=None):
         """
         Args:
             name (str): mouse ID
             dir (str): path where the .h5 file is located, if `None`, `prefs.DATADIR` is used
+            file (str): load a mouse from a filename. if `None`, ignored.
             new (bool): if True, a new file is made (a new file is made if one does not exist anyway)
             biography (dict): If making a new mouse file, a dictionary with biographical data can be passed
         """
@@ -101,17 +102,39 @@ class Mouse:
         self.lock = threading.Lock()
 
         if not dir:
-            dir = prefs.DATADIR
+            try:
+                dir = prefs.DATADIR
+            except AttributeError:
+                dir = os.path.split(file)[0]
 
-        self.name = str(name)
-        self.file = os.path.join(dir, name + '.h5')
-        if new or not os.path.isfile(self.file):
-            self.new_mouse_file(biography)
+        if not name:
+            if not file:
+                Exception('Need to either have a name or a file, how else would we find the .h5 file?')
+            if not os.path.isfile(file):
+                Exception('no file was found at passed file: {}'.format(file))
+            self.file = file
+        else:
+            if file:
+                Warning('file passed, but so was name, defaulting to using name + dir')
+
+            self.name = str(name)
+            self.file = os.path.join(dir, name + '.h5')
+            if new or not os.path.isfile(self.file):
+                self.new_mouse_file(biography)
 
         # before we open, make sure we have the stuff we need
         self.ensure_structure()
 
         h5f = self.open_hdf()
+
+        if not name:
+            try:
+                self.name = h5f.root.info._v_attrs['name']
+            except KeyError:
+                Warning('No Name attribute saved, trying to recover from filename')
+                self.name = os.path.splitext(os.path.split(file)[-1])[0]
+
+
 
         # If mouse has a protocol, load it to a dict
         self.current = None
@@ -235,6 +258,8 @@ class Mouse:
             for k, v in biography.items():
                 h5f.root.info._v_attrs[k] = v
 
+        h5f.root.info._v_attrs['name'] = self.name
+
         self.close_hdf(h5f)
 
     def ensure_structure(self):
@@ -251,11 +276,21 @@ class Mouse:
             except tables.exceptions.NoSuchNodeError:
                 #pdb.set_trace()
                 # try to make it
-                if isinstance(node[3], basestring):
-                    if node[3] == 'group':
-                        h5f.create_group(node[1], node[2])
-                elif issubclass(node[3], tables.IsDescription):
-                    h5f.create_table(node[1], node[2], description=node[3])
+                # python 3 compatibility
+                if sys.version_info >= (3,0):
+                    if isinstance(node[3], str):
+                        if node[3] == 'group':
+                            h5f.create_group(node[1], node[2])
+                    elif issubclass(node[3], tables.IsDescription):
+                        h5f.create_table(node[1], node[2], description=node[3])
+
+                # python 2
+                else:
+                    if isinstance(node[3], basestring):
+                        if node[3] == 'group':
+                            h5f.create_group(node[1], node[2])
+                    elif issubclass(node[3], tables.IsDescription):
+                        h5f.create_table(node[1], node[2], description=node[3])
 
         self.close_hdf(h5f)
 
@@ -418,7 +453,7 @@ class Mouse:
         # memory, we can just keep appending to keep things simple.
         for i, step in enumerate(self.current):
             # First we get the task class for this step
-            task_class = tasks.TASK_LIST[step['task_type']]
+            task_class = TASK_LIST[step['task_type']]
             step_name = step['step_name']
             # group name is S##_'step_name'
             group_name = "S{:02d}_{}".format(i, step_name)
@@ -582,7 +617,7 @@ class Mouse:
             grad_params = task_params['graduation']['value'].copy()
 
             # add other params asked for by the task class
-            grad_obj = tasks.GRAD_LIST[grad_type]
+            grad_obj = GRAD_LIST[grad_type]
 
             if grad_obj.PARAMS:
                 # these are params that should be set in the protocol settings
@@ -768,7 +803,9 @@ class Mouse:
                     step_groups = [step_name]
                     break
         elif isinstance(step, int):
-            step_groups = step_groups[step]
+            if step > len(step_groups):
+                ValueError('You provided a step number ({}) greater than the number of steps in the subjects assigned protocol: ()'.format(step, len(step_groups)))
+            step_groups = [step_groups[step]]
         elif isinstance(step, list):
             step_groups = step_groups[int(step[0]):int(step[1])]
 

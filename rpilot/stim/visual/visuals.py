@@ -8,10 +8,14 @@ from rpilot import prefs
 
 import threading
 import os
+import sys
 import datetime
-from Queue import Queue, Empty
+if sys.version_info >= (3,0):
+    from queue import Queue, Empty
+else:
+    from Queue import Queue, Empty
 
-print(prefs.prefdict.items())
+#print(prefs.prefdict.items())
 if hasattr(prefs, 'CONFIG'):
     if 'VISUAL' in prefs.CONFIG:
         from psychopy import visual, core
