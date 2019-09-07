@@ -379,6 +379,8 @@ class Pilot_Panel(QtGui.QWidget):
         """
         # type: () -> None
         label = QtGui.QLabel(self.pilot)
+        label.setStyleSheet("font: bold 14pt; text-align:right;")
+        label.setAlignment(QtCore.Qt.AlignVCenter)
         self.button = Pilot_Button(self.pilot, self.mouse_list, self.start_fn)
         add_button = QtGui.QPushButton("+")
         add_button.clicked.connect(self.create_mouse)
@@ -2523,6 +2525,18 @@ class Weights(QtGui.QTableWidget):
             date = self.mice_weights[row]['date']
             column_name = self.colnames.keys()[column] # recall colnames is an ordered dictionary
             self.mice[mouse_name].set_weight(date, column_name, new_val)
+
+
+#####################################################
+# Custom Autopilot Qt Style
+
+class Autopilot_Style(QtGui.QPlastiqueStyle):
+
+    def __init__(self):
+        super(Autopilot_Style, self).__init__()
+
+
+
 
 ###############
 # don't remove these - will be used to replace Protocol Wizard eventually

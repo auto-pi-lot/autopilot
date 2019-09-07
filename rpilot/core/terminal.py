@@ -9,6 +9,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from rpilot import prefs
+from rpilot.core import styles
 
 if __name__ == '__main__':
     # Parse arguments - this should have been called with a .json prefs file passed
@@ -214,9 +215,14 @@ class Terminal(QtGui.QMainWindow):
         * :class:`.plots.Plot_Widget`
         """
 
+        # set stylesheet for main window
+        self.setStyleSheet(styles.TERMINAL)
+
         # set central widget
         self.widget = QtGui.QWidget()
         self.setCentralWidget(self.widget)
+
+
 
         # Start GUI
         self.layout = QtGui.QGridLayout()
@@ -225,13 +231,16 @@ class Terminal(QtGui.QMainWindow):
         self.widget.setLayout(self.layout)
 
         self.setWindowTitle('Terminal')
+        #self.menuBar().setFixedHeight(40)
 
         # Main panel layout
         #self.panel_layout.setContentsMargins(0,0,0,0)
 
         # Init toolbar
         # File menu
-        self.file_menu = self.menuBar().addMenu("&File")
+        self.file_menu = QtGui.QMenu("&File")
+        #self.file_menu.setFixedHeight(40)
+        _ = self.menuBar().addMenu(self.file_menu)
         new_pilot_act = QtGui.QAction("New &Pilot", self, triggered=self.new_pilot)
         new_prot_act  = QtGui.QAction("New Pro&tocol", self, triggered=self.new_protocol)
         #batch_create_mice = QtGui.QAction("Batch &Create Mice", self, triggered=self.batch_mice)
@@ -272,31 +281,40 @@ class Terminal(QtGui.QMainWindow):
         # Logo goes up top
         pixmap_path = os.path.join(os.path.dirname(prefs.REPODIR), 'graphics', 'logo.png')
         self.logo = QtGui.QLabel()
-        pixmap = QtGui.QPixmap(pixmap_path).scaled(265,40)
+        self.logo.setMargin(0)
+        self.logo.setContentsMargins(0,0,0,0)
+        pixmap = QtGui.QPixmap(pixmap_path).scaled(265/2,20)
         self.logo.setPixmap(pixmap)
-        self.logo.setFixedHeight(40)
-        self.logo.setAlignment(QtCore.Qt.AlignLeft)
+        self.logo.setFixedHeight(20)
+        #self.logo.setAlignment(QtCore.Qt.AlignLeft)
+
+        self.menuBar().setCornerWidget(self.logo, QtCore.Qt.TopLeftCorner)
 
         # Combine all in main layout
-        self.layout.addWidget(self.logo, 0,0,1,2)
-        self.layout.addWidget(self.control_panel, 1,0,1,1)
-        self.layout.addWidget(self.data_panel, 1,1,1,1)
+        #self.layout.addWidget(self.logo, 0,0,1,2)
+        self.layout.addWidget(self.control_panel, 0,0,1,1)
+        self.layout.addWidget(self.data_panel, 0,1,1,1)
         self.layout.setColumnStretch(0, 2)
         self.layout.setColumnStretch(1, 10)
 
         # Set size of window to be fullscreen without maximization
         # Until a better solution is found, if not set large enough, the pilot tabs will
         # expand into infinity. See the Expandable_Tabs class
+        #pdb.set_trace()
         winsize = app.desktop().availableGeometry()
 
         # want to subtract bounding title box, our title bar, and logo height.
         # our y offset will be the size of the bounding title box
-        window_title_height = winsize.y()
+        #window_title_height = winsize.y()
+        window_title_height = 0
         # Then our tilebar
+        # multiply by three to get the inner (file, etc.) bar, the top bar (min, maximize, etc)
+        # and then the very top system tray bar in ubuntu
         titleBarHeight = self.style().pixelMetric(QtGui.QStyle.PM_TitleBarHeight,
-                                                  QtGui.QStyleOptionTitleBar(), self)
+                                                  QtGui.QStyleOptionTitleBar(), self) * 2
         # finally our logo
         logo_height = self.logo.height()
+
 
         winheight = winsize.height() - window_title_height - titleBarHeight - logo_height  # also subtract logo height
         winsize.setHeight(winheight)
@@ -305,6 +323,13 @@ class Terminal(QtGui.QMainWindow):
         self.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
 
         # Set heights on control panel and data panel
+
+
+        # move to primary display and show maximized
+        primary_display = app.desktop().availableGeometry(0)
+        self.move(primary_display.left(), primary_display.top())
+        # self.resize(primary_display.width(), primary_display.height())
+        #
         self.control_panel.setMaximumHeight(winheight)
         self.data_panel.setMaximumHeight(winheight)
 
