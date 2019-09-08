@@ -26,7 +26,7 @@ QWidget {
 QPushButton {
 	color: #666;
 	background-color: #eee;
-	font-size: 12px;
+	font: normal "FreeSans" 20px;
 	padding: 5px 5px;
 	border-radius: 5px;
 	border: 1px solid rgba(0,0,0,0.3);

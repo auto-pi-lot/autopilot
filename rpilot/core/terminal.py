@@ -39,7 +39,7 @@ import threading
 from collections import OrderedDict as odict
 import numpy as np
 
-from PySide import QtCore, QtGui
+from PySide import QtCore, QtGui, QtSvg
 from mouse import Mouse
 from plots import Plot_Widget
 from networking import Terminal_Networking, Net_Node
@@ -238,9 +238,16 @@ class Terminal(QtGui.QMainWindow):
 
         # Init toolbar
         # File menu
-        self.file_menu = QtGui.QMenu("&File")
-        #self.file_menu.setFixedHeight(40)
-        _ = self.menuBar().addMenu(self.file_menu)
+        # make menu take up 1/10 of the screen
+        winsize = app.desktop().availableGeometry()
+        bar_height = (winsize.height()/25)+5
+
+        self.menuBar().setFixedHeight(bar_height)
+        #self.menuBar().setStyleSheet('QMenuBar:item {  }')
+
+
+        self.file_menu = self.menuBar().addMenu("&File")
+        self.file_menu.setObjectName("file")
         new_pilot_act = QtGui.QAction("New &Pilot", self, triggered=self.new_pilot)
         new_prot_act  = QtGui.QAction("New Pro&tocol", self, triggered=self.new_protocol)
         #batch_create_mice = QtGui.QAction("Batch &Create Mice", self, triggered=self.batch_mice)
@@ -279,44 +286,65 @@ class Terminal(QtGui.QMainWindow):
 
 
         # Logo goes up top
-        pixmap_path = os.path.join(os.path.dirname(prefs.REPODIR), 'graphics', 'logo.png')
+        # https://stackoverflow.com/questions/25671275/pyside-how-to-set-an-svg-icon-in-qtreewidgets-item-and-change-the-size-of-the
+
+
+        pixmap_path = os.path.join(os.path.dirname(prefs.REPODIR), 'graphics', 'autopilot_logo_small.svg')
+        #svg_renderer = QtSvg.QSvgRenderer(pixmap_path)
+        #image = QtGui.QImage()
+        #self.logo = QtSvg.QSvgWidget()
+
+
+        # set size, preserving aspect ratio
+        logo_height = round(44.0*((bar_height-5)/44.0))
+        logo_width = round(139*((bar_height-5)/44.0))
+
+        svg_renderer = QtSvg.QSvgRenderer(pixmap_path)
+        image = QtGui.QImage(logo_width, logo_height, QtGui.QImage.Format_ARGB32)
+        # Set the ARGB to 0 to prevent rendering artifacts
+        image.fill(0x00000000)
+        svg_renderer.render(QtGui.QPainter(image))
+        pixmap = QtGui.QPixmap.fromImage(image)
         self.logo = QtGui.QLabel()
-        self.logo.setMargin(0)
-        self.logo.setContentsMargins(0,0,0,0)
-        pixmap = QtGui.QPixmap(pixmap_path).scaled(265/2,20)
         self.logo.setPixmap(pixmap)
-        self.logo.setFixedHeight(20)
-        #self.logo.setAlignment(QtCore.Qt.AlignLeft)
 
-        self.menuBar().setCornerWidget(self.logo, QtCore.Qt.TopLeftCorner)
 
+        self.menuBar().setCornerWidget(self.logo, QtCore.Qt.TopRightCorner)
+        self.menuBar().adjustSize()
+
+        #self.logo.load(pixmap_path)
         # Combine all in main layout
         #self.layout.addWidget(self.logo, 0,0,1,2)
         self.layout.addWidget(self.control_panel, 0,0,1,1)
         self.layout.addWidget(self.data_panel, 0,1,1,1)
-        self.layout.setColumnStretch(0, 2)
-        self.layout.setColumnStretch(1, 10)
+        self.layout.setColumnStretch(0, 1)
+        self.layout.setColumnStretch(1, 3)
 
         # Set size of window to be fullscreen without maximization
         # Until a better solution is found, if not set large enough, the pilot tabs will
         # expand into infinity. See the Expandable_Tabs class
         #pdb.set_trace()
+        screensize = app.desktop().screenGeometry()
         winsize = app.desktop().availableGeometry()
 
         # want to subtract bounding title box, our title bar, and logo height.
         # our y offset will be the size of the bounding title box
-        #window_title_height = winsize.y()
-        window_title_height = 0
+
         # Then our tilebar
         # multiply by three to get the inner (file, etc.) bar, the top bar (min, maximize, etc)
         # and then the very top system tray bar in ubuntu
-        titleBarHeight = self.style().pixelMetric(QtGui.QStyle.PM_TitleBarHeight,
-                                                  QtGui.QStyleOptionTitleBar(), self) * 2
+        #titleBarHeight = self.style().pixelMetric(QtGui.QStyle.PM_TitleBarHeight,
+        #                                          QtGui.QStyleOptionTitleBar(), self) * 3
+        title_bar_height = screensize.height()-winsize.height()
+
+        #titleBarHeight = bar_height*2
         # finally our logo
-        logo_height = self.logo.height()
+        logo_height = bar_height
+
+        #pdb.set_trace()
 
 
-        winheight = winsize.height() - window_title_height - titleBarHeight - logo_height  # also subtract logo height
+        winheight = winsize.height() - title_bar_height - logo_height  # also subtract logo height
         winsize.setHeight(winheight)
         self.max_height = winheight
         self.setGeometry(winsize)

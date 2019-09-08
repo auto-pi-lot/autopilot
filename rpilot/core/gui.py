@@ -143,8 +143,8 @@ class Control_Panel(QtGui.QWidget):
         make a :class:`Mouse_List`: and :class:`Pilot_Panel`:,
         set size policies and connect Qt signals.
         """
-        self.layout.setColumnStretch(0, 1)
-        self.layout.setColumnStretch(1, 5)
+        self.layout.setColumnStretch(0, 2)
+        self.layout.setColumnStretch(1, 2)
 
         # Iterate through pilots and mice, making start/stop buttons for pilots and lists of mice
         for i, (pilot, mice) in enumerate(self.pilots.items()):
@@ -158,7 +158,7 @@ class Control_Panel(QtGui.QWidget):
 
             # Make a panel for pilot control
             pilot_panel = Pilot_Panel(pilot, mouse_list, self.start_fn, self.create_mouse)
-            pilot_panel.setFixedWidth(100)
+            pilot_panel.setFixedWidth(150)
 
             self.panels[pilot] = pilot_panel
 
@@ -384,17 +384,19 @@ class Pilot_Panel(QtGui.QWidget):
         self.button = Pilot_Button(self.pilot, self.mouse_list, self.start_fn)
         add_button = QtGui.QPushButton("+")
         add_button.clicked.connect(self.create_mouse)
+        add_button.setSizePolicy(QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding)
         remove_button = QtGui.QPushButton("-")
         remove_button.clicked.connect(self.remove_mouse)
+        remove_button.setSizePolicy(QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding)
 
         self.layout.addWidget(label, 0, 0, 1, 2)
         self.layout.addWidget(self.button, 1, 0, 1, 2)
         self.layout.addWidget(add_button, 2,0,1,1)
         self.layout.addWidget(remove_button, 2,1,1,1)
 
-        self.layout.setRowStretch(0, 0)
-        self.layout.setRowStretch(1, 5)
-        self.layout.setRowStretch(2, 0)
+        self.layout.setRowStretch(0, 3)
+        self.layout.setRowStretch(1, 2)
+        self.layout.setRowStretch(2, 1)
 
     def remove_mouse(self):
         """
@@ -463,7 +465,7 @@ class Pilot_Button(QtGui.QPushButton):
         self.state = "DISCONNECTED"
 
         # Normally buttons only expand horizontally, but these big ole ones....
-        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Maximum)
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
 
         # What's yr name anyway?
         self.pilot = pilot

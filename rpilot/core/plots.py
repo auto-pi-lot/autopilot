@@ -275,10 +275,10 @@ class Plot(QtGui.QWidget):
 
             self.infobox.addRow(k, v)
 
-        self.infobox.setS
+        #self.infobox.setS
 
 
-        self.layout.addLayout(self.infobox, 1)
+        self.layout.addLayout(self.infobox, 2)
 
         # The plot that we own :)
         self.plot = pg.PlotWidget()
