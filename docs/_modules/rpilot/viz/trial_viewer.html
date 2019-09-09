@@ -250,7 +250,7 @@
     <span class="c1"># find pilot for mouse</span>
     <span class="n">pilot_name</span> <span class="o">=</span> <span class="n">pilot_db</span><span class="p">[</span><span class="n">mouse_name</span><span class="p">]</span>
 
-    <span class="n">amus</span> <span class="o">=</span> <span class="n">mouse</span><span class="o">.</span><span class="n">Mouse</span><span class="p">(</span><span class="n">mouse_name</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="n">data_dir</span><span class="p">)</span>
+    <span class="n">amus</span> <span class="o">=</span> <span class="n">mouse</span><span class="o">.</span><span class="n">Subject</span><span class="p">(</span><span class="n">mouse_name</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="n">data_dir</span><span class="p">)</span>
 
     <span class="n">step_data</span> <span class="o">=</span> <span class="bp">None</span>
     <span class="n">grad_data</span> <span class="o">=</span> <span class="bp">None</span>
@@ -281,7 +281,7 @@
 <div class="viewcode-block" id="load_mouse_dir"><a class="viewcode-back" href="../../../rpilot.viz.trial_viewer.html#rpilot.viz.trial_viewer.load_mouse_dir">[docs]</a><span class="k">def</span> <span class="nf">load_mouse_dir</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">which</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
-<span class="sd">        data_dir (str): A path to a directory with :class:`~.core.mouse.Mouse` style hdf5 files</span>
+<span class="sd">        data_dir (str): A path to a directory with :class:`~.core.mouse.Subject` style hdf5 files</span>
 <span class="sd">        steps (bool): Whether to return full trial-level data for each step</span>
 <span class="sd">        grad (bool): Whether to return summarized step graduation data.</span>
 
@@ -331,7 +331,7 @@
 
 
 
-    <span class="n">p</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">x_range</span><span class="o">=</span><span class="n">current_step</span><span class="p">[</span><span class="s1">&#39;mouse&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">(),</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Mouse Steps&#39;</span><span class="p">,</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">x_range</span><span class="o">=</span><span class="n">current_step</span><span class="p">[</span><span class="s1">&#39;mouse&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">(),</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Subject Steps&#39;</span><span class="p">,</span>
                <span class="n">plot_height</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span>
                <span class="n">plot_width</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
     <span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">major_label_orientation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span>
@@ -367,7 +367,7 @@
     <span class="n">current_step</span> <span class="o">=</span> <span class="n">current_step</span><span class="p">[[</span><span class="s1">&#39;mouse&#39;</span><span class="p">,</span><span class="s1">&#39;step&#39;</span><span class="p">]]</span>
 
     <span class="n">plots</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">x_range</span><span class="o">=</span><span class="n">step_data</span><span class="p">[</span><span class="s1">&#39;mouse&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">(),</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Mouse Steps&#39;</span><span class="p">,</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">x_range</span><span class="o">=</span><span class="n">step_data</span><span class="p">[</span><span class="s1">&#39;mouse&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">(),</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Subject Steps&#39;</span><span class="p">,</span>
                <span class="n">plot_height</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
     <span class="n">p</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">major_label_orientation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span>
     <span class="n">p</span><span class="o">.</span><span class="n">vbar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">current_step</span><span class="p">[</span><span class="s1">&#39;mouse&#39;</span><span class="p">],</span> <span class="n">top</span><span class="o">=</span><span class="n">current_step</span><span class="p">[</span><span class="s1">&#39;step&#39;</span><span class="p">],</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>

@@ -1,26 +1,26 @@
-Pilot_Networking
+Pilot_Station
 ================
 
 .. currentmodule:: rpilot.core.networking
 
-.. autoclass:: Pilot_Networking
+.. autoclass:: Pilot_Station
    :show-inheritance:
 
    .. rubric:: Methods Summary
 
    .. autosummary::
 
-      ~Pilot_Networking.l_change
-      ~Pilot_Networking.l_child
-      ~Pilot_Networking.l_cohere
-      ~Pilot_Networking.l_continuous
-      ~Pilot_Networking.l_file
-      ~Pilot_Networking.l_forward
-      ~Pilot_Networking.l_noop
-      ~Pilot_Networking.l_ping
-      ~Pilot_Networking.l_start
-      ~Pilot_Networking.l_state
-      ~Pilot_Networking.l_stop
+      ~Pilot_Station.l_change
+      ~Pilot_Station.l_child
+      ~Pilot_Station.l_cohere
+      ~Pilot_Station.l_continuous
+      ~Pilot_Station.l_file
+      ~Pilot_Station.l_forward
+      ~Pilot_Station.l_noop
+      ~Pilot_Station.l_ping
+      ~Pilot_Station.l_start
+      ~Pilot_Station.l_state
+      ~Pilot_Station.l_stop
 
    .. rubric:: Methods Documentation
 

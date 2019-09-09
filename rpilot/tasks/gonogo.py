@@ -48,7 +48,7 @@ class GoNoGo(Task):
     # PyTables Data descriptor
     # for numpy data types see http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html#arrays-dtypes-constructing
     class TrialData(tables.IsDescription):
-        # This class allows the Mouse object to make a data table with the correct data types. You must update it for any new data you'd like to store
+        # This class allows the Subject object to make a data table with the correct data types. You must update it for any new data you'd like to store
         trial_num = tables.Int32Col()
         target = tables.BoolCol()
         response = tables.StringCol(1)
@@ -101,11 +101,11 @@ class GoNoGo(Task):
                              instance=True)
 
         # get our child started
-        self.mouse = kwargs['mouse']
+        self.subject = kwargs['subject']
         value = {
-            'child': {'parent': prefs.NAME, 'mouse': kwargs['mouse']},
+            'child': {'parent': prefs.NAME, 'subject': kwargs['subject']},
             'task_type': 'Wheel Child',
-            'mouse': kwargs['mouse']
+            'subject': kwargs['subject']
         }
 
         self.node.send(to=prefs.NAME, key='CHILD', value=value)
@@ -117,7 +117,7 @@ class GoNoGo(Task):
 
 
     def request(self):
-        # wait for the mouse to hold the wheel still
+        # wait for the subject to hold the wheel still
         # Set the event lock
         self.stage_block.clear()
         self.punish_block.wait()
@@ -170,7 +170,7 @@ class GoNoGo(Task):
     def discrim(self):
         self.stage_block.clear()
 
-        # if the mouse licks on a good trial, reward.
+        # if the subject licks on a good trial, reward.
         # set a trigger to respond false if delay time elapses
         if self.target:
             self.triggers['C'] = [lambda: self.respond(True), self.pins['PORTS']['C'].open]

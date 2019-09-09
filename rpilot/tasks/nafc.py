@@ -12,7 +12,7 @@ from rpilot.core.networking import Net_Node
 
 from rpilot import prefs
 
-# This declaration allows Mouse to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
+# This declaration allows Subject to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
 # TODO: Move this to __init__
 TASK = 'Nafc'
 
@@ -37,7 +37,7 @@ class Nafc(Task):
         correction_trial (bool): If using correction trials, last trial was a correction trial
         trial_counter (:class:`itertools.count`): Which trial are we on?
         discrim_playing (bool): Is the stimulus playing?
-        bailed (0, 1): Mouse answered before stimulus was finished playing.
+        bailed (0, 1): Subject answered before stimulus was finished playing.
         current_stage (int): As each stage is reached, update for asynchronous event reference
 
     """
@@ -89,7 +89,7 @@ class Nafc(Task):
     # PyTables Data descriptor
     # for numpy data types see http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html#arrays-dtypes-constructing
     class TrialData(tables.IsDescription):
-        # This class allows the Mouse object to make a data table with the correct data types. You must update it for any new data you'd like to store
+        # This class allows the Subject object to make a data table with the correct data types. You must update it for any new data you'd like to store
         trial_num = tables.Int32Col()
         target = tables.StringCol(1)
         response = tables.StringCol(1)
@@ -224,7 +224,7 @@ class Nafc(Task):
     #
     #     """
     #     # Called when something leaves the center pin,
-    #     # We use this to handle the mouse leaving the port early
+    #     # We use this to handle the subject leaving the port early
     #     if self.discrim_playing:
     #         self.bail_trial()
 
@@ -420,7 +420,7 @@ class Nafc(Task):
         self.set_leds({'L':[0,255,0], 'R':[0,255,0]})
 
     # def bail_trial(self):
-    #     # If a timer ends or the mouse pulls out too soon, we punish and bail
+    #     # If a timer ends or the subject pulls out too soon, we punish and bail
     #     self.bailed = 1
     #     self.triggers = {}
     #     self.punish()
@@ -486,9 +486,9 @@ class Nafc_Wheel(Nafc):
                              instance=True)
 
         value = {
-            'child': {'parent':prefs.NAME, 'mouse':kwargs['mouse']},
+            'child': {'parent':prefs.NAME, 'subject':kwargs['subject']},
             'task_type': 'Wheel Child',
-            'mouse': kwargs['mouse']
+            'subject': kwargs['subject']
         }
 
         self.node.send(key='CHILD', value=value)

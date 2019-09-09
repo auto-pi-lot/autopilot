@@ -174,7 +174,7 @@ class Hardware(object):
     def __del__(self):
         self.release()
 
-# TODO: Subclass nosepoke that knows about waiting for mouse leaving
+# TODO: Subclass nosepoke that knows about waiting for subject leaving
 class Beambreak(Hardware):
     """
     An IR Beambreak sensor.
@@ -702,7 +702,7 @@ class Wheel(Hardware):
             self.mouse = devices.mice[mouse_idx]
         except IndexError:
             Warning('Could not find requested mouse with index {}\nAttempting to use mouse idx 0'.format(mouse_idx))
-            self.mouse = devices.mice[0]
+            self.subject = devices.mice[0]
 
         # frequency of our updating
         self.fs = fs

@@ -30,7 +30,7 @@ import threading
 
 # adding rpilot parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from rpilot.core.mouse import Mouse
+from rpilot.core.subject import Subject
 from rpilot import tasks, prefs
 from rpilot.stim.sound import sounds
 from rpilot.core.networking import Net_Node
@@ -68,31 +68,31 @@ class Control_Panel(QtGui.QWidget):
 
     Specifically, for each pilot, it contains
 
-    * one :class:`Mouse_List`: A list of the mice that run in each pilot.
+    * one :class:`subject_List`: A list of the subjects that run in each pilot.
     * one :class:`Pilot_Panel`: A set of button controls for starting/stopping behavior
 
     This class should not be instantiated outside the context of a
-    :py:class:`~.terminal.Terminal` object, as they share the :py:attr:`.mice` dictionary.
+    :py:class:`~.terminal.Terminal` object, as they share the :py:attr:`.subjects` dictionary.
 
     Attributes:
-        mice (dict): A dictionary with mouse ID's as keys and
-                :class:`core.mouse.Mouse` objects as values. Shared with the
+        subjects (dict): A dictionary with subject ID's as keys and
+                :class:`core.subject.Subject` objects as values. Shared with the
                 Terminal object to manage access conflicts.
         start_fn (:py:meth:`~rpilot.core.terminal.Terminal.toggle_start`): See :py:attr:`.Control_Panel.start_fn`
         pilots (dict): A dictionary with pilot ID's as keys and nested dictionaries
-                    containing mice, IP, etc. as values
-        mouse_lists (dict): A dict mapping mouse ID to :py:class:`.Mouse_List`
+                    containing subjects, IP, etc. as values
+        subject_lists (dict): A dict mapping subject ID to :py:class:`.subject_List`
         layout (:py:class:`~QtGui.QGridLayout`): Layout grid for widget
         panels (dict): A dict mapping pilot name to the relevant :py:class:`.Pilot_Panel`
 
     """
-    # Hosts two nested tab widgets to select pilot and mouse,
-    # set params, run mice, etc.
+    # Hosts two nested tab widgets to select pilot and subject,
+    # set params, run subjects, etc.
 
-    def __init__(self, mice, start_fn, pilots=None):
+    def __init__(self, subjects, start_fn, pilots=None):
         """
         Args:
-            mice (dict): See :py:attr:`.Control_Panel.mice`
+            subjects (dict): See :py:attr:`.Control_Panel.subjects`
             start_fn (:py:meth:`~rpilot.core.terminal.Terminal.toggle_start`): the Terminal's
                 toggle_start function, propagated down to each :class:`~core.gui.Pilot_Button`
             pilots: Usually the Terminal's :py:attr:`~.Terminal.pilots` dict. If not passed,
@@ -100,8 +100,8 @@ class Control_Panel(QtGui.QWidget):
         """
         super(Control_Panel, self).__init__()
 
-        # We share a dict of mouse objects with the main Terminal class to avoid access conflicts
-        self.mice = mice
+        # We share a dict of subject objects with the main Terminal class to avoid access conflicts
+        self.subjects = subjects
 
         # We get the Terminal's send_message function so we can communicate directly from here
         self.start_fn = start_fn
@@ -120,8 +120,8 @@ class Control_Panel(QtGui.QWidget):
                 except IOError:
                     Exception('Couldnt find pilot directory!')
 
-        # Make dict to store handles to mice lists
-        self.mouse_lists = {}
+        # Make dict to store handles to subjects lists
+        self.subject_lists = {}
 
         # Set layout for whole widget
         self.layout = QtGui.QGridLayout()
@@ -140,68 +140,68 @@ class Control_Panel(QtGui.QWidget):
         Called on init, creates the UI components.
 
         Specifically, for each pilot in :py:attr:`.pilots`,
-        make a :class:`Mouse_List`: and :class:`Pilot_Panel`:,
+        make a :class:`subject_List`: and :class:`Pilot_Panel`:,
         set size policies and connect Qt signals.
         """
         self.layout.setColumnStretch(0, 2)
         self.layout.setColumnStretch(1, 2)
 
-        # Iterate through pilots and mice, making start/stop buttons for pilots and lists of mice
-        for i, (pilot, mice) in enumerate(self.pilots.items()):
-            # in pilot dict, format is {'pilot':{'mice':['mouse1',...],'ip':'',etc.}}
-            mice = mice['mice']
-            # Make a list of mice
-            mouse_list = Mouse_List(mice, drop_fn = self.update_db)
-            mouse_list.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-            #mouse_list.itemDoubleClicked.connect(self.edit_params)
-            self.mouse_lists[pilot] = mouse_list
+        # Iterate through pilots and subjects, making start/stop buttons for pilots and lists of subjects
+        for i, (pilot, subjects) in enumerate(self.pilots.items()):
+            # in pilot dict, format is {'pilot':{'subjects':['subject1',...],'ip':'',etc.}}
+            subjects = subjects['subjects']
+            # Make a list of subjects
+            subject_list = Subject_List(subjects, drop_fn = self.update_db)
+            subject_list.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+            #subject_list.itemDoubleClicked.connect(self.edit_params)
+            self.subject_lists[pilot] = subject_list
 
             # Make a panel for pilot control
-            pilot_panel = Pilot_Panel(pilot, mouse_list, self.start_fn, self.create_mouse)
+            pilot_panel = Pilot_Panel(pilot, subject_list, self.start_fn, self.create_subject)
             pilot_panel.setFixedWidth(150)
 
             self.panels[pilot] = pilot_panel
 
             self.layout.addWidget(pilot_panel, i, 1, 1, 1)
-            self.layout.addWidget(mouse_list, i, 2, 1, 1)
+            self.layout.addWidget(subject_list, i, 2, 1, 1)
 
-    def create_mouse(self, pilot):
+    def create_subject(self, pilot):
         """
         Becomes :py:attr:`.Pilot_Panel.create_fn`.
-        Opens a :py:class:`.New_Mouse_Wizard` to create a new mouse file and assign protocol.
-        Finally, adds the new mouse to the :py:attr:`~.Control_Panel.pilots` database and updates it.
+        Opens a :py:class:`.New_Subject_Wizard` to create a new subject file and assign protocol.
+        Finally, adds the new subject to the :py:attr:`~.Control_Panel.pilots` database and updates it.
 
         Args:
-            pilot (str): Pilot name passed from :py:class:`.Pilot_Panel`, added to the created Mouse object.
+            pilot (str): Pilot name passed from :py:class:`.Pilot_Panel`, added to the created Subject object.
         """
-        new_mouse_wizard = New_Mouse_Wizard()
-        new_mouse_wizard.exec_()
+        new_subject_wizard = New_Subject_Wizard()
+        new_subject_wizard.exec_()
 
         # If the wizard completed successfully, get its values
-        if new_mouse_wizard.result() == 1:
-            biography_vals = new_mouse_wizard.bio_tab.values
-            # TODO: Make a "session" history table that stashes pilot, git hash, step, etc. for each session - mice might run on different pilots
+        if new_subject_wizard.result() == 1:
+            biography_vals = new_subject_wizard.bio_tab.values
+            # TODO: Make a "session" history table that stashes pilot, git hash, step, etc. for each session - subjects might run on different pilots
             biography_vals['pilot'] = pilot
 
-            # Make a new mouse object, make it temporary because we want to close it
-            mouse_obj = Mouse(biography_vals['id'], new=True,
-                              biography=biography_vals)
-            self.mice[biography_vals['id']] = mouse_obj
+            # Make a new subject object, make it temporary because we want to close it
+            subject_obj = Subject(biography_vals['id'], new=True,
+                                biography=biography_vals)
+            self.subjects[biography_vals['id']] = subject_obj
 
-            # If a protocol was selected in the mouse wizard, assign it.
+            # If a protocol was selected in the subject wizard, assign it.
             try:
-                protocol_vals = new_mouse_wizard.task_tab.values
+                protocol_vals = new_subject_wizard.task_tab.values
                 if 'protocol' in protocol_vals.keys() and 'step' in protocol_vals.keys():
                     protocol_file = os.path.join(prefs.PROTOCOLDIR, protocol_vals['protocol'] + '.json')
-                    mouse_obj.assign_protocol(protocol_file, int(protocol_vals['step']))
+                    subject_obj.assign_protocol(protocol_file, int(protocol_vals['step']))
             except:
                 # the wizard couldn't find the protocol dir, so no task tab was made
                 # or no task was assigned
                 pass
 
-            # Add mouse to pilots dict, update it and our tabs
-            self.pilots[pilot]['mice'].append(biography_vals['id'])
-            self.mouse_lists[pilot].addItem(biography_vals['id'])
+            # Add subject to pilots dict, update it and our tabs
+            self.pilots[pilot]['subjects'].append(biography_vals['id'])
+            self.subject_lists[pilot].addItem(biography_vals['id'])
             self.update_db()
 
     # TODO: fix this
@@ -210,17 +210,17 @@ class Control_Panel(QtGui.QWidget):
     #     Args:
     #         item:
     #     """
-    #     # edit a mouse's task parameters, called when mouse double-clicked
-    #     mouse = item.text()
-    #     if mouse not in self.mice.keys():
-    #         self.mice[mouse] = Mouse(mouse)
+    #     # edit a subject's task parameters, called when subject double-clicked
+    #     subject = item.text()
+    #     if subject not in self.subjects.keys():
+    #         self.subjects[subject] = Subject(subject)
     #
-    #     if '/current' not in self.mice[mouse].h5f:
-    #         Warning("Mouse {} has no protocol!".format(mouse))
+    #     if '/current' not in self.subjects[subject].h5f:
+    #         Warning("Subject {} has no protocol!".format(subject))
     #         return
     #
-    #     protocol = self.mice[mouse].current
-    #     step = self.mice[mouse].step
+    #     protocol = self.subjects[subject].current
+    #     step = self.subjects[subject].step
     #
     #     protocol_edit = Protocol_Parameters_Dialogue(protocol, step)
     #     protocol_edit.exec_()
@@ -232,29 +232,29 @@ class Control_Panel(QtGui.QWidget):
     #             # if there are any changes to this step, stash them
     #             if step_changes:
     #                 for k, v in step_changes.items():
-    #                     self.mice[mouse].update_history('param', k, v, step=i)
+    #                     self.subjects[subject].update_history('param', k, v, step=i)
     #
     #
 
     def update_db(self, **kwargs):
         """
-        Gathers any changes in :class:`Mouse_List` s and dumps :py:attr:`.pilots` to :py:attr:`.prefs.PILOT_DB`
+        Gathers any changes in :class:`Subject_List` s and dumps :py:attr:`.pilots` to :py:attr:`.prefs.PILOT_DB`
 
         Args:
             kwargs: Create new pilots by passing a dictionary with the structure
 
                 `new={'pilot_name':'pilot_values'}`
 
-                where `'pilot_values'` can be nothing, a list of mice,
+                where `'pilot_values'` can be nothing, a list of subjects,
                 or any other information included in the pilot db
         """
-        # gather mice from lists
-        for pilot, mlist in self.mouse_lists.items():
-            mice = []
+        # gather subjects from lists
+        for pilot, mlist in self.subject_lists.items():
+            subjects = []
             for i in range(mlist.count()):
-                mice.append(mlist.item(i).text())
+                subjects.append(mlist.item(i).text())
 
-            self.pilots[pilot]['mice'] = mice
+            self.pilots[pilot]['subjects'] = subjects
 
         # if we were given a new pilot, add it
         if 'new' in kwargs.keys():
@@ -280,7 +280,7 @@ class Control_Panel(QtGui.QWidget):
 # Control Panel Widgets
 ###################################
 
-class Mouse_List(QtGui.QListWidget):
+class Subject_List(QtGui.QListWidget):
     """
     A trivial modification of :class:`~.QtGui.QListWidget` that updates
     :py:attr:`~.Terminal.pilots` when an item in the list is dragged to another location.
@@ -288,21 +288,21 @@ class Mouse_List(QtGui.QListWidget):
     Should not be initialized except by :class:`.Control_Panel` .
 
     Attributes:
-        mice (list): A list of mice ID's passed by :class:`.Control_Panel`
+        subjects (list): A list of subjects ID's passed by :class:`.Control_Panel`
         drop_fn (:py:meth:`.Control_Panel.update_db`): called on a drop event
     """
 
-    def __init__(self, mice=None, drop_fn=None):
+    def __init__(self, subjects=None, drop_fn=None):
         """
         Args:
-            mice: see :py:attr:`~.Mouse_List.mice`. Can be `None` for an empty list
-            drop_fn: see :py:meth:`~.Mouse_List.drop_fn`. Passed from :class:`.Control_Panel`
+            subjects: see :py:attr:`~.Subject_List.subjects`. Can be `None` for an empty list
+            drop_fn: see :py:meth:`~.Subject_List.drop_fn`. Passed from :class:`.Control_Panel`
         """
-        super(Mouse_List, self).__init__()
+        super(Subject_List, self).__init__()
 
-        # if we are passed a list of mice, populate
-        if mice:
-            self.mice = mice
+        # if we are passed a list of subjects, populate
+        if subjects:
+            self.subjects = subjects
             self.populate_list()
 
         # make draggable
@@ -315,21 +315,21 @@ class Mouse_List(QtGui.QListWidget):
 
     def populate_list(self):
         """
-        Adds each item in :py:attr:`Mouse_List.mice` to the list.
+        Adds each item in :py:attr:`Subject_List.subjects` to the list.
         """
-        for m in self.mice:
+        for m in self.subjects:
             self.addItem(m)
 
     def dropEvent(self, event):
         """
         A trivial redefinition of :py:meth:`.QtGui.QListWidget.dropEvent`
-        that calls the parent `dropEvent` and then calls :py:attr:`~.Mouse_List.drop_fn`
+        that calls the parent `dropEvent` and then calls :py:attr:`~.Subject_List.drop_fn`
 
         Args:
             event: A :class:`.QtCore.QEvent` simply forwarded to the superclass.
         """
         # call the parent dropEvent to make sure all the list ops happen
-        super(Mouse_List, self).dropEvent(event)
+        super(Subject_List, self).dropEvent(event)
         # then we call the drop_fn passed to us
         self.drop_fn()
 
@@ -340,7 +340,7 @@ class Pilot_Panel(QtGui.QWidget):
 
     * the name of a pilot,
     * A :class:`Pilot_Button` to start and stop the task
-    * Add and remove buttons to :py:meth:`~Pilot_Panel.create_mouse` and :py:meth:`Pilot_Panel.remove_mouse`
+    * Add and remove buttons to :py:meth:`~Pilot_Panel.create_subject` and :py:meth:`Pilot_Panel.remove_subject`
 
     Note:
         This class should not be instantiated except by :class:`Control_Panel`
@@ -349,13 +349,13 @@ class Pilot_Panel(QtGui.QWidget):
         layout (:py:class:`QtGui.QGridLayout`): Layout for UI elements
         button (:class:`.Pilot_Button`): button used to control a pilot
     """
-    def __init__(self, pilot=None, mouse_list=None, start_fn=None, create_fn=None):
+    def __init__(self, pilot=None, subject_list=None, start_fn=None, create_fn=None):
         """
         Args:
             pilot (str): The name of the pilot this panel controls
-            mouse_list (:py:class:`.Mouse_List`): The :py:class:`.Mouse_List` we control
+            subject_list (:py:class:`.Subject_List`): The :py:class:`.Subject_List` we control
             start_fn (:py:meth:`~rpilot.core.terminal.Terminal.toggle_start`): Passed by :class:`Control_Panel`
-            create_fn (:py:meth:`Control_Panel.create_mouse`): Passed by :class:`Control_Panel`
+            create_fn (:py:meth:`Control_Panel.create_subject`): Passed by :class:`Control_Panel`
         """
         super(Pilot_Panel, self).__init__()
 
@@ -365,7 +365,7 @@ class Pilot_Panel(QtGui.QWidget):
         self.setLayout(self.layout)
 
         self.pilot = pilot
-        self.mouse_list = mouse_list
+        self.subject_list = subject_list
         self.start_fn = start_fn
         self.create_fn = create_fn
         self.button = None
@@ -381,12 +381,12 @@ class Pilot_Panel(QtGui.QWidget):
         label = QtGui.QLabel(self.pilot)
         label.setStyleSheet("font: bold 14pt; text-align:right;")
         label.setAlignment(QtCore.Qt.AlignVCenter)
-        self.button = Pilot_Button(self.pilot, self.mouse_list, self.start_fn)
+        self.button = Pilot_Button(self.pilot, self.subject_list, self.start_fn)
         add_button = QtGui.QPushButton("+")
-        add_button.clicked.connect(self.create_mouse)
+        add_button.clicked.connect(self.create_subject)
         add_button.setSizePolicy(QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding)
         remove_button = QtGui.QPushButton("-")
-        remove_button.clicked.connect(self.remove_mouse)
+        remove_button.clicked.connect(self.remove_subject)
         remove_button.setSizePolicy(QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding)
 
         self.layout.addWidget(label, 0, 0, 1, 2)
@@ -398,18 +398,18 @@ class Pilot_Panel(QtGui.QWidget):
         self.layout.setRowStretch(1, 2)
         self.layout.setRowStretch(2, 1)
 
-    def remove_mouse(self):
+    def remove_subject(self):
         """
-        Remove the currently selected mouse in :py:attr:`Pilot_Panel.mouse_list`,
+        Remove the currently selected subject in :py:attr:`Pilot_Panel.subject_list`,
         and calls the :py:meth:`Control_Panel.update_db` method.
         """
 
-        current_mouse = self.mouse_list.currentItem().text()
+        current_subject = self.subject_list.currentItem().text()
         msgbox = QtGui.QMessageBox()
-        msgbox.setText("\n(only removes from pilot_db.json, data will not be deleted)".format(current_mouse))
+        msgbox.setText("\n(only removes from pilot_db.json, data will not be deleted)".format(current_subject))
 
         msgBox = QtGui.QMessageBox()
-        msgBox.setText("Are you sure you would like to remove {}?".format(current_mouse))
+        msgBox.setText("Are you sure you would like to remove {}?".format(current_subject))
         msgBox.setInformativeText("'Yes' only removes from pilot_db.json, data will not be deleted")
         msgBox.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
         msgBox.setDefaultButton(QtGui.QMessageBox.No)
@@ -417,9 +417,9 @@ class Pilot_Panel(QtGui.QWidget):
 
         if ret == QtGui.QMessageBox.Yes:
 
-            self.mouse_list.takeItem(self.mouse_list.currentRow())
+            self.subject_list.takeItem(self.subject_list.currentRow())
             # the drop fn updates the db
-            self.mouse_list.drop_fn()
+            self.subject_list.drop_fn()
 
     def create_mouse(self):
         """
@@ -429,7 +429,7 @@ class Pilot_Panel(QtGui.QWidget):
 
 
 class Pilot_Button(QtGui.QPushButton):
-    def __init__(self, pilot=None, mouse_list=None, start_fn=None):
+    def __init__(self, pilot=None, subject_list=None, start_fn=None):
         """
         A subclass of (toggled) :class:`QtGui.QPushButton` that incorporates the style logic of a
         start/stop button - ie. color, text.
@@ -438,7 +438,7 @@ class Pilot_Button(QtGui.QPushButton):
 
         Args:
             pilot (str): The ID of the pilot that this button controls
-            mouse_list (:py:class:`.Mouse_List`): The Mouse list used to determine which
+            subject_list (:py:class:`.Subject_List`): The Subject list used to determine which
                 mouse is starting/stopping
             start_fn (:py:meth:`~rpilot.core.terminal.Terminal.toggle_start`): The final
                 resting place of the toggle_start method
@@ -470,8 +470,8 @@ class Pilot_Button(QtGui.QPushButton):
         # What's yr name anyway?
         self.pilot = pilot
 
-        # What mice do we know about?
-        self.mouse_list = mouse_list
+        # What subjects do we know about?
+        self.subject_list = subject_list
 
 
 
@@ -493,7 +493,7 @@ class Pilot_Button(QtGui.QPushButton):
             toggled (bool): T/F this button is now toggled down (starting the task) or vice versa.
         """
         # If we're stopped, start, and vice versa...
-        current_mouse = self.mouse_list.currentItem().text()
+        current_mouse = self.subject_list.currentItem().text()
 
         if current_mouse is None:
             Warning("Start button clicked, but no mouse selected.")
@@ -552,22 +552,22 @@ class Pilot_Button(QtGui.QPushButton):
 
 # TODO: Change these classes to use the update params windows
 
-class New_Mouse_Wizard(QtGui.QDialog):
+class New_Subject_Wizard(QtGui.QDialog):
     """
-    A popup that prompts you to define variables for a new :class:`.mouse.Mouse` object
+    A popup that prompts you to define variables for a new :class:`.mouse.Subject` object
 
     Called by :py:meth:`.Control_Panel.create_mouse` , which handles actually creating
     the mouse file and updating the :py:attr:`.Terminal.pilots` dict and file.
 
     Contains two tabs
-    - :class:`~.New_Mouse_Wizard.Biography_Tab` - to set basic biographical information about a mouse
-    - :class:`~.New_Mouse_Wizard.Task_Tab` - to set the protocol and step to start the mouse on
+    - :class:`~.New_Subject_Wizard.Biography_Tab` - to set basic biographical information about a mouse
+    - :class:`~.New_Subject_Wizard.Task_Tab` - to set the protocol and step to start the mouse on
 
     Attributes:
         protocol_dir (str): A full path to where protocols are stored,
             received from :py:const:`.prefs.PROTOCOLDIR`
-        bio_tab (:class:`~.New_Mouse_Wizard.Biography_Tab`): Sub-object to set and store biographical variables
-        task_tab (:class:`~.New_Mouse_Wizard.Task_Tab`): Sub-object to set and store protocol and step assignment
+        bio_tab (:class:`~.New_Subject_Wizard.Biography_Tab`): Sub-object to set and store biographical variables
+        task_tab (:class:`~.New_Subject_Wizard.Task_Tab`): Sub-object to set and store protocol and step assignment
     """
 
     def __init__(self):
@@ -593,7 +593,7 @@ class New_Mouse_Wizard(QtGui.QDialog):
         mainLayout.addWidget(buttonBox)
         self.setLayout(mainLayout)
 
-        self.setWindowTitle("Setup New Mouse")
+        self.setWindowTitle("Setup New Subject")
 
     class Biography_Tab(QtGui.QWidget):
         """
@@ -606,7 +606,7 @@ class New_Mouse_Wizard(QtGui.QDialog):
             available in the values dictionary. The attributes themselves are PySide Widgets that set the values.
 
         Attributes:
-            id (str): A Mouse's ID or name
+            id (str): A Subject's ID or name
             start_date (str): The date the mouse started the task. Automatically filled by
                 :py:meth:`datetime.date.today().isoformat()`
             blmass (float): The mouse's baseline mass
@@ -2305,9 +2305,9 @@ class Pilot_Ports(QtGui.QWidget):
 
 class Reassign(QtGui.QDialog):
     """
-    A dialog that lets mice be batch reassigned to new protocols or steps.
+    A dialog that lets subjects be batch reassigned to new protocols or steps.
     """
-    def __init__(self, mice, protocols):
+    def __init__(self, subjects, protocols):
         """
         Args:
             mice (dict): A dictionary that contains each mouse's protocol and step, ie.::
@@ -2440,8 +2440,8 @@ class Weights(QtGui.QTableWidget):
         """
         Args:
             mice_weights (list): a list of weights of the format returned by
-                :py:meth:`.Mouse.get_weight(baseline=True)`.
-            mice (dict): the Terminal's :py:attr:`.Terminal.mice` dictionary of :class:`.Mouse` objects.
+                :py:meth:`.Subject.get_weight(baseline=True)`.
+            mice (dict): the Terminal's :py:attr:`.Terminal.subjects` dictionary of :class:`.Subject` objects.
         """
         super(Weights, self).__init__()
 
@@ -2449,7 +2449,7 @@ class Weights(QtGui.QTableWidget):
         self.mice = mice # mouse objects from terminal
 
         self.colnames = odict()
-        self.colnames['mouse'] = "Mouse"
+        self.colnames['mouse'] = "Subject"
         self.colnames['date'] = "Date"
         self.colnames['baseline_mass'] = "Baseline"
         self.colnames['minimum_mass'] = "Minimum"
@@ -2504,7 +2504,7 @@ class Weights(QtGui.QTableWidget):
 
     def set_weight(self, row, column):
         """
-        Updates the most recent weights in :attr:`.gui.Weights.mice` objects.
+        Updates the most recent weights in :attr:`.gui.Weights.subjects` objects.
 
         Note:
             Only the daily weight measurements can be changed this way - not mouse name, baseline weight, etc.
@@ -2557,7 +2557,7 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #     Attributes:
 #         param_layout (:class:`QtGui.QFormLayout`): Holds param tags and values
 #         param_changes (dict): Stores any changes made to protocol parameters,
-#             used to update the protocol stored in the :class:`~.mouse.Mouse` object.
+#             used to update the protocol stored in the :class:`~.mouse.Subject` object.
 #     """
 #     # Superclass to embed wherever needed
 #     # Subclasses will implement use as standalong dialog and as step selector

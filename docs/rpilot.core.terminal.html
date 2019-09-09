@@ -319,7 +319,7 @@ Typically set by <a class="reference internal" href="/rpilot.setup.setup_termina
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
 <li><a class="reference internal" href="rpilot.core.pilot.html#rpilot.core.pilot.RPilot.node" title="rpilot.core.pilot.RPilot.node"><strong>node</strong></a> (<a class="reference internal" href="/rpilot.core.networking.html#rpilot.core.networking.Net_Node" title="rpilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net_Node</span></code></a>) – Our Net_Node we use to communicate with our main networking object</li>
 <li><a class="reference internal" href="rpilot.core.pilot.html#rpilot.core.pilot.RPilot.networking" title="rpilot.core.pilot.RPilot.networking"><strong>networking</strong></a> (<a class="reference internal" href="/rpilot.core.networking.html#rpilot.core.networking.Terminal_Networking" title="rpilot.core.networking.Terminal_Networking"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal_Networking</span></code></a>) – Our networking object to communicate with the outside world</li>
-<li><strong>mice</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary mapping mouse ID to <a class="reference internal" href="/rpilot.core.mouse.html#rpilot.core.mouse.Mouse" title="rpilot.core.mouse.Mouse"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mouse</span></code></a> object.</li>
+<li><strong>mice</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary mapping mouse ID to <a class="reference internal" href="/rpilot.core.mouse.html#rpilot.core.mouse.Subject" title="rpilot.core.mouse.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> object.</li>
 <li><strong>pilots</strong> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary mapping pilot ID to a list of its mice, its IP, and any other pilot attributes.</li>
 <li><strong>layout</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QtGui.QGridLayout</span></code>) – Layout used to organize widgets</li>
 <li><strong>control_panel</strong> (<a class="reference internal" href="/rpilot.core.gui.html#rpilot.core.gui.Control_Panel" title="rpilot.core.gui.Control_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Control_Panel</span></code></a>) – Control Panel to manage pilots and mice</li>
@@ -377,7 +377,7 @@ what calls this function.</p>
 <li><strong>starting</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Does this button press mean we are starting (True)
 or stopping (False) the task?</li>
 <li><strong>pilot</strong> – Which Pilot is starting or stopping?</li>
-<li><strong>mouse</strong> – Which Mouse is currently selected?</li>
+<li><strong>mouse</strong> – Which Subject is currently selected?</li>
 </ul>
 </td>
 </tr>
@@ -483,8 +483,8 @@ GUI elements.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="rpilot.core.terminal.Terminal.list_mice">
-<code class="descname">list_mice</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/core/terminal.html#Terminal.list_mice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.terminal.Terminal.list_mice" title="Permalink to this definition">¶</a></dt>
+<dt id="rpilot.core.terminal.Terminal.list_subjects">
+<code class="descname">list_subjects</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/core/terminal.html#Terminal.list_subjects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.terminal.Terminal.list_subjects" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of all mouse IDs</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />

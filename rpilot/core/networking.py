@@ -3,7 +3,7 @@ Classes for network communication.
 
 There are two general types of network objects -
 
-* :class:`.Networking` and its children are independent processes that should only be instantiated once
+* :class:`.Station` and its children are independent processes that should only be instantiated once
     per piece of hardware. They are used to distribute messages between :class:`.Net_Node` s,
     forward messages up the networking tree, and responding to messages that don't need any input from
     the :class:`~.pilot.Pilot` or :class:`~.terminal.Terminal`.
@@ -36,12 +36,12 @@ from rpilot import prefs
 
 # TODO: Periodically ping pis to check that they are still responsive
 
-class Networking(multiprocessing.Process):
+class Station(multiprocessing.Process):
     """
     Independent networking class used for messaging between computers.
 
     These objects send and handle :class:`.networking.Message` s by using a
-    dictionary of :attr:`~.networking.Networking.listens`, or methods
+    dictionary of :attr:`~.networking.Station.listens`, or methods
     that are called to respond to different types of messages.
 
     Each sent message is given an ID, and a thread is spawned to periodically
@@ -52,12 +52,12 @@ class Networking(multiprocessing.Process):
     which responds to message confirmations. Accordingly, `listens` should be added
     by using :meth:`dict.update` rather than reassigning the attribute.
 
-    Networking objects can be made with or without a :attr:`~.networking.Networking.pusher`,
+    Station objects can be made with or without a :attr:`~.networking.Station.pusher`,
     a :class:`zmq.DEALER` socket that connects to the :class:`zmq.ROUTER`
-    socket of an upstream Networking object.
+    socket of an upstream Station object.
 
     This class should not be instantiated on its own, but should instead
-    be subclassed in order to provide methods used by :meth:`~.Networking.handle_listen`.
+    be subclassed in order to provide methods used by :meth:`~.Station.handle_listen`.
 
     Attributes:
         ctx (:class:`zmq.Context`):  zeromq context
@@ -110,7 +110,7 @@ class Networking(multiprocessing.Process):
     repeat_interval = 5.0 # seconds to wait before retrying messages
 
     def __init__(self):
-        super(Networking, self).__init__()
+        super(Station, self).__init__()
         # Prefs should be passed by the terminal, if not, try to load from default locatio
 
         self.ip = self.get_ip()
@@ -146,7 +146,7 @@ class Networking(multiprocessing.Process):
         """
         A :class:`zmq.Context` and :class:`tornado.IOLoop` are spawned,
         the listener and optionally the pusher are instantiated and
-        connected to :meth:`~.Networking.handle_listen` using
+        connected to :meth:`~.Station.handle_listen` using
         :meth:`~zmq.eventloop.zmqstream.ZMQStream.on_recv` .
 
         The process is kept open by the :class:`tornado.IOLoop` .
@@ -156,9 +156,9 @@ class Networking(multiprocessing.Process):
         self.loop = IOLoop()
 
         # Our networking topology is treelike:
-        # each Networking object binds one Router to
+        # each Station object binds one Router to
         # send and receive messages from its descendants
-        # each Networking object may have one Dealer that
+        # each Station object may have one Dealer that
         # connects it with its antecedents.
         self.listener  = self.context.socket(zmq.ROUTER)
         self.listener.identity = self.id.encode('utf-8')
@@ -210,14 +210,14 @@ class Networking(multiprocessing.Process):
 
     def send(self, to=None, key=None, value=None, msg=None, repeat=True, flags=None):
         """
-        Send a message via our :attr:`~.Networking.listener` , ROUTER socket.
+        Send a message via our :attr:`~.Station.listener` , ROUTER socket.
 
         Either an already created :class:`.Message` should be passed as `msg`,
         or at least `to` and `key` must be provided for a new message created
-        by :meth:`~.Networking.prepare_message` .
+        by :meth:`~.Station.prepare_message` .
 
         A :class:`threading.Timer` is created to resend the message using
-        :meth:`~.Networking.repeat` unless `repeat` is False.
+        :meth:`~.Station.repeat` unless `repeat` is False.
 
         Args:
             to (str): The identity of the socket this message is to
@@ -280,23 +280,23 @@ class Networking(multiprocessing.Process):
 
     def push(self,  to=None, key = None, value = None, msg=None, repeat=True, flags=None):
         """
-        Send a message via our :attr:`~.Networking.pusher` , DEALER socket.
+        Send a message via our :attr:`~.Station.pusher` , DEALER socket.
 
-        Unlike :meth:`~.Networking.send` , `to` is not required. Every message
-        is always sent to :attr:`~.Networking.push_id` . `to` can be included
+        Unlike :meth:`~.Station.send` , `to` is not required. Every message
+        is always sent to :attr:`~.Station.push_id` . `to` can be included
         to send a message further up the network tree to a networking object
         we're not directly connected to.
 
         Either an already created :class:`.Message` should be passed as `msg`,
         or at least `key` must be provided for a new message created
-        by :meth:`~.Networking.prepare_message` .
+        by :meth:`~.Station.prepare_message` .
 
         A :class:`threading.Timer` is created to resend the message using
-        :meth:`~.Networking.repeat` unless `repeat` is False.
+        :meth:`~.Station.repeat` unless `repeat` is False.
 
         Args:
             to (str): The identity of the socket this message is to. If not included,
-                sent to :meth:`~.Networking.push_id` .
+                sent to :meth:`~.Station.push_id` .
             key (str): The type of message - used to select which method the receiver
                 uses to process this message.
             value: Any information this message should contain. Can be any type, but
@@ -579,7 +579,7 @@ class Networking(multiprocessing.Process):
         self.log_handler.setFormatter(self.log_formatter)
         self.logger.addHandler(self.log_handler)
         self.logger.setLevel(logging.INFO)
-        self.logger.info('Networking Logging Initiated')
+        self.logger.info('Station Logging Initiated')
 
     def get_ip(self):
         """
@@ -608,35 +608,35 @@ class Networking(multiprocessing.Process):
         else:
             self.do_logging.clear()
 
-class Terminal_Networking(Networking):
+class Terminal_Station(Station):
     """
-    :class:`~.networking.Networking` object used by :class:`~.Terminal`
+    :class:`~.networking.Station` object used by :class:`~.Terminal`
     objects.
 
-    Spawned without a :attr:`~.Networking.pusher`.
+    Spawned without a :attr:`~.Station.pusher`.
 
     **Listens**
 
     +-------------+-------------------------------------------+-----------------------------------------------+
     | Key         | Method                                    | Description                                   |
     +=============+===========================================+===============================================+
-    | 'PING'      | :meth:`~.Terminal_Networking.l_ping`      | We are asked to confirm that we are alive     |
+    | 'PING'      | :meth:`~.Terminal_Station.l_ping`      | We are asked to confirm that we are alive     |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'INIT'      | :meth:`~.Terminal_Networking.l_init`      | Ask all pilots to confirm that they are alive |
+    | 'INIT'      | :meth:`~.Terminal_Station.l_init`      | Ask all pilots to confirm that they are alive |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'CHANGE'    | :meth:`~.Terminal_Networking.l_change`    | Change a parameter on the Pi                  |
+    | 'CHANGE'    | :meth:`~.Terminal_Station.l_change`    | Change a parameter on the Pi                  |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'STOPALL'   | :meth:`~.Terminal_Networking.l_stopall`   | Stop all pilots and plots                     |
+    | 'STOPALL'   | :meth:`~.Terminal_Station.l_stopall`   | Stop all pilots and plots                     |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'KILL'      | :meth:`~.Terminal_Networking.l_kill`      | Terminal wants us to die :(                   |
+    | 'KILL'      | :meth:`~.Terminal_Station.l_kill`      | Terminal wants us to die :(                   |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'DATA'      | :meth:`~.Terminal_Networking.l_data`      | Stash incoming data from a Pilot              |
+    | 'DATA'      | :meth:`~.Terminal_Station.l_data`      | Stash incoming data from a Pilot              |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'STATE'     | :meth:`~.Terminal_Networking.l_state`     | A Pilot has changed state                     |
+    | 'STATE'     | :meth:`~.Terminal_Station.l_state`     | A Pilot has changed state                     |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'HANDSHAKE' | :meth:`~.Terminal_Networking.l_handshake` | A Pi is telling us it's alive and its IP      |
+    | 'HANDSHAKE' | :meth:`~.Terminal_Station.l_handshake` | A Pi is telling us it's alive and its IP      |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'FILE'      | :meth:`~.Terminal_Networking.l_file`      | The pi needs some file from us                |
+    | 'FILE'      | :meth:`~.Terminal_Station.l_file`      | The pi needs some file from us                |
     +-------------+-------------------------------------------+-----------------------------------------------+
 
     """
@@ -646,7 +646,7 @@ class Terminal_Networking(Networking):
         Args:
             pilots (dict): The :attr:`.Terminal.pilots` dictionary.
         """
-        super(Terminal_Networking, self).__init__()
+        super(Terminal_Station, self).__init__()
 
         # by default terminal doesn't have a pusher, everything connects to it
         self.pusher = False
@@ -735,7 +735,7 @@ class Terminal_Networking(Networking):
         """
         Terminal wants us to die :(
 
-        Stop the :attr:`.Networking.loop`
+        Stop the :attr:`.Station.loop`
 
         Args:
             msg (:class:`.Message`):
@@ -830,12 +830,12 @@ class Terminal_Networking(Networking):
 
         self.send(msg.sender, 'FILE', file_message)
 
-class Pilot_Networking(Networking):
+class Pilot_Station(Station):
     """
-    :class:`~.networking.Networking` object used by :class:`~.Pilot`
+    :class:`~.networking.Station` object used by :class:`~.Pilot`
     objects.
 
-    Spawned with a :attr:`~.Networking.pusher` connected back to the 
+    Spawned with a :attr:`~.Station.pusher` connected back to the
     :class:`~.Terminal` .
 
     **Listens**
@@ -843,13 +843,13 @@ class Pilot_Networking(Networking):
     +-------------+-------------------------------------+-----------------------------------------------+
     | Key         | Method                              | Description                                   |
     +=============+=====================================+===============================================+
-    | 'STATE'     | :meth:`~.Pilot_Networking.l_state`  | Pilot has changed state                       |
-    | 'COHERE'    | :meth:`~.Pilot_Networking.l_cohere` | Make sure our data and the Terminal's match.  |
-    | 'PING'      | :meth:`~.Pilot_Networking.l_ping`   | The Terminal wants to know if we're listening |
-    | 'START'     | :meth:`~.Pilot_Networking.l_start`  | We are being sent a task to start             |
-    | 'STOP'      | :meth:`~.Pilot_Networking.l_stop`   | We are being told to stop the current task    |
-    | 'PARAM'     | :meth:`~.Pilot_Networking.l_change` | The Terminal is changing some task parameter  |
-    | 'FILE'      | :meth:`~.Pilot_Networking.l_file`   | We are receiving a file                       |
+    | 'STATE'     | :meth:`~.Pilot_Station.l_state`  | Pilot has changed state                       |
+    | 'COHERE'    | :meth:`~.Pilot_Station.l_cohere` | Make sure our data and the Terminal's match.  |
+    | 'PING'      | :meth:`~.Pilot_Station.l_ping`   | The Terminal wants to know if we're listening |
+    | 'START'     | :meth:`~.Pilot_Station.l_start`  | We are being sent a task to start             |
+    | 'STOP'      | :meth:`~.Pilot_Station.l_stop`   | We are being told to stop the current task    |
+    | 'PARAM'     | :meth:`~.Pilot_Station.l_change` | The Terminal is changing some task parameter  |
+    | 'FILE'      | :meth:`~.Pilot_Station.l_file`   | We are receiving a file                       |
     +-------------+-------------------------------------+-----------------------------------------------+
 
     """
@@ -873,12 +873,12 @@ class Pilot_Networking(Networking):
 
         self.id = prefs.NAME.encode('utf-8')
         self.pi_id = "_{}".format(self.id)
-        self.mouse = None # Store current mouse ID
+        self.subject = None # Store current subject ID
         self.state = None # store current pi state
         self.child = False # Are we acting as a child right now?
         self.parent = False # Are we acting as a parent right now?
 
-        super(Pilot_Networking, self).__init__()
+        super(Pilot_Station, self).__init__()
 
         self.listens.update({
             'STATE': self.l_state,  # Confirm or notify terminal of state change
@@ -956,7 +956,7 @@ class Pilot_Networking(Networking):
             msg (:class:`.Message`): value will contain a dictionary containing a task
                 description.
         """
-        self.mouse = msg.value['mouse']
+        self.subject = msg.value['subject']
 
         # TODO: Refactor into a general preflight check.
         # First make sure we have any sound files that we need
@@ -1010,7 +1010,7 @@ class Pilot_Networking(Networking):
         if 'child' in msg.value.keys():
             self.child = True
             self.parent_id = msg.value['child']['parent']
-            self.mouse = msg.value['child']['mouse']
+            self.subject = msg.value['child']['subject']
 
         else:
             self.child = False
@@ -1073,7 +1073,7 @@ class Pilot_Networking(Networking):
     def l_continuous(self, msg):
         if self.child:
             msg.value['pilot'] = self.parent_id
-            msg.value['mouse'] = self.mouse
+            msg.value['subject'] = self.subject
             self.push(to='T', key='DATA', value=msg.value, repeat=False)
 
     def l_child(self, msg):
@@ -1104,13 +1104,13 @@ class Pilot_Networking(Networking):
 class Net_Node(object):
     """
     Drop in networking object to be given to any sub-object
-    behind some external-facing :class:`.Networking` object.
+    behind some external-facing :class:`.Station` object.
 
     These objects are intended to communicate locally, within a piece of hardware,
     though not necessarily within the same process.
 
     To minimize the complexity of the network topology, Net_Nodes
-    must communicate through a :class:`.Networking` ROUTER, rather than
+    must communicate through a :class:`.Station` ROUTER, rather than
     address each other directly.
 
     Attributes:
@@ -1118,7 +1118,7 @@ class Net_Node(object):
         loop (:class:`tornado.ioloop.IOLoop`): a tornado ioloop
         sock (:class:`zmq.Socket`): Our DEALER socket.
         id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
-        upstream (str): The identity of the ROUTER socket used by our upstream :class:`.Networking` object.
+        upstream (str): The identity of the ROUTER socket used by our upstream :class:`.Station` object.
         port (int): The port that our upstream ROUTER socket is bound to
         listens (dict): Dictionary of functions to call for different types of messages. keys match the :attr:`.Message.key`.
         outbox (dict): Messages that have been sent but have not been confirmed
@@ -1154,7 +1154,7 @@ class Net_Node(object):
         """
         Args:
             id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
-            upstream (str): The identity of the ROUTER socket used by our upstream :class:`.Networking` object.
+            upstream (str): The identity of the ROUTER socket used by our upstream :class:`.Station` object.
             port (int): The port that our upstream ROUTER socket is bound to
             listens (dict): Dictionary of functions to call for different types of messages.
                 keys match the :attr:`.Message.key`.
@@ -1240,7 +1240,7 @@ class Net_Node(object):
         in a new thread and send confirmation it was received.
 
         Note:
-            Unlike :meth:`.Networking.handle_listen` , only the :attr:`.Message.value`
+            Unlike :meth:`.Station.handle_listen` , only the :attr:`.Message.value`
             is given to listen methods. This was initially intended to simplify these
             methods, but this might change in the future to unify the messaging system.
 

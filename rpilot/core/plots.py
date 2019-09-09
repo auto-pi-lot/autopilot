@@ -229,7 +229,7 @@ class Plot(QtGui.QWidget):
         # Inits the basic widget settings
         self.init_plots()
 
-        ## Networking
+        ## Station
         # Start the listener, subscribes to terminal_networking that will broadcast data
         self.listens = {
             'START' : self.l_start, # Receiving a new task

@@ -29,7 +29,7 @@ class Stim_Manager(object):
 
     Currently implemented:
 
-    * correction trials - If a mouse continually answers to one side incorrectly, keep
+    * correction trials - If a subject continually answers to one side incorrectly, keep
         the correct answer on the other side until they answer in that direction
     * bias correction - above some bias threshold, skew the correct answers to the less-responded side
 
@@ -251,7 +251,7 @@ class Stim_Manager(object):
         with the outcome of the trial.
 
         Args:
-            response ('L', 'R'): How the mouse responded
+            response ('L', 'R'): How the subject responded
             correct (0, 1): Whether the response was correct.
         """
         self.response = response
@@ -510,7 +510,7 @@ class Bias_Correction(object):
         Store some new response and target values
 
         Args:
-            response ('R', 'L'): Which side the mouse responded to
+            response ('R', 'L'): Which side the subject responded to
             target ('R', 'L'): The correct side.
         """
         if isinstance(response, basestring):

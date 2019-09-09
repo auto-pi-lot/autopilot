@@ -1,35 +1,35 @@
-Mouse
+Subject
 =====
 
 .. currentmodule:: rpilot.core.mouse
 
-.. autoclass:: Mouse
+.. autoclass:: Subject
    :show-inheritance:
 
    .. rubric:: Methods Summary
 
    .. autosummary::
 
-      ~Mouse.assign_protocol
-      ~Mouse.close_hdf
-      ~Mouse.data_thread
-      ~Mouse.ensure_structure
-      ~Mouse.flush_current
-      ~Mouse.get_step_history
-      ~Mouse.get_timestamp
-      ~Mouse.get_trial_data
-      ~Mouse.get_weight
-      ~Mouse.graduate
-      ~Mouse.new_mouse_file
-      ~Mouse.open_hdf
-      ~Mouse.prepare_run
-      ~Mouse.save_data
-      ~Mouse.set_weight
-      ~Mouse.stash_current
-      ~Mouse.stop_run
-      ~Mouse.update_biography
-      ~Mouse.update_history
-      ~Mouse.update_weights
+      ~Subject.assign_protocol
+      ~Subject.close_hdf
+      ~Subject.data_thread
+      ~Subject.ensure_structure
+      ~Subject.flush_current
+      ~Subject.get_step_history
+      ~Subject.get_timestamp
+      ~Subject.get_trial_data
+      ~Subject.get_weight
+      ~Subject.graduate
+      ~Subject.new_mouse_file
+      ~Subject.open_hdf
+      ~Subject.prepare_run
+      ~Subject.save_data
+      ~Subject.set_weight
+      ~Subject.stash_current
+      ~Subject.stop_run
+      ~Subject.update_biography
+      ~Subject.update_history
+      ~Subject.update_weights
 
    .. rubric:: Methods Documentation
 

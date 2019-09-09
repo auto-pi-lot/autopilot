@@ -1,16 +1,16 @@
-New_Mouse_Wizard
+New_Subject_Wizard
 ================
 
 .. currentmodule:: rpilot.core.gui
 
-.. autoclass:: New_Mouse_Wizard
+.. autoclass:: New_Subject_Wizard
    :show-inheritance:
 
    .. rubric:: Attributes Summary
 
    .. autosummary::
 
-      ~New_Mouse_Wizard.staticMetaObject
+      ~New_Subject_Wizard.staticMetaObject
 
    .. rubric:: Attributes Documentation
 

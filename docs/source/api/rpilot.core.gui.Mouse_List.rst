@@ -1,23 +1,23 @@
-Mouse_List
+Subject_List
 ==========
 
 .. currentmodule:: rpilot.core.gui
 
-.. autoclass:: Mouse_List
+.. autoclass:: Subject_List
    :show-inheritance:
 
    .. rubric:: Attributes Summary
 
    .. autosummary::
 
-      ~Mouse_List.staticMetaObject
+      ~Subject_List.staticMetaObject
 
    .. rubric:: Methods Summary
 
    .. autosummary::
 
-      ~Mouse_List.dropEvent
-      ~Mouse_List.populate_list
+      ~Subject_List.dropEvent
+      ~Subject_List.populate_list
 
    .. rubric:: Attributes Documentation
 

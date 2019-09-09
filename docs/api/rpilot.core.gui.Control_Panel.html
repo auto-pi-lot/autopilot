@@ -236,7 +236,7 @@
 <p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">QtGui.QWidget</span></code> that contains the controls for all pilots.</p>
 <p>Specifically, for each pilot, it contains</p>
 <ul class="simple">
-<li>one <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Mouse_List" title="rpilot.core.gui.Mouse_List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mouse_List</span></code></a>: A list of the mice that run in each pilot.</li>
+<li>one <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Subject_List" title="rpilot.core.gui.Subject_List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject_List</span></code></a>: A list of the mice that run in each pilot.</li>
 <li>one <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Pilot_Panel" title="rpilot.core.gui.Pilot_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Panel</span></code></a>: A set of button controls for starting/stopping behavior</li>
 </ul>
 <p>This class should not be instantiated outside the context of a
@@ -247,12 +247,12 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first simple">
 <li><strong>mice</strong> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary with mouse ID’s as keys and
-<code class="xref py py-class docutils literal notranslate"><span class="pre">core.mouse.Mouse</span></code> objects as values. Shared with the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">core.mouse.Subject</span></code> objects as values. Shared with the
 Terminal object to manage access conflicts.</li>
 <li><strong>start_fn</strong> (<a class="reference internal" href="../rpilot.core.terminal.html#rpilot.core.terminal.Terminal.toggle_start" title="rpilot.core.terminal.Terminal.toggle_start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">toggle_start()</span></code></a>) – See <code class="xref py py-attr docutils literal notranslate"><span class="pre">Control_Panel.start_fn</span></code></li>
 <li><strong>pilots</strong> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary with pilot ID’s as keys and nested dictionaries
 containing mice, IP, etc. as values</li>
-<li><strong>mouse_lists</strong> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dict mapping mouse ID to <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Mouse_List" title="rpilot.core.gui.Mouse_List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mouse_List</span></code></a></li>
+<li><strong>mouse_lists</strong> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dict mapping mouse ID to <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Subject_List" title="rpilot.core.gui.Subject_List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject_List</span></code></a></li>
 <li><strong>layout</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QGridLayout</span></code>) – Layout grid for widget</li>
 <li><strong>panels</strong> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dict mapping pilot name to the relevant <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Pilot_Panel" title="rpilot.core.gui.Pilot_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Panel</span></code></a></li>
 </ul>
@@ -295,7 +295,7 @@ will try to load <code class="xref py py-attr docutils literal notranslate"><spa
 <td>Called on init, creates the UI components.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Control_Panel.update_db" title="rpilot.core.gui.Control_Panel.update_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_db</span></code></a>(**kwargs)</td>
-<td>Gathers any changes in <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Mouse_List" title="rpilot.core.gui.Mouse_List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mouse_List</span></code></a> s and dumps <code class="xref py py-attr docutils literal notranslate"><span class="pre">pilots</span></code> to <code class="xref py py-attr docutils literal notranslate"><span class="pre">prefs.PILOT_DB</span></code></td>
+<td>Gathers any changes in <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Subject_List" title="rpilot.core.gui.Subject_List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject_List</span></code></a> s and dumps <code class="xref py py-attr docutils literal notranslate"><span class="pre">pilots</span></code> to <code class="xref py py-attr docutils literal notranslate"><span class="pre">prefs.PILOT_DB</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -310,13 +310,13 @@ will try to load <code class="xref py py-attr docutils literal notranslate"><spa
 <dt id="rpilot.core.gui.Control_Panel.create_mouse">
 <code class="descname">create_mouse</code><span class="sig-paren">(</span><em>pilot</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/gui.html#Control_Panel.create_mouse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.gui.Control_Panel.create_mouse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Becomes <code class="xref py py-attr docutils literal notranslate"><span class="pre">Pilot_Panel.create_fn</span></code>.
-Opens a <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.New_Mouse_Wizard" title="rpilot.core.gui.New_Mouse_Wizard"><code class="xref py py-class docutils literal notranslate"><span class="pre">New_Mouse_Wizard</span></code></a> to create a new mouse file and assign protocol.
+Opens a <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.New_Subject_Wizard" title="rpilot.core.gui.New_Subject_Wizard"><code class="xref py py-class docutils literal notranslate"><span class="pre">New_Subject_Wizard</span></code></a> to create a new mouse file and assign protocol.
 Finally, adds the new mouse to the <code class="xref py py-attr docutils literal notranslate"><span class="pre">pilots</span></code> database and updates it.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pilot</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Pilot name passed from <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Pilot_Panel" title="rpilot.core.gui.Pilot_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Panel</span></code></a>, added to the created Mouse object.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pilot</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Pilot name passed from <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Pilot_Panel" title="rpilot.core.gui.Pilot_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Panel</span></code></a>, added to the created Subject object.</td>
 </tr>
 </tbody>
 </table>
@@ -327,14 +327,14 @@ Finally, adds the new mouse to the <code class="xref py py-attr docutils literal
 <code class="descname">init_ui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/gui.html#Control_Panel.init_ui"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.gui.Control_Panel.init_ui" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called on init, creates the UI components.</p>
 <p>Specifically, for each pilot in <code class="xref py py-attr docutils literal notranslate"><span class="pre">pilots</span></code>,
-make a <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Mouse_List" title="rpilot.core.gui.Mouse_List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mouse_List</span></code></a>: and <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Pilot_Panel" title="rpilot.core.gui.Pilot_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Panel</span></code></a>:,
+make a <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Subject_List" title="rpilot.core.gui.Subject_List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject_List</span></code></a>: and <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Pilot_Panel" title="rpilot.core.gui.Pilot_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Panel</span></code></a>:,
 set size policies and connect Qt signals.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="rpilot.core.gui.Control_Panel.update_db">
 <code class="descname">update_db</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/gui.html#Control_Panel.update_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.gui.Control_Panel.update_db" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gathers any changes in <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Mouse_List" title="rpilot.core.gui.Mouse_List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mouse_List</span></code></a> s and dumps <code class="xref py py-attr docutils literal notranslate"><span class="pre">pilots</span></code> to <code class="xref py py-attr docutils literal notranslate"><span class="pre">prefs.PILOT_DB</span></code></p>
+<dd><p>Gathers any changes in <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Subject_List" title="rpilot.core.gui.Subject_List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject_List</span></code></a> s and dumps <code class="xref py py-attr docutils literal notranslate"><span class="pre">pilots</span></code> to <code class="xref py py-attr docutils literal notranslate"><span class="pre">prefs.PILOT_DB</span></code></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

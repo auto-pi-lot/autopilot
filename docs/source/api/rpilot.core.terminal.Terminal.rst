@@ -24,7 +24,7 @@ Terminal
       ~Terminal.l_handshake
       ~Terminal.l_ping
       ~Terminal.l_state
-      ~Terminal.list_mice
+      ~Terminal.list_subjects
       ~Terminal.mouse_weights
       ~Terminal.new_pilot
       ~Terminal.new_protocol
@@ -47,7 +47,7 @@ Terminal
    .. automethod:: l_handshake
    .. automethod:: l_ping
    .. automethod:: l_state
-   .. automethod:: list_mice
+   .. automethod:: list_subjects
    .. automethod:: mouse_weights
    .. automethod:: new_pilot
    .. automethod:: new_protocol

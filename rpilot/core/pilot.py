@@ -54,7 +54,7 @@ if __name__ == '__main__':
         elif prefs.AUDIOSERVER == 'jack':
             from rpilot.stim.sound import jackclient
 
-from networking import Pilot_Networking, Net_Node, Message
+from networking import Pilot_Station, Net_Node, Message
 from rpilot import tasks
 import hardware
 
@@ -68,7 +68,7 @@ class RPilot:
     Coordinates the hardware and networking objects to run tasks.
 
     Typically used with a connection to a :class:`.Terminal` object to
-    coordinate multiple mice and tasks, but a high priority for future releases
+    coordinate multiple subjects and tasks, but a high priority for future releases
     is to do the (trivial amount of) work to make this class optionally
     standalone.
 
@@ -117,7 +117,7 @@ class RPilot:
         pulls (list): list of :class:`~.hardware.Pull` objects to keep pins pulled up or down
         server: Either a :func:`~.sound.pyoserver.pyo_server` or :class:`~.jackclient.JackClient` , sound server.
         node (:class:`.networking.Net_Node`): Our Net_Node we use to communicate with our main networking object
-        networking (:class:`.networking.Pilot_Networking`): Our networking object to communicate with the outside world
+        networking (:class:`.networking.Pilot_Station`): Our networking object to communicate with the outside world
         ip (str): Our IPv4 address
         listens (dict): Dictionary mapping message keys to methods used to process them.
         logger (:class:`logging.Logger`): Used to log messages and network events.
@@ -163,7 +163,7 @@ class RPilot:
         if hasattr(prefs, 'AUDIOSERVER'):
             self.init_audio()
 
-        # Init Networking
+        # Init Station
         # Listen dictionary - what do we do when we receive different messages?
         self.listens = {
             'START': self.l_start, # We are being passed a task and asked to start it
@@ -175,7 +175,7 @@ class RPilot:
         }
 
         # spawn_network gives us the independent message-handling process
-        self.networking = Pilot_Networking()
+        self.networking = Pilot_Station()
         self.networking.start()
         self.node = Net_Node(id = "_{}".format(self.name),
                              upstream = self.name,
@@ -224,7 +224,7 @@ class RPilot:
         self.logger.info('Pilot Logging Initiated')
 
     #################################################################
-    # Networking
+    # Station
     #################################################################
 
     def get_ip(self):
@@ -259,7 +259,7 @@ class RPilot:
     def update_state(self):
         """
         Send our current state to the Terminal,
-        our Networking object will cache this and will handle any
+        our Station object will cache this and will handle any
         future requests.
         """
         self.node.send(self.parentid, 'STATE', self.state, flags={'NOLOG':True})
@@ -290,8 +290,8 @@ class RPilot:
         self.stage_block.clear()
         self.task = task_class(stage_block=self.stage_block, **value)
 
-        # Make a group for this mouse if we don't already have one
-        self.mouse = value['mouse']
+        # Make a group for this subject if we don't already have one
+        self.subject = value['subject']
 
         # Run the task and tell the terminal we have
         self.running.set()
@@ -556,7 +556,7 @@ class RPilot:
         """
         Setup a table to store data locally.
 
-        Opens `prefs.DATADIR/local.h5`, creates a group for the current mouse,
+        Opens `prefs.DATADIR/local.h5`, creates a group for the current subject,
         a new table for the current day.
 
         Returns:
@@ -575,16 +575,16 @@ class RPilot:
 
 
         try:
-            h5f.create_group("/", self.mouse, "Local Data for {}".format(self.mouse))
+            h5f.create_group("/", self.subject, "Local Data for {}".format(self.subject))
         except tables.NodeError:
             # already made it
             pass
-        mouse_group = h5f.get_node('/', self.mouse)
+        subject_group = h5f.get_node('/', self.subject)
 
         # Make a table for today's data, appending a conflict-avoidance int if one already exists
         datestring = datetime.date.today().isoformat()
         conflict_avoid = 0
-        while datestring in mouse_group:
+        while datestring in subject_group:
             conflict_avoid += 1
             datestring = datetime.date.today().isoformat() + '-' + str(conflict_avoid)
 
@@ -595,8 +595,8 @@ class RPilot:
 
 
 
-            table = h5f.create_table(mouse_group, datestring, table_descriptor,
-                                               "Mouse {} on {}".format(self.mouse, datestring))
+            table = h5f.create_table(subject_group, datestring, table_descriptor,
+                                               "Subject {} on {}".format(self.subject, datestring))
 
             # The Row object is what we write data into as it comes in
             row = table.row
@@ -635,9 +635,9 @@ class RPilot:
 
             if data:
                 data['pilot'] = self.name
-                data['mouse'] = self.mouse
+                data['subject'] = self.subject
 
-                # Send data back to terminal (mouse is identified by the networking object)
+                # Send data back to terminal (subject is identified by the networking object)
                 self.node.send('T', 'DATA', data)
 
                 # Store a local copy

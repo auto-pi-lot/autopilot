@@ -127,27 +127,27 @@ class ReturnThread(Thread):
 
         return self._return
 
-def list_mice(pilot_db=None):
+def list_subjects(pilot_db=None):
     """
-    Given a dictionary of a pilot_db, return the mice that are in it.
+    Given a dictionary of a pilot_db, return the subjects that are in it.
 
     Args:
         pilot_db (dict): a pilot_db. if None tried to load pilot_db with :method:`.load_pilotdb`
 
     Returns:
-        mice (list): a list of currently active mice
+        subjects (list): a list of currently active subjects
 
     """
 
     if pilot_db is None:
         pilot_db = load_pilotdb()
 
-    mice = []
+    subjects = []
     for pilot, values in pilot_db.items():
-        if 'mice' in values.keys():
-            mice.extend(values['mice'])
+        if 'subjects' in values.keys():
+            subjects.extend(values['subjects'])
 
-    return mice
+    return subjects
 
 def load_pilotdb(file_name=None, reverse=False):
     """
@@ -168,10 +168,10 @@ def load_pilotdb(file_name=None, reverse=False):
 
     if reverse:
         # simplify pilot db
-        pilot_db = {k: v['mice'] for k, v in pilot_db.items()}
+        pilot_db = {k: v['subjects'] for k, v in pilot_db.items()}
         pilot_dict = {}
-        for pilot, mouselist in pilot_db.items():
-            for ms in mouselist:
+        for pilot, subjectlist in pilot_db.items():
+            for ms in subjectlist:
                 pilot_dict[ms] = pilot
         pilot_db = pilot_dict
 
