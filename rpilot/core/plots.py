@@ -22,6 +22,7 @@ pg.setConfigOptions(antialias=True)
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from rpilot import tasks, prefs
+from rpilot.core import styles
 from utils import InvokeEvent, Invoker
 from rpilot.core.networking import Net_Node
 
@@ -228,7 +229,7 @@ class Plot(QtGui.QWidget):
         # Inits the basic widget settings
         self.init_plots()
 
-        ## Networking
+        ## Station
         # Start the listener, subscribes to terminal_networking that will broadcast data
         self.listens = {
             'START' : self.l_start, # Receiving a new task
@@ -256,6 +257,7 @@ class Plot(QtGui.QWidget):
         #self.getPlotItem().hideAxis('bottom')
 
         self.layout = QtGui.QHBoxLayout()
+        self.layout.setContentsMargins(2,2,2,2)
         self.setLayout(self.layout)
 
         # A little infobox to keep track of running time, trials, etc.
@@ -270,12 +272,18 @@ class Plot(QtGui.QWidget):
             'Step'    : QtGui.QLabel()
         }
         for k, v in self.info.items():
+
             self.infobox.addRow(k, v)
 
-        self.layout.addLayout(self.infobox, 1)
+        #self.infobox.setS
+
+
+        self.layout.addLayout(self.infobox, 2)
 
         # The plot that we own :)
         self.plot = pg.PlotWidget()
+        self.plot.setContentsMargins(0,0,0,0)
+
         self.layout.addWidget(self.plot, 8)
 
         self.xrange = xrange(self.last_trial - self.x_width + 1, self.last_trial + 1)
@@ -283,6 +291,8 @@ class Plot(QtGui.QWidget):
 
         self.plot.getPlotItem().hideAxis('left')
         self.plot.setBackground(None)
+        self.plot.getPlotItem().getAxis('bottom').setPen({'color':'k'})
+        self.plot.getPlotItem().getAxis('bottom').setTickFont('FreeMono')
         self.plot.setXRange(self.xrange[0], self.xrange[1])
         self.plot.setYRange(0, 1)
 
@@ -579,6 +589,8 @@ class Shaded(pg.PlotDataItem):
         self.setFillLevel(0)
         self.series = pd.Series()
 
+        self.getBoundingParents()
+
 
         self.brush = pg.mkBrush((0,0,0,100))
         self.setBrush(self.brush)
@@ -599,7 +611,7 @@ class Shaded(pg.PlotDataItem):
         self.max_num = float(np.abs(np.max(data[:,1])))
 
         if self.max_num > 1.0:
-            data[:,1] = data[:,1]/self.max_num
+            data[:,1] = (data[:,1]/(self.max_num*2.0))+0.5
         #print(ys)
 
         self.curve.setData(data[...,0], data[...,1], fillLevel=0)

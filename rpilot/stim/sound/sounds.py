@@ -31,13 +31,17 @@ TODO:
 # TODO: Be a whole lot more robust about handling different numbers of channels
 
 import os
+import sys
 from time import sleep
 from scipy.io import wavfile
 from scipy.signal import resample
 import numpy as np
 import threading
 import logging
-from Queue import Empty
+if sys.version_info >= (3,0):
+    from queue import Empty
+else:
+    from Queue import Empty
 
 
 from rpilot import prefs

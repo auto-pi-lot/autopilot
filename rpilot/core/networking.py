@@ -3,7 +3,7 @@ Classes for network communication.
 
 There are two general types of network objects -
 
-* :class:`.Networking` and its children are independent processes that should only be instantiated once
+* :class:`.Station` and its children are independent processes that should only be instantiated once
     per piece of hardware. They are used to distribute messages between :class:`.Net_Node` s,
     forward messages up the networking tree, and responding to messages that don't need any input from
     the :class:`~.pilot.Pilot` or :class:`~.terminal.Terminal`.
@@ -18,24 +18,30 @@ import threading
 import zmq
 import sys
 import datetime
+import time
 import os
 import multiprocessing
 import base64
 import socket
+from copy import copy
 from tornado.ioloop import IOLoop
 from zmq.eventloop.zmqstream import ZMQStream
 from itertools import count
+if sys.version_info >= (3,0):
+    import queue
+else:
+    import Queue as queue
 
 from rpilot import prefs
 
 # TODO: Periodically ping pis to check that they are still responsive
 
-class Networking(multiprocessing.Process):
+class Station(multiprocessing.Process):
     """
     Independent networking class used for messaging between computers.
 
     These objects send and handle :class:`.networking.Message` s by using a
-    dictionary of :attr:`~.networking.Networking.listens`, or methods
+    dictionary of :attr:`~.networking.Station.listens`, or methods
     that are called to respond to different types of messages.
 
     Each sent message is given an ID, and a thread is spawned to periodically
@@ -46,12 +52,12 @@ class Networking(multiprocessing.Process):
     which responds to message confirmations. Accordingly, `listens` should be added
     by using :meth:`dict.update` rather than reassigning the attribute.
 
-    Networking objects can be made with or without a :attr:`~.networking.Networking.pusher`,
+    Station objects can be made with or without a :attr:`~.networking.Station.pusher`,
     a :class:`zmq.DEALER` socket that connects to the :class:`zmq.ROUTER`
-    socket of an upstream Networking object.
+    socket of an upstream Station object.
 
     This class should not be instantiated on its own, but should instead
-    be subclassed in order to provide methods used by :meth:`~.Networking.handle_listen`.
+    be subclassed in order to provide methods used by :meth:`~.Station.handle_listen`.
 
     Attributes:
         ctx (:class:`zmq.Context`):  zeromq context
@@ -88,19 +94,23 @@ class Networking(multiprocessing.Process):
     pusher       = None    # pusher socket - a dealer socket that connects to other routers
     listener     = None    # Listener socket - a router socket to send/recv messages
     logger       = None    # Logger....
+    do_logging   = multiprocessing.Event()
+    do_logging.set()
     log_handler  = None
     log_formatter = None
     id           = None    # What are we known as?
     ip           = None    # whatismy
     listens      = {}    # Dictionary of functions to call for different types of messages
     senders      = {} # who has sent us stuff (ie. directly connected) and their state if they keep one
-    outbox = {}  # Messages that are out with unconfirmed delivery
+    push_outbox = {}  # Messages that are out with unconfirmed delivery
+    send_outbox = {}  # Messages that are out with unconfirmed delivery
     timers = {}  # dict of timer threads that will check in on outbox messages
     child = False
     routes = {} # dict of 'to' addressee and the route that should be taken to reach them
+    repeat_interval = 5.0 # seconds to wait before retrying messages
 
     def __init__(self):
-        super(Networking, self).__init__()
+        super(Station, self).__init__()
         # Prefs should be passed by the terminal, if not, try to load from default locatio
 
         self.ip = self.get_ip()
@@ -118,11 +128,25 @@ class Networking(multiprocessing.Process):
             'CONFIRM': self.l_confirm
         }
 
+        # even tthat signals when we are closing
+        self.closing = threading.Event()
+        self.closing.clear()
+
+        # start thread that periodically resends messages
+        self.repeat_thread = threading.Thread(target=self.repeat)
+        self.repeat_thread.setDaemon(True)
+        self.repeat_thread.start()
+
+    def __del__(self):
+        self.closing.set()
+        # Stopping the loop should kill the process, as it's what's holding us in run()
+        self.loop.stop()
+
     def run(self):
         """
         A :class:`zmq.Context` and :class:`tornado.IOLoop` are spawned,
         the listener and optionally the pusher are instantiated and
-        connected to :meth:`~.Networking.handle_listen` using
+        connected to :meth:`~.Station.handle_listen` using
         :meth:`~zmq.eventloop.zmqstream.ZMQStream.on_recv` .
 
         The process is kept open by the :class:`tornado.IOLoop` .
@@ -132,9 +156,9 @@ class Networking(multiprocessing.Process):
         self.loop = IOLoop()
 
         # Our networking topology is treelike:
-        # each Networking object binds one Router to
+        # each Station object binds one Router to
         # send and receive messages from its descendants
-        # each Networking object may have one Dealer that
+        # each Station object may have one Dealer that
         # connects it with its antecedents.
         self.listener  = self.context.socket(zmq.ROUTER)
         self.listener.identity = self.id.encode('utf-8')
@@ -153,7 +177,7 @@ class Networking(multiprocessing.Process):
         self.logger.info('Starting IOLoop')
         self.loop.start()
 
-    def prepare_message(self, to, key, value, repeat=True):
+    def prepare_message(self, to, key, value, repeat=True, flags=None):
         """
         If a message originates with us, a :class:`.Message` class
         is instantiated, given an ID and the rest of its attributes.
@@ -177,19 +201,23 @@ class Networking(multiprocessing.Process):
         if not repeat:
             msg.flags['NOREPEAT'] = True
 
+        if flags:
+            for k, v in flags.items():
+                msg.flags[k] = v
+
         return msg
 
 
-    def send(self, to=None, key=None, value=None, msg=None, repeat=True):
+    def send(self, to=None, key=None, value=None, msg=None, repeat=True, flags=None):
         """
-        Send a message via our :attr:`~.Networking.listener` , ROUTER socket.
+        Send a message via our :attr:`~.Station.listener` , ROUTER socket.
 
         Either an already created :class:`.Message` should be passed as `msg`,
         or at least `to` and `key` must be provided for a new message created
-        by :meth:`~.Networking.prepare_message` .
+        by :meth:`~.Station.prepare_message` .
 
         A :class:`threading.Timer` is created to resend the message using
-        :meth:`~.Networking.repeat` unless `repeat` is False.
+        :meth:`~.Station.repeat` unless `repeat` is False.
 
         Args:
             to (str): The identity of the socket this message is to
@@ -208,9 +236,13 @@ class Networking(multiprocessing.Process):
 
         if not msg:
             # we're sending this ourselves, new message.
-            msg = self.prepare_message(to, key, value, repeat)
+            msg = self.prepare_message(to, key, value, repeat, flags)
 
         if 'NOREPEAT' in msg.flags.keys():
+            repeat = False
+
+        # if we didn't send it, we shouldn't double-confirm it.
+        if msg.sender not in [self.name, '_'+self.name]:
             repeat = False
 
         # Make sure our message has everything
@@ -230,34 +262,41 @@ class Networking(multiprocessing.Process):
         else:
             self.listener.send_multipart([bytes(msg.to), msg_enc])
 
-        if not msg.key == "CONFIRM":
+        # messages can have a flag that says not to log
+        log_this = True
+        if 'NOLOG' in msg.flags.keys():
+            log_this = False
+
+
+        if (msg.key != "CONFIRM") and self.do_logging.is_set() and log_this:
             self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
 
         if repeat and not msg.key == "CONFIRM":
             # add to outbox and spawn timer to resend
-            self.outbox[msg.id] = msg
-            self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,'send'))
-            self.timers[msg.id].start()
+            self.send_outbox[msg.id] = (time.time(), msg)
+            # self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,'send'))
+            # self.timers[msg.id].start()
+            #self.outbox.put((msg.id))
 
-    def push(self,  to=None, key = None, value = None, msg=None, repeat=True):
+    def push(self,  to=None, key = None, value = None, msg=None, repeat=True, flags=None):
         """
-        Send a message via our :attr:`~.Networking.pusher` , DEALER socket.
+        Send a message via our :attr:`~.Station.pusher` , DEALER socket.
 
-        Unlike :meth:`~.Networking.send` , `to` is not required. Every message
-        is always sent to :attr:`~.Networking.push_id` . `to` can be included
+        Unlike :meth:`~.Station.send` , `to` is not required. Every message
+        is always sent to :attr:`~.Station.push_id` . `to` can be included
         to send a message further up the network tree to a networking object
         we're not directly connected to.
 
         Either an already created :class:`.Message` should be passed as `msg`,
         or at least `key` must be provided for a new message created
-        by :meth:`~.Networking.prepare_message` .
+        by :meth:`~.Station.prepare_message` .
 
         A :class:`threading.Timer` is created to resend the message using
-        :meth:`~.Networking.repeat` unless `repeat` is False.
+        :meth:`~.Station.repeat` unless `repeat` is False.
 
         Args:
             to (str): The identity of the socket this message is to. If not included,
-                sent to :meth:`~.Networking.push_id` .
+                sent to :meth:`~.Station.push_id` .
             key (str): The type of message - used to select which method the receiver
                 uses to process this message.
             value: Any information this message should contain. Can be any type, but
@@ -277,10 +316,14 @@ class Networking(multiprocessing.Process):
         if not msg:
             if to is None:
                 to = self.push_id
-            msg = self.prepare_message(to, key, value, repeat)
+            msg = self.prepare_message(to, key, value, repeat, flags)
 
         if 'NOREPEAT' in msg.flags.keys():
             repeat = False
+
+        log_this = True
+        if 'NOLOG' in msg.flags.keys():
+            log_this = False
 
         # Make sure our message has everything
         if not msg.validate():
@@ -297,76 +340,90 @@ class Networking(multiprocessing.Process):
         # upstream because presumably our target is upstream.
         self.pusher.send_multipart([bytes(self.push_id), msg_enc])
 
-        if not msg.key == "CONFIRM":
+        if not (msg.key == "CONFIRM") and self.do_logging.is_set() and log_this:
             self.logger.info('MESSAGE PUSHED - {}'.format(str(msg)))
 
         if repeat and not msg.key == 'CONFIRM':
             # add to outbox and spawn timer to resend
-            self.outbox[msg.id] = msg
-            self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id, 'push'))
-            self.timers[msg.id].start()
+            self.push_outbox[msg.id] = (time.time(), msg)
+            #self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id, 'push'))
+            #self.timers[msg.id].start()
 
-    def repeat(self, msg_id, send_type):
+    def repeat(self):
         """
-        Called by a :class:`threading.Timer` to resend a message that hasn't
-        been confirmed by its recipient.
+        Periodically (according to :attr:`~.repeat_interval`) resend messages that haven't been confirmed
 
         TTL is decremented, and messages are resent until their TTL is 0.
 
-        Args:
-            msg_id (str): The ID of our message, the key used to store it
-                in :attr:`~.Networking.outbox` .
-            send_type ('send', 'push'): Should this message be resent with
-                our `listener` (send) or pusher?
         """
-        # Handle repeated messages
-        # If we still have the message in our outbox...
-        if msg_id not in self.outbox.keys():
-            # TODO: Do we really need this warning? this should be normal behavior...
-            self.logger.warning('Republish called for message {}, but missing message'.format(msg_id))
-            return
+        while not self.closing.is_set():
+            # make local copies
+            push_outbox = copy(self.push_outbox)
+            send_outbox = copy(self.send_outbox)
 
-        # decrement ttl
-        self.outbox[msg_id].ttl -= 1
+            # try to send any outstanding messages and delete if too old
+            if len(push_outbox)>0:
+                for id in push_outbox.keys():
+                    if push_outbox[id][1].ttl <= 0:
+                        self.logger.warning('PUBLISH FAILED {} - {}'.format(id, str(push_outbox[id][1])))
+                        try:
+                            del self.push_outbox[id]
+                        except KeyError:
+                            # fine, already deleted
+                            pass
+                    else:
+                        # if we didn't just put this message in our outbox
+                        if (time.time() - push_outbox[id][0]) > self.repeat_interval:
+                            if self.do_logging.is_set():
+                                self.logger.info('REPUBLISH {} - {}'.format(id, str(push_outbox[id][1])))
+                            self.pusher.send_multipart([bytes(self.push_id), push_outbox[id][1].serialize()])
+                            self.push_outbox[id][1].ttl -= 1
 
-        # If our TTL is now zero, delete the message and log its failure
-        if int(self.outbox[msg_id].ttl) <= 0:
-            self.logger.warning('PUBLISH FAILED {} - {}'.format(msg_id, str(self.outbox[msg_id])))
-            del self.outbox[msg_id]
-            return
 
-        # Send the message again
-        msg = self.outbox[msg_id]
-        self.logger.info('REPUBLISH {} - {}'.format(msg_id,str(self.outbox[msg_id])))
-        if send_type == 'send':
-            self.listener.send_multipart([bytes(msg.to), msg.serialize()])
-        elif send_type == 'push':
-            self.pusher.send_multipart([bytes(self.push_id), msg.serialize()])
-        else:
-            self.logger.exception('Republish called without proper send_type!')
+            
+            if len(send_outbox)>0:
+                for id in send_outbox.keys():
+                    if send_outbox[id][1].ttl <= 0:
+                        self.logger.warning('PUBLISH FAILED {} - {}'.format(id, str(send_outbox[id][1])))
+                        try:
+                            del self.send_outbox[id]
+                        except KeyError:
+                            # fine, already deleted
+                            pass
 
-        # Spawn a thread to check in on our message
-        self.timers[msg_id] = threading.Timer(5.0, self.repeat, args=(msg_id, send_type))
-        self.timers[msg_id].start()
+                    else:
+                        # if we didn't just put this message in our outbox
+                        if (time.time() - send_outbox[id][0]) > self.repeat_interval:
+                            if self.do_logging.is_set():
+                                self.logger.info('REPUBLISH {} - {}'.format(id, str(send_outbox[id][1])))
+                            self.listener.send_multipart([bytes(send_outbox[id][1].to), send_outbox[id][1].serialize()])
+                            self.send_outbox[id][1].ttl -= 1
+                    
+            # wait to do it again
+            time.sleep(self.repeat_interval)
+
+
 
     def l_confirm(self, msg):
         """
         Confirm that a message was received.
 
         Args:
-            msg (:class:`.Message`): The message we are confirming.
+            msg (:class:`.Message`): A confirmation message - note that this message has its own unique ID, so the value of this message contains the ID of the message that is being confirmed
         """
         # confirmation that a published message was received
         # value should be the message id
 
         # delete message from outbox if we still have it
-        if msg.value in self.outbox.keys():
-            del self.outbox[msg.value]
+        try:
+            if msg.value in self.send_outbox.keys():
+                del self.send_outbox[msg.id]
+            elif msg.value in self.push_outbox.keys():
+                del self.push_outbox[msg.id]
+        except KeyError:
+            # fine, already deleted
+            pass
 
-        # stop a timer thread if we have it
-        if msg.value in self.timers.keys():
-            self.timers[msg.value].cancel()
-            del self.timers[msg.value]
 
         #self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
 
@@ -401,9 +458,10 @@ class Networking(multiprocessing.Process):
             if len(msg)>3:
                 self.routes[sender] = msg[0:-2]
 
-            # if this is a new sender, add them to the list
+            # # if this is a new sender, add them to the list
             if sender not in self.senders.keys():
                 self.senders[sender] = ""
+                self.senders['_' + sender] = ''
 
             # connection pings are blank frames,
             # respond to let them know we're alive
@@ -413,6 +471,12 @@ class Networking(multiprocessing.Process):
 
             msg = json.loads(msg[-1])
             msg = Message(**msg)
+
+            # if this is a new sender, add them to the list
+            if msg['sender'] not in self.senders.keys():
+                self.senders[msg['sender']] = ""
+                self.senders['_' + msg['sender']] = ''
+
         else:
             self.logger.error('Dont know what this message is:{}'.format(msg))
             return
@@ -428,6 +492,11 @@ class Networking(multiprocessing.Process):
         ###################################
         # Handle the message
         # if this message has a multihop 'to' field, forward it along
+
+        # some messages have a flag not to log them
+        log_this = True
+        if 'NOLOG' in msg.flags.keys():
+            log_this = False
         
         if isinstance(msg.to, list):
             if len(msg.to) == 1:
@@ -444,7 +513,7 @@ class Networking(multiprocessing.Process):
                 self.send(msg=msg)
         # if this message is to us, just handle it and return
         elif msg.to in [self.id, "_{}".format(self.id)]:
-            if msg.key != "CONFIRM":
+            if (msg.key != "CONFIRM") and self.do_logging.is_set() and log_this:
                 self.logger.info('RECEIVED: {}'.format(str(msg)))
             # Log and spawn thread to respond to listen
             try:
@@ -475,7 +544,8 @@ class Networking(multiprocessing.Process):
         elif self.pusher:
             self.push(msg=msg)
         else:
-            self.logger.warning('Message to unconfirmed recipient, attempting to send: {}'.format(str(msg)))
+            if self.do_logging.is_set():
+                self.logger.warning('Message to unconfirmed recipient, attempting to send: {}'.format(str(msg)))
             self.send(msg=msg)
 
         # finally, if there's something we're supposed to do, do it
@@ -509,7 +579,7 @@ class Networking(multiprocessing.Process):
         self.log_handler.setFormatter(self.log_formatter)
         self.logger.addHandler(self.log_handler)
         self.logger.setLevel(logging.INFO)
-        self.logger.info('Networking Logging Initiated')
+        self.logger.info('Station Logging Initiated')
 
     def get_ip(self):
         """
@@ -532,35 +602,41 @@ class Networking(multiprocessing.Process):
 
         return unwrap2
 
-class Terminal_Networking(Networking):
+    def set_logging(self, do_logging):
+        if do_logging:
+            self.do_logging.set()
+        else:
+            self.do_logging.clear()
+
+class Terminal_Station(Station):
     """
-    :class:`~.networking.Networking` object used by :class:`~.Terminal`
+    :class:`~.networking.Station` object used by :class:`~.Terminal`
     objects.
 
-    Spawned without a :attr:`~.Networking.pusher`.
+    Spawned without a :attr:`~.Station.pusher`.
 
     **Listens**
 
     +-------------+-------------------------------------------+-----------------------------------------------+
     | Key         | Method                                    | Description                                   |
     +=============+===========================================+===============================================+
-    | 'PING'      | :meth:`~.Terminal_Networking.l_ping`      | We are asked to confirm that we are alive     |
+    | 'PING'      | :meth:`~.Terminal_Station.l_ping`      | We are asked to confirm that we are alive     |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'INIT'      | :meth:`~.Terminal_Networking.l_init`      | Ask all pilots to confirm that they are alive |
+    | 'INIT'      | :meth:`~.Terminal_Station.l_init`      | Ask all pilots to confirm that they are alive |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'CHANGE'    | :meth:`~.Terminal_Networking.l_change`    | Change a parameter on the Pi                  |
+    | 'CHANGE'    | :meth:`~.Terminal_Station.l_change`    | Change a parameter on the Pi                  |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'STOPALL'   | :meth:`~.Terminal_Networking.l_stopall`   | Stop all pilots and plots                     |
+    | 'STOPALL'   | :meth:`~.Terminal_Station.l_stopall`   | Stop all pilots and plots                     |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'KILL'      | :meth:`~.Terminal_Networking.l_kill`      | Terminal wants us to die :(                   |
+    | 'KILL'      | :meth:`~.Terminal_Station.l_kill`      | Terminal wants us to die :(                   |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'DATA'      | :meth:`~.Terminal_Networking.l_data`      | Stash incoming data from a Pilot              |
+    | 'DATA'      | :meth:`~.Terminal_Station.l_data`      | Stash incoming data from a Pilot              |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'STATE'     | :meth:`~.Terminal_Networking.l_state`     | A Pilot has changed state                     |
+    | 'STATE'     | :meth:`~.Terminal_Station.l_state`     | A Pilot has changed state                     |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'HANDSHAKE' | :meth:`~.Terminal_Networking.l_handshake` | A Pi is telling us it's alive and its IP      |
+    | 'HANDSHAKE' | :meth:`~.Terminal_Station.l_handshake` | A Pi is telling us it's alive and its IP      |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'FILE'      | :meth:`~.Terminal_Networking.l_file`      | The pi needs some file from us                |
+    | 'FILE'      | :meth:`~.Terminal_Station.l_file`      | The pi needs some file from us                |
     +-------------+-------------------------------------------+-----------------------------------------------+
 
     """
@@ -570,7 +646,7 @@ class Terminal_Networking(Networking):
         Args:
             pilots (dict): The :attr:`.Terminal.pilots` dictionary.
         """
-        super(Terminal_Networking, self).__init__()
+        super(Terminal_Station, self).__init__()
 
         # by default terminal doesn't have a pusher, everything connects to it
         self.pusher = False
@@ -611,7 +687,7 @@ class Terminal_Networking(Networking):
         """
         # we are being asked if we're alive
         # respond with blank message since the terminal isn't really stateful
-        self.send(msg.sender, 'STATE')
+        self.send(msg.sender, 'STATE', flags={'NOLOG':True})
 
     def l_init(self, msg):
         """
@@ -626,7 +702,7 @@ class Terminal_Networking(Networking):
         # Responses will be handled with l_state so not much needed here
 
         for p in self.pilots.keys():
-            self.send(p, 'PING')
+            self.send(p, 'PING', flags={'NOLOG':True})
 
 
     def l_change(self, msg):
@@ -659,12 +735,14 @@ class Terminal_Networking(Networking):
         """
         Terminal wants us to die :(
 
-        Stop the :attr:`.Networking.loop`
+        Stop the :attr:`.Station.loop`
 
         Args:
             msg (:class:`.Message`):
         """
         self.logger.info('Received kill request')
+
+        self.closing.set()
 
         # Stopping the loop should kill the process, as it's what's holding us in run()
         self.loop.stop()
@@ -697,10 +775,10 @@ class Terminal_Networking(Networking):
             msg (:class:`.Message`):
         """
         if msg.sender in self.pilots.keys():
-            if 'state' in self.pilots[msg.sender].keys():
-                if msg.value == self.pilots[msg.sender]['state']:
-                    # if we've already gotten this one, don't send to terminal
-                    return
+            #if 'state' in self.pilots[msg.sender].keys():
+                # if msg.value == self.pilots[msg.sender]['state']:
+                #     # if we've already gotten this one, don't send to terminal
+                #     return
             self.pilots[msg.sender]['state'] = msg.value
 
             # Tell the terminal so it can update the pilot_db file
@@ -752,12 +830,12 @@ class Terminal_Networking(Networking):
 
         self.send(msg.sender, 'FILE', file_message)
 
-class Pilot_Networking(Networking):
+class Pilot_Station(Station):
     """
-    :class:`~.networking.Networking` object used by :class:`~.Pilot`
+    :class:`~.networking.Station` object used by :class:`~.Pilot`
     objects.
 
-    Spawned with a :attr:`~.Networking.pusher` connected back to the 
+    Spawned with a :attr:`~.Station.pusher` connected back to the
     :class:`~.Terminal` .
 
     **Listens**
@@ -765,13 +843,13 @@ class Pilot_Networking(Networking):
     +-------------+-------------------------------------+-----------------------------------------------+
     | Key         | Method                              | Description                                   |
     +=============+=====================================+===============================================+
-    | 'STATE'     | :meth:`~.Pilot_Networking.l_state`  | Pilot has changed state                       |
-    | 'COHERE'    | :meth:`~.Pilot_Networking.l_cohere` | Make sure our data and the Terminal's match.  |
-    | 'PING'      | :meth:`~.Pilot_Networking.l_ping`   | The Terminal wants to know if we're listening |
-    | 'START'     | :meth:`~.Pilot_Networking.l_start`  | We are being sent a task to start             |
-    | 'STOP'      | :meth:`~.Pilot_Networking.l_stop`   | We are being told to stop the current task    |
-    | 'PARAM'     | :meth:`~.Pilot_Networking.l_change` | The Terminal is changing some task parameter  |
-    | 'FILE'      | :meth:`~.Pilot_Networking.l_file`   | We are receiving a file                       |
+    | 'STATE'     | :meth:`~.Pilot_Station.l_state`  | Pilot has changed state                       |
+    | 'COHERE'    | :meth:`~.Pilot_Station.l_cohere` | Make sure our data and the Terminal's match.  |
+    | 'PING'      | :meth:`~.Pilot_Station.l_ping`   | The Terminal wants to know if we're listening |
+    | 'START'     | :meth:`~.Pilot_Station.l_start`  | We are being sent a task to start             |
+    | 'STOP'      | :meth:`~.Pilot_Station.l_stop`   | We are being told to stop the current task    |
+    | 'PARAM'     | :meth:`~.Pilot_Station.l_change` | The Terminal is changing some task parameter  |
+    | 'FILE'      | :meth:`~.Pilot_Station.l_file`   | We are receiving a file                       |
     +-------------+-------------------------------------+-----------------------------------------------+
 
     """
@@ -795,12 +873,12 @@ class Pilot_Networking(Networking):
 
         self.id = prefs.NAME.encode('utf-8')
         self.pi_id = "_{}".format(self.id)
-        self.mouse = None # Store current mouse ID
+        self.subject = None # Store current subject ID
         self.state = None # store current pi state
         self.child = False # Are we acting as a child right now?
         self.parent = False # Are we acting as a parent right now?
 
-        super(Pilot_Networking, self).__init__()
+        super(Pilot_Station, self).__init__()
 
         self.listens.update({
             'STATE': self.l_state,  # Confirm or notify terminal of state change
@@ -814,7 +892,8 @@ class Pilot_Networking(Networking):
             'CHILD': self.l_child,
             'HANDSHAKE': self.l_noop,
             'CALIBRATE_PORT': self.l_forward,
-            'CALIBRATE_RESULT': self.l_forward
+            'CALIBRATE_RESULT': self.l_forward,
+            'BANDWIDTH': self.l_forward
         })
 
     ###########################3
@@ -863,7 +942,7 @@ class Pilot_Networking(Networking):
         """
         # The terminal wants to know if we are alive, respond with our name and IP
         # don't bother the pi
-        self.push(key='STATE', value=self.state)
+        self.push(key='STATE', value=self.state, flags={'NOLOG':True})
 
     def l_start(self, msg):
         """
@@ -877,7 +956,7 @@ class Pilot_Networking(Networking):
             msg (:class:`.Message`): value will contain a dictionary containing a task
                 description.
         """
-        self.mouse = msg.value['mouse']
+        self.subject = msg.value['subject']
 
         # TODO: Refactor into a general preflight check.
         # First make sure we have any sound files that we need
@@ -895,6 +974,8 @@ class Pilot_Networking(Networking):
                     for group in msg.value['stim']['groups']:
                         f_sounds.extend([sound for sounds in group['sounds'].values() for sound in sounds
                                         if sound['type'] in ['File', 'Speech']])
+            else:
+                f_sounds = []
 
             if len(f_sounds)>0:
                 # check to see if we have these files, if not
@@ -929,7 +1010,7 @@ class Pilot_Networking(Networking):
         if 'child' in msg.value.keys():
             self.child = True
             self.parent_id = msg.value['child']['parent']
-            self.mouse = msg.value['child']['mouse']
+            self.subject = msg.value['child']['subject']
 
         else:
             self.child = False
@@ -992,7 +1073,7 @@ class Pilot_Networking(Networking):
     def l_continuous(self, msg):
         if self.child:
             msg.value['pilot'] = self.parent_id
-            msg.value['mouse'] = self.mouse
+            msg.value['subject'] = self.subject
             self.push(to='T', key='DATA', value=msg.value, repeat=False)
 
     def l_child(self, msg):
@@ -1023,13 +1104,13 @@ class Pilot_Networking(Networking):
 class Net_Node(object):
     """
     Drop in networking object to be given to any sub-object
-    behind some external-facing :class:`.Networking` object.
+    behind some external-facing :class:`.Station` object.
 
     These objects are intended to communicate locally, within a piece of hardware,
     though not necessarily within the same process.
 
     To minimize the complexity of the network topology, Net_Nodes
-    must communicate through a :class:`.Networking` ROUTER, rather than
+    must communicate through a :class:`.Station` ROUTER, rather than
     address each other directly.
 
     Attributes:
@@ -1037,7 +1118,7 @@ class Net_Node(object):
         loop (:class:`tornado.ioloop.IOLoop`): a tornado ioloop
         sock (:class:`zmq.Socket`): Our DEALER socket.
         id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
-        upstream (str): The identity of the ROUTER socket used by our upstream :class:`.Networking` object.
+        upstream (str): The identity of the ROUTER socket used by our upstream :class:`.Station` object.
         port (int): The port that our upstream ROUTER socket is bound to
         listens (dict): Dictionary of functions to call for different types of messages. keys match the :attr:`.Message.key`.
         outbox (dict): Messages that have been sent but have not been confirmed
@@ -1061,16 +1142,19 @@ class Net_Node(object):
     timers = {}
     #connected = False
     logger = None
+    do_logging = threading.Event()
+    do_logging.set()
     log_handler = None
     log_formatter = None
     sock = None
     loop_thread = None
+    repeat_interval = 5 # how many seconds to wait before trying to repeat a message
 
-    def __init__(self, id, upstream, port, listens, instance=True):
+    def __init__(self, id, upstream, port, listens, instance=True, do_logging=True):
         """
         Args:
             id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
-            upstream (str): The identity of the ROUTER socket used by our upstream :class:`.Networking` object.
+            upstream (str): The identity of the ROUTER socket used by our upstream :class:`.Station` object.
             port (int): The port that our upstream ROUTER socket is bound to
             listens (dict): Dictionary of functions to call for different types of messages.
                 keys match the :attr:`.Message.key`.
@@ -1082,6 +1166,9 @@ class Net_Node(object):
         else:
             self.context = zmq.Context()
             self.loop    = IOLoop()
+
+        self.closing = threading.Event()
+        self.closing.clear()
 
         # we have a few builtin listens
         self.listens = {
@@ -1098,9 +1185,14 @@ class Net_Node(object):
         self.msg_counter = count()
 
         # try to get a logger
+        if not do_logging:
+            self.do_logging.clear()
         self.init_logging()
 
         self.init_networking()
+
+    def __del__(self):
+        self.closing.set()
 
     def init_networking(self):
         """
@@ -1121,6 +1213,10 @@ class Net_Node(object):
         self.loop_thread = threading.Thread(target=self.threaded_loop)
         self.loop_thread.daemon = True
         self.loop_thread.start()
+
+        self.repeat_thread = threading.Thread(target=self.repeat)
+        self.repeat_thread.daemon = True
+        self.repeat_thread.start()
 
         #self.connected = True
 
@@ -1144,7 +1240,7 @@ class Net_Node(object):
         in a new thread and send confirmation it was received.
 
         Note:
-            Unlike :meth:`.Networking.handle_listen` , only the :attr:`.Message.value`
+            Unlike :meth:`.Station.handle_listen` , only the :attr:`.Message.value`
             is given to listen methods. This was initially intended to simplify these
             methods, but this might change in the future to unify the messaging system.
 
@@ -1164,7 +1260,11 @@ class Net_Node(object):
                 self.logger.error('Message failed to validate:\n{}'.format(str(msg)))
             return
 
-        if self.logger:
+        log_this = True
+        if 'NOLOG' in msg.flags.keys():
+            log_this = False
+
+        if self.logger and self.do_logging.is_set() and log_this:
             self.logger.info('{} - RECEIVED: {}'.format(self.id, str(msg)))
 
         # if msg.key == 'CONFIRM':
@@ -1200,7 +1300,7 @@ class Net_Node(object):
             # send confirmation
             self.send(msg.sender, 'CONFIRM', msg.id)
 
-    def send(self, to=None, key=None, value=None, msg=None, repeat=True):
+    def send(self, to=None, key=None, value=None, msg=None, repeat=True, flags = None):
         """
         Send a message via our :attr:`~.Net_Node.sock` , DEALER socket.
 
@@ -1239,13 +1339,17 @@ class Net_Node(object):
             return
 
         if not msg:
-            msg = self.prepare_message(to, key, value, repeat)
+            msg = self.prepare_message(to, key, value, repeat, flags)
+
+        log_this = True
+        if 'NOLOG' in msg.flags.keys():
+            log_this = False
 
         # Make sure our message has everything
-        if not msg.validate():
-            if self.logger:
-                self.logger.error('Message Invalid:\n{}'.format(str(msg)))
-            return
+        # if not msg.validate():
+        #     if self.logger:
+        #         self.logger.error('Message Invalid:\n{}'.format(str(msg)))
+        #     return
 
         # encode message
         msg_enc = msg.serialize()
@@ -1256,51 +1360,47 @@ class Net_Node(object):
 
    
         self.sock.send_multipart([bytes(self.upstream), msg_enc])
-        if self.logger:
+        if self.logger and self.do_logging.is_set() and log_this:
             self.logger.info("MESSAGE SENT - {}".format(str(msg)))
 
         if repeat and not msg.key == "CONFIRM":
             # add to outbox and spawn timer to resend
-            self.outbox[msg.id] = msg
-            self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,))
-            self.timers[msg.id].start()
+            self.outbox[msg.id] = (time.time(), msg)
+            # self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,))
+            # self.timers[msg.id].start()
 
-    def repeat(self, msg_id):
+    def repeat(self):
         """
-        Called by a :class:`threading.Timer` to resend a message that hasn't
-        been confirmed by its recipient.
+        Periodically (according to :attr:`~.repeat_interval`) resend messages that haven't been confirmed
 
         TTL is decremented, and messages are resent until their TTL is 0.
 
-        Args:
-            msg_id (str): The ID of our message, the key used to store it
-                in :attr:`~.Net_Node.outbox` .
         """
-        # Handle repeated messages
-        # If we still have the message in our outbox...
-        if msg_id not in self.outbox.keys():
-            # TODO: Do we really need this warning? this should be normal behavior...
-            self.logger.warning('Republish called for message {}, but missing message'.format(msg_id))
-            return
+        while not self.closing.is_set():
+            # try to send any outstanding messages and delete if too old
+            # make a local copy of dict
+            outbox = copy(self.outbox)
 
-        # decrement ttl
-        self.outbox[msg_id].ttl -= 1
-        # If our TTL is now zero, delete the message and log its failure
-        if int(self.outbox[msg_id].ttl) <= 0:
-            self.logger.warning('PUBLISH FAILED {} - {}'.format(msg_id, str(self.outbox[msg_id])))
-            del self.outbox[msg_id]
-            return
+            if len(outbox) > 0:
+                for id in outbox.keys():
+                    if outbox[id][1].ttl <= 0:
+                        self.logger.warning('PUBLISH FAILED {} - {}'.format(id, str(outbox[id][1])))
+                        try:
+                            del self.outbox[id]
+                        except KeyError:
+                            # fine, already deleted
+                            pass
+                    else:
+                        # if we didn't just put this message in the outbox...
+                        if (time.time() - outbox[id][0]) > self.repeat_interval:
+                            if self.do_logging.is_set():
+                                self.logger.info('REPUBLISH {} - {}'.format(id, str(outbox[id][1])))
+                            self.sock.send_multipart([bytes(self.upstream), outbox[id][1].serialize()])
+                            self.outbox[id][1].ttl -= 1
 
 
-        # Send the message again
-        self.logger.info('REPUBLISH {} - {}'.format(msg_id,str(self.outbox[msg_id])))
-        msg = self.outbox[msg_id]
-        self.sock.send_multipart([bytes(self.upstream), msg.serialize()])
-
-        # Spawn a thread to check in on our message
-        self.timers[msg_id] = threading.Timer(5.0, self.repeat, args=(msg_id,))
-        self.timers[msg_id].daemon = True
-        self.timers[msg_id].start()
+            # wait to do it again
+            time.sleep(self.repeat_interval)
 
     def l_confirm(self, value):
         """
@@ -1311,17 +1411,22 @@ class Net_Node(object):
         """
         # delete message from outbox if we still have it
         # msg.value should contain the if of the message that was confirmed
-        if value in self.outbox.keys():
-            del self.outbox[value]
+        try:
+            if value in self.outbox.keys():
+                del self.outbox[value]
+        except KeyError:
+            # already deleted
+            pass
 
-        # stop a timer thread if we have it
-        if value in self.timers.keys():
-            self.timers[value].cancel()
-            del self.timers[value]
+        # # stop a timer thread if we have it
+        # if value in self.timers.keys():
+        #     self.timers[value].cancel()
+        #     del self.timers[value]
 
-        self.logger.info('CONFIRMED MESSAGE {}'.format(value))
+        if self.do_logging.is_set():
+            self.logger.info('CONFIRMED MESSAGE {}'.format(value))
 
-    def prepare_message(self, to, key, value, repeat):
+    def prepare_message(self, to, key, value, repeat, flags=None):
         """
         Instantiate a :class:`.Message` class, give it an ID and
         the rest of its attributes.
@@ -1352,6 +1457,12 @@ class Net_Node(object):
         if not repeat:
             msg.flags['NOREPEAT'] = True
 
+
+        if flags:
+            for k, v in flags.items():
+                msg.flags[k] = v
+
+
         return msg
 
     def init_logging(self):
@@ -1373,6 +1484,7 @@ class Net_Node(object):
 
 
 
+
 class Message(object):
     """
     A formatted message.
@@ -1390,6 +1502,7 @@ class Message(object):
         sender (str): ID of socket where this message originates
         key (str): Type of message, used to select a listen method to process it
         value: Body of message, can be any type but must be JSON serializable.
+        timestamp (str): Timestamp of message creation
         ttl (int): Time-To-Live, each message is sent this many times at max,
             each send decrements ttl.
     """
@@ -1402,8 +1515,9 @@ class Message(object):
     # value is the only attribute that can be left None,
     # ie. with signal-type messages like "STOP"
     value = None
+    timestamp = None
     flags = {}
-    ttl = 5 # every message starts with 5 retries. only relevant to the sender so not serialized.
+    ttl = 2 # every message starts with 2 retries. only relevant to the sender so not serialized.
 
     def __init__(self, *args, **kwargs):
         # type: (object, object) -> None
@@ -1414,15 +1528,25 @@ class Message(object):
             *args:
             **kwargs:
         """
+
+        # optional attrs should be instance attributes so they are caught by _-dict__
+        self.flags = {}
+        self.timestamp = None
+        self.ttl = 5
+
         if len(args)>0:
             Exception("Messages cannot be constructed with positional arguments")
 
         for k, v in kwargs.items():
             setattr(self, k, v)
 
+        # if we're not a previous message being recreated, get a timestamp for our creation
+        if 'timestamp' not in kwargs.keys():
+            self.get_timestamp()
+
     def __str__(self):
         # type: () -> str
-        if self.key == 'FILE':
+        if self.key == 'FILE' or ('MINPRINT' in self.flags.keys()):
             me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}".format(self.id, self.to, self.sender, self.key)
         else:
             me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}; VALUE: {}".format(self.id, self.to, self.sender, self.key, self.value)
@@ -1461,6 +1585,9 @@ class Message(object):
     def __len__(self):
         return len(self.__dict__)
 
+    def get_timestamp(self):
+        self.timestamp = datetime.datetime.now().isoformat()
+
     def validate(self):
         """
         Checks if `id`, `to`, `sender`, and `key` are all defined.
@@ -1487,6 +1614,7 @@ class Message(object):
         valid = self.validate()
         if not valid:
             Exception("""Message invalid at the time of serialization!\n {}""".format(str(self)))
+            return False
 
         # msg = {
         #     'id': self.id,

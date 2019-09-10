@@ -232,7 +232,7 @@
 
 
 
-<div class="viewcode-block" id="Mouse"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse">[docs]</a><span class="k">class</span> <span class="nc">Mouse</span><span class="p">:</span>
+<div class="viewcode-block" id="Subject"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject">[docs]</a><span class="k">class</span> <span class="nc">Subject</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for managing one mouse&#39;s data and protocol.</span>
 
@@ -257,7 +257,7 @@
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        lock (:class:`threading.Lock`): manages access to the hdf5 file</span>
-<span class="sd">        name (str): Mouse ID</span>
+<span class="sd">        name (str): Subject ID</span>
 <span class="sd">        file (str): Path to hdf5 file - usually `{prefs.DATADIR}/{self.name}.h5`</span>
 <span class="sd">        current (dict): current task parameters. loaded from</span>
 <span class="sd">            the &#39;current&#39; :mod:`~tables.filenode` of the h5 file</span>
@@ -273,7 +273,7 @@
 <span class="sd">            * full path, eg. &#39;/history/weights&#39;</span>
 <span class="sd">            * relative path, eg. &#39;/history&#39;</span>
 <span class="sd">            * name, eg. &#39;weights&#39;</span>
-<span class="sd">            * type, eg. :class:`.Mouse.Weight_Table` or &#39;group&#39;</span>
+<span class="sd">            * type, eg. :class:`.Subject.Weight_Table` or &#39;group&#39;</span>
 
 <span class="sd">        node locations (eg. &#39;/data&#39;) to types, either &#39;group&#39; for groups or a</span>
 <span class="sd">            :class:`tables.IsDescriptor` for tables.</span>
@@ -351,12 +351,12 @@
         <span class="c1"># we have to always open and close the h5f</span>
         <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Mouse.open_hdf"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.open_hdf">[docs]</a>    <span class="k">def</span> <span class="nf">open_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r+&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.open_hdf"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.open_hdf">[docs]</a>    <span class="k">def</span> <span class="nf">open_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r+&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Opens the hdf5 file.</span>
 
 <span class="sd">        This should be called at the start of every method that access the h5 file</span>
-<span class="sd">        and :meth:`~.Mouse.close_hdf` should be called at the end. Otherwise</span>
+<span class="sd">        and :meth:`~.Subject.close_hdf` should be called at the end. Otherwise</span>
 <span class="sd">        the file will close and we risk file corruption.</span>
 
 <span class="sd">        See the pytables docs</span>
@@ -378,20 +378,20 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">tables</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mouse.close_hdf"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.close_hdf">[docs]</a>    <span class="k">def</span> <span class="nf">close_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h5f</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.close_hdf"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.close_hdf">[docs]</a>    <span class="k">def</span> <span class="nf">close_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h5f</span><span class="p">):</span>
         <span class="c1"># type: (tables.file.File) -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Flushes &amp; closes the open hdf file.</span>
-<span class="sd">        Must be called whenever :meth:`~.Mouse.open_hdf` is used.</span>
+<span class="sd">        Must be called whenever :meth:`~.Subject.open_hdf` is used.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            h5f (:class:`tables.File`): the hdf file opened by :meth:`~.Mouse.open_hdf`</span>
+<span class="sd">            h5f (:class:`tables.File`): the hdf file opened by :meth:`~.Subject.open_hdf`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
             <span class="n">h5f</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">h5f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Mouse.new_mouse_file"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.new_mouse_file">[docs]</a>    <span class="k">def</span> <span class="nf">new_mouse_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">biography</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.new_mouse_file"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.new_mouse_file">[docs]</a>    <span class="k">def</span> <span class="nf">new_mouse_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">biography</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new mouse file and make the general filestructure.</span>
 
@@ -399,7 +399,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            biography (dict): Biographical details like DOB, mass, etc.</span>
-<span class="sd">                Typically created by :class:`~.gui.New_Mouse_Wizard.Biography_Tab`.</span>
+<span class="sd">                Typically created by :class:`~.gui.New_Subject_Wizard.Biography_Tab`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># If a file already exists, we open it for appending so we don&#39;t lose data.</span>
         <span class="c1"># For now we are assuming that the existing file has the basic structure,</span>
@@ -426,7 +426,7 @@
             <span class="n">h5f</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="n">history_group</span><span class="p">,</span> <span class="s1">&#39;history&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">History_Table</span><span class="p">,</span> <span class="s2">&quot;Change History&quot;</span><span class="p">)</span>
 
             <span class="c1"># Make table for weights</span>
-            <span class="n">h5f</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="n">history_group</span><span class="p">,</span> <span class="s1">&#39;weights&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Weight_Table</span><span class="p">,</span> <span class="s2">&quot;Mouse Weights&quot;</span><span class="p">)</span>
+            <span class="n">h5f</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="n">history_group</span><span class="p">,</span> <span class="s1">&#39;weights&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Weight_Table</span><span class="p">,</span> <span class="s2">&quot;Subject Weights&quot;</span><span class="p">)</span>
 
             <span class="c1"># And another table to stash the git hash every time we&#39;re open.</span>
             <span class="n">h5f</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="n">history_group</span><span class="p">,</span> <span class="s1">&#39;hashes&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Hash_Table</span><span class="p">,</span> <span class="s2">&quot;Git commit hash history&quot;</span><span class="p">)</span>
@@ -438,7 +438,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mouse.ensure_structure"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.ensure_structure">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.ensure_structure"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.ensure_structure">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensure that our h5f has the appropriate baseline structure as defined in `self.STRUCTURE`</span>
 
@@ -461,7 +461,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Mouse.update_biography"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.update_biography">[docs]</a>    <span class="k">def</span> <span class="nf">update_biography</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.update_biography"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.update_biography">[docs]</a>    <span class="k">def</span> <span class="nf">update_biography</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Change or make a new biographical attribute, stored as</span>
 <span class="sd">        attributes of the `info` group.</span>
@@ -474,7 +474,7 @@
             <span class="n">h5f</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">_v_attrs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
         <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mouse.update_history"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.update_history">[docs]</a>    <span class="k">def</span> <span class="nf">update_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.update_history"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.update_history">[docs]</a>    <span class="k">def</span> <span class="nf">update_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the history table when changes are made to the mouse&#39;s protocol.</span>
 
@@ -541,11 +541,11 @@
     <span class="c1">#     # TODO: this</span>
     <span class="c1">#     pass</span>
 
-<div class="viewcode-block" id="Mouse.assign_protocol"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.assign_protocol">[docs]</a>    <span class="k">def</span> <span class="nf">assign_protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">step_n</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.assign_protocol"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.assign_protocol">[docs]</a>    <span class="k">def</span> <span class="nf">assign_protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">step_n</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assign a protocol to the mouse.</span>
 
-<span class="sd">        If the mouse has a currently assigned task, stashes it with :meth:`~.Mouse.stash_current`</span>
+<span class="sd">        If the mouse has a currently assigned task, stashes it with :meth:`~.Subject.stash_current`</span>
 
 <span class="sd">        Creates groups and tables according to the data descriptions in the task class being assigned.</span>
 <span class="sd">        eg. as described in :class:`.Task.TrialData`.</span>
@@ -672,7 +672,7 @@
         <span class="c1"># Update history</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_history</span><span class="p">(</span><span class="s1">&#39;protocol&#39;</span><span class="p">,</span> <span class="n">protocol_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mouse.flush_current"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.flush_current">[docs]</a>    <span class="k">def</span> <span class="nf">flush_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.flush_current"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.flush_current">[docs]</a>    <span class="k">def</span> <span class="nf">flush_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Flushes the &#39;current&#39; attribute in the mouse object to the current filenode</span>
 <span class="sd">        in the .h5</span>
@@ -688,7 +688,7 @@
         <span class="n">current_node</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;protocol_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mouse.stash_current"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.stash_current">[docs]</a>    <span class="k">def</span> <span class="nf">stash_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.stash_current"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.stash_current">[docs]</a>    <span class="k">def</span> <span class="nf">stash_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the current protocol in the history group and delete the node</span>
 
@@ -714,13 +714,13 @@
         <span class="n">h5f</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="s1">&#39;/current&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mouse.prepare_run"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.prepare_run">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.prepare_run"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.prepare_run">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Prepares the Mouse object to receive data while running the task.</span>
+<span class="sd">        Prepares the Subject object to receive data while running the task.</span>
 
 <span class="sd">        Gets information about current task, trial number,</span>
 <span class="sd">        spawns :class:`~.tasks.graduation.Graduation` object,</span>
-<span class="sd">        spawns :attr:`~.Mouse.data_queue` and calls :meth:`~.Mouse.data_thread`.</span>
+<span class="sd">        spawns :attr:`~.Subject.data_queue` and calls :meth:`~.Subject.data_thread`.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Dict: the parameters for the current step, with mouse id, step number,</span>
@@ -812,11 +812,11 @@
         <span class="n">task</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
         <span class="k">return</span> <span class="n">task</span></div>
 
-<div class="viewcode-block" id="Mouse.data_thread"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.data_thread">[docs]</a>    <span class="k">def</span> <span class="nf">data_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.data_thread"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.data_thread">[docs]</a>    <span class="k">def</span> <span class="nf">data_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Thread that keeps hdf file open and receives data while task is running.</span>
 
-<span class="sd">        receives data through :attr:`~.Mouse.queue` as dictionaries. Data can be</span>
+<span class="sd">        receives data through :attr:`~.Subject.queue` as dictionaries. Data can be</span>
 <span class="sd">        partial-trial data (eg. each phase of a trial) as long as the task returns a dict with</span>
 <span class="sd">        &#39;TRIAL_END&#39; as a key at the end of each trial.</span>
 
@@ -826,7 +826,7 @@
 <span class="sd">        Checks graduation state at the end of each trial.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            queue (:class:`queue.Queue`): passed by :meth:`~.Mouse.prepare_run` and used by other</span>
+<span class="sd">            queue (:class:`queue.Queue`): passed by :meth:`~.Subject.prepare_run` and used by other</span>
 <span class="sd">                objects to pass data to be stored.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">h5f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_hdf</span><span class="p">()</span>
@@ -888,9 +888,9 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mouse.save_data"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.save_data">[docs]</a>    <span class="k">def</span> <span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.save_data"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.save_data">[docs]</a>    <span class="k">def</span> <span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Alternate and equivalent method of putting data in the queue as `Mouse.data_queue.put(data)`</span>
+<span class="sd">        Alternate and equivalent method of putting data in the queue as `Subject.data_queue.put(data)`</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            data (dict): trial data. each should have a &#39;trial_num&#39;, and a dictionary with key</span>
@@ -898,9 +898,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mouse.stop_run"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.stop_run">[docs]</a>    <span class="k">def</span> <span class="nf">stop_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.stop_run"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.stop_run">[docs]</a>    <span class="k">def</span> <span class="nf">stop_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        puts &#39;END&#39; in the data_queue, which causes :meth:`~.Mouse.data_thread` to end.</span>
+<span class="sd">        puts &#39;END&#39; in the data_queue, which causes :meth:`~.Subject.data_thread` to end.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;END&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
@@ -908,7 +908,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
             <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;Data thread did not exit&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mouse.get_trial_data"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.get_trial_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_trial_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.get_trial_data"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.get_trial_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_trial_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get trial data from the current task.</span>
 
@@ -958,7 +958,7 @@
         <span class="k">return</span> <span class="n">return_df</span></div>
 
 
-<div class="viewcode-block" id="Mouse.get_step_history"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.get_step_history">[docs]</a>    <span class="k">def</span> <span class="nf">get_step_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_history</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.get_step_history"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.get_step_history">[docs]</a>    <span class="k">def</span> <span class="nf">get_step_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_history</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets a dataframe of step numbers, timestamps, and step names</span>
 <span class="sd">        as a coarse view of training status.</span>
@@ -1025,7 +1025,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">step_df</span></div>
 
-<div class="viewcode-block" id="Mouse.get_timestamp"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.get_timestamp">[docs]</a>    <span class="k">def</span> <span class="nf">get_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simple</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.get_timestamp"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.get_timestamp">[docs]</a>    <span class="k">def</span> <span class="nf">get_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simple</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="c1"># type: (bool) -&gt; str</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Makes a timestamp.</span>
@@ -1048,7 +1048,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Mouse.get_weight"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.get_weight">[docs]</a>    <span class="k">def</span> <span class="nf">get_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="n">include_baseline</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.get_weight"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.get_weight">[docs]</a>    <span class="k">def</span> <span class="nf">get_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="n">include_baseline</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets start and stop weights.</span>
 
@@ -1093,7 +1093,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">weights</span></div>
 
-<div class="viewcode-block" id="Mouse.set_weight"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.set_weight">[docs]</a>    <span class="k">def</span> <span class="nf">set_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">col_name</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.set_weight"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.set_weight">[docs]</a>    <span class="k">def</span> <span class="nf">set_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">col_name</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates an existing weight in the weight table.</span>
 
@@ -1116,7 +1116,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Mouse.update_weights"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.update_weights">[docs]</a>    <span class="k">def</span> <span class="nf">update_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.update_weights"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.update_weights">[docs]</a>    <span class="k">def</span> <span class="nf">update_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Store either a starting or stopping mass.</span>
 
@@ -1142,7 +1142,7 @@
 
         <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mouse.graduate"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Mouse.graduate">[docs]</a>    <span class="k">def</span> <span class="nf">graduate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.graduate"><a class="viewcode-back" href="../../../rpilot.core.mouse.html#rpilot.core.mouse.Subject.graduate">[docs]</a>    <span class="k">def</span> <span class="nf">graduate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Increase the current step by one, unless it is the last step.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

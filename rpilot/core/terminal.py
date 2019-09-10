@@ -9,6 +9,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from rpilot import prefs
+from rpilot.core import styles
 
 if __name__ == '__main__':
     # Parse arguments - this should have been called with a .json prefs file passed
@@ -38,18 +39,18 @@ import threading
 from collections import OrderedDict as odict
 import numpy as np
 
-from PySide import QtCore, QtGui
-from mouse import Mouse
+from PySide import QtCore, QtGui, QtSvg
+from subject import Subject
 from plots import Plot_Widget
-from networking import Terminal_Networking, Net_Node
+from networking import Terminal_Station, Net_Node
 from utils import InvokeEvent, Invoker
-from gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water
+from gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test
 import pdb
 
 
 # TODO: Be more complete about generating logs
 # TODO: Make exit graceful
-# TODO: Make 'edit mouse' button
+# TODO: Make 'edit subject' button
 # TODO: Make experiment tags, save and populate?
 
 # http://zetcode.com/gui/pysidetutorial/layoutmanagement/
@@ -96,12 +97,12 @@ class Terminal(QtGui.QMainWindow):
 
     Attributes:
         node (:class:`~.networking.Net_Node`): Our Net_Node we use to communicate with our main networking object
-        networking (:class:`~.networking.Terminal_Networking`): Our networking object to communicate with the outside world
-        mice (dict): A dictionary mapping mouse ID to :class:`~.mouse.Mouse` object.
-        pilots (dict): A dictionary mapping pilot ID to a list of its mice, its IP, and any other pilot attributes.
+        networking (:class:`~.networking.Terminal_Station`): Our networking object to communicate with the outside world
+        subjects (dict): A dictionary mapping subject ID to :class:`~.subject.Subject` object.
+        pilots (dict): A dictionary mapping pilot ID to a list of its subjects, its IP, and any other pilot attributes.
         layout (:class:`QtGui.QGridLayout`): Layout used to organize widgets
-        control_panel (:class:`~.gui.Control_Panel`): Control Panel to manage pilots and mice
-        data_panel (:class:`~.plots.Plot_Widget`): Plots for each pilot and mouse.
+        control_panel (:class:`~.gui.Control_Panel`): Control Panel to manage pilots and subjects
+        data_panel (:class:`~.plots.Plot_Widget`): Plots for each pilot and subject.
         logo (:class:`QtGui.QLabel`): Label holding our beautiful logo ;X
         logger (:class:`logging.Logger`): Used to log messages and network events.
         log_handler (:class:`logging.FileHandler`): Handler for logging
@@ -118,9 +119,10 @@ class Terminal(QtGui.QMainWindow):
         # networking
         self.node = None
         self.networking = None
+        self.heartbeat_dur = 10 # check every n seconds whether our pis are around still
 
         # data
-        self.mice = {}  # Dict of our open mouse objects
+        self.subjects = {}  # Dict of our open subject objects
         self.pilots = None
 
         # gui
@@ -172,12 +174,19 @@ class Terminal(QtGui.QMainWindow):
 
         # Start external communications in own process
         # Has to be after init_network so it makes a new context
-        self.networking = Terminal_Networking(self.pilots)
+        self.networking = Terminal_Station(self.pilots)
         self.networking.start()
-        self.logger.info("Networking object Initialized")
+        self.logger.info("Station object Initialized")
 
         # send an initial ping looking for our pilots
         self.node.send('T', 'INIT')
+
+        # start beating ur heart
+        self.heartbeat_timer = threading.Timer(self.heartbeat_dur, self.heartbeat)
+        self.heartbeat_timer.daemon = True
+        self.heartbeat_timer.start()
+        #self.heartbeat(once=True)
+
 
     def init_logging(self):
         """
@@ -206,9 +215,14 @@ class Terminal(QtGui.QMainWindow):
         * :class:`.plots.Plot_Widget`
         """
 
+        # set stylesheet for main window
+        self.setStyleSheet(styles.TERMINAL)
+
         # set central widget
         self.widget = QtGui.QWidget()
         self.setCentralWidget(self.widget)
+
+
 
         # Start GUI
         self.layout = QtGui.QGridLayout()
@@ -217,37 +231,52 @@ class Terminal(QtGui.QMainWindow):
         self.widget.setLayout(self.layout)
 
         self.setWindowTitle('Terminal')
+        #self.menuBar().setFixedHeight(40)
 
         # Main panel layout
         #self.panel_layout.setContentsMargins(0,0,0,0)
 
         # Init toolbar
         # File menu
+        # make menu take up 1/10 of the screen
+        winsize = app.desktop().availableGeometry()
+        bar_height = (winsize.height()/25)+5
+
+        self.menuBar().setFixedHeight(bar_height)
+        #self.menuBar().setStyleSheet('QMenuBar:item {  }')
+
+
         self.file_menu = self.menuBar().addMenu("&File")
+        self.file_menu.setObjectName("file")
         new_pilot_act = QtGui.QAction("New &Pilot", self, triggered=self.new_pilot)
         new_prot_act  = QtGui.QAction("New Pro&tocol", self, triggered=self.new_protocol)
-        #batch_create_mice = QtGui.QAction("Batch &Create Mice", self, triggered=self.batch_mice)
+        #batch_create_subjects = QtGui.QAction("Batch &Create subjects", self, triggered=self.batch_subjects)
         # TODO: Update pis
         self.file_menu.addAction(new_pilot_act)
         self.file_menu.addAction(new_prot_act)
-        #self.file_menu.addAction(batch_create_mice)
+        #self.file_menu.addAction(batch_create_subjects)
 
         # Tools menu
         self.tool_menu = self.menuBar().addMenu("&Tools")
-        mouse_weights_act = QtGui.QAction("View Mouse &Weights", self, triggered=self.mouse_weights)
+        subject_weights_act = QtGui.QAction("View Subject &Weights", self, triggered=self.subject_weights)
         update_protocol_act = QtGui.QAction("Update Protocols", self, triggered=self.update_protocols)
         reassign_act = QtGui.QAction("Batch Reassign Protocols", self, triggered=self.reassign_protocols)
         calibrate_act = QtGui.QAction("Calibrate &Water Ports", self, triggered=self.calibrate_ports)
-        self.tool_menu.addAction(mouse_weights_act)
+        self.tool_menu.addAction(subject_weights_act)
         self.tool_menu.addAction(update_protocol_act)
         self.tool_menu.addAction(reassign_act)
         self.tool_menu.addAction(calibrate_act)
 
+        # Tests menu
+        self.tests_menu = self.menuBar().addMenu("Test&s")
+        bandwidth_test_act = QtGui.QAction("Test Bandwidth", self, triggered=self.test_bandwidth)
+        self.tests_menu.addAction(bandwidth_test_act)
+
 
         ## Init main panels and add to layout
-        # Control panel sits on the left, controls pilots & mice
+        # Control panel sits on the left, controls pilots & subjects
         self.control_panel = Control_Panel(pilots=self.pilots,
-                                           mice=self.mice,
+                                           subjects=self.subjects,
                                            start_fn=self.toggle_start)
 
         # Data panel sits on the right, plots stuff.
@@ -257,41 +286,77 @@ class Terminal(QtGui.QMainWindow):
 
 
         # Logo goes up top
-        pixmap_path = os.path.join(os.path.dirname(prefs.REPODIR), 'graphics', 'logo.png')
-        self.logo = QtGui.QLabel()
-        pixmap = QtGui.QPixmap(pixmap_path).scaled(265,40)
-        self.logo.setPixmap(pixmap)
-        self.logo.setFixedHeight(40)
-        self.logo.setAlignment(QtCore.Qt.AlignLeft)
+        # https://stackoverflow.com/questions/25671275/pyside-how-to-set-an-svg-icon-in-qtreewidgets-item-and-change-the-size-of-the
 
+
+        pixmap_path = os.path.join(os.path.dirname(prefs.REPODIR), 'graphics', 'autopilot_logo_small.svg')
+        #svg_renderer = QtSvg.QSvgRenderer(pixmap_path)
+        #image = QtGui.QImage()
+        #self.logo = QtSvg.QSvgWidget()
+
+
+        # set size, preserving aspect ratio
+        logo_height = round(44.0*((bar_height-5)/44.0))
+        logo_width = round(139*((bar_height-5)/44.0))
+
+        svg_renderer = QtSvg.QSvgRenderer(pixmap_path)
+        image = QtGui.QImage(logo_width, logo_height, QtGui.QImage.Format_ARGB32)
+        # Set the ARGB to 0 to prevent rendering artifacts
+        image.fill(0x00000000)
+        svg_renderer.render(QtGui.QPainter(image))
+        pixmap = QtGui.QPixmap.fromImage(image)
+        self.logo = QtGui.QLabel()
+        self.logo.setPixmap(pixmap)
+
+
+        self.menuBar().setCornerWidget(self.logo, QtCore.Qt.TopRightCorner)
+        self.menuBar().adjustSize()
+
+        #self.logo.load(pixmap_path)
         # Combine all in main layout
-        self.layout.addWidget(self.logo, 0,0,1,2)
-        self.layout.addWidget(self.control_panel, 1,0,1,1)
-        self.layout.addWidget(self.data_panel, 1,1,1,1)
-        self.layout.setColumnStretch(0, 2)
-        self.layout.setColumnStretch(1, 10)
+        #self.layout.addWidget(self.logo, 0,0,1,2)
+        self.layout.addWidget(self.control_panel, 0,0,1,1)
+        self.layout.addWidget(self.data_panel, 0,1,1,1)
+        self.layout.setColumnStretch(0, 1)
+        self.layout.setColumnStretch(1, 3)
 
         # Set size of window to be fullscreen without maximization
         # Until a better solution is found, if not set large enough, the pilot tabs will
         # expand into infinity. See the Expandable_Tabs class
+        #pdb.set_trace()
+        screensize = app.desktop().screenGeometry()
         winsize = app.desktop().availableGeometry()
 
         # want to subtract bounding title box, our title bar, and logo height.
         # our y offset will be the size of the bounding title box
-        window_title_height = winsize.y()
-        # Then our tilebar
-        titleBarHeight = self.style().pixelMetric(QtGui.QStyle.PM_TitleBarHeight,
-                                                  QtGui.QStyleOptionTitleBar(), self)
-        # finally our logo
-        logo_height = self.logo.height()
 
-        winheight = winsize.height() - window_title_height - titleBarHeight - logo_height  # also subtract logo height
+        # Then our tilebar
+        # multiply by three to get the inner (file, etc.) bar, the top bar (min, maximize, etc)
+        # and then the very top system tray bar in ubuntu
+        #titleBarHeight = self.style().pixelMetric(QtGui.QStyle.PM_TitleBarHeight,
+        #                                          QtGui.QStyleOptionTitleBar(), self) * 3
+        title_bar_height = screensize.height()-winsize.height()
+
+        #titleBarHeight = bar_height*2
+        # finally our logo
+        logo_height = bar_height
+
+
+
+        winheight = winsize.height() - title_bar_height - logo_height  # also subtract logo height
         winsize.setHeight(winheight)
         self.max_height = winheight
         self.setGeometry(winsize)
         self.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
 
         # Set heights on control panel and data panel
+
+
+        # move to primary display and show maximized
+        primary_display = app.desktop().availableGeometry(0)
+        self.move(primary_display.left(), primary_display.top())
+        # self.resize(primary_display.width(), primary_display.height())
+        #
         self.control_panel.setMaximumHeight(winheight)
         self.data_panel.setMaximumHeight(winheight)
 
@@ -315,8 +380,17 @@ class Terminal(QtGui.QMainWindow):
     ##########################3
     # Listens & inter-object methods
 
-    def toggle_start(self, starting, pilot, mouse=None):
-        """Start or Stop running the currently selected mouse's task. Sends a
+    def heartbeat(self, once=False):
+        self.node.send('T', 'INIT', repeat=False, flags={'NOREPEAT': True})
+
+        if not once:
+            self.heartbeat_timer = threading.Timer(self.heartbeat_dur, self.heartbeat)
+            self.heartbeat_timer.daemon = True
+            self.heartbeat_timer.start()
+
+
+    def toggle_start(self, starting, pilot, subject=None):
+        """Start or Stop running the currently selected subject's task. Sends a
         message containing the task information to the concerned pilot.
 
         Each :class:`Pilot_Panel` is given a lambda function that calls this
@@ -327,7 +401,7 @@ class Terminal(QtGui.QMainWindow):
             starting (bool): Does this button press mean we are starting (True)
                 or stopping (False) the task?
             pilot: Which Pilot is starting or stopping?
-            mouse: Which Mouse is currently selected?
+            subject: Which Subject is currently selected?
         """
         # stopping is the enemy of starting so we put them in the same function to learn about each other
         if starting is True:
@@ -336,12 +410,12 @@ class Terminal(QtGui.QMainWindow):
                                                             "Starting Weight:")
             if ok:
                 # Ope'nr up if she aint
-                if mouse not in self.mice.keys():
-                    self.mice[mouse] = Mouse(mouse)
+                if subject not in self.subjects.keys():
+                    self.subjects[subject] = Subject(subject)
 
-                task = self.mice[mouse].prepare_run()
+                task = self.subjects[subject].prepare_run()
                 task['pilot'] = pilot
-                self.mice[mouse].update_weights(start=float(start_weight))
+                self.subjects[subject].update_weights(start=float(start_weight))
 
                 self.node.send(to=bytes(pilot), key="START", value=task)
                 # also let the plot know to start
@@ -360,15 +434,15 @@ class Terminal(QtGui.QMainWindow):
                 # Send message to pilot to stop running,
                 # it should initiate a coherence checking routine to make sure
                 # its data matches what the Terminal got,
-                # so the terminal will handle closing the mouse object
+                # so the terminal will handle closing the subject object
                 self.node.send(to=bytes(pilot), key="STOP")
                 # also let the plot know to start
                 self.node.send(to=bytes("P_{}".format(pilot)), key="STOP")
                 # TODO: Start coherence checking ritual
-                # TODO: Auto-select the next mouse in the list.
+                # TODO: Auto-select the next subject in the list.
 
-                self.mice[mouse].stop_run()
-                self.mice[mouse].update_weights(stop=float(stop_weight))
+                self.subjects[subject].stop_run()
+                self.subjects[subject].update_weights(stop=float(stop_weight))
 
             else:
                 # pressed cancel
@@ -382,24 +456,24 @@ class Terminal(QtGui.QMainWindow):
         """
         A Pilot has sent us data.
 
-        `value` field of message should have `mouse` and `pilot` added to dictionary for identification.
+        `value` field of message should have `subject` and `pilot` added to dictionary for identification.
 
-        Any key in `value` that matches a column in the mouse's trial data table will be saved.
+        Any key in `value` that matches a column in the subject's trial data table will be saved.
 
-        If the mouse graduates after receiving this piece of data, stop the current
+        If the subject graduates after receiving this piece of data, stop the current
         task running on the Pilot and send the new one.
 
         Args:
             value (dict): A dict of field-value pairs to save
         """
         # A Pi has sent us data, let's save it huh?
-        mouse_name = value['mouse']
-        self.mice[mouse_name].save_data(value)
-        if self.mice[mouse_name].did_graduate.is_set() is True:
+        subject_name = value['subject']
+        self.subjects[subject_name].save_data(value)
+        if self.subjects[subject_name].did_graduate.is_set() is True:
             self.node.send(to=value['pilot'], key="STOP", value={'graduation':True})
-            self.mice[mouse_name].stop_run()
-            self.mice[mouse_name].graduate()
-            task = self.mice[mouse_name].prepare_run()
+            self.subjects[subject_name].stop_run()
+            self.subjects[subject_name].graduate()
+            task = self.subjects[subject_name].prepare_run()
             task['pilot'] = value['pilot']
 
             self.node.send(to=value['pilot'], key="START", value=task)
@@ -417,7 +491,7 @@ class Terminal(QtGui.QMainWindow):
         Args:
             value: (unused)
         """
-        # Only our Networking object should ever ping us, because
+        # Only our Station object should ever ping us, because
         # we otherwise want it handling any pings on our behalf.
 
         # self.send_message('ALIVE', value=b'T')
@@ -432,14 +506,21 @@ class Terminal(QtGui.QMainWindow):
             value (dict): dict containing `state` .
         """
         # TODO: If we are stopping, we enter into a cohere state
-        # TODO: If we are stopped, close the mouse object.
+        # TODO: If we are stopped, close the subject object.
         # TODO: Also tell the relevant dataview to clear
-        if value['pilot'] in self.pilots.keys():
-            self.pilots[value['pilot']]['state'] = value['state']
 
         # update the pilot button
-        if value['pilot'] in self.control_panel.panels.keys():
-            self.control_panel.panels[value['pilot']].button.set_state(value['state'])
+        if value['pilot'] in self.pilots.keys():
+            if 'state' not in self.pilots[value['pilot']].keys():
+                self.pilots[value['pilot']]['state'] = value['state']
+                self.control_panel.panels[value['pilot']].button.set_state(value['state'])
+            elif value['state'] != self.pilots[value['pilot']]['state']:
+                self.control_panel.panels[value['pilot']].button.set_state(value['state'])
+                self.pilots[value['pilot']]['state'] = value['state']
+
+            
+
+
 
 
     def l_handshake(self, value):
@@ -489,7 +570,7 @@ class Terminal(QtGui.QMainWindow):
             pass
 
         if name != '':
-            new_pilot = {name:{'mice':[], 'ip':ip}}
+            new_pilot = {name:{'subjects':[], 'ip':ip}}
             self.control_panel.update_db(new=new_pilot)
             self.reset_ui()
         else:
@@ -534,43 +615,43 @@ class Terminal(QtGui.QMainWindow):
                 with open(protocol_file, 'w') as pfile_open:
                     json.dump(save_steps, pfile_open, indent=4, separators=(',', ': '), sort_keys=True)
 
-    def list_mice(self):
+    def list_subjects(self):
         """
-        Get a list of all mouse IDs
+        Get a list of all subject IDs
 
         Returns:
-            list: list of all mouse IDs present in :attr:`.Terminal.pilots`
+            list: list of all subject IDs present in :attr:`.Terminal.pilots`
         """
-        mice = []
+        subjects = []
         for pilot, vals in self.pilots.items():
-            mice.extend(vals['mice'])
-        return mice
+            subjects.extend(vals['subjects'])
+        return subjects
 
-    def mouse_weights(self):
+    def subject_weights(self):
         """
-        Gets recent weights from all :attr:`~.Terminal.mice` and
+        Gets recent weights from all :attr:`~.Terminal.subjects` and
         open a :class:`.gui.Weights` window to view or set weights.
         """
-        mice = self.list_mice()
+        subjects = self.list_subjects()
 
         # open objects if not already
-        for mouse in mice:
-            if mouse not in self.mice.keys():
-                self.mice[mouse] = Mouse(mouse)
+        for subject in subjects:
+            if subject not in self.subjects.keys():
+                self.subjects[subject] = Subject(subject)
 
-        # for each mouse, get weight
+        # for each subject, get weight
         weights = []
-        for mouse in mice:
-            weight = self.mice[mouse].get_weight(include_baseline=True)
-            weight['mouse'] = mouse
+        for subject in subjects:
+            weight = self.subjects[subject].get_weight(include_baseline=True)
+            weight['subject'] = subject
             weights.append(weight)
 
-        self.weight_widget = Weights(weights, self.mice)
+        self.weight_widget = Weights(weights, self.subjects)
         self.weight_widget.show()
 
     def update_protocols(self):
         """
-        If we change the protocol file, update the stored version in mouse files
+        If we change the protocol file, update the stored version in subject files
         """
         #
         # get list of protocol files
@@ -578,19 +659,19 @@ class Terminal(QtGui.QMainWindow):
         protocols = [p for p in protocols if p.endswith('.json')]
 
 
-        mice = self.list_mice()
-        for mouse in mice:
-            if mouse not in self.mice.keys():
-                self.mice[mouse] = Mouse(mouse)
+        subjects = self.list_subjects()
+        for subject in subjects:
+            if subject not in self.subjects.keys():
+                self.subjects[subject] = Subject(subject)
 
-            protocol_bool = [self.mice[mouse].protocol_name == p.rstrip('.json') for p in protocols]
+            protocol_bool = [self.subjects[subject].protocol_name == p.rstrip('.json') for p in protocols]
             if any(protocol_bool):
                 which_prot = np.where(protocol_bool)[0][0]
                 protocol = protocols[which_prot]
-                self.mice[mouse].assign_protocol(os.path.join(prefs.PROTOCOLDIR, protocol), step_n=self.mice[mouse].step)
+                self.subjects[subject].assign_protocol(os.path.join(prefs.PROTOCOLDIR, protocol), step_n=self.subjects[subject].step)
 
         msgbox = QtGui.QMessageBox()
-        msgbox.setText("Mouse Protocols Updated")
+        msgbox.setText("Subject Protocols Updated")
         msgbox.exec_()
 
     def reassign_protocols(self):
@@ -604,40 +685,40 @@ class Terminal(QtGui.QMainWindow):
         protocols = os.listdir(prefs.PROTOCOLDIR)
         protocols = [os.path.splitext(p)[0] for p in protocols if p.endswith('.json')]
 
-        # get mice and current protocols
-        mice = self.list_mice()
-        mice_protocols = {}
-        for mouse in mice:
-            if mouse not in self.mice.keys():
-                self.mice[mouse] = Mouse(mouse)
+        # get subjects and current protocols
+        subjects = self.list_subjects()
+        subjects_protocols = {}
+        for subject in subjects:
+            if subject not in self.subjects.keys():
+                self.subjects[subject] = Subject(subject)
 
-            mice_protocols[mouse] = [self.mice[mouse].protocol_name, self.mice[mouse].step]
+            subjects_protocols[subject] = [self.subjects[subject].protocol_name, self.subjects[subject].step]
 
-        reassign_window = Reassign(mice_protocols, protocols)
+        reassign_window = Reassign(subjects_protocols, protocols)
         reassign_window.exec_()
 
         if reassign_window.result() == 1:
-            mouse_protocols = reassign_window.mice
+            subject_protocols = reassign_window.subjects
 
-            for mouse, protocol in mouse_protocols.items():
+            for subject, protocol in subject_protocols.items():
                 step = protocol[1]
                 protocol = protocol[0]
 
                 # since assign_protocol also changes the step, stash the step number here to tell if it's changed
-                mouse_orig_step = self.mice[mouse].step
+                subject_orig_step = self.subjects[subject].step
 
 
 
-                if self.mice[mouse].protocol_name != protocol:
-                    self.logger.info('Setting {} protocol from {} to {}'.format(mouse, self.mice[mouse].protocol_name, protocol))
+                if self.subjects[subject].protocol_name != protocol:
+                    self.logger.info('Setting {} protocol from {} to {}'.format(subject, self.subjects[subject].protocol_name, protocol))
                     protocol_file = os.path.join(prefs.PROTOCOLDIR, protocol + '.json')
-                    self.mice[mouse].assign_protocol(protocol_file, step)
+                    self.subjects[subject].assign_protocol(protocol_file, step)
 
-                if mouse_orig_step != step:
-                    self.logger.info('Setting {} step from {} to {}'.format(mouse, mouse_orig_step, step))
-                    step_name = self.mice[mouse].current[step]['step_name']
+                if subject_orig_step != step:
+                    self.logger.info('Setting {} step from {} to {}'.format(subject, subject_orig_step, step))
+                    step_name = self.subjects[subject].current[step]['step_name']
                     #update history also flushes current - aka it also actually changes the step number
-                    self.mice[mouse].update_history('step', step_name, step)
+                    self.subjects[subject].update_history('step', step_name, step)
 
     def calibrate_ports(self):
 
@@ -665,6 +746,17 @@ class Terminal(QtGui.QMainWindow):
             msgbox.setText("Calibration results sent!")
             msgbox.exec_()
 
+    def test_bandwidth(self):
+        # turn off logging while we run
+        self.networking.set_logging(False)
+        self.node.do_logging.clear()
+
+        bandwidth_test = Bandwidth_Test(self.pilots)
+        bandwidth_test.exec_()
+
+        self.networking.set_logging(True)
+        self.node.do_logging.set()
+
 
 
 
@@ -672,17 +764,17 @@ class Terminal(QtGui.QMainWindow):
 
     def closeEvent(self, event):
         """
-        When Closing the Terminal Window, close any running mouse objects,
+        When Closing the Terminal Window, close any running subject objects,
         'KILL' our networking object.
 
         Since the `:class:`.Net_Node` keeping us alive is a `daemon`, no need
         to explicitly kill it.
 
         """
-        # TODO: Check if any mice are currently running, pop dialog asking if we want to stop
+        # TODO: Check if any subjects are currently running, pop dialog asking if we want to stop
 
-        # Close all mice files
-        for m in self.mice.values():
+        # Close all subjects files
+        for m in self.subjects.values():
             if m.running is True:
                 m.stop_run()
 

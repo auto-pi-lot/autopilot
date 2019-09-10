@@ -1,3 +1,0 @@
-GUI
-- Pull up weights at the end of the day
-- Notes section

@@ -1,6 +1,6 @@
 <map id="inheritancee46d5e7c7a" name="inheritancee46d5e7c7a">
 <area shape="rect" id="node1" href="#rpilot.core.gui.Calibrate_Water" target="_top" title="A window to calibrate the volume of water dispensed per ms." alt="" coords="340,3,407,17"/>
-<area shape="rect" id="node9" href="#rpilot.core.gui.New_Mouse_Wizard" target="_top" title="A popup that prompts you to define variables for a new :class:`.mouse.Mouse` object" alt="" coords="332,30,414,44"/>
+<area shape="rect" id="node9" href="#rpilot.core.gui.New_Subject_Wizard" target="_top" title="A popup that prompts you to define variables for a new :class:`.mouse.Subject` object" alt="" coords="332,30,414,44"/>
 <area shape="rect" id="node15" href="#rpilot.core.gui.Protocol_Wizard" target="_top" title="A dialog window to create a new protocol." alt="" coords="339,58,407,72"/>
 <area shape="rect" id="node25" href="#rpilot.core.gui.Reassign" target="_top" title="A dialog that lets mice be batch reassigned to new protocols or steps." alt="" coords="351,85,395,99"/>
 <area shape="rect" id="node3" href="#rpilot.core.gui.Control_Panel" target="_top" title="A :class:`QtGui.QWidget` that contains the controls for all pilots." alt="" coords="236,72,296,85"/>
@@ -9,7 +9,7 @@
 <area shape="rect" id="node14" href="#rpilot.core.gui.Pilot_Ports" target="_top" title="Each pilot&#39;s ports and buttons to control repeated release." alt="" coords="241,154,290,167"/>
 <area shape="rect" id="node26" href="#rpilot.core.gui.Sound_Widget" target="_top" title="A widget that allows sounds to be parameterized." alt="" coords="235,236,297,250"/>
 <area shape="rect" id="node5" href="#rpilot.core.gui.Drag_List" target="_top" title="A :class:`QtGui.QListWidget` that is capable of having files dragged &amp; dropped." alt="" coords="717,167,762,181"/>
-<area shape="rect" id="node8" href="#rpilot.core.gui.Mouse_List" target="_top" title="A trivial modification of :class:`~.QtGui.QListWidget` that updates" alt="" coords="714,195,765,209"/>
+<area shape="rect" id="node8" href="#rpilot.core.gui.Subject_List" target="_top" title="A trivial modification of :class:`~.QtGui.QListWidget` that updates" alt="" coords="714,195,765,209"/>
 <area shape="rect" id="node11" href="#rpilot.core.gui.Pilot_Button" target="_top" title="Pilot_Button" alt="" coords="454,181,507,195"/>
 <area shape="rect" id="node27" href="#rpilot.core.gui.Weights" target="_top" title="A table for viewing and editing the most recent mouse weights." alt="" coords="719,222,760,236"/>
 </map>

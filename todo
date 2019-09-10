@@ -45,6 +45,19 @@
 - implement parameter setting, datatype mapping for stimulus managers (ie. 'correction trials' should be available for a particular stim manager, and the corresponding data should be added to data description)
 - separate task description generation from GUI
 - option to prebuffer all sounds or buffer on demand
+- must add "CONFIG" value to prefs - ie. "CONFIG": "VISUAL" as required by visuals module
+- be better about capitalization: ie. "LINEAGE" needs to be "CHILD" not "child", always test against .lower() or .upper()
+- DONT LOG PINGS
+- make logs machine readable: standardized format and standardized delimiters
+- refactor mouse into subject
+- clean up imports: should be rpilot.subject not rpilot.core.subject.Subject
+- subject class should store pilot and pilot config
+- make general timestamp column for every row that's saved.
+- make session increase cumulatively across steps
+- separate file and console handlers like https://docs.python.org/3/howto/logging-cookbook.html
+- setup terminal to be a ntp server by default https://help.ubuntu.com/lts/serverguide/NTP.html https://opensource.com/article/18/12/manage-ntp-chrony https://raspberrytips.com/time-sync-raspberry-pi/
+- set status of pis to unknown if no response from pings
+
 
 .. automodsumm:: rpilot.core.gui
     :toctree:

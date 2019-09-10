@@ -7,9 +7,15 @@ WIN = None
 from rpilot import prefs
 
 import threading
-from Queue import Queue, Empty
+import os
+import sys
+import datetime
+if sys.version_info >= (3,0):
+    from queue import Queue, Empty
+else:
+    from Queue import Queue, Empty
 
-print(prefs.prefdict.items())
+#print(prefs.prefdict.items())
 if hasattr(prefs, 'CONFIG'):
     if 'VISUAL' in prefs.CONFIG:
         from psychopy import visual, core
@@ -22,12 +28,14 @@ class Visual(object):
     callback = None
 
 
-    def __init__(self):
+    def __init__(self, debug=False):
         # psychopy Window
         self.win = None
         self.duration = None
         self.ppo = None # psychopy object
         #self.get_window()
+
+        self.debug = debug
 
         self.clock = core.Clock()
         self.draw_time = 0
@@ -44,7 +52,7 @@ class Visual(object):
         else:
             try:
                 global WIN
-                WIN = visual.Window(winType="pyglet")
+                WIN = visual.Window(winType="glfw", color=(-1., -1., -1.), fullscr=True, size=(1280,720))
                 self.win = WIN
             except:
                 Exception("Couldn't get psychopy Window!")
@@ -62,8 +70,8 @@ class Grating(Visual):
 
     def __init__(self, angle, freq, rate, phase=0,
                  mask="gauss", pos=(0., 0.), size=(2,2),
-                 duration=5000.):
-        super(Grating, self).__init__()
+                 duration=5000., debug=False):
+        super(Grating, self).__init__(debug=debug)
 
         self.angle = angle
         self.freq = freq
@@ -103,6 +111,9 @@ class Grating(Visual):
         while not self.stop_evt.is_set():
             self.play_evt.wait()
 
+            if self.debug:
+                self.win.recordFrameIntervals = True
+
             # reset stim
             self.ppo.phase = self.phase
 
@@ -124,6 +135,11 @@ class Grating(Visual):
             # another flip clears the screen
             self.win.flip()
             self.play_evt.clear()
+
+            if self.debug:
+                path = os.path.join(prefs.DATADIR, 'frameintervals_'+datetime.datetime.now().isoformat()+'.csv')
+                self.win.saveFrameIntervals(path)
+                self.win.recordFrameIntervals = False
 
 
 

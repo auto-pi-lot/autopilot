@@ -3,7 +3,7 @@ Warning:
     this module is unfinished, so it is undocumented.
 """
 
-# renders a standalone webpage with bokeh of trial data for all mice in the data folder
+# renders a standalone webpage with bokeh of trial data for all subjects in the data folder
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -19,7 +19,7 @@ from bokeh.layouts import gridplot
 from bokeh.transform import factor_cmap
 from bokeh.palettes import Spectral10
 from tqdm import tqdm
-from rpilot.core import mouse
+from rpilot.core import subject
 import colorcet as cc
 import numpy as np
 import json
@@ -34,7 +34,7 @@ def load_mouse_data(data_dir, mouse_name, steps=True, grad=True):
     # find pilot for mouse
     pilot_name = pilot_db[mouse_name]
 
-    amus = mouse.Mouse(mouse_name, dir=data_dir)
+    amus = subject.Subject(mouse_name, dir=data_dir)
 
     step_data = None
     grad_data = None
@@ -65,10 +65,10 @@ def load_mouse_data(data_dir, mouse_name, steps=True, grad=True):
 def load_mouse_dir(data_dir, steps=True, grad=True, which = None):
     """
     Args:
-        data_dir (str): A path to a directory with :class:`~.core.mouse.Mouse` style hdf5 files
+        data_dir (str): A path to a directory with :class:`~.core.mouse.Subject` style hdf5 files
         steps (bool): Whether to return full trial-level data for each step
         grad (bool): Whether to return summarized step graduation data.
-        which (list): A list of mice to subset the loaded mice to
+        which (list): A list of subjects to subset the loaded subjects to
 
     """
 
@@ -116,7 +116,7 @@ def step_viewer(grad_data):
 
 
 
-    p = figure(x_range=current_step['mouse'].unique(),title='Mouse Steps',
+    p = figure(x_range=current_step['mouse'].unique(),title='Subject Steps',
                plot_height=600,
                plot_width=1000)
     p.xaxis.major_label_orientation = np.pi / 2
@@ -152,7 +152,7 @@ def trial_viewer(step_data, roll_type = "ewm", roll_span=100, bar=False):
     current_step = current_step[['mouse','step']]
 
     plots = []
-    p = figure(x_range=step_data['mouse'].unique(),title='Mouse Steps',
+    p = figure(x_range=step_data['mouse'].unique(),title='Subject Steps',
                plot_height=200)
     p.xaxis.major_label_orientation = np.pi / 2
     p.vbar(x=current_step['mouse'], top=current_step['step'], width=0.9)
@@ -196,7 +196,7 @@ if __name__ == '__main__':
         data_dir = args.dir
 
     # TODO Make arg
-    active_mice = utils.list_mice()
+    active_mice = utils.list_subjects()
 
 
 

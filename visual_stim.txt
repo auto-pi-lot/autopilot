@@ -21,6 +21,22 @@ moviepy
 configobj
 psychopy
 json_tricks
+arabic-reshaper
+astunparse
+esprima
+freetype-py
+gevent
+gitpython
+msgpack-numpy
+msgpack-python
+pyosg
+pyparallel
+pyserial
+python-bidi
+python-gitlab
+pyyaml
+sounddevice
+soundfile
 
 sudo apt-get install mesa-utils
 
@@ -34,6 +50,8 @@ using X11-
 
 - https://discourse.psychopy.org/t/gamma-problem-in-v1-90-2/4549/11
 
+- ? https://github.com/sakaki-/genpi64-overlay/issues/17
+
 - sudo gpasswd -a pi tty
 - install xterm
 - call xinit
@@ -41,3 +59,14 @@ using X11-
 
 to investigate:
 - lxde, lightweight window server?
+
+
+# comment out text stim and form imports from psychopy
+
+
+# glfw
+apt install xorg-dev
+
+#######
+don't know what i did, but probably xorg-dev and then just running it from the .xinitrc file with xinit using pygame as backend.
+

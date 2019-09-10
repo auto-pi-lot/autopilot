@@ -44,7 +44,6 @@ import os
 import sys
 from rpilot import prefs
 from rpilot.core.networking import Net_Node
-from rpilot.core.utils import ReturnThread
 if prefs.AGENT in ['pilot']:
     import pigpio
 
@@ -78,7 +77,10 @@ import threading
 import time
 from datetime import datetime
 import numpy as np
-from Queue import Queue, Empty
+if sys.version_info >= (3,0):
+    from queue import Queue, Empty
+else:
+    from Queue import Queue, Empty
 
 
 # pigpio only uses BCM numbers, we need to translate them
@@ -172,7 +174,7 @@ class Hardware(object):
     def __del__(self):
         self.release()
 
-# TODO: Subclass nosepoke that knows about waiting for mouse leaving
+# TODO: Subclass nosepoke that knows about waiting for subject leaving
 class Beambreak(Hardware):
     """
     An IR Beambreak sensor.
@@ -293,6 +295,7 @@ class Flag(Beambreak):
 
 
     """
+    trigger = True
 
     def __init__(self, pin):
         super(Flag, self).__init__(pin, pull_ud="D", trigger_ud="U")
@@ -454,7 +457,7 @@ class LED_RGB(Hardware):
             offtimer = threading.Timer(float(timed)/1000, self.set_color, kwargs={'col':[0,0,0]})
             offtimer.start()
 
-    def flash(self, duration, frequency=40, colors=[[255,255,255],[0,0,0]]):
+    def flash(self, duration, frequency=10, colors=[[255,255,255],[0,0,0]]):
         """
         Specify a color series by total duration and flash frequency.
 
@@ -699,7 +702,7 @@ class Wheel(Hardware):
             self.mouse = devices.mice[mouse_idx]
         except IndexError:
             Warning('Could not find requested mouse with index {}\nAttempting to use mouse idx 0'.format(mouse_idx))
-            self.mouse = devices.mice[0]
+            self.subject = devices.mice[0]
 
         # frequency of our updating
         self.fs = fs
@@ -751,6 +754,10 @@ class Wheel(Hardware):
         self.pins = pins
         if self.gpio_trig:
             self.pig = pigpio.pi()
+
+            # FIXME: This doesn't make a whole hell of a lot of sense to me
+            # why would we want a wheel with all the power of god to trigger whatever pins it wants
+            # probably should be a single pin, or at least flexible.
 
             pins_temp = pins
             self.pins = {}
@@ -857,6 +864,8 @@ class Wheel(Hardware):
             thresh_val = self.thresh_val[self.thresh_val['timestamp'] > time.time()-self.integrate_dur]
 
             thresh_update = self.calc_move(thresh_val)
+            #print(thresh_update)
+            #sys.stdout.flush()
 
             if (thresh_update < self.thresh) and (self.measure_time+self.integrate_dur < time.time()):
                 do_trigger = True
@@ -909,7 +918,11 @@ class Wheel(Hardware):
             if self.gpio_trig:
                 for pin in self.pins.values():
                     print("TRIGGERING", pin)
-                    self.pig.gpio_trigger(pin, 100, 1)
+                    sys.stdout.flush()
+                    #self.pig.gpio_trigger(pin, 100, 1)
+                    self.pig.write(pin, 1)
+                    time.sleep(0.5)
+                    self.pig.write(pin, 0)
 
         else:
             if self.gpio_trig:
@@ -950,6 +963,9 @@ class Wheel(Hardware):
         self.measure_time = time.time()
 
         self.measure_evt.set()
+
+        print('MEASURING!!!!!')
+        sys.stdout.flush()
 
     def l_clear(self, value):
         """

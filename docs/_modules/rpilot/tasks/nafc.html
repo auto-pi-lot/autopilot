@@ -214,7 +214,7 @@
 
 <span class="kn">from</span> <span class="nn">rpilot</span> <span class="kn">import</span> <span class="n">prefs</span>
 
-<span class="c1"># This declaration allows Mouse to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.</span>
+<span class="c1"># This declaration allows Subject to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.</span>
 <span class="c1"># TODO: Move this to __init__</span>
 <span class="n">TASK</span> <span class="o">=</span> <span class="s1">&#39;Nafc&#39;</span>
 
@@ -239,7 +239,7 @@
 <span class="sd">        correction_trial (bool): If using correction trials, last trial was a correction trial</span>
 <span class="sd">        trial_counter (:class:`itertools.count`): Which trial are we on?</span>
 <span class="sd">        discrim_playing (bool): Is the stimulus playing?</span>
-<span class="sd">        bailed (0, 1): Mouse answered before stimulus was finished playing.</span>
+<span class="sd">        bailed (0, 1): Subject answered before stimulus was finished playing.</span>
 <span class="sd">        current_stage (int): As each stage is reached, update for asynchronous event reference</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -290,7 +290,7 @@
     <span class="c1"># PyTables Data descriptor</span>
     <span class="c1"># for numpy data types see http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html#arrays-dtypes-constructing</span>
     <span class="k">class</span> <span class="nc">TrialData</span><span class="p">(</span><span class="n">tables</span><span class="o">.</span><span class="n">IsDescription</span><span class="p">):</span>
-        <span class="c1"># This class allows the Mouse object to make a data table with the correct data types. You must update it for any new data you&#39;d like to store</span>
+        <span class="c1"># This class allows the Subject object to make a data table with the correct data types. You must update it for any new data you&#39;d like to store</span>
         <span class="n">trial_num</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Int32Col</span><span class="p">()</span>
         <span class="n">target</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">StringCol</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">StringCol</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>

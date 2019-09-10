@@ -19,7 +19,7 @@ import pandas as pd
 import warnings
 from copy import copy
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from rpilot import tasks
+from rpilot.tasks import GRAD_LIST, TASK_LIST
 from rpilot import prefs
 from rpilot.stim.sound.sounds import STRING_PARAMS
 
@@ -31,7 +31,7 @@ else:
 import pdb
 
 
-class Mouse:
+class Subject:
     """
     Class for managing one mouse's data and protocol.
 
@@ -56,7 +56,7 @@ class Mouse:
 
     Attributes:
         lock (:class:`threading.Lock`): manages access to the hdf5 file
-        name (str): Mouse ID
+        name (str): Subject ID
         file (str): Path to hdf5 file - usually `{prefs.DATADIR}/{self.name}.h5`
         current (dict): current task parameters. loaded from
             the 'current' :mod:`~tables.filenode` of the h5 file
@@ -72,7 +72,7 @@ class Mouse:
             * full path, eg. '/history/weights'
             * relative path, eg. '/history'
             * name, eg. 'weights'
-            * type, eg. :class:`.Mouse.Weight_Table` or 'group'
+            * type, eg. :class:`.Subject.Weight_Table` or 'group'
 
         node locations (eg. '/data') to types, either 'group' for groups or a
             :class:`tables.IsDescriptor` for tables.
@@ -80,11 +80,12 @@ class Mouse:
 
 
 
-    def __init__(self, name, dir=None, new=False, biography=None):
+    def __init__(self, name=None, dir=None, file=None, new=False, biography=None):
         """
         Args:
             name (str): mouse ID
             dir (str): path where the .h5 file is located, if `None`, `prefs.DATADIR` is used
+            file (str): load a mouse from a filename. if `None`, ignored.
             new (bool): if True, a new file is made (a new file is made if one does not exist anyway)
             biography (dict): If making a new mouse file, a dictionary with biographical data can be passed
         """
@@ -101,17 +102,39 @@ class Mouse:
         self.lock = threading.Lock()
 
         if not dir:
-            dir = prefs.DATADIR
+            try:
+                dir = prefs.DATADIR
+            except AttributeError:
+                dir = os.path.split(file)[0]
 
-        self.name = str(name)
-        self.file = os.path.join(dir, name + '.h5')
-        if new or not os.path.isfile(self.file):
-            self.new_mouse_file(biography)
+        if not name:
+            if not file:
+                Exception('Need to either have a name or a file, how else would we find the .h5 file?')
+            if not os.path.isfile(file):
+                Exception('no file was found at passed file: {}'.format(file))
+            self.file = file
+        else:
+            if file:
+                Warning('file passed, but so was name, defaulting to using name + dir')
+
+            self.name = str(name)
+            self.file = os.path.join(dir, name + '.h5')
+            if new or not os.path.isfile(self.file):
+                self.new_mouse_file(biography)
 
         # before we open, make sure we have the stuff we need
         self.ensure_structure()
 
         h5f = self.open_hdf()
+
+        if not name:
+            try:
+                self.name = h5f.root.info._v_attrs['name']
+            except KeyError:
+                Warning('No Name attribute saved, trying to recover from filename')
+                self.name = os.path.splitext(os.path.split(file)[-1])[0]
+
+
 
         # If mouse has a protocol, load it to a dict
         self.current = None
@@ -155,7 +178,7 @@ class Mouse:
         Opens the hdf5 file.
 
         This should be called at the start of every method that access the h5 file
-        and :meth:`~.Mouse.close_hdf` should be called at the end. Otherwise
+        and :meth:`~.Subject.close_hdf` should be called at the end. Otherwise
         the file will close and we risk file corruption.
 
         See the pytables docs
@@ -181,10 +204,10 @@ class Mouse:
         # type: (tables.file.File) -> None
         """
         Flushes & closes the open hdf file.
-        Must be called whenever :meth:`~.Mouse.open_hdf` is used.
+        Must be called whenever :meth:`~.Subject.open_hdf` is used.
 
         Args:
-            h5f (:class:`tables.File`): the hdf file opened by :meth:`~.Mouse.open_hdf`
+            h5f (:class:`tables.File`): the hdf file opened by :meth:`~.Subject.open_hdf`
         """
         with self.lock:
             h5f.flush()
@@ -198,7 +221,7 @@ class Mouse:
 
         Args:
             biography (dict): Biographical details like DOB, mass, etc.
-                Typically created by :class:`~.gui.New_Mouse_Wizard.Biography_Tab`.
+                Typically created by :class:`~.gui.New_Subject_Wizard.Biography_Tab`.
         """
         # If a file already exists, we open it for appending so we don't lose data.
         # For now we are assuming that the existing file has the basic structure,
@@ -225,7 +248,7 @@ class Mouse:
             h5f.create_table(history_group, 'history', self.History_Table, "Change History")
 
             # Make table for weights
-            h5f.create_table(history_group, 'weights', self.Weight_Table, "Mouse Weights")
+            h5f.create_table(history_group, 'weights', self.Weight_Table, "Subject Weights")
 
             # And another table to stash the git hash every time we're open.
             h5f.create_table(history_group, 'hashes', self.Hash_Table, "Git commit hash history")
@@ -234,6 +257,8 @@ class Mouse:
         if biography:
             for k, v in biography.items():
                 h5f.root.info._v_attrs[k] = v
+
+        h5f.root.info._v_attrs['name'] = self.name
 
         self.close_hdf(h5f)
 
@@ -251,11 +276,21 @@ class Mouse:
             except tables.exceptions.NoSuchNodeError:
                 #pdb.set_trace()
                 # try to make it
-                if isinstance(node[3], basestring):
-                    if node[3] == 'group':
-                        h5f.create_group(node[1], node[2])
-                elif issubclass(node[3], tables.IsDescription):
-                    h5f.create_table(node[1], node[2], description=node[3])
+                # python 3 compatibility
+                if sys.version_info >= (3,0):
+                    if isinstance(node[3], str):
+                        if node[3] == 'group':
+                            h5f.create_group(node[1], node[2])
+                    elif issubclass(node[3], tables.IsDescription):
+                        h5f.create_table(node[1], node[2], description=node[3])
+
+                # python 2
+                else:
+                    if isinstance(node[3], basestring):
+                        if node[3] == 'group':
+                            h5f.create_group(node[1], node[2])
+                    elif issubclass(node[3], tables.IsDescription):
+                        h5f.create_table(node[1], node[2], description=node[3])
 
         self.close_hdf(h5f)
 
@@ -344,7 +379,7 @@ class Mouse:
         """
         Assign a protocol to the mouse.
 
-        If the mouse has a currently assigned task, stashes it with :meth:`~.Mouse.stash_current`
+        If the mouse has a currently assigned task, stashes it with :meth:`~.Subject.stash_current`
 
         Creates groups and tables according to the data descriptions in the task class being assigned.
         eg. as described in :class:`.Task.TrialData`.
@@ -418,7 +453,7 @@ class Mouse:
         # memory, we can just keep appending to keep things simple.
         for i, step in enumerate(self.current):
             # First we get the task class for this step
-            task_class = tasks.TASK_LIST[step['task_type']]
+            task_class = TASK_LIST[step['task_type']]
             step_name = step['step_name']
             # group name is S##_'step_name'
             group_name = "S{:02d}_{}".format(i, step_name)
@@ -529,11 +564,11 @@ class Mouse:
 
     def prepare_run(self):
         """
-        Prepares the Mouse object to receive data while running the task.
+        Prepares the Subject object to receive data while running the task.
 
         Gets information about current task, trial number,
         spawns :class:`~.tasks.graduation.Graduation` object,
-        spawns :attr:`~.Mouse.data_queue` and calls :meth:`~.Mouse.data_thread`.
+        spawns :attr:`~.Subject.data_queue` and calls :meth:`~.Subject.data_thread`.
 
         Returns:
             Dict: the parameters for the current step, with mouse id, step number,
@@ -582,7 +617,7 @@ class Mouse:
             grad_params = task_params['graduation']['value'].copy()
 
             # add other params asked for by the task class
-            grad_obj = tasks.GRAD_LIST[grad_type]
+            grad_obj = GRAD_LIST[grad_type]
 
             if grad_obj.PARAMS:
                 # these are params that should be set in the protocol settings
@@ -628,7 +663,7 @@ class Mouse:
         """
         Thread that keeps hdf file open and receives data while task is running.
 
-        receives data through :attr:`~.Mouse.queue` as dictionaries. Data can be
+        receives data through :attr:`~.Subject.queue` as dictionaries. Data can be
         partial-trial data (eg. each phase of a trial) as long as the task returns a dict with
         'TRIAL_END' as a key at the end of each trial.
 
@@ -638,7 +673,7 @@ class Mouse:
         Checks graduation state at the end of each trial.
 
         Args:
-            queue (:class:`queue.Queue`): passed by :meth:`~.Mouse.prepare_run` and used by other
+            queue (:class:`queue.Queue`): passed by :meth:`~.Subject.prepare_run` and used by other
                 objects to pass data to be stored.
         """
         h5f = self.open_hdf()
@@ -719,7 +754,7 @@ class Mouse:
 
     def save_data(self, data):
         """
-        Alternate and equivalent method of putting data in the queue as `Mouse.data_queue.put(data)`
+        Alternate and equivalent method of putting data in the queue as `Subject.data_queue.put(data)`
 
         Args:
             data (dict): trial data. each should have a 'trial_num', and a dictionary with key
@@ -729,7 +764,7 @@ class Mouse:
 
     def stop_run(self):
         """
-        puts 'END' in the data_queue, which causes :meth:`~.Mouse.data_thread` to end.
+        puts 'END' in the data_queue, which causes :meth:`~.Subject.data_thread` to end.
         """
         self.data_queue.put('END')
         self.thread.join(5)
@@ -768,7 +803,9 @@ class Mouse:
                     step_groups = [step_name]
                     break
         elif isinstance(step, int):
-            step_groups = step_groups[step]
+            if step > len(step_groups):
+                ValueError('You provided a step number ({}) greater than the number of steps in the subjects assigned protocol: ()'.format(step, len(step_groups)))
+            step_groups = [step_groups[step]]
         elif isinstance(step, list):
             step_groups = step_groups[int(step[0]):int(step[1])]
 

@@ -98,3 +98,6 @@ ENV/
 .DS_Store
 
 # rendered docs
+
+# viz renders
+/*/viz/*.html

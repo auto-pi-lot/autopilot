@@ -226,7 +226,7 @@
 
 <span class="c1"># adding rpilot parent directory to path</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))))</span>
-<span class="kn">from</span> <span class="nn">rpilot.core.mouse</span> <span class="kn">import</span> <span class="n">Mouse</span>
+<span class="kn">from</span> <span class="nn">rpilot.core.mouse</span> <span class="kn">import</span> <span class="n">Subject</span>
 <span class="kn">from</span> <span class="nn">rpilot</span> <span class="kn">import</span> <span class="n">tasks</span><span class="p">,</span> <span class="n">prefs</span>
 <span class="kn">from</span> <span class="nn">rpilot.stim.sound</span> <span class="kn">import</span> <span class="n">sounds</span>
 <span class="kn">from</span> <span class="nn">rpilot.core.networking</span> <span class="kn">import</span> <span class="n">Net_Node</span>
@@ -260,7 +260,7 @@
 
 <span class="sd">    Specifically, for each pilot, it contains</span>
 
-<span class="sd">    * one :class:`Mouse_List`: A list of the mice that run in each pilot.</span>
+<span class="sd">    * one :class:`Subject_List`: A list of the mice that run in each pilot.</span>
 <span class="sd">    * one :class:`Pilot_Panel`: A set of button controls for starting/stopping behavior</span>
 
 <span class="sd">    This class should not be instantiated outside the context of a</span>
@@ -268,12 +268,12 @@
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        mice (dict): A dictionary with mouse ID&#39;s as keys and</span>
-<span class="sd">                :class:`core.mouse.Mouse` objects as values. Shared with the</span>
+<span class="sd">                :class:`core.mouse.Subject` objects as values. Shared with the</span>
 <span class="sd">                Terminal object to manage access conflicts.</span>
 <span class="sd">        start_fn (:py:meth:`~rpilot.core.terminal.Terminal.toggle_start`): See :py:attr:`.Control_Panel.start_fn`</span>
 <span class="sd">        pilots (dict): A dictionary with pilot ID&#39;s as keys and nested dictionaries</span>
 <span class="sd">                    containing mice, IP, etc. as values</span>
-<span class="sd">        mouse_lists (dict): A dict mapping mouse ID to :py:class:`.Mouse_List`</span>
+<span class="sd">        mouse_lists (dict): A dict mapping mouse ID to :py:class:`.Subject_List`</span>
 <span class="sd">        layout (:py:class:`~QtGui.QGridLayout`): Layout grid for widget</span>
 <span class="sd">        panels (dict): A dict mapping pilot name to the relevant :py:class:`.Pilot_Panel`</span>
 
@@ -332,7 +332,7 @@
 <span class="sd">        Called on init, creates the UI components.</span>
 
 <span class="sd">        Specifically, for each pilot in :py:attr:`.pilots`,</span>
-<span class="sd">        make a :class:`Mouse_List`: and :class:`Pilot_Panel`:,</span>
+<span class="sd">        make a :class:`Subject_List`: and :class:`Pilot_Panel`:,</span>
 <span class="sd">        set size policies and connect Qt signals.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">setColumnStretch</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -343,7 +343,7 @@
             <span class="c1"># in pilot dict, format is {&#39;pilot&#39;:{&#39;mice&#39;:[&#39;mouse1&#39;,...],&#39;ip&#39;:&#39;&#39;,etc.}}</span>
             <span class="n">mice</span> <span class="o">=</span> <span class="n">mice</span><span class="p">[</span><span class="s1">&#39;mice&#39;</span><span class="p">]</span>
             <span class="c1"># Make a list of mice</span>
-            <span class="n">mouse_list</span> <span class="o">=</span> <span class="n">Mouse_List</span><span class="p">(</span><span class="n">mice</span><span class="p">,</span> <span class="n">drop_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_db</span><span class="p">)</span>
+            <span class="n">mouse_list</span> <span class="o">=</span> <span class="n">Subject_List</span><span class="p">(</span><span class="n">mice</span><span class="p">,</span> <span class="n">drop_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_db</span><span class="p">)</span>
             <span class="n">mouse_list</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">)</span>
             <span class="c1">#mouse_list.itemDoubleClicked.connect(self.edit_params)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mouse_lists</span><span class="p">[</span><span class="n">pilot</span><span class="p">]</span> <span class="o">=</span> <span class="n">mouse_list</span>
@@ -360,13 +360,13 @@
 <div class="viewcode-block" id="Control_Panel.create_mouse"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.Control_Panel.create_mouse">[docs]</a>    <span class="k">def</span> <span class="nf">create_mouse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pilot</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Becomes :py:attr:`.Pilot_Panel.create_fn`.</span>
-<span class="sd">        Opens a :py:class:`.New_Mouse_Wizard` to create a new mouse file and assign protocol.</span>
+<span class="sd">        Opens a :py:class:`.New_Subject_Wizard` to create a new mouse file and assign protocol.</span>
 <span class="sd">        Finally, adds the new mouse to the :py:attr:`~.Control_Panel.pilots` database and updates it.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            pilot (str): Pilot name passed from :py:class:`.Pilot_Panel`, added to the created Mouse object.</span>
+<span class="sd">            pilot (str): Pilot name passed from :py:class:`.Pilot_Panel`, added to the created Subject object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_mouse_wizard</span> <span class="o">=</span> <span class="n">New_Mouse_Wizard</span><span class="p">()</span>
+        <span class="n">new_mouse_wizard</span> <span class="o">=</span> <span class="n">New_Subject_Wizard</span><span class="p">()</span>
         <span class="n">new_mouse_wizard</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
 
         <span class="c1"># If the wizard completed successfully, get its values</span>
@@ -376,7 +376,7 @@
             <span class="n">biography_vals</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pilot</span>
 
             <span class="c1"># Make a new mouse object, make it temporary because we want to close it</span>
-            <span class="n">mouse_obj</span> <span class="o">=</span> <span class="n">Mouse</span><span class="p">(</span><span class="n">biography_vals</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">new</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+            <span class="n">mouse_obj</span> <span class="o">=</span> <span class="n">Subject</span><span class="p">(</span><span class="n">biography_vals</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">new</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
                               <span class="n">biography</span><span class="o">=</span><span class="n">biography_vals</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mice</span><span class="p">[</span><span class="n">biography_vals</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">mouse_obj</span>
 
@@ -405,10 +405,10 @@
     <span class="c1">#     # edit a mouse&#39;s task parameters, called when mouse double-clicked</span>
     <span class="c1">#     mouse = item.text()</span>
     <span class="c1">#     if mouse not in self.mice.keys():</span>
-    <span class="c1">#         self.mice[mouse] = Mouse(mouse)</span>
+    <span class="c1">#         self.mice[mouse] = Subject(mouse)</span>
     <span class="c1">#</span>
     <span class="c1">#     if &#39;/current&#39; not in self.mice[mouse].h5f:</span>
-    <span class="c1">#         Warning(&quot;Mouse {} has no protocol!&quot;.format(mouse))</span>
+    <span class="c1">#         Warning(&quot;Subject {} has no protocol!&quot;.format(mouse))</span>
     <span class="c1">#         return</span>
     <span class="c1">#</span>
     <span class="c1">#     protocol = self.mice[mouse].current</span>
@@ -430,7 +430,7 @@
 
 <div class="viewcode-block" id="Control_Panel.update_db"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.Control_Panel.update_db">[docs]</a>    <span class="k">def</span> <span class="nf">update_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Gathers any changes in :class:`Mouse_List` s and dumps :py:attr:`.pilots` to :py:attr:`.prefs.PILOT_DB`</span>
+<span class="sd">        Gathers any changes in :class:`Subject_List` s and dumps :py:attr:`.pilots` to :py:attr:`.prefs.PILOT_DB`</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            kwargs: Create new pilots by passing a dictionary with the structure</span>
@@ -472,7 +472,7 @@
 <span class="c1"># Control Panel Widgets</span>
 <span class="c1">###################################</span>
 
-<div class="viewcode-block" id="Mouse_List"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.Mouse_List">[docs]</a><span class="k">class</span> <span class="nc">Mouse_List</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QListWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject_List"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.Subject_List">[docs]</a><span class="k">class</span> <span class="nc">Subject_List</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QListWidget</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A trivial modification of :class:`~.QtGui.QListWidget` that updates</span>
 <span class="sd">    :py:attr:`~.Terminal.pilots` when an item in the list is dragged to another location.</span>
@@ -487,10 +487,10 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mice</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">drop_fn</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
-<span class="sd">            mice: see :py:attr:`~.Mouse_List.mice`. Can be `None` for an empty list</span>
-<span class="sd">            drop_fn: see :py:meth:`~.Mouse_List.drop_fn`. Passed from :class:`.Control_Panel`</span>
+<span class="sd">            mice: see :py:attr:`~.Subject_List.mice`. Can be `None` for an empty list</span>
+<span class="sd">            drop_fn: see :py:meth:`~.Subject_List.drop_fn`. Passed from :class:`.Control_Panel`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Mouse_List</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Subject_List</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="c1"># if we are passed a list of mice, populate</span>
         <span class="k">if</span> <span class="n">mice</span><span class="p">:</span>
@@ -505,23 +505,23 @@
         <span class="c1"># drop_fn gets called on a dropEvent (after calling the superclass method)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">drop_fn</span> <span class="o">=</span> <span class="n">drop_fn</span>
 
-<div class="viewcode-block" id="Mouse_List.populate_list"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.Mouse_List.populate_list">[docs]</a>    <span class="k">def</span> <span class="nf">populate_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject_List.populate_list"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.Subject_List.populate_list">[docs]</a>    <span class="k">def</span> <span class="nf">populate_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Adds each item in :py:attr:`Mouse_List.mice` to the list.</span>
+<span class="sd">        Adds each item in :py:attr:`Subject_List.mice` to the list.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mice</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">m</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mouse_List.dropEvent"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.Mouse_List.dropEvent">[docs]</a>    <span class="k">def</span> <span class="nf">dropEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject_List.dropEvent"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.Subject_List.dropEvent">[docs]</a>    <span class="k">def</span> <span class="nf">dropEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A trivial redefinition of :py:meth:`.QtGui.QListWidget.dropEvent`</span>
-<span class="sd">        that calls the parent `dropEvent` and then calls :py:attr:`~.Mouse_List.drop_fn`</span>
+<span class="sd">        that calls the parent `dropEvent` and then calls :py:attr:`~.Subject_List.drop_fn`</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            event: A :class:`.QtCore.QEvent` simply forwarded to the superclass.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># call the parent dropEvent to make sure all the list ops happen</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Mouse_List</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">dropEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Subject_List</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">dropEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
         <span class="c1"># then we call the drop_fn passed to us</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">drop_fn</span><span class="p">()</span></div></div>
 
@@ -545,7 +545,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            pilot (str): The name of the pilot this panel controls</span>
-<span class="sd">            mouse_list (:py:class:`.Mouse_List`): The :py:class:`.Mouse_List` we control</span>
+<span class="sd">            mouse_list (:py:class:`.Subject_List`): The :py:class:`.Subject_List` we control</span>
 <span class="sd">            start_fn (:py:meth:`~rpilot.core.terminal.Terminal.toggle_start`): Passed by :class:`Control_Panel`</span>
 <span class="sd">            create_fn (:py:meth:`Control_Panel.create_mouse`): Passed by :class:`Control_Panel`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -626,7 +626,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            pilot (str): The ID of the pilot that this button controls</span>
-<span class="sd">            mouse_list (:py:class:`.Mouse_List`): The Mouse list used to determine which</span>
+<span class="sd">            mouse_list (:py:class:`.Subject_List`): The Subject list used to determine which</span>
 <span class="sd">                mouse is starting/stopping</span>
 <span class="sd">            start_fn (:py:meth:`~rpilot.core.terminal.Terminal.toggle_start`): The final</span>
 <span class="sd">                resting place of the toggle_start method</span>
@@ -740,22 +740,22 @@
 
 <span class="c1"># TODO: Change these classes to use the update params windows</span>
 
-<div class="viewcode-block" id="New_Mouse_Wizard"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.New_Mouse_Wizard">[docs]</a><span class="k">class</span> <span class="nc">New_Mouse_Wizard</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="p">):</span>
+<div class="viewcode-block" id="New_Subject_Wizard"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.New_Subject_Wizard">[docs]</a><span class="k">class</span> <span class="nc">New_Subject_Wizard</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A popup that prompts you to define variables for a new :class:`.mouse.Mouse` object</span>
+<span class="sd">    A popup that prompts you to define variables for a new :class:`.mouse.Subject` object</span>
 
 <span class="sd">    Called by :py:meth:`.Control_Panel.create_mouse` , which handles actually creating</span>
 <span class="sd">    the mouse file and updating the :py:attr:`.Terminal.pilots` dict and file.</span>
 
 <span class="sd">    Contains two tabs</span>
-<span class="sd">    - :class:`~.New_Mouse_Wizard.Biography_Tab` - to set basic biographical information about a mouse</span>
-<span class="sd">    - :class:`~.New_Mouse_Wizard.Task_Tab` - to set the protocol and step to start the mouse on</span>
+<span class="sd">    - :class:`~.New_Subject_Wizard.Biography_Tab` - to set basic biographical information about a mouse</span>
+<span class="sd">    - :class:`~.New_Subject_Wizard.Task_Tab` - to set the protocol and step to start the mouse on</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        protocol_dir (str): A full path to where protocols are stored,</span>
 <span class="sd">            received from :py:const:`.prefs.PROTOCOLDIR`</span>
-<span class="sd">        bio_tab (:class:`~.New_Mouse_Wizard.Biography_Tab`): Sub-object to set and store biographical variables</span>
-<span class="sd">        task_tab (:class:`~.New_Mouse_Wizard.Task_Tab`): Sub-object to set and store protocol and step assignment</span>
+<span class="sd">        bio_tab (:class:`~.New_Subject_Wizard.Biography_Tab`): Sub-object to set and store biographical variables</span>
+<span class="sd">        task_tab (:class:`~.New_Subject_Wizard.Task_Tab`): Sub-object to set and store protocol and step assignment</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -781,9 +781,9 @@
         <span class="n">mainLayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">buttonBox</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">mainLayout</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;Setup New Mouse&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;Setup New Subject&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="New_Mouse_Wizard.Biography_Tab"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.New_Mouse_Wizard.Biography_Tab">[docs]</a>    <span class="k">class</span> <span class="nc">Biography_Tab</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="New_Subject_Wizard.Biography_Tab"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.New_Subject_Wizard.Biography_Tab">[docs]</a>    <span class="k">class</span> <span class="nc">Biography_Tab</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A widget that allows defining basic biographical attributes about a mouse</span>
 
@@ -794,7 +794,7 @@
 <span class="sd">            available in the values dictionary. The attributes themselves are PySide Widgets that set the values.</span>
 
 <span class="sd">        Attributes:</span>
-<span class="sd">            id (str): A Mouse&#39;s ID or name</span>
+<span class="sd">            id (str): A Subject&#39;s ID or name</span>
 <span class="sd">            start_date (str): The date the mouse started the task. Automatically filled by</span>
 <span class="sd">                :py:meth:`datetime.date.today().isoformat()`</span>
 <span class="sd">            blmass (float): The mouse&#39;s baseline mass</span>
@@ -865,7 +865,7 @@
             <span class="c1"># Dictionary to return values</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="New_Mouse_Wizard.Biography_Tab.update_return_dict"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.New_Mouse_Wizard.Biography_Tab.update_return_dict">[docs]</a>        <span class="k">def</span> <span class="nf">update_return_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+<div class="viewcode-block" id="New_Subject_Wizard.Biography_Tab.update_return_dict"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.New_Subject_Wizard.Biography_Tab.update_return_dict">[docs]</a>        <span class="k">def</span> <span class="nf">update_return_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Called by lambda functions by the widgets, eg.::</span>
 
@@ -878,7 +878,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span></div>
             <span class="c1"># When values changed, update return dict</span>
 
-<div class="viewcode-block" id="New_Mouse_Wizard.Biography_Tab.calc_minmass"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.New_Mouse_Wizard.Biography_Tab.calc_minmass">[docs]</a>        <span class="k">def</span> <span class="nf">calc_minmass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="New_Subject_Wizard.Biography_Tab.calc_minmass"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.New_Subject_Wizard.Biography_Tab.calc_minmass">[docs]</a>        <span class="k">def</span> <span class="nf">calc_minmass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Calculates the minimum mass for a mouse based on its baseline mass</span>
 <span class="sd">            and the allowable percentage of that baseline</span>
@@ -888,7 +888,7 @@
             <span class="n">pct</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minmass_pct</span><span class="o">.</span><span class="n">text</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mi">100</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">minmass</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">baseline</span><span class="o">*</span><span class="n">pct</span><span class="p">))</span></div></div>
 
-<div class="viewcode-block" id="New_Mouse_Wizard.Task_Tab"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.New_Mouse_Wizard.Task_Tab">[docs]</a>    <span class="k">class</span> <span class="nc">Task_Tab</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="New_Subject_Wizard.Task_Tab"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.New_Subject_Wizard.Task_Tab">[docs]</a>    <span class="k">class</span> <span class="nc">Task_Tab</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A tab for selecting a task and step to assign to the mouse.</span>
 
@@ -932,7 +932,7 @@
             <span class="c1"># Dict to return values</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="New_Mouse_Wizard.Task_Tab.update_step_box"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.New_Mouse_Wizard.Task_Tab.update_step_box">[docs]</a>        <span class="k">def</span> <span class="nf">update_step_box</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="New_Subject_Wizard.Task_Tab.update_step_box"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.New_Subject_Wizard.Task_Tab.update_step_box">[docs]</a>        <span class="k">def</span> <span class="nf">update_step_box</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Clears any steps that might be in the step selection box,</span>
 <span class="sd">            loads the protocol file and repopulates it.</span>
@@ -956,14 +956,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">step_selection</span><span class="o">.</span><span class="n">insertItems</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">step_list</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">step_selection</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="New_Mouse_Wizard.Task_Tab.protocol_changed"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.New_Mouse_Wizard.Task_Tab.protocol_changed">[docs]</a>        <span class="k">def</span> <span class="nf">protocol_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="New_Subject_Wizard.Task_Tab.protocol_changed"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.New_Subject_Wizard.Task_Tab.protocol_changed">[docs]</a>        <span class="k">def</span> <span class="nf">protocol_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            When the protocol is changed, save the value and call :py:meth:`.update_step_box`.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_listbox</span><span class="o">.</span><span class="n">currentItem</span><span class="p">()</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_step_box</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="New_Mouse_Wizard.Task_Tab.step_changed"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.New_Mouse_Wizard.Task_Tab.step_changed">[docs]</a>        <span class="k">def</span> <span class="nf">step_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="New_Subject_Wizard.Task_Tab.step_changed"><a class="viewcode-back" href="../../../rpilot.core.gui.html#rpilot.core.gui.New_Subject_Wizard.Task_Tab.step_changed">[docs]</a>        <span class="k">def</span> <span class="nf">step_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            When the step is changed, save it.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
@@ -2162,8 +2162,8 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            mice_weights (list): a list of weights of the format returned by</span>
-<span class="sd">                :py:meth:`.Mouse.get_weight(baseline=True)`.</span>
-<span class="sd">            mice (dict): the Terminal&#39;s :py:attr:`.Terminal.mice` dictionary of :class:`.Mouse` objects.</span>
+<span class="sd">                :py:meth:`.Subject.get_weight(baseline=True)`.</span>
+<span class="sd">            mice (dict): the Terminal&#39;s :py:attr:`.Terminal.mice` dictionary of :class:`.Subject` objects.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Weights</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -2171,7 +2171,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mice</span> <span class="o">=</span> <span class="n">mice</span> <span class="c1"># mouse objects from terminal</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">colnames</span> <span class="o">=</span> <span class="n">odict</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">colnames</span><span class="p">[</span><span class="s1">&#39;mouse&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Mouse&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colnames</span><span class="p">[</span><span class="s1">&#39;mouse&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Subject&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">colnames</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Date&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">colnames</span><span class="p">[</span><span class="s1">&#39;baseline_mass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Baseline&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">colnames</span><span class="p">[</span><span class="s1">&#39;minimum_mass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Minimum&quot;</span>
@@ -2267,7 +2267,7 @@
 <span class="c1">#     Attributes:</span>
 <span class="c1">#         param_layout (:class:`QtGui.QFormLayout`): Holds param tags and values</span>
 <span class="c1">#         param_changes (dict): Stores any changes made to protocol parameters,</span>
-<span class="c1">#             used to update the protocol stored in the :class:`~.mouse.Mouse` object.</span>
+<span class="c1">#             used to update the protocol stored in the :class:`~.mouse.Subject` object.</span>
 <span class="c1">#     &quot;&quot;&quot;</span>
 <span class="c1">#     # Superclass to embed wherever needed</span>
 <span class="c1">#     # Subclasses will implement use as standalong dialog and as step selector</span>
