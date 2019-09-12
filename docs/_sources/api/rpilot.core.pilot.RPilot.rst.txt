@@ -26,10 +26,12 @@ RPilot
 
       ~RPilot.blank_LEDs
       ~RPilot.calibrate_port
+      ~RPilot.calibration_curve
       ~RPilot.get_ip
       ~RPilot.handshake
       ~RPilot.init_audio
       ~RPilot.init_logging
+      ~RPilot.l_bandwidth
       ~RPilot.l_cal_port
       ~RPilot.l_cal_result
       ~RPilot.l_param
@@ -55,10 +57,12 @@ RPilot
 
    .. automethod:: blank_LEDs
    .. automethod:: calibrate_port
+   .. automethod:: calibration_curve
    .. automethod:: get_ip
    .. automethod:: handshake
    .. automethod:: init_audio
    .. automethod:: init_logging
+   .. automethod:: l_bandwidth
    .. automethod:: l_cal_port
    .. automethod:: l_cal_result
    .. automethod:: l_param

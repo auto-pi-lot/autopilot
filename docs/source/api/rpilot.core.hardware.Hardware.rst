@@ -21,6 +21,7 @@ Hardware
    .. autosummary::
 
       ~Hardware.assign_cb
+      ~Hardware.get_name
       ~Hardware.release
 
    .. rubric:: Attributes Documentation
@@ -34,4 +35,5 @@ Hardware
    .. rubric:: Methods Documentation
 
    .. automethod:: assign_cb
+   .. automethod:: get_name
    .. automethod:: release

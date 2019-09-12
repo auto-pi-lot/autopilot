@@ -14,7 +14,7 @@ TASK = 'Free_water'
 
 class Free_Water(Task):
     """
-    Randomly light up one of the ports, then dispense water when the mouse pokes there
+    Randomly light up one of the ports, then dispense water when the subject pokes there
 
     Two stages:
 

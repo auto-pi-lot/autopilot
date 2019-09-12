@@ -1,0 +1,10 @@
+<map id="inheritanceef97e5fc3c" name="inheritanceef97e5fc3c">
+<area shape="rect" id="node1" href="rst/rpilot.core.hardware.html#rpilot.core.hardware.Beambreak" target="_top" title="An IR Beambreak sensor." alt="" coords="132,5,222,29"/>
+<area shape="rect" id="node3" href="rst/rpilot.core.hardware.html#rpilot.core.hardware.Flag" target="_top" title="Trivial Reclass of the Beambreak class with the default directions reversed." alt="" coords="270,5,342,29"/>
+<area shape="rect" id="node2" href="rst/rpilot.core.hardware.html#rpilot.core.hardware.Hardware" target="_top" title="Generic class inherited by all hardware. Should not be instantiated" alt="" coords="5,125,84,149"/>
+<area shape="rect" id="node4" href="rst/rpilot.core.hardware.html#rpilot.core.hardware.LED_RGB" target="_top" title="An RGB LED." alt="" coords="135,53,219,77"/>
+<area shape="rect" id="node5" href="rst/rpilot.core.hardware.html#rpilot.core.hardware.Pull" target="_top" title="Pull a pin up or down. Called by the :class:`~.pilot.Pilot` instead of by" alt="" coords="141,101,213,125"/>
+<area shape="rect" id="node6" href="rst/rpilot.core.hardware.html#rpilot.core.hardware.Scale" target="_top" title="Note:" alt="" coords="141,149,213,173"/>
+<area shape="rect" id="node7" href="rst/rpilot.core.hardware.html#rpilot.core.hardware.Solenoid" target="_top" title="Solenoid valves for water delivery." alt="" coords="141,197,214,221"/>
+<area shape="rect" id="node8" href="rst/rpilot.core.hardware.html#rpilot.core.hardware.Wheel" target="_top" title="A continuously measured mouse wheel." alt="" coords="141,245,213,269"/>
+</map>

@@ -702,7 +702,7 @@ class Wheel(Hardware):
             self.mouse = devices.mice[mouse_idx]
         except IndexError:
             Warning('Could not find requested mouse with index {}\nAttempting to use mouse idx 0'.format(mouse_idx))
-            self.subject = devices.mice[0]
+            self.mouse = devices.mice[0]
 
         # frequency of our updating
         self.fs = fs

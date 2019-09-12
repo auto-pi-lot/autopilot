@@ -21,8 +21,7 @@
     <link rel="canonical" href="http://docs.rpilot.net/rpilot.core.pilot.html" />
     <link rel="index" title="Index" href="/genindex.html" />
     <link rel="search" title="Search" href="/search.html" />
-    <link rel="next" title="RPilot" href="/api/rpilot.core.pilot.RPilot.html" />
-    <link rel="prev" title="Terminal_Networking" href="/api/rpilot.core.networking.Terminal_Networking.html" />
+    <link rel="prev" title="Terminal_Station" href="/api/rpilot.core.networking.Terminal_Station.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -56,9 +55,20 @@
      href="index.html">RPilot Docs <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">User Guide Sections:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="/guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="/guide.installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="/guide.installation.html#setting-up-a-pilot">Setting Up a Pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/guide.installation.html#pilot-presetup">Pilot Presetup</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="/rpilot.core.html">core</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="/rpilot.core.html">Core Modules</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.core.gui.html">gui</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.gui.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.gui.html#classes">Classes</a></li>
@@ -68,11 +78,6 @@
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.core.hardware.html">hardware</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.hardware.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.hardware.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="/rpilot.core.mouse.html">mouse</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.mouse.html#classes">Classes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.mouse.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.core.networking.html">networking</a><ul>
@@ -91,19 +96,25 @@
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.plots.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.core.subject.html">mouse</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.subject.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.subject.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.core.terminal.html">terminal</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.terminal.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.terminal.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.core.utils.html">utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.utils.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.utils.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.utils.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="/rpilot.tasks.html">tasks</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.tasks.html">Tasks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.tasks.free_water.html">free_water</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.tasks.free_water.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.tasks.free_water.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
@@ -126,8 +137,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="/rpilot.stim.html">stim</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.stim.html">Stimuli</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.stim.managers.html">managers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.stim.managers.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.stim.managers.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.stim.managers.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
@@ -140,17 +152,20 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="/rpilot.viz.html">viz</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.viz.trial_viewer.html">trial_viewer</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="/rpilot.setup.html">setup</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.setup.html">Setup</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.setup.setup_pilot.html">setup_pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.setup.setup_scale.html">setup_scale</a></li>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.setup.setup_terminal.html">setup_terminal</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="/rpilot.prefs.html">prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.prefs.html">Prefs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="/todo.html">To-Do</a></li>
 </ul>
 </ul>
 </li>
@@ -178,11 +193,7 @@
               
                 
   <li>
-    <a href="/api/rpilot.core.networking.Terminal_Networking.html" title="Previous Chapter: Terminal_Networking"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Terminal_Networking</span>
-    </a>
-  </li>
-  <li>
-    <a href="/api/rpilot.core.pilot.RPilot.html" title="Next Chapter: RPilot"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">RPilot &raquo;</span>
+    <a href="/api/rpilot.core.networking.Terminal_Station.html" title="Previous Chapter: Terminal_Station"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Terminal_Station</span>
     </a>
   </li>
               
@@ -224,11 +235,7 @@
 </ul>
 
   <li>
-    <a href="/api/rpilot.core.networking.Terminal_Networking.html" title="Previous Chapter: Terminal_Networking"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Terminal_Networking</span>
-    </a>
-  </li>
-  <li>
-    <a href="/api/rpilot.core.pilot.RPilot.html" title="Next Chapter: RPilot"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">RPilot &raquo;</span>
+    <a href="/api/rpilot.core.networking.Terminal_Station.html" title="Previous Chapter: Terminal_Station"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Terminal_Station</span>
     </a>
   </li>
         </div>
@@ -245,7 +252,10 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#rpilot.core.pilot.RPilot" title="rpilot.core.pilot.RPilot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RPilot</span></code></a>()</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">Message</span></code>(*args,&nbsp;**kwargs)</td>
+<td>A formatted message.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="/rst/rpilot.core.pilot.html#rpilot.core.pilot.RPilot" title="rpilot.core.pilot.RPilot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RPilot</span></code></a>()</td>
 <td>Drives the Raspberry Pi</td>
 </tr>
 </tbody>
@@ -253,16 +263,16 @@
 </div>
 <div class="section" id="class-inheritance-diagram">
 <h2>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Permalink to this headline">¶</a></h2>
-<div class="graphviz"><img src="_images/inheritance-c9ae20f71bac5fb793dc2aeac26cab193bfa6a06.png" alt="Inheritance diagram of rpilot.core.pilot.RPilot" usemap="#inheritancea01fef771c" class="inheritance graphviz" /></div>
+<div class="graphviz"><img src="_images/inheritance-26dc04e9e0f6d634f4f1b3c1f4961fba11bdf6b7.png" alt="Inheritance diagram of rpilot.core.pilot.RPilot" usemap="#inheritancea01fef771c" class="inheritance graphviz" /></div>
 <map id="inheritancea01fef771c" name="inheritancea01fef771c">
-<area shape="rect" id="node1" href="#rpilot.core.pilot.RPilot" target="_top" title="Drives the Raspberry Pi" alt="" coords="5,5,77,29"/>
+<area shape="rect" id="node1" href="/rst/rpilot.core.pilot.html#rpilot.core.pilot.RPilot" target="_top" title="Drives the Raspberry Pi" alt="" coords="5,5,77,29"/>
 </map><span class="target" id="module-rpilot.core.pilot"></span><dl class="class">
 <dt id="rpilot.core.pilot.RPilot">
 <em class="property">class </em><code class="descclassname">rpilot.core.pilot.</code><code class="descname">RPilot</code><a class="reference internal" href="/_modules/rpilot/core/pilot.html#RPilot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.pilot.RPilot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Drives the Raspberry Pi</p>
 <p>Coordinates the hardware and networking objects to run tasks.</p>
-<p>Typically used with a connection to a <a class="reference internal" href="/rpilot.core.terminal.html#rpilot.core.terminal.Terminal" title="rpilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a> object to
-coordinate multiple mice and tasks, but a high priority for future releases
+<p>Typically used with a connection to a <a class="reference internal" href="/rst/rpilot.core.terminal.html#rpilot.core.terminal.Terminal" title="rpilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a> object to
+coordinate multiple subjects and tasks, but a high priority for future releases
 is to do the (trivial amount of) work to make this class optionally
 standalone.</p>
 <p>Called as a module with the -f flag to give the location of a prefs file, eg:</p>
@@ -271,7 +281,7 @@ standalone.</p>
 </div>
 <p>if the -f flag is not passed, looks in the default location for prefs
 (ie. <cite>/usr/rpilot/prefs.json</cite>)</p>
-<p>Needs the following prefs (typically established by <a class="reference internal" href="/rpilot.setup.setup_pilot.html#module-rpilot.setup.setup_pilot" title="rpilot.setup.setup_pilot"><code class="xref py py-mod docutils literal notranslate"><span class="pre">setup.setup_pilot</span></code></a>):</p>
+<p>Needs the following prefs (typically established by <a class="reference internal" href="/rst/rpilot.setup.setup_pilot.html#module-rpilot.setup.setup_pilot" title="rpilot.setup.setup_pilot"><code class="xref py py-mod docutils literal notranslate"><span class="pre">setup.setup_pilot</span></code></a>):</p>
 <ul>
 <li><p class="first"><strong>NAME</strong> - The name used by networking objects to address this Pilot</p>
 </li>
@@ -287,9 +297,9 @@ standalone.</p>
 task defines which pins it needs. Currently the default configuration asks for</p>
 <blockquote>
 <div><ul class="simple">
-<li>POKES - <a class="reference internal" href="/rpilot.core.hardware.html#rpilot.core.hardware.Beambreak" title="rpilot.core.hardware.Beambreak"><code class="xref py py-class docutils literal notranslate"><span class="pre">hardware.Beambreak</span></code></a></li>
-<li>LEDS - <a class="reference internal" href="/rpilot.core.hardware.html#rpilot.core.hardware.LED_RGB" title="rpilot.core.hardware.LED_RGB"><code class="xref py py-class docutils literal notranslate"><span class="pre">hardware.LED_RGB</span></code></a></li>
-<li>PORTS - <a class="reference internal" href="/rpilot.core.hardware.html#rpilot.core.hardware.Solenoid" title="rpilot.core.hardware.Solenoid"><code class="xref py py-class docutils literal notranslate"><span class="pre">hardware.Solenoid</span></code></a></li>
+<li>POKES - <a class="reference internal" href="/rst/rpilot.core.hardware.html#rpilot.core.hardware.Beambreak" title="rpilot.core.hardware.Beambreak"><code class="xref py py-class docutils literal notranslate"><span class="pre">hardware.Beambreak</span></code></a></li>
+<li>LEDS - <a class="reference internal" href="/rst/rpilot.core.hardware.html#rpilot.core.hardware.LED_RGB" title="rpilot.core.hardware.LED_RGB"><code class="xref py py-class docutils literal notranslate"><span class="pre">hardware.LED_RGB</span></code></a></li>
+<li>PORTS - <a class="reference internal" href="/rst/rpilot.core.hardware.html#rpilot.core.hardware.Solenoid" title="rpilot.core.hardware.Solenoid"><code class="xref py py-class docutils literal notranslate"><span class="pre">hardware.Solenoid</span></code></a></li>
 </ul>
 </div></blockquote>
 </li>
@@ -319,21 +329,21 @@ task defines which pins it needs. Currently the default configuration asks for</
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The name used to identify ourselves in <a class="reference internal" href="/rpilot.core.networking.html#module-rpilot.core.networking" title="rpilot.core.networking"><code class="xref py py-mod docutils literal notranslate"><span class="pre">networking</span></code></a></li>
-<li><a class="reference internal" href="/rpilot.tasks.task.html#module-rpilot.tasks.task" title="rpilot.tasks.task"><strong>task</strong></a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">tasks.Task</span></code>) – The currently instantiated task</li>
-<li><a class="reference internal" href="#rpilot.core.pilot.RPilot.running" title="rpilot.core.pilot.RPilot.running"><strong>running</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Flag used to control task running state</li>
-<li><a class="reference internal" href="#rpilot.core.pilot.RPilot.stage_block" title="rpilot.core.pilot.RPilot.stage_block"><strong>stage_block</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Flag given to a task to signal when task stages finish</li>
-<li><a class="reference internal" href="#rpilot.core.pilot.RPilot.file_block" title="rpilot.core.pilot.RPilot.file_block"><strong>file_block</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Flag used to wait for file transfers</li>
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The name used to identify ourselves in <a class="reference internal" href="/rst/rpilot.core.networking.html#module-rpilot.core.networking" title="rpilot.core.networking"><code class="xref py py-mod docutils literal notranslate"><span class="pre">networking</span></code></a></li>
+<li><a class="reference internal" href="/rst/rpilot.tasks.task.html#module-rpilot.tasks.task" title="rpilot.tasks.task"><strong>task</strong></a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">tasks.Task</span></code>) – The currently instantiated task</li>
+<li><a class="reference internal" href="rst/rpilot.core.pilot.html#rpilot.core.pilot.RPilot.running" title="rpilot.core.pilot.RPilot.running"><strong>running</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Flag used to control task running state</li>
+<li><a class="reference internal" href="rst/rpilot.core.pilot.html#rpilot.core.pilot.RPilot.stage_block" title="rpilot.core.pilot.RPilot.stage_block"><strong>stage_block</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Flag given to a task to signal when task stages finish</li>
+<li><a class="reference internal" href="rst/rpilot.core.pilot.html#rpilot.core.pilot.RPilot.file_block" title="rpilot.core.pilot.RPilot.file_block"><strong>file_block</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Flag used to wait for file transfers</li>
 <li><strong>state</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – ‘RUNNING’, ‘STOPPING’, ‘IDLE’ - signals what this pilot is up to</li>
-<li><strong>pulls</strong> (<em>list</em>) – list of <a class="reference internal" href="/rpilot.core.hardware.html#rpilot.core.hardware.Pull" title="rpilot.core.hardware.Pull"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pull</span></code></a> objects to keep pins pulled up or down</li>
-<li><a class="reference internal" href="#rpilot.core.pilot.RPilot.server" title="rpilot.core.pilot.RPilot.server"><strong>server</strong></a> – Either a <a class="reference internal" href="rpilot.stim.sound.pyoserver.html#rpilot.stim.sound.pyoserver.pyo_server" title="rpilot.stim.sound.pyoserver.pyo_server"><code class="xref py py-func docutils literal notranslate"><span class="pre">pyo_server()</span></code></a> or <a class="reference internal" href="/rpilot.stim.sound.jackclient.html#rpilot.stim.sound.jackclient.JackClient" title="rpilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">JackClient</span></code></a> , sound server.</li>
-<li><a class="reference internal" href="#rpilot.core.pilot.RPilot.node" title="rpilot.core.pilot.RPilot.node"><strong>node</strong></a> (<a class="reference internal" href="/rpilot.core.networking.html#rpilot.core.networking.Net_Node" title="rpilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">networking.Net_Node</span></code></a>) – Our Net_Node we use to communicate with our main networking object</li>
-<li><a class="reference internal" href="#rpilot.core.pilot.RPilot.networking" title="rpilot.core.pilot.RPilot.networking"><strong>networking</strong></a> (<a class="reference internal" href="/rpilot.core.networking.html#rpilot.core.networking.Pilot_Networking" title="rpilot.core.networking.Pilot_Networking"><code class="xref py py-class docutils literal notranslate"><span class="pre">networking.Pilot_Networking</span></code></a>) – Our networking object to communicate with the outside world</li>
-<li><a class="reference internal" href="rpilot.core.networking.html#rpilot.core.networking.Networking.ip" title="rpilot.core.networking.Networking.ip"><strong>ip</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Our IPv4 address</li>
-<li><a class="reference internal" href="rpilot.core.networking.html#rpilot.core.networking.Networking.listens" title="rpilot.core.networking.Networking.listens"><strong>listens</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Dictionary mapping message keys to methods used to process them.</li>
-<li><a class="reference internal" href="rpilot.core.networking.html#rpilot.core.networking.Net_Node.logger" title="rpilot.core.networking.Net_Node.logger"><strong>logger</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/logging.html#logging.Logger" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a>) – Used to log messages and network events.</li>
-<li><a class="reference internal" href="#rpilot.core.pilot.RPilot.log_handler" title="rpilot.core.pilot.RPilot.log_handler"><strong>log_handler</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/logging.handlers.html#logging.FileHandler" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.FileHandler</span></code></a>) – Handler for logging</li>
-<li><a class="reference internal" href="#rpilot.core.pilot.RPilot.log_formatter" title="rpilot.core.pilot.RPilot.log_formatter"><strong>log_formatter</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/logging.html#logging.Formatter" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></a>) – <p>Formats log entries as:</p>
+<li><strong>pulls</strong> (<em>list</em>) – list of <a class="reference internal" href="/rst/rpilot.core.hardware.html#rpilot.core.hardware.Pull" title="rpilot.core.hardware.Pull"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pull</span></code></a> objects to keep pins pulled up or down</li>
+<li><a class="reference internal" href="rst/rpilot.core.pilot.html#rpilot.core.pilot.RPilot.server" title="rpilot.core.pilot.RPilot.server"><strong>server</strong></a> – Either a <a class="reference internal" href="rst/rpilot.stim.sound.pyoserver.html#rpilot.stim.sound.pyoserver.pyo_server" title="rpilot.stim.sound.pyoserver.pyo_server"><code class="xref py py-func docutils literal notranslate"><span class="pre">pyo_server()</span></code></a> or <a class="reference internal" href="/rst/rpilot.stim.sound.jackclient.html#rpilot.stim.sound.jackclient.JackClient" title="rpilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">JackClient</span></code></a> , sound server.</li>
+<li><a class="reference internal" href="rst/rpilot.core.pilot.html#rpilot.core.pilot.RPilot.node" title="rpilot.core.pilot.RPilot.node"><strong>node</strong></a> (<a class="reference internal" href="/rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node" title="rpilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">networking.Net_Node</span></code></a>) – Our Net_Node we use to communicate with our main networking object</li>
+<li><a class="reference internal" href="rst/rpilot.core.pilot.html#rpilot.core.pilot.RPilot.networking" title="rpilot.core.pilot.RPilot.networking"><strong>networking</strong></a> (<a class="reference internal" href="/rst/rpilot.core.networking.html#rpilot.core.networking.Pilot_Station" title="rpilot.core.networking.Pilot_Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">networking.Pilot_Station</span></code></a>) – Our networking object to communicate with the outside world</li>
+<li><a class="reference internal" href="rst/rpilot.core.networking.html#rpilot.core.networking.Station.ip" title="rpilot.core.networking.Station.ip"><strong>ip</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Our IPv4 address</li>
+<li><a class="reference internal" href="rst/rpilot.core.networking.html#rpilot.core.networking.Station.listens" title="rpilot.core.networking.Station.listens"><strong>listens</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Dictionary mapping message keys to methods used to process them.</li>
+<li><a class="reference internal" href="rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.logger" title="rpilot.core.networking.Net_Node.logger"><strong>logger</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/logging.html#logging.Logger" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a>) – Used to log messages and network events.</li>
+<li><a class="reference internal" href="rst/rpilot.core.pilot.html#rpilot.core.pilot.RPilot.log_handler" title="rpilot.core.pilot.RPilot.log_handler"><strong>log_handler</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/logging.handlers.html#logging.FileHandler" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.FileHandler</span></code></a>) – Handler for logging</li>
+<li><a class="reference internal" href="rst/rpilot.core.pilot.html#rpilot.core.pilot.RPilot.log_formatter" title="rpilot.core.pilot.RPilot.log_formatter"><strong>log_formatter</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/logging.html#logging.Formatter" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></a>) – <p>Formats log entries as:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2"> : </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
@@ -410,7 +420,7 @@ task defines which pins it needs. Currently the default configuration asks for</
 <dt id="rpilot.core.pilot.RPilot.update_state">
 <code class="descname">update_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/core/pilot.html#RPilot.update_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.pilot.RPilot.update_state" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send our current state to the Terminal,
-our Networking object will cache this and will handle any
+our Station object will cache this and will handle any
 future requests.</p>
 </dd></dl>
 
@@ -421,7 +431,7 @@ future requests.</p>
 <p>Get the task object by using <cite>value[‘task_type’]</cite> to select from
 <code class="xref py py-data docutils literal notranslate"><span class="pre">tasks.TASK_LIST</span></code> , then feed the rest of <cite>value</cite> as kwargs
 into the task object.</p>
-<p>Calls <a class="reference internal" href="#rpilot.core.pilot.RPilot.run_task" title="rpilot.core.pilot.RPilot.run_task"><code class="xref py py-meth docutils literal notranslate"><span class="pre">RPilot.run_task()</span></code></a> in a new thread</p>
+<p>Calls <a class="reference internal" href="/rst/rpilot.core.pilot.html#rpilot.core.pilot.RPilot.run_task" title="rpilot.core.pilot.RPilot.run_task"><code class="xref py py-meth docutils literal notranslate"><span class="pre">RPilot.run_task()</span></code></a> in a new thread</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -483,10 +493,26 @@ into the task object.</p>
 <dt id="rpilot.core.pilot.RPilot.l_cal_result">
 <code class="descname">l_cal_result</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/core/pilot.html#RPilot.l_cal_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.pilot.RPilot.l_cal_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the results of a port calibration</p>
-<div class="admonition-todo admonition" id="index-1">
-<p class="first admonition-title">Todo</p>
-<p class="last">Compute the LUT/curve.</p>
-</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rpilot.core.pilot.RPilot.l_bandwidth">
+<code class="descname">l_bandwidth</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/core/pilot.html#RPilot.l_bandwidth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.pilot.RPilot.l_bandwidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send messages with a poissonian process according to the settings in value</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rpilot.core.pilot.RPilot.calibration_curve">
+<code class="descname">calibration_curve</code><span class="sig-paren">(</span><em>path=None</em>, <em>calibration=None</em><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/core/pilot.html#RPilot.calibration_curve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.pilot.RPilot.calibration_curve" title="Permalink to this definition">¶</a></dt>
+<dd><p># compute curve to compute duration from desired volume</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> – If present, use calibration file specified, otherwise use default.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -495,8 +521,8 @@ into the task object.</p>
 <dd><p>Initialize an audio server depending on the value of
 <cite>prefs.AUDIOSERVER</cite></p>
 <ul class="simple">
-<li>‘pyo’ = <a class="reference internal" href="/rpilot.stim.sound.pyoserver.html#rpilot.stim.sound.pyoserver.pyo_server" title="rpilot.stim.sound.pyoserver.pyo_server"><code class="xref py py-func docutils literal notranslate"><span class="pre">pyoserver.pyo_server()</span></code></a></li>
-<li>‘jack’ = <a class="reference internal" href="/rpilot.stim.sound.jackclient.html#rpilot.stim.sound.jackclient.JackClient" title="rpilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">jackclient.JackClient</span></code></a></li>
+<li>‘pyo’ = <a class="reference internal" href="/rst/rpilot.stim.sound.pyoserver.html#rpilot.stim.sound.pyoserver.pyo_server" title="rpilot.stim.sound.pyoserver.pyo_server"><code class="xref py py-func docutils literal notranslate"><span class="pre">pyoserver.pyo_server()</span></code></a></li>
+<li>‘jack’ = <a class="reference internal" href="/rst/rpilot.stim.sound.jackclient.html#rpilot.stim.sound.jackclient.JackClient" title="rpilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">jackclient.JackClient</span></code></a></li>
 </ul>
 </dd></dl>
 
@@ -512,7 +538,7 @@ and then release them.</p>
 <dt id="rpilot.core.pilot.RPilot.open_file">
 <code class="descname">open_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/core/pilot.html#RPilot.open_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.pilot.RPilot.open_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup a table to store data locally.</p>
-<p>Opens <cite>prefs.DATADIR/local.h5</cite>, creates a group for the current mouse,
+<p>Opens <cite>prefs.DATADIR/local.h5</cite>, creates a group for the current subject,
 a new table for the current day.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -529,7 +555,7 @@ a new table for the current day.</p>
 <dt id="rpilot.core.pilot.RPilot.run_task">
 <code class="descname">run_task</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/core/pilot.html#RPilot.run_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.pilot.RPilot.run_task" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called in a new thread, run the task.</p>
-<p>Opens a file with <a class="reference internal" href="#rpilot.core.pilot.RPilot.open_file" title="rpilot.core.pilot.RPilot.open_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open_file()</span></code></a> , then
+<p>Opens a file with <a class="reference internal" href="/rst/rpilot.core.pilot.html#rpilot.core.pilot.RPilot.open_file" title="rpilot.core.pilot.RPilot.open_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open_file()</span></code></a> , then
 continually calls <cite>task.stages.next</cite> to process stages.</p>
 <p>Sends data back to the terminal between every stage.</p>
 <p>Waits for the task to clear <cite>stage_block</cite> between stages.</p>

@@ -11,6 +11,7 @@ Net_Node
    .. autosummary::
 
       ~Net_Node.context
+      ~Net_Node.do_logging
       ~Net_Node.id
       ~Net_Node.listens
       ~Net_Node.log_formatter
@@ -20,6 +21,7 @@ Net_Node
       ~Net_Node.loop_thread
       ~Net_Node.outbox
       ~Net_Node.port
+      ~Net_Node.repeat_interval
       ~Net_Node.sock
       ~Net_Node.timers
       ~Net_Node.upstream
@@ -40,6 +42,7 @@ Net_Node
    .. rubric:: Attributes Documentation
 
    .. autoattribute:: context
+   .. autoattribute:: do_logging
    .. autoattribute:: id
    .. autoattribute:: listens
    .. autoattribute:: log_formatter
@@ -49,6 +52,7 @@ Net_Node
    .. autoattribute:: loop_thread
    .. autoattribute:: outbox
    .. autoattribute:: port
+   .. autoattribute:: repeat_interval
    .. autoattribute:: sock
    .. autoattribute:: timers
    .. autoattribute:: upstream

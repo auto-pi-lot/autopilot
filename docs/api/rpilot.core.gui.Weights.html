@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="/../genindex.html" />
     <link rel="search" title="Search" href="/../search.html" />
     <link rel="next" title="hardware" href="/../rpilot.core.hardware.html" />
-    <link rel="prev" title="Sound_Widget" href="/rpilot.core.gui.Sound_Widget.html" />
+    <link rel="prev" title="Subject_List" href="/rpilot.core.gui.Subject_List.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -56,9 +56,20 @@
      href="../index.html">RPilot Docs <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">User Guide Sections:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide.installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../guide.installation.html#setting-up-a-pilot">Setting Up a Pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.installation.html#pilot-presetup">Pilot Presetup</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../rpilot.core.html">core</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../rpilot.core.html">Core Modules</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../rpilot.core.gui.html">gui</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.gui.html#functions">Functions</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../rpilot.core.gui.html#classes">Classes</a></li>
@@ -68,11 +79,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.hardware.html">hardware</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.hardware.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.hardware.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../rpilot.core.mouse.html">mouse</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.mouse.html#classes">Classes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.mouse.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.networking.html">networking</a><ul>
@@ -91,19 +97,25 @@
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.plots.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.core.subject.html">mouse</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.subject.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.subject.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.terminal.html">terminal</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.terminal.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.terminal.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.utils.html">utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.utils.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.utils.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.utils.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.tasks.html">tasks</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.tasks.html">Tasks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.tasks.free_water.html">free_water</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.tasks.free_water.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.tasks.free_water.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
@@ -126,8 +138,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.stim.html">stim</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.stim.html">Stimuli</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.stim.managers.html">managers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.managers.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.managers.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.managers.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
@@ -140,17 +153,20 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.viz.html">viz</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.viz.trial_viewer.html">trial_viewer</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.setup.html">setup</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.setup.html">Setup</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.setup.setup_pilot.html">setup_pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.setup.setup_scale.html">setup_scale</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.setup.setup_terminal.html">setup_terminal</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.prefs.html">prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.prefs.html">Prefs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">To-Do</a></li>
 </ul>
 </ul>
 </li>
@@ -174,7 +190,7 @@
               
                 
   <li>
-    <a href="/rpilot.core.gui.Sound_Widget.html" title="Previous Chapter: Sound_Widget"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Sound_Widget</span>
+    <a href="/rpilot.core.gui.Subject_List.html" title="Previous Chapter: Subject_List"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Subject_List</span>
     </a>
   </li>
   <li>
@@ -216,7 +232,7 @@
 </ul>
 
   <li>
-    <a href="/rpilot.core.gui.Sound_Widget.html" title="Previous Chapter: Sound_Widget"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Sound_Widget</span>
+    <a href="/rpilot.core.gui.Subject_List.html" title="Previous Chapter: Subject_List"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Subject_List</span>
     </a>
   </li>
   <li>
@@ -233,7 +249,7 @@
 <dt id="rpilot.core.gui.Weights">
 <em class="property">class </em><code class="descclassname">rpilot.core.gui.</code><code class="descname">Weights</code><span class="sig-paren">(</span><em>mice_weights</em>, <em>mice</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/gui.html#Weights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.gui.Weights" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="/http://pyside.github.io/docs/pyside/PySide/QtGui/QTableWidget.html#PySide.QtGui.QTableWidget" title="(in PySide v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySide.QtGui.QTableWidget</span></code></a></p>
-<p>A table for viewing and editing the most recent mouse weights.</p>
+<p>A table for viewing and editing the most recent subject weights.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -241,7 +257,7 @@
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>mice_weights</strong> (<em>list</em>) – a list of weights of the format returned by
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">Subject.get_weight(baseline=True)()</span></code>.</li>
-<li><strong>mice</strong> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – the Terminal’s <code class="xref py py-attr docutils literal notranslate"><span class="pre">Terminal.mice</span></code> dictionary of <a class="reference internal" href="../rpilot.core.mouse.html#rpilot.core.mouse.Subject" title="rpilot.core.mouse.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> objects.</li>
+<li><strong>mice</strong> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – the Terminal’s <code class="xref py py-attr docutils literal notranslate"><span class="pre">Terminal.subjects</span></code> dictionary of <a class="reference internal" href="../rst/rpilot.core.subject.html#rpilot.core.subject.Subject" title="rpilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> objects.</li>
 </ul>
 </td>
 </tr>
@@ -254,7 +270,7 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Weights.staticMetaObject" title="rpilot.core.gui.Weights.staticMetaObject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">staticMetaObject</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.gui.html#rpilot.core.gui.Weights.staticMetaObject" title="rpilot.core.gui.Weights.staticMetaObject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">staticMetaObject</span></code></a></td>
 <td></td>
 </tr>
 </tbody>
@@ -266,11 +282,11 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Weights.init_ui" title="rpilot.core.gui.Weights.init_ui"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_ui</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.gui.html#rpilot.core.gui.Weights.init_ui" title="rpilot.core.gui.Weights.init_ui"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_ui</span></code></a>()</td>
 <td>Initialized graphical elements.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Weights.set_weight" title="rpilot.core.gui.Weights.set_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_weight</span></code></a>(row,&nbsp;column)</td>
-<td>Updates the most recent weights in <code class="xref py py-attr docutils literal notranslate"><span class="pre">gui.Weights.mice</span></code> objects.</td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.gui.html#rpilot.core.gui.Weights.set_weight" title="rpilot.core.gui.Weights.set_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_weight</span></code></a>(row,&nbsp;column)</td>
+<td>Updates the most recent weights in <code class="xref py py-attr docutils literal notranslate"><span class="pre">gui.Weights.subjects</span></code> objects.</td>
 </tr>
 </tbody>
 </table>
@@ -290,10 +306,10 @@
 <dl class="method">
 <dt id="rpilot.core.gui.Weights.set_weight">
 <code class="descname">set_weight</code><span class="sig-paren">(</span><em>row</em>, <em>column</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/gui.html#Weights.set_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.gui.Weights.set_weight" title="Permalink to this definition">¶</a></dt>
-<dd><p>Updates the most recent weights in <code class="xref py py-attr docutils literal notranslate"><span class="pre">gui.Weights.mice</span></code> objects.</p>
+<dd><p>Updates the most recent weights in <code class="xref py py-attr docutils literal notranslate"><span class="pre">gui.Weights.subjects</span></code> objects.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Only the daily weight measurements can be changed this way - not mouse name, baseline weight, etc.</p>
+<p class="last">Only the daily weight measurements can be changed this way - not subject name, baseline weight, etc.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />

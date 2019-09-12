@@ -20,7 +20,7 @@ class Wheel_Child(object):
 
     def __init__(self, stage_block=None, **kwargs):
 
-        self.mouse = Wheel(gpio_trig=True, pins=prefs.PINS['OUTPUT'],
+        self.subject = Wheel(gpio_trig=True, pins=prefs.PINS['OUTPUT'],
                            mode="steady", thresh=100)
         self.stages = cycle([self.noop])
 
@@ -29,7 +29,7 @@ class Wheel_Child(object):
         return {}
 
     def end(self):
-        self.mouse.release()
+        self.subject.release()
 
 
 

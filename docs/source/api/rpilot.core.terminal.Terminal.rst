@@ -18,6 +18,7 @@ Terminal
 
       ~Terminal.calibrate_ports
       ~Terminal.closeEvent
+      ~Terminal.heartbeat
       ~Terminal.initUI
       ~Terminal.init_logging
       ~Terminal.l_data
@@ -25,11 +26,12 @@ Terminal
       ~Terminal.l_ping
       ~Terminal.l_state
       ~Terminal.list_subjects
-      ~Terminal.mouse_weights
       ~Terminal.new_pilot
       ~Terminal.new_protocol
       ~Terminal.reassign_protocols
       ~Terminal.reset_ui
+      ~Terminal.subject_weights
+      ~Terminal.test_bandwidth
       ~Terminal.toggle_start
       ~Terminal.update_protocols
 
@@ -41,6 +43,7 @@ Terminal
 
    .. automethod:: calibrate_ports
    .. automethod:: closeEvent
+   .. automethod:: heartbeat
    .. automethod:: initUI
    .. automethod:: init_logging
    .. automethod:: l_data
@@ -48,10 +51,11 @@ Terminal
    .. automethod:: l_ping
    .. automethod:: l_state
    .. automethod:: list_subjects
-   .. automethod:: mouse_weights
    .. automethod:: new_pilot
    .. automethod:: new_protocol
    .. automethod:: reassign_protocols
    .. automethod:: reset_ui
+   .. automethod:: subject_weights
+   .. automethod:: test_bandwidth
    .. automethod:: toggle_start
    .. automethod:: update_protocols

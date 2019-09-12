@@ -16,9 +16,9 @@ Pilot_Panel
 
    .. autosummary::
 
-      ~Pilot_Panel.create_mouse
+      ~Pilot_Panel.create_subject
       ~Pilot_Panel.init_ui
-      ~Pilot_Panel.remove_mouse
+      ~Pilot_Panel.remove_subject
 
    .. rubric:: Attributes Documentation
 
@@ -26,6 +26,6 @@ Pilot_Panel
 
    .. rubric:: Methods Documentation
 
-   .. automethod:: create_mouse
+   .. automethod:: create_subject
    .. automethod:: init_ui
-   .. automethod:: remove_mouse
+   .. automethod:: remove_subject

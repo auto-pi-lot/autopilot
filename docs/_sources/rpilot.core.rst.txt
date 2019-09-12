@@ -12,10 +12,12 @@ core
 
    rpilot.core.gui
    rpilot.core.hardware
-   rpilot.core.mouse
    rpilot.core.networking
    rpilot.core.pilot
    rpilot.core.plots
+   rpilot.core.reward
+   rpilot.core.styles
+   rpilot.core.subject
    rpilot.core.terminal
    rpilot.core.utils
 

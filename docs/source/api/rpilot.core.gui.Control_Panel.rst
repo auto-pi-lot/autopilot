@@ -16,7 +16,7 @@ Control_Panel
 
    .. autosummary::
 
-      ~Control_Panel.create_mouse
+      ~Control_Panel.create_subject
       ~Control_Panel.init_ui
       ~Control_Panel.update_db
 
@@ -26,6 +26,6 @@ Control_Panel
 
    .. rubric:: Methods Documentation
 
-   .. automethod:: create_mouse
+   .. automethod:: create_subject
    .. automethod:: init_ui
    .. automethod:: update_db
