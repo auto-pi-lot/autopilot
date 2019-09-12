@@ -3,6 +3,9 @@
 Installation
 ************
 
+Warning:
+    Jonny for the love of god split this out to a separate file.
+
 Each runtime of Autopilot is called an "Agent,"
 each of which performs different roles within a system,
 and thus have different requirements.
@@ -24,12 +27,12 @@ Pilot Presetup
 --------------
 
 Note:
-    These files are encapsulated in a :any:`rpilot.setup.preinstall_pilot.sh` bash script.
+    These files are encapsulated in a :any:`rpilot.setup.preinstall_pilot.sh` bash script that should let you skip this whole section.
 
 Rasbian Installation
 ~~~~~~~~~~~~~~~~~~~~
 
-1. Download `Raspbian Lite<https://www.raspberrypi.org/downloads/raspbian/>`_ and unzip
+1. Download `Raspbian Lite <https://www.raspberrypi.org/downloads/raspbian/>`_ and unzip
     * `As a .torrent (faster, better for the soul of the universe) <https://downloads.raspberrypi.org/raspbian_lite_latest.torrent>`_
     * `Via http (slower) <https://downloads.raspberrypi.org/raspbian_lite_latest>`_
 2. Use ``dd`` to write the Raspbian disk image to a microSD card. Note that ``dd`` can and will mess up your entire life if given the opportunity, be very careful that you don't run the command until you're sure your ``if=`` and ``of=`` are correct.
@@ -97,6 +100,14 @@ Rasbian Installation
         tornado \      # tornado message server
         inputs         # interactions with USB devices
 
+8. Autopilot depends on `pigpio <http://abyz.me.uk/rpi/pigpio/>`_ for high performance GPIO access and control, so install it already::
+
+    git clone https://github.com/joan2937/pigpio.git
+    cd pigpio
+    make -j6
+    sudo -H make install
+
+
 
 Rasbian Performance Improvements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -161,24 +172,111 @@ Autopilot uses `Jack Audio <http://jackaudio.org/>`_ to play sounds.
 
 We also use the the `Hifiberry Amp 2 <https://www.hifiberry.com/shop/boards/hifiberry-amp2/>`_ as our soundcard and amplifier.
 
-15. Add pi user (or whatever username you're using) to i2c group:
+15. Add pi user (or whatever username you're using) to i2c group::
+
     sudo adduser pi i2c
 
-    # turn onboard audio off
-    sudo sed -i 's/^dtparam=audio=on/#dtparam=audio=on/g' /boot/config.txt
+16. Turn onboard audio off and enable hifiberry overlays in ``/boot/config.txt``.
 
-    # enable hifiberry stuff
-    sudo sed -i '$s/$/\ndtoverlay=hifiberry-dacplus\ndtoverlay=i2s-mmap\ndtoverlay=i2c-mmap\ndtparam=i2c1=on\ndtparam=i2c_arm=on/' /boot/config.txt
+    Comment out::
+        # dtparam=audio=on
 
-    # edit alsa config so hifiberry is default sound card
-    ALSAFILE=/etc/asound.conf
-#    if [ ! -f "$ALSAFILE" ]; then
-#        sudo touch $ALSAFILE
-#    fi
+    Add::
+        dtoverlay=hifiberry-dacplus
+        dtoverlay=i2s-mmap
+        dtparam=i2c1=on
+        dtparam=i2c_arm=on
 
-    #sudo sed -i '1 i\pcm.!default {\n type hw card 0\n}\nctl.!default {\n type hw card 0\n}' $ALSAFILE
+    Or use these commands which do it for you::
+        sudo sed -i 's/^dtparam=audio=on/#dtparam=audio=on/g' /boot/config.txt
+        sudo sed -i '$s/$/\ndtoverlay=hifiberry-dacplus\ndtoverlay=i2s-mmap\ndtoverlay=i2c-mmap\ndtparam=i2c1=on\ndtparam=i2c_arm=on/' /boot/config.txt
 
-    echo -e 'pcm.!default {\n type hw card 0\n}\nctl.!default {\n type hw card 0\n}' | sudo tee $ALSAFILE
+17. Edit ALSA configuration (``/etc/asound.conf``) so hifiberry is default sound card. M
+
+    Make it look like this::
+
+        pcm.!default  {
+         type hw card 0
+        }
+        ctl.!default {
+         type hw card 0
+        }
+
+    Or use this::
+
+        echo -e 'pcm.!default {\n type hw card 0\n}\nctl.!default {\n type hw card 0\n}' | sudo tee $ALSAFILE
+
+18. Reboot and test with ``aplay -l`` which shoudl look something like this::
+
+    pi@raspberrypi:~ $ aplay -l
+    **** List of PLAYBACK Hardware Devices ****
+    card 0: sndrpihifiberry [snd_rpi_hifiberry_dacplus], device 0: HiFiBerry DAC+ HiFi pcm512x-hifi-0 []
+      Subdevices: 1/1
+      Subdevice #0: subdevice #0
+
+Video Setup
+~~~~~~~~~~~
+
+If you're using Autopilot to present visual stimuli, it runs in an X11 instance and uses `PsychoPy <https://www.psychopy.org/>`_
+
+19. Psychopy and X11 both have quite a few dependencies::
+
+    # X11 dependencies
+    sudo apt-get install -y \
+        xserver-xorg \             # graphics server
+        xorg-dev \                 # development headers
+        xinit \                    # interface for graphics server
+        xserver-xorg-video-fbdev \ # frame buffer
+        python-opencv \            # opencv python bindings
+        mesa-utils
+
+    # Psychopy dependencies
+    sudo apt-get install -y
+        pyopengl \
+        pyglet \
+        pillow \
+        moviepy \
+        configobj \
+        psychopy \
+        json_tricks \
+        arabic-reshaper \
+        astunparse \
+        esprima \
+        freetype-py \
+        gevent \
+        gitpython \
+        msgpack-numpy \
+        msgpack-python \
+        pyosg \
+        pyparallel \
+        pyserial \
+        python-bidi \
+        python-gitlab \
+        pyyaml \
+        sounddevice \
+        soundfile
+
+20. To have reasonable video performance, enable the Raspberry pi's OpenGL driver:
+    * ``sudo raspi-config`` > advanced > video options
+    * then reboot
+
+22. Psychopy uses a few video backends, but in our experience `glfw <https://www.glfw.org/>`_ is the fastest. We have to `compile it manually <https://www.glfw.org/docs/latest/compile_guide.html`_::
+
+git clone https://github.com/glfw/glfw
+cd glfw
+cmake .
+make -j7
+sudo -H make install
+
+23. Install Psychopy. At the time of writing there is a broken dependency in the Raspbian package repositories that makes this a real pain in the ass.::
+
+    pip install psychopy --no-deps
+
+Note:
+    Jonny return here tomorrow
+
+
+
 
 
 
