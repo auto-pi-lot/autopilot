@@ -2,7 +2,7 @@
 
 Classes for managing data and protocol access and storage.
 
-Currently named mouse, but will likely be refactored to include other data
+Currently named subject, but will likely be refactored to include other data
 models should the need arise.
 
 """
@@ -33,7 +33,7 @@ import pdb
 
 class Subject:
     """
-    Class for managing one mouse's data and protocol.
+    Class for managing one subject's data and protocol.
 
     Creates a :mod:`tables` hdf5 file in `prefs.DATADIR` with the general structure::
 
@@ -63,10 +63,10 @@ class Subject:
         step (int): current step
         protocol_name (str): name of currently assigned protocol
         current_trial (int): number of current trial
-        running (bool): Flag that signals whether the mouse is currently running a task or not.
+        running (bool): Flag that signals whether the subject is currently running a task or not.
         data_queue (:class:`queue.Queue`): Queue to dump data while running task
         thread (:class:`threading.Thread`): thread used to keep file open while running task
-        did_graduate (:class:`threading.Event`): Event used to signal if the mouse has graduated the current step
+        did_graduate (:class:`threading.Event`): Event used to signal if the subject has graduated the current step
         STRUCTURE (list): list of tuples with order:
 
             * full path, eg. '/history/weights'
@@ -83,11 +83,11 @@ class Subject:
     def __init__(self, name=None, dir=None, file=None, new=False, biography=None):
         """
         Args:
-            name (str): mouse ID
+            name (str): subject ID
             dir (str): path where the .h5 file is located, if `None`, `prefs.DATADIR` is used
-            file (str): load a mouse from a filename. if `None`, ignored.
+            file (str): load a subject from a filename. if `None`, ignored.
             new (bool): if True, a new file is made (a new file is made if one does not exist anyway)
-            biography (dict): If making a new mouse file, a dictionary with biographical data can be passed
+            biography (dict): If making a new subject file, a dictionary with biographical data can be passed
         """
         self.STRUCTURE = [
             ('/data', '/', 'data', 'group'),
@@ -120,7 +120,7 @@ class Subject:
             self.name = str(name)
             self.file = os.path.join(dir, name + '.h5')
             if new or not os.path.isfile(self.file):
-                self.new_mouse_file(biography)
+                self.new_subject_file(biography)
 
         # before we open, make sure we have the stuff we need
         self.ensure_structure()
@@ -136,7 +136,7 @@ class Subject:
 
 
 
-        # If mouse has a protocol, load it to a dict
+        # If subject has a protocol, load it to a dict
         self.current = None
         self.step    = None
         self.protocol_name = None
@@ -152,8 +152,8 @@ class Subject:
         # We will get handles to trial and continuous data when we start running
         self.current_trial  = None
 
-        # Is the mouse currently running (ie. we expect data to be incoming)
-        # Used to keep the mouse object alive, otherwise we close the file whenever we don't need it
+        # Is the subject currently running (ie. we expect data to be incoming)
+        # Used to keep the subject object alive, otherwise we close the file whenever we don't need it
         self.running = False
 
         # We use a threading queue to dump data into a kept-alive h5f file
@@ -213,9 +213,9 @@ class Subject:
             h5f.flush()
             return h5f.close()
 
-    def new_mouse_file(self, biography):
+    def new_subject_file(self, biography):
         """
-        Create a new mouse file and make the general filestructure.
+        Create a new subject file and make the general filestructure.
 
         If a file already exists, open it in append mode, otherwise create it.
 
@@ -310,7 +310,7 @@ class Subject:
 
     def update_history(self, type, name, value, step=None):
         """
-        Update the history table when changes are made to the mouse's protocol.
+        Update the history table when changes are made to the subject's protocol.
 
         The current protocol is flushed to the past_protocols group and an updated
         filenode is created.
@@ -331,7 +331,7 @@ class Subject:
             step (int): When type is 'param', changes the parameter at a particular step,
                 otherwise the current step is used.
         """
-        # Make sure the updates are written to the mouse file
+        # Make sure the updates are written to the subject file
         if type == 'param':
             if not step:
                 self.current[self.step][name] = value
@@ -377,9 +377,9 @@ class Subject:
 
     def assign_protocol(self, protocol, step_n=0):
         """
-        Assign a protocol to the mouse.
+        Assign a protocol to the subject.
 
-        If the mouse has a currently assigned task, stashes it with :meth:`~.Subject.stash_current`
+        If the subject has a currently assigned task, stashes it with :meth:`~.Subject.stash_current`
 
         Creates groups and tables according to the data descriptions in the task class being assigned.
         eg. as described in :class:`.Task.TrialData`.
@@ -522,11 +522,11 @@ class Subject:
 
     def flush_current(self):
         """
-        Flushes the 'current' attribute in the mouse object to the current filenode
+        Flushes the 'current' attribute in the subject object to the current filenode
         in the .h5
 
         Used to make sure the stored .json representation of the current task stays up to date
-        with the params set in the mouse object
+        with the params set in the subject object
         """
         h5f = self.open_hdf()
         h5f.remove_node('/current')
@@ -571,7 +571,7 @@ class Subject:
         spawns :attr:`~.Subject.data_queue` and calls :meth:`~.Subject.data_thread`.
 
         Returns:
-            Dict: the parameters for the current step, with mouse id, step number,
+            Dict: the parameters for the current step, with subject id, step number,
                 current trial, and session number included.
         """
 
@@ -653,7 +653,7 @@ class Subject:
         # return a task parameter dictionary
 
         task = copy(self.current[self.step])
-        task['mouse'] = self.name
+        task['subject'] = self.name
         task['step'] = self.step
         task['current_trial'] = self.current_trial
         task['session'] = self.session

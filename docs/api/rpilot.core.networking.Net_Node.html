@@ -21,7 +21,7 @@
     <link rel="canonical" href="http://docs.rpilot.net/api/rpilot.core.networking.Net_Node.html" />
     <link rel="index" title="Index" href="/../genindex.html" />
     <link rel="search" title="Search" href="/../search.html" />
-    <link rel="next" title="Networking" href="/rpilot.core.networking.Networking.html" />
+    <link rel="next" title="Pilot_Station" href="/rpilot.core.networking.Pilot_Station.html" />
     <link rel="prev" title="Message" href="/rpilot.core.networking.Message.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -56,9 +56,20 @@
      href="../index.html">RPilot Docs <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">User Guide Sections:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide.installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../guide.installation.html#setting-up-a-pilot">Setting Up a Pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.installation.html#pilot-presetup">Pilot Presetup</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../rpilot.core.html">core</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../rpilot.core.html">Core Modules</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.gui.html">gui</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.gui.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.gui.html#classes">Classes</a></li>
@@ -68,11 +79,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.hardware.html">hardware</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.hardware.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.hardware.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../rpilot.core.mouse.html">mouse</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.mouse.html#classes">Classes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.mouse.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="reference internal" href="../rpilot.core.networking.html">networking</a><ul class="current">
@@ -91,19 +97,25 @@
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.plots.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.core.subject.html">mouse</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.subject.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.subject.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.terminal.html">terminal</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.terminal.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.terminal.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.utils.html">utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.utils.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.utils.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.utils.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.tasks.html">tasks</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.tasks.html">Tasks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.tasks.free_water.html">free_water</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.tasks.free_water.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.tasks.free_water.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
@@ -126,8 +138,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.stim.html">stim</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.stim.html">Stimuli</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.stim.managers.html">managers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.managers.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.managers.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.managers.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
@@ -140,17 +153,20 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.viz.html">viz</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.viz.trial_viewer.html">trial_viewer</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.setup.html">setup</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.setup.html">Setup</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.setup.setup_pilot.html">setup_pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.setup.setup_scale.html">setup_scale</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.setup.setup_terminal.html">setup_terminal</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.prefs.html">prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.prefs.html">Prefs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">To-Do</a></li>
 </ul>
 </ul>
 </li>
@@ -178,7 +194,7 @@
     </a>
   </li>
   <li>
-    <a href="/rpilot.core.networking.Networking.html" title="Next Chapter: Networking"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Networking &raquo;</span>
+    <a href="/rpilot.core.networking.Pilot_Station.html" title="Next Chapter: Pilot_Station"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Pilot_Station &raquo;</span>
     </a>
   </li>
               
@@ -220,7 +236,7 @@
     </a>
   </li>
   <li>
-    <a href="/rpilot.core.networking.Networking.html" title="Next Chapter: Networking"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Networking &raquo;</span>
+    <a href="/rpilot.core.networking.Pilot_Station.html" title="Next Chapter: Pilot_Station"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Pilot_Station &raquo;</span>
     </a>
   </li>
         </div>
@@ -231,47 +247,47 @@
 <h1>Net_Node<a class="headerlink" href="#net-node" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="rpilot.core.networking.Net_Node">
-<em class="property">class </em><code class="descclassname">rpilot.core.networking.</code><code class="descname">Net_Node</code><span class="sig-paren">(</span><em>id</em>, <em>upstream</em>, <em>port</em>, <em>listens</em>, <em>instance=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/networking.html#Net_Node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.networking.Net_Node" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">rpilot.core.networking.</code><code class="descname">Net_Node</code><span class="sig-paren">(</span><em>id</em>, <em>upstream</em>, <em>port</em>, <em>listens</em>, <em>instance=True</em>, <em>do_logging=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/networking.html#Net_Node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.networking.Net_Node" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="/https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Drop in networking object to be given to any sub-object
-behind some external-facing <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Networking" title="rpilot.core.networking.Networking"><code class="xref py py-class docutils literal notranslate"><span class="pre">Networking</span></code></a> object.</p>
+behind some external-facing <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Station" title="rpilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object.</p>
 <p>These objects are intended to communicate locally, within a piece of hardware,
 though not necessarily within the same process.</p>
 <p>To minimize the complexity of the network topology, Net_Nodes
-must communicate through a <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Networking" title="rpilot.core.networking.Networking"><code class="xref py py-class docutils literal notranslate"><span class="pre">Networking</span></code></a> ROUTER, rather than
+must communicate through a <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Station" title="rpilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> ROUTER, rather than
 address each other directly.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first simple">
-<li><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.context" title="rpilot.core.networking.Net_Node.context"><strong>context</strong></a> (<a class="reference external" href="/https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Context" title="(in PyZMQ v17.1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Context</span></code></a>) – zeromq context</li>
-<li><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.loop" title="rpilot.core.networking.Net_Node.loop"><strong>loop</strong></a> (<a class="reference external" href="/https://www.tornadoweb.org/en/stable/ioloop.html#tornado.ioloop.IOLoop" title="(in Tornado v6.0.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tornado.ioloop.IOLoop</span></code></a>) – a tornado ioloop</li>
-<li><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.sock" title="rpilot.core.networking.Net_Node.sock"><strong>sock</strong></a> (<a class="reference external" href="/https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Socket" title="(in PyZMQ v17.1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Socket</span></code></a>) – Our DEALER socket.</li>
-<li><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.id" title="rpilot.core.networking.Net_Node.id"><strong>id</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – What are we known as? What do we set our <code class="xref py py-attr docutils literal notranslate"><span class="pre">identity</span></code> as?</li>
-<li><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.upstream" title="rpilot.core.networking.Net_Node.upstream"><strong>upstream</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The identity of the ROUTER socket used by our upstream <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Networking" title="rpilot.core.networking.Networking"><code class="xref py py-class docutils literal notranslate"><span class="pre">Networking</span></code></a> object.</li>
-<li><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.port" title="rpilot.core.networking.Net_Node.port"><strong>port</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – The port that our upstream ROUTER socket is bound to</li>
-<li><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Networking.listens" title="rpilot.core.networking.Networking.listens"><strong>listens</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Dictionary of functions to call for different types of messages. keys match the <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Message.key" title="rpilot.core.networking.Message.key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.key</span></code></a>.</li>
-<li><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Networking.outbox" title="rpilot.core.networking.Networking.outbox"><strong>outbox</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Messages that have been sent but have not been confirmed</li>
-<li><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.timers" title="rpilot.core.networking.Net_Node.timers"><strong>timers</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – dict of <a class="reference external" href="/https://docs.python.org/2/library/threading.html#threading.Timer" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Timer</span></code></a> s that will check in on outbox messages</li>
-<li><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.logger" title="rpilot.core.networking.Net_Node.logger"><strong>logger</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/logging.html#logging.Logger" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a>) – Used to log messages and network events.</li>
-<li><a class="reference internal" href="../rpilot.core.pilot.html#rpilot.core.pilot.RPilot.log_handler" title="rpilot.core.pilot.RPilot.log_handler"><strong>log_handler</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/logging.handlers.html#logging.FileHandler" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.FileHandler</span></code></a>) – Handler for logging</li>
-<li><a class="reference internal" href="../rpilot.core.pilot.html#rpilot.core.pilot.RPilot.log_formatter" title="rpilot.core.pilot.RPilot.log_formatter"><strong>log_formatter</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/logging.html#logging.Formatter" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></a>) – <p>Formats log entries as:</p>
+<li><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.context" title="rpilot.core.networking.Net_Node.context"><strong>context</strong></a> (<a class="reference external" href="/https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Context" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Context</span></code></a>) – zeromq context</li>
+<li><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Station.loop" title="rpilot.core.networking.Station.loop"><strong>loop</strong></a> (<a class="reference external" href="/https://www.tornadoweb.org/en/stable/ioloop.html#tornado.ioloop.IOLoop" title="(in Tornado v6.0.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tornado.ioloop.IOLoop</span></code></a>) – a tornado ioloop</li>
+<li><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.sock" title="rpilot.core.networking.Net_Node.sock"><strong>sock</strong></a> (<a class="reference external" href="/https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Socket" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Socket</span></code></a>) – Our DEALER socket.</li>
+<li><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.id" title="rpilot.core.networking.Net_Node.id"><strong>id</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – What are we known as? What do we set our <code class="xref py py-attr docutils literal notranslate"><span class="pre">identity</span></code> as?</li>
+<li><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.upstream" title="rpilot.core.networking.Net_Node.upstream"><strong>upstream</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The identity of the ROUTER socket used by our upstream <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Station" title="rpilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object.</li>
+<li><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.port" title="rpilot.core.networking.Net_Node.port"><strong>port</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – The port that our upstream ROUTER socket is bound to</li>
+<li><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Station.listens" title="rpilot.core.networking.Station.listens"><strong>listens</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Dictionary of functions to call for different types of messages. keys match the <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Message.key" title="rpilot.core.networking.Message.key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.key</span></code></a>.</li>
+<li><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.outbox" title="rpilot.core.networking.Net_Node.outbox"><strong>outbox</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Messages that have been sent but have not been confirmed</li>
+<li><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.timers" title="rpilot.core.networking.Net_Node.timers"><strong>timers</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – dict of <a class="reference external" href="/https://docs.python.org/2/library/threading.html#threading.Timer" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Timer</span></code></a> s that will check in on outbox messages</li>
+<li><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.logger" title="rpilot.core.networking.Net_Node.logger"><strong>logger</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/logging.html#logging.Logger" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a>) – Used to log messages and network events.</li>
+<li><a class="reference internal" href="../rst/rpilot.core.pilot.html#rpilot.core.pilot.RPilot.log_handler" title="rpilot.core.pilot.RPilot.log_handler"><strong>log_handler</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/logging.handlers.html#logging.FileHandler" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.FileHandler</span></code></a>) – Handler for logging</li>
+<li><a class="reference internal" href="../rst/rpilot.core.pilot.html#rpilot.core.pilot.RPilot.log_formatter" title="rpilot.core.pilot.RPilot.log_formatter"><strong>log_formatter</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/logging.html#logging.Formatter" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></a>) – <p>Formats log entries as:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2"> : </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
 </li>
 <li><strong>msg_counter</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">itertools.count</span></code>) – counter to index our sent messages</li>
-<li><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.loop_thread" title="rpilot.core.networking.Net_Node.loop_thread"><strong>loop_thread</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/threading.html#threading.Thread" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code></a>) – Thread that holds our loop. initialized with <cite>daemon=True</cite></li>
+<li><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.loop_thread" title="rpilot.core.networking.Net_Node.loop_thread"><strong>loop_thread</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/threading.html#threading.Thread" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code></a>) – Thread that holds our loop. initialized with <cite>daemon=True</cite></li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>id</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – What are we known as? What do we set our <code class="xref py py-attr docutils literal notranslate"><span class="pre">identity</span></code> as?</li>
-<li><strong>upstream</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The identity of the ROUTER socket used by our upstream <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Networking" title="rpilot.core.networking.Networking"><code class="xref py py-class docutils literal notranslate"><span class="pre">Networking</span></code></a> object.</li>
+<li><strong>upstream</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The identity of the ROUTER socket used by our upstream <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Station" title="rpilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object.</li>
 <li><strong>port</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – The port that our upstream ROUTER socket is bound to</li>
 <li><strong>listens</strong> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Dictionary of functions to call for different types of messages.
-keys match the <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Message.key" title="rpilot.core.networking.Message.key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.key</span></code></a>.</li>
+keys match the <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Message.key" title="rpilot.core.networking.Message.key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.key</span></code></a>.</li>
 <li><strong>instance</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Should the node try and use the existing zmq context and tornado loop?</li>
 </ul>
 </td>
@@ -285,43 +301,49 @@ keys match the <a class="reference internal" href="../rpilot.core.networking.htm
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.context" title="rpilot.core.networking.Net_Node.context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">context</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.context" title="rpilot.core.networking.Net_Node.context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">context</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.id" title="rpilot.core.networking.Net_Node.id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">id</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.do_logging" title="rpilot.core.networking.Net_Node.do_logging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_logging</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.listens" title="rpilot.core.networking.Net_Node.listens"><code class="xref py py-obj docutils literal notranslate"><span class="pre">listens</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.id" title="rpilot.core.networking.Net_Node.id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">id</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.log_formatter" title="rpilot.core.networking.Net_Node.log_formatter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_formatter</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.listens" title="rpilot.core.networking.Net_Node.listens"><code class="xref py py-obj docutils literal notranslate"><span class="pre">listens</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.log_handler" title="rpilot.core.networking.Net_Node.log_handler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_handler</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.log_formatter" title="rpilot.core.networking.Net_Node.log_formatter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_formatter</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.logger" title="rpilot.core.networking.Net_Node.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.log_handler" title="rpilot.core.networking.Net_Node.log_handler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_handler</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.loop" title="rpilot.core.networking.Net_Node.loop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loop</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.logger" title="rpilot.core.networking.Net_Node.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.loop_thread" title="rpilot.core.networking.Net_Node.loop_thread"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loop_thread</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.loop" title="rpilot.core.networking.Net_Node.loop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loop</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.outbox" title="rpilot.core.networking.Net_Node.outbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outbox</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.loop_thread" title="rpilot.core.networking.Net_Node.loop_thread"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loop_thread</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.port" title="rpilot.core.networking.Net_Node.port"><code class="xref py py-obj docutils literal notranslate"><span class="pre">port</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.outbox" title="rpilot.core.networking.Net_Node.outbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outbox</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.sock" title="rpilot.core.networking.Net_Node.sock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sock</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.port" title="rpilot.core.networking.Net_Node.port"><code class="xref py py-obj docutils literal notranslate"><span class="pre">port</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.timers" title="rpilot.core.networking.Net_Node.timers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timers</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.repeat_interval" title="rpilot.core.networking.Net_Node.repeat_interval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat_interval</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.upstream" title="rpilot.core.networking.Net_Node.upstream"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upstream</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.sock" title="rpilot.core.networking.Net_Node.sock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sock</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.timers" title="rpilot.core.networking.Net_Node.timers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timers</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.upstream" title="rpilot.core.networking.Net_Node.upstream"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upstream</span></code></a></td>
 <td></td>
 </tr>
 </tbody>
@@ -333,28 +355,28 @@ keys match the <a class="reference internal" href="../rpilot.core.networking.htm
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.handle_listen" title="rpilot.core.networking.Net_Node.handle_listen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_listen</span></code></a>(msg)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.handle_listen" title="rpilot.core.networking.Net_Node.handle_listen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_listen</span></code></a>(msg)</td>
 <td>Upon receiving a message, call the appropriate listen method in a new thread and send confirmation it was received.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.init_logging" title="rpilot.core.networking.Net_Node.init_logging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_logging</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.init_logging" title="rpilot.core.networking.Net_Node.init_logging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_logging</span></code></a>()</td>
 <td>Initialize logging to a timestamped file in <cite>prefs.LOGDIR</cite> .</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.init_networking" title="rpilot.core.networking.Net_Node.init_networking"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_networking</span></code></a>()</td>
-<td>Creates socket, connects to specified port on localhost, and starts the <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.threaded_loop" title="rpilot.core.networking.Net_Node.threaded_loop"><code class="xref py py-meth docutils literal notranslate"><span class="pre">threaded_loop()</span></code></a> as a daemon thread.</td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.init_networking" title="rpilot.core.networking.Net_Node.init_networking"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_networking</span></code></a>()</td>
+<td>Creates socket, connects to specified port on localhost, and starts the <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.threaded_loop" title="rpilot.core.networking.Net_Node.threaded_loop"><code class="xref py py-meth docutils literal notranslate"><span class="pre">threaded_loop()</span></code></a> as a daemon thread.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.l_confirm" title="rpilot.core.networking.Net_Node.l_confirm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_confirm</span></code></a>(value)</td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.l_confirm" title="rpilot.core.networking.Net_Node.l_confirm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_confirm</span></code></a>(value)</td>
 <td>Confirm that a message was received.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.prepare_message" title="rpilot.core.networking.Net_Node.prepare_message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_message</span></code></a>(to,&nbsp;key,&nbsp;value,&nbsp;repeat)</td>
-<td>Instantiate a <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Message" title="rpilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> class, give it an ID and the rest of its attributes.</td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.prepare_message" title="rpilot.core.networking.Net_Node.prepare_message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_message</span></code></a>(to,&nbsp;key,&nbsp;value,&nbsp;repeat[,&nbsp;flags])</td>
+<td>Instantiate a <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Message" title="rpilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> class, give it an ID and the rest of its attributes.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.repeat" title="rpilot.core.networking.Net_Node.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code></a>(msg_id)</td>
-<td>Called by a <a class="reference external" href="/https://docs.python.org/2/library/threading.html#threading.Timer" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Timer</span></code></a> to resend a message that hasn’t been confirmed by its recipient.</td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.repeat" title="rpilot.core.networking.Net_Node.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code></a>()</td>
+<td>Periodically (according to <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.repeat_interval" title="rpilot.core.networking.Net_Node.repeat_interval"><code class="xref py py-attr docutils literal notranslate"><span class="pre">repeat_interval</span></code></a>) resend messages that haven’t been confirmed</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.send" title="rpilot.core.networking.Net_Node.send"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send</span></code></a>([to,&nbsp;key,&nbsp;value,&nbsp;msg,&nbsp;repeat])</td>
-<td>Send a message via our <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.sock" title="rpilot.core.networking.Net_Node.sock"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sock</span></code></a> , DEALER socket.</td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.send" title="rpilot.core.networking.Net_Node.send"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send</span></code></a>([to,&nbsp;key,&nbsp;value,&nbsp;msg,&nbsp;repeat,&nbsp;flags])</td>
+<td>Send a message via our <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.sock" title="rpilot.core.networking.Net_Node.sock"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sock</span></code></a> , DEALER socket.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.threaded_loop" title="rpilot.core.networking.Net_Node.threaded_loop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">threaded_loop</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.threaded_loop" title="rpilot.core.networking.Net_Node.threaded_loop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">threaded_loop</span></code></a>()</td>
 <td>Run in a thread, either starts the IOLoop, or if it is already started (ie.</td>
 </tr>
 </tbody>
@@ -363,6 +385,11 @@ keys match the <a class="reference internal" href="../rpilot.core.networking.htm
 <dl class="attribute">
 <dt id="rpilot.core.networking.Net_Node.context">
 <code class="descname">context</code><em class="property"> = None</em><a class="headerlink" href="#rpilot.core.networking.Net_Node.context" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rpilot.core.networking.Net_Node.do_logging">
+<code class="descname">do_logging</code><em class="property"> = &lt;threading._Event object&gt;</em><a class="headerlink" href="#rpilot.core.networking.Net_Node.do_logging" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -411,6 +438,11 @@ keys match the <a class="reference internal" href="../rpilot.core.networking.htm
 <dd></dd></dl>
 
 <dl class="attribute">
+<dt id="rpilot.core.networking.Net_Node.repeat_interval">
+<code class="descname">repeat_interval</code><em class="property"> = 5</em><a class="headerlink" href="#rpilot.core.networking.Net_Node.repeat_interval" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
 <dt id="rpilot.core.networking.Net_Node.sock">
 <code class="descname">sock</code><em class="property"> = None</em><a class="headerlink" href="#rpilot.core.networking.Net_Node.sock" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -433,7 +465,7 @@ keys match the <a class="reference internal" href="../rpilot.core.networking.htm
 in a new thread and send confirmation it was received.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Unlike <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Networking.handle_listen" title="rpilot.core.networking.Networking.handle_listen"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Networking.handle_listen()</span></code></a> , only the <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Message.value" title="rpilot.core.networking.Message.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.value</span></code></a>
+<p class="last">Unlike <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Station.handle_listen" title="rpilot.core.networking.Station.handle_listen"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Station.handle_listen()</span></code></a> , only the <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Message.value" title="rpilot.core.networking.Message.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.value</span></code></a>
 is given to listen methods. This was initially intended to simplify these
 methods, but this might change in the future to unify the messaging system.</p>
 </div>
@@ -441,7 +473,7 @@ methods, but this might change in the future to unify the messaging system.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – JSON <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Message.serialize" title="rpilot.core.networking.Message.serialize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Message.serialize()</span></code></a> d message.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – JSON <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Message.serialize" title="rpilot.core.networking.Message.serialize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Message.serialize()</span></code></a> d message.</td>
 </tr>
 </tbody>
 </table>
@@ -458,7 +490,7 @@ methods, but this might change in the future to unify the messaging system.</p>
 <dt id="rpilot.core.networking.Net_Node.init_networking">
 <code class="descname">init_networking</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/networking.html#Net_Node.init_networking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.networking.Net_Node.init_networking" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates socket, connects to specified port on localhost,
-and starts the <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.threaded_loop" title="rpilot.core.networking.Net_Node.threaded_loop"><code class="xref py py-meth docutils literal notranslate"><span class="pre">threaded_loop()</span></code></a> as a daemon thread.</p>
+and starts the <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.threaded_loop" title="rpilot.core.networking.Net_Node.threaded_loop"><code class="xref py py-meth docutils literal notranslate"><span class="pre">threaded_loop()</span></code></a> as a daemon thread.</p>
 </dd></dl>
 
 <dl class="method">
@@ -477,8 +509,8 @@ and starts the <a class="reference internal" href="../rpilot.core.networking.htm
 
 <dl class="method">
 <dt id="rpilot.core.networking.Net_Node.prepare_message">
-<code class="descname">prepare_message</code><span class="sig-paren">(</span><em>to</em>, <em>key</em>, <em>value</em>, <em>repeat</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/networking.html#Net_Node.prepare_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.networking.Net_Node.prepare_message" title="Permalink to this definition">¶</a></dt>
-<dd><p>Instantiate a <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Message" title="rpilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> class, give it an ID and
+<code class="descname">prepare_message</code><span class="sig-paren">(</span><em>to</em>, <em>key</em>, <em>value</em>, <em>repeat</em>, <em>flags=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/networking.html#Net_Node.prepare_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.networking.Net_Node.prepare_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiate a <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Message" title="rpilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> class, give it an ID and
 the rest of its attributes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -499,34 +531,24 @@ must be JSON serializable.</li>
 
 <dl class="method">
 <dt id="rpilot.core.networking.Net_Node.repeat">
-<code class="descname">repeat</code><span class="sig-paren">(</span><em>msg_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/networking.html#Net_Node.repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.networking.Net_Node.repeat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called by a <a class="reference external" href="/https://docs.python.org/2/library/threading.html#threading.Timer" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Timer</span></code></a> to resend a message that hasn’t
-been confirmed by its recipient.</p>
+<code class="descname">repeat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/networking.html#Net_Node.repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.networking.Net_Node.repeat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Periodically (according to <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.repeat_interval" title="rpilot.core.networking.Net_Node.repeat_interval"><code class="xref py py-attr docutils literal notranslate"><span class="pre">repeat_interval</span></code></a>) resend messages that haven’t been confirmed</p>
 <p>TTL is decremented, and messages are resent until their TTL is 0.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg_id</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The ID of our message, the key used to store it
-in <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.outbox" title="rpilot.core.networking.Net_Node.outbox"><code class="xref py py-attr docutils literal notranslate"><span class="pre">outbox</span></code></a> .</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="rpilot.core.networking.Net_Node.send">
-<code class="descname">send</code><span class="sig-paren">(</span><em>to=None</em>, <em>key=None</em>, <em>value=None</em>, <em>msg=None</em>, <em>repeat=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/networking.html#Net_Node.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.networking.Net_Node.send" title="Permalink to this definition">¶</a></dt>
-<dd><p>Send a message via our <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.sock" title="rpilot.core.networking.Net_Node.sock"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sock</span></code></a> , DEALER socket.</p>
+<code class="descname">send</code><span class="sig-paren">(</span><em>to=None</em>, <em>key=None</em>, <em>value=None</em>, <em>msg=None</em>, <em>repeat=True</em>, <em>flags=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/networking.html#Net_Node.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.networking.Net_Node.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a message via our <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.sock" title="rpilot.core.networking.Net_Node.sock"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sock</span></code></a> , DEALER socket.</p>
 <p><cite>to</cite> is not required. Every message
-is always sent to <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.upstream" title="rpilot.core.networking.Net_Node.upstream"><code class="xref py py-attr docutils literal notranslate"><span class="pre">upstream</span></code></a> . <cite>to</cite> can be included
+is always sent to <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.upstream" title="rpilot.core.networking.Net_Node.upstream"><code class="xref py py-attr docutils literal notranslate"><span class="pre">upstream</span></code></a> . <cite>to</cite> can be included
 to send a message further up the network tree to a networking object
 we’re not directly connected to.</p>
-<p>Either an already created <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Message" title="rpilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> should be passed as <cite>msg</cite>,
+<p>Either an already created <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Message" title="rpilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> should be passed as <cite>msg</cite>,
 or at least <cite>key</cite> must be provided for a new message created
-by <a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.prepare_message" title="rpilot.core.networking.Net_Node.prepare_message"><code class="xref py py-meth docutils literal notranslate"><span class="pre">prepare_message()</span></code></a> .</p>
+by <a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.prepare_message" title="rpilot.core.networking.Net_Node.prepare_message"><code class="xref py py-meth docutils literal notranslate"><span class="pre">prepare_message()</span></code></a> .</p>
 <p>A <a class="reference external" href="/https://docs.python.org/2/library/threading.html#threading.Timer" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Timer</span></code></a> is created to resend the message using
-<a class="reference internal" href="../rpilot.core.networking.html#rpilot.core.networking.Net_Node.repeat" title="rpilot.core.networking.Net_Node.repeat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">repeat()</span></code></a> unless <cite>repeat</cite> is False.</p>
+<a class="reference internal" href="../rst/rpilot.core.networking.html#rpilot.core.networking.Net_Node.repeat" title="rpilot.core.networking.Net_Node.repeat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">repeat()</span></code></a> unless <cite>repeat</cite> is False.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

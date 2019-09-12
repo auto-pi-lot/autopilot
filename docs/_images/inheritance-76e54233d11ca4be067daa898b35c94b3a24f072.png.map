@@ -1,0 +1,5 @@
+<map id="inheritanceb403021e01" name="inheritanceb403021e01">
+<area shape="rect" id="node1" href="rst/rpilot.tasks.graduation.html#rpilot.tasks.graduation.Accuracy" target="_top" title="Graduate stage based on percent accuracy over some window of trials." alt="" coords="141,5,217,29"/>
+<area shape="rect" id="node2" href="rst/rpilot.tasks.graduation.html#rpilot.tasks.graduation.Graduation" target="_top" title="Base Graduation object." alt="" coords="5,29,93,53"/>
+<area shape="rect" id="node3" href="rst/rpilot.tasks.graduation.html#rpilot.tasks.graduation.NTrials" target="_top" title="Graduate after doing n trials" alt="" coords="143,53,215,77"/>
+</map>

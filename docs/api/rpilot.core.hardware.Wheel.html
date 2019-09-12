@@ -21,7 +21,7 @@
     <link rel="canonical" href="http://docs.rpilot.net/api/rpilot.core.hardware.Wheel.html" />
     <link rel="index" title="Index" href="/../genindex.html" />
     <link rel="search" title="Search" href="/../search.html" />
-    <link rel="next" title="mouse" href="/../rpilot.core.mouse.html" />
+    <link rel="next" title="networking" href="/../rpilot.core.networking.html" />
     <link rel="prev" title="Solenoid" href="/rpilot.core.hardware.Solenoid.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -56,9 +56,20 @@
      href="../index.html">RPilot Docs <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">User Guide Sections:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide.installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../guide.installation.html#setting-up-a-pilot">Setting Up a Pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.installation.html#pilot-presetup">Pilot Presetup</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../rpilot.core.html">core</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../rpilot.core.html">Core Modules</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.gui.html">gui</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.gui.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.gui.html#classes">Classes</a></li>
@@ -68,11 +79,6 @@
 <li class="toctree-l2 current"><a class="reference internal" href="../rpilot.core.hardware.html">hardware</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../rpilot.core.hardware.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.hardware.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../rpilot.core.mouse.html">mouse</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.mouse.html#classes">Classes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.mouse.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.networking.html">networking</a><ul>
@@ -91,19 +97,25 @@
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.plots.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.core.subject.html">mouse</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.subject.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.subject.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.terminal.html">terminal</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.terminal.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.terminal.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.utils.html">utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.utils.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.utils.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.utils.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.tasks.html">tasks</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.tasks.html">Tasks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.tasks.free_water.html">free_water</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.tasks.free_water.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.tasks.free_water.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
@@ -126,8 +138,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.stim.html">stim</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.stim.html">Stimuli</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.stim.managers.html">managers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.managers.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.managers.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.managers.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
@@ -140,17 +153,20 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.viz.html">viz</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.viz.trial_viewer.html">trial_viewer</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.setup.html">setup</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.setup.html">Setup</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.setup.setup_pilot.html">setup_pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.setup.setup_scale.html">setup_scale</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.setup.setup_terminal.html">setup_terminal</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.prefs.html">prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.prefs.html">Prefs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">To-Do</a></li>
 </ul>
 </ul>
 </li>
@@ -178,7 +194,7 @@
     </a>
   </li>
   <li>
-    <a href="../rpilot.core.mouse.html" title="Next Chapter: mouse"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">mouse &raquo;</span>
+    <a href="../rpilot.core.networking.html" title="Next Chapter: networking"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">networking &raquo;</span>
     </a>
   </li>
               
@@ -220,7 +236,7 @@
     </a>
   </li>
   <li>
-    <a href="../rpilot.core.mouse.html" title="Next Chapter: mouse"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">mouse &raquo;</span>
+    <a href="../rpilot.core.networking.html" title="Next Chapter: networking"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">networking &raquo;</span>
     </a>
   </li>
         </div>
@@ -232,7 +248,7 @@
 <dl class="class">
 <dt id="rpilot.core.hardware.Wheel">
 <em class="property">class </em><code class="descclassname">rpilot.core.hardware.</code><code class="descname">Wheel</code><span class="sig-paren">(</span><em>mouse_idx=0</em>, <em>fs=10</em>, <em>thresh=100</em>, <em>thresh_type='dist'</em>, <em>start=True</em>, <em>gpio_trig=False</em>, <em>pins=None</em>, <em>mode='vel_total'</em>, <em>integrate_dur=5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/hardware.html#Wheel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.hardware.Wheel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../rpilot.core.hardware.html#rpilot.core.hardware.Hardware" title="rpilot.core.hardware.Hardware"><code class="xref py py-class docutils literal notranslate"><span class="pre">rpilot.core.hardware.Hardware</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Hardware" title="rpilot.core.hardware.Hardware"><code class="xref py py-class docutils literal notranslate"><span class="pre">rpilot.core.hardware.Hardware</span></code></a></p>
 <p>A continuously measured mouse wheel.</p>
 <p>Uses a USB computer mouse.</p>
 <div class="admonition warning">
@@ -246,22 +262,22 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.MODES" title="rpilot.core.hardware.Wheel.MODES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MODES</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Wheel.MODES" title="rpilot.core.hardware.Wheel.MODES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MODES</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.MOVE_DTYPE" title="rpilot.core.hardware.Wheel.MOVE_DTYPE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MOVE_DTYPE</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Wheel.MOVE_DTYPE" title="rpilot.core.hardware.Wheel.MOVE_DTYPE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MOVE_DTYPE</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.THRESH_TYPES" title="rpilot.core.hardware.Wheel.THRESH_TYPES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">THRESH_TYPES</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Wheel.THRESH_TYPES" title="rpilot.core.hardware.Wheel.THRESH_TYPES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">THRESH_TYPES</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.input" title="rpilot.core.hardware.Wheel.input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">input</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Wheel.input" title="rpilot.core.hardware.Wheel.input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">input</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.trigger" title="rpilot.core.hardware.Wheel.trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trigger</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Wheel.trigger" title="rpilot.core.hardware.Wheel.trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trigger</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.type" title="rpilot.core.hardware.Wheel.type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Wheel.type" title="rpilot.core.hardware.Wheel.type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></td>
 <td></td>
 </tr>
 </tbody>
@@ -273,31 +289,31 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.assign_cb" title="rpilot.core.hardware.Wheel.assign_cb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assign_cb</span></code></a>(trigger_fn)</td>
-<td>Every hardware device that is a <a class="reference internal" href="../rpilot.core.hardware.html#rpilot.core.hardware.Hardware.trigger" title="rpilot.core.hardware.Hardware.trigger"><code class="xref py py-attr docutils literal notranslate"><span class="pre">trigger</span></code></a> must redefine this to accept a function (typically <a class="reference internal" href="../rpilot.tasks.task.html#rpilot.tasks.task.Task.handle_trigger" title="rpilot.tasks.task.Task.handle_trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Task.handle_trigger()</span></code></a>) that is called when that trigger is activated.</td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Wheel.assign_cb" title="rpilot.core.hardware.Wheel.assign_cb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assign_cb</span></code></a>(trigger_fn)</td>
+<td>Every hardware device that is a <a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Hardware.trigger" title="rpilot.core.hardware.Hardware.trigger"><code class="xref py py-attr docutils literal notranslate"><span class="pre">trigger</span></code></a> must redefine this to accept a function (typically <a class="reference internal" href="../rst/rpilot.tasks.task.html#rpilot.tasks.task.Task.handle_trigger" title="rpilot.tasks.task.Task.handle_trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Task.handle_trigger()</span></code></a>) that is called when that trigger is activated.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.calc_move" title="rpilot.core.hardware.Wheel.calc_move"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_move</span></code></a>(move[,&nbsp;thresh_type])</td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Wheel.calc_move" title="rpilot.core.hardware.Wheel.calc_move"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_move</span></code></a>(move[,&nbsp;thresh_type])</td>
 <td>Calculate distance move depending on type (x, y, total dist)</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.check_thresh" title="rpilot.core.hardware.Wheel.check_thresh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_thresh</span></code></a>(move)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Wheel.check_thresh" title="rpilot.core.hardware.Wheel.check_thresh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_thresh</span></code></a>(move)</td>
 <td>Updates thresh_val and checks whether it’s above/below threshold</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.l_clear" title="rpilot.core.hardware.Wheel.l_clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_clear</span></code></a>(value)</td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Wheel.l_clear" title="rpilot.core.hardware.Wheel.l_clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_clear</span></code></a>(value)</td>
 <td>Stop measuring!</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.l_measure" title="rpilot.core.hardware.Wheel.l_measure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_measure</span></code></a>(value)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Wheel.l_measure" title="rpilot.core.hardware.Wheel.l_measure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_measure</span></code></a>(value)</td>
 <td>Task has signaled that we need to start measuring movements for a trigger</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.l_stop" title="rpilot.core.hardware.Wheel.l_stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_stop</span></code></a>(value)</td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Wheel.l_stop" title="rpilot.core.hardware.Wheel.l_stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_stop</span></code></a>(value)</td>
 <td>Stop measuring and clear system resources :param value ():</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.release" title="rpilot.core.hardware.Wheel.release"><code class="xref py py-obj docutils literal notranslate"><span class="pre">release</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Wheel.release" title="rpilot.core.hardware.Wheel.release"><code class="xref py py-obj docutils literal notranslate"><span class="pre">release</span></code></a>()</td>
 <td>Every hardware device needs to redefine <cite>release()</cite>, and must</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.start" title="rpilot.core.hardware.Wheel.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Wheel.start" title="rpilot.core.hardware.Wheel.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.hardware.html#rpilot.core.hardware.Wheel.thresh_trig" title="rpilot.core.hardware.Wheel.thresh_trig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thresh_trig</span></code></a>([which])</td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Wheel.thresh_trig" title="rpilot.core.hardware.Wheel.thresh_trig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thresh_trig</span></code></a>([which])</td>
 <td></td>
 </tr>
 </tbody>
@@ -337,8 +353,8 @@
 <dl class="method">
 <dt id="rpilot.core.hardware.Wheel.assign_cb">
 <code class="descname">assign_cb</code><span class="sig-paren">(</span><em>trigger_fn</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/hardware.html#Wheel.assign_cb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.hardware.Wheel.assign_cb" title="Permalink to this definition">¶</a></dt>
-<dd><p>Every hardware device that is a <a class="reference internal" href="../rpilot.core.hardware.html#rpilot.core.hardware.Hardware.trigger" title="rpilot.core.hardware.Hardware.trigger"><code class="xref py py-attr docutils literal notranslate"><span class="pre">trigger</span></code></a> must redefine this
-to accept a function (typically <a class="reference internal" href="../rpilot.tasks.task.html#rpilot.tasks.task.Task.handle_trigger" title="rpilot.tasks.task.Task.handle_trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Task.handle_trigger()</span></code></a>) that
+<dd><p>Every hardware device that is a <a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Hardware.trigger" title="rpilot.core.hardware.Hardware.trigger"><code class="xref py py-attr docutils literal notranslate"><span class="pre">trigger</span></code></a> must redefine this
+to accept a function (typically <a class="reference internal" href="../rst/rpilot.tasks.task.html#rpilot.tasks.task.Task.handle_trigger" title="rpilot.tasks.task.Task.handle_trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Task.handle_trigger()</span></code></a>) that
 is called when that trigger is activated.</p>
 <p>When not redefined, a warning is given.</p>
 </dd></dl>

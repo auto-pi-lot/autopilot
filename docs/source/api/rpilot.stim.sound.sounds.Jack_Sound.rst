@@ -20,6 +20,7 @@ Jack_Sound
 
       ~Jack_Sound.buffer
       ~Jack_Sound.chunk
+      ~Jack_Sound.end
       ~Jack_Sound.get_nsamples
       ~Jack_Sound.play
       ~Jack_Sound.set_trigger
@@ -35,6 +36,7 @@ Jack_Sound
 
    .. automethod:: buffer
    .. automethod:: chunk
+   .. automethod:: end
    .. automethod:: get_nsamples
    .. automethod:: play
    .. automethod:: set_trigger

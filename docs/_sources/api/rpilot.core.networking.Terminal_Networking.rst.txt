@@ -1,24 +1,24 @@
-Terminal_Networking
+Terminal_Station
 ===================
 
 .. currentmodule:: rpilot.core.networking
 
-.. autoclass:: Terminal_Networking
+.. autoclass:: Terminal_Station
    :show-inheritance:
 
    .. rubric:: Methods Summary
 
    .. autosummary::
 
-      ~Terminal_Networking.l_change
-      ~Terminal_Networking.l_data
-      ~Terminal_Networking.l_file
-      ~Terminal_Networking.l_handshake
-      ~Terminal_Networking.l_init
-      ~Terminal_Networking.l_kill
-      ~Terminal_Networking.l_ping
-      ~Terminal_Networking.l_state
-      ~Terminal_Networking.l_stopall
+      ~Terminal_Station.l_change
+      ~Terminal_Station.l_data
+      ~Terminal_Station.l_file
+      ~Terminal_Station.l_handshake
+      ~Terminal_Station.l_init
+      ~Terminal_Station.l_kill
+      ~Terminal_Station.l_ping
+      ~Terminal_Station.l_state
+      ~Terminal_Station.l_stopall
 
    .. rubric:: Methods Documentation
 

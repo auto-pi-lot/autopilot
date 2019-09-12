@@ -21,7 +21,7 @@
     <link rel="canonical" href="http://docs.rpilot.net/rpilot.stim.managers.html" />
     <link rel="index" title="Index" href="/genindex.html" />
     <link rel="search" title="Search" href="/search.html" />
-    <link rel="next" title="Bias_Correction" href="/api/rpilot.stim.managers.Bias_Correction.html" />
+    <link rel="next" title="init_manager" href="/api/rpilot.stim.managers.init_manager.html" />
     <link rel="prev" title="stim" href="/rpilot.stim.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -56,9 +56,20 @@
      href="index.html">RPilot Docs <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">User Guide Sections:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="/guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="/guide.installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="/guide.installation.html#setting-up-a-pilot">Setting Up a Pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/guide.installation.html#pilot-presetup">Pilot Presetup</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="/rpilot.core.html">core</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.core.html">Core Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.core.gui.html">gui</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.gui.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.gui.html#classes">Classes</a></li>
@@ -68,11 +79,6 @@
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.core.hardware.html">hardware</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.hardware.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.hardware.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="/rpilot.core.mouse.html">mouse</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.mouse.html#classes">Classes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.mouse.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.core.networking.html">networking</a><ul>
@@ -91,19 +97,25 @@
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.plots.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.core.subject.html">mouse</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.subject.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.subject.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.core.terminal.html">terminal</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.terminal.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.terminal.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.core.utils.html">utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.utils.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.utils.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.utils.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="/rpilot.tasks.html">tasks</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.tasks.html">Tasks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.tasks.free_water.html">free_water</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.tasks.free_water.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.tasks.free_water.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
@@ -126,8 +138,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal" href="/rpilot.stim.html">stim</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="/rpilot.stim.html">Stimuli</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">managers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
@@ -140,17 +153,20 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="/rpilot.viz.html">viz</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.viz.trial_viewer.html">trial_viewer</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="/rpilot.setup.html">setup</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.setup.html">Setup</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.setup.setup_pilot.html">setup_pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.setup.setup_scale.html">setup_scale</a></li>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.setup.setup_terminal.html">setup_terminal</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="/rpilot.prefs.html">prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.prefs.html">Prefs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="/todo.html">To-Do</a></li>
 </ul>
 </ul>
 </li>
@@ -165,6 +181,7 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">managers</a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
@@ -182,7 +199,7 @@
     </a>
   </li>
   <li>
-    <a href="/api/rpilot.stim.managers.Bias_Correction.html" title="Next Chapter: Bias_Correction"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Bias_Correction &raquo;</span>
+    <a href="/api/rpilot.stim.managers.init_manager.html" title="Next Chapter: init_manager"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">init_manager &raquo;</span>
     </a>
   </li>
               
@@ -217,6 +234,7 @@
       <div class="col-md-3">
         <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
 <li><a class="reference internal" href="#">managers</a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
@@ -228,7 +246,7 @@
     </a>
   </li>
   <li>
-    <a href="/api/rpilot.stim.managers.Bias_Correction.html" title="Next Chapter: Bias_Correction"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Bias_Correction &raquo;</span>
+    <a href="/api/rpilot.stim.managers.init_manager.html" title="Next Chapter: init_manager"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">init_manager &raquo;</span>
     </a>
   </li>
         </div>
@@ -244,6 +262,20 @@ redefine <cite>next_stim</cite></p>
 <p class="first admonition-title">Todo</p>
 <p class="last">Make this more general, for more than just sounds.</p>
 </div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="/rst/rpilot.stim.managers.html#rpilot.stim.managers.init_manager" title="rpilot.stim.managers.init_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_manager</span></code></a>(stim)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="longtable docutils">
@@ -252,10 +284,13 @@ redefine <cite>next_stim</cite></p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#rpilot.stim.managers.Bias_Correction" title="rpilot.stim.managers.Bias_Correction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a>([mode,&nbsp;thresh,&nbsp;window])</td>
+<tr class="row-odd"><td><a class="reference internal" href="/rst/rpilot.stim.managers.html#rpilot.stim.managers.Bias_Correction" title="rpilot.stim.managers.Bias_Correction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a>([mode,&nbsp;thresh,&nbsp;window])</td>
 <td>Basic Bias correction module.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#rpilot.stim.managers.Stim_Manager" title="rpilot.stim.managers.Stim_Manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a>(stim)</td>
+<tr class="row-even"><td><a class="reference internal" href="/rst/rpilot.stim.managers.html#rpilot.stim.managers.Proportional" title="rpilot.stim.managers.Proportional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Proportional</span></code></a>(stim)</td>
+<td>Present groups of stimuli with a particular frequency.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="/rst/rpilot.stim.managers.html#rpilot.stim.managers.Stim_Manager" title="rpilot.stim.managers.Stim_Manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a>([stim])</td>
 <td>Yield sounds according to some set of rules.</td>
 </tr>
 </tbody>
@@ -263,10 +298,11 @@ redefine <cite>next_stim</cite></p>
 </div>
 <div class="section" id="class-inheritance-diagram">
 <h2>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Permalink to this headline">¶</a></h2>
-<div class="graphviz"><img src="_images/inheritance-6e09214f245d99f31208167d13a3584f963dd269.png" alt="Inheritance diagram of rpilot.stim.managers.Bias_Correction, rpilot.stim.managers.Stim_Manager" usemap="#inheritance492ee67834" class="inheritance graphviz" /></div>
-<map id="inheritance492ee67834" name="inheritance492ee67834">
-<area shape="rect" id="node1" href="#rpilot.stim.managers.Bias_Correction" target="_top" title="Basic Bias correction module. Modifies the threshold of random stimulus" alt="" coords="5,53,122,77"/>
-<area shape="rect" id="node2" href="#rpilot.stim.managers.Stim_Manager" target="_top" title="Yield sounds according to some set of rules." alt="" coords="9,5,117,29"/>
+<div class="graphviz"><img src="_images/inheritance-ea90c995fcdaef2904d311ee945bd5ffd4f75ef3.png" alt="Inheritance diagram of rpilot.stim.managers.Bias_Correction, rpilot.stim.managers.Proportional, rpilot.stim.managers.Stim_Manager" usemap="#inheritancea842e654e3" class="inheritance graphviz" /></div>
+<map id="inheritancea842e654e3" name="inheritancea842e654e3">
+<area shape="rect" id="node1" href="/rst/rpilot.stim.managers.html#rpilot.stim.managers.Bias_Correction" target="_top" title="Basic Bias correction module. Modifies the threshold of random stimulus" alt="" coords="5,53,122,77"/>
+<area shape="rect" id="node2" href="/rst/rpilot.stim.managers.html#rpilot.stim.managers.Proportional" target="_top" title="Present groups of stimuli with a particular frequency." alt="" coords="170,5,263,29"/>
+<area shape="rect" id="node3" href="/rst/rpilot.stim.managers.html#rpilot.stim.managers.Stim_Manager" target="_top" title="Yield sounds according to some set of rules." alt="" coords="9,5,117,29"/>
 </map><span class="target" id="module-rpilot.stim.managers"></span><p>This is a scrappy first draft of a stimulus manager that will be built out
 to incorporate arbitrary stimulus logic. For now you can subclass <cite>Stim_Manager</cite> and
 redefine <cite>next_stim</cite></p>
@@ -274,15 +310,20 @@ redefine <cite>next_stim</cite></p>
 <p class="first admonition-title">Todo</p>
 <p class="last">Make this more general, for more than just sounds.</p>
 </div>
+<dl class="function">
+<dt id="rpilot.stim.managers.init_manager">
+<code class="descclassname">rpilot.stim.managers.</code><code class="descname">init_manager</code><span class="sig-paren">(</span><em>stim</em><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/stim/managers.html#init_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.stim.managers.init_manager" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="class">
 <dt id="rpilot.stim.managers.Stim_Manager">
-<em class="property">class </em><code class="descclassname">rpilot.stim.managers.</code><code class="descname">Stim_Manager</code><span class="sig-paren">(</span><em>stim</em><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/stim/managers.html#Stim_Manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.stim.managers.Stim_Manager" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">rpilot.stim.managers.</code><code class="descname">Stim_Manager</code><span class="sig-paren">(</span><em>stim=None</em><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/stim/managers.html#Stim_Manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.stim.managers.Stim_Manager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="/https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Yield sounds according to some set of rules.</p>
 <p>Currently implemented:</p>
 <ul class="simple">
 <li><dl class="first docutils">
-<dt>correction trials - If a mouse continually answers to one side incorrectly, keep</dt>
+<dt>correction trials - If a subject continually answers to one side incorrectly, keep</dt>
 <dd>the correct answer on the other side until they answer in that direction</dd>
 </dl>
 </li>
@@ -300,7 +341,7 @@ redefine <cite>next_stim</cite></p>
 </li>
 <li><strong>target</strong> (<em>'L'</em><em>, </em><em>'R'</em>) – What is the correct port?</li>
 <li><strong>distractor</strong> (<em>'L'</em><em>, </em><em>'R'</em>) – What is the incorrect port?</li>
-<li><a class="reference internal" href="/rpilot.tasks.free_water.html#rpilot.tasks.free_water.Free_Water.response" title="rpilot.tasks.free_water.Free_Water.response"><strong>response</strong></a> (<em>'L'</em><em>, </em><em>'R'</em>) – What was the last response?</li>
+<li><a class="reference internal" href="/rst/rpilot.tasks.free_water.html#rpilot.tasks.free_water.Free_Water.response" title="rpilot.tasks.free_water.Free_Water.response"><strong>response</strong></a> (<em>'L'</em><em>, </em><em>'R'</em>) – What was the last response?</li>
 <li><strong>correct</strong> (<em>0</em><em>, </em><em>1</em>) – Was the last response correct?</li>
 <li><strong>last_stim</strong> – What was the last stim? (one of <cite>self.stimuli</cite>)</li>
 <li><strong>correction</strong> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Are we doing correction trials?</li>
@@ -340,12 +381,12 @@ redefine <cite>next_stim</cite></p>
 <dl class="method">
 <dt id="rpilot.stim.managers.Stim_Manager.do_bias">
 <code class="descname">do_bias</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/stim/managers.html#Stim_Manager.do_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.stim.managers.Stim_Manager.do_bias" title="Permalink to this definition">¶</a></dt>
-<dd><p>Instantiate a <a class="reference internal" href="#rpilot.stim.managers.Bias_Correction" title="rpilot.stim.managers.Bias_Correction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a> module</p>
+<dd><p>Instantiate a <a class="reference internal" href="/rst/rpilot.stim.managers.html#rpilot.stim.managers.Bias_Correction" title="rpilot.stim.managers.Bias_Correction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a> module</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kwargs</strong> – parameters to initialize <a class="reference internal" href="#rpilot.stim.managers.Bias_Correction" title="rpilot.stim.managers.Bias_Correction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a> with.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kwargs</strong> – parameters to initialize <a class="reference internal" href="/rst/rpilot.stim.managers.html#rpilot.stim.managers.Bias_Correction" title="rpilot.stim.managers.Bias_Correction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a> with.</td>
 </tr>
 </tbody>
 </table>
@@ -355,7 +396,7 @@ redefine <cite>next_stim</cite></p>
 <dt id="rpilot.stim.managers.Stim_Manager.init_sounds">
 <code class="descname">init_sounds</code><span class="sig-paren">(</span><em>sound_dict</em><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/stim/managers.html#Stim_Manager.init_sounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.stim.managers.Stim_Manager.init_sounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Instantiate sound objects, using the ‘type’ value to choose an object from
-<a class="reference internal" href="/rpilot.stim.sound.sounds.html#rpilot.stim.sound.sounds.SOUND_LIST" title="rpilot.stim.sound.sounds.SOUND_LIST"><code class="xref py py-data docutils literal notranslate"><span class="pre">sounds.SOUND_LIST</span></code></a> .</p>
+<a class="reference internal" href="/rst/rpilot.stim.sound.sounds.html#rpilot.stim.sound.sounds.SOUND_LIST" title="rpilot.stim.sound.sounds.SOUND_LIST"><code class="xref py py-data docutils literal notranslate"><span class="pre">sounds.SOUND_LIST</span></code></a> .</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -470,10 +511,145 @@ with the outcome of the trial.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>response</strong> (<em>'L'</em><em>, </em><em>'R'</em>) – How the mouse responded</li>
+<li><strong>response</strong> (<em>'L'</em><em>, </em><em>'R'</em>) – How the subject responded</li>
 <li><strong>correct</strong> (<em>0</em><em>, </em><em>1</em>) – Whether the response was correct.</li>
 </ul>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rpilot.stim.managers.Stim_Manager.end">
+<code class="descname">end</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/stim/managers.html#Stim_Manager.end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.stim.managers.Stim_Manager.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>End all of our stim. Stim should have an <cite>.end()</cite> method of their own</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rpilot.stim.managers.Proportional">
+<em class="property">class </em><code class="descclassname">rpilot.stim.managers.</code><code class="descname">Proportional</code><span class="sig-paren">(</span><em>stim</em><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/stim/managers.html#Proportional"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.stim.managers.Proportional" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="/rst/rpilot.stim.managers.html#rpilot.stim.managers.Stim_Manager" title="rpilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">rpilot.stim.managers.Stim_Manager</span></code></a></p>
+<p>Present groups of stimuli with a particular frequency.</p>
+<p>Frequencies do not need to add up to 1, groups will be selected with the frequency
+(frequency)/(sum(frequencies)).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>stim</strong> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>Dictionary with the structure:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;manager&#39;</span><span class="p">:</span> <span class="s1">&#39;proportional&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;sounds&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;groups&#39;</span><span class="p">:</span> <span class="p">(</span>
+     <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;group_name&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;frequency&#39;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+      <span class="s1">&#39;sounds&#39;</span><span class="p">:{</span>
+          <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="n">Tone1_params</span><span class="p">},</span> <span class="p">{</span><span class="n">Tone2_params</span><span class="p">}</span><span class="o">...</span><span class="p">],</span>
+          <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="n">Tone3_params</span><span class="p">},</span> <span class="p">{</span><span class="n">Tone4_params</span><span class="p">}</span><span class="o">...</span><span class="p">]</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;second_group&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;frequency&#39;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+      <span class="s1">&#39;sounds&#39;</span><span class="p">:{</span>
+          <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="n">Tone1_params</span><span class="p">},</span> <span class="p">{</span><span class="n">Tone2_params</span><span class="p">}</span><span class="o">...</span><span class="p">],</span>
+          <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="n">Tone3_params</span><span class="p">},</span> <span class="p">{</span><span class="n">Tone4_params</span><span class="p">}</span><span class="o">...</span><span class="p">]</span>
+      <span class="p">}</span>
+    <span class="p">})</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>stimuli</strong> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary of stimuli organized into groups</li>
+<li><strong>groups</strong> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary mapping group names to frequencies</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="rpilot.stim.managers.Proportional.init_sounds">
+<code class="descname">init_sounds</code><span class="sig-paren">(</span><em>sound_stim</em><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/stim/managers.html#Proportional.init_sounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.stim.managers.Proportional.init_sounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiate sound objects similarly to <a class="reference internal" href="/rst/rpilot.stim.managers.html#rpilot.stim.managers.Stim_Manager" title="rpilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a>, just organizes them into groups.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sound_dict</strong> (<em>tuple</em><em>, </em><em>list</em>) – <dl class="docutils">
+<dt>an iterator like::</dt>
+<dd><dl class="first docutils">
+<dt>(</dt>
+<dd><dl class="first last docutils">
+<dt>{‘name’:’group_name’,</dt>
+<dd>’frequency’: 0.2,
+‘sounds’: {<blockquote class="last">
+<div><blockquote>
+<div>’L’: [{Tone1_params}, {Tone2_params}…],
+‘R’: [{Tone3_params}, {Tone4_params}…]</div></blockquote>
+<p>}</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>},
+{‘name’:’second_group’,</p>
+<blockquote>
+<div>’frequency’: 0.8,
+‘sounds’:{<blockquote>
+<div>’L’: [{Tone1_params}, {Tone2_params}…],
+‘R’: [{Tone3_params}, {Tone4_params}…]</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p class="last">})</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rpilot.stim.managers.Proportional.store_groups">
+<code class="descname">store_groups</code><span class="sig-paren">(</span><em>stim</em><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/stim/managers.html#Proportional.store_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.stim.managers.Proportional.store_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>store groups and frequencies</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rpilot.stim.managers.Proportional.set_triggers">
+<code class="descname">set_triggers</code><span class="sig-paren">(</span><em>trig_fn</em><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/stim/managers.html#Proportional.set_triggers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.stim.managers.Proportional.set_triggers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Give a callback function to all of our stimuli for when the stimulus ends.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Stimuli need a <cite>set_trigger</cite> method.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>trig_fn</strong> (<em>callable</em>) – A function to be given to stimuli via <cite>set_trigger</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rpilot.stim.managers.Proportional.next_stim">
+<code class="descname">next_stim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/stim/managers.html#Proportional.next_stim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.stim.managers.Proportional.next_stim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute and return the next stimulus</p>
+<p>If we are doing correction trials, compute that.</p>
+<p>Same thing with bias correction.</p>
+<p>Otherwise, randomly select a stimulus to present, weighted by its group frequency.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(‘L’/’R’ Target, ‘L’/’R’ distractor, Stimulus to present)</td>
 </tr>
 </tbody>
 </table>
@@ -522,7 +698,7 @@ choice based on history of biased responses.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Some threshold <a class="reference internal" href="#rpilot.stim.managers.Stim_Manager" title="rpilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a> uses to decide left vs right.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Some threshold <a class="reference internal" href="/rst/rpilot.stim.managers.html#rpilot.stim.managers.Stim_Manager" title="rpilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a> uses to decide left vs right.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="/https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></td>
 </tr>
@@ -557,7 +733,7 @@ presentation to favor the rarely responded side.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>response</strong> (<em>'R'</em><em>, </em><em>'L'</em>) – Which side the mouse responded to</li>
+<li><strong>response</strong> (<em>'R'</em><em>, </em><em>'L'</em>) – Which side the subject responded to</li>
 <li><strong>target</strong> (<em>'R'</em><em>, </em><em>'L'</em>) – The correct side.</li>
 </ul>
 </td>

@@ -1,0 +1,13 @@
+<map id="inheritancee226bfef92" name="inheritancee226bfef92">
+<area shape="rect" id="node1" title="**Bases:** :class:`object`" alt="" coords="266,79,357,101"/>
+<area shape="rect" id="node2" title="**Bases:** :class:`GraphicsItem &lt;pyqtgraph.graphicsItems.GraphicsItem&gt;`, :class:`QtGui.QGraphicsObject`" alt="" coords="410,90,512,112"/>
+<area shape="rect" id="node9" title="**Bases:** :class:`GraphicsObject &lt;pyqtgraph.GraphicsObject&gt;`" alt="" coords="555,90,644,112"/>
+<area shape="rect" id="node4" href="rst/rpilot.core.plots.html#rpilot.core.plots.HLine" target="_top" title="A Horizontal line." alt="" coords="567,136,632,157"/>
+<area shape="rect" id="node7" href="rst/rpilot.core.plots.html#rpilot.core.plots.Plot" target="_top" title="Widget that hosts a :class:`pyqtgraph.PlotWidget` and manages" alt="" coords="429,183,493,205"/>
+<area shape="rect" id="node10" href="rst/rpilot.core.plots.html#rpilot.core.plots.Plot_Widget" target="_top" title="Main plot widget that holds plots for all pilots" alt="" coords="419,227,503,248"/>
+<area shape="rect" id="node11" href="rst/rpilot.core.plots.html#rpilot.core.plots.Point" target="_top" title="A simple point." alt="" coords="693,5,757,26"/>
+<area shape="rect" id="node16" href="rst/rpilot.core.plots.html#rpilot.core.plots.Roll_Mean" target="_top" title="Shaded area underneath a rolling average." alt="" coords="687,48,763,70"/>
+<area shape="rect" id="node17" href="rst/rpilot.core.plots.html#rpilot.core.plots.Segment" target="_top" title="A line segment that draws from 0.5 to some endpoint." alt="" coords="691,91,759,113"/>
+<area shape="rect" id="node18" href="rst/rpilot.core.plots.html#rpilot.core.plots.Shaded" target="_top" title="Shaded area for a continuous plot" alt="" coords="693,134,757,156"/>
+<area shape="rect" id="node19" href="rst/rpilot.core.plots.html#rpilot.core.plots.Timer" target="_top" title="A simple timer that counts... time..." alt="" coords="693,179,757,200"/>
+</map>

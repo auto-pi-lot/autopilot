@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Installation &#8212; rpilot 0.2 documentation</title>
+    <link rel="stylesheet" href="/_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="/_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="_static/restyle.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="/_static/documentation_options.js"></script>
+    <script type="text/javascript" src="/_static/jquery.js"></script>
+    <script type="text/javascript" src="/_static/underscore.js"></script>
+    <script type="text/javascript" src="/_static/doctools.js"></script>
+    <script type="text/javascript" src="/_static/language_data.js"></script>
+    <script type="text/javascript" src="/_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="/_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="/_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/_static/bootstrap-sphinx.js"></script>
+    <link rel="canonical" href="http://docs.rpilot.net/guide.installation.html" />
+    <link rel="index" title="Index" href="/genindex.html" />
+    <link rel="search" title="Search" href="/search.html" />
+    <link rel="next" title="core" href="/rpilot.core.html" />
+    <link rel="prev" title="Concepts and Terms in Autopilot" href="/guide.overview.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/index.html">
+          RPilot</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">RPilot Docs <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">User Guide Sections:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="/guide.overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#setting-up-a-pilot">Setting Up a Pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pilot-presetup">Pilot Presetup</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.core.html">Core Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.core.gui.html">gui</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.gui.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.gui.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.gui.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.core.hardware.html">hardware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.hardware.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.hardware.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.core.networking.html">networking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.networking.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.networking.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.core.pilot.html">pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.pilot.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.pilot.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.core.plots.html">plots</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.plots.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.plots.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.plots.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.core.subject.html">mouse</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.subject.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.subject.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.core.terminal.html">terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.terminal.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.terminal.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.core.utils.html">utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.utils.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.utils.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.utils.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.tasks.free_water.html">free_water</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.tasks.free_water.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.tasks.free_water.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.tasks.graduation.html">graduation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.tasks.graduation.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.tasks.graduation.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.tasks.nafc.html">nafc</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.tasks.nafc.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.tasks.nafc.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.tasks.task.html">task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.tasks.task.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.tasks.task.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.stim.html">Stimuli</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.stim.managers.html">managers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.stim.managers.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.stim.managers.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.stim.managers.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.stim.sound.html">sound</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.stim.sound.jackclient.html">jackclient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.stim.sound.pyoserver.html">pyoserver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.stim.sound.sounds.html">sounds</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.viz.html">Visualization Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.viz.trial_viewer.html">trial_viewer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.setup.html">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.setup.setup_pilot.html">setup_pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.setup.setup_scale.html">setup_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.setup.setup_terminal.html">setup_terminal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.prefs.html">Prefs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="/todo.html">To-Do</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#setting-up-a-pilot">Setting Up a Pilot</a><ul>
+<li><a class="reference internal" href="#pilot-presetup">Pilot Presetup</a><ul>
+<li><a class="reference internal" href="#rasbian-installation">Rasbian Installation</a></li>
+<li><a class="reference internal" href="#rasbian-performance-improvements">Rasbian Performance Improvements</a></li>
+<li><a class="reference internal" href="#audio-setup">Audio Setup</a></li>
+<li><a class="reference internal" href="#optional-installation-steps">Optional Installation Steps</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="/guide.overview.html" title="Previous Chapter: Concepts and Terms in Autopilot"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Concepts and ...</span>
+    </a>
+  </li>
+  <li>
+    <a href="/rpilot.core.html" title="Next Chapter: core"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">core &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="/_sources/guide.installation.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#setting-up-a-pilot">Setting Up a Pilot</a><ul>
+<li><a class="reference internal" href="#pilot-presetup">Pilot Presetup</a><ul>
+<li><a class="reference internal" href="#rasbian-installation">Rasbian Installation</a></li>
+<li><a class="reference internal" href="#rasbian-performance-improvements">Rasbian Performance Improvements</a></li>
+<li><a class="reference internal" href="#audio-setup">Audio Setup</a></li>
+<li><a class="reference internal" href="#optional-installation-steps">Optional Installation Steps</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <li>
+    <a href="/guide.overview.html" title="Previous Chapter: Concepts and Terms in Autopilot"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Concepts and ...</span>
+    </a>
+  </li>
+  <li>
+    <a href="/rpilot.core.html" title="Next Chapter: core"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">core &raquo;</span>
+    </a>
+  </li>
+        </div>
+      </div>
+    <div class="col-md-9 content">
+      
+  <div class="section" id="installation">
+<span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>Each runtime of Autopilot is called an “Agent,”
+each of which performs different roles within a system,
+and thus have different requirements.</p>
+<p>Each Agent should have its own setup routine, currently in two parts:</p>
+<ul class="simple">
+<li>A <strong>presetup</strong> script that prepares the environment, and installs prerequisites – essentially does all the things to prepare us to invoke Autopilot</li>
+<li>A <strong>setup</strong> routine that creates the prefs.json  file that governs Agent operation, creates any launch scripts and system services as needed.</li>
+</ul>
+<p>We will be incorporating these into a unified agent system that makes setting up and switching between agents easier in future version (See <a class="reference internal" href="/todo.html#todo"><span class="std std-ref">To-Do</span></a>).</p>
+<dl class="docutils">
+<dt>Note:</dt>
+<dd>These instructions, like everything in Autopilot, is Linux and <a href="#id2"><span class="problematic" id="id3">*</span></a>nix only. They have only been tested on macOS and Ubuntu Linux.</dd>
+</dl>
+<div class="section" id="setting-up-a-pilot">
+<h2>Setting Up a Pilot<a class="headerlink" href="#setting-up-a-pilot" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pilot-presetup">
+<h3>Pilot Presetup<a class="headerlink" href="#pilot-presetup" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>Note:</dt>
+<dd>These files are encapsulated in a <code class="xref any docutils literal notranslate"><span class="pre">rpilot.setup.preinstall_pilot.sh</span></code> bash script.</dd>
+</dl>
+<div class="section" id="rasbian-installation">
+<h4>Rasbian Installation<a class="headerlink" href="#rasbian-installation" title="Permalink to this headline">¶</a></h4>
+<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Download <a href="#id4"><span class="problematic" id="id5">`Raspbian Lite&lt;https://www.raspberrypi.org/downloads/raspbian/&gt;`_</span></a> and unzip</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="/https://downloads.raspberrypi.org/raspbian_lite_latest.torrent">As a .torrent (faster, better for the soul of the universe)</a></li>
+<li><a class="reference external" href="/https://downloads.raspberrypi.org/raspbian_lite_latest">Via http (slower)</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Use <code class="docutils literal notranslate"><span class="pre">dd</span></code> to write the Raspbian disk image to a microSD card. Note that <code class="docutils literal notranslate"><span class="pre">dd</span></code> can and will mess up your entire life if given the opportunity, be very careful that you don’t run the command until you’re sure your <code class="docutils literal notranslate"><span class="pre">if=</span></code> and <code class="docutils literal notranslate"><span class="pre">of=</span></code> are correct.</dt>
+<dd><ul class="first last">
+<li><p class="first">macOS:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># get the number of the disk, should be something like /dev/disk2</span>
+<span class="n">diskutil</span> <span class="nb">list</span>
+
+<span class="c1"># unmount the disk, using the disk # from before.</span>
+<span class="n">sudo</span> <span class="n">diskutil</span> <span class="n">unmountDisk</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">disk</span><span class="c1">#</span>
+
+<span class="c1"># use dd to copy (use ctrl+t to check transfer status)</span>
+<span class="c1"># note the use of rdisk rather than disk the number should be the same</span>
+<span class="n">sudo</span> <span class="n">dd</span> <span class="k">if</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">raspbian</span><span class="o">.</span><span class="n">img</span> <span class="n">of</span><span class="o">=/</span><span class="n">dev</span><span class="o">/</span><span class="n">rdisk</span><span class="c1"># bs=1m</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">linux (use admin privileges when needed with <code class="docutils literal notranslate"><span class="pre">sudo</span></code>):</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># get the number of the disk, should be something like /dev/randomnumbersandletters</span>
+<span class="n">fdisk</span> <span class="o">-</span><span class="n">l</span>
+
+<span class="c1"># unmount the disk</span>
+<span class="n">umount</span> <span class="o">/</span><span class="n">dev</span><span class="o">/&lt;</span><span class="n">your_disk</span><span class="o">&gt;</span>
+
+<span class="c1"># use dd to copy (use ctrl+t to check transfer status)</span>
+<span class="c1"># note the use of rdisk rather than disk the number should be the same</span>
+<span class="n">dd</span> <span class="k">if</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">raspbian</span><span class="o">.</span><span class="n">img</span> <span class="n">of</span><span class="o">=/</span><span class="n">dev</span><span class="o">/&lt;</span><span class="n">your_disk</span><span class="o">&gt;</span> <span class="n">bs</span><span class="o">=</span><span class="mi">1</span><span class="n">M</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Boot from the SD card. It should reboot once after it resizes the filesystem. Login with the default credentials:</dt>
+<dd><ul class="first last simple">
+<li>username: <code class="docutils literal notranslate"><span class="pre">pi</span></code></li>
+<li>password: <code class="docutils literal notranslate"><span class="pre">raspberry</span></code></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Do an initial <code class="docutils literal notranslate"><span class="pre">update</span></code> and <code class="docutils literal notranslate"><span class="pre">upgrade</span></code> to grab any critical security fixes so we don’t get sunk before we get started:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">update</span> <span class="pre">**</span> <span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">upgrade</span> <span class="pre">-y</span></code></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Optional:</strong> Change the default password. You’ll be sorry if you don’t – I got my credit card stolen this way.</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">passwd</span></code> and follow the prompts</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first">Install necessary system packages:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> \
+    <span class="n">build</span><span class="o">-</span><span class="n">essential</span> \
+    <span class="n">cmake</span> \
+    <span class="n">git</span> \
+    <span class="n">python</span><span class="o">-</span><span class="n">pip</span> \
+    <span class="n">python2</span><span class="o">.</span><span class="mi">7</span><span class="o">-</span><span class="n">dev</span> \
+    <span class="n">python3</span><span class="o">-</span><span class="n">distutils</span> \
+    <span class="n">libsamplerate0</span><span class="o">-</span><span class="n">dev</span> \ <span class="c1"># audio requirements are from here...</span>
+    <span class="n">libsndfile1</span><span class="o">-</span><span class="n">dev</span> \    <span class="c1">#</span>
+    <span class="n">libreadline</span><span class="o">-</span><span class="n">dev</span> \    <span class="c1">#</span>
+    <span class="n">libasound</span><span class="o">-</span><span class="n">dev</span> \      <span class="c1">#</span>
+    <span class="n">i2c</span><span class="o">-</span><span class="n">tools</span> \          <span class="c1">#</span>
+    <span class="n">libportmidi</span><span class="o">-</span><span class="n">dev</span> \    <span class="c1">#</span>
+    <span class="n">liblo</span><span class="o">-</span><span class="n">dev</span> \          <span class="c1"># to here.</span>
+    <span class="n">libhdf5</span><span class="o">-</span><span class="n">dev</span> \
+    <span class="n">python</span><span class="o">-</span><span class="n">numpy</span> \       <span class="c1"># install these python packages through apt,</span>
+    <span class="n">python</span><span class="o">-</span><span class="n">pandas</span> \      <span class="c1"># take forever to build them on the raspi</span>
+    <span class="n">python</span><span class="o">-</span><span class="n">tables</span> \      <span class="c1"># this one too</span>
+    <span class="n">libzmq</span><span class="o">-</span><span class="n">dev</span> \
+    <span class="n">libffi</span><span class="o">-</span><span class="n">dev</span> \         <span class="c1"># Allows us to call C functions from python</span>
+    <span class="n">python</span><span class="o">-</span><span class="n">cffi</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">And Python packages:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="o">-</span><span class="n">H</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> \
+    <span class="n">pyzmq</span> \        <span class="c1"># ZeroMQ wrapper</span>
+    <span class="n">npyscreen</span> \    <span class="c1"># ncurses wrapper used for setup menus</span>
+    <span class="n">JACK</span><span class="o">-</span><span class="n">Client</span> \  <span class="c1"># client for jack audio</span>
+    <span class="n">tornado</span> \      <span class="c1"># tornado message server</span>
+    <span class="n">inputs</span>         <span class="c1"># interactions with USB devices</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="rasbian-performance-improvements">
+<h4>Rasbian Performance Improvements<a class="headerlink" href="#rasbian-performance-improvements" title="Permalink to this headline">¶</a></h4>
+<p>All of these are, strictly speaking, optional, but there’s not really a good reason not to do them…</p>
+<ol class="arabic" start="8">
+<li><dl class="first docutils">
+<dt>Change the CPU Governor - Change the CPU Governor - normally the RPi keeps a low clock speed when not under load, raising it when load increases. this can cause audible glitches which are obviously to be avoided.</dt>
+<dd><ul class="first last">
+<li><dl class="first docutils">
+<dt>the RPi has a startup script (confusingly, /etc/init.d/raspi-config) that sets the cpu governor to on demand. disable it</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">systemctl</span> <span class="pre">disable</span> <span class="pre">raspi-config</span></code></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Add a line to <code class="docutils literal notranslate"><span class="pre">etc/rc.local</span></code>, which runs on boot, that changes the governor to “performance”</dt>
+<dd><ul class="first last">
+<li><p class="first">Either add this above ‘exit 0’:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="s2">&quot;performance&quot;</span> <span class="o">|</span> <span class="n">sudo</span> <span class="n">tee</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">devices</span><span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">cpu</span><span class="o">/</span><span class="n">cpu</span><span class="o">*/</span><span class="n">cpufreq</span><span class="o">/</span><span class="n">scaling_governor</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Or run this which does it for you:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;/^exit 0/i echo &quot;performance&quot; | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor&#39;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">rc</span><span class="o">.</span><span class="n">local</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Disable Bluetooth</dt>
+<dd><ul class="first last">
+<li><p class="first">Add <code class="docutils literal notranslate"><span class="pre">dtoverlay=pi3-disable-bt</span></code> to <code class="docutils literal notranslate"><span class="pre">/boot/config.txt</span></code>, or use this:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;$s/$/</span><span class="se">\n</span><span class="s1">dtoverlay=pi3-disable-bt/&#39;</span> <span class="o">/</span><span class="n">boot</span><span class="o">/</span><span class="n">config</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Disable other bluetooth services:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">systemctl</span> <span class="n">disable</span> <span class="n">hciuart</span><span class="o">.</span><span class="n">service</span>
+<span class="n">sudo</span> <span class="n">systemctl</span> <span class="n">disable</span> <span class="n">bluealsa</span><span class="o">.</span><span class="n">service</span>
+<span class="n">sudo</span> <span class="n">systemctl</span> <span class="n">disable</span> <span class="n">bluetooth</span><span class="o">.</span><span class="n">service</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first">You can decrease the memory that is allocated to the video card, but keep in mind pigpio allocates its memory from the GPU store. Don’t reduce to lower than ~8MB</p>
+</li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">raspi-config</span></code> &gt; Advanced &gt; Memory Split</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="audio-setup">
+<h4>Audio Setup<a class="headerlink" href="#audio-setup" title="Permalink to this headline">¶</a></h4>
+<p>Autopilot uses <a class="reference external" href="/http://jackaudio.org/">Jack Audio</a> to play sounds.</p>
+<ol class="arabic" start="11">
+<li><p class="first">Clone jack:</p>
+<p>git clone git://github.com/jackaudio/jack2 –depth 1</p>
+</li>
+<li><p class="first">Configure, build, install:</p>
+<p>cd jack2
+# use ./waf –help to list compile options
+./waf configure –alsa=yes –libdir=/usr/lib/arm-linux-gnueabihf/
+./waf build -j6
+sudo ./waf install
+sudo ldconfig #reconfigure links</p>
+</li>
+<li><p class="first">Give jack some more juice:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># let jack use more memory than Raspbian wants it to</span>
+</pre></div>
+</div>
+<p>sudo sh -c “echo &#64;audio - memlock 256000 &gt;&gt; /etc/security/limits.conf”</p>
+<p># let jack take a higher priority than Raspbian wants it to
+sudo sh -c “echo &#64;audio - rtprio 75 &gt;&gt; /etc/security/limits.conf”</p>
+</li>
+<li><p class="first">Install the jack python wrapper:</p>
+<p>sudo -H pip install JACK-Client</p>
+</li>
+</ol>
+<p>We also use the the <a class="reference external" href="/https://www.hifiberry.com/shop/boards/hifiberry-amp2/">Hifiberry Amp 2</a> as our soundcard and amplifier.</p>
+<ol class="arabic" start="15">
+<li><p class="first">Add pi user (or whatever username you’re using) to i2c group:
+sudo adduser pi i2c</p>
+<p># turn onboard audio off
+sudo sed -i ‘s/^dtparam=audio=on/#dtparam=audio=on/g’ /boot/config.txt</p>
+<p># enable hifiberry stuff
+sudo sed -i ‘$s/$/ndtoverlay=hifiberry-dacplusndtoverlay=i2s-mmapndtoverlay=i2c-mmapndtparam=i2c1=onndtparam=i2c_arm=on/’ /boot/config.txt</p>
+<p># edit alsa config so hifiberry is default sound card
+ALSAFILE=/etc/asound.conf</p>
+</li>
+</ol>
+<p>#    if [ ! -f “$ALSAFILE” ]; then
+#        sudo touch $ALSAFILE
+#    fi</p>
+<blockquote>
+<div><p>#sudo sed -i ‘1 ipcm.!default {n type hw card 0n}nctl.!default {n type hw card 0n}’ $ALSAFILE</p>
+<p>echo -e ‘pcm.!default {n type hw card 0n}nctl.!default {n type hw card 0n}’ | sudo tee $ALSAFILE</p>
+</div></blockquote>
+</div>
+<div class="section" id="optional-installation-steps">
+<h4>Optional Installation Steps<a class="headerlink" href="#optional-installation-steps" title="Permalink to this headline">¶</a></h4>
+<p>sudo dpkg-reconfigure locales
+sudo dpkg-reconfigure keyboard-configuration</p>
+<ol class="lowerroman simple" start="30">
+<li><strong>Optional:</strong> Setup SSH access</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Jonny Saunders.<br/>
+      Created using <a href="/http://sphinx-doc.org/">Sphinx</a> 1.8.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

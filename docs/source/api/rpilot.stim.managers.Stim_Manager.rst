@@ -13,6 +13,7 @@ Stim_Manager
       ~Stim_Manager.compute_correction
       ~Stim_Manager.do_bias
       ~Stim_Manager.do_correction
+      ~Stim_Manager.end
       ~Stim_Manager.init_sounds
       ~Stim_Manager.make_punishment
       ~Stim_Manager.next_stim
@@ -25,6 +26,7 @@ Stim_Manager
    .. automethod:: compute_correction
    .. automethod:: do_bias
    .. automethod:: do_correction
+   .. automethod:: end
    .. automethod:: init_sounds
    .. automethod:: make_punishment
    .. automethod:: next_stim

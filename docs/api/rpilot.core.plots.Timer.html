@@ -21,7 +21,7 @@
     <link rel="canonical" href="http://docs.rpilot.net/api/rpilot.core.plots.Timer.html" />
     <link rel="index" title="Index" href="/../genindex.html" />
     <link rel="search" title="Search" href="/../search.html" />
-    <link rel="next" title="terminal" href="/../rpilot.core.terminal.html" />
+    <link rel="next" title="mouse" href="/../rpilot.core.subject.html" />
     <link rel="prev" title="Shaded" href="/rpilot.core.plots.Shaded.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -56,9 +56,20 @@
      href="../index.html">RPilot Docs <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">User Guide Sections:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide.installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../guide.installation.html#setting-up-a-pilot">Setting Up a Pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.installation.html#pilot-presetup">Pilot Presetup</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../rpilot.core.html">core</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../rpilot.core.html">Core Modules</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.gui.html">gui</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.gui.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.gui.html#classes">Classes</a></li>
@@ -68,11 +79,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.hardware.html">hardware</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.hardware.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.hardware.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../rpilot.core.mouse.html">mouse</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.mouse.html#classes">Classes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.mouse.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.networking.html">networking</a><ul>
@@ -91,19 +97,25 @@
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.plots.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.core.subject.html">mouse</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.subject.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.subject.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.terminal.html">terminal</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.terminal.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.terminal.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.utils.html">utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.utils.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.utils.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.utils.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.tasks.html">tasks</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.tasks.html">Tasks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.tasks.free_water.html">free_water</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.tasks.free_water.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.tasks.free_water.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
@@ -126,8 +138,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.stim.html">stim</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.stim.html">Stimuli</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.stim.managers.html">managers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.managers.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.managers.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.managers.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
@@ -140,17 +153,20 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.viz.html">viz</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.viz.trial_viewer.html">trial_viewer</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.setup.html">setup</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.setup.html">Setup</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.setup.setup_pilot.html">setup_pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.setup.setup_scale.html">setup_scale</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.setup.setup_terminal.html">setup_terminal</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.prefs.html">prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.prefs.html">Prefs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">To-Do</a></li>
 </ul>
 </ul>
 </li>
@@ -178,7 +194,7 @@
     </a>
   </li>
   <li>
-    <a href="../rpilot.core.terminal.html" title="Next Chapter: terminal"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">terminal &raquo;</span>
+    <a href="../rpilot.core.subject.html" title="Next Chapter: mouse"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">mouse &raquo;</span>
     </a>
   </li>
               
@@ -220,7 +236,7 @@
     </a>
   </li>
   <li>
-    <a href="../rpilot.core.terminal.html" title="Next Chapter: terminal"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">terminal &raquo;</span>
+    <a href="../rpilot.core.subject.html" title="Next Chapter: mouse"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">mouse &raquo;</span>
     </a>
   </li>
         </div>
@@ -234,7 +250,7 @@
 <em class="property">class </em><code class="descclassname">rpilot.core.plots.</code><code class="descname">Timer</code><a class="reference internal" href="../_modules/rpilot/core/plots.html#Timer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.plots.Timer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="/http://pyside.github.io/docs/pyside/PySide/QtGui/QLabel.html#PySide.QtGui.QLabel" title="(in PySide v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySide.QtGui.QLabel</span></code></a></p>
 <p>A simple timer that counts… time…</p>
-<p>Uses a <code class="xref py py-class docutils literal notranslate"><span class="pre">QtCore.QTimer</span></code> connected to <a class="reference internal" href="../rpilot.core.plots.html#rpilot.core.plots.Timer.update_time" title="rpilot.core.plots.Timer.update_time"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Timer.update_time()</span></code></a> .</p>
+<p>Uses a <code class="xref py py-class docutils literal notranslate"><span class="pre">QtCore.QTimer</span></code> connected to <a class="reference internal" href="../rst/rpilot.core.plots.html#rpilot.core.plots.Timer.update_time" title="rpilot.core.plots.Timer.update_time"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Timer.update_time()</span></code></a> .</p>
 <p class="rubric">Attributes Summary</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -242,7 +258,7 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.plots.html#rpilot.core.plots.Timer.staticMetaObject" title="rpilot.core.plots.Timer.staticMetaObject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">staticMetaObject</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.plots.html#rpilot.core.plots.Timer.staticMetaObject" title="rpilot.core.plots.Timer.staticMetaObject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">staticMetaObject</span></code></a></td>
 <td></td>
 </tr>
 </tbody>
@@ -254,7 +270,7 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.plots.html#rpilot.core.plots.Timer.start_timer" title="rpilot.core.plots.Timer.start_timer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start_timer</span></code></a>([update_interval])</td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.plots.html#rpilot.core.plots.Timer.start_timer" title="rpilot.core.plots.Timer.start_timer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start_timer</span></code></a>([update_interval])</td>
 <td><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -266,10 +282,10 @@
 </table>
 </td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.plots.html#rpilot.core.plots.Timer.stop_timer" title="rpilot.core.plots.Timer.stop_timer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop_timer</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.plots.html#rpilot.core.plots.Timer.stop_timer" title="rpilot.core.plots.Timer.stop_timer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop_timer</span></code></a>()</td>
 <td>you can read the sign ya punk</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.plots.html#rpilot.core.plots.Timer.update_time" title="rpilot.core.plots.Timer.update_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_time</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.plots.html#rpilot.core.plots.Timer.update_time" title="rpilot.core.plots.Timer.update_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_time</span></code></a>()</td>
 <td>Called every (update_interval) milliseconds to set the text of the timer.</td>
 </tr>
 </tbody>

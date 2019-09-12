@@ -421,9 +421,9 @@ class Pilot_Panel(QtGui.QWidget):
             # the drop fn updates the db
             self.subject_list.drop_fn()
 
-    def create_mouse(self):
+    def create_subject(self):
         """
-        Just calls :py:meth:`Control_Panel.create_mouse` with our `pilot` as the argument
+        Just calls :py:meth:`Control_Panel.create_subject` with our `pilot` as the argument
         """
         self.create_fn(self.pilot)
 
@@ -439,7 +439,7 @@ class Pilot_Button(QtGui.QPushButton):
         Args:
             pilot (str): The ID of the pilot that this button controls
             subject_list (:py:class:`.Subject_List`): The Subject list used to determine which
-                mouse is starting/stopping
+                subject is starting/stopping
             start_fn (:py:meth:`~rpilot.core.terminal.Terminal.toggle_start`): The final
                 resting place of the toggle_start method
 
@@ -487,16 +487,16 @@ class Pilot_Button(QtGui.QPushButton):
     def toggle_start(self):
         """
         Minor window dressing to call the :py:meth:`~.Pilot_Button.start_fn` with the
-        appropriate pilot, mouse, and whether the task is starting or stopping
+        appropriate pilot, subject, and whether the task is starting or stopping
 
         Args:
             toggled (bool): T/F this button is now toggled down (starting the task) or vice versa.
         """
         # If we're stopped, start, and vice versa...
-        current_mouse = self.subject_list.currentItem().text()
+        current_subject = self.subject_list.currentItem().text()
 
-        if current_mouse is None:
-            Warning("Start button clicked, but no mouse selected.")
+        if current_subject is None:
+            Warning("Start button clicked, but no subject selected.")
             return
 
 
@@ -504,11 +504,11 @@ class Pilot_Button(QtGui.QPushButton):
         if toggled is True: # ie button is already down, already running.
 
             self.setText("STOP")
-            self.start_fn(True, self.pilot, current_mouse)
+            self.start_fn(True, self.pilot, current_subject)
 
         else:
             self.setText("START")
-            self.start_fn(False, self.pilot, current_mouse)
+            self.start_fn(False, self.pilot, current_subject)
 
     @gui_event
     def set_state(self, state):
@@ -554,14 +554,14 @@ class Pilot_Button(QtGui.QPushButton):
 
 class New_Subject_Wizard(QtGui.QDialog):
     """
-    A popup that prompts you to define variables for a new :class:`.mouse.Subject` object
+    A popup that prompts you to define variables for a new :class:`.subject.Subject` object
 
-    Called by :py:meth:`.Control_Panel.create_mouse` , which handles actually creating
-    the mouse file and updating the :py:attr:`.Terminal.pilots` dict and file.
+    Called by :py:meth:`.Control_Panel.create_subject` , which handles actually creating
+    the subject file and updating the :py:attr:`.Terminal.pilots` dict and file.
 
     Contains two tabs
-    - :class:`~.New_Subject_Wizard.Biography_Tab` - to set basic biographical information about a mouse
-    - :class:`~.New_Subject_Wizard.Task_Tab` - to set the protocol and step to start the mouse on
+    - :class:`~.New_Subject_Wizard.Biography_Tab` - to set basic biographical information about a subject
+    - :class:`~.New_Subject_Wizard.Task_Tab` - to set the protocol and step to start the subject on
 
     Attributes:
         protocol_dir (str): A full path to where protocols are stored,
@@ -597,7 +597,7 @@ class New_Subject_Wizard(QtGui.QDialog):
 
     class Biography_Tab(QtGui.QWidget):
         """
-        A widget that allows defining basic biographical attributes about a mouse
+        A widget that allows defining basic biographical attributes about a subject
 
         Creates a set of widgets connected to :py:meth:`~.Biography_Tab.update_return_dict` that stores the parameters.
 
@@ -607,13 +607,13 @@ class New_Subject_Wizard(QtGui.QDialog):
 
         Attributes:
             id (str): A Subject's ID or name
-            start_date (str): The date the mouse started the task. Automatically filled by
+            start_date (str): The date the subject started the task. Automatically filled by
                 :py:meth:`datetime.date.today().isoformat()`
-            blmass (float): The mouse's baseline mass
-            minmass_pct (int): The percentage of baseline mass that a water restricted mouse is allowed to reach
-            minmass (float): The mouse's minimum mass, automatically calculated `blmass * (minmass_pct / 100.)`
-            genotype (str): A string describing the mouse's genotype
-            expt (str): A tag to describe what experiment this mouse is a part of
+            blmass (float): The subject's baseline mass
+            minmass_pct (int): The percentage of baseline mass that a water restricted subject is allowed to reach
+            minmass (float): The subject's minimum mass, automatically calculated `blmass * (minmass_pct / 100.)`
+            genotype (str): A string describing the subject's genotype
+            expt (str): A tag to describe what experiment this subject is a part of
         """
         def __init__(self):
             QtGui.QWidget.__init__(self)
@@ -692,7 +692,7 @@ class New_Subject_Wizard(QtGui.QDialog):
 
         def calc_minmass(self):
             """
-            Calculates the minimum mass for a mouse based on its baseline mass
+            Calculates the minimum mass for a subject based on its baseline mass
             and the allowable percentage of that baseline
             """
             # minimum mass automatically from % and baseline
@@ -702,7 +702,7 @@ class New_Subject_Wizard(QtGui.QDialog):
 
     class Task_Tab(QtGui.QWidget):
         """
-        A tab for selecting a task and step to assign to the mouse.
+        A tab for selecting a task and step to assign to the subject.
 
         Reads available tasks from `prefs.PROTOCOLDIR` , lists them, and
         creates a spinbox to select from the available steps.
@@ -1120,9 +1120,9 @@ class Graduation_Widget(QtGui.QWidget):
     See :py:mod:`.tasks.graduation` .
 
     A protocol is composed of multiple tasks (steps), and graduation criteria
-    define when a mouse should progress through those steps.
+    define when a subject should progress through those steps.
 
-    eg. a mouse should graduate one stage after 300 trials, or after it reaches
+    eg. a subject should graduate one stage after 300 trials, or after it reaches
     75% accuracy over the last 500 trials.
 
     Attributes:
@@ -2310,9 +2310,9 @@ class Reassign(QtGui.QDialog):
     def __init__(self, subjects, protocols):
         """
         Args:
-            mice (dict): A dictionary that contains each mouse's protocol and step, ie.::
+            mice (dict): A dictionary that contains each subject's protocol and step, ie.::
 
-                    {'mouse_id':['protocol_name', step_int], ... }
+                    {'subject_id':['protocol_name', step_int], ... }
 
             protocols (list): list of protocol files in the `prefs.PROTOCOLDIR`.
                 Not entirely sure why we don't just list them ourselves here.
@@ -2328,41 +2328,41 @@ class Reassign(QtGui.QDialog):
         """
         Initializes graphical elements.
 
-        Makes a row for each mouse where its protocol and step can be changed.
+        Makes a row for each subject where its protocol and step can be changed.
         """
         self.grid = QtGui.QGridLayout()
 
-        self.mouse_objects = {}
+        self.subject_objects = {}
 
-        for i, (mouse, protocol) in zip(xrange(len(self.mice)), self.mice.items()):
-            mouse_name = copy.deepcopy(mouse)
+        for i, (subject, protocol) in zip(xrange(len(self.mice)), self.mice.items()):
+            subject_name = copy.deepcopy(subject)
             step = protocol[1]
             protocol = protocol[0]
 
-            # mouse label
-            mouse_lab = QtGui.QLabel(mouse)
+            # subject label
+            subject_lab = QtGui.QLabel(subject)
 
-            self.mouse_objects[mouse] = [QtGui.QComboBox(), QtGui.QComboBox()]
-            protocol_box = self.mouse_objects[mouse][0]
-            protocol_box.setObjectName(mouse_name)
+            self.subject_objects[subject] = [QtGui.QComboBox(), QtGui.QComboBox()]
+            protocol_box = self.subject_objects[subject][0]
+            protocol_box.setObjectName(subject_name)
             protocol_box.insertItems(0, self.protocols)
-            # set current item if mouse has matching protocol
+            # set current item if subject has matching protocol
             protocol_bool = [protocol == p for p in self.protocols]
             if any(protocol_bool):
                 protocol_ind = np.where(protocol_bool)[0][0]
                 protocol_box.setCurrentIndex(protocol_ind)
             protocol_box.currentIndexChanged.connect(self.set_protocol)
 
-            step_box = self.mouse_objects[mouse][1]
-            step_box.setObjectName(mouse_name)
+            step_box = self.subject_objects[subject][1]
+            step_box.setObjectName(subject_name)
 
-            self.populate_steps(mouse_name)
+            self.populate_steps(subject_name)
 
             step_box.setCurrentIndex(step)
             step_box.currentIndexChanged.connect(self.set_step)
 
             # add to layout
-            self.grid.addWidget(mouse_lab, i%25, 0+(i/25)*3)
+            self.grid.addWidget(subject_lab, i%25, 0+(i/25)*3)
             self.grid.addWidget(protocol_box, i%25, 1+(i/25)*3)
             self.grid.addWidget(step_box, i%25, 2+(i/25)*3)
 
@@ -2377,15 +2377,15 @@ class Reassign(QtGui.QDialog):
 
         self.setLayout(main_layout)
 
-    def populate_steps(self, mouse):
+    def populate_steps(self, subject):
         """
         When a protocol is selected, populate the selection box with the steps that can be chosen.
 
         Args:
-            mouse (str): ID of mouse whose steps are being populated
+            subject (str): ID of subject whose steps are being populated
         """
-        protocol_box = self.mouse_objects[mouse][0]
-        step_box = self.mouse_objects[mouse][1]
+        protocol_box = self.subject_objects[subject][0]
+        step_box = self.subject_objects[subject][1]
 
         while step_box.count():
             step_box.removeItem(0)
@@ -2408,25 +2408,25 @@ class Reassign(QtGui.QDialog):
         Returns:
 
         """
-        mouse = self.sender().objectName()
-        protocol_box = self.mouse_objects[mouse][0]
-        step_box = self.mouse_objects[mouse][1]
+        subject = self.sender().objectName()
+        protocol_box = self.subject_objects[subject][0]
+        step_box = self.subject_objects[subject][1]
 
-        self.mice[mouse][0] = protocol_box.currentText()
-        self.mice[mouse][1] = 0
+        self.mice[subject][0] = protocol_box.currentText()
+        self.mice[subject][1] = 0
 
-        self.populate_steps(mouse)
+        self.populate_steps(subject)
 
 
     def set_step(self):
         """
         When the step is changed, stash that.
         """
-        mouse = self.sender().objectName()
-        protocol_box = self.mouse_objects[mouse][0]
-        step_box = self.mouse_objects[mouse][1]
+        subject = self.sender().objectName()
+        protocol_box = self.subject_objects[subject][0]
+        step_box = self.subject_objects[subject][1]
 
-        self.mice[mouse][1] = step_box.currentIndex()
+        self.mice[subject][1] = step_box.currentIndex()
 
 
 
@@ -2434,7 +2434,7 @@ class Reassign(QtGui.QDialog):
 
 class Weights(QtGui.QTableWidget):
     """
-    A table for viewing and editing the most recent mouse weights.
+    A table for viewing and editing the most recent subject weights.
     """
     def __init__(self, mice_weights, mice):
         """
@@ -2446,10 +2446,10 @@ class Weights(QtGui.QTableWidget):
         super(Weights, self).__init__()
 
         self.mice_weights = mice_weights
-        self.mice = mice # mouse objects from terminal
+        self.mice = mice # subject objects from terminal
 
         self.colnames = odict()
-        self.colnames['mouse'] = "Subject"
+        self.colnames['subject'] = "Subject"
         self.colnames['date'] = "Date"
         self.colnames['baseline_mass'] = "Baseline"
         self.colnames['minimum_mass'] = "Minimum"
@@ -2507,7 +2507,7 @@ class Weights(QtGui.QTableWidget):
         Updates the most recent weights in :attr:`.gui.Weights.subjects` objects.
 
         Note:
-            Only the daily weight measurements can be changed this way - not mouse name, baseline weight, etc.
+            Only the daily weight measurements can be changed this way - not subject name, baseline weight, etc.
 
         Args:
             row (int): row of table
@@ -2522,11 +2522,11 @@ class Weights(QtGui.QTableWidget):
                 ValueError("New value must be able to be coerced to a float! input: {}".format(new_val))
                 return
 
-            # get mouse, date and column name
-            mouse_name = self.item(row, 0).text()
+            # get subject, date and column name
+            subject_name = self.item(row, 0).text()
             date = self.mice_weights[row]['date']
             column_name = self.colnames.keys()[column] # recall colnames is an ordered dictionary
-            self.mice[mouse_name].set_weight(date, column_name, new_val)
+            self.mice[subject_name].set_weight(date, column_name, new_val)
 
 
 #####################################################
@@ -2557,11 +2557,11 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #     Attributes:
 #         param_layout (:class:`QtGui.QFormLayout`): Holds param tags and values
 #         param_changes (dict): Stores any changes made to protocol parameters,
-#             used to update the protocol stored in the :class:`~.mouse.Subject` object.
+#             used to update the protocol stored in the :class:`~.subject.Subject` object.
 #     """
 #     # Superclass to embed wherever needed
 #     # Subclasses will implement use as standalong dialog and as step selector
-#     # Reads and edits tasks parameters from a mouse's protocol
+#     # Reads and edits tasks parameters from a subject's protocol
 #     def __init__(self, params=None, stash_changes=False):
 #         """
 #         Args:
@@ -2627,7 +2627,7 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #             params (str, collections.OrderedDict): see `params` in the class instantiation arguments.
 #         """
 #         # We want to hang on to the protocol and step
-#         # because they are direct references to the mouse file,
+#         # because they are direct references to the subject file,
 #         # but we don't need to have them passed every time
 #
 #         self.clear_layout(self.param_layout)
@@ -2709,7 +2709,7 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #         Identifies the param that was changed, gets the current value, updates `self.param` and
 #         `self.param_changes` if `stash_changes` is True.
 #         """
-#         # A param was changed in the window, update our values here and in the mouse object
+#         # A param was changed in the window, update our values here and in the subject object
 #         sender = self.sender()
 #         param_name = sender.objectName()
 #         sender_type = self.task_params[param_name]['type']
@@ -2845,7 +2845,7 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #         if self.params_widget.stash_changes:
 #             self.step_changes[self.step].update(self.params_widget.param_changes)
 #
-#         # the step was changed! Change our parameters here and update the mouse object
+#         # the step was changed! Change our parameters here and update the subject object
 #         self.step = self.step_selection.currentIndex()
 #
 #         self.params_widget.populate_params(self.protocol[self.step])

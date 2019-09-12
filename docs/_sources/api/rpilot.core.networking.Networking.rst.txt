@@ -1,48 +1,48 @@
-Networking
+Station
 ==========
 
 .. currentmodule:: rpilot.core.networking
 
-.. autoclass:: Networking
+.. autoclass:: Station
    :show-inheritance:
 
    .. rubric:: Attributes Summary
 
    .. autosummary::
 
-      ~Networking.child
-      ~Networking.ctx
-      ~Networking.id
-      ~Networking.ip
-      ~Networking.listen_port
-      ~Networking.listener
-      ~Networking.listens
-      ~Networking.log_formatter
-      ~Networking.log_handler
-      ~Networking.logger
-      ~Networking.loop
-      ~Networking.outbox
-      ~Networking.push_id
-      ~Networking.push_ip
-      ~Networking.push_port
-      ~Networking.pusher
-      ~Networking.routes
-      ~Networking.senders
-      ~Networking.timers
+      ~Station.child
+      ~Station.ctx
+      ~Station.id
+      ~Station.ip
+      ~Station.listen_port
+      ~Station.listener
+      ~Station.listens
+      ~Station.log_formatter
+      ~Station.log_handler
+      ~Station.logger
+      ~Station.loop
+      ~Station.outbox
+      ~Station.push_id
+      ~Station.push_ip
+      ~Station.push_port
+      ~Station.pusher
+      ~Station.routes
+      ~Station.senders
+      ~Station.timers
 
    .. rubric:: Methods Summary
 
    .. autosummary::
 
-      ~Networking.get_ip
-      ~Networking.handle_listen
-      ~Networking.init_logging
-      ~Networking.l_confirm
-      ~Networking.prepare_message
-      ~Networking.push
-      ~Networking.repeat
-      ~Networking.run
-      ~Networking.send
+      ~Station.get_ip
+      ~Station.handle_listen
+      ~Station.init_logging
+      ~Station.l_confirm
+      ~Station.prepare_message
+      ~Station.push
+      ~Station.repeat
+      ~Station.run
+      ~Station.send
 
    .. rubric:: Attributes Documentation
 

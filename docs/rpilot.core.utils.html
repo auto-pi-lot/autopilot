@@ -21,7 +21,6 @@
     <link rel="canonical" href="http://docs.rpilot.net/rpilot.core.utils.html" />
     <link rel="index" title="Index" href="/genindex.html" />
     <link rel="search" title="Search" href="/search.html" />
-    <link rel="next" title="InvokeEvent" href="/api/rpilot.core.utils.InvokeEvent.html" />
     <link rel="prev" title="Terminal" href="/api/rpilot.core.terminal.Terminal.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -56,9 +55,20 @@
      href="index.html">RPilot Docs <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">User Guide Sections:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="/guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="/guide.installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="/guide.installation.html#setting-up-a-pilot">Setting Up a Pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/guide.installation.html#pilot-presetup">Pilot Presetup</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="/rpilot.core.html">core</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="/rpilot.core.html">Core Modules</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.core.gui.html">gui</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.gui.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.gui.html#classes">Classes</a></li>
@@ -68,11 +78,6 @@
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.core.hardware.html">hardware</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.hardware.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.hardware.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="/rpilot.core.mouse.html">mouse</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.mouse.html#classes">Classes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.mouse.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.core.networking.html">networking</a><ul>
@@ -91,19 +96,25 @@
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.plots.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="/rpilot.core.subject.html">mouse</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.subject.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.core.subject.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.core.terminal.html">terminal</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.terminal.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.core.terminal.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="/rpilot.tasks.html">tasks</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.tasks.html">Tasks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.tasks.free_water.html">free_water</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.tasks.free_water.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.tasks.free_water.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
@@ -126,8 +137,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="/rpilot.stim.html">stim</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.stim.html">Stimuli</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.stim.managers.html">managers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="/rpilot.stim.managers.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.stim.managers.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="/rpilot.stim.managers.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
@@ -140,17 +152,20 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="/rpilot.viz.html">viz</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.viz.trial_viewer.html">trial_viewer</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="/rpilot.setup.html">setup</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.setup.html">Setup</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.setup.setup_pilot.html">setup_pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.setup.setup_scale.html">setup_scale</a></li>
 <li class="toctree-l2"><a class="reference internal" href="/rpilot.setup.setup_terminal.html">setup_terminal</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="/rpilot.prefs.html">prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="/rpilot.prefs.html">Prefs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="/todo.html">To-Do</a></li>
 </ul>
 </ul>
 </li>
@@ -165,6 +180,7 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">utils</a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
@@ -179,10 +195,6 @@
                 
   <li>
     <a href="/api/rpilot.core.terminal.Terminal.html" title="Previous Chapter: Terminal"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Terminal</span>
-    </a>
-  </li>
-  <li>
-    <a href="/api/rpilot.core.utils.InvokeEvent.html" title="Next Chapter: InvokeEvent"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">InvokeEvent &raquo;</span>
     </a>
   </li>
               
@@ -217,6 +229,7 @@
       <div class="col-md-3">
         <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
 <li><a class="reference internal" href="#">utils</a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
@@ -227,16 +240,32 @@
     <a href="/api/rpilot.core.terminal.Terminal.html" title="Previous Chapter: Terminal"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Terminal</span>
     </a>
   </li>
-  <li>
-    <a href="/api/rpilot.core.utils.InvokeEvent.html" title="Next Chapter: InvokeEvent"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">InvokeEvent &raquo;</span>
-    </a>
-  </li>
         </div>
       </div>
     <div class="col-md-9 content">
       
   <div class="section" id="module-rpilot.core.utils">
 <span id="utils"></span><h1>utils<a class="headerlink" href="#module-rpilot.core.utils" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">linregress</span></code>(x[,&nbsp;y])</td>
+<td>Calculate a linear least-squares regression for two sets of measurements.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="/rst/rpilot.core.utils.html#rpilot.core.utils.list_subjects" title="rpilot.core.utils.list_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_subjects</span></code></a>([pilot_db])</td>
+<td>Given a dictionary of a pilot_db, return the subjects that are in it.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="/rst/rpilot.core.utils.html#rpilot.core.utils.load_pilotdb" title="rpilot.core.utils.load_pilotdb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_pilotdb</span></code></a>([file_name,&nbsp;reverse])</td>
+<td>Try to load the file_db</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="longtable docutils">
@@ -245,16 +274,16 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#rpilot.core.utils.InvokeEvent" title="rpilot.core.utils.InvokeEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a>(fn,&nbsp;*args,&nbsp;**kwargs)</td>
+<tr class="row-odd"><td><a class="reference internal" href="/rst/rpilot.core.utils.html#rpilot.core.utils.InvokeEvent" title="rpilot.core.utils.InvokeEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a>(fn,&nbsp;*args,&nbsp;**kwargs)</td>
 <td>Sends signals to the main QT thread from spawned message threads</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#rpilot.core.utils.Invoker" title="rpilot.core.utils.Invoker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Invoker</span></code></a></td>
-<td>Wrapper that calls an evoked event made by <a class="reference internal" href="#rpilot.core.utils.InvokeEvent" title="rpilot.core.utils.InvokeEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="/rst/rpilot.core.utils.html#rpilot.core.utils.Invoker" title="rpilot.core.utils.Invoker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Invoker</span></code></a></td>
+<td>Wrapper that calls an evoked event made by <a class="reference internal" href="/rst/rpilot.core.utils.html#rpilot.core.utils.InvokeEvent" title="rpilot.core.utils.InvokeEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#rpilot.core.utils.Param" title="rpilot.core.utils.Param"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Param</span></code></a>(**kwargs)</td>
+<tr class="row-odd"><td><a class="reference internal" href="/rst/rpilot.core.utils.html#rpilot.core.utils.Param" title="rpilot.core.utils.Param"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Param</span></code></a>(**kwargs)</td>
 <td>In the future, we will implement a coherent Parameter management system</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#rpilot.core.utils.ReturnThread" title="rpilot.core.utils.ReturnThread"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReturnThread</span></code></a>([group,&nbsp;target,&nbsp;name,&nbsp;args,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="/rst/rpilot.core.utils.html#rpilot.core.utils.ReturnThread" title="rpilot.core.utils.ReturnThread"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReturnThread</span></code></a>([group,&nbsp;target,&nbsp;name,&nbsp;args,&nbsp;…])</td>
 <td>Thread whose .join() method returns the value from the function thx to <a class="reference external" href="/https://stackoverflow.com/a/6894023">https://stackoverflow.com/a/6894023</a></td>
 </tr>
 </tbody>
@@ -262,12 +291,12 @@
 </div>
 <div class="section" id="class-inheritance-diagram">
 <h2>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Permalink to this headline">¶</a></h2>
-<div class="graphviz"><img src="_images/inheritance-9300f0e30a918d77a8f845f003cbb5181e567d30.png" alt="Inheritance diagram of rpilot.core.utils.InvokeEvent, rpilot.core.utils.Invoker, rpilot.core.utils.Param, rpilot.core.utils.ReturnThread" usemap="#inheritancee6e6b46106" class="inheritance graphviz" /></div>
+<div class="graphviz"><img src="_images/inheritance-91e6602db61e1eef302f6683d6f35ad12946aba0.png" alt="Inheritance diagram of rpilot.core.utils.InvokeEvent, rpilot.core.utils.Invoker, rpilot.core.utils.Param, rpilot.core.utils.ReturnThread" usemap="#inheritancee6e6b46106" class="inheritance graphviz" /></div>
 <map id="inheritancee6e6b46106" name="inheritancee6e6b46106">
-<area shape="rect" id="node1" href="#rpilot.core.utils.InvokeEvent" target="_top" title="Sends signals to the main QT thread from spawned message threads" alt="" coords="255,53,350,77"/>
-<area shape="rect" id="node3" href="#rpilot.core.utils.Invoker" target="_top" title="Wrapper that calls an evoked event made by :class:`.InvokeEvent`" alt="" coords="267,101,339,125"/>
-<area shape="rect" id="node6" href="#rpilot.core.utils.Param" target="_top" title="In the future, we will implement a coherent Parameter management system" alt="" coords="8,53,80,77"/>
-<area shape="rect" id="node7" href="#rpilot.core.utils.ReturnThread" target="_top" title="Thread whose .join() method returns the value from the function" alt="" coords="251,5,355,29"/>
+<area shape="rect" id="node1" href="/rst/rpilot.core.utils.html#rpilot.core.utils.InvokeEvent" target="_top" title="Sends signals to the main QT thread from spawned message threads" alt="" coords="255,53,350,77"/>
+<area shape="rect" id="node3" href="/rst/rpilot.core.utils.html#rpilot.core.utils.Invoker" target="_top" title="Wrapper that calls an evoked event made by :class:`.InvokeEvent`" alt="" coords="267,101,339,125"/>
+<area shape="rect" id="node6" href="/rst/rpilot.core.utils.html#rpilot.core.utils.Param" target="_top" title="In the future, we will implement a coherent Parameter management system" alt="" coords="8,53,80,77"/>
+<area shape="rect" id="node7" href="/rst/rpilot.core.utils.html#rpilot.core.utils.ReturnThread" target="_top" title="Thread whose .join() method returns the value from the function" alt="" coords="251,5,355,29"/>
 </map><span class="target" id="module-rpilot.core.utils"></span><dl class="class">
 <dt id="rpilot.core.utils.Param">
 <em class="property">class </em><code class="descclassname">rpilot.core.utils.</code><code class="descname">Param</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/core/utils.html#Param"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.utils.Param" title="Permalink to this definition">¶</a></dt>
@@ -377,7 +406,7 @@
 <dt id="rpilot.core.utils.Invoker">
 <em class="property">class </em><code class="descclassname">rpilot.core.utils.</code><code class="descname">Invoker</code><a class="reference internal" href="/_modules/rpilot/core/utils.html#Invoker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.utils.Invoker" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="/http://pyside.github.io/docs/pyside/PySide/QtCore/QObject.html#PySide.QtCore.QObject" title="(in PySide v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySide.QtCore.QObject</span></code></a></p>
-<p>Wrapper that calls an evoked event made by <a class="reference internal" href="#rpilot.core.utils.InvokeEvent" title="rpilot.core.utils.InvokeEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a></p>
+<p>Wrapper that calls an evoked event made by <a class="reference internal" href="/rst/rpilot.core.utils.html#rpilot.core.utils.InvokeEvent" title="rpilot.core.utils.InvokeEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a></p>
 <dl class="method">
 <dt id="rpilot.core.utils.Invoker.event">
 <code class="descname">event</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/core/utils.html#Invoker.event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.utils.Invoker.event" title="Permalink to this definition">¶</a></dt>
@@ -435,6 +464,39 @@ thread before it has been started and attempts to do so raises the same
 exception.</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="function">
+<dt id="rpilot.core.utils.list_subjects">
+<code class="descclassname">rpilot.core.utils.</code><code class="descname">list_subjects</code><span class="sig-paren">(</span><em>pilot_db=None</em><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/core/utils.html#list_subjects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.utils.list_subjects" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a dictionary of a pilot_db, return the subjects that are in it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pilot_db</strong> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – a pilot_db. if None tried to load pilot_db with <a href="#id1"><span class="problematic" id="id2">:method:`.load_pilotdb`</span></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a list of currently active subjects</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">subjects (list)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="rpilot.core.utils.load_pilotdb">
+<code class="descclassname">rpilot.core.utils.</code><code class="descname">load_pilotdb</code><span class="sig-paren">(</span><em>file_name=None</em>, <em>reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="/_modules/rpilot/core/utils.html#load_pilotdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.utils.load_pilotdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to load the file_db</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_name</strong> – </td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
 </dd></dl>
 
 </div>

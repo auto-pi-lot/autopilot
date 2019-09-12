@@ -21,7 +21,7 @@
     <link rel="canonical" href="http://docs.rpilot.net/api/rpilot.core.gui.Sound_Widget.html" />
     <link rel="index" title="Index" href="/../genindex.html" />
     <link rel="search" title="Search" href="/../search.html" />
-    <link rel="next" title="Weights" href="/rpilot.core.gui.Weights.html" />
+    <link rel="next" title="Subject_List" href="/rpilot.core.gui.Subject_List.html" />
     <link rel="prev" title="Reassign" href="/rpilot.core.gui.Reassign.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -56,9 +56,20 @@
      href="../index.html">RPilot Docs <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">User Guide Sections:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide.installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../guide.installation.html#setting-up-a-pilot">Setting Up a Pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.installation.html#pilot-presetup">Pilot Presetup</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../rpilot.core.html">core</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../rpilot.core.html">Core Modules</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../rpilot.core.gui.html">gui</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.gui.html#functions">Functions</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../rpilot.core.gui.html#classes">Classes</a></li>
@@ -68,11 +79,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.hardware.html">hardware</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.hardware.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.hardware.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../rpilot.core.mouse.html">mouse</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.mouse.html#classes">Classes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.mouse.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.networking.html">networking</a><ul>
@@ -91,19 +97,25 @@
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.plots.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../rpilot.core.subject.html">mouse</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.subject.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.subject.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.terminal.html">terminal</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.terminal.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.terminal.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.core.utils.html">utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.core.utils.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.utils.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.core.utils.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.tasks.html">tasks</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.tasks.html">Tasks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.tasks.free_water.html">free_water</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.tasks.free_water.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.tasks.free_water.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
@@ -126,8 +138,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.stim.html">stim</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.stim.html">Stimuli</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.stim.managers.html">managers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.managers.html#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.managers.html#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rpilot.stim.managers.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
 </ul>
@@ -140,17 +153,20 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.viz.html">viz</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.viz.trial_viewer.html">trial_viewer</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.setup.html">setup</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.setup.html">Setup</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.setup.setup_pilot.html">setup_pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.setup.setup_scale.html">setup_scale</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rpilot.setup.setup_terminal.html">setup_terminal</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../rpilot.prefs.html">prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rpilot.prefs.html">Prefs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">To-Do</a></li>
 </ul>
 </ul>
 </li>
@@ -178,7 +194,7 @@
     </a>
   </li>
   <li>
-    <a href="/rpilot.core.gui.Weights.html" title="Next Chapter: Weights"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Weights &raquo;</span>
+    <a href="/rpilot.core.gui.Subject_List.html" title="Next Chapter: Subject_List"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Subject_List &raquo;</span>
     </a>
   </li>
               
@@ -220,7 +236,7 @@
     </a>
   </li>
   <li>
-    <a href="/rpilot.core.gui.Weights.html" title="Next Chapter: Weights"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Weights &raquo;</span>
+    <a href="/rpilot.core.gui.Subject_List.html" title="Next Chapter: Subject_List"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Subject_List &raquo;</span>
     </a>
   </li>
         </div>
@@ -234,8 +250,8 @@
 <em class="property">class </em><code class="descclassname">rpilot.core.gui.</code><code class="descname">Sound_Widget</code><a class="reference internal" href="../_modules/rpilot/core/gui.html#Sound_Widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.gui.Sound_Widget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="/http://pyside.github.io/docs/pyside/PySide/QtGui/QWidget.html#PySide.QtGui.QWidget" title="(in PySide v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySide.QtGui.QWidget</span></code></a></p>
 <p>A widget that allows sounds to be parameterized.</p>
-<p>Used in <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Protocol_Wizard" title="rpilot.core.gui.Protocol_Wizard"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol_Wizard</span></code></a> .</p>
-<p>Has two <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Drag_List" title="rpilot.core.gui.Drag_List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Drag_List</span></code></a> s for left and right sounds (for a 2afc task), given
+<p>Used in <a class="reference internal" href="../rst/rpilot.core.gui.html#rpilot.core.gui.Protocol_Wizard" title="rpilot.core.gui.Protocol_Wizard"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol_Wizard</span></code></a> .</p>
+<p>Has two <a class="reference internal" href="../rst/rpilot.core.gui.html#rpilot.core.gui.Drag_List" title="rpilot.core.gui.Drag_List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Drag_List</span></code></a> s for left and right sounds (for a 2afc task), given
 Buttons beneath them allow adding and removing sounds.</p>
 <p>Adding a sound will open a <code class="xref py py-class docutils literal notranslate"><span class="pre">Add_SoundDialog</span></code></p>
 <div class="admonition-todo admonition" id="index-0">
@@ -264,7 +280,7 @@ with correction trials and bias correction.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Sound_Widget.staticMetaObject" title="rpilot.core.gui.Sound_Widget.staticMetaObject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">staticMetaObject</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.gui.html#rpilot.core.gui.Sound_Widget.staticMetaObject" title="rpilot.core.gui.Sound_Widget.staticMetaObject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">staticMetaObject</span></code></a></td>
 <td></td>
 </tr>
 </tbody>
@@ -276,19 +292,19 @@ with correction trials and bias correction.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Sound_Widget.add_sound" title="rpilot.core.gui.Sound_Widget.add_sound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_sound</span></code></a>(side)</td>
-<td>When the “+” button on either side is pressed, open an <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Sound_Widget.Add_Sound_Dialog" title="rpilot.core.gui.Sound_Widget.Add_Sound_Dialog"><code class="xref py py-class docutils literal notranslate"><span class="pre">Add_Sound_Dialog</span></code></a>.</td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.gui.html#rpilot.core.gui.Sound_Widget.add_sound" title="rpilot.core.gui.Sound_Widget.add_sound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_sound</span></code></a>(side)</td>
+<td>When the “+” button on either side is pressed, open an <a class="reference internal" href="../rst/rpilot.core.gui.html#rpilot.core.gui.Sound_Widget.Add_Sound_Dialog" title="rpilot.core.gui.Sound_Widget.Add_Sound_Dialog"><code class="xref py py-class docutils literal notranslate"><span class="pre">Add_Sound_Dialog</span></code></a>.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Sound_Widget.files_dropped" title="rpilot.core.gui.Sound_Widget.files_dropped"><code class="xref py py-obj docutils literal notranslate"><span class="pre">files_dropped</span></code></a>(files)</td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.gui.html#rpilot.core.gui.Sound_Widget.files_dropped" title="rpilot.core.gui.Sound_Widget.files_dropped"><code class="xref py py-obj docutils literal notranslate"><span class="pre">files_dropped</span></code></a>(files)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Sound_Widget.pass_set_param_function" title="rpilot.core.gui.Sound_Widget.pass_set_param_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pass_set_param_function</span></code></a>(set_param_fnxn)</td>
-<td>Receives <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Protocol_Wizard.set_sounds" title="rpilot.core.gui.Protocol_Wizard.set_sounds"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Protocol_Wizard.set_sounds()</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.gui.html#rpilot.core.gui.Sound_Widget.pass_set_param_function" title="rpilot.core.gui.Sound_Widget.pass_set_param_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pass_set_param_function</span></code></a>(set_param_fnxn)</td>
+<td>Receives <a class="reference internal" href="../rst/rpilot.core.gui.html#rpilot.core.gui.Protocol_Wizard.set_sounds" title="rpilot.core.gui.Protocol_Wizard.set_sounds"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Protocol_Wizard.set_sounds()</span></code></a></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Sound_Widget.populate_lists" title="rpilot.core.gui.Sound_Widget.populate_lists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">populate_lists</span></code></a>(sound_dict)</td>
+<tr class="row-even"><td><a class="reference internal" href="../rst/rpilot.core.gui.html#rpilot.core.gui.Sound_Widget.populate_lists" title="rpilot.core.gui.Sound_Widget.populate_lists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">populate_lists</span></code></a>(sound_dict)</td>
 <td>Populates the sound lists after re-selecting a step.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Sound_Widget.remove_sound" title="rpilot.core.gui.Sound_Widget.remove_sound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_sound</span></code></a>(side)</td>
+<tr class="row-odd"><td><a class="reference internal" href="../rst/rpilot.core.gui.html#rpilot.core.gui.Sound_Widget.remove_sound" title="rpilot.core.gui.Sound_Widget.remove_sound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_sound</span></code></a>(side)</td>
 <td>When the “-” button is pressed, remove the currently highlighted sound.</td>
 </tr>
 </tbody>
@@ -303,7 +319,7 @@ with correction trials and bias correction.</p>
 <dl class="method">
 <dt id="rpilot.core.gui.Sound_Widget.add_sound">
 <code class="descname">add_sound</code><span class="sig-paren">(</span><em>side</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/gui.html#Sound_Widget.add_sound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.gui.Sound_Widget.add_sound" title="Permalink to this definition">¶</a></dt>
-<dd><p>When the “+” button on either side is pressed, open an <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Sound_Widget.Add_Sound_Dialog" title="rpilot.core.gui.Sound_Widget.Add_Sound_Dialog"><code class="xref py py-class docutils literal notranslate"><span class="pre">Add_Sound_Dialog</span></code></a>.</p>
+<dd><p>When the “+” button on either side is pressed, open an <a class="reference internal" href="../rst/rpilot.core.gui.html#rpilot.core.gui.Sound_Widget.Add_Sound_Dialog" title="rpilot.core.gui.Sound_Widget.Add_Sound_Dialog"><code class="xref py py-class docutils literal notranslate"><span class="pre">Add_Sound_Dialog</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -343,12 +359,12 @@ relative paths, adds them to the <cite>sound_dict</cite></p>
 <dl class="method">
 <dt id="rpilot.core.gui.Sound_Widget.pass_set_param_function">
 <code class="descname">pass_set_param_function</code><span class="sig-paren">(</span><em>set_param_fnxn</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/core/gui.html#Sound_Widget.pass_set_param_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.core.gui.Sound_Widget.pass_set_param_function" title="Permalink to this definition">¶</a></dt>
-<dd><p>Receives <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Protocol_Wizard.set_sounds" title="rpilot.core.gui.Protocol_Wizard.set_sounds"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Protocol_Wizard.set_sounds()</span></code></a></p>
+<dd><p>Receives <a class="reference internal" href="../rst/rpilot.core.gui.html#rpilot.core.gui.Protocol_Wizard.set_sounds" title="rpilot.core.gui.Protocol_Wizard.set_sounds"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Protocol_Wizard.set_sounds()</span></code></a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>set_param_fnxn</strong> (<a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Protocol_Wizard.set_sounds" title="rpilot.core.gui.Protocol_Wizard.set_sounds"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Protocol_Wizard.set_sounds()</span></code></a>) – Called when sounds are changed.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>set_param_fnxn</strong> (<a class="reference internal" href="../rst/rpilot.core.gui.html#rpilot.core.gui.Protocol_Wizard.set_sounds" title="rpilot.core.gui.Protocol_Wizard.set_sounds"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Protocol_Wizard.set_sounds()</span></code></a>) – Called when sounds are changed.</td>
 </tr>
 </tbody>
 </table>
@@ -362,7 +378,7 @@ relative paths, adds them to the <cite>sound_dict</cite></p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sound_dict</strong> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – passed to us by <a class="reference internal" href="../rpilot.core.gui.html#rpilot.core.gui.Protocol_Wizard" title="rpilot.core.gui.Protocol_Wizard"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol_Wizard</span></code></a> upon reselecting a step.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sound_dict</strong> (<a class="reference external" href="/https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – passed to us by <a class="reference internal" href="../rst/rpilot.core.gui.html#rpilot.core.gui.Protocol_Wizard" title="rpilot.core.gui.Protocol_Wizard"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol_Wizard</span></code></a> upon reselecting a step.</td>
 </tr>
 </tbody>
 </table>

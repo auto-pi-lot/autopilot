@@ -14,6 +14,7 @@ Message
       ~Message.id
       ~Message.key
       ~Message.sender
+      ~Message.timestamp
       ~Message.to
       ~Message.ttl
       ~Message.value
@@ -22,6 +23,7 @@ Message
 
    .. autosummary::
 
+      ~Message.get_timestamp
       ~Message.serialize
       ~Message.validate
 
@@ -31,11 +33,13 @@ Message
    .. autoattribute:: id
    .. autoattribute:: key
    .. autoattribute:: sender
+   .. autoattribute:: timestamp
    .. autoattribute:: to
    .. autoattribute:: ttl
    .. autoattribute:: value
 
    .. rubric:: Methods Documentation
 
+   .. automethod:: get_timestamp
    .. automethod:: serialize
    .. automethod:: validate
