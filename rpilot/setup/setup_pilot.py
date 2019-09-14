@@ -248,7 +248,7 @@ if __name__ == "__main__":
             launch_string = "python " + os.path.join(params['REPODIR'], "core", "pilot.py") + " -f " + prefs_file
             launch_file_open.write(launch_string)
 
-    elif params['CONFIG'] == 'VIDEO':
+    elif params['CONFIG'] == 'VISUAL':
         with open(launch_file, 'w') as launch_file_open:
             launch_file_open.write('#!/bin/sh\n')
             launch_file_open.write('sudo killall python\n')  # Try to kill any existing jackd processes
