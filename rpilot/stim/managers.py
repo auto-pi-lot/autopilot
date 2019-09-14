@@ -10,7 +10,9 @@ TODO:
 import os
 from collections import deque
 import numpy as np
-from rpilot.stim.sound import sounds
+from rpilot import prefs
+if prefs.CONFIG == 'AUDIO':
+    from rpilot.stim.sound import sounds
 
 def init_manager(stim):
     if 'manager' in stim.keys():
