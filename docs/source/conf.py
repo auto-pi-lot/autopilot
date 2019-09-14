@@ -33,7 +33,7 @@ from sphinx.util import logging
 
 # -- Project information -----------------------------------------------------
 
-project = u'rpilot'
+project = u'Autopilot'
 copyright = u'2019, Jonny Saunders'
 author = u'Jonny Saunders'
 
@@ -170,7 +170,7 @@ html_sidebars = {
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-html_baseurl = 'http://docs.rpilot.net/'
+html_baseurl = 'http://docs.auto-pi-lot.com/'
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -186,7 +186,7 @@ html_baseurl = 'http://docs.rpilot.net/'
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'rpilotdoc'
+htmlhelp_basename = 'autopilotdoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -213,7 +213,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'rpilot.tex', u'rpilot Documentation',
+    (master_doc, 'autopilot.tex', u'Autopilot Documentation',
      u'Jonny Saunders', 'manual'),
 ]
 
@@ -223,7 +223,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'rpilot', u'rpilot Documentation',
+    (master_doc, 'autopilot', u'autopilot Documentation',
      [author], 1)
 ]
 
@@ -234,8 +234,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'rpilot', u'rpilot Documentation',
-     author, 'rpilot', 'One line description of project.',
+    (master_doc, 'autopilot', u'autopilot Documentation',
+     author, 'autopilot', 'One line description of project.',
      'Miscellaneous'),
 ]
 

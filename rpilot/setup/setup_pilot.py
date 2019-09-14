@@ -52,6 +52,8 @@ class PilotSetupForm(nps.SplitForm):
         self.input = odict({
             'NAME': self.add(nps.TitleText, name="Pilot Name:", value=""),
             'LINEAGE': self.add(nps.TitleText, name="Are we a parent or a child?", value=""),
+            'CONFIG': self.add(nps.TitleSelectOne,max_height=4,value=[0,], name="Configuration:",
+                                   values=["AUDIO", "VISUAL", "NONE"], scroll_exit=True),
             'CHILDID': self.add(nps.TitleText, name="Child ID:", value=""),
             'PARENTID': self.add(nps.TitleText, name="Parent ID:", value=""),
             'PARENTIP': self.add(nps.TitleText, name="Parent IP:", value=""),
@@ -181,6 +183,7 @@ if __name__ == "__main__":
 
     # convert numerical audio server index to string
     params['AUDIOSERVER'] = ['jack', 'pyo', 'none'][params['AUDIOSERVER'][0]]
+    params['CONFIG'] = ['AUDIO', 'VISUAL', 'NONE'][params['CONFIG'][0]]
 
     # convert string LED pin specifier to list
     for k, v in params['PINS']['LEDS'].items():
@@ -228,17 +231,31 @@ if __name__ == "__main__":
 
     ###############################
     # Install -  create runfile and optionally make service
+
     launch_file = os.path.join(params['BASEDIR'], 'launch_pilot.sh')
-    with open(launch_file, 'w') as launch_file_open:
-        launch_file_open.write('#!/bin/sh\n')
-        launch_file_open.write('killall jackd\n')  # Try to kill any existing jackd processes
-        launch_file_open.write('sudo killall pigpiod\n')
-        launch_file_open.write('sudo mount -o remount,size=128M /dev/shm\n') # refresh shared memory
-        launch_file_open.write('sudo ' + pigpio_string + '\n')
-        launch_file_open.write(params['JACKDSTRING'] + '\n')  # Then launch ours
-        launch_file_open.write('sleep 2\n')  # We wait a damn second to let jackd start up
-        launch_string = "python " + os.path.join(params['REPODIR'], "core", "pilot.py") + " -f " + prefs_file
-        launch_file_open.write(launch_string)
+    if params['CONFIG'] == 'AUDIO':
+        with open(launch_file, 'w') as launch_file_open:
+            launch_file_open.write('#!/bin/sh\n')
+            launch_file_open.write('killall jackd\n')  # Try to kill any existing jackd processes
+            launch_file_open.write('sudo killall pigpiod\n')
+            launch_file_open.write('sudo mount -o remount,size=128M /dev/shm\n') # refresh shared memory
+            launch_file_open.write('sudo ' + pigpio_string + '\n')
+            launch_file_open.write(params['JACKDSTRING'] + '\n')  # Then launch ours
+            launch_file_open.write('sleep 2\n')  # We wait a damn second to let jackd start up
+            launch_string = "python " + os.path.join(params['REPODIR'], "core", "pilot.py") + " -f " + prefs_file
+            launch_file_open.write(launch_string)
+
+    elif params['CONFIG'] == 'VIDEO':
+        with open(launch_file, 'w') as launch_file_open:
+            launch_file_open.write('#!/bin/sh\n')
+            launch_file_open.write('sudo killall python\n')  # Try to kill any existing jackd processes
+            launch_file_open.write('sudo killall pigpiod\n')
+            launch_file_open.write('sudo mount -o remount,size=128M /dev/shm\n') # refresh shared memory
+            launch_file_open.write('sudo ' + pigpio_string + '\n')
+            launch_file_open.write('sleep 2\n')  # We wait a damn second to let jackd start up
+            launch_string = "xinit /usr/bin/python " + os.path.join(params['REPODIR'], "core", "pilot.py") + " -f " + prefs_file
+            launch_file_open.write(launch_string)
+
 
     os.chmod(launch_file, 0775)
 

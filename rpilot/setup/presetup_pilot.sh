@@ -27,6 +27,8 @@ read -p "Install jack audio? (y/n): " installjack
 
 read -p "Setup hifiberry dac/amp? (y/n): " setuphifi
 
+read -p "Setup X11 server and psychopy for visual stimuli? (y/n): " visualstim
+
 read -p "Disable bluetooth? (y/n): " disablebt
 
 ###########
@@ -148,6 +150,53 @@ if [ "$setuphifi" == "y" ]; then
     echo -e 'pcm.!default {\n type hw card 0\n}\nctl.!default {\n type hw card 0\n}' | sudo tee $ALSAFILE
 fi
 
+#######
+# setup visual stim
+if [ "$visualstim" == "y" ]; then
+    echo -e "\n${RED}Installing X11 Server.. ${NC}"
+    sudo apt-get install -y xserver-xorg xorg-dev xinit xserver-xorg-video-fbdev python-opencv mesa-utils
+
+    echo -e "\n${RED}Installing Psychopy dependencies.. ${NC}"
+    pip install \
+        pyopengl \
+        pyglet \
+        pillow \
+        moviepy \
+        configobj \
+        json_tricks \
+        arabic-reshaper \
+        astunparse \
+        esprima \
+        freetype-py \
+        gevent \
+        gitpython \
+        msgpack-numpy \
+        msgpack-python \
+        pyparallel \
+        pyserial \
+        python-bidi \
+        python-gitlab \
+        pyyaml \
+        sounddevice \
+        soundfile
+
+    echo -e "\n${RED}Compiling glfw... ${NC}"
+    cd $HOME/git
+    git clone https://github.com/glfw/glfw
+    cd glfw
+    cmake .
+    make -j7
+    sudo -H make install
+
+    echo -e "\n${RED}Installing Psychopy... ${NC}"
+
+    pip install psychopy --no_deps
+
+    sudo sh -c "echo winType = \"glfw\" >> /home/pi/.psychopy3/userPrefs.cfg"
+fi
+
+
+
 ###########
 # clone repo
 cd $GITDIR
@@ -158,6 +207,10 @@ read -p "reboot? (y/n): " DOREBOOT
 
 if [ "$DOREBOOT" == "y" ]; then
     sudo reboot
+fi
+
+if [ "$visualstim" == "y" ]; then
+  echo -e "\n${RED}    ***For visual stimuli, you will need to enable the GL driver for the raspberry pi: \n    sudo raspi-config and then select Advanced > Gl Driver > GL (fake KMS)\n${NC}"
 fi
 
 
