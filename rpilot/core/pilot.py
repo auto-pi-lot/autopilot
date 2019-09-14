@@ -35,7 +35,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if not args.prefs:
-        prefs_file = '/usr/rpilot/prefs.json'
+        prefs_file = '/usr/autopilot/prefs.json'
 
         if not os.path.exists(prefs_file):
             raise Exception("No Prefs file passed, and file not in default location")
