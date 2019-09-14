@@ -9,7 +9,7 @@ Prompts user to create a run script or a systemd service.
 Sets the following params:
 
 * **NAME** - The name used by networking objects to address this Pilot
-* **BASEDIR** - The base directory for rpilot files (/usr/rpilot)
+* **BASEDIR** - The base directory for autopilot files (/usr/autopilot)
 * **PUSHPORT** - Router port used by the Terminal we connect to.
 * **TERMINALIP** - IP Address of our upstream Terminal.
 * **MSGPORT** - Port used by our own networking object
@@ -58,7 +58,7 @@ class PilotSetupForm(nps.SplitForm):
             'PARENTID': self.add(nps.TitleText, name="Parent ID:", value=""),
             'PARENTIP': self.add(nps.TitleText, name="Parent IP:", value=""),
             'PARENTPORT': self.add(nps.TitleText, name="Parent Port:", value=""),
-            'BASEDIR': self.add(nps.TitleText, name="Base Directory:", value="/usr/rpilot"),
+            'BASEDIR': self.add(nps.TitleText, name="Base Directory:", value="/usr/autopilot"),
             'PUSHPORT': self.add(nps.TitleText, name="Push Port - Router port used by the Terminal:", value="5560"),
             'MSGPORT': self.add(nps.TitleText, name="Message Port - Our router port:", value="5565"),
             'TERMINALIP': self.add(nps.TitleText, name="Terminal IP:", value="192.168.0.100"),
@@ -148,19 +148,19 @@ if __name__ == "__main__":
     #
     # # parse args
     # parser = argparse.ArgumentParser()
-    # parser.add_argument('--pfile', help="path to prefs.json to pre-populate fields. default looks for /usr/rpilot/prefs.json")
+    # parser.add_argument('--pfile', help="path to prefs.json to pre-populate fields. default looks for /usr/autopilot/prefs.json")
     # args = parser.parse_args()
     #
     # pfile = None
     # if args.pfile:
     #     pfile = str(args.pfile)
     #     print('using passed prefs file {}'.format(pfile))
-    # elif os.path.exists('/usr/rpilot/prefs.json'):
-    #     print('found existing prefs file at default location "/usr/rpilot/prefs.json"')
+    # elif os.path.exists('/usr/autopilot/prefs.json'):
+    #     print('found existing prefs file at default location "/usr/autopilot/prefs.json"')
     #     usepfile = raw_input("\nUse found prefs (y) or start with defaults (n)? > ")
     #     if usepfile == "y":
     #         print('Using found prefs')
-    #         pfile = '/usr/rpilot/prefs.json'
+    #         pfile = '/usr/autopilot/prefs.json'
     #     else:
     #         print('Starting with default prefs')
 
@@ -182,8 +182,11 @@ if __name__ == "__main__":
     params['AGENT'] = "pilot"
 
     # convert numerical audio server index to string
+    print(params['CONFIG'])
     params['AUDIOSERVER'] = ['jack', 'pyo', 'none'][params['AUDIOSERVER'][0]]
     params['CONFIG'] = ['AUDIO', 'VISUAL', 'NONE'][params['CONFIG'][0]]
+    print(params['CONFIG'])
+
 
     # convert string LED pin specifier to list
     for k, v in params['PINS']['LEDS'].items():
@@ -278,14 +281,14 @@ Restart=on-failure
 [Install]
 WantedBy=multi-user.target'''.format(launch_pi=launch_file)
 
-        unit_loc = '/lib/systemd/system/rpilot.service'
-        with open(unit_loc, 'w') as rpilot_service:
-            rpilot_service.write(systemd_string)
+        unit_loc = '/lib/systemd/system/autopilot.service'
+        with open(unit_loc, 'w') as autopilot_service:
+            autopilot_service.write(systemd_string)
 
         # enable the service
         subprocess.call(['sudo', 'systemctl', 'daemon-reload'])
-        subprocess.call(['sudo', 'systemctl', 'enable', 'rpilot.service'])
-        print('\nrpilot service installed and enabled, unit file located at:\n     {}\n'.format(unit_loc))
+        subprocess.call(['sudo', 'systemctl', 'enable', 'autopilot.service'])
+        print('\nautopilot service installed and enabled, unit file located at:\n     {}\n'.format(unit_loc))
 
 
     disable_services = {'hciuart': ""}
