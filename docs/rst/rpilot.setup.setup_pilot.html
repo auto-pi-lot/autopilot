@@ -4,7 +4,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>rpilot.setup.setup_pilot module &#8212; rpilot 0.2 documentation</title>
+    <title>rpilot.setup.setup_pilot module &#8212; Autopilot 0.2 documentation</title>
     <link rel="stylesheet" href="/../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="/../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -18,7 +18,7 @@
     <script type="text/javascript" src="/../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="/../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/../_static/bootstrap-sphinx.js"></script>
-    <link rel="canonical" href="http://docs.rpilot.net/rst/rpilot.setup.setup_pilot.html" />
+    <link rel="canonical" href="http://docs.auto-pi-lot.com/rst/rpilot.setup.setup_pilot.html" />
     <link rel="index" title="Index" href="/../genindex.html" />
     <link rel="search" title="Search" href="/../search.html" />
 <meta charset='utf-8'>
@@ -58,10 +58,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../guide.overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide.installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../guide.installation.html#setting-up-a-pilot">Setting Up a Pilot</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../guide.installation.html#pilot-presetup">Pilot Presetup</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.installation.html#agent-installation-instructions">Agent Installation Instructions</a></li>
 </ul>
 </li>
 </ul>
@@ -235,7 +232,7 @@ for parameters to set up a <code class="xref py py-class docutils literal notran
 <ul>
 <li><p class="first"><strong>NAME</strong> - The name used by networking objects to address this Pilot</p>
 </li>
-<li><p class="first"><strong>BASEDIR</strong> - The base directory for rpilot files (/usr/rpilot)</p>
+<li><p class="first"><strong>BASEDIR</strong> - The base directory for autopilot files (/usr/autopilot)</p>
 </li>
 <li><p class="first"><strong>PUSHPORT</strong> - Router port used by the Terminal we connect to.</p>
 </li>
@@ -276,8 +273,8 @@ task defines which pins it needs. Currently the default configuration asks for</
 </ul>
 <dl class="class">
 <dt id="rpilot.setup.setup_pilot.PilotSetupForm">
-<em class="property">class </em><code class="descclassname">rpilot.setup.setup_pilot.</code><code class="descname">PilotSetupForm</code><span class="sig-paren">(</span><em>draw_line_at=None</em>, <em>*args</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/setup/setup_pilot.html#PilotSetupForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.setup.setup_pilot.PilotSetupForm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">npyscreen.fmForm.SplitForm</span></code></p>
+<em class="property">class </em><code class="descclassname">rpilot.setup.setup_pilot.</code><code class="descname">PilotSetupForm</code><span class="sig-paren">(</span><em>name=None</em>, <em>parentApp=None</em>, <em>framed=None</em>, <em>help=None</em>, <em>color='FORMDEFAULT'</em>, <em>widget_list=None</em>, <em>cycle_widgets=False</em>, <em>*args</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/setup/setup_pilot.html#PilotSetupForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.setup.setup_pilot.PilotSetupForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">npyscreen.fmForm.Form</span></code></p>
 <dl class="method">
 <dt id="rpilot.setup.setup_pilot.PilotSetupForm.create">
 <code class="descname">create</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/setup/setup_pilot.html#PilotSetupForm.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.setup.setup_pilot.PilotSetupForm.create" title="Permalink to this definition">¶</a></dt>
@@ -287,6 +284,23 @@ task defines which pins it needs. Currently the default configuration asks for</
 <dl class="method">
 <dt id="rpilot.setup.setup_pilot.PilotSetupForm.afterEditing">
 <code class="descname">afterEditing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/setup/setup_pilot.html#PilotSetupForm.afterEditing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.setup.setup_pilot.PilotSetupForm.afterEditing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rpilot.setup.setup_pilot.HardwareForm">
+<em class="property">class </em><code class="descclassname">rpilot.setup.setup_pilot.</code><code class="descname">HardwareForm</code><span class="sig-paren">(</span><em>name=None</em>, <em>parentApp=None</em>, <em>framed=None</em>, <em>help=None</em>, <em>color='FORMDEFAULT'</em>, <em>widget_list=None</em>, <em>cycle_widgets=False</em>, <em>*args</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/setup/setup_pilot.html#HardwareForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.setup.setup_pilot.HardwareForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">npyscreen.fmForm.Form</span></code></p>
+<dl class="method">
+<dt id="rpilot.setup.setup_pilot.HardwareForm.create">
+<code class="descname">create</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/setup/setup_pilot.html#HardwareForm.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.setup.setup_pilot.HardwareForm.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Programmers should over-ride this in derived classes, creating widgets here</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rpilot.setup.setup_pilot.HardwareForm.afterEditing">
+<code class="descname">afterEditing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rpilot/setup/setup_pilot.html#HardwareForm.afterEditing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rpilot.setup.setup_pilot.HardwareForm.afterEditing" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

@@ -4,7 +4,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>rpilot.core.pilot &#8212; rpilot 0.2 documentation</title>
+    <title>rpilot.core.pilot &#8212; Autopilot 0.2 documentation</title>
     <link rel="stylesheet" href="/../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="/../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -18,7 +18,7 @@
     <script type="text/javascript" src="/../../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="/../../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/../../../_static/bootstrap-sphinx.js"></script>
-    <link rel="canonical" href="http://docs.rpilot.net/_modules/rpilot/core/pilot.html" />
+    <link rel="canonical" href="http://docs.auto-pi-lot.com/_modules/rpilot/core/pilot.html" />
     <link rel="index" title="Index" href="/../../../genindex.html" />
     <link rel="search" title="Search" href="/../../../search.html" />
 <meta charset='utf-8'>
@@ -58,10 +58,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.html#setting-up-a-pilot">Setting Up a Pilot</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.html#pilot-presetup">Pilot Presetup</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.html#agent-installation-instructions">Agent Installation Instructions</a></li>
 </ul>
 </li>
 </ul>
@@ -253,7 +250,7 @@
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">prefs</span><span class="p">:</span>
-        <span class="n">prefs_file</span> <span class="o">=</span> <span class="s1">&#39;/usr/rpilot/prefs.json&#39;</span>
+        <span class="n">prefs_file</span> <span class="o">=</span> <span class="s1">&#39;/usr/autopilot/prefs.json&#39;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">prefs_file</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No Prefs file passed, and file not in default location&quot;</span><span class="p">)</span>
@@ -266,7 +263,7 @@
     <span class="n">prefs</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">prefs_file</span><span class="p">)</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">REPODIR</span><span class="p">))</span>
 
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prefs</span><span class="p">,</span> <span class="s1">&#39;AUDIOSERVER&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prefs</span><span class="p">,</span> <span class="s1">&#39;AUDIOSERVER&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">prefs</span><span class="o">.</span><span class="n">CONFIG</span> <span class="o">==</span> <span class="s1">&#39;AUDIO&#39;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">prefs</span><span class="o">.</span><span class="n">AUDIOSERVER</span> <span class="o">==</span> <span class="s1">&#39;pyo&#39;</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">rpilot.stim.sound</span> <span class="kn">import</span> <span class="n">pyoserver</span>
         <span class="k">elif</span> <span class="n">prefs</span><span class="o">.</span><span class="n">AUDIOSERVER</span> <span class="o">==</span> <span class="s1">&#39;jack&#39;</span><span class="p">:</span>
@@ -378,7 +375,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">file_block</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span> <span class="c1"># Are we waiting on file transfer?</span>
 
         <span class="c1"># Init audio server</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prefs</span><span class="p">,</span> <span class="s1">&#39;AUDIOSERVER&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prefs</span><span class="p">,</span> <span class="s1">&#39;AUDIOSERVER&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">prefs</span><span class="o">.</span><span class="n">CONFIG</span> <span class="o">==</span> <span class="s1">&#39;AUDIO&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">init_audio</span><span class="p">()</span>
 
         <span class="c1"># Init Station</span>

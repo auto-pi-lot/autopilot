@@ -1,14 +1,27 @@
-.. _installation_pilot:
+.. _setup_pilot:
 
-Pilot Installation
+Pilot Setup
 ************
 
+Scripted Installation
+=====================
 
-Pilot Presetup
-==============
+The pilot preinstallation and setup routines are in two scripts, :ref:`autopilot.setup.presetup_pilot.sh` and :ref:`autopilot.setup.setup_pilot.py`.
 
-Note:
-    These files are encapsulated in a :any:`rpilot.setup.preinstall_pilot.sh` bash script that should let you skip this whole section.
+Setting up a pilot then just requires you run those two scripts, which will prompt you as you go::
+
+    cd <repo_directory>/autopilot/setup
+    ./presetup_pilot.sh
+    sudo python ./setup_pilot.py
+
+The ``setup_pilot`` script uses `npyscreen <https://npyscreen.readthedocs.io/>`_ to enable graphical parameter setup on headless machines and over SSH.
+
+.. image:: ../_images/npyscreen_setup.png
+
+
+Manual Preinstall
+=================
+
 
 Rasbian Installation
 --------------------
@@ -260,7 +273,7 @@ sudo -H make install
 Pilot Setup
 ===========
 
-
+After the ``preinstall_pilot.sh`` script is run, or after
 
 
 

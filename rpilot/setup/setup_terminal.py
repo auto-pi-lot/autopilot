@@ -8,7 +8,7 @@ for parameters to set up a :class:`~.terminal.Terminal` .
 
 Sets the following prefs:
 
-* **BASEDIR** - Base directory for all local rpilot data, typically `/usr/rpilot`
+* **BASEDIR** - Base directory for all local autopilot data, typically `/usr/autopilot`
 * **MSGPORT** - Port to use for our ROUTER listener, default `5560`
 * **DATADIR** -  `os.path.join(params['BASEDIR'], 'data')`
 * **SOUNDDIR** - `os.path.join(params['BASEDIR'], 'sounds')`
@@ -30,7 +30,7 @@ import os
 class TerminalSetupForm(nps.SplitForm):
     def create(self):
         self.input = odict({
-            'BASEDIR': self.add(nps.TitleText, name="Base Directory:", value="/usr/rpilot"),
+            'BASEDIR': self.add(nps.TitleText, name="Base Directory:", value="/usr/autopilot"),
             'MSGPORT': self.add(nps.TitleText, name="Message Port - Our router port:", value="5560"),
         })
         #self.inName = self.add(nps.)

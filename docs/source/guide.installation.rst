@@ -4,9 +4,6 @@
 Installation
 ************
 
-Warning:
-    Jonny for the love of god split this out to a separate file.
-
 Each runtime of Autopilot is called an "Agent,"
 each of which performs different roles within a system,
 and thus have different requirements.
@@ -14,7 +11,7 @@ and thus have different requirements.
 Each Agent should have its own setup routine, currently in two parts:
 
 - A **presetup** script that prepares the environment, and installs prerequisites -- essentially does all the things to prepare us to invoke Autopilot
-- A **setup** routine that creates the prefs.json  file that governs Agent operation, creates any launch scripts and system services as needed.
+- A **setup** routine that creates the prefs.json file that governs Agent operation, creates any launch scripts and system services as needed.
 
 We will be incorporating these into a unified agent system that makes setting up and switching between agents easier in future version (See :ref:`todo`).
 
@@ -24,5 +21,5 @@ Note:
 Agent Installation Instructions
 ===============================
 
-* :ref:`Install a Pilot <installation_pilot>`
-* :red:`Install a Terminal <installation_terminal>`
+* :ref:`Setup a Pilot <setup_pilot>`
+* :ref:`Setup a Terminal <setup_terminal>`

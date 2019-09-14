@@ -4,7 +4,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Hardware &#8212; rpilot 0.2 documentation</title>
+    <title>Hardware &#8212; Autopilot 0.2 documentation</title>
     <link rel="stylesheet" href="/../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="/../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -18,7 +18,7 @@
     <script type="text/javascript" src="/../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="/../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/../_static/bootstrap-sphinx.js"></script>
-    <link rel="canonical" href="http://docs.rpilot.net/api/rpilot.core.hardware.Hardware.html" />
+    <link rel="canonical" href="http://docs.auto-pi-lot.com/api/rpilot.core.hardware.Hardware.html" />
     <link rel="index" title="Index" href="/../genindex.html" />
     <link rel="search" title="Search" href="/../search.html" />
     <link rel="next" title="LED_RGB" href="/rpilot.core.hardware.LED_RGB.html" />
@@ -60,10 +60,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../guide.overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide.installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../guide.installation.html#setting-up-a-pilot">Setting Up a Pilot</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../guide.installation.html#pilot-presetup">Pilot Presetup</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.installation.html#agent-installation-instructions">Agent Installation Instructions</a></li>
 </ul>
 </li>
 </ul>
@@ -264,7 +261,7 @@ or, will this device be used to trigger some event? If <cite>True</cite>,
 will be given a callback by <a class="reference internal" href="../rst/rpilot.tasks.task.html#rpilot.tasks.task.Task" title="rpilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>, and <a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Hardware.assign_cb" title="rpilot.core.hardware.Hardware.assign_cb"><code class="xref py py-meth docutils literal notranslate"><span class="pre">assign_cb()</span></code></a>
 must be redefined.</li>
 <li><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Hardware.pin" title="rpilot.core.hardware.Hardware.pin"><strong>pin</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – The BCM pin used by this device, or None if no pin is used.</li>
-<li><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Wheel.type" title="rpilot.core.hardware.Wheel.type"><strong>type</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – What is this device known as in <cite>.prefs</cite>? Not required.</li>
+<li><a class="reference internal" href="../rst/rpilot.core.utils.html#rpilot.core.utils.Param.type" title="rpilot.core.utils.Param.type"><strong>type</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – What is this device known as in <cite>.prefs</cite>? Not required.</li>
 <li><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.Beambreak.input" title="rpilot.core.hardware.Beambreak.input"><strong>input</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Is this an input device?</li>
 <li><a class="reference internal" href="../rst/rpilot.core.hardware.html#rpilot.core.hardware.LED_RGB.output" title="rpilot.core.hardware.LED_RGB.output"><strong>output</strong></a> (<a class="reference external" href="/https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Is this an output device?</li>
 </ul>

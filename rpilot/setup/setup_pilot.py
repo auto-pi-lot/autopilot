@@ -45,12 +45,11 @@ import json
 import os
 import subprocess
 
-class PilotSetupForm(nps.SplitForm):
-
-
+class PilotSetupForm(nps.Form):
     def create(self):
         self.input = odict({
             'NAME': self.add(nps.TitleText, name="Pilot Name:", value=""),
+            'BASEDIR': self.add(nps.TitleText, name="Base Directory:", value="/usr/autopilot"),
             'LINEAGE': self.add(nps.TitleText, name="Are we a parent or a child?", value=""),
             'CONFIG': self.add(nps.TitleSelectOne,max_height=4,value=[0,], name="Configuration:",
                                    values=["AUDIO", "VISUAL", "NONE"], scroll_exit=True),
@@ -58,10 +57,31 @@ class PilotSetupForm(nps.SplitForm):
             'PARENTID': self.add(nps.TitleText, name="Parent ID:", value=""),
             'PARENTIP': self.add(nps.TitleText, name="Parent IP:", value=""),
             'PARENTPORT': self.add(nps.TitleText, name="Parent Port:", value=""),
-            'BASEDIR': self.add(nps.TitleText, name="Base Directory:", value="/usr/autopilot"),
             'PUSHPORT': self.add(nps.TitleText, name="Push Port - Router port used by the Terminal:", value="5560"),
             'MSGPORT': self.add(nps.TitleText, name="Message Port - Our router port:", value="5565"),
             'TERMINALIP': self.add(nps.TitleText, name="Terminal IP:", value="192.168.0.100"),
+            'AUDIOSERVER':self.add(nps.TitleSelectOne,max_height=4,value=[0,], name="Audio Server:",
+                                   values=["jack", "pyo", "none"], scroll_exit=True),
+            'NCHANNELS':self.add(nps.TitleText, name="N Audio Channels", value="1"),
+            'OUTCHANNELS': self.add(nps.TitleText, name="List of output ports for jack audioserver to connect to", value="[1]"),
+            'FS': self.add(nps.TitleText, name="Audio Sampling Rate", value="192000"),
+            'JACKDSTRING': self.add(nps.TitleText, name="Command used to launch jackd - note that \'fs\' will be replaced with above FS",
+                                    value="jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -n3 -s &"),
+            'PIGPIOMASK': self.add(nps.TitleText, name="Binary mask to enable pigpio to access pins according to the BCM numbering",
+                                    value="1111110000111111111111110000")
+
+
+        })
+        #self.inName = self.add(nps.)
+
+
+    # after we're done editing, close the input program
+    def afterEditing(self):
+        self.parentApp.setNextForm('HARDWARE')
+
+class HardwareForm(nps.Form):
+    def create(self):
+        self.input = odict({
             'PINS':{
                 'POKES':{
                     'L':self.add(nps.TitleText, name="PINS - POKES - L", value="24"),
@@ -82,21 +102,10 @@ class PilotSetupForm(nps.SplitForm):
                     'L': self.add(nps.TitleText, name="PINS - FLAGS - L", value=""),
                     'R': self.add(nps.TitleText, name="PINS - FLAGS - R", value="")
                 }},
-            'AUDIOSERVER':self.add(nps.TitleSelectOne,max_height=4,value=[0,], name="Audio Server:",
-                                   values=["jack", "pyo", "none"], scroll_exit=True),
-            'NCHANNELS':self.add(nps.TitleText, name="N Audio Channels", value="1"),
-            'OUTCHANNELS': self.add(nps.TitleText, name="List of output ports for jack audioserver to connect to", value="[1]"),
-            'FS': self.add(nps.TitleText, name="Audio Sampling Rate", value="192000"),
-            'JACKDSTRING': self.add(nps.TitleText, name="Command used to launch jackd - note that \'fs\' will be replaced with above FS",
-                                    value="jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -n3 -s &"),
-            'PIGPIOMASK': self.add(nps.TitleText, name="Binary mask to enable pigpio to access pins according to the BCM numbering",
-                                    value="1111110000111111111111110000"),
             'PULLUPS': self.add(nps.TitleText, name="Pins to pull up on boot",
-                                    value="[7]"),
+                                value="[7]"),
             'PULLDOWNS': self.add(nps.TitleText, name="Pins to pull down on boot",
-                                value="[]")
-
-
+                                  value="[]")
         })
         #self.inName = self.add(nps.)
 
@@ -108,6 +117,7 @@ class PilotSetupForm(nps.SplitForm):
 class SetupApp(nps.NPSAppManaged):
     def onStart(self):
         self.form = self.addForm('MAIN', PilotSetupForm, name='Setup Pilot')
+        self.hardware = self.addForm('HARDWARE', HardwareForm, name='Setup Pilot Hardware')
 
 
 def unfold_values(v):
@@ -174,6 +184,10 @@ if __name__ == "__main__":
 
     # extract params
     params = {k:unfold_values(v) for k, v in setup.form.input.items()}
+    hardware_params = {k:unfold_values(v) for k, v in setup.hardware.input.items()}
+
+    # combine
+    params.update(hardware_params)
 
     ############################
     # some inelegant manual formatting
