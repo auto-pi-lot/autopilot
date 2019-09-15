@@ -1,0 +1,5 @@
+<map id="inheritance12ef2d6950" name="inheritance12ef2d6950">
+<area shape="rect" id="node1" href="api/autopilot.tasks.nafc.Nafc.html#autopilot.tasks.nafc.Nafc" target="_top" title="A Two&#45;alternative forced choice task." alt="" coords="125,5,197,29"/>
+<area shape="rect" id="node3" href="api/autopilot.tasks.nafc.Nafc_Wheel.html#autopilot.tasks.nafc.Nafc_Wheel" target="_top" title="2afc using a wheel run on a child pi as the input device" alt="" coords="245,5,339,29"/>
+<area shape="rect" id="node2" href="api/autopilot.tasks.task.Task.html#autopilot.tasks.task.Task" target="_top" title="Generic Task metaclass" alt="" coords="5,5,77,29"/>
+</map>

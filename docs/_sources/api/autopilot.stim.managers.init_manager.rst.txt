@@ -1,0 +1,6 @@
+init_manager
+============
+
+.. currentmodule:: autopilot.stim.managers
+
+.. autofunction:: init_manager

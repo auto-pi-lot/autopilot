@@ -1,0 +1,45 @@
+Message
+=======
+
+.. currentmodule:: autopilot.core.networking
+
+.. autoclass:: Message
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Message.flags
+      ~Message.id
+      ~Message.key
+      ~Message.sender
+      ~Message.timestamp
+      ~Message.to
+      ~Message.ttl
+      ~Message.value
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Message.get_timestamp
+      ~Message.serialize
+      ~Message.validate
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: flags
+   .. autoattribute:: id
+   .. autoattribute:: key
+   .. autoattribute:: sender
+   .. autoattribute:: timestamp
+   .. autoattribute:: to
+   .. autoattribute:: ttl
+   .. autoattribute:: value
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: get_timestamp
+   .. automethod:: serialize
+   .. automethod:: validate

@@ -1,0 +1,37 @@
+LED_RGB
+=======
+
+.. currentmodule:: autopilot.core.hardware
+
+.. autoclass:: LED_RGB
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~LED_RGB.output
+      ~LED_RGB.type
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~LED_RGB.color_series
+      ~LED_RGB.flash
+      ~LED_RGB.release
+      ~LED_RGB.set_color
+      ~LED_RGB.threaded_color_series
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: output
+   .. autoattribute:: type
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: color_series
+   .. automethod:: flash
+   .. automethod:: release
+   .. automethod:: set_color
+   .. automethod:: threaded_color_series

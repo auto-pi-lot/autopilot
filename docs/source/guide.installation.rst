@@ -18,8 +18,8 @@ We will be incorporating these into a unified agent system that makes setting up
 Note:
     These instructions, like everything in Autopilot, is Linux and *nix only. They have only been tested on macOS and Ubuntu Linux.
 
-Agent Installation Instructions
-===============================
 
-* :ref:`Setup a Pilot <setup_pilot>`
-* :ref:`Setup a Terminal <setup_terminal>`
+.. toctree::
+
+   Setup a Pilot <guide.installation.pilot>
+   Setup a Terminal <guide.installation.terminal>

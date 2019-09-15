@@ -1,0 +1,21 @@
+Param
+=====
+
+.. currentmodule:: autopilot.core.utils
+
+.. autoclass:: Param
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Param.tag
+      ~Param.type
+      ~Param.types
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: tag
+   .. autoattribute:: type
+   .. autoattribute:: types

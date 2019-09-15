@@ -1,0 +1,564 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>autopilot.tasks.task_scripts &mdash; Autopilot 0.2 documentation</title>
+  
+
+  
+  
+  
+  
+    <link rel="canonical" href="docs.auto-pi-lot.com_modules/autopilot/tasks/task_scripts.html"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/autopilot_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+
+    <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
+
+
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Autopilot
+          
+
+          
+            
+            <img src="../../../_static/autopilot_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.pilot.html">Setup a Pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#raspbian-performance-improvements">Raspbian Performance Improvements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#audio-setup">Audio Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#video-setup">Video Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#optional-installation-steps">Optional Installation Steps</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.training.html">Training a Subject</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.hardware.html">Writing a Hardware Class</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.core.html">Core Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.gui.html">gui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.hardware.html">hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.networking.html">networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.pilot.html">pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.subject.html">mouse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.terminal.html">terminal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.free_water.html">free_water</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.graduation.html">graduation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.nafc.html">nafc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.task.html">task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.stim.html">Stimuli</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.stim.managers.html">managers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.stim.sound.html">sound</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autopilot.stim.sound.jackclient.html">jackclient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autopilot.stim.sound.pyoserver.html">pyoserver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autopilot.stim.sound.sounds.html">sounds</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.viz.html">Visualization Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.setup.html">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.setup.setup_pilot.html">setup_pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.setup.setup_scale.html">setup_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.setup.setup_terminal.html">setup_terminal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.prefs.html">Prefs</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">To-Do</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Autopilot</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>autopilot.tasks.task_scripts</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for autopilot.tasks.task_scripts</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Sometimes a GUI just doesn&#39;t cut it for making tasks, eg. those with many steps, many stimuli, etc.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">autopilot</span> <span class="kn">import</span> <span class="n">tasks</span>
+<span class="kn">from</span> <span class="nn">autopilot.core</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<div class="viewcode-block" id="manystep_speech"><a class="viewcode-back" href="../../../rst/autopilot.tasks.task_scripts.html#autopilot.tasks.task_scripts.manystep_speech">[docs]</a><span class="k">def</span> <span class="nf">manystep_speech</span><span class="p">(</span><span class="n">token_dir</span><span class="p">,</span> <span class="n">out_fn</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes a protocol with ::</span>
+
+<span class="sd">        * one free water step with 200 trials</span>
+<span class="sd">        * one request rewards tone discrimination step 300 trials</span>
+<span class="sd">        * one tone discim step 75% accuracy over 400 trials</span>
+<span class="sd">        * many steps that introduce new tokens pairwise.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token_dir (str): where the speech tokens are</span>
+<span class="sd">        write_dir (str): where to write the task .json file</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># list all the speech tokens</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">token_dir</span><span class="p">,</span> <span class="s1">&#39;wav&#39;</span><span class="p">)</span>
+
+    <span class="c1"># make df of token attributes</span>
+    <span class="n">token_relpath</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">token_dir</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]</span>
+    <span class="n">speaker</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">token_relpath</span><span class="p">]</span>
+    <span class="n">consonant</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">token_relpath</span><span class="p">]</span>
+    <span class="n">vowel</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">token_relpath</span><span class="p">]</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="mi">2</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">token_relpath</span><span class="p">]</span>
+
+    <span class="n">token_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;path&#39;</span><span class="p">:</span><span class="n">tokens</span><span class="p">,</span>
+                             <span class="s1">&#39;relpath&#39;</span><span class="p">:</span> <span class="n">token_relpath</span><span class="p">,</span>
+                             <span class="s1">&#39;speaker&#39;</span><span class="p">:</span> <span class="n">speaker</span><span class="p">,</span>
+                             <span class="s1">&#39;consonant&#39;</span><span class="p">:</span> <span class="n">consonant</span><span class="p">,</span>
+                             <span class="s1">&#39;vowel&#39;</span><span class="p">:</span> <span class="n">vowel</span><span class="p">,</span>
+                             <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="n">token</span><span class="p">},</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="n">token_df</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token_df</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">token_df</span> <span class="o">=</span> <span class="n">token_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;speaker&#39;</span><span class="p">,</span> <span class="s1">&#39;consonant&#39;</span><span class="p">,</span> <span class="s1">&#39;vowel&#39;</span><span class="p">,</span> <span class="s1">&#39;token&#39;</span><span class="p">])</span>
+
+    <span class="c1"># we introduce tokens as the product of speaker, vowel, and token:</span>
+    <span class="c1"># ie. introduce S1V1T(oken)1, 2, 3, then S1V2T1,2,3, S2V1</span>
+    <span class="c1"># but since product will exhaust the speaker first (ie. introduce all vowels</span>
+    <span class="c1"># and tokens from S1 before S2) we have to stack a few iterations</span>
+    <span class="n">speakers_1</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Brynna&#39;</span><span class="p">]</span>
+    <span class="n">vowels_1</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">]</span>
+    <span class="n">tokens_1</span>   <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">speakers_2</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Jonny&#39;</span><span class="p">]</span>
+
+    <span class="n">speakers_3</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Brynna&#39;</span><span class="p">,</span> <span class="s1">&#39;Jonny&#39;</span><span class="p">]</span>
+    <span class="n">vowels_3</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;u&#39;</span><span class="p">]</span>
+
+    <span class="n">speakers_4</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Anna&#39;</span><span class="p">]</span>
+    <span class="n">vowels_4</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="s1">&#39;u&#39;</span><span class="p">]</span>
+
+    <span class="n">order_1</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">speakers_1</span><span class="p">,</span> <span class="n">vowels_1</span><span class="p">,</span> <span class="n">tokens_1</span><span class="p">)</span>
+    <span class="n">order_2</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">speakers_2</span><span class="p">,</span> <span class="n">vowels_1</span><span class="p">,</span> <span class="n">tokens_1</span><span class="p">)</span>
+    <span class="n">order_3</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">speakers_3</span><span class="p">,</span> <span class="n">vowels_3</span><span class="p">,</span> <span class="n">tokens_1</span><span class="p">)</span>
+    <span class="n">order_4</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">speakers_4</span><span class="p">,</span> <span class="n">vowels_4</span><span class="p">,</span> <span class="n">tokens_1</span><span class="p">)</span>
+
+    <span class="n">order</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="n">order_1</span><span class="p">,</span> <span class="n">order_2</span><span class="p">,</span> <span class="n">order_3</span><span class="p">,</span> <span class="n">order_4</span><span class="p">))</span>
+
+    <span class="c1"># make steps of task</span>
+    <span class="n">base_task</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;graduation&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;accuracy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;threshold&quot;</span><span class="p">:</span> <span class="s2">&quot;.80&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;window&quot;</span><span class="p">:</span> <span class="s2">&quot;1000&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;accuracy&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;reward&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;volume&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="s1">&#39;2.5&#39;</span><span class="p">},</span>
+        <span class="s2">&quot;req_reward&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+        <span class="s2">&quot;correction&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="s2">&quot;bias_mode&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+        <span class="s2">&quot;punish_dur&quot;</span><span class="p">:</span> <span class="s2">&quot;5000&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;task_type&quot;</span><span class="p">:</span> <span class="s2">&quot;2AFC&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;step_name&quot;</span><span class="p">:</span> <span class="s2">&quot;speech_1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pct_correction&quot;</span><span class="p">:</span> <span class="s2">&quot;10&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;stim&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;manager&quot;</span><span class="p">:</span> <span class="s2">&quot;proportional&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;sounds&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;groups&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;training&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;frequency&quot;</span><span class="p">:</span> <span class="mf">0.98</span><span class="p">,</span>
+                 <span class="s2">&quot;sounds&quot;</span><span class="p">:</span> <span class="p">{</span>
+                     <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                     <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="p">[]</span>
+                 <span class="p">}},</span>
+                <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;generalization&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;frequency&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
+                 <span class="s2">&quot;sounds&quot;</span><span class="p">:</span> <span class="p">{</span>
+                     <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                     <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="p">[]</span>
+                 <span class="p">}}</span>
+                <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;punish_sound&quot;</span><span class="p">:</span> <span class="bp">False</span>
+    <span class="p">}</span>
+
+    <span class="c1"># make a dictionary to describe every token so we can add them to the task later</span>
+    <span class="n">token_dicts</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">token_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">new_tok</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">token</span><span class="p">),</span>
+            <span class="s1">&#39;speaker&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">speaker</span><span class="p">),</span>
+            <span class="s1">&#39;vowel&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">vowel</span><span class="p">),</span>
+            <span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">relpath</span><span class="p">,</span>
+            <span class="s1">&#39;consonant&#39;</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">consonant</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Speech&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;amplitude&#39;</span><span class="p">:</span> <span class="s1">&#39;0.02&#39;</span>
+        <span class="p">}</span>
+        <span class="n">token_dicts</span><span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">relpath</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_tok</span>
+
+
+
+    <span class="n">steps</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">relpaths</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># keep track of which relpaths are in our task</span>
+    <span class="n">step_num</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">speaker</span><span class="p">,</span> <span class="n">vowel</span><span class="p">,</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">order</span><span class="p">:</span>
+        <span class="c1"># get /b/ and /g/ relpaths</span>
+        <span class="n">b_path</span> <span class="o">=</span> <span class="n">token_df</span><span class="p">[(</span><span class="n">token_df</span><span class="o">.</span><span class="n">speaker</span> <span class="o">==</span> <span class="n">speaker</span><span class="p">)</span> <span class="o">&amp;</span>
+                          <span class="p">(</span><span class="n">token_df</span><span class="o">.</span><span class="n">vowel</span> <span class="o">==</span> <span class="n">vowel</span><span class="p">)</span> <span class="o">&amp;</span>
+                          <span class="p">(</span><span class="n">token_df</span><span class="o">.</span><span class="n">token</span> <span class="o">==</span> <span class="n">token</span><span class="p">)</span> <span class="o">&amp;</span>
+                          <span class="p">(</span><span class="n">token_df</span><span class="o">.</span><span class="n">consonant</span> <span class="o">==</span> <span class="s2">&quot;b&quot;</span><span class="p">)]</span><span class="o">.</span><span class="n">relpath</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">g_path</span> <span class="o">=</span> <span class="n">token_df</span><span class="p">[(</span><span class="n">token_df</span><span class="o">.</span><span class="n">speaker</span> <span class="o">==</span> <span class="n">speaker</span><span class="p">)</span> <span class="o">&amp;</span>
+                          <span class="p">(</span><span class="n">token_df</span><span class="o">.</span><span class="n">vowel</span> <span class="o">==</span> <span class="n">vowel</span><span class="p">)</span> <span class="o">&amp;</span>
+                          <span class="p">(</span><span class="n">token_df</span><span class="o">.</span><span class="n">token</span> <span class="o">==</span> <span class="n">token</span><span class="p">)</span> <span class="o">&amp;</span>
+                          <span class="p">(</span><span class="n">token_df</span><span class="o">.</span><span class="n">consonant</span> <span class="o">==</span> <span class="s2">&quot;g&quot;</span><span class="p">)]</span><span class="o">.</span><span class="n">relpath</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">relpaths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b_path</span><span class="p">)</span>
+        <span class="n">relpaths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">g_path</span><span class="p">)</span>
+
+        <span class="c1"># add sounds to task</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">step_dict</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">base_task</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">step_dict</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">steps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># first add new training tokens</span>
+        <span class="n">step_dict</span><span class="p">[</span><span class="s1">&#39;stim&#39;</span><span class="p">][</span><span class="s1">&#39;groups&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;sounds&#39;</span><span class="p">][</span><span class="s1">&#39;R&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token_dicts</span><span class="p">[</span><span class="n">b_path</span><span class="p">])</span>
+        <span class="n">step_dict</span><span class="p">[</span><span class="s1">&#39;stim&#39;</span><span class="p">][</span><span class="s1">&#39;groups&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;sounds&#39;</span><span class="p">][</span><span class="s1">&#39;L&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token_dicts</span><span class="p">[</span><span class="n">g_path</span><span class="p">])</span>
+
+        <span class="c1"># then add generalization tokens</span>
+        <span class="n">b_gens</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">token_dicts</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">relpaths</span> <span class="ow">and</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;consonant&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;b&#39;</span><span class="p">]</span>
+        <span class="n">g_gens</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">token_dicts</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">relpaths</span> <span class="ow">and</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;consonant&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;g&#39;</span><span class="p">]</span>
+        <span class="n">step_dict</span><span class="p">[</span><span class="s1">&#39;stim&#39;</span><span class="p">][</span><span class="s1">&#39;groups&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;sounds&#39;</span><span class="p">][</span><span class="s1">&#39;R&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">b_gens</span>
+        <span class="n">step_dict</span><span class="p">[</span><span class="s1">&#39;stim&#39;</span><span class="p">][</span><span class="s1">&#39;groups&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;sounds&#39;</span><span class="p">][</span><span class="s1">&#39;L&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g_gens</span>
+
+        <span class="c1"># change step name</span>
+        <span class="n">step_dict</span><span class="p">[</span><span class="s1">&#39;step_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;speech_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">step_num</span><span class="o">.</span><span class="n">next</span><span class="p">())</span>
+
+
+        <span class="n">steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_dict</span><span class="p">)</span>
+
+    <span class="c1"># free water stage</span>
+    <span class="n">reward_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;volume&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;value&#39;</span><span class="p">:</span><span class="mf">2.5</span><span class="p">}</span>
+
+    <span class="n">fw_params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;task_type&quot;</span><span class="p">:</span> <span class="s2">&quot;Free Water&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;allow_repeat&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+        <span class="s2">&quot;reward&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;volume&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span><span class="mf">5.0</span><span class="p">},</span>
+        <span class="s2">&quot;step_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Free Water&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;graduation&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;n_trials&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;current_trial&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;n_trials&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;n_trials&quot;</span><span class="p">:</span> <span class="s2">&quot;200&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1"># req rewards stage</span>
+    <span class="n">req_rewards</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;graduation&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;n_trials&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;current_trial&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;n_trials&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;n_trials&quot;</span><span class="p">:</span> <span class="s2">&quot;300&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;reward&quot;</span><span class="p">:</span> <span class="n">reward_dict</span><span class="p">,</span>
+        <span class="s2">&quot;req_reward&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="s2">&quot;correction&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+        <span class="s2">&quot;bias_mode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;punish_dur&quot;</span><span class="p">:</span> <span class="s2">&quot;500&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;task_type&quot;</span><span class="p">:</span> <span class="s2">&quot;2AFC&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;step_name&quot;</span><span class="p">:</span> <span class="s2">&quot;reqrewards&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;stim&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;sounds&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;R&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="s2">&quot;100&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;frequency&quot;</span><span class="p">:</span> <span class="s2">&quot;10000&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Tone&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;amplitude&quot;</span><span class="p">:</span> <span class="s2">&quot;0.01&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;L&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="s2">&quot;100&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;frequency&quot;</span><span class="p">:</span> <span class="s2">&quot;5000&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Tone&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;amplitude&quot;</span><span class="p">:</span> <span class="s2">&quot;0.01&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;punish_sound&quot;</span><span class="p">:</span> <span class="bp">False</span>
+    <span class="p">}</span>
+
+    <span class="c1"># tone discrim stage</span>
+    <span class="n">tone_discrim</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;graduation&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;accuracy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;threshold&quot;</span><span class="p">:</span> <span class="s2">&quot;0.75&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;window&quot;</span><span class="p">:</span> <span class="s2">&quot;400&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;accuracy&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;reward&quot;</span><span class="p">:</span> <span class="s2">&quot;20&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;req_reward&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+        <span class="s2">&quot;correction&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="s2">&quot;bias_mode&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;punish_dur&quot;</span><span class="p">:</span> <span class="s2">&quot;3500&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;task_type&quot;</span><span class="p">:</span> <span class="s2">&quot;2AFC&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;step_name&quot;</span><span class="p">:</span> <span class="s2">&quot;tonediscrim&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pct_correction&quot;</span><span class="p">:</span> <span class="s2">&quot;10&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;stim&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;sounds&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;R&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="s2">&quot;100&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;frequency&quot;</span><span class="p">:</span> <span class="s2">&quot;10000&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Tone&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;amplitude&quot;</span><span class="p">:</span> <span class="s2">&quot;0.01&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;L&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="s2">&quot;100&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;frequency&quot;</span><span class="p">:</span> <span class="s2">&quot;5000&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Tone&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;amplitude&quot;</span><span class="p">:</span> <span class="s2">&quot;0.01&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;punish_sound&quot;</span><span class="p">:</span> <span class="bp">False</span>
+    <span class="p">}</span>
+
+    <span class="c1"># combine all</span>
+    <span class="n">task</span> <span class="o">=</span> <span class="p">[</span><span class="n">fw_params</span><span class="p">,</span> <span class="n">req_rewards</span><span class="p">,</span> <span class="n">tone_discrim</span><span class="p">]</span>
+    <span class="n">task</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_fn</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outf</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">outf</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;wrote task with {} steps to {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">task</span><span class="p">),</span> <span class="n">out_fn</span><span class="p">))</span></div>
+
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Jonny Saunders
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

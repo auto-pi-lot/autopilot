@@ -1,0 +1,1287 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>hardware &mdash; Autopilot 0.2 documentation</title>
+  
+
+  
+  
+  
+  
+    <link rel="canonical" href="docs.auto-pi-lot.comautopilot.core.hardware.html"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="networking" href="autopilot.core.networking.html" />
+    <link rel="prev" title="gui" href="autopilot.core.gui.html" />
+
+    <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Autopilot
+          
+
+          
+            
+            <img src="_static/autopilot_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Setup a Pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#raspbian-performance-improvements">Raspbian Performance Improvements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#audio-setup">Audio Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#video-setup">Video Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#optional-installation-steps">Optional Installation Steps</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide.training.html">Training a Subject</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="autopilot.core.html">Core Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.gui.html">gui</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">mouse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.terminal.html">terminal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.free_water.html">free_water</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.graduation.html">graduation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.nafc.html">nafc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.task.html">task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.stim.html">Stimuli</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.stim.managers.html">managers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.stim.sound.html">sound</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autopilot.stim.sound.jackclient.html">jackclient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autopilot.stim.sound.pyoserver.html">pyoserver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autopilot.stim.sound.sounds.html">sounds</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.viz.html">Visualization Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.setup.html">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.setup.setup_pilot.html">setup_pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.setup.setup_scale.html">setup_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.setup.setup_terminal.html">setup_terminal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.prefs.html">Prefs</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Autopilot</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="autopilot.core.html">core</a> &raquo;</li>
+        
+      <li>hardware</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/autopilot.core.hardware.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-autopilot.core.hardware">
+<span id="hardware"></span><h1>hardware<a class="headerlink" href="#module-autopilot.core.hardware" title="Permalink to this headline">¶</a></h1>
+<p>Classes that manage hardware logic.</p>
+<p>Each hardware class should be able to operate independently - ie. not
+be dependent on a particular task class, etc. Other than that there are
+very few design requirements:</p>
+<ul class="simple">
+<li>Every class should have a .release() method that releases any system
+resources in use by the object, eg. objects that use pigpio must have
+their <cite>pigpio.pi</cite> client stopped; LEDs should be explicitly turned off.</li>
+<li>The very minimal class attributes are described in the <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware" title="autopilot.core.hardware.Hardware"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hardware</span></code></a> metaclass.</li>
+<li>Hardware methods are typically called in their own threads, so care should
+be taken to make any long-running operations internally threadsafe.</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>This software was primarily developed for the Raspberry Pi, which
+has <a class="reference external" href="https://pinout.xyz/#">two types of numbering schemes</a> ,
+“board” numbering based on physical position and “bcm” numbering
+based on the broadcom chip numbering scheme.</p>
+<p>Board numbering is easier to use, but <a class="reference external" href="http://abyz.me.uk/rpi/pigpio/">pigpio</a>
+, which we use as a bridge between Python and the GPIOs, uses the BCM scheme.
+As such each class that uses the GPIOs takes a board number as its argument
+and converts it to a BCM number in the __init__ method.</p>
+<p class="last">If there is sufficient demand to make this more flexible, we can implement
+an additional <cite>pref</cite> to set the numbering scheme, but the current solution
+works without getting too muddy.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">In order to use pigpio, the pigpio daemon must be running. See <a class="reference external" href="http://abyz.me.uk/rpi/pigpio/python.html">the docs</a>
+Usually <a class="reference internal" href="rst/autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a> s should be started by the bash script or systemd service
+generated by <a class="reference internal" href="rst/autopilot.setup.setup_pilot.html#module-autopilot.setup.setup_pilot" title="autopilot.setup.setup_pilot"><code class="xref py py-mod docutils literal notranslate"><span class="pre">setup.setup_pilot</span></code></a>, which starts pigpiod.</p>
+</div>
+<p><strong>Data</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.BCM_TO_BOARD" title="autopilot.core.hardware.BCM_TO_BOARD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BCM_TO_BOARD</span></code></a></td>
+<td>The inverse of <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.BOARD_TO_BCM" title="autopilot.core.hardware.BOARD_TO_BCM"><code class="xref py py-const docutils literal notranslate"><span class="pre">BOARD_TO_BCM</span></code></a>.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.BOARD_TO_BCM" title="autopilot.core.hardware.BOARD_TO_BCM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BOARD_TO_BCM</span></code></a></td>
+<td>Mapping from board (physical) numbering to BCM numbering.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Classes</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Beambreak" title="autopilot.core.hardware.Beambreak"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Beambreak</span></code></a>(pin[,&nbsp;pull_ud,&nbsp;trigger_ud,&nbsp;event])</td>
+<td>An IR Beambreak sensor.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Flag" title="autopilot.core.hardware.Flag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Flag</span></code></a>(pin)</td>
+<td>Trivial Reclass of the Beambreak class with the default directions reversed.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware" title="autopilot.core.hardware.Hardware"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Hardware</span></code></a></td>
+<td>Generic class inherited by all hardware.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB" title="autopilot.core.hardware.LED_RGB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LED_RGB</span></code></a>([pins,&nbsp;r,&nbsp;g,&nbsp;b,&nbsp;common,&nbsp;blink])</td>
+<td>An RGB LED.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Pull" title="autopilot.core.hardware.Pull"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Pull</span></code></a>(pin,&nbsp;pud)</td>
+<td>Pull a pin up or down.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Scale" title="autopilot.core.hardware.Scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Scale</span></code></a>([model,&nbsp;vendor_id,&nbsp;product_id])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Solenoid" title="autopilot.core.hardware.Solenoid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Solenoid</span></code></a>(pin[,&nbsp;duration,&nbsp;vol])</td>
+<td>Solenoid valves for water delivery.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel" title="autopilot.core.hardware.Wheel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Wheel</span></code></a>([mouse_idx,&nbsp;fs,&nbsp;thresh,&nbsp;thresh_type,&nbsp;…])</td>
+<td>A continuously measured mouse wheel.</td>
+</tr>
+</tbody>
+</table>
+<dl class="data">
+<dt id="autopilot.core.hardware.BOARD_TO_BCM">
+<code class="descclassname">autopilot.core.hardware.</code><code class="descname">BOARD_TO_BCM</code><em class="property"> = {3: 2, 5: 3, 7: 4, 8: 14, 10: 15, 11: 17, 12: 18, 13: 27, 15: 22, 16: 23, 18: 24, 19: 10, 21: 9, 22: 25, 23: 11, 24: 8, 26: 7, 29: 5, 31: 6, 32: 12, 33: 13, 35: 19, 36: 16, 37: 26, 38: 20, 40: 21}</em><a class="headerlink" href="#autopilot.core.hardware.BOARD_TO_BCM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mapping from board (physical) numbering to BCM numbering.</p>
+<p>See <a class="reference external" href="https://pinout.xyz/#">this pinout</a>.</p>
+<p>Hardware objects take board numbered pins and convert them to BCM
+numbers for use with <cite>pigpio</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="autopilot.core.hardware.BCM_TO_BOARD">
+<code class="descclassname">autopilot.core.hardware.</code><code class="descname">BCM_TO_BOARD</code><em class="property"> = {2: 3, 3: 5, 4: 7, 5: 29, 6: 31, 7: 26, 8: 24, 9: 21, 10: 19, 11: 23, 12: 32, 13: 33, 14: 8, 15: 10, 16: 36, 17: 11, 18: 12, 19: 35, 20: 38, 21: 40, 22: 15, 23: 16, 24: 18, 25: 22, 26: 37, 27: 13}</em><a class="headerlink" href="#autopilot.core.hardware.BCM_TO_BOARD" title="Permalink to this definition">¶</a></dt>
+<dd><p>The inverse of <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.BOARD_TO_BCM" title="autopilot.core.hardware.BOARD_TO_BCM"><code class="xref py py-const docutils literal notranslate"><span class="pre">BOARD_TO_BCM</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="autopilot.core.hardware.Hardware">
+<em class="property">class </em><code class="descclassname">autopilot.core.hardware.</code><code class="descname">Hardware</code><a class="reference internal" href="_modules/autopilot/core/hardware.html#Hardware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Hardware" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Generic class inherited by all hardware. Should not be instantiated
+on its own (but it won’t do anything bad so go nuts i guess).</p>
+<p>Primarily for the purpose of defining necessary attributes.</p>
+<p>Also defines <cite>__del__</cite> to call <cite>release()</cite> so objects are always released
+even if not explicitly.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.trigger" title="autopilot.core.hardware.Beambreak.trigger"><strong>trigger</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Is this object a discrete event input device?
+or, will this device be used to trigger some event? If <cite>True</cite>,
+will be given a callback by <a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>, and <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.assign_cb" title="autopilot.core.hardware.Hardware.assign_cb"><code class="xref py py-meth docutils literal notranslate"><span class="pre">assign_cb()</span></code></a>
+must be redefined.</li>
+<li><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.pin" title="autopilot.core.hardware.Hardware.pin"><strong>pin</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – The BCM pin used by this device, or None if no pin is used.</li>
+<li><a class="reference internal" href="rst/autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Speech.type" title="autopilot.stim.sound.sounds.Speech.type"><strong>type</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – What is this device known as in <cite>.prefs</cite>? Not required.</li>
+<li><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.input" title="autopilot.core.hardware.Wheel.input"><strong>input</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Is this an input device?</li>
+<li><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.output" title="autopilot.core.hardware.Hardware.output"><strong>output</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Is this an output device?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.assign_cb" title="autopilot.core.hardware.Hardware.assign_cb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assign_cb</span></code></a>(trigger_fn)</td>
+<td>Every hardware device that is a <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.trigger" title="autopilot.core.hardware.Hardware.trigger"><code class="xref py py-attr docutils literal notranslate"><span class="pre">trigger</span></code></a> must redefine this to accept a function (typically <a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.handle_trigger" title="autopilot.tasks.task.Task.handle_trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Task.handle_trigger()</span></code></a>) that is called when that trigger is activated.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.get_name" title="autopilot.core.hardware.Hardware.get_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_name</span></code></a>()</td>
+<td>Usually Hardware is only instantiated with its pin number,</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.release" title="autopilot.core.hardware.Hardware.release"><code class="xref py py-obj docutils literal notranslate"><span class="pre">release</span></code></a>()</td>
+<td>Every hardware device needs to redefine <cite>release()</cite>, and must</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.input" title="autopilot.core.hardware.Hardware.input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">input</span></code></a></td>
+<td>bool(x) -&gt; bool</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.output" title="autopilot.core.hardware.Hardware.output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">output</span></code></a></td>
+<td>bool(x) -&gt; bool</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.trigger" title="autopilot.core.hardware.Hardware.trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trigger</span></code></a></td>
+<td>bool(x) -&gt; bool</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.type" title="autopilot.core.hardware.Hardware.type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></td>
+<td>str(object=’‘) -&gt; string</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Hardware.trigger">
+<code class="descname">trigger</code><em class="property"> = False</em><a class="headerlink" href="#autopilot.core.hardware.Hardware.trigger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Hardware.pin">
+<code class="descname">pin</code><em class="property"> = None</em><a class="headerlink" href="#autopilot.core.hardware.Hardware.pin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Hardware.type">
+<code class="descname">type</code><em class="property"> = ''</em><a class="headerlink" href="#autopilot.core.hardware.Hardware.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Hardware.input">
+<code class="descname">input</code><em class="property"> = False</em><a class="headerlink" href="#autopilot.core.hardware.Hardware.input" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Hardware.output">
+<code class="descname">output</code><em class="property"> = False</em><a class="headerlink" href="#autopilot.core.hardware.Hardware.output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.Hardware.release">
+<code class="descname">release</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Hardware.release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Hardware.release" title="Permalink to this definition">¶</a></dt>
+<dd><p>Every hardware device needs to redefine <cite>release()</cite>, and must</p>
+<ul class="simple">
+<li>Safely unload any system resources used by the object, and</li>
+<li>Return the object to a neutral state - eg. LEDs turn off.</li>
+</ul>
+<p>When not redefined, a warning is given.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.Hardware.assign_cb">
+<code class="descname">assign_cb</code><span class="sig-paren">(</span><em>trigger_fn</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Hardware.assign_cb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Hardware.assign_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Every hardware device that is a <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.trigger" title="autopilot.core.hardware.Hardware.trigger"><code class="xref py py-attr docutils literal notranslate"><span class="pre">trigger</span></code></a> must redefine this
+to accept a function (typically <a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.handle_trigger" title="autopilot.tasks.task.Task.handle_trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Task.handle_trigger()</span></code></a>) that
+is called when that trigger is activated.</p>
+<p>When not redefined, a warning is given.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.Hardware.get_name">
+<code class="descname">get_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Hardware.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Hardware.get_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usually Hardware is only instantiated with its pin number,
+but we can get its name from prefs</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="autopilot.core.hardware.Beambreak">
+<em class="property">class </em><code class="descclassname">autopilot.core.hardware.</code><code class="descname">Beambreak</code><span class="sig-paren">(</span><em>pin</em>, <em>pull_ud='U'</em>, <em>trigger_ud='D'</em>, <em>event=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Beambreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Beambreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware" title="autopilot.core.hardware.Hardware"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.hardware.Hardware</span></code></a></p>
+<p>An IR Beambreak sensor.</p>
+<p>A phototransistor that changes voltage from ‘high’ to ‘low’ or vice versa
+when light is blocked.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first simple">
+<li><strong>pig</strong> (<code class="xref py py-meth docutils literal notranslate"><span class="pre">pigpio.pi()</span></code>) – The pigpio connection.</li>
+<li><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.pin" title="autopilot.core.hardware.Hardware.pin"><strong>pin</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Broadcom-numbered pin, converted from the argument given on instantiation</li>
+<li><strong>callbacks</strong> (<em>list</em>) – A list of :meth:<a href="#id1"><span class="problematic" id="id2">`</span></a>pigpio.callback`s kept to clear them on exit</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pin</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Board-numbered pin, converted to BCM numbering during instantiation.</li>
+<li><strong>pull_ud</strong> (<em>'U'</em><em>, </em><em>'D'</em><em>, </em><em>'B'</em>) – Should this beambreak be pulled up or down?</li>
+<li><strong>trigger_ud</strong> (<em>'U'</em><em>, </em><em>'D'</em><em>, </em><em>'B'</em>) – Is the trigger event up (low to high) or down (high to low)?</li>
+<li><strong>event</strong> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – We can be passed an Event object if we want to handle
+stage transition logic here instead of the <a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> object, as is typical.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.assign_cb" title="autopilot.core.hardware.Beambreak.assign_cb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assign_cb</span></code></a>(callback_fn[,&nbsp;add,&nbsp;evented,&nbsp;…])</td>
+<td>Sets <cite>callback_fn</cite> to be called when triggered.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.clear_cb" title="autopilot.core.hardware.Beambreak.clear_cb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear_cb</span></code></a>()</td>
+<td>Tries to call <cite>.cancel()</cite> on each of the callbacks in <code class="xref py py-attr docutils literal notranslate"><span class="pre">Beambreak.callbacks</span></code></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.release" title="autopilot.core.hardware.Beambreak.release"><code class="xref py py-obj docutils literal notranslate"><span class="pre">release</span></code></a>()</td>
+<td>Simply calls <cite>self.pig.stop()</cite> to release pigpio resources.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.input" title="autopilot.core.hardware.Beambreak.input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">input</span></code></a></td>
+<td>bool(x) -&gt; bool</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.trigger" title="autopilot.core.hardware.Beambreak.trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trigger</span></code></a></td>
+<td>bool(x) -&gt; bool</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.type" title="autopilot.core.hardware.Beambreak.type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></td>
+<td>str(object=’‘) -&gt; string</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Beambreak.trigger">
+<code class="descname">trigger</code><em class="property"> = True</em><a class="headerlink" href="#autopilot.core.hardware.Beambreak.trigger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Beambreak.type">
+<code class="descname">type</code><em class="property"> = 'POKES'</em><a class="headerlink" href="#autopilot.core.hardware.Beambreak.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Beambreak.input">
+<code class="descname">input</code><em class="property"> = True</em><a class="headerlink" href="#autopilot.core.hardware.Beambreak.input" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.Beambreak.release">
+<code class="descname">release</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Beambreak.release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Beambreak.release" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply calls <cite>self.pig.stop()</cite> to release pigpio resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.Beambreak.assign_cb">
+<code class="descname">assign_cb</code><span class="sig-paren">(</span><em>callback_fn</em>, <em>add=False</em>, <em>evented=False</em>, <em>manual_trigger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Beambreak.assign_cb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Beambreak.assign_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets <cite>callback_fn</cite> to be called when triggered.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>callback_fn</strong> (<em>callable</em>) – The function to be called when triggered</li>
+<li><strong>add</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Are we adding another callback?
+If False, the previous callbacks are cleared.</li>
+<li><strong>evented</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Should triggering this event also set the internal <code class="xref py py-attr docutils literal notranslate"><span class="pre">event</span></code>?
+Note that <code class="xref py py-attr docutils literal notranslate"><span class="pre">Beambreak.event</span></code> must have been passed.</li>
+<li><strong>manual_trigger</strong> (<em>'U'</em><em>, </em><em>'D'</em><em>, </em><em>'B'</em>) – We can override <code class="xref py py-attr docutils literal notranslate"><span class="pre">Beambreak.trigger_ud</span></code> if needed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.Beambreak.clear_cb">
+<code class="descname">clear_cb</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Beambreak.clear_cb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Beambreak.clear_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tries to call <cite>.cancel()</cite> on each of the callbacks in <code class="xref py py-attr docutils literal notranslate"><span class="pre">Beambreak.callbacks</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="autopilot.core.hardware.Flag">
+<em class="property">class </em><code class="descclassname">autopilot.core.hardware.</code><code class="descname">Flag</code><span class="sig-paren">(</span><em>pin</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Flag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Flag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Beambreak" title="autopilot.core.hardware.Beambreak"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.hardware.Beambreak</span></code></a></p>
+<p>Trivial Reclass of the Beambreak class with the default directions reversed.</p>
+<p id="index-0"><strong>Attributes</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Flag.trigger" title="autopilot.core.hardware.Flag.trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trigger</span></code></a></td>
+<td>bool(x) -&gt; bool</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-todo admonition">
+<p class="first admonition-title">Todo</p>
+<p class="last">Need to add argument passing into hardware spec so we don’t need stuff like this</p>
+</div>
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Flag.trigger">
+<code class="descname">trigger</code><em class="property"> = True</em><a class="headerlink" href="#autopilot.core.hardware.Flag.trigger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="autopilot.core.hardware.LED_RGB">
+<em class="property">class </em><code class="descclassname">autopilot.core.hardware.</code><code class="descname">LED_RGB</code><span class="sig-paren">(</span><em>pins=None</em>, <em>r=None</em>, <em>g=None</em>, <em>b=None</em>, <em>common='anode'</em>, <em>blink=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#LED_RGB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.LED_RGB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware" title="autopilot.core.hardware.Hardware"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.hardware.Hardware</span></code></a></p>
+<p>An RGB LED.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first simple">
+<li><strong>pig</strong> (<code class="xref py py-meth docutils literal notranslate"><span class="pre">pigpio.pi()</span></code>) – The pigpio connection.</li>
+<li><strong>flash_block</strong> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – An Event to wait on setting further colors
+if we are currently in a threaded flash train</li>
+<li><strong>end_thread</strong> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Set this event to stop a flash train - usually called during object cleanup</li>
+<li><strong>pins</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>After init, pin numbers are kept in a dict like:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;r&#39;</span><span class="p">:</span><span class="n">bcm_number</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">:</span><span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><strong>stored_color</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A color we store to restore after we do a flash train.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pins</strong> (<em>list</em>) – A list of (board) pin numbers.
+Either <cite>pins</cite> OR all <cite>r</cite>, <cite>g</cite>, <cite>b</cite> must be passed.</li>
+<li><strong>r</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Board number of Red pin - must be passed with <cite>g</cite> and <cite>b</cite></li>
+<li><strong>g</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Board number of Green pin - must be passed with <cite>r</cite> and <cite>b</cite></li>
+<li><strong>b</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Board number of Blue pin - must be passed with <cite>r</cite> and <cite>g</cite>:</li>
+<li><strong>common</strong> (<em>'anode'</em><em>, </em><em>'cathode'</em>) – Is this LED common anode (low turns LED on)
+or cathode (low turns LED off)</li>
+<li><strong>blink</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Flash RGB at the end of init to show we’re alive.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.color_series" title="autopilot.core.hardware.LED_RGB.color_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">color_series</span></code></a>(colors,&nbsp;duration)</td>
+<td>Change color through a series for a fixed duration.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.flash" title="autopilot.core.hardware.LED_RGB.flash"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flash</span></code></a>(duration[,&nbsp;frequency,&nbsp;colors])</td>
+<td>Specify a color series by total duration and flash frequency.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.release" title="autopilot.core.hardware.LED_RGB.release"><code class="xref py py-obj docutils literal notranslate"><span class="pre">release</span></code></a>()</td>
+<td>Turns LED off and releases pigpio.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.set_color" title="autopilot.core.hardware.LED_RGB.set_color"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_color</span></code></a>([col,&nbsp;r,&nbsp;g,&nbsp;b,&nbsp;timed,&nbsp;stored,&nbsp;…])</td>
+<td>Set the color of the LED.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.threaded_color_series" title="autopilot.core.hardware.LED_RGB.threaded_color_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">threaded_color_series</span></code></a>(colors,&nbsp;duration)</td>
+<td>Should only be called by <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.color_series" title="autopilot.core.hardware.LED_RGB.color_series"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LED_RGB.color_series()</span></code></a> because it blocks.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.output" title="autopilot.core.hardware.LED_RGB.output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">output</span></code></a></td>
+<td>bool(x) -&gt; bool</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.type" title="autopilot.core.hardware.LED_RGB.type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></td>
+<td>str(object=’‘) -&gt; string</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="autopilot.core.hardware.LED_RGB.output">
+<code class="descname">output</code><em class="property"> = True</em><a class="headerlink" href="#autopilot.core.hardware.LED_RGB.output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.core.hardware.LED_RGB.type">
+<code class="descname">type</code><em class="property"> = 'LEDS'</em><a class="headerlink" href="#autopilot.core.hardware.LED_RGB.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.LED_RGB.release">
+<code class="descname">release</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#LED_RGB.release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.LED_RGB.release" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turns LED off and releases pigpio.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.LED_RGB.set_color">
+<code class="descname">set_color</code><span class="sig-paren">(</span><em>col=None</em>, <em>r=None</em>, <em>g=None</em>, <em>b=None</em>, <em>timed=None</em>, <em>stored=False</em>, <em>internal=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#LED_RGB.set_color"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.LED_RGB.set_color" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the color of the LED.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">if called during a <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.color_series" title="autopilot.core.hardware.LED_RGB.color_series"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LED_RGB.color_series()</span></code></a>, the color will be stashed and set when the train is over.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>col</strong> (<em>list</em><em>, </em><em>tuple</em>) – an RGB color trio ranging from 0-255. Either <cite>col</cite> or all of <cite>r</cite>, <cite>g</cite>, <cite>b</cite> must be provided</li>
+<li><strong>r</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Red intensity 0-255. Must be passed with <cite>g</cite> and <cite>b</cite></li>
+<li><strong>g</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Green intensity 0-255. Must be passed with <cite>r</cite> and <cite>b</cite></li>
+<li><strong>b</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Blue intensity 0-255. Must be passed with <cite>r</cite> and <cite>g</cite></li>
+<li><strong>timed</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Duration to change to this color before turning off in ms.</li>
+<li><strong>stored</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Called internally to change back to the color that preceded a flash train. Restores <code class="xref py py-attr docutils literal notranslate"><span class="pre">LED_RGB.stored_color</span></code>.</li>
+<li><strong>internal</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – True if being called inside a flash train.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.LED_RGB.flash">
+<code class="descname">flash</code><span class="sig-paren">(</span><em>duration, frequency=10, colors=[[255, 255, 255], [0, 0, 0]]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#LED_RGB.flash"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.LED_RGB.flash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify a color series by total duration and flash frequency.</p>
+<p>Largely a convenience function for on/off flashes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Duration of flash in ms.</li>
+<li><strong>frequency</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Frequency of flashes in Hz</li>
+<li><strong>colors</strong> (<em>list</em>) – <p>A list of RGB values 0-255 like:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.LED_RGB.color_series">
+<code class="descname">color_series</code><span class="sig-paren">(</span><em>colors</em>, <em>duration</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#LED_RGB.color_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.LED_RGB.color_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change color through a series for a fixed duration.</p>
+<p>Wrapper around <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.threaded_color_series" title="autopilot.core.hardware.LED_RGB.threaded_color_series"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LED_RGB.threaded_color_series()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>colors</strong> (<em>list</em>) – <p>A list of RGB values 0-255 like:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
+</pre></div>
+</div>
+</li>
+<li><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>list</em>) – Either a single duration (int, ms)
+or list of ints of equal length to <cite>colors</cite> to define
+duration for each.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.LED_RGB.threaded_color_series">
+<code class="descname">threaded_color_series</code><span class="sig-paren">(</span><em>colors</em>, <em>duration</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#LED_RGB.threaded_color_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.LED_RGB.threaded_color_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should only be called by <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.color_series" title="autopilot.core.hardware.LED_RGB.color_series"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LED_RGB.color_series()</span></code></a> because it blocks.</p>
+<p>Clears <code class="xref py py-attr docutils literal notranslate"><span class="pre">LED_RGB.flash_block</span></code> , sets colors, sleeps, sets the block, and
+then sets any color that was passed during the train.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>colors</strong> (<em>list</em>) – <p>A list of RGB values 0-255 like:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
+</pre></div>
+</div>
+</li>
+<li><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>list</em>) – Either a single duration (int, ms)
+or list of ints of equal length to <cite>colors</cite> to define
+duration for each.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="autopilot.core.hardware.Solenoid">
+<em class="property">class </em><code class="descclassname">autopilot.core.hardware.</code><code class="descname">Solenoid</code><span class="sig-paren">(</span><em>pin</em>, <em>duration=20</em>, <em>vol=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Solenoid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Solenoid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware" title="autopilot.core.hardware.Hardware"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.hardware.Hardware</span></code></a></p>
+<p>Solenoid valves for water delivery.</p>
+<p>Only NC solenoids should be used, as there is no way to guarantee
+that a pin will maintain its voltage when it is released, and you will
+spill water all over the place.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>pigpio has a function to send waveforms, which would make solenoid
+opening far more accurate. If you are using an audio device, however,
+creating and sending waveforms disables it. Waveforms are thus not
+implemented here, but their implementation is left, skeleton-like,
+in the source should you do an experiment without audio that
+needs more precision.</p>
+<p class="last">It’s hard to see why submillisecond precision
+would matter all that much for reward delivery, but such is the
+obsessiveness of scientists.</p>
+</div>
+<p><strong>Methods</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.dur_from_vol" title="autopilot.core.hardware.Solenoid.dur_from_vol"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dur_from_vol</span></code></a>(vol)</td>
+<td>Given a desired volume, set our open duration.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.open" title="autopilot.core.hardware.Solenoid.open"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open</span></code></a>([duration])</td>
+<td>Open the valve.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.release" title="autopilot.core.hardware.Solenoid.release"><code class="xref py py-obj docutils literal notranslate"><span class="pre">release</span></code></a>()</td>
+<td>Simply releases the pigpio resources</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.mode" title="autopilot.core.hardware.Solenoid.mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mode</span></code></a></td>
+<td>str(object=’‘) -&gt; string</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.output" title="autopilot.core.hardware.Solenoid.output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">output</span></code></a></td>
+<td>bool(x) -&gt; bool</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.type" title="autopilot.core.hardware.Solenoid.type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></td>
+<td>str(object=’‘) -&gt; string</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pin</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Board pin number, converted to BCM on init.</li>
+<li><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – duration of open, ms.</li>
+<li><strong>vol</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – desired volume of reward in uL, must have computed calibration results, see <a href="#id3"><span class="problematic" id="id4">:method:`~autopilot.core.terminal.Terminal.calibrate_ports`</span></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Solenoid.output">
+<code class="descname">output</code><em class="property"> = True</em><a class="headerlink" href="#autopilot.core.hardware.Solenoid.output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Solenoid.type">
+<code class="descname">type</code><em class="property"> = 'PORTS'</em><a class="headerlink" href="#autopilot.core.hardware.Solenoid.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Solenoid.mode">
+<code class="descname">mode</code><em class="property"> = 'DURATION'</em><a class="headerlink" href="#autopilot.core.hardware.Solenoid.mode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.Solenoid.dur_from_vol">
+<code class="descname">dur_from_vol</code><span class="sig-paren">(</span><em>vol</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Solenoid.dur_from_vol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Solenoid.dur_from_vol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a desired volume, set our open duration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vol</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – desired reward volume in uL</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.Solenoid.release">
+<code class="descname">release</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Solenoid.release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Solenoid.release" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply releases the pigpio resources</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.Solenoid.open">
+<code class="descname">open</code><span class="sig-paren">(</span><em>duration=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Solenoid.open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Solenoid.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open the valve.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – If provided, open for this duration instead of
+the duration stored on instantiation.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="autopilot.core.hardware.Wheel">
+<em class="property">class </em><code class="descclassname">autopilot.core.hardware.</code><code class="descname">Wheel</code><span class="sig-paren">(</span><em>mouse_idx=0</em>, <em>fs=10</em>, <em>thresh=100</em>, <em>thresh_type='dist'</em>, <em>start=True</em>, <em>gpio_trig=False</em>, <em>pins=None</em>, <em>mode='vel_total'</em>, <em>integrate_dur=5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Wheel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Wheel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware" title="autopilot.core.hardware.Hardware"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.hardware.Hardware</span></code></a></p>
+<p>A continuously measured mouse wheel.</p>
+<p>Uses a USB computer mouse.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">‘vel’ thresh_type not implemented</p>
+</div>
+<p><strong>Attributes</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.MODES" title="autopilot.core.hardware.Wheel.MODES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MODES</span></code></a></td>
+<td>tuple() -&gt; empty tuple</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.MOVE_DTYPE" title="autopilot.core.hardware.Wheel.MOVE_DTYPE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MOVE_DTYPE</span></code></a></td>
+<td>list() -&gt; new empty list</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.THRESH_TYPES" title="autopilot.core.hardware.Wheel.THRESH_TYPES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">THRESH_TYPES</span></code></a></td>
+<td>list() -&gt; new empty list</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.input" title="autopilot.core.hardware.Wheel.input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">input</span></code></a></td>
+<td>bool(x) -&gt; bool</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.trigger" title="autopilot.core.hardware.Wheel.trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trigger</span></code></a></td>
+<td>bool(x) -&gt; bool</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.type" title="autopilot.core.hardware.Wheel.type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></td>
+<td>str(object=’‘) -&gt; string</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.assign_cb" title="autopilot.core.hardware.Wheel.assign_cb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assign_cb</span></code></a>(trigger_fn)</td>
+<td>Every hardware device that is a <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.trigger" title="autopilot.core.hardware.Hardware.trigger"><code class="xref py py-attr docutils literal notranslate"><span class="pre">trigger</span></code></a> must redefine this to accept a function (typically <a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.handle_trigger" title="autopilot.tasks.task.Task.handle_trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Task.handle_trigger()</span></code></a>) that is called when that trigger is activated.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.calc_move" title="autopilot.core.hardware.Wheel.calc_move"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_move</span></code></a>(move[,&nbsp;thresh_type])</td>
+<td>Calculate distance move depending on type (x, y, total dist)</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.check_thresh" title="autopilot.core.hardware.Wheel.check_thresh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_thresh</span></code></a>(move)</td>
+<td>Updates thresh_val and checks whether it’s above/below threshold</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.l_clear" title="autopilot.core.hardware.Wheel.l_clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_clear</span></code></a>(value)</td>
+<td>Stop measuring!</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.l_measure" title="autopilot.core.hardware.Wheel.l_measure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_measure</span></code></a>(value)</td>
+<td>Task has signaled that we need to start measuring movements for a trigger</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.l_stop" title="autopilot.core.hardware.Wheel.l_stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_stop</span></code></a>(value)</td>
+<td>Stop measuring and clear system resources</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.release" title="autopilot.core.hardware.Wheel.release"><code class="xref py py-obj docutils literal notranslate"><span class="pre">release</span></code></a>()</td>
+<td>Every hardware device needs to redefine <cite>release()</cite>, and must</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.start" title="autopilot.core.hardware.Wheel.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.thresh_trig" title="autopilot.core.hardware.Wheel.thresh_trig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thresh_trig</span></code></a>([which])</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Wheel.input">
+<code class="descname">input</code><em class="property"> = True</em><a class="headerlink" href="#autopilot.core.hardware.Wheel.input" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Wheel.type">
+<code class="descname">type</code><em class="property"> = 'Wheel'</em><a class="headerlink" href="#autopilot.core.hardware.Wheel.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Wheel.trigger">
+<code class="descname">trigger</code><em class="property"> = False</em><a class="headerlink" href="#autopilot.core.hardware.Wheel.trigger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Wheel.THRESH_TYPES">
+<code class="descname">THRESH_TYPES</code><em class="property"> = ['dist', 'x', 'y', 'vel']</em><a class="headerlink" href="#autopilot.core.hardware.Wheel.THRESH_TYPES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Wheel.MODES">
+<code class="descname">MODES</code><em class="property"> = ('vel_total', 'steady', 'dist', 'timed')</em><a class="headerlink" href="#autopilot.core.hardware.Wheel.MODES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Wheel.MOVE_DTYPE">
+<code class="descname">MOVE_DTYPE</code><em class="property"> = [('vel', 'i4'), ('dir', 'U5'), ('timestamp', 'f8')]</em><a class="headerlink" href="#autopilot.core.hardware.Wheel.MOVE_DTYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.Wheel.start">
+<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Wheel.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Wheel.start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.Wheel.check_thresh">
+<code class="descname">check_thresh</code><span class="sig-paren">(</span><em>move</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Wheel.check_thresh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Wheel.check_thresh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates thresh_val and checks whether it’s above/below threshold</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>move</strong> (<em>np.array</em>) – Structured array with fields (‘vel’, ‘dir’, ‘timestamp’)</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.Wheel.calc_move">
+<code class="descname">calc_move</code><span class="sig-paren">(</span><em>move</em>, <em>thresh_type=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Wheel.calc_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Wheel.calc_move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate distance move depending on type (x, y, total dist)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>(</strong><strong>)</strong> (<em>thresh_type</em>) – </li>
+<li><strong>(</strong><strong>)</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.Wheel.thresh_trig">
+<code class="descname">thresh_trig</code><span class="sig-paren">(</span><em>which=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Wheel.thresh_trig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Wheel.thresh_trig" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.Wheel.assign_cb">
+<code class="descname">assign_cb</code><span class="sig-paren">(</span><em>trigger_fn</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Wheel.assign_cb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Wheel.assign_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Every hardware device that is a <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.trigger" title="autopilot.core.hardware.Hardware.trigger"><code class="xref py py-attr docutils literal notranslate"><span class="pre">trigger</span></code></a> must redefine this
+to accept a function (typically <a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.handle_trigger" title="autopilot.tasks.task.Task.handle_trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Task.handle_trigger()</span></code></a>) that
+is called when that trigger is activated.</p>
+<p>When not redefined, a warning is given.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.Wheel.l_measure">
+<code class="descname">l_measure</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Wheel.l_measure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Wheel.l_measure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Task has signaled that we need to start measuring movements for a trigger</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>(</strong><strong>)</strong> (<em>value</em>) – </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.Wheel.l_clear">
+<code class="descname">l_clear</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Wheel.l_clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Wheel.l_clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop measuring!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>(</strong><strong>)</strong> (<em>value</em>) – </td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.Wheel.l_stop">
+<code class="descname">l_stop</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Wheel.l_stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Wheel.l_stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop measuring and clear system resources
+:param value ():</p>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.hardware.Wheel.release">
+<code class="descname">release</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Wheel.release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Wheel.release" title="Permalink to this definition">¶</a></dt>
+<dd><p>Every hardware device needs to redefine <cite>release()</cite>, and must</p>
+<ul class="simple">
+<li>Safely unload any system resources used by the object, and</li>
+<li>Return the object to a neutral state - eg. LEDs turn off.</li>
+</ul>
+<p>When not redefined, a warning is given.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="autopilot.core.hardware.Scale">
+<em class="property">class </em><code class="descclassname">autopilot.core.hardware.</code><code class="descname">Scale</code><span class="sig-paren">(</span><em>model='stamps.com'</em>, <em>vendor_id=None</em>, <em>product_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Scale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware" title="autopilot.core.hardware.Hardware"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.hardware.Hardware</span></code></a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Not implemented, working on using a digital scale to
+make weighing faster.</p>
+</div>
+<p><strong>Attributes</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Scale.MODEL" title="autopilot.core.hardware.Scale.MODEL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MODEL</span></code></a></td>
+<td>dict() -&gt; new empty dictionary</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>model</strong> – </li>
+<li><strong>vendor_id</strong> – </li>
+<li><strong>product_id</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="autopilot.core.hardware.Scale.MODEL">
+<code class="descname">MODEL</code><em class="property"> = {'stamps.com': {'product_id': 27251, 'vendor_id': 5190}}</em><a class="headerlink" href="#autopilot.core.hardware.Scale.MODEL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="autopilot.core.hardware.Pull">
+<em class="property">class </em><code class="descclassname">autopilot.core.hardware.</code><code class="descname">Pull</code><span class="sig-paren">(</span><em>pin</em>, <em>pud</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Pull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Pull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware" title="autopilot.core.hardware.Hardware"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.hardware.Hardware</span></code></a></p>
+<p>Pull a pin up or down. Called by the <a class="reference internal" href="rst/autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a> instead of by
+a <a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> as is usual.</p>
+<p>If a pin should be pulled up or down always, regardless of task,
+use this. For example, the <a class="reference external" href="https://www.hifiberry.com/shop/boards/hifiberry-amp2/">otherwise wonderful HiFiBerry Amp 2</a>
+has an undocumented … feature … : the (board) pin 8 mutes output when low.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pin</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – (Board) pin number</li>
+<li><strong>pud</strong> (<em>'U'</em><em>, </em><em>'D'</em>) – Pull the pin ‘U’p or ‘D’own.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Pull.release" title="autopilot.core.hardware.Pull.release"><code class="xref py py-obj docutils literal notranslate"><span class="pre">release</span></code></a>()</td>
+<td>Simply releases the pigpio client.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="autopilot.core.hardware.Pull.release">
+<code class="descname">release</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/hardware.html#Pull.release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.hardware.Pull.release" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply releases the pigpio client.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="autopilot.core.networking.html" class="btn btn-neutral float-right" title="networking" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="autopilot.core.gui.html" class="btn btn-neutral" title="gui" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Jonny Saunders
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

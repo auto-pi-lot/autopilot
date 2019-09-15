@@ -1,4 +1,4 @@
-.. rpilot documentation master file, created by
+.. autopilot documentation master file, created by
    sphinx-quickstart on Mon Jan 21 15:35:11 2019.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
@@ -11,34 +11,39 @@ Autopilot is a Python framework to perform behavioral experiments with one or ma
 For an overview of Autopilot's motivation, design, and structure, see our `whitepaper <https://auto-pi-lot.com/autopilot-paper.pdf>`_.
 
 
-User Guide
-====================
+
 
 .. toctree::
    :maxdepth: 1
-   :caption: User Guide Sections:
+   :caption: User Guide:
 
    Overview <guide.overview>
    Installation <guide.installation>
-
-
-API Documentation
-=================
-
+   Training a Subject <guide.training>
+   Writing a Task <guide.task>
+   Writing a Hardware Class <guide.hardware>
 
 
 .. toctree::
    :maxdepth: 1
-   :caption: Contents:
+   :caption: API Documentation:
 
-   Core Modules <rpilot.core>
-   Tasks <rpilot.tasks>
-   Stimuli <rpilot.stim>
-   Visualization Tools <rpilot.viz>
-   Setup <rpilot.setup>
-   Prefs <rpilot.prefs>
+   Core Modules <autopilot.core>
+   Tasks <autopilot.tasks>
+   Stimuli <autopilot.stim>
+   Visualization Tools <autopilot.viz>
+   Setup <autopilot.setup>
+   Prefs <autopilot.prefs>
 
 
+.. toctree::
+    :maxdepth: 1
+    :caption: Meta:
+
+    To-Do <todo>
+    Index <genindex>
+    Module Index <modindex>
+    Search Page <search>
 
 
 
@@ -48,12 +53,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-
-Planned Improvements
-====================
-
-.. toctree::
-    :maxdepth: 1
-
-    To-Do <todo>

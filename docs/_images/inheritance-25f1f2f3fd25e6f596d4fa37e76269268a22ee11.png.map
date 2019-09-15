@@ -1,0 +1,5 @@
+<map id="inheritance10894b6d88" name="inheritance10894b6d88">
+<area shape="rect" id="node1" href="api/autopilot.tasks.graduation.Accuracy.html#autopilot.tasks.graduation.Accuracy" target="_top" title="Graduate stage based on percent accuracy over some window of trials." alt="" coords="141,5,217,29"/>
+<area shape="rect" id="node2" href="api/autopilot.tasks.graduation.Graduation.html#autopilot.tasks.graduation.Graduation" target="_top" title="Base Graduation object." alt="" coords="5,29,93,53"/>
+<area shape="rect" id="node3" href="api/autopilot.tasks.graduation.NTrials.html#autopilot.tasks.graduation.NTrials" target="_top" title="Graduate after doing n trials" alt="" coords="143,53,215,77"/>
+</map>

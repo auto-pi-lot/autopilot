@@ -1,0 +1,8 @@
+<map id="inheritance87b7867503" name="inheritance87b7867503">
+<area shape="rect" id="node1" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" target="_top" title="A formatted message." alt="" coords="8,125,84,149"/>
+<area shape="rect" id="node2" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node" target="_top" title="Drop in networking object to be given to any sub&#45;object" alt="" coords="5,77,87,101"/>
+<area shape="rect" id="node3" href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station" target="_top" title=":class:`~.networking.Station` object used by :class:`~.Pilot`" alt="" coords="267,5,363,29"/>
+<area shape="rect" id="node4" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station" target="_top" title="Independent networking class used for messaging between computers." alt="" coords="135,29,207,53"/>
+<area shape="rect" id="node6" href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station" target="_top" title=":class:`~.networking.Station` object used by :class:`~.Terminal`" alt="" coords="255,53,375,77"/>
+<area shape="rect" id="node5" title="Process objects represent activity that is run in a separate process" alt="" coords="10,29,82,53"/>
+</map>
