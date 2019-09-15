@@ -1,0 +1,850 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>autopilot.stim.managers module &mdash; Autopilot 0.2 documentation</title>
+  
+
+  
+  
+  
+  
+    <link rel="canonical" href="docs.auto-pi-lot.comrst/autopilot.stim.managers.html"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/autopilot_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+
+    <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
+
+
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Autopilot
+          
+
+          
+            
+            <img src="../_static/autopilot_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide.installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../guide.installation.pilot.html">Setup a Pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.pilot.html#raspbian-performance-improvements">Raspbian Performance Improvements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.pilot.html#audio-setup">Audio Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.pilot.html#video-setup">Video Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.pilot.html#optional-installation-steps">Optional Installation Steps</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide.training.html">Training a Subject</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide.hardware.html">Writing a Hardware Class</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../autopilot.core.html">Core Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.core.gui.html">gui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.core.hardware.html">hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.core.networking.html">networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.core.pilot.html">pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.core.subject.html">mouse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.core.terminal.html">terminal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.core.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.tasks.free_water.html">free_water</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.tasks.graduation.html">graduation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.tasks.nafc.html">nafc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.tasks.task.html">task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../autopilot.stim.html">Stimuli</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.stim.managers.html">managers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.stim.sound.html">sound</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autopilot.stim.sound.jackclient.html">jackclient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autopilot.stim.sound.pyoserver.html">pyoserver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autopilot.stim.sound.sounds.html">sounds</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../autopilot.viz.html">Visualization Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../autopilot.setup.html">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.setup.setup_pilot.html">setup_pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.setup.setup_scale.html">setup_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.setup.setup_terminal.html">setup_terminal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../autopilot.prefs.html">Prefs</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">To-Do</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Autopilot</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>autopilot.stim.managers module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/rst/autopilot.stim.managers.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-autopilot.stim.managers">
+<span id="autopilot-stim-managers-module"></span><h1>autopilot.stim.managers module<a class="headerlink" href="#module-autopilot.stim.managers" title="Permalink to this headline">¶</a></h1>
+<p>This is a scrappy first draft of a stimulus manager that will be built out
+to incorporate arbitrary stimulus logic. For now you can subclass <cite>Stim_Manager</cite> and
+redefine <cite>next_stim</cite></p>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">Make this more general, for more than just sounds.</p>
+</div>
+<p><strong>Classes</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Bias_Correction" title="autopilot.stim.managers.Bias_Correction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a>([mode,&nbsp;thresh,&nbsp;window])</td>
+<td>Basic Bias correction module.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Proportional" title="autopilot.stim.managers.Proportional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Proportional</span></code></a>(stim)</td>
+<td>Present groups of stimuli with a particular frequency.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a>([stim])</td>
+<td>Yield sounds according to some set of rules.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Functions</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.init_manager" title="autopilot.stim.managers.init_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_manager</span></code></a>(stim)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="autopilot.stim.managers.init_manager">
+<code class="descclassname">autopilot.stim.managers.</code><code class="descname">init_manager</code><span class="sig-paren">(</span><em>stim</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#init_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.init_manager" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="autopilot.stim.managers.Stim_Manager">
+<em class="property">class </em><code class="descclassname">autopilot.stim.managers.</code><code class="descname">Stim_Manager</code><span class="sig-paren">(</span><em>stim=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Stim_Manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Yield sounds according to some set of rules.</p>
+<p>Currently implemented:</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>correction trials - If a subject continually answers to one side incorrectly, keep</dt>
+<dd>the correct answer on the other side until they answer in that direction</dd>
+</dl>
+</li>
+<li>bias correction - above some bias threshold, skew the correct answers to the less-responded side</li>
+</ul>
+<p><strong>Methods</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.compute_correction" title="autopilot.stim.managers.Stim_Manager.compute_correction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_correction</span></code></a>()</td>
+<td>If <cite>self.correction</cite> is true, compute correction trial logic during <cite>next_stim</cite>.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.do_bias" title="autopilot.stim.managers.Stim_Manager.do_bias"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_bias</span></code></a>(**kwargs)</td>
+<td>Instantiate a <a class="reference internal" href="#autopilot.stim.managers.Bias_Correction" title="autopilot.stim.managers.Bias_Correction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a> module</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.do_correction" title="autopilot.stim.managers.Stim_Manager.do_correction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_correction</span></code></a>([correction_pct])</td>
+<td>Called to set correction trials to True and correction percent.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.end" title="autopilot.stim.managers.Stim_Manager.end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end</span></code></a>()</td>
+<td>End all of our stim.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.init_sounds" title="autopilot.stim.managers.Stim_Manager.init_sounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_sounds</span></code></a>(sound_dict)</td>
+<td>Instantiate sound objects, using the ‘type’ value to choose an object from <a class="reference internal" href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.SOUND_LIST" title="autopilot.stim.sound.sounds.SOUND_LIST"><code class="xref py py-data docutils literal notranslate"><span class="pre">sounds.SOUND_LIST</span></code></a> .</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.make_punishment" title="autopilot.stim.managers.Stim_Manager.make_punishment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_punishment</span></code></a>(type,&nbsp;duration)</td>
+<td><div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Not Implemented</p>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.next_stim" title="autopilot.stim.managers.Stim_Manager.next_stim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">next_stim</span></code></a>()</td>
+<td>Compute and return the next stimulus</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.play_punishment" title="autopilot.stim.managers.Stim_Manager.play_punishment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">play_punishment</span></code></a>()</td>
+<td><div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Not Implemented</p>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.set_triggers" title="autopilot.stim.managers.Stim_Manager.set_triggers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_triggers</span></code></a>(trig_fn)</td>
+<td>Give a callback function to all of our stimuli for when the stimulus ends.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.update" title="autopilot.stim.managers.Stim_Manager.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(response,&nbsp;correct)</td>
+<td>At the end of a trial, update the status of our internal variables with the outcome of the trial.</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first simple">
+<li><strong>stimuli</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>Dictionary of instantiated stimuli like:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">Tone1</span><span class="p">,</span> <span class="n">Tone2</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">Tone3</span><span class="p">,</span> <span class="n">Tone4</span><span class="p">,</span> <span class="o">...</span><span class="p">]}</span>
+</pre></div>
+</div>
+</li>
+<li><strong>target</strong> (<em>'L'</em><em>, </em><em>'R'</em>) – What is the correct port?</li>
+<li><strong>distractor</strong> (<em>'L'</em><em>, </em><em>'R'</em>) – What is the incorrect port?</li>
+<li><a class="reference internal" href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.response" title="autopilot.tasks.free_water.Free_Water.response"><strong>response</strong></a> (<em>'L'</em><em>, </em><em>'R'</em>) – What was the last response?</li>
+<li><strong>correct</strong> (<em>0</em><em>, </em><em>1</em>) – Was the last response correct?</li>
+<li><strong>last_stim</strong> – What was the last stim? (one of <cite>self.stimuli</cite>)</li>
+<li><strong>correction</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Are we doing correction trials?</li>
+<li><strong>correction_trial</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Is this a correction trial?</li>
+<li><strong>last_was_correction</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Was the last trial a correction trial?</li>
+<li><strong>correction_pct</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – proportion of trials that are correction trials</li>
+<li><strong>bias</strong> – False, or a bias correction mode.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first last"><strong>stim</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>Dictionary describing sound stimuli, in a format like:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;tone&#39;</span><span class="p">,</span><span class="o">...</span><span class="p">},{</span><span class="o">...</span><span class="p">}],</span>
+<span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;tone&#39;</span><span class="p">,</span><span class="o">...</span><span class="p">},{</span><span class="o">...</span><span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="autopilot.stim.managers.Stim_Manager.do_correction">
+<code class="descname">do_correction</code><span class="sig-paren">(</span><em>correction_pct=0.5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Stim_Manager.do_correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.do_correction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called to set correction trials to True and correction percent.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>correction_pct</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Proportion of trials that should randomly be set to be correction trials.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.stim.managers.Stim_Manager.do_bias">
+<code class="descname">do_bias</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Stim_Manager.do_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.do_bias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiate a <a class="reference internal" href="#autopilot.stim.managers.Bias_Correction" title="autopilot.stim.managers.Bias_Correction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a> module</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kwargs</strong> – parameters to initialize <a class="reference internal" href="#autopilot.stim.managers.Bias_Correction" title="autopilot.stim.managers.Bias_Correction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a> with.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.stim.managers.Stim_Manager.init_sounds">
+<code class="descname">init_sounds</code><span class="sig-paren">(</span><em>sound_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Stim_Manager.init_sounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.init_sounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiate sound objects, using the ‘type’ value to choose an object from
+<a class="reference internal" href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.SOUND_LIST" title="autopilot.stim.sound.sounds.SOUND_LIST"><code class="xref py py-data docutils literal notranslate"><span class="pre">sounds.SOUND_LIST</span></code></a> .</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sound_dict</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <dl class="docutils">
+<dt>a dictionary like::</dt>
+<dd>{
+‘L’: [{‘type’:’tone’,…},{…}],
+‘R’: [{‘type’:’tone’,…},{…}]
+}</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.stim.managers.Stim_Manager.set_triggers">
+<code class="descname">set_triggers</code><span class="sig-paren">(</span><em>trig_fn</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Stim_Manager.set_triggers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.set_triggers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Give a callback function to all of our stimuli for when the stimulus ends.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Stimuli need a <cite>set_trigger</cite> method.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>trig_fn</strong> (<em>callable</em>) – A function to be given to stimuli via <cite>set_trigger</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.stim.managers.Stim_Manager.make_punishment">
+<code class="descname">make_punishment</code><span class="sig-paren">(</span><em>type</em>, <em>duration</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Stim_Manager.make_punishment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.make_punishment" title="Permalink to this definition">¶</a></dt>
+<dd><div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Not Implemented</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>type</strong> – </li>
+<li><strong>duration</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.stim.managers.Stim_Manager.play_punishment">
+<code class="descname">play_punishment</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Stim_Manager.play_punishment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.play_punishment" title="Permalink to this definition">¶</a></dt>
+<dd><div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Not Implemented</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.stim.managers.Stim_Manager.next_stim">
+<code class="descname">next_stim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Stim_Manager.next_stim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.next_stim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute and return the next stimulus</p>
+<p>If we are doing correction trials, compute that.</p>
+<p>Same thing with bias correction.</p>
+<p>Otherwise, randomly select a stimulus to present.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(‘L’/’R’ Target, ‘L’/’R’ distractor, Stimulus to present)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.stim.managers.Stim_Manager.compute_correction">
+<code class="descname">compute_correction</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Stim_Manager.compute_correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.compute_correction" title="Permalink to this definition">¶</a></dt>
+<dd><p>If <cite>self.correction</cite> is true, compute correction trial logic during
+<cite>next_stim</cite>.</p>
+<ul class="simple">
+<li>If the last trial was a correction trial and the response to it wasn’t correct, return True</li>
+<li>If the last trial was a correction trial and the response was correct, return False</li>
+<li>If the last trial as not a correction trial, but a randomly generated float is less than <cite>correction_pct</cite>, return True.</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">whether this trial should be a correction trial.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.stim.managers.Stim_Manager.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>response</em>, <em>correct</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Stim_Manager.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>At the end of a trial, update the status of our internal variables
+with the outcome of the trial.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>response</strong> (<em>'L'</em><em>, </em><em>'R'</em>) – How the subject responded</li>
+<li><strong>correct</strong> (<em>0</em><em>, </em><em>1</em>) – Whether the response was correct.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.stim.managers.Stim_Manager.end">
+<code class="descname">end</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Stim_Manager.end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>End all of our stim. Stim should have an <cite>.end()</cite> method of their own</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="autopilot.stim.managers.Proportional">
+<em class="property">class </em><code class="descclassname">autopilot.stim.managers.</code><code class="descname">Proportional</code><span class="sig-paren">(</span><em>stim</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Proportional"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.stim.managers.Stim_Manager</span></code></a></p>
+<p>Present groups of stimuli with a particular frequency.</p>
+<p>Frequencies do not need to add up to 1, groups will be selected with the frequency
+(frequency)/(sum(frequencies)).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>stim</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>Dictionary with the structure:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;manager&#39;</span><span class="p">:</span> <span class="s1">&#39;proportional&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;sounds&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;groups&#39;</span><span class="p">:</span> <span class="p">(</span>
+     <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;group_name&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;frequency&#39;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+      <span class="s1">&#39;sounds&#39;</span><span class="p">:{</span>
+          <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="n">Tone1_params</span><span class="p">},</span> <span class="p">{</span><span class="n">Tone2_params</span><span class="p">}</span><span class="o">...</span><span class="p">],</span>
+          <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="n">Tone3_params</span><span class="p">},</span> <span class="p">{</span><span class="n">Tone4_params</span><span class="p">}</span><span class="o">...</span><span class="p">]</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;second_group&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;frequency&#39;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+      <span class="s1">&#39;sounds&#39;</span><span class="p">:{</span>
+          <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="n">Tone1_params</span><span class="p">},</span> <span class="p">{</span><span class="n">Tone2_params</span><span class="p">}</span><span class="o">...</span><span class="p">],</span>
+          <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="n">Tone3_params</span><span class="p">},</span> <span class="p">{</span><span class="n">Tone4_params</span><span class="p">}</span><span class="o">...</span><span class="p">]</span>
+      <span class="p">}</span>
+    <span class="p">})</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>stimuli</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary of stimuli organized into groups</li>
+<li><strong>groups</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary mapping group names to frequencies</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Proportional.init_sounds" title="autopilot.stim.managers.Proportional.init_sounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_sounds</span></code></a>(sound_stim)</td>
+<td>Instantiate sound objects similarly to <a class="reference internal" href="#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a>, just organizes them into groups.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Proportional.next_stim" title="autopilot.stim.managers.Proportional.next_stim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">next_stim</span></code></a>()</td>
+<td>Compute and return the next stimulus</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Proportional.set_triggers" title="autopilot.stim.managers.Proportional.set_triggers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_triggers</span></code></a>(trig_fn)</td>
+<td>Give a callback function to all of our stimuli for when the stimulus ends.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Proportional.store_groups" title="autopilot.stim.managers.Proportional.store_groups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_groups</span></code></a>(stim)</td>
+<td>store groups and frequencies</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="autopilot.stim.managers.Proportional.init_sounds">
+<code class="descname">init_sounds</code><span class="sig-paren">(</span><em>sound_stim</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Proportional.init_sounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional.init_sounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiate sound objects similarly to <a class="reference internal" href="#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a>, just organizes them into groups.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sound_dict</strong> (<em>tuple</em><em>, </em><em>list</em>) – <dl class="docutils">
+<dt>an iterator like::</dt>
+<dd><dl class="first docutils">
+<dt>(</dt>
+<dd><dl class="first last docutils">
+<dt>{‘name’:’group_name’,</dt>
+<dd>’frequency’: 0.2,
+‘sounds’: {<blockquote class="last">
+<div><blockquote>
+<div>’L’: [{Tone1_params}, {Tone2_params}…],
+‘R’: [{Tone3_params}, {Tone4_params}…]</div></blockquote>
+<p>}</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>},
+{‘name’:’second_group’,</p>
+<blockquote>
+<div>’frequency’: 0.8,
+‘sounds’:{<blockquote>
+<div>’L’: [{Tone1_params}, {Tone2_params}…],
+‘R’: [{Tone3_params}, {Tone4_params}…]</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p class="last">})</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.stim.managers.Proportional.store_groups">
+<code class="descname">store_groups</code><span class="sig-paren">(</span><em>stim</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Proportional.store_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional.store_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>store groups and frequencies</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.stim.managers.Proportional.set_triggers">
+<code class="descname">set_triggers</code><span class="sig-paren">(</span><em>trig_fn</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Proportional.set_triggers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional.set_triggers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Give a callback function to all of our stimuli for when the stimulus ends.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Stimuli need a <cite>set_trigger</cite> method.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>trig_fn</strong> (<em>callable</em>) – A function to be given to stimuli via <cite>set_trigger</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.stim.managers.Proportional.next_stim">
+<code class="descname">next_stim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Proportional.next_stim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional.next_stim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute and return the next stimulus</p>
+<p>If we are doing correction trials, compute that.</p>
+<p>Same thing with bias correction.</p>
+<p>Otherwise, randomly select a stimulus to present, weighted by its group frequency.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(‘L’/’R’ Target, ‘L’/’R’ distractor, Stimulus to present)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="autopilot.stim.managers.Bias_Correction">
+<em class="property">class </em><code class="descclassname">autopilot.stim.managers.</code><code class="descname">Bias_Correction</code><span class="sig-paren">(</span><em>mode='thresholded_linear'</em>, <em>thresh=0.2</em>, <em>window=100</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Bias_Correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Bias_Correction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Basic Bias correction module. Modifies the threshold of random stimulus
+choice based on history of biased responses.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first simple">
+<li><strong>responses</strong> (<a class="reference external" href="https://docs.python.org/2/library/collections.html#collections.deque" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.deque</span></code></a>) – History of prior responses</li>
+<li><strong>targets</strong> (<a class="reference external" href="https://docs.python.org/2/library/collections.html#collections.deque" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.deque</span></code></a>) – History of prior targets.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mode</strong> – <p>One of the following:</p>
+<ul>
+<li><dl class="first docutils">
+<dt><cite>’thresholded linear’</cite> <span class="classifier-delimiter">:</span> <span class="classifier">above some threshold, do linear bias correction</span></dt>
+<dd>eg. if response rate 65% left, make correct be right 65% of the time</dd>
+</dl>
+</li>
+</ul>
+</li>
+<li><strong>thresh</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – threshold above chance, ie. 0.2 means has to be 70% biased in window</li>
+<li><strong>window</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – number of trials to calculate bias over</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Bias_Correction.next_bias" title="autopilot.stim.managers.Bias_Correction.next_bias"><code class="xref py py-obj docutils literal notranslate"><span class="pre">next_bias</span></code></a>()</td>
+<td>Compute the next bias depending on <cite>self.mode</cite></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Bias_Correction.thresholded_linear" title="autopilot.stim.managers.Bias_Correction.thresholded_linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thresholded_linear</span></code></a>()</td>
+<td>If we are above the threshold, linearly correct the rate of presentation to favor the rarely responded side.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Bias_Correction.update" title="autopilot.stim.managers.Bias_Correction.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(response,&nbsp;target)</td>
+<td>Store some new response and target values</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="autopilot.stim.managers.Bias_Correction.next_bias">
+<code class="descname">next_bias</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Bias_Correction.next_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Bias_Correction.next_bias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the next bias depending on <cite>self.mode</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Some threshold <a class="reference internal" href="#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a> uses to decide left vs right.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.stim.managers.Bias_Correction.thresholded_linear">
+<code class="descname">thresholded_linear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Bias_Correction.thresholded_linear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Bias_Correction.thresholded_linear" title="Permalink to this definition">¶</a></dt>
+<dd><p>If we are above the threshold, linearly correct the rate of
+presentation to favor the rarely responded side.</p>
+<p>eg. if response rate 65% left, make correct be right 65% of the time</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">0.5-bias, where bias is the difference between the mean response and mean target.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.stim.managers.Bias_Correction.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>response</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Bias_Correction.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Bias_Correction.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Store some new response and target values</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>response</strong> (<em>'R'</em><em>, </em><em>'L'</em>) – Which side the subject responded to</li>
+<li><strong>target</strong> (<em>'R'</em><em>, </em><em>'L'</em>) – The correct side.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Jonny Saunders
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

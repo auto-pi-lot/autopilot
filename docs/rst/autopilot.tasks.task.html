@@ -1,0 +1,540 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>autopilot.tasks.task module &mdash; Autopilot 0.2 documentation</title>
+  
+
+  
+  
+  
+  
+    <link rel="canonical" href="docs.auto-pi-lot.comrst/autopilot.tasks.task.html"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/autopilot_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+
+    <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
+
+
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Autopilot
+          
+
+          
+            
+            <img src="../_static/autopilot_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide.installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../guide.installation.pilot.html">Setup a Pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.pilot.html#raspbian-performance-improvements">Raspbian Performance Improvements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.pilot.html#audio-setup">Audio Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.pilot.html#video-setup">Video Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.pilot.html#optional-installation-steps">Optional Installation Steps</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide.training.html">Training a Subject</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide.hardware.html">Writing a Hardware Class</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../autopilot.core.html">Core Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.core.gui.html">gui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.core.hardware.html">hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.core.networking.html">networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.core.pilot.html">pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.core.subject.html">mouse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.core.terminal.html">terminal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.core.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.tasks.free_water.html">free_water</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.tasks.graduation.html">graduation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.tasks.nafc.html">nafc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.tasks.task.html">task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../autopilot.stim.html">Stimuli</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.stim.managers.html">managers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.stim.sound.html">sound</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autopilot.stim.sound.jackclient.html">jackclient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autopilot.stim.sound.pyoserver.html">pyoserver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autopilot.stim.sound.sounds.html">sounds</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../autopilot.viz.html">Visualization Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../autopilot.setup.html">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.setup.setup_pilot.html">setup_pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.setup.setup_scale.html">setup_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.setup.setup_terminal.html">setup_terminal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../autopilot.prefs.html">Prefs</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">To-Do</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Autopilot</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>autopilot.tasks.task module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/rst/autopilot.tasks.task.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-autopilot.tasks.task">
+<span id="autopilot-tasks-task-module"></span><h1>autopilot.tasks.task module<a class="headerlink" href="#module-autopilot.tasks.task" title="Permalink to this headline">¶</a></h1>
+<p><strong>Classes</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Task</span></code></a>()</td>
+<td>Generic Task metaclass</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="autopilot.tasks.task.Task">
+<em class="property">class </em><code class="descclassname">autopilot.tasks.task.</code><code class="descname">Task</code><a class="reference internal" href="../_modules/autopilot/tasks/task.html#Task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.task.Task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Generic Task metaclass</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PARAMS" title="autopilot.tasks.nafc.Nafc.PARAMS"><strong>PARAMS</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/collections.html#collections.OrderedDict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.OrderedDict</span></code></a>) – <p>Params to define task, like:</p>
+<p>PARAMS = odict()
+PARAMS[‘reward’]         = {‘tag’:’Reward Duration (ms)’,</p>
+<blockquote>
+<div>’type’:’int’}</div></blockquote>
+<dl class="docutils">
+<dt>PARAMS[‘req_reward’]     = {‘tag’:’Request Rewards’,</dt>
+<dd>’type’:’check’}</dd>
+</dl>
+</li>
+<li><a class="reference internal" href="#autopilot.tasks.task.Task.HARDWARE" title="autopilot.tasks.task.Task.HARDWARE"><strong>HARDWARE</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>dict for necessary hardware, like:</p>
+<dl class="docutils">
+<dt>HARDWARE = {</dt>
+<dd><dl class="first docutils">
+<dt>‘POKES’:{</dt>
+<dd>‘L’: hardware.Beambreak, …</dd>
+</dl>
+<p>},
+‘PORTS’:{</p>
+<blockquote>
+<div>’L’: hardware.Solenoid, …</div></blockquote>
+<p class="last">}</p>
+</dd>
+</dl>
+<p>}</p>
+</li>
+<li><a class="reference internal" href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PLOT" title="autopilot.tasks.nafc.Nafc.PLOT"><strong>PLOT</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>Dict of plotting parameters, like:</p>
+<dl class="docutils">
+<dt>PLOT = {</dt>
+<dd><dl class="first docutils">
+<dt>‘data’: {</dt>
+<dd>‘target’   : ‘point’,
+‘response’ : ‘segment’,
+‘correct’  : ‘rollmean’</dd>
+</dl>
+<p class="last">},
+‘chance_bar’  : True, # Draw a red bar at 50%
+‘roll_window’ : 50 # number of trials to roll window over</p>
+</dd>
+</dl>
+<p>}</p>
+</li>
+<li><strong>Trial_Data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">tables.IsDescription</span></code>) – <p>Data table description, like:</p>
+<dl class="docutils">
+<dt>class TrialData(tables.IsDescription):</dt>
+<dd>trial_num = tables.Int32Col()
+target = tables.StringCol(1)
+response = tables.StringCol(1)
+correct = tables.Int32Col()
+correction = tables.Int32Col()
+RQ_timestamp = tables.StringCol(26)
+DC_timestamp = tables.StringCol(26)
+bailed = tables.Int32Col()</dd>
+</dl>
+</li>
+<li><a class="reference internal" href="#autopilot.tasks.task.Task.STAGE_NAMES" title="autopilot.tasks.task.Task.STAGE_NAMES"><strong>STAGE_NAMES</strong></a> (<em>list</em>) – List of stage method names</li>
+<li><a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot.stage_block" title="autopilot.core.pilot.Pilot.stage_block"><strong>stage_block</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Signal when task stages complete.</li>
+<li><strong>punish_stim</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Do a punishment stimulus</li>
+<li><strong>stages</strong> (<em>iterator</em>) – Some generator or iterator that continuously returns the next stage method of a trial</li>
+<li><strong>triggers</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Some mapping of some pin to callback methods</li>
+<li><strong>pins</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Dict to store references to hardware</li>
+<li><strong>pin_id</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Reverse dictionary, pin numbers back to pin letters.</li>
+<li><strong>punish_block</strong> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Event to mark when punishment is occuring</li>
+<li><a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.logger" title="autopilot.core.networking.Net_Node.logger"><strong>logger</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Logger" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a>) – gets the ‘main’ logger for now.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.task.Task.HARDWARE" title="autopilot.tasks.task.Task.HARDWARE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HARDWARE</span></code></a></td>
+<td>dict() -&gt; new empty dictionary</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.task.Task.PARAMS" title="autopilot.tasks.task.Task.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
+<td>Dictionary that remembers insertion order</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.task.Task.PLOT" title="autopilot.tasks.task.Task.PLOT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLOT</span></code></a></td>
+<td>dict() -&gt; new empty dictionary</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.task.Task.STAGE_NAMES" title="autopilot.tasks.task.Task.STAGE_NAMES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">STAGE_NAMES</span></code></a></td>
+<td>list() -&gt; new empty list</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.task.Task.end" title="autopilot.tasks.task.Task.end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end</span></code></a>()</td>
+<td>Release all hardware objects</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.task.Task.flash_leds" title="autopilot.tasks.task.Task.flash_leds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flash_leds</span></code></a>()</td>
+<td>flash lights for punish_dir</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.task.Task.handle_trigger" title="autopilot.tasks.task.Task.handle_trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_trigger</span></code></a>(pin,&nbsp;level,&nbsp;tick)</td>
+<td>All GPIO triggers call this function with the pin number, level (high, low), and ticks since booting pigpio.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.task.Task.init_hardware" title="autopilot.tasks.task.Task.init_hardware"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_hardware</span></code></a>()</td>
+<td>Use the HARDWARE dict that specifies what we need to run the task</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.task.Task.set_leds" title="autopilot.tasks.task.Task.set_leds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_leds</span></code></a>([color_dict])</td>
+<td>Set the color of all LEDs at once.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.task.Task.set_reward" title="autopilot.tasks.task.Task.set_reward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_reward</span></code></a>([vol,&nbsp;duration,&nbsp;port])</td>
+<td>Set the reward value for each of the ‘PORTS’.</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="autopilot.tasks.task.Task.PARAMS">
+<code class="descname">PARAMS</code><em class="property"> = {}</em><a class="headerlink" href="#autopilot.tasks.task.Task.PARAMS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.tasks.task.Task.HARDWARE">
+<code class="descname">HARDWARE</code><em class="property"> = {}</em><a class="headerlink" href="#autopilot.tasks.task.Task.HARDWARE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.tasks.task.Task.STAGE_NAMES">
+<code class="descname">STAGE_NAMES</code><em class="property"> = []</em><a class="headerlink" href="#autopilot.tasks.task.Task.STAGE_NAMES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.tasks.task.Task.PLOT">
+<code class="descname">PLOT</code><em class="property"> = {}</em><a class="headerlink" href="#autopilot.tasks.task.Task.PLOT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.tasks.task.Task.TrialData">
+<code class="descname">TrialData</code><em class="property"> = None</em><a class="headerlink" href="#autopilot.tasks.task.Task.TrialData" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="autopilot.tasks.task.Task.init_hardware">
+<code class="descname">init_hardware</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/tasks/task.html#Task.init_hardware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.task.Task.init_hardware" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the HARDWARE dict that specifies what we need to run the task
+alongside the PINS subdict in <code class="xref py py-mod docutils literal notranslate"><span class="pre">prefs</span></code> to tell us how
+they’re plugged in to the pi</p>
+<p>Instantiate the hardware, assign it <a class="reference internal" href="#autopilot.tasks.task.Task.handle_trigger" title="autopilot.tasks.task.Task.handle_trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Task.handle_trigger()</span></code></a>
+as a callback if it is a trigger.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.tasks.task.Task.set_reward">
+<code class="descname">set_reward</code><span class="sig-paren">(</span><em>vol=None</em>, <em>duration=None</em>, <em>port=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/tasks/task.html#Task.set_reward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.task.Task.set_reward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the reward value for each of the ‘PORTS’.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vol</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Volume of reward in uL</li>
+<li><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Duration to open port in ms</li>
+<li><strong>port</strong> (<a class="reference external" href="https://docs.python.org/2/library/constants.html#None" title="(in Python v2.7)"><em>None</em></a><em>, </em><em>Port_ID</em>) – If <cite>None</cite>, set everything in ‘PORTS’, otherwise
+only set <cite>port</cite></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.tasks.task.Task.handle_trigger">
+<code class="descname">handle_trigger</code><span class="sig-paren">(</span><em>pin</em>, <em>level</em>, <em>tick</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/tasks/task.html#Task.handle_trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.task.Task.handle_trigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>All GPIO triggers call this function with the pin number, level (high, low),
+and ticks since booting pigpio.</p>
+<p>Calls any trigger assigned to the pin in <cite>self.triggers</cite> ,
+unless during punishment (returns).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pin</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – BCM Pin number</li>
+<li><strong>level</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – True, False high/low</li>
+<li><strong>tick</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – ticks since booting pigpio</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.tasks.task.Task.set_leds">
+<code class="descname">set_leds</code><span class="sig-paren">(</span><em>color_dict=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/tasks/task.html#Task.set_leds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.task.Task.set_leds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the color of all LEDs at once.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>color_dict</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>If None, turn LEDs off, otherwise like:</p>
+<p>{‘pin’: [R,G,B],
+‘pin2: [R,G,B]}</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.tasks.task.Task.flash_leds">
+<code class="descname">flash_leds</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/tasks/task.html#Task.flash_leds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.task.Task.flash_leds" title="Permalink to this definition">¶</a></dt>
+<dd><p>flash lights for punish_dir</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.tasks.task.Task.end">
+<code class="descname">end</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/tasks/task.html#Task.end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.task.Task.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Release all hardware objects</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Jonny Saunders
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

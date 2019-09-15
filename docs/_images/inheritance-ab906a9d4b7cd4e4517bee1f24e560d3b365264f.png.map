@@ -1,0 +1,5 @@
+<map id="inheritance771045dbb5" name="inheritance771045dbb5">
+<area shape="rect" id="node1" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction" target="_top" title="Basic Bias correction module. Modifies the threshold of random stimulus" alt="" coords="5,53,122,77"/>
+<area shape="rect" id="node2" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Proportional" target="_top" title="Present groups of stimuli with a particular frequency." alt="" coords="170,5,263,29"/>
+<area shape="rect" id="node3" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager" target="_top" title="Yield sounds according to some set of rules." alt="" coords="9,5,117,29"/>
+</map>

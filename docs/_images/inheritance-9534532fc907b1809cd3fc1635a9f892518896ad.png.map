@@ -1,0 +1,4 @@
+<map id="inheritance87ecda883b" name="inheritance87ecda883b">
+<area shape="rect" id="node1" href="api/autopilot.tasks.free_water.Free_Water.html#autopilot.tasks.free_water.Free_Water" target="_top" title="Randomly light up one of the ports, then dispense water when the subject pokes there" alt="" coords="125,5,217,29"/>
+<area shape="rect" id="node2" href="api/autopilot.tasks.task.Task.html#autopilot.tasks.task.Task" target="_top" title="Generic Task metaclass" alt="" coords="5,5,77,29"/>
+</map>

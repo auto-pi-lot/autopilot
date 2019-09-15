@@ -33,7 +33,7 @@ def html_page_context(app, pagename, templatename, context, doctree):
        only prune and collapse.
     """
     rendered_toc = get_rendered_toctree(app.builder, pagename)
-    pdb.set_trace()
+
     context['toc'] = rendered_toc
     context['display_toc'] = True  # force toctree to display
 
@@ -76,6 +76,7 @@ def build_full_toctree(builder, docname, prune, collapse):
                                       prune=prune,
                                       includehidden=True,
                                       )
+        pdb.set_trace()
         if toctree is not None:
             toctrees.append(toctree)
 

@@ -1,0 +1,23 @@
+Proportional
+============
+
+.. currentmodule:: autopilot.stim.managers
+
+.. autoclass:: Proportional
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Proportional.init_sounds
+      ~Proportional.next_stim
+      ~Proportional.set_triggers
+      ~Proportional.store_groups
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: init_sounds
+   .. automethod:: next_stim
+   .. automethod:: set_triggers
+   .. automethod:: store_groups

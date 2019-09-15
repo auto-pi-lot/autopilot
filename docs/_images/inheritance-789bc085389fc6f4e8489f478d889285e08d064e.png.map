@@ -1,0 +1,17 @@
+<map id="inheritance0106fe31cf" name="inheritance0106fe31cf">
+<area shape="rect" id="node1" href="rst/rpilot.core.gui.html#autopilot.core.gui.Autopilot_Style" target="_top" title="Autopilot_Style" alt="" coords="538,272,600,285"/>
+<area shape="rect" id="node3" href="rst/rpilot.core.gui.html#autopilot.core.gui.Bandwidth_Test" target="_top" title="Test the limits of the rate of messaging from the connected Pilots." alt="" coords="335,3,399,16"/>
+<area shape="rect" id="node5" href="rst/rpilot.core.gui.html#autopilot.core.gui.Calibrate_Water" target="_top" title="A window to calibrate the volume of water dispensed per ms." alt="" coords="334,30,400,43"/>
+<area shape="rect" id="node11" href="rst/rpilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard" target="_top" title="A popup that prompts you to define variables for a new :class:`.subject.Subject` object" alt="" coords="325,57,409,70"/>
+<area shape="rect" id="node17" href="rst/rpilot.core.gui.html#autopilot.core.gui.Protocol_Wizard" target="_top" title="A dialog window to create a new protocol." alt="" coords="334,84,400,97"/>
+<area shape="rect" id="node30" href="rst/rpilot.core.gui.html#autopilot.core.gui.Reassign" target="_top" title="A dialog that lets subjects be batch reassigned to new protocols or steps." alt="" coords="346,110,389,124"/>
+<area shape="rect" id="node6" href="rst/rpilot.core.gui.html#autopilot.core.gui.Control_Panel" target="_top" title="A :class:`QtGui.QWidget` that contains the controls for all pilots." alt="" coords="231,84,290,97"/>
+<area shape="rect" id="node10" href="rst/rpilot.core.gui.html#autopilot.core.gui.Graduation_Widget" target="_top" title="A widget used in :class:`.Protocol_Wizard` to define graduation parameters." alt="" coords="222,110,299,124"/>
+<area shape="rect" id="node15" href="rst/rpilot.core.gui.html#autopilot.core.gui.Pilot_Panel" target="_top" title="A little panel with" alt="" coords="236,137,285,151"/>
+<area shape="rect" id="node16" href="rst/rpilot.core.gui.html#autopilot.core.gui.Pilot_Ports" target="_top" title="Each pilot&#39;s ports and buttons to control repeated release." alt="" coords="237,164,285,178"/>
+<area shape="rect" id="node31" href="rst/rpilot.core.gui.html#autopilot.core.gui.Sound_Widget" target="_top" title="A widget that allows sounds to be parameterized." alt="" coords="230,245,291,258"/>
+<area shape="rect" id="node8" href="rst/rpilot.core.gui.html#autopilot.core.gui.Drag_List" target="_top" title="A :class:`QtGui.QListWidget` that is capable of having files dragged &amp; dropped." alt="" coords="717,178,761,191"/>
+<area shape="rect" id="node32" href="rst/rpilot.core.gui.html#autopilot.core.gui.Subject_List" target="_top" title="A trivial modification of :class:`~.QtGui.QListWidget` that updates" alt="" coords="712,204,765,218"/>
+<area shape="rect" id="node13" href="rst/rpilot.core.gui.html#autopilot.core.gui.Pilot_Button" target="_top" title="Pilot_Button" alt="" coords="447,191,500,204"/>
+<area shape="rect" id="node33" href="rst/rpilot.core.gui.html#autopilot.core.gui.Weights" target="_top" title="A table for viewing and editing the most recent subject weights." alt="" coords="719,231,759,245"/>
+</map>

@@ -1,7 +1,7 @@
-rpilot
-======
+autopilot
+=========
 
 .. toctree::
    :maxdepth: 5
 
-   rpilot
+   autopilot

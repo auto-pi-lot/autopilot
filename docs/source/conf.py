@@ -21,7 +21,7 @@ from mock import MagicMock
 sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../..'))
 sys.setrecursionlimit(1500)
-import sphinx_bootstrap_theme
+#import sphinx_bootstrap_theme
 #import guzzle_sphinx_theme
 # import contextlib
 # import os
@@ -33,7 +33,7 @@ from sphinx.util import logging
 
 # -- Project information -----------------------------------------------------
 
-project = u'rpilot'
+project = u'Autopilot'
 copyright = u'2019, Jonny Saunders'
 author = u'Jonny Saunders'
 
@@ -49,6 +49,8 @@ release = u'0.2'
 #
 # needs_sphinx = '1.0'
 
+try_theme = "rtd"
+
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
@@ -63,11 +65,15 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
     'sphinx.ext.inheritance_diagram',
-    'sphinx.ext.autosummary',
-    'sphinx_automodapi.automodapi',
+    #'sphinx.ext.autosummary',
+    #'sphinx_automodapi.automodapi',
+    'autodocsumm',   # https://github.com/Chilipp/autodocsumm
     #'sphinxcontrib.fulltoc',
-    #'localext.fulltoc',
+    #'localext.fulltoc'
 ]
+
+if try_theme == 'rtd':
+    extensions.append('sphinx_rtd_theme')
 
 # Napoleon settings
 # see http://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html#configuration
@@ -85,7 +91,8 @@ autodoc_member_order = "bysource"
 
 autodoc_default_options = {
     'member-order': 'bysource',
-    'exclude-members': '__doc__'
+    'exclude-members': '__doc__',
+    'autosummary': True
 }
 
 #automodsumm_writereprocessed = True
@@ -129,48 +136,59 @@ pygments_style = None
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-#html_theme = 'sphinx_rtd_theme'
-html_theme = 'bootstrap'
+
+if try_theme == 'rtd':
+    html_theme = 'sphinx_rtd_theme'
+    html_style = 'css/autopilot_theme.css'
+    html_logo = 'autopilot_logo.svg'
+elif try_theme == 'bootstrap':
+    html_theme = 'bootstrap'
+    html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+else:
+    html_theme = 'bootstrap'
+    html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+
 #html_theme = "basicstrap"
 #
 # html_theme = "sphinx_rtd_theme"
 # html_theme_path = ["_themes", ]
-html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 #
 
-#
-# # Guzzle theme options (see theme.conf for more information)
-# html_theme_options = {
-#     # Set the name of the project to appear in the sidebar
-#     "project_nav_name": "RPilot",
-# }
+
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-html_theme_options = {
-    'navbar_title': "RPilot",
-    'navbar_site_name': 'RPilot Docs',
-    'globaltoc_depth': 3,
-    'navbar_class': "navbar navbar-inverse",
-    'bootswatch_theme': "readable",
-    'navbar_pagenav': True,
+if html_theme == 'sphinx_rtd_theme':
+    html_theme_options = {
+        'canonical_url': 'docs.auto-pi-lot.com',
+        'collapse_navigation': False # keep expanding toc
+    }
 
-}
+elif html_theme == 'bootstrap':
+    html_theme_options = {
+        'navbar_title': "Autopilot",
+        'navbar_site_name': 'Autopilot Docs',
+        'globaltoc_depth': 3,
+        'navbar_class': "navbar navbar-inverse",
+        'bootswatch_theme': "readable",
+        'navbar_pagenav': True,
+
+    }
 
 
 #
-html_sidebars = {
-    '**': ['localtoc.html', 'relations.html']
-}
+# html_sidebars = {
+#     '**': ['localtoc.html', 'relations.html']
+# }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-html_baseurl = 'http://docs.rpilot.net/'
+html_baseurl = 'http://docs.auto-pi-lot.com/'
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -186,7 +204,7 @@ html_baseurl = 'http://docs.rpilot.net/'
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'rpilotdoc'
+htmlhelp_basename = 'autopilotdoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -213,7 +231,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'rpilot.tex', u'rpilot Documentation',
+    (master_doc, 'autopilot.tex', u'Autopilot Documentation',
      u'Jonny Saunders', 'manual'),
 ]
 
@@ -223,7 +241,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'rpilot', u'rpilot Documentation',
+    (master_doc, 'autopilot', u'autopilot Documentation',
      [author], 1)
 ]
 
@@ -234,8 +252,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'rpilot', u'rpilot Documentation',
-     author, 'rpilot', 'One line description of project.',
+    (master_doc, 'autopilot', u'autopilot Documentation',
+     author, 'autopilot', 'One line description of project.',
      'Miscellaneous'),
 ]
 
@@ -411,11 +429,12 @@ def fix_html_links(app, exception):
 
 
 def setup(app):
-    app.add_stylesheet("restyle.css")
+    if try_theme == 'bootstrap':
+        app.add_stylesheet("restyle.css")
 
-    from rpilot import prefs
+    from autopilot import prefs
 
     prefs.add('AUDIOSERVER', 'docs')
     prefs.add('AGENT', 'docs')
 
-    app.connect('build-finished', fix_html_links)
+    #app.connect('build-finished', fix_html_links)

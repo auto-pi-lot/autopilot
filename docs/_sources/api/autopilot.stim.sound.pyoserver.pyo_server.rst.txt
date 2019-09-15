@@ -1,0 +1,6 @@
+pyo_server
+==========
+
+.. currentmodule:: autopilot.stim.sound.pyoserver
+
+.. autofunction:: pyo_server

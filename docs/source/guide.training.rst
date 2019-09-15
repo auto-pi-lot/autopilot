@@ -1,0 +1,30 @@
+.. _training:
+
+Training a Subject
+******************
+
+After you have set up a `Terminal <setup_terminal>`_ and a `Pilot <setup_pilot>`_, launch the Terminal.
+
+TODO:
+    Screenshot of terminal
+
+Connecting the Pilot
+--------------------
+
+If the ``TERMINAL_IP`` and port information is correctly set in the ``prefs.json`` file of the Pilot, it should automatically attempt to connect to the Terminal when it starts.
+It will send a ``handshake`` message that lets the Terminal know of its existence, its IP address, and its state.
+Once the Terminal receives its initial message, it will refresh, adding an entry to its ``pilot_db.json`` file and displaying a control panel for the pilot.
+
+TODO:
+    Screenshot of terminal with pilot
+
+Creating a Protocol
+-------------------
+
+Creating a Subject
+------------------
+
+Running the Task
+----------------
+
+close w/ a view of the data.

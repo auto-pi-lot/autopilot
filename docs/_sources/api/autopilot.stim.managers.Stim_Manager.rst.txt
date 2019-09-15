@@ -1,0 +1,35 @@
+Stim_Manager
+============
+
+.. currentmodule:: autopilot.stim.managers
+
+.. autoclass:: Stim_Manager
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Stim_Manager.compute_correction
+      ~Stim_Manager.do_bias
+      ~Stim_Manager.do_correction
+      ~Stim_Manager.end
+      ~Stim_Manager.init_sounds
+      ~Stim_Manager.make_punishment
+      ~Stim_Manager.next_stim
+      ~Stim_Manager.play_punishment
+      ~Stim_Manager.set_triggers
+      ~Stim_Manager.update
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: compute_correction
+   .. automethod:: do_bias
+   .. automethod:: do_correction
+   .. automethod:: end
+   .. automethod:: init_sounds
+   .. automethod:: make_punishment
+   .. automethod:: next_stim
+   .. automethod:: play_punishment
+   .. automethod:: set_triggers
+   .. automethod:: update

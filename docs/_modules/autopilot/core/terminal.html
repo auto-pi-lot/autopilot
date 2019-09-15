@@ -1,0 +1,1086 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>autopilot.core.terminal &mdash; Autopilot 0.2 documentation</title>
+  
+
+  
+  
+  
+  
+    <link rel="canonical" href="docs.auto-pi-lot.com_modules/autopilot/core/terminal.html"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/autopilot_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+
+    <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
+
+
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Autopilot
+          
+
+          
+            
+            <img src="../../../_static/autopilot_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.pilot.html">Setup a Pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#raspbian-performance-improvements">Raspbian Performance Improvements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#audio-setup">Audio Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#video-setup">Video Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#optional-installation-steps">Optional Installation Steps</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.training.html">Training a Subject</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.hardware.html">Writing a Hardware Class</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.core.html">Core Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.gui.html">gui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.hardware.html">hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.networking.html">networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.pilot.html">pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.subject.html">mouse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.terminal.html">terminal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.free_water.html">free_water</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.graduation.html">graduation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.nafc.html">nafc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.task.html">task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.stim.html">Stimuli</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.stim.managers.html">managers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.stim.sound.html">sound</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autopilot.stim.sound.jackclient.html">jackclient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autopilot.stim.sound.pyoserver.html">pyoserver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autopilot.stim.sound.sounds.html">sounds</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.viz.html">Visualization Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.setup.html">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.setup.setup_pilot.html">setup_pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.setup.setup_scale.html">setup_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.setup.setup_terminal.html">setup_terminal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.prefs.html">Prefs</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">To-Do</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Autopilot</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>autopilot.core.terminal</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for autopilot.core.terminal</h1><div class="highlight"><pre>
+<span></span><span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;0.2&#39;</span>
+<span class="n">__author__</span>  <span class="o">=</span> <span class="s1">&#39;Jonny Saunders &lt;JLSaunders987@gmail.com&gt;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))))</span>
+
+<span class="kn">from</span> <span class="nn">autopilot</span> <span class="kn">import</span> <span class="n">prefs</span>
+<span class="kn">from</span> <span class="nn">autopilot.core</span> <span class="kn">import</span> <span class="n">styles</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># Parse arguments - this should have been called with a .json prefs file passed</span>
+    <span class="c1"># We&#39;ll try to look in the default location first</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Run an RPilot Terminal&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-f&#39;</span><span class="p">,</span> <span class="s1">&#39;--prefs&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Location of .json prefs file (created during setup_terminal.py)&quot;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">prefs</span><span class="p">:</span>
+        <span class="n">prefs_file</span> <span class="o">=</span> <span class="s1">&#39;/usr/autopilot/prefs.json&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">prefs_file</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No Prefs file passed, and file not in default location&quot;</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;No prefs file passed, loaded from default location. Should pass explicitly with -p&#39;</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">prefs_file</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">prefs</span>
+
+    <span class="c1"># init prefs for module access</span>
+    <span class="n">prefs</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">prefs_file</span><span class="p">)</span>
+
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span> <span class="k">as</span> <span class="n">odict</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">PySide</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtSvg</span>
+<span class="kn">from</span> <span class="nn">subject</span> <span class="kn">import</span> <span class="n">Subject</span>
+<span class="kn">from</span> <span class="nn">plots</span> <span class="kn">import</span> <span class="n">Plot_Widget</span>
+<span class="kn">from</span> <span class="nn">networking</span> <span class="kn">import</span> <span class="n">Terminal_Station</span><span class="p">,</span> <span class="n">Net_Node</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">InvokeEvent</span><span class="p">,</span> <span class="n">Invoker</span>
+<span class="kn">from</span> <span class="nn">gui</span> <span class="kn">import</span> <span class="n">Control_Panel</span><span class="p">,</span> <span class="n">Protocol_Wizard</span><span class="p">,</span> <span class="n">Weights</span><span class="p">,</span> <span class="n">Reassign</span><span class="p">,</span> <span class="n">Calibrate_Water</span><span class="p">,</span> <span class="n">Bandwidth_Test</span>
+<span class="kn">import</span> <span class="nn">pdb</span>
+
+
+<span class="c1"># TODO: Be more complete about generating logs</span>
+<span class="c1"># TODO: Make exit graceful</span>
+<span class="c1"># TODO: Make &#39;edit subject&#39; button</span>
+<span class="c1"># TODO: Make experiment tags, save and populate?</span>
+
+<span class="c1"># http://zetcode.com/gui/pysidetutorial/layoutmanagement/</span>
+<span class="c1"># https://wiki.qt.io/PySide_Tutorials</span>
+
+
+<div class="viewcode-block" id="Terminal"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal">[docs]</a><span class="k">class</span> <span class="nc">Terminal</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QMainWindow</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Central host to a fleet of :class:`.Pilot` s and user-facing</span>
+<span class="sd">    :mod:`~.core.gui` objects.</span>
+
+<span class="sd">    Called as a module with the -f flag to give the location of a prefs file, eg::</span>
+
+<span class="sd">        python terminal.py -f prefs_file.json</span>
+
+<span class="sd">    if the -f flag is not passed, looks in the default location for prefs</span>
+<span class="sd">    (ie. `/usr/autopilot/prefs.json`)</span>
+
+<span class="sd">    **Listens used by the internal :class:`.Net_Node` **</span>
+
+<span class="sd">    +---------------+--------------------------------+--------------------------------------------------------+</span>
+<span class="sd">    | Key           | Method                         | Description                                            |</span>
+<span class="sd">    +===============+================================+========================================================+</span>
+<span class="sd">    | `&#39;STATE&#39;`     | :meth:`~.Terminal.l_state`     | A Pi has changed state                                 |</span>
+<span class="sd">    +---------------+--------------------------------+--------------------------------------------------------+</span>
+<span class="sd">    | `&#39;PING&#39;`      | :meth:`~.Terminal.l_ping`      |  Someone wants to know if we&#39;re alive                  |</span>
+<span class="sd">    +---------------+--------------------------------+--------------------------------------------------------+</span>
+<span class="sd">    | `&#39;DATA&#39;`      | :meth:`~.Terminal.l_data`      | Receiving data to store                                |</span>
+<span class="sd">    +---------------+--------------------------------+--------------------------------------------------------+</span>
+<span class="sd">    | `&#39;HANDSHAKE&#39;` | :meth:`~.Terminal.l_handshake` | Pilot first contact, telling us it&#39;s alive and its IP  |</span>
+<span class="sd">    +---------------+--------------------------------+--------------------------------------------------------+</span>
+
+<span class="sd">    ** Prefs needed by Terminal **</span>
+<span class="sd">    Typically set by :mod:`.setup.setup_terminal`</span>
+
+<span class="sd">    * **BASEDIR** - Base directory for all local autopilot data, typically `/usr/autopilot`</span>
+<span class="sd">    * **MSGPORT** - Port to use for our ROUTER listener, default `5560`</span>
+<span class="sd">    * **DATADIR** -  `os.path.join(params[&#39;BASEDIR&#39;], &#39;data&#39;)`</span>
+<span class="sd">    * **SOUNDDIR** - `os.path.join(params[&#39;BASEDIR&#39;], &#39;sounds&#39;)`</span>
+<span class="sd">    * **PROTOCOLDIR** - `os.path.join(params[&#39;BASEDIR&#39;], &#39;protocols&#39;)`</span>
+<span class="sd">    * **LOGDIR** - `os.path.join(params[&#39;BASEDIR&#39;], &#39;logs&#39;)`</span>
+<span class="sd">    * **REPODIR** - Path to RPilot git repo</span>
+<span class="sd">    * **PILOT_DB** - Location of `pilot_db.json` used to populate :attr:`~.Terminal.pilots`</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        node (:class:`~.networking.Net_Node`): Our Net_Node we use to communicate with our main networking object</span>
+<span class="sd">        networking (:class:`~.networking.Terminal_Station`): Our networking object to communicate with the outside world</span>
+<span class="sd">        subjects (dict): A dictionary mapping subject ID to :class:`~.subject.Subject` object.</span>
+<span class="sd">        pilots (dict): A dictionary mapping pilot ID to a list of its subjects, its IP, and any other pilot attributes.</span>
+<span class="sd">        layout (:class:`QtGui.QGridLayout`): Layout used to organize widgets</span>
+<span class="sd">        control_panel (:class:`~.gui.Control_Panel`): Control Panel to manage pilots and subjects</span>
+<span class="sd">        data_panel (:class:`~.plots.Plot_Widget`): Plots for each pilot and subject.</span>
+<span class="sd">        logo (:class:`QtGui.QLabel`): Label holding our beautiful logo ;X</span>
+<span class="sd">        logger (:class:`logging.Logger`): Used to log messages and network events.</span>
+<span class="sd">        log_handler (:class:`logging.FileHandler`): Handler for logging</span>
+<span class="sd">        log_formatter (:class:`logging.Formatter`): Formats log entries as::</span>
+
+<span class="sd">            &quot;%(asctime)s %(levelname)s : %(message)s&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; None</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Terminal</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># networking</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">networking</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heartbeat_dur</span> <span class="o">=</span> <span class="mi">10</span> <span class="c1"># check every n seconds whether our pis are around still</span>
+
+        <span class="c1"># data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Dict of our open subject objects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pilots</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c1"># gui</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widget</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_menu</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tool_menu</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">control_panel</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_panel</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logo</span> <span class="o">=</span> <span class="bp">None</span>
+
+
+        <span class="c1"># logging</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>        <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_handler</span>   <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_formatter</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c1"># Load pilots db as ordered dictionary</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">PILOT_DB</span><span class="p">)</span> <span class="k">as</span> <span class="n">pilot_file</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pilots</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">pilot_file</span><span class="p">,</span> <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">odict</span><span class="p">)</span>
+
+        <span class="c1"># Start Logging</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_logging</span><span class="p">()</span>
+
+        <span class="c1"># Listen dictionary - which methods to call for different messages</span>
+        <span class="c1"># Methods are spawned in new threads using handle_message</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">listens</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;STATE&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_state</span><span class="p">,</span> <span class="c1"># A Pi has changed state</span>
+            <span class="s1">&#39;PING&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_ping</span><span class="p">,</span>  <span class="c1"># Someone wants to know if we&#39;re alive</span>
+            <span class="s1">&#39;DATA&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_data</span><span class="p">,</span>
+            <span class="s1">&#39;HANDSHAKE&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_handshake</span> <span class="c1"># a pi is making first contact, telling us its IP</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Make invoker object to send GUI events back to the main thread</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">invoker</span> <span class="o">=</span> <span class="n">Invoker</span><span class="p">()</span>
+        <span class="n">prefs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;INVOKER&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">invoker</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initUI</span><span class="p">()</span>
+
+        <span class="c1"># Start Networking</span>
+        <span class="c1"># Networking is in two parts,</span>
+        <span class="c1"># &quot;internal&quot; networking for messages sent to and from the Terminal object itself</span>
+        <span class="c1"># &quot;external&quot; networking for messages to and from all the other components,</span>
+        <span class="c1"># The split is so the external networking can run in another process, do potentially time-consuming tasks</span>
+        <span class="c1"># like resending &amp; confirming message delivery without blocking or missing messages</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="n">Net_Node</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;_T&quot;</span><span class="p">,</span> <span class="n">upstream</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">prefs</span><span class="o">.</span><span class="n">MSGPORT</span><span class="p">,</span> <span class="n">listens</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">listens</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Net Node Initialized&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Start external communications in own process</span>
+        <span class="c1"># Has to be after init_network so it makes a new context</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">networking</span> <span class="o">=</span> <span class="n">Terminal_Station</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pilots</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">networking</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Station object Initialized&quot;</span><span class="p">)</span>
+
+        <span class="c1"># send an initial ping looking for our pilots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;INIT&#39;</span><span class="p">)</span>
+
+        <span class="c1"># start beating ur heart</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heartbeat_timer</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">heartbeat_dur</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">heartbeat</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heartbeat_timer</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heartbeat_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="c1">#self.heartbeat(once=True)</span>
+
+
+<div class="viewcode-block" id="Terminal.init_logging"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal.init_logging">[docs]</a>    <span class="k">def</span> <span class="nf">init_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start logging to a timestamped file in `prefs.LOGDIR`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">timestr</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%y%m</span><span class="si">%d</span><span class="s1">_%H%M%S&#39;</span><span class="p">)</span>
+        <span class="n">log_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">LOGDIR</span><span class="p">,</span> <span class="s1">&#39;Terminal_Log_{}.log&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timestr</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>        <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_handler</span>   <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">log_file</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2"> : </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_formatter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_handler</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Terminal Logging Initiated&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Terminal.initUI"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal.initUI">[docs]</a>    <span class="k">def</span> <span class="nf">initUI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes graphical elements of Terminal.</span>
+
+<span class="sd">        Including...</span>
+
+<span class="sd">        * Toolbar</span>
+<span class="sd">        * :class:`.gui.Control_Panel`</span>
+<span class="sd">        * :class:`.plots.Plot_Widget`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># set stylesheet for main window</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">TERMINAL</span><span class="p">)</span>
+
+        <span class="c1"># set central widget</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widget</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="p">)</span>
+
+
+
+        <span class="c1"># Start GUI</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGridLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s1">&#39;Terminal&#39;</span><span class="p">)</span>
+        <span class="c1">#self.menuBar().setFixedHeight(40)</span>
+
+        <span class="c1"># Main panel layout</span>
+        <span class="c1">#self.panel_layout.setContentsMargins(0,0,0,0)</span>
+
+        <span class="c1"># Init toolbar</span>
+        <span class="c1"># File menu</span>
+        <span class="c1"># make menu take up 1/10 of the screen</span>
+        <span class="n">winsize</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">desktop</span><span class="p">()</span><span class="o">.</span><span class="n">availableGeometry</span><span class="p">()</span>
+        <span class="n">bar_height</span> <span class="o">=</span> <span class="p">(</span><span class="n">winsize</span><span class="o">.</span><span class="n">height</span><span class="p">()</span><span class="o">/</span><span class="mi">25</span><span class="p">)</span><span class="o">+</span><span class="mi">5</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">menuBar</span><span class="p">()</span><span class="o">.</span><span class="n">setFixedHeight</span><span class="p">(</span><span class="n">bar_height</span><span class="p">)</span>
+        <span class="c1">#self.menuBar().setStyleSheet(&#39;QMenuBar:item {  }&#39;)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_menu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuBar</span><span class="p">()</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;&amp;File&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_menu</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;file&quot;</span><span class="p">)</span>
+        <span class="n">new_pilot_act</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;New &amp;Pilot&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">new_pilot</span><span class="p">)</span>
+        <span class="n">new_prot_act</span>  <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;New Pro&amp;tocol&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">new_protocol</span><span class="p">)</span>
+        <span class="c1">#batch_create_subjects = QtGui.QAction(&quot;Batch &amp;Create subjects&quot;, self, triggered=self.batch_subjects)</span>
+        <span class="c1"># TODO: Update pis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">new_pilot_act</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">new_prot_act</span><span class="p">)</span>
+        <span class="c1">#self.file_menu.addAction(batch_create_subjects)</span>
+
+        <span class="c1"># Tools menu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tool_menu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuBar</span><span class="p">()</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;&amp;Tools&quot;</span><span class="p">)</span>
+        <span class="n">subject_weights_act</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;View Subject &amp;Weights&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subject_weights</span><span class="p">)</span>
+        <span class="n">update_protocol_act</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Update Protocols&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">update_protocols</span><span class="p">)</span>
+        <span class="n">reassign_act</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Batch Reassign Protocols&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reassign_protocols</span><span class="p">)</span>
+        <span class="n">calibrate_act</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Calibrate &amp;Water Ports&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calibrate_ports</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tool_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">subject_weights_act</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tool_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">update_protocol_act</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tool_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">reassign_act</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tool_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">calibrate_act</span><span class="p">)</span>
+
+        <span class="c1"># Tests menu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tests_menu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuBar</span><span class="p">()</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;Test&amp;s&quot;</span><span class="p">)</span>
+        <span class="n">bandwidth_test_act</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Test Bandwidth&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">test_bandwidth</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tests_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">bandwidth_test_act</span><span class="p">)</span>
+
+
+        <span class="c1">## Init main panels and add to layout</span>
+        <span class="c1"># Control panel sits on the left, controls pilots &amp; subjects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">control_panel</span> <span class="o">=</span> <span class="n">Control_Panel</span><span class="p">(</span><span class="n">pilots</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pilots</span><span class="p">,</span>
+                                           <span class="n">subjects</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">,</span>
+                                           <span class="n">start_fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">toggle_start</span><span class="p">)</span>
+
+        <span class="c1"># Data panel sits on the right, plots stuff.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_panel</span> <span class="o">=</span> <span class="n">Plot_Widget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_panel</span><span class="o">.</span><span class="n">init_plots</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pilots</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+
+
+        <span class="c1"># Logo goes up top</span>
+        <span class="c1"># https://stackoverflow.com/questions/25671275/pyside-how-to-set-an-svg-icon-in-qtreewidgets-item-and-change-the-size-of-the</span>
+
+
+        <span class="n">pixmap_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">REPODIR</span><span class="p">),</span> <span class="s1">&#39;graphics&#39;</span><span class="p">,</span> <span class="s1">&#39;autopilot_logo_small.svg&#39;</span><span class="p">)</span>
+        <span class="c1">#svg_renderer = QtSvg.QSvgRenderer(pixmap_path)</span>
+        <span class="c1">#image = QtGui.QImage()</span>
+        <span class="c1">#self.logo = QtSvg.QSvgWidget()</span>
+
+
+        <span class="c1"># set size, preserving aspect ratio</span>
+        <span class="n">logo_height</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mf">44.0</span><span class="o">*</span><span class="p">((</span><span class="n">bar_height</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span><span class="o">/</span><span class="mf">44.0</span><span class="p">))</span>
+        <span class="n">logo_width</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">139</span><span class="o">*</span><span class="p">((</span><span class="n">bar_height</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span><span class="o">/</span><span class="mf">44.0</span><span class="p">))</span>
+
+        <span class="n">svg_renderer</span> <span class="o">=</span> <span class="n">QtSvg</span><span class="o">.</span><span class="n">QSvgRenderer</span><span class="p">(</span><span class="n">pixmap_path</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="p">(</span><span class="n">logo_width</span><span class="p">,</span> <span class="n">logo_height</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="o">.</span><span class="n">Format_ARGB32</span><span class="p">)</span>
+        <span class="c1"># Set the ARGB to 0 to prevent rendering artifacts</span>
+        <span class="n">image</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mh">0x00000000</span><span class="p">)</span>
+        <span class="n">svg_renderer</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPainter</span><span class="p">(</span><span class="n">image</span><span class="p">))</span>
+        <span class="n">pixmap</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="o">.</span><span class="n">fromImage</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logo</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logo</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span><span class="n">pixmap</span><span class="p">)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">menuBar</span><span class="p">()</span><span class="o">.</span><span class="n">setCornerWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logo</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">TopRightCorner</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menuBar</span><span class="p">()</span><span class="o">.</span><span class="n">adjustSize</span><span class="p">()</span>
+
+        <span class="c1">#self.logo.load(pixmap_path)</span>
+        <span class="c1"># Combine all in main layout</span>
+        <span class="c1">#self.layout.addWidget(self.logo, 0,0,1,2)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">control_panel</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_panel</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">setColumnStretch</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">setColumnStretch</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+        <span class="c1"># Set size of window to be fullscreen without maximization</span>
+        <span class="c1"># Until a better solution is found, if not set large enough, the pilot tabs will</span>
+        <span class="c1"># expand into infinity. See the Expandable_Tabs class</span>
+        <span class="c1">#pdb.set_trace()</span>
+        <span class="n">screensize</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">desktop</span><span class="p">()</span><span class="o">.</span><span class="n">screenGeometry</span><span class="p">()</span>
+        <span class="n">winsize</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">desktop</span><span class="p">()</span><span class="o">.</span><span class="n">availableGeometry</span><span class="p">()</span>
+
+        <span class="c1"># want to subtract bounding title box, our title bar, and logo height.</span>
+        <span class="c1"># our y offset will be the size of the bounding title box</span>
+
+        <span class="c1"># Then our tilebar</span>
+        <span class="c1"># multiply by three to get the inner (file, etc.) bar, the top bar (min, maximize, etc)</span>
+        <span class="c1"># and then the very top system tray bar in ubuntu</span>
+        <span class="c1">#titleBarHeight = self.style().pixelMetric(QtGui.QStyle.PM_TitleBarHeight,</span>
+        <span class="c1">#                                          QtGui.QStyleOptionTitleBar(), self) * 3</span>
+        <span class="n">title_bar_height</span> <span class="o">=</span> <span class="n">screensize</span><span class="o">.</span><span class="n">height</span><span class="p">()</span><span class="o">-</span><span class="n">winsize</span><span class="o">.</span><span class="n">height</span><span class="p">()</span>
+
+        <span class="c1">#titleBarHeight = bar_height*2</span>
+        <span class="c1"># finally our logo</span>
+        <span class="n">logo_height</span> <span class="o">=</span> <span class="n">bar_height</span>
+
+
+
+        <span class="n">winheight</span> <span class="o">=</span> <span class="n">winsize</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="o">-</span> <span class="n">title_bar_height</span> <span class="o">-</span> <span class="n">logo_height</span>  <span class="c1"># also subtract logo height</span>
+        <span class="n">winsize</span><span class="o">.</span><span class="n">setHeight</span><span class="p">(</span><span class="n">winheight</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_height</span> <span class="o">=</span> <span class="n">winheight</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="n">winsize</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">)</span>
+
+        <span class="c1"># Set heights on control panel and data panel</span>
+
+
+        <span class="c1"># move to primary display and show maximized</span>
+        <span class="n">primary_display</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">desktop</span><span class="p">()</span><span class="o">.</span><span class="n">availableGeometry</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">primary_display</span><span class="o">.</span><span class="n">left</span><span class="p">(),</span> <span class="n">primary_display</span><span class="o">.</span><span class="n">top</span><span class="p">())</span>
+        <span class="c1"># self.resize(primary_display.width(), primary_display.height())</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">control_panel</span><span class="o">.</span><span class="n">setMaximumHeight</span><span class="p">(</span><span class="n">winheight</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_panel</span><span class="o">.</span><span class="n">setMaximumHeight</span><span class="p">(</span><span class="n">winheight</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;UI Initialized&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Terminal.reset_ui"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal.reset_ui">[docs]</a>    <span class="k">def</span> <span class="nf">reset_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clear Layout and call :meth:`~.Terminal.initUI` again</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># type: () -&gt; None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGridLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initUI</span><span class="p">()</span></div>
+
+
+    <span class="c1">##########################3</span>
+    <span class="c1"># Listens &amp; inter-object methods</span>
+
+<div class="viewcode-block" id="Terminal.heartbeat"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal.heartbeat">[docs]</a>    <span class="k">def</span> <span class="nf">heartbeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">once</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;INIT&#39;</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;NOREPEAT&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">})</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">once</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">heartbeat_timer</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">heartbeat_dur</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">heartbeat</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">heartbeat_timer</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">heartbeat_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Terminal.toggle_start"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal.toggle_start">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">starting</span><span class="p">,</span> <span class="n">pilot</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Start or Stop running the currently selected subject&#39;s task. Sends a</span>
+<span class="sd">        message containing the task information to the concerned pilot.</span>
+
+<span class="sd">        Each :class:`Pilot_Panel` is given a lambda function that calls this</span>
+<span class="sd">        one with the arguments specified See :class:`Pilot_Button`, as it is</span>
+<span class="sd">        what calls this function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            starting (bool): Does this button press mean we are starting (True)</span>
+<span class="sd">                or stopping (False) the task?</span>
+<span class="sd">            pilot: Which Pilot is starting or stopping?</span>
+<span class="sd">            subject: Which Subject is currently selected?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># stopping is the enemy of starting so we put them in the same function to learn about each other</span>
+        <span class="k">if</span> <span class="n">starting</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="c1"># Get Weights</span>
+            <span class="n">start_weight</span><span class="p">,</span> <span class="n">ok</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QInputDialog</span><span class="o">.</span><span class="n">getDouble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Set Starting Weight&quot;</span><span class="p">,</span>
+                                                            <span class="s2">&quot;Starting Weight:&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ok</span><span class="p">:</span>
+                <span class="c1"># Ope&#39;nr up if she aint</span>
+                <span class="k">if</span> <span class="n">subject</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span> <span class="o">=</span> <span class="n">Subject</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span>
+
+                <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">prepare_run</span><span class="p">()</span>
+                <span class="n">task</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pilot</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">update_weights</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">start_weight</span><span class="p">))</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="nb">bytes</span><span class="p">(</span><span class="n">pilot</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;START&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
+                <span class="c1"># also let the plot know to start</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="nb">bytes</span><span class="p">(</span><span class="s2">&quot;P_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pilot</span><span class="p">)),</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;START&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># pressed cancel, don&#39;t start</span>
+                <span class="k">return</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Get Weights</span>
+            <span class="n">stop_weight</span><span class="p">,</span> <span class="n">ok</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QInputDialog</span><span class="o">.</span><span class="n">getDouble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Set Stopping Weight&quot;</span><span class="p">,</span>
+                                                           <span class="s2">&quot;Stopping Weight:&quot;</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">ok</span><span class="p">:</span>
+                <span class="c1"># Send message to pilot to stop running,</span>
+                <span class="c1"># it should initiate a coherence checking routine to make sure</span>
+                <span class="c1"># its data matches what the Terminal got,</span>
+                <span class="c1"># so the terminal will handle closing the subject object</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="nb">bytes</span><span class="p">(</span><span class="n">pilot</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;STOP&quot;</span><span class="p">)</span>
+                <span class="c1"># also let the plot know to start</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="nb">bytes</span><span class="p">(</span><span class="s2">&quot;P_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pilot</span><span class="p">)),</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;STOP&quot;</span><span class="p">)</span>
+                <span class="c1"># TODO: Start coherence checking ritual</span>
+                <span class="c1"># TODO: Auto-select the next subject in the list.</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">stop_run</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">update_weights</span><span class="p">(</span><span class="n">stop</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">stop_weight</span><span class="p">))</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># pressed cancel</span>
+                <span class="k">return</span></div>
+
+
+    <span class="c1">############################</span>
+    <span class="c1"># MESSAGE HANDLING METHODS</span>
+
+<div class="viewcode-block" id="Terminal.l_data"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal.l_data">[docs]</a>    <span class="k">def</span> <span class="nf">l_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A Pilot has sent us data.</span>
+
+<span class="sd">        `value` field of message should have `subject` and `pilot` added to dictionary for identification.</span>
+
+<span class="sd">        Any key in `value` that matches a column in the subject&#39;s trial data table will be saved.</span>
+
+<span class="sd">        If the subject graduates after receiving this piece of data, stop the current</span>
+<span class="sd">        task running on the Pilot and send the new one.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (dict): A dict of field-value pairs to save</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># A Pi has sent us data, let&#39;s save it huh?</span>
+        <span class="n">subject_name</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject_name</span><span class="p">]</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject_name</span><span class="p">]</span><span class="o">.</span><span class="n">did_graduate</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;STOP&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;graduation&#39;</span><span class="p">:</span><span class="bp">True</span><span class="p">})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject_name</span><span class="p">]</span><span class="o">.</span><span class="n">stop_run</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject_name</span><span class="p">]</span><span class="o">.</span><span class="n">graduate</span><span class="p">()</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject_name</span><span class="p">]</span><span class="o">.</span><span class="n">prepare_run</span><span class="p">()</span>
+            <span class="n">task</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;START&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">task</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Terminal.l_ping"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal.l_ping">[docs]</a>    <span class="k">def</span> <span class="nf">l_ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO:</span>
+<span class="sd">            Reminder to implement heartbeating.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Currently unused, as Terminal Net_Node stability hasn&#39;t been</span>
+<span class="sd">            a problem and no universal system of heartbeating has been</span>
+<span class="sd">            established (global stability has not been an issue).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: (unused)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Only our Station object should ever ping us, because</span>
+        <span class="c1"># we otherwise want it handling any pings on our behalf.</span>
+
+        <span class="c1"># self.send_message(&#39;ALIVE&#39;, value=b&#39;T&#39;)</span>
+        <span class="k">pass</span></div>
+
+
+
+<div class="viewcode-block" id="Terminal.l_state"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal.l_state">[docs]</a>    <span class="k">def</span> <span class="nf">l_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A Pilot has changed state, keep track of it.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (dict): dict containing `state` .</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: If we are stopping, we enter into a cohere state</span>
+        <span class="c1"># TODO: If we are stopped, close the subject object.</span>
+        <span class="c1"># TODO: Also tell the relevant dataview to clear</span>
+
+        <span class="c1"># update the pilot button</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pilots</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;state&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pilots</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pilots</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]][</span><span class="s1">&#39;state&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">control_panel</span><span class="o">.</span><span class="n">panels</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">button</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pilots</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]][</span><span class="s1">&#39;state&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">control_panel</span><span class="o">.</span><span class="n">panels</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">button</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pilots</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]][</span><span class="s1">&#39;state&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">]</span></div>
+
+            
+
+
+
+
+<div class="viewcode-block" id="Terminal.l_handshake"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal.l_handshake">[docs]</a>    <span class="k">def</span> <span class="nf">l_handshake</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pilot is sending its IP and state on startup.</span>
+
+<span class="sd">        If we haven&#39;t heard of this pilot before, make a new entry in :attr:`~.Terminal.pilots`</span>
+<span class="sd">        and :meth:`.gui.Control_Panel.update_db` .</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (dict): dict containing `ip` and `state`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pilots</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;ip&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pilots</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]][</span><span class="s1">&#39;ip&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;ip&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;state&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pilots</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]][</span><span class="s1">&#39;state&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">new_pilot</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">],</span> <span class="n">ip</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;ip&#39;</span><span class="p">])</span>
+
+        <span class="c1"># update the pilot button</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_panel</span><span class="o">.</span><span class="n">panels</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">control_panel</span><span class="o">.</span><span class="n">panels</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">button</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">])</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">control_panel</span><span class="o">.</span><span class="n">update_db</span><span class="p">()</span></div>
+
+    <span class="c1">#############################</span>
+    <span class="c1"># GUI &amp; etc. methods</span>
+
+<div class="viewcode-block" id="Terminal.new_pilot"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal.new_pilot">[docs]</a>    <span class="k">def</span> <span class="nf">new_pilot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make a new entry in :attr:`.Terminal.pilots` and make appropriate</span>
+<span class="sd">        GUI elements.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ip (str): Optional. if given, stored in db.</span>
+<span class="sd">            name (str): If None, prompted for a name, otherwise used for entry in pilot DB.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">name</span><span class="p">,</span> <span class="n">ok</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QInputDialog</span><span class="o">.</span><span class="n">getText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Pilot ID&quot;</span><span class="p">,</span> <span class="s2">&quot;Pilot ID:&quot;</span><span class="p">)</span>
+
+        <span class="c1"># make sure we won&#39;t overwrite ourself</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pilots</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="c1"># TODO: Pop a window confirming we want to overwrite</span>
+            <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">new_pilot</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:{</span><span class="s1">&#39;subjects&#39;</span><span class="p">:[],</span> <span class="s1">&#39;ip&#39;</span><span class="p">:</span><span class="n">ip</span><span class="p">}}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">control_panel</span><span class="o">.</span><span class="n">update_db</span><span class="p">(</span><span class="n">new</span><span class="o">=</span><span class="n">new_pilot</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reset_ui</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Idk maybe pop a dialog window but i don&#39;t really see why</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Terminal.new_protocol"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal.new_protocol">[docs]</a>    <span class="k">def</span> <span class="nf">new_protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Open a :class:`.gui.Protocol_Wizard` to create a new protocol.</span>
+
+<span class="sd">        Prompts for name of protocol, then saves in `prefs.PROTOCOLDIR`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_protocol_window</span> <span class="o">=</span> <span class="n">Protocol_Wizard</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_protocol_window</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_protocol_window</span><span class="o">.</span><span class="n">result</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_protocol_window</span><span class="o">.</span><span class="n">steps</span>
+
+            <span class="c1"># The values useful to the step functions are stored with a &#39;value&#39; key in the param_dict</span>
+            <span class="n">save_steps</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
+                <span class="n">param_values</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="s1">&#39;value&#39;</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="n">param_values</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s1">&#39;stim&#39;</span><span class="p">:</span>
+                        <span class="c1"># TODO: Super hacky - don&#39;t do this. Refactor params already.</span>
+                        <span class="n">param_values</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                        <span class="k">for</span> <span class="n">stimtype</span><span class="p">,</span> <span class="n">stim</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                            <span class="n">param_values</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">stimtype</span><span class="p">]</span> <span class="o">=</span> <span class="n">stim</span>
+                <span class="n">save_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param_values</span><span class="p">)</span>
+
+            <span class="c1"># Name the protocol</span>
+            <span class="n">name</span><span class="p">,</span> <span class="n">ok</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QInputDialog</span><span class="o">.</span><span class="n">getText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Name Protocol&quot;</span><span class="p">,</span> <span class="s2">&quot;Protocol Name:&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ok</span> <span class="ow">and</span> <span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="n">protocol_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">PROTOCOLDIR</span><span class="p">,</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;.json&#39;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">protocol_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pfile_open</span><span class="p">:</span>
+                    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">save_steps</span><span class="p">,</span> <span class="n">pfile_open</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">),</span> <span class="n">sort_keys</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">ok</span><span class="p">:</span>
+                <span class="n">placeholder_name</span> <span class="o">=</span> <span class="s1">&#39;protocol_created_{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
+                <span class="n">protocol_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">PROTOCOLDIR</span><span class="p">,</span> <span class="n">placeholder_name</span> <span class="o">+</span> <span class="s1">&#39;.json&#39;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">protocol_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pfile_open</span><span class="p">:</span>
+                    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">save_steps</span><span class="p">,</span> <span class="n">pfile_open</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">),</span> <span class="n">sort_keys</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Terminal.list_subjects"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal.list_subjects">[docs]</a>    <span class="k">def</span> <span class="nf">list_subjects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a list of all subject IDs</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: list of all subject IDs present in :attr:`.Terminal.pilots`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">subjects</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">pilot</span><span class="p">,</span> <span class="n">vals</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pilots</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">subjects</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="s1">&#39;subjects&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">subjects</span></div>
+
+<div class="viewcode-block" id="Terminal.subject_weights"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal.subject_weights">[docs]</a>    <span class="k">def</span> <span class="nf">subject_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets recent weights from all :attr:`~.Terminal.subjects` and</span>
+<span class="sd">        open a :class:`.gui.Weights` window to view or set weights.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">subjects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_subjects</span><span class="p">()</span>
+
+        <span class="c1"># open objects if not already</span>
+        <span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">subjects</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">subject</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span> <span class="o">=</span> <span class="n">Subject</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span>
+
+        <span class="c1"># for each subject, get weight</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">subjects</span><span class="p">:</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">get_weight</span><span class="p">(</span><span class="n">include_baseline</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">weight</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subject</span>
+            <span class="n">weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight_widget</span> <span class="o">=</span> <span class="n">Weights</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight_widget</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Terminal.update_protocols"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal.update_protocols">[docs]</a>    <span class="k">def</span> <span class="nf">update_protocols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If we change the protocol file, update the stored version in subject files</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#</span>
+        <span class="c1"># get list of protocol files</span>
+        <span class="n">protocols</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">PROTOCOLDIR</span><span class="p">)</span>
+        <span class="n">protocols</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">protocols</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">)]</span>
+
+
+        <span class="n">subjects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_subjects</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">subjects</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">subject</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span> <span class="o">=</span> <span class="n">Subject</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span>
+
+            <span class="n">protocol_bool</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">protocol_name</span> <span class="o">==</span> <span class="n">p</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">protocols</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">protocol_bool</span><span class="p">):</span>
+                <span class="n">which_prot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">protocol_bool</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">protocol</span> <span class="o">=</span> <span class="n">protocols</span><span class="p">[</span><span class="n">which_prot</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">assign_protocol</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">PROTOCOLDIR</span><span class="p">,</span> <span class="n">protocol</span><span class="p">),</span> <span class="n">step_n</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+
+        <span class="n">msgbox</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="p">()</span>
+        <span class="n">msgbox</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;Subject Protocols Updated&quot;</span><span class="p">)</span>
+        <span class="n">msgbox</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Terminal.reassign_protocols"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal.reassign_protocols">[docs]</a>    <span class="k">def</span> <span class="nf">reassign_protocols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Batch reassign protocols and steps.</span>
+
+<span class="sd">        Opens a :class:`.gui.Reassign` window after getting protocol data,</span>
+<span class="sd">        and applies any changes made in the window.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># get list of protocol files</span>
+        <span class="n">protocols</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">PROTOCOLDIR</span><span class="p">)</span>
+        <span class="n">protocols</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">p</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">protocols</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">)]</span>
+
+        <span class="c1"># get subjects and current protocols</span>
+        <span class="n">subjects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_subjects</span><span class="p">()</span>
+        <span class="n">subjects_protocols</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">subjects</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">subject</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span> <span class="o">=</span> <span class="n">Subject</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span>
+
+            <span class="n">subjects_protocols</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">protocol_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">step</span><span class="p">]</span>
+
+        <span class="n">reassign_window</span> <span class="o">=</span> <span class="n">Reassign</span><span class="p">(</span><span class="n">subjects_protocols</span><span class="p">,</span> <span class="n">protocols</span><span class="p">)</span>
+        <span class="n">reassign_window</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">reassign_window</span><span class="o">.</span><span class="n">result</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">subject_protocols</span> <span class="o">=</span> <span class="n">reassign_window</span><span class="o">.</span><span class="n">subjects</span>
+
+            <span class="k">for</span> <span class="n">subject</span><span class="p">,</span> <span class="n">protocol</span> <span class="ow">in</span> <span class="n">subject_protocols</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">step</span> <span class="o">=</span> <span class="n">protocol</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">protocol</span> <span class="o">=</span> <span class="n">protocol</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="c1"># since assign_protocol also changes the step, stash the step number here to tell if it&#39;s changed</span>
+                <span class="n">subject_orig_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">step</span>
+
+
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">protocol_name</span> <span class="o">!=</span> <span class="n">protocol</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Setting {} protocol from {} to {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">protocol_name</span><span class="p">,</span> <span class="n">protocol</span><span class="p">))</span>
+                    <span class="n">protocol_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">PROTOCOLDIR</span><span class="p">,</span> <span class="n">protocol</span> <span class="o">+</span> <span class="s1">&#39;.json&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">assign_protocol</span><span class="p">(</span><span class="n">protocol_file</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">subject_orig_step</span> <span class="o">!=</span> <span class="n">step</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Setting {} step from {} to {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">subject_orig_step</span><span class="p">,</span> <span class="n">step</span><span class="p">))</span>
+                    <span class="n">step_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">current</span><span class="p">[</span><span class="n">step</span><span class="p">][</span><span class="s1">&#39;step_name&#39;</span><span class="p">]</span>
+                    <span class="c1">#update history also flushes current - aka it also actually changes the step number</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span><span class="o">.</span><span class="n">update_history</span><span class="p">(</span><span class="s1">&#39;step&#39;</span><span class="p">,</span> <span class="n">step_name</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Terminal.calibrate_ports"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal.calibrate_ports">[docs]</a>    <span class="k">def</span> <span class="nf">calibrate_ports</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">calibrate_window</span> <span class="o">=</span> <span class="n">Calibrate_Water</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pilots</span><span class="p">)</span>
+        <span class="n">calibrate_window</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">calibrate_window</span><span class="o">.</span><span class="n">result</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">pilot</span><span class="p">,</span> <span class="n">p_widget</span> <span class="ow">in</span> <span class="n">calibrate_window</span><span class="o">.</span><span class="n">pilot_widgets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">p_results</span> <span class="o">=</span> <span class="n">p_widget</span><span class="o">.</span><span class="n">volumes</span>
+                <span class="c1"># p_results are [port][dur] = {params} so running the same duration will</span>
+                <span class="c1"># overwrite a previous run. unnest here so pi can keep a record</span>
+                <span class="n">unnested_results</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">port</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">p_results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">unnested_results</span><span class="p">[</span><span class="n">port</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="c1"># result is [dur] = {params}</span>
+                    <span class="k">for</span> <span class="n">dur</span><span class="p">,</span> <span class="n">inner_result</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">inner_result</span><span class="p">[</span><span class="s1">&#39;dur&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dur</span>
+                        <span class="n">unnested_results</span><span class="p">[</span><span class="n">port</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inner_result</span><span class="p">)</span>
+
+                <span class="c1"># send to pi</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="n">pilot</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;CALIBRATE_RESULT&quot;</span><span class="p">,</span>
+                               <span class="n">value</span> <span class="o">=</span> <span class="n">unnested_results</span><span class="p">)</span>
+
+            <span class="n">msgbox</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="p">()</span>
+            <span class="n">msgbox</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;Calibration results sent!&quot;</span><span class="p">)</span>
+            <span class="n">msgbox</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Terminal.test_bandwidth"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal.test_bandwidth">[docs]</a>    <span class="k">def</span> <span class="nf">test_bandwidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># turn off logging while we run</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">networking</span><span class="o">.</span><span class="n">set_logging</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">do_logging</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="n">bandwidth_test</span> <span class="o">=</span> <span class="n">Bandwidth_Test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pilots</span><span class="p">)</span>
+        <span class="n">bandwidth_test</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">networking</span><span class="o">.</span><span class="n">set_logging</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">do_logging</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+
+
+
+
+
+
+<div class="viewcode-block" id="Terminal.closeEvent"><a class="viewcode-back" href="../../../rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal.closeEvent">[docs]</a>    <span class="k">def</span> <span class="nf">closeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        When Closing the Terminal Window, close any running subject objects,</span>
+<span class="sd">        &#39;KILL&#39; our networking object.</span>
+
+<span class="sd">        Since the `:class:`.Net_Node` keeping us alive is a `daemon`, no need</span>
+<span class="sd">        to explicitly kill it.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: Check if any subjects are currently running, pop dialog asking if we want to stop</span>
+
+        <span class="c1"># Close all subjects files</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">running</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+                <span class="n">m</span><span class="o">.</span><span class="n">stop_run</span><span class="p">()</span>
+
+        <span class="c1"># Stop networking</span>
+        <span class="c1"># send message to kill networking process</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;KILL&quot;</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">REPODIR</span><span class="p">)</span>
+
+    <span class="c1">#with open(prefs_file) as prefs_file_open:</span>
+    <span class="c1">#    prefs = json.load(prefs_file_open)</span>
+
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span><span class="s1">&#39;plastique&#39;</span><span class="p">)</span> <span class="c1"># Keeps some GTK errors at bay</span>
+    <span class="n">ex</span> <span class="o">=</span> <span class="n">Terminal</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">())</span>
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Jonny Saunders
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

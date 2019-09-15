@@ -13,14 +13,21 @@ help:
 
 .PHONY: help Makefile
 
+serve:
+	@$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	rsync -av $(BUILDDIR)/html/* ./ --remove-source-files
+	# open up the simple node http-server
+	http-server
+
+buildapi:
+	sphinx-apidoc -e -M -d 5 -o source/rst/ ../autopilot/
+	# for f in source/rst/*.rst; do\
+	# 	perl -pi -e 's/(module|package)$$// if $$. == 1' $$f ;\
+	# done
+
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 	rsync -av $(BUILDDIR)/html/* ./ --remove-source-files
 
-buildapi:
-	sphinx-apidoc -e -M -d 5 -o source/rst/ ../rpilot/
-	# for f in source/rst/*.rst; do\
-	# 	perl -pi -e 's/(module|package)$$// if $$. == 1' $$f ;\
-	# done

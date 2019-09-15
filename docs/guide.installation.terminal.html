@@ -1,0 +1,392 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Terminal Setup &mdash; Autopilot 0.2 documentation</title>
+  
+
+  
+  
+  
+  
+    <link rel="canonical" href="docs.auto-pi-lot.comguide.installation.terminal.html"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Training a Subject" href="guide.training.html" />
+    <link rel="prev" title="Pilot Setup" href="guide.installation.pilot.html" />
+
+    <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
+
+
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Autopilot
+          
+
+          
+            
+            <img src="_static/autopilot_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="guide.installation.html">Installation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Setup a Pilot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#raspbian-performance-improvements">Raspbian Performance Improvements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#audio-setup">Audio Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#video-setup">Video Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#optional-installation-steps">Optional Installation Steps</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scripted-terminal-setup">Scripted Terminal Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide.training.html">Training a Subject</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.core.html">Core Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.gui.html">gui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.hardware.html">hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">mouse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.terminal.html">terminal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.free_water.html">free_water</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.graduation.html">graduation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.nafc.html">nafc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.task.html">task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.stim.html">Stimuli</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.stim.managers.html">managers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.stim.sound.html">sound</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autopilot.stim.sound.jackclient.html">jackclient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autopilot.stim.sound.pyoserver.html">pyoserver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autopilot.stim.sound.sounds.html">sounds</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.viz.html">Visualization Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.setup.html">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.setup.setup_pilot.html">setup_pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.setup.setup_scale.html">setup_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.setup.setup_terminal.html">setup_terminal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.prefs.html">Prefs</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Autopilot</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="guide.installation.html">Installation</a> &raquo;</li>
+        
+      <li>Terminal Setup</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/guide.installation.terminal.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="terminal-setup">
+<span id="setup-terminal"></span><h1>Terminal Setup<a class="headerlink" href="#terminal-setup" title="Permalink to this headline">¶</a></h1>
+<p>The Terminal is the user-facing Agent in Autopilot.</p>
+<p>It provides a GUI used to control task operation on a set of Pilots, as well as a few calibration and maintenance routines.</p>
+<p>We have found that locally compiling Qt4 and PySide increases stability, but using precompiled binaries shouldn’t be qualitatively different.</p>
+<div class="section" id="scripted-terminal-setup">
+<h2>Scripted Terminal Setup<a class="headerlink" href="#scripted-terminal-setup" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><dl class="first docutils">
+<dt>The <code class="xref any docutils literal notranslate"><span class="pre">~autopilot.setup.presetup_terminal.sh</span></code> script automates the manual presetup below. It..</dt>
+<dd><ul class="first last simple">
+<li>Downloads, compiles, and installs Qt4</li>
+<li>Downloads, compiled, and installs PySide</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>The <code class="xref any docutils literal notranslate"><span class="pre">~autopilot.setup.setup_terminal</span></code> script sets two configuration options</dt>
+<dd><ul class="first simple">
+<li><strong>BASE_DIR:</strong> The base directory used by Autopilot to store data, configuration, etc.</li>
+<li><strong>MSGPORT:</strong> The port used by the Terminal to send and receive messages.</li>
+</ul>
+<p class="last">It then creates the basic directory structure used by the Terminal and creates a launch script (ie. <code class="docutils literal notranslate"><span class="pre">&lt;BASE_DIR&gt;/launch_terminal.sh</span></code>).</p>
+</dd>
+</dl>
+</li>
+</ol>
+<p>The Terminal does not run as a systemd service, and must be launched each time it is used.</p>
+</div>
+<div class="section" id="manual-terminal-presetup">
+<h2>Manual Terminal Presetup<a class="headerlink" href="#manual-terminal-presetup" title="Permalink to this headline">¶</a></h2>
+<p>Both of these steps take an enormous amount of time, so plan to start the compilation and go get a cup of coffee.</p>
+<div class="section" id="compiling-installing-qt4">
+<h3>Compiling &amp; Installing Qt4<a class="headerlink" href="#compiling-installing-qt4" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>Note:</dt>
+<dd>Since Autopilot was developed, <a class="reference external" href="https://pypi.org/project/PySide2/">PySide 2</a> which uses Qt5 has been released. We will be upgrading Autopilot to use it in the next minor release.</dd>
+</dl>
+<ol class="arabic">
+<li><p class="first">Download <a class="reference external" href="https://download.qt.io/archive/qt/4.8/4.8.7/qt-everywhere-opensource-src-4.8.7.zip">Qt4.8.7</a></p>
+</li>
+<li><p class="first">Unzip with the -a flag:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">unzip</span> <span class="o">-</span><span class="n">a</span> <span class="o">./&lt;</span><span class="n">qt</span> <span class="n">archive</span><span class="o">&gt;.</span><span class="n">zip</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Optionally, to speed compilation, building the <code class="docutils literal notranslate"><span class="pre">examples</span></code> and <code class="docutils literal notranslate"><span class="pre">demos</span></code> can be disabled by commenting the following lines in <code class="docutils literal notranslate"><span class="pre">projects.pro</span></code>:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1">#       SUBDIRS += examples</span>
+<span class="p">}</span> <span class="k">else</span><span class="p">:</span><span class="n">isEqual</span><span class="p">(</span><span class="n">PROJECT</span><span class="p">,</span> <span class="n">demos</span><span class="p">)</span> <span class="p">{</span>
+<span class="c1">#       SUBDIRS += demos</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Configure, make and install as usual. Use <code class="docutils literal notranslate"><span class="pre">./configure</span> <span class="pre">-h</span></code> to see all configuration options.:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">configure</span> \
+    <span class="o">-</span><span class="n">debug</span> \
+    <span class="o">-</span><span class="n">opensource</span> \
+    <span class="o">-</span><span class="n">optimized</span><span class="o">-</span><span class="n">qmake</span> \
+    <span class="o">-</span><span class="n">separate</span><span class="o">-</span><span class="n">debug</span><span class="o">-</span><span class="n">info</span> \
+    <span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">webkit</span> \
+    <span class="o">-</span><span class="n">opengl</span>
+
+<span class="n">make</span> <span class="o">-</span><span class="n">j10</span>
+<span class="n">sudo</span> <span class="o">-</span><span class="n">H</span> <span class="n">make</span> <span class="n">install</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="compiling-installing-pyside">
+<h3>Compiling &amp; Installing PySide<a class="headerlink" href="#compiling-installing-pyside" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first">Clone the PySide repository:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">PySide</span><span class="o">/</span><span class="n">pyside</span><span class="o">-</span><span class="n">setup</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Run the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> script to build the wheel and then install. Note that you need to provide the location of <code class="docutils literal notranslate"><span class="pre">qmake</span></code> from Qt4 manually, which can usually be found with <code class="docutils literal notranslate"><span class="pre">which</span> <span class="pre">qmake</span></code>:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">pyside</span><span class="o">-</span><span class="n">setup</span>
+<span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">bdist_wheel</span> <span class="o">--</span><span class="n">qmake</span><span class="o">=&lt;/</span><span class="n">location</span><span class="o">/</span><span class="n">of</span><span class="o">/</span><span class="n">qt4</span><span class="o">/</span><span class="n">qmake</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">standalone</span>
+<span class="n">sudo</span> <span class="o">-</span><span class="n">H</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">dist</span><span class="o">/&lt;</span><span class="n">name</span><span class="o">-</span><span class="n">of</span><span class="o">-</span><span class="n">pyside</span><span class="o">-</span><span class="n">wheel</span><span class="o">&gt;.</span><span class="n">whl</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="guide.training.html" class="btn btn-neutral float-right" title="Training a Subject" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="guide.installation.pilot.html" class="btn btn-neutral" title="Pilot Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Jonny Saunders
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
