@@ -26,6 +26,8 @@ from collections import OrderedDict as odict
 import pprint
 import json
 import os
+from sys import platform
+import subprocess
 
 class TerminalSetupForm(nps.SplitForm):
     def create(self):
@@ -136,4 +138,21 @@ if __name__ == "__main__":
     pp = pprint.PrettyPrinter(indent=4)
     print('Terminal set up with prefs written to:\n{}\n'.format(launch_file))
     pp.pprint(params)
+
+    # create alias
+    if platform == 'darwin':
+        prof_file = os.path.join(os.path.expanduser('~'), '.bash_profile')
+    else:
+        prof_file = os.path.join(os.path.expanduser('~'), '.profile')
+
+    alias_cmd = "alias terminal='{}'".format(launch_file)
+
+    with open(prof_file, 'a+') as profile:
+        profile.write(alias_cmd)
+
+    subprocess.call(['alias', 'terminal=\'{}\''.format(launch_file)])
+
+    print('Attempted to create alias \'terminal\' to launch file {}'.format(launch_file))
+
+
 
