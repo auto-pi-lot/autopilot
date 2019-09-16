@@ -8,7 +8,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from rpilot.core import utils
+from autopilot.core import utils
 
 from glob import glob
 import argparse
@@ -19,7 +19,7 @@ from bokeh.layouts import gridplot
 from bokeh.transform import factor_cmap
 from bokeh.palettes import Spectral10
 from tqdm import tqdm
-from rpilot.core import subject
+from autopilot.core import subject
 import colorcet as cc
 import numpy as np
 import json
@@ -186,7 +186,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if not args.dir:
-        data_dir = '/usr/rpilot/data'
+        data_dir = '/usr/autopilot/data'
 
         if not os.path.exists(data_dir):
             raise Exception("No directory file passed, and default location doesn't exist")

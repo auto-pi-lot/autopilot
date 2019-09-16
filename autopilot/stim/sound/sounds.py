@@ -44,7 +44,7 @@ else:
     from Queue import Empty
 
 
-from rpilot import prefs
+from autopilot import prefs
 
 # switch behavior based on audio server type
 try:
@@ -114,7 +114,7 @@ if server_type in ("pyo", "docs"):
 
 
 if server_type in ("jack", "docs"):
-    from rpilot.stim.sound import jackclient
+    from autopilot.stim.sound import jackclient
 
     class Jack_Sound(object):
         """

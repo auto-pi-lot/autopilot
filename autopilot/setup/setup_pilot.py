@@ -283,7 +283,7 @@ if __name__ == "__main__":
     if answer == 'y':
         # open pilot on startup using systemd
         systemd_string = '''[Unit]
-Description=RPilot
+Description=autopilot
 After=multi-user.target
 
 [Service]

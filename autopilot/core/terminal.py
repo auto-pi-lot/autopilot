@@ -8,18 +8,18 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from rpilot import prefs
-from rpilot.core import styles
+from autopilot import prefs
+from autopilot.core import styles
 
 if __name__ == '__main__':
     # Parse arguments - this should have been called with a .json prefs file passed
     # We'll try to look in the default location first
-    parser = argparse.ArgumentParser(description="Run an RPilot Terminal")
+    parser = argparse.ArgumentParser(description="Run an autopilot Terminal")
     parser.add_argument('-f', '--prefs', help="Location of .json prefs file (created during setup_terminal.py)")
     args = parser.parse_args()
 
     if not args.prefs:
-        prefs_file = '/usr/rpilot/prefs.json'
+        prefs_file = '/usr/autopilot/prefs.json'
 
         if not os.path.exists(prefs_file):
             raise Exception("No Prefs file passed, and file not in default location")
@@ -67,7 +67,7 @@ class Terminal(QtGui.QMainWindow):
         python terminal.py -f prefs_file.json
 
     if the -f flag is not passed, looks in the default location for prefs
-    (ie. `/usr/rpilot/prefs.json`)
+    (ie. `/usr/autopilot/prefs.json`)
 
     **Listens used by the internal :class:`.Net_Node` **
 
@@ -86,13 +86,13 @@ class Terminal(QtGui.QMainWindow):
     ** Prefs needed by Terminal **
     Typically set by :mod:`.setup.setup_terminal`
 
-    * **BASEDIR** - Base directory for all local rpilot data, typically `/usr/rpilot`
+    * **BASEDIR** - Base directory for all local autopilot data, typically `/usr/autopilot`
     * **MSGPORT** - Port to use for our ROUTER listener, default `5560`
     * **DATADIR** -  `os.path.join(params['BASEDIR'], 'data')`
     * **SOUNDDIR** - `os.path.join(params['BASEDIR'], 'sounds')`
     * **PROTOCOLDIR** - `os.path.join(params['BASEDIR'], 'protocols')`
     * **LOGDIR** - `os.path.join(params['BASEDIR'], 'logs')`
-    * **REPODIR** - Path to RPilot git repo
+    * **REPODIR** - Path to autopilot git repo
     * **PILOT_DB** - Location of `pilot_db.json` used to populate :attr:`~.Terminal.pilots`
 
     Attributes:

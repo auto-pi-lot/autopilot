@@ -1,5 +1,5 @@
 # import numpy as np
-from rpilot import prefs
+from autopilot import prefs
 if prefs.AGENT in ("terminal", "docs"):
     from PySide import QtCore
 import json
@@ -161,7 +161,7 @@ def load_pilotdb(file_name=None, reverse=False):
     """
 
     if file_name is None:
-        file_name = '/usr/rpilot/pilot_db.json'
+        file_name = '/usr/autopilot/pilot_db.json'
 
     with open(file_name) as pilot_file:
         pilot_db = json.load(pilot_file)
@@ -209,7 +209,7 @@ def load_pilotdb(file_name=None, reverse=False):
 #     if github is True:
 #         ips = ['pi@'+v['ip'] for k,v in pilots.items()]
 #         ip_string = " ".join(ips)
-#         call('parallel-ssh', '-H', ip_string, 'git --git-dir=/home/pi/git/RPilot/.git pull')
+#         call('parallel-ssh', '-H', ip_string, 'git --git-dir=/home/pi/git/autopilot/.git pull')
 
 
 

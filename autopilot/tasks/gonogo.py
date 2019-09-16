@@ -11,13 +11,13 @@ import threading
 from random import random
 
 
-from rpilot.core import hardware
-from rpilot.tasks import Task
-from rpilot.stim.visual.visuals import Grating, Grating_Continuous
+from autopilot.core import hardware
+from autopilot.tasks import Task
+from autopilot.stim.visual.visuals import Grating, Grating_Continuous
 from collections import OrderedDict as odict
-from rpilot.core.networking import Net_Node
+from autopilot.core.networking import Net_Node
 
-from rpilot import prefs
+from autopilot import prefs
 TASK = 'GoNoGo'
 
 class GoNoGo(Task):

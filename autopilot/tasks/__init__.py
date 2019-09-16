@@ -1,10 +1,10 @@
 # from taskontrol.templates.nafc import Nafc
-from rpilot.tasks.task import Task
-from rpilot.tasks.nafc import Nafc, Nafc_Wheel
-from rpilot.tasks.gonogo import GoNoGo
-from rpilot.tasks.free_water import Free_Water
-from rpilot.tasks.graduation import GRAD_LIST
-from rpilot.tasks.children import Wheel_Child
+from autopilot.tasks.task import Task
+from autopilot.tasks.nafc import Nafc, Nafc_Wheel
+from autopilot.tasks.gonogo import GoNoGo
+from autopilot.tasks.free_water import Free_Water
+from autopilot.tasks.graduation import GRAD_LIST
+from autopilot.tasks.children import Wheel_Child
 
 
 TASK_LIST = {'2AFC':Nafc,

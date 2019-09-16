@@ -3,8 +3,8 @@ Sometimes a GUI just doesn't cut it for making tasks, eg. those with many steps,
 """
 
 import copy
-from rpilot import tasks
-from rpilot.core import utils
+from autopilot import tasks
+from autopilot.core import utils
 import pandas as pd
 import os
 import itertools

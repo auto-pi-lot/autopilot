@@ -4,13 +4,13 @@ import itertools
 import tables
 import threading
 
-from rpilot.core import hardware
-from rpilot.tasks import Task
-from rpilot.stim import init_manager
+from autopilot.core import hardware
+from autopilot.tasks import Task
+from autopilot.stim import init_manager
 from collections import OrderedDict as odict
-from rpilot.core.networking import Net_Node
+from autopilot.core.networking import Net_Node
 
-from rpilot import prefs
+from autopilot import prefs
 
 # This declaration allows Subject to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
 # TODO: Move this to __init__

@@ -14,7 +14,7 @@ Sets the following prefs:
 * **SOUNDDIR** - `os.path.join(params['BASEDIR'], 'sounds')`
 * **PROTOCOLDIR** - `os.path.join(params['BASEDIR'], 'protocols')`
 * **LOGDIR** - `os.path.join(params['BASEDIR'], 'logs')`
-* **REPODIR** - Path to RPilot git repo
+* **REPODIR** - Path to autopilot git repo
 * **PILOT_DB** - Location of `pilot_db.json` used to populate :attr:`~.Terminal.pilots`
 
 

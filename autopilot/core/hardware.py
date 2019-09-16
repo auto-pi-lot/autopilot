@@ -42,8 +42,8 @@ Warning:
 #try:
 import os
 import sys
-from rpilot import prefs
-from rpilot.core.networking import Net_Node
+from autopilot import prefs
+from autopilot.core.networking import Net_Node
 if prefs.AGENT in ['pilot']:
     import pigpio
 
@@ -568,7 +568,7 @@ class Solenoid(Hardware):
         Args:
             pin (int): Board pin number, converted to BCM on init.
             duration (int, float): duration of open, ms.
-            vol (int, float): desired volume of reward in uL, must have computed calibration results, see :method:`~rpilot.core.terminal.Terminal.calibrate_ports`
+            vol (int, float): desired volume of reward in uL, must have computed calibration results, see :method:`~autopilot.core.terminal.Terminal.calibrate_ports`
         """
 
         # Initialize connection to pigpio daemon

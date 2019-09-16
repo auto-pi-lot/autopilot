@@ -21,10 +21,10 @@ from functools import wraps
 pg.setConfigOptions(antialias=True)
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from rpilot import tasks, prefs
-from rpilot.core import styles
+from autopilot import tasks, prefs
+from autopilot.core import styles
 from utils import InvokeEvent, Invoker
-from rpilot.core.networking import Net_Node
+from autopilot.core.networking import Net_Node
 
 
 ############

@@ -1,4 +1,4 @@
-from rpilot import prefs
+from autopilot import prefs
 import os
 
 

@@ -4,14 +4,14 @@ Module to hold module-global variables as preferences.
 Warning:
     DO NOT hardcode prefs here.
 
-A prefs.json file should be generated with an appropriate :mod:`rpilot.setup` routine
+A prefs.json file should be generated with an appropriate :mod:`autopilot.setup` routine
 
-Before importing any other RPilot module,
+Before importing any other autopilot module,
 
 Examples:
 
-    from rpilot import prefs
-    prefs_file = '/usr/rpilot/prefs.json' # or some .json prefs file
+    from autopilot import prefs
+    prefs_file = '/usr/autopilot/prefs.json' # or some .json prefs file
     prefs.init(prefs_file)
 
 And to add a pref
@@ -40,7 +40,7 @@ stores a dictionary of preferences that mirrors the global variables.
 
 def init(fn):
     """
-    Initialize prefs on rpilot start.
+    Initialize prefs on autopilot start.
 
     Args:
         fn (str, dict): a path to `prefs.json` or a dictionary of preferences
@@ -156,7 +156,7 @@ def compute_calibration(path=None, calibration=None, do_return=False):
         if path:
             open_fn = path
         else:
-            open_fn = "/usr/rpilot/port_calibration.json"
+            open_fn = "/usr/autopilot/port_calibration.json"
 
         with open(open_fn, 'r') as open_f:
             calibration = json.load(open_f)

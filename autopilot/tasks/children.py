@@ -3,8 +3,8 @@ Sub-tasks that serve as children to other tasks
 """
 
 from collections import OrderedDict as odict
-from rpilot import prefs
-from rpilot.core.hardware import Wheel
+from autopilot import prefs
+from autopilot.core.hardware import Wheel
 from itertools import cycle
 
 class Wheel_Child(object):

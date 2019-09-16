@@ -4,9 +4,9 @@
 from collections import OrderedDict as odict
 import threading
 import logging
-# from rpilot.core.networking import Net_Node
-from rpilot.core import hardware
-from rpilot import prefs
+# from autopilot.core.networking import Net_Node
+from autopilot.core import hardware
+from autopilot import prefs
 
 import sys
 

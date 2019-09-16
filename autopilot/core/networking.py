@@ -32,7 +32,7 @@ if sys.version_info >= (3,0):
 else:
     import Queue as queue
 
-from rpilot import prefs
+from autopilot import prefs
 
 # TODO: Periodically ping pis to check that they are still responsive
 
@@ -662,7 +662,7 @@ class Terminal_Station(Station):
             'CHANGE':    self.l_change,  # Change a parameter on the Pi
             'STOPALL':   self.l_stopall, # Stop all pilots and plots
             'KILL':      self.l_kill,  # Terminal wants us to die :(
-            'DATA':      self.l_data,  # Stash incoming data from an rpilot
+            'DATA':      self.l_data,  # Stash incoming data from an autopilot
             'STATE':     self.l_state,  # The Pi is confirming/notifying us that it has changed state
             'HANDSHAKE': self.l_handshake, # initial connection with some initial info
             'FILE':      self.l_file,  # The pi needs some file from us
