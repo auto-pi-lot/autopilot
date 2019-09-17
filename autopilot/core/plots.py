@@ -21,10 +21,10 @@ from functools import wraps
 pg.setConfigOptions(antialias=True)
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from rpilot import tasks, prefs
-from rpilot.core import styles
+from autopilot import tasks, prefs
+from autopilot.core import styles
 from utils import InvokeEvent, Invoker
-from rpilot.core.networking import Net_Node
+from autopilot.core.networking import Net_Node
 
 
 ############
@@ -349,7 +349,7 @@ class Plot(QtGui.QWidget):
 
         # Make plot items for each data type
         for data, plot in self.plot_params['data'].items():
-            # TODO: Better way of doing params for plots, might just have to suck it up and make dict another level
+            # TODO: Better way of doing params for plots, redo when params are refactored
             if plot == 'rollmean' and 'roll_window' in self.plot_params.keys():
                 self.plots[data] = Roll_Mean(winsize=self.plot_params['roll_window'])
                 self.plot.addItem(self.plots[data])

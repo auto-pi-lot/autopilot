@@ -19,13 +19,20 @@
   
 
   
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
@@ -38,21 +45,16 @@
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
 
 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -110,10 +112,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -122,9 +126,42 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.training.html">Training a Subject</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#debugging-a-task">Debugging a Task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -268,7 +305,7 @@
 <span class="kn">import</span> <span class="nn">pdb</span>
 
 
-<div class="viewcode-block" id="Subject"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject">[docs]</a><span class="k">class</span> <span class="nc">Subject</span><span class="p">:</span>
+<div class="viewcode-block" id="Subject"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject">[docs]</a><span class="k">class</span> <span class="nc">Subject</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for managing one subject&#39;s data and protocol.</span>
 
@@ -410,7 +447,7 @@
         <span class="c1"># we have to always open and close the h5f</span>
         <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Subject.open_hdf"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.open_hdf">[docs]</a>    <span class="k">def</span> <span class="nf">open_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r+&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.open_hdf"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.open_hdf">[docs]</a>    <span class="k">def</span> <span class="nf">open_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r+&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Opens the hdf5 file.</span>
 
@@ -437,7 +474,7 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">tables</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Subject.close_hdf"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.close_hdf">[docs]</a>    <span class="k">def</span> <span class="nf">close_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h5f</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.close_hdf"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.close_hdf">[docs]</a>    <span class="k">def</span> <span class="nf">close_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h5f</span><span class="p">):</span>
         <span class="c1"># type: (tables.file.File) -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Flushes &amp; closes the open hdf file.</span>
@@ -450,7 +487,7 @@
             <span class="n">h5f</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">h5f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Subject.new_subject_file"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.new_subject_file">[docs]</a>    <span class="k">def</span> <span class="nf">new_subject_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">biography</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.new_subject_file"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.new_subject_file">[docs]</a>    <span class="k">def</span> <span class="nf">new_subject_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">biography</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new subject file and make the general filestructure.</span>
 
@@ -499,7 +536,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Subject.ensure_structure"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.ensure_structure">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.ensure_structure"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.ensure_structure">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensure that our h5f has the appropriate baseline structure as defined in `self.STRUCTURE`</span>
 
@@ -532,7 +569,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Subject.update_biography"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.update_biography">[docs]</a>    <span class="k">def</span> <span class="nf">update_biography</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.update_biography"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.update_biography">[docs]</a>    <span class="k">def</span> <span class="nf">update_biography</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Change or make a new biographical attribute, stored as</span>
 <span class="sd">        attributes of the `info` group.</span>
@@ -545,7 +582,7 @@
             <span class="n">h5f</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">_v_attrs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
         <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Subject.update_history"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.update_history">[docs]</a>    <span class="k">def</span> <span class="nf">update_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.update_history"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.update_history">[docs]</a>    <span class="k">def</span> <span class="nf">update_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the history table when changes are made to the subject&#39;s protocol.</span>
 
@@ -612,7 +649,7 @@
     <span class="c1">#     # TODO: this</span>
     <span class="c1">#     pass</span>
 
-<div class="viewcode-block" id="Subject.assign_protocol"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.assign_protocol">[docs]</a>    <span class="k">def</span> <span class="nf">assign_protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">step_n</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.assign_protocol"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.assign_protocol">[docs]</a>    <span class="k">def</span> <span class="nf">assign_protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">step_n</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assign a protocol to the subject.</span>
 
@@ -757,7 +794,7 @@
         <span class="c1"># Update history</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_history</span><span class="p">(</span><span class="s1">&#39;protocol&#39;</span><span class="p">,</span> <span class="n">protocol_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Subject.flush_current"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.flush_current">[docs]</a>    <span class="k">def</span> <span class="nf">flush_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.flush_current"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.flush_current">[docs]</a>    <span class="k">def</span> <span class="nf">flush_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Flushes the &#39;current&#39; attribute in the subject object to the current filenode</span>
 <span class="sd">        in the .h5</span>
@@ -773,7 +810,7 @@
         <span class="n">current_node</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;protocol_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Subject.stash_current"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.stash_current">[docs]</a>    <span class="k">def</span> <span class="nf">stash_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.stash_current"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.stash_current">[docs]</a>    <span class="k">def</span> <span class="nf">stash_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the current protocol in the history group and delete the node</span>
 
@@ -799,7 +836,7 @@
         <span class="n">h5f</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="s1">&#39;/current&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Subject.prepare_run"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.prepare_run">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.prepare_run"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.prepare_run">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepares the Subject object to receive data while running the task.</span>
 
@@ -896,7 +933,7 @@
         <span class="n">task</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
         <span class="k">return</span> <span class="n">task</span></div>
 
-<div class="viewcode-block" id="Subject.data_thread"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.data_thread">[docs]</a>    <span class="k">def</span> <span class="nf">data_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.data_thread"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.data_thread">[docs]</a>    <span class="k">def</span> <span class="nf">data_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Thread that keeps hdf file open and receives data while task is running.</span>
 
@@ -989,7 +1026,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Subject.save_data"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.save_data">[docs]</a>    <span class="k">def</span> <span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.save_data"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.save_data">[docs]</a>    <span class="k">def</span> <span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Alternate and equivalent method of putting data in the queue as `Subject.data_queue.put(data)`</span>
 
@@ -999,7 +1036,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Subject.stop_run"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.stop_run">[docs]</a>    <span class="k">def</span> <span class="nf">stop_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.stop_run"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.stop_run">[docs]</a>    <span class="k">def</span> <span class="nf">stop_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        puts &#39;END&#39; in the data_queue, which causes :meth:`~.Subject.data_thread` to end.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1009,7 +1046,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
             <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;Data thread did not exit&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Subject.get_trial_data"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.get_trial_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_trial_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.get_trial_data"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.get_trial_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_trial_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get trial data from the current task.</span>
 
@@ -1061,7 +1098,7 @@
         <span class="k">return</span> <span class="n">return_df</span></div>
 
 
-<div class="viewcode-block" id="Subject.get_step_history"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.get_step_history">[docs]</a>    <span class="k">def</span> <span class="nf">get_step_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_history</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.get_step_history"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.get_step_history">[docs]</a>    <span class="k">def</span> <span class="nf">get_step_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_history</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets a dataframe of step numbers, timestamps, and step names</span>
 <span class="sd">        as a coarse view of training status.</span>
@@ -1128,7 +1165,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">step_df</span></div>
 
-<div class="viewcode-block" id="Subject.get_timestamp"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.get_timestamp">[docs]</a>    <span class="k">def</span> <span class="nf">get_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simple</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.get_timestamp"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.get_timestamp">[docs]</a>    <span class="k">def</span> <span class="nf">get_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simple</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="c1"># type: (bool) -&gt; str</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Makes a timestamp.</span>
@@ -1151,7 +1188,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Subject.get_weight"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.get_weight">[docs]</a>    <span class="k">def</span> <span class="nf">get_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="n">include_baseline</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.get_weight"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.get_weight">[docs]</a>    <span class="k">def</span> <span class="nf">get_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="n">include_baseline</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets start and stop weights.</span>
 
@@ -1196,7 +1233,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">weights</span></div>
 
-<div class="viewcode-block" id="Subject.set_weight"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.set_weight">[docs]</a>    <span class="k">def</span> <span class="nf">set_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">col_name</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.set_weight"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.set_weight">[docs]</a>    <span class="k">def</span> <span class="nf">set_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">col_name</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates an existing weight in the weight table.</span>
 
@@ -1219,7 +1256,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Subject.update_weights"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.update_weights">[docs]</a>    <span class="k">def</span> <span class="nf">update_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.update_weights"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.update_weights">[docs]</a>    <span class="k">def</span> <span class="nf">update_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Store either a starting or stopping mass.</span>
 
@@ -1245,7 +1282,7 @@
 
         <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Subject.graduate"><a class="viewcode-back" href="../../../rst/autopilot.core.subject.html#autopilot.core.subject.Subject.graduate">[docs]</a>    <span class="k">def</span> <span class="nf">graduate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.graduate"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.graduate">[docs]</a>    <span class="k">def</span> <span class="nf">graduate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Increase the current step by one, unless it is the last step.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1329,26 +1366,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

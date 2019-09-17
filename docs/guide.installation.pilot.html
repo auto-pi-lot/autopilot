@@ -19,13 +19,20 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -40,21 +47,16 @@
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
 
 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -112,10 +114,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -124,9 +128,42 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.training.html">Training a Subject</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#debugging-a-task">Debugging a Task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -251,7 +288,7 @@
 <span class="n">sudo</span> <span class="n">python</span> <span class="o">./</span><span class="n">setup_pilot</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">setup_pilot</span></code> script produces the <code class="docutils literal notranslate"><span class="pre">prefs.json</span></code> file (see <a class="reference internal" href="rst/autopilot.prefs.html#module-autopilot.prefs" title="autopilot.prefs"><code class="xref py py-mod docutils literal notranslate"><span class="pre">prefs</span></code></a>) and uses <a class="reference external" href="https://npyscreen.readthedocs.io/">npyscreen</a> to enable graphical parameter setup on headless machines and over SSH. The <code class="docutils literal notranslate"><span class="pre">prefs.json</span></code> file can be manually edited to add any additional configuration options needed by your system.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">setup_pilot</span></code> script produces the <code class="docutils literal notranslate"><span class="pre">prefs.json</span></code> file (see <code class="xref py py-mod docutils literal notranslate"><span class="pre">prefs</span></code>) and uses <a class="reference external" href="https://npyscreen.readthedocs.io/">npyscreen</a> to enable graphical parameter setup on headless machines and over SSH. The <code class="docutils literal notranslate"><span class="pre">prefs.json</span></code> file can be manually edited to add any additional configuration options needed by your system.</p>
 <img alt="_images/npyscreen_setup.png" src="_images/npyscreen_setup.png" />
 <p><strong>Basic Configuration</strong></p>
 <ul class="simple">
@@ -260,13 +297,13 @@
 <li><strong>Lineage:</strong> (“Are we a parent or a child?”) - can be <code class="docutils literal notranslate"><span class="pre">PARENT</span></code> or <code class="docutils literal notranslate"><span class="pre">CHILD</span></code>.</li>
 <li><strong>Configuration:</strong> (Still experimental) Whether the Pilot has been set up for audio stimuli (and thus launches a <a href="#id1"><span class="problematic" id="id2">``</span></a>jack` server, etc.), visual stimuli (<cite>X11</cite> server) or neither.</li>
 <li><strong>Child/Parent Settings:</strong> The ID of any parent or child that this pilot has. Since Autopilot’s networking structure is treelike (see the whitepaper), an IP and Port are only necessary for a child that is connecting to a parent</li>
-<li><strong>Push/Message Port:</strong> The <code class="docutils literal notranslate"><span class="pre">push</span></code> port is the port that messages are pushed to and should correspond to the port used by the upstream node, whether that be a Terminal or a Parent. The <code class="docutils literal notranslate"><span class="pre">message</span></code> port is the port opened to receive messages by the Pilot’s <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object.</li>
+<li><strong>Push/Message Port:</strong> The <code class="docutils literal notranslate"><span class="pre">push</span></code> port is the port that messages are pushed to and should correspond to the port used by the upstream node, whether that be a Terminal or a Parent. The <code class="docutils literal notranslate"><span class="pre">message</span></code> port is the port opened to receive messages by the Pilot’s <a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object.</li>
 <li><strong>Terminal IP:</strong> The IP address of the Terminal. Ideally the Terminal has a static, local IP address, but this can be changed at any time by editing the <code class="docutils literal notranslate"><span class="pre">prefs.json</span></code> file.</li>
 </ul>
 <p><strong>Audio Configuration</strong></p>
 <p>If the <code class="docutils literal notranslate"><span class="pre">CONFIG</span></code> is set to <code class="docutils literal notranslate"><span class="pre">VISUAL</span></code>, these options are ignored. We will make the setup menu responsive in future versions (see <a class="reference internal" href="todo.html#todo"><span class="std std-ref">To-Do</span></a>).</p>
 <ul class="simple">
-<li><strong>Audio Server:</strong> While both options use <code class="docutils literal notranslate"><span class="pre">jack</span></code> as a backend, choose between using our internal <a class="reference internal" href="rst/autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient" title="autopilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">JackClient</span></code></a> that dumps samples directly into Jack streams (strongly recommended) or <a class="reference external" href="http://ajaxsoundstudio.com/software/pyo/">pyo</a> which is a more flexible synthesis library but has issues with latency and reliability and will likely be deprecated in future versions</li>
+<li><strong>Audio Server:</strong> While both options use <code class="docutils literal notranslate"><span class="pre">jack</span></code> as a backend, choose between using our internal <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient" title="autopilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">JackClient</span></code></a> that dumps samples directly into Jack streams (strongly recommended) or <a class="reference external" href="http://ajaxsoundstudio.com/software/pyo/">pyo</a> which is a more flexible synthesis library but has issues with latency and reliability and will likely be deprecated in future versions</li>
 <li><strong>N Audio Channels:</strong> How many audio channels should be used for output.</li>
 <li><strong>Output Ports:</strong> The indices of output that should be used (depending on whether you have connected a speaker to the left or right audio out, for example)</li>
 <li><strong>Sampling Rate:</strong> The sampling rate that will be used by the jack server.</li>
@@ -299,7 +336,7 @@
 </ul>
 <p>TODO:</p>
 <blockquote>
-<div>Hardware configuration will be extended to include additional configuration options beyond pin number, obviating classes like <a class="reference internal" href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Flag" title="autopilot.core.hardware.Flag"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flag</span></code></a> which are identical to other classes with different settings.</div></blockquote>
+<div>Hardware configuration will be extended to include additional configuration options beyond pin number, obviating classes like <code class="xref py py-class docutils literal notranslate"><span class="pre">Flag</span></code> which are identical to other classes with different settings.</div></blockquote>
 <p>The setup script will then create a launch script (ie. <code class="docutils literal notranslate"><span class="pre">&lt;BASE_DIR&gt;/launch_pilot.sh</span></code>) and optionally install the Pilot to run as an always-on systemd service. If the Pilot is not setup as a systemd service, it needs to be started manually using the <code class="docutils literal notranslate"><span class="pre">launch_pilot.sh</span></code> script.</p>
 </div>
 <div class="section" id="manual-preinstall">
@@ -611,7 +648,7 @@ winType = “glfw”</p>
 <p>sudo dpkg-reconfigure locales
 sudo dpkg-reconfigure keyboard-configuration</p>
 <ol class="lowerroman simple" start="30">
-<li><strong>Optional:</strong> Setup SSH access</li>
+<li><strong>Optional:</strong> Setup SSH access and install RSA key</li>
 </ol>
 </div>
 </div>
@@ -628,7 +665,7 @@ sudo dpkg-reconfigure keyboard-configuration</p>
         <a href="guide.installation.terminal.html" class="btn btn-neutral float-right" title="Terminal Setup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="guide.installation.html" class="btn btn-neutral" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="guide.installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -654,26 +691,16 @@ sudo dpkg-reconfigure keyboard-configuration</p>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

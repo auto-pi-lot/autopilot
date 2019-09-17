@@ -28,15 +28,15 @@ import pandas as pd
 import itertools
 import threading
 
-# adding rpilot parent directory to path
+# adding autopilot parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from rpilot.core.subject import Subject
-from rpilot import tasks, prefs
-from rpilot.stim.sound import sounds
-from rpilot.core.networking import Net_Node
+from autopilot.core.subject import Subject
+from autopilot import tasks, prefs
+from autopilot.stim.sound import sounds
+from autopilot.core.networking import Net_Node
 from functools import wraps
-from rpilot.core.utils import InvokeEvent
-from rpilot.core.plots import gui_event
+from autopilot.core.utils import InvokeEvent
+from autopilot.core.plots import gui_event
 
 import pdb
 import time
@@ -78,7 +78,7 @@ class Control_Panel(QtGui.QWidget):
         subjects (dict): A dictionary with subject ID's as keys and
                 :class:`core.subject.Subject` objects as values. Shared with the
                 Terminal object to manage access conflicts.
-        start_fn (:py:meth:`~rpilot.core.terminal.Terminal.toggle_start`): See :py:attr:`.Control_Panel.start_fn`
+        start_fn (:py:meth:`~autopilot.core.terminal.Terminal.toggle_start`): See :py:attr:`.Control_Panel.start_fn`
         pilots (dict): A dictionary with pilot ID's as keys and nested dictionaries
                     containing subjects, IP, etc. as values
         subject_lists (dict): A dict mapping subject ID to :py:class:`.subject_List`
@@ -93,7 +93,7 @@ class Control_Panel(QtGui.QWidget):
         """
         Args:
             subjects (dict): See :py:attr:`.Control_Panel.subjects`
-            start_fn (:py:meth:`~rpilot.core.terminal.Terminal.toggle_start`): the Terminal's
+            start_fn (:py:meth:`~autopilot.core.terminal.Terminal.toggle_start`): the Terminal's
                 toggle_start function, propagated down to each :class:`~core.gui.Pilot_Button`
             pilots: Usually the Terminal's :py:attr:`~.Terminal.pilots` dict. If not passed,
                 will try to load :py:attr:`.params.PILOT_DB`
@@ -115,7 +115,7 @@ class Control_Panel(QtGui.QWidget):
                     self.pilots = json.load(pilot_file, object_pairs_hook=odict)
             except NameError:
                 try:
-                    with open('/usr/rpilot/pilot_db.json') as pilot_file:
+                    with open('/usr/autopilot/pilot_db.json') as pilot_file:
                         self.pilots = json.load(pilot_file, object_pairs_hook=odict)
                 except IOError:
                     Exception('Couldnt find pilot directory!')
@@ -271,7 +271,7 @@ class Control_Panel(QtGui.QWidget):
                 json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
         except NameError:
             try:
-                with open('/usr/rpilot/pilot_db.json', 'w') as pilot_file:
+                with open('/usr/autopilot/pilot_db.json', 'w') as pilot_file:
                     json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
             except IOError:
                 Exception('Couldnt update pilot db!')
@@ -354,7 +354,7 @@ class Pilot_Panel(QtGui.QWidget):
         Args:
             pilot (str): The name of the pilot this panel controls
             subject_list (:py:class:`.Subject_List`): The :py:class:`.Subject_List` we control
-            start_fn (:py:meth:`~rpilot.core.terminal.Terminal.toggle_start`): Passed by :class:`Control_Panel`
+            start_fn (:py:meth:`~autopilot.core.terminal.Terminal.toggle_start`): Passed by :class:`Control_Panel`
             create_fn (:py:meth:`Control_Panel.create_subject`): Passed by :class:`Control_Panel`
         """
         super(Pilot_Panel, self).__init__()
@@ -440,7 +440,7 @@ class Pilot_Button(QtGui.QPushButton):
             pilot (str): The ID of the pilot that this button controls
             subject_list (:py:class:`.Subject_List`): The Subject list used to determine which
                 subject is starting/stopping
-            start_fn (:py:meth:`~rpilot.core.terminal.Terminal.toggle_start`): The final
+            start_fn (:py:meth:`~autopilot.core.terminal.Terminal.toggle_start`): The final
                 resting place of the toggle_start method
 
         Attributes:
@@ -824,7 +824,7 @@ class Protocol_Wizard(QtGui.QDialog):
     The available types include:
 
     * **int** - integer
-    * **check** - boolean checkbox
+    * **bool** - boolean boolbox
     * **list** - a list of `values` to choose from
     * **sounds** - a :class:`.Sound_Widget` that allows sounds to be defined.
     * **graduation** - a :class:`.Graduation_Widget` that allows graduation criteria to be defined
@@ -978,7 +978,7 @@ class Protocol_Wizard(QtGui.QDialog):
                     self.steps[step_index][k]['value'] = ''
                 self.param_layout.addRow(rowtag,input_widget)
 
-            elif v['type'] == 'check':
+            elif v['type'] == 'bool':
                 rowtag = QtGui.QLabel(v['tag'])
                 input_widget = QtGui.QCheckBox()
                 input_widget.setObjectName(k)
@@ -1066,7 +1066,7 @@ class Protocol_Wizard(QtGui.QDialog):
 
         if sender_type == 'int' or sender_type == 'str':
             self.steps[current_step][param_name]['value'] = sender.text()
-        elif sender_type == 'check':
+        elif sender_type == 'bool':
             self.steps[current_step][param_name]['value'] = sender.isChecked()
         elif sender_type == 'list':
             list_text = sender.currentItem().text()
@@ -2587,7 +2587,7 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #
 #                 The available types include:
 #                 - **int** - integer
-#                 - **check** - boolean checkbox
+#                 - **bool** - boolean boolbox
 #                 - **list** - a list of `values` to choose from
 #                 - **sounds** - a :class:`Sound_Widget` that allows sounds to be defined.
 #
@@ -2658,7 +2658,7 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #                 if k in self.params.keys():
 #                     input_widget.setText(self.params[k])
 #                 self.param_layout.addRow(rowtag,input_widget)
-#             elif v['type'] == 'check':
+#             elif v['type'] == 'bool':
 #                 rowtag = QtGui.QLabel(v['tag'])
 #                 input_widget = QtGui.QCheckBox()
 #                 input_widget.setObjectName(k)
@@ -2716,7 +2716,7 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #
 #         if sender_type == 'int' or sender_type == 'str':
 #             new_val = sender.text()
-#         elif sender_type == 'check':
+#         elif sender_type == 'bool':
 #             new_val = sender.isChecked()
 #         elif sender_type == 'list':
 #             list_text = sender.currentItem().text()

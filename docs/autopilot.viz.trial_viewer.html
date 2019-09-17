@@ -19,13 +19,20 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -40,21 +47,16 @@
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
 
 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -112,10 +114,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -124,9 +128,42 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.training.html">Training a Subject</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#debugging-a-task">Debugging a Task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -240,12 +277,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-autopilot.viz.trial_viewer">
-<span id="trial-viewer"></span><h1>trial_viewer<a class="headerlink" href="#module-autopilot.viz.trial_viewer" title="Permalink to this headline">¶</a></h1>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">this module is unfinished, so it is undocumented.</p>
-</div>
+  <div class="section" id="trial-viewer">
+<h1>trial_viewer<a class="headerlink" href="#trial-viewer" title="Permalink to this headline">¶</a></h1>
 <p><strong>Functions</strong></p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -253,83 +286,26 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.viz.trial_viewer.html#autopilot.viz.trial_viewer.load_subject_data" title="autopilot.viz.trial_viewer.load_subject_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_subject_data</span></code></a>(data_dir,&nbsp;subject_name[,&nbsp;…])</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__format__</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.viz.trial_viewer.html#autopilot.viz.trial_viewer.load_subject_dir" title="autopilot.viz.trial_viewer.load_subject_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_subject_dir</span></code></a>(data_dir[,&nbsp;steps,&nbsp;grad,&nbsp;which])</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">param data_dir:</th><td class="field-body">A path to a directory with <a class="reference internal" href="rst/autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> style hdf5 files</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.viz.trial_viewer.html#autopilot.viz.trial_viewer.step_viewer" title="autopilot.viz.trial_viewer.step_viewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">step_viewer</span></code></a>(grad_data)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__new__</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.viz.trial_viewer.html#autopilot.viz.trial_viewer.trial_viewer" title="autopilot.viz.trial_viewer.trial_viewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trial_viewer</span></code></a>(step_data[,&nbsp;roll_type,&nbsp;…])</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name" colspan="2">param step_data:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__reduce__</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__reduce_ex__</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__sizeof__</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__subclasshook__</span></code></td>
+<td></td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="function">
-<dt id="autopilot.viz.trial_viewer.load_subject_data">
-<code class="descclassname">autopilot.viz.trial_viewer.</code><code class="descname">load_subject_data</code><span class="sig-paren">(</span><em>data_dir</em>, <em>subject_name</em>, <em>steps=True</em>, <em>grad=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#load_subject_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.load_subject_data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="autopilot.viz.trial_viewer.load_subject_dir">
-<code class="descclassname">autopilot.viz.trial_viewer.</code><code class="descname">load_subject_dir</code><span class="sig-paren">(</span><em>data_dir</em>, <em>steps=True</em>, <em>grad=True</em>, <em>which=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#load_subject_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.load_subject_dir" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data_dir</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – A path to a directory with <a class="reference internal" href="rst/autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> style hdf5 files</li>
-<li><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Whether to return full trial-level data for each step</li>
-<li><strong>grad</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Whether to return summarized step graduation data.</li>
-<li><strong>which</strong> (<em>list</em>) – A list of subjects to subset the loaded subjects to</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="autopilot.viz.trial_viewer.step_viewer">
-<code class="descclassname">autopilot.viz.trial_viewer.</code><code class="descname">step_viewer</code><span class="sig-paren">(</span><em>grad_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#step_viewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.step_viewer" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="autopilot.viz.trial_viewer.trial_viewer">
-<code class="descclassname">autopilot.viz.trial_viewer.</code><code class="descname">trial_viewer</code><span class="sig-paren">(</span><em>step_data</em>, <em>roll_type='ewm'</em>, <em>roll_span=100</em>, <em>bar=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#trial_viewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.trial_viewer" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>step_data</strong> – </li>
-<li><strong>grad_data</strong> – </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </div>
 
 
@@ -343,7 +319,7 @@
         <a href="autopilot.setup.html" class="btn btn-neutral float-right" title="setup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="autopilot.viz.html" class="btn btn-neutral" title="viz" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="autopilot.viz.html" class="btn btn-neutral float-left" title="viz" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -369,26 +345,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

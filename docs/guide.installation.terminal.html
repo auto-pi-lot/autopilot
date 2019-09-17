@@ -19,13 +19,20 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -40,21 +47,16 @@
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
 
 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -112,10 +114,12 @@
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -124,9 +128,42 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.training.html">Training a Subject</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#debugging-a-task">Debugging a Task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -245,6 +282,31 @@
 <p>The Terminal is the user-facing Agent in Autopilot.</p>
 <p>It provides a GUI used to control task operation on a set of Pilots, as well as a few calibration and maintenance routines.</p>
 <p>We have found that locally compiling Qt4 and PySide increases stability, but using precompiled binaries shouldn’t be qualitatively different.</p>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>The terminal requires:</p>
+<ul class="simple">
+<li>libzmq - the zeromq messaging library</li>
+<li>Qt4 - the GUI library</li>
+</ul>
+<p>and the Python packages:</p>
+<ul class="simple">
+<li>tables&gt;=3.4.2</li>
+<li>numpy&gt;=1.12.1</li>
+<li>pyzmq&gt;=17.1.2</li>
+<li>pandas&gt;=0.19.2</li>
+<li>npyscreen</li>
+<li>scipy</li>
+<li>tornado</li>
+<li>inputs</li>
+<li>pyqtgraph - must be installed after Qt + pyside</li>
+</ul>
+<dl class="docutils">
+<dt><strong>macOS:</strong>::</dt>
+<dd>brew install hdf5 zmq
+pip install tables numpy pyzmq pandas npyscreen scipy tornado inputs</dd>
+</dl>
+</div>
 <div class="section" id="scripted-terminal-setup">
 <h2>Scripted Terminal Setup<a class="headerlink" href="#scripted-terminal-setup" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic">
@@ -268,13 +330,13 @@
 </dl>
 </li>
 </ol>
-<p>The Terminal does not run as a systemd service, and must be launched each time it is used.</p>
+<p>The Terminal does not run as a systemd service, and must be launched each time it is used (typically from <code class="docutils literal notranslate"><span class="pre">/usr/autopilot/launch_terminal.sh</span></code>)</p>
 </div>
 <div class="section" id="manual-terminal-presetup">
 <h2>Manual Terminal Presetup<a class="headerlink" href="#manual-terminal-presetup" title="Permalink to this headline">¶</a></h2>
 <p>Both of these steps take an enormous amount of time, so plan to start the compilation and go get a cup of coffee.</p>
-<div class="section" id="compiling-installing-qt4">
-<h3>Compiling &amp; Installing Qt4<a class="headerlink" href="#compiling-installing-qt4" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="compiling-installing-qt4-linux">
+<h3>Compiling &amp; Installing Qt4 - Linux<a class="headerlink" href="#compiling-installing-qt4-linux" title="Permalink to this headline">¶</a></h3>
 <dl class="docutils">
 <dt>Note:</dt>
 <dd>Since Autopilot was developed, <a class="reference external" href="https://pypi.org/project/PySide2/">PySide 2</a> which uses Qt5 has been released. We will be upgrading Autopilot to use it in the next minor release.</dd>
@@ -310,15 +372,35 @@
 </li>
 </ol>
 </div>
-<div class="section" id="compiling-installing-pyside">
-<h3>Compiling &amp; Installing PySide<a class="headerlink" href="#compiling-installing-pyside" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="installing-qt4-macos">
+<h3>Installing Qt4 - MacOS<a class="headerlink" href="#installing-qt4-macos" title="Permalink to this headline">¶</a></h3>
+<p>MacOS’s g++ is pretty whacky, it’s easier to install from the Mac Package (with debug libs):</p>
+<ul class="simple">
+<li><a class="reference external" href="https://download.qt.io/archive/qt/4.8/4.8.5/qt-mac-opensource-4.8.5.dmg">Download Qt4 for Mac</a></li>
+<li>Mount image, run setup</li>
+</ul>
+</div>
+<div class="section" id="compiling-installing-pyside-linux-macos">
+<h3>Compiling &amp; Installing PySide - Linux + macOS<a class="headerlink" href="#compiling-installing-pyside-linux-macos" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic">
 <li><p class="first">Clone the PySide repository:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">PySide</span><span class="o">/</span><span class="n">pyside</span><span class="o">-</span><span class="n">setup</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
 </div>
 </li>
-<li><p class="first">Run the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> script to build the wheel and then install. Note that you need to provide the location of <code class="docutils literal notranslate"><span class="pre">qmake</span></code> from Qt4 manually, which can usually be found with <code class="docutils literal notranslate"><span class="pre">which</span> <span class="pre">qmake</span></code>:</p>
+<li><p class="first"><strong>macOS</strong> - Manually specify the location of the Qt includes in the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file (see <a class="reference external" href="https://github.com/NixOS/nixpkgs/issues/25619#issuecomment-404113402">this github issue</a>). At line ~609 replace:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">cmake_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-DALTERNATIVE_QT_INCLUDE_DIR=&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">qtinfo</span><span class="o">.</span><span class="n">headers_dir</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>with:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">cmake_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-DALTERNATIVE_QT_INCLUDE_DIR=/Library/Frameworks/&#39;</span> <span class="p">)</span>
+<span class="n">cmake_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-DCMAKE_CXX_FLAGS=-F/Library/Frameworks/&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic" start="3">
+<li><p class="first">Run the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> script to build the wheel and then install. Note that macOS doesn’t support the <code class="docutils literal notranslate"><span class="pre">--standalone</span></code> flag, so it must be removed.:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">pyside</span><span class="o">-</span><span class="n">setup</span>
 <span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">bdist_wheel</span> <span class="o">--</span><span class="n">qmake</span><span class="o">=&lt;/</span><span class="n">location</span><span class="o">/</span><span class="n">of</span><span class="o">/</span><span class="n">qt4</span><span class="o">/</span><span class="n">qmake</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">standalone</span>
 <span class="n">sudo</span> <span class="o">-</span><span class="n">H</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">dist</span><span class="o">/&lt;</span><span class="n">name</span><span class="o">-</span><span class="n">of</span><span class="o">-</span><span class="n">pyside</span><span class="o">-</span><span class="n">wheel</span><span class="o">&gt;.</span><span class="n">whl</span>
@@ -341,7 +423,7 @@
         <a href="guide.training.html" class="btn btn-neutral float-right" title="Training a Subject" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="guide.installation.pilot.html" class="btn btn-neutral" title="Pilot Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="guide.installation.pilot.html" class="btn btn-neutral float-left" title="Pilot Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -367,26 +449,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

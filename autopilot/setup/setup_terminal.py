@@ -14,7 +14,7 @@ Sets the following prefs:
 * **SOUNDDIR** - `os.path.join(params['BASEDIR'], 'sounds')`
 * **PROTOCOLDIR** - `os.path.join(params['BASEDIR'], 'protocols')`
 * **LOGDIR** - `os.path.join(params['BASEDIR'], 'logs')`
-* **REPODIR** - Path to RPilot git repo
+* **REPODIR** - Path to autopilot git repo
 * **PILOT_DB** - Location of `pilot_db.json` used to populate :attr:`~.Terminal.pilots`
 
 
@@ -145,7 +145,7 @@ if __name__ == "__main__":
     else:
         prof_file = os.path.join(os.path.expanduser('~'), '.profile')
 
-    alias_cmd = "alias terminal='{}'".format(launch_file)
+    alias_cmd = "\n#autopilot terminal alias\n\nalias terminal='{}'".format(launch_file)
 
     with open(prof_file, 'a+') as profile:
         profile.write(alias_cmd)

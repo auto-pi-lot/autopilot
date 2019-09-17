@@ -4,7 +4,7 @@ Visual Stimuli -- still very alpha
 
 WIN = None
 
-from rpilot import prefs
+from autopilot import prefs
 
 import threading
 import os

@@ -19,13 +19,20 @@
   
 
   
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
@@ -38,21 +45,16 @@
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
 
 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -110,10 +112,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -122,9 +126,42 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.training.html">Training a Subject</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#debugging-a-task">Debugging a Task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -246,7 +283,7 @@
 <span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
-<div class="viewcode-block" id="Param"><a class="viewcode-back" href="../../../rst/autopilot.core.utils.html#autopilot.core.utils.Param">[docs]</a><span class="k">class</span> <span class="nc">Param</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Param"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.Param">[docs]</a><span class="k">class</span> <span class="nc">Param</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    In the future, we will implement a coherent Parameter management system</span>
 
@@ -258,7 +295,7 @@
     <span class="nb">type</span> <span class="o">=</span> <span class="bp">None</span> <span class="c1"># string that describes the type of input or param</span>
 
     <span class="c1"># possible types</span>
-    <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;int&#39;</span><span class="p">,</span> <span class="s1">&#39;check&#39;</span><span class="p">,</span> <span class="s1">&#39;list&#39;</span><span class="p">]</span>
+    <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;int&#39;</span><span class="p">,</span> <span class="s1">&#39;bool&#39;</span><span class="p">,</span> <span class="s1">&#39;list&#39;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -269,14 +306,14 @@
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
 
     <span class="c1"># enable dictionary-like behavior</span>
-<div class="viewcode-block" id="Param.__getitem__"><a class="viewcode-back" href="../../../rst/autopilot.core.utils.html#autopilot.core.utils.Param.__getitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="Param.__getitem__"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.Param.__getitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            key:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Param.__setitem__"><a class="viewcode-back" href="../../../rst/autopilot.core.utils.html#autopilot.core.utils.Param.__setitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Param.__setitem__"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.Param.__setitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            key:</span>
@@ -284,14 +321,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="Param.__delitem__"><a class="viewcode-back" href="../../../rst/autopilot.core.utils.html#autopilot.core.utils.Param.__delitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="Param.__delitem__"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.Param.__delitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            key:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Param.__contains__"><a class="viewcode-back" href="../../../rst/autopilot.core.utils.html#autopilot.core.utils.Param.__contains__">[docs]</a>    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="Param.__contains__"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.Param.__contains__">[docs]</a>    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            key:</span>
@@ -311,7 +348,7 @@
 
 
 <span class="k">if</span> <span class="n">prefs</span><span class="o">.</span><span class="n">AGENT</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;terminal&quot;</span><span class="p">,</span> <span class="s2">&quot;docs&quot;</span><span class="p">]:</span>
-<div class="viewcode-block" id="InvokeEvent"><a class="viewcode-back" href="../../../rst/autopilot.core.utils.html#autopilot.core.utils.InvokeEvent">[docs]</a>    <span class="k">class</span> <span class="nc">InvokeEvent</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="p">):</span>
+<div class="viewcode-block" id="InvokeEvent"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.InvokeEvent">[docs]</a>    <span class="k">class</span> <span class="nc">InvokeEvent</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sends signals to the main QT thread from spawned message threads</span>
 
@@ -333,11 +370,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span></div>
 
 
-<div class="viewcode-block" id="Invoker"><a class="viewcode-back" href="../../../rst/autopilot.core.utils.html#autopilot.core.utils.Invoker">[docs]</a>    <span class="k">class</span> <span class="nc">Invoker</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
+<div class="viewcode-block" id="Invoker"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.Invoker">[docs]</a>    <span class="k">class</span> <span class="nc">Invoker</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Wrapper that calls an evoked event made by :class:`.InvokeEvent`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="Invoker.event"><a class="viewcode-back" href="../../../rst/autopilot.core.utils.html#autopilot.core.utils.Invoker.event">[docs]</a>        <span class="k">def</span> <span class="nf">event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<div class="viewcode-block" id="Invoker.event"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.Invoker.event">[docs]</a>        <span class="k">def</span> <span class="nf">event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Args:</span>
 <span class="sd">                event:</span>
@@ -346,7 +383,7 @@
             <span class="k">return</span> <span class="bp">True</span></div></div>
 
 
-<div class="viewcode-block" id="ReturnThread"><a class="viewcode-back" href="../../../rst/autopilot.core.utils.html#autopilot.core.utils.ReturnThread">[docs]</a><span class="k">class</span> <span class="nc">ReturnThread</span><span class="p">(</span><span class="n">Thread</span><span class="p">):</span>
+<div class="viewcode-block" id="ReturnThread"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.ReturnThread">[docs]</a><span class="k">class</span> <span class="nc">ReturnThread</span><span class="p">(</span><span class="n">Thread</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Thread whose .join() method returns the value from the function</span>
 <span class="sd">    thx to https://stackoverflow.com/a/6894023</span>
@@ -355,16 +392,16 @@
                  <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{},</span> <span class="n">Verbose</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="n">Thread</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">Verbose</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_return</span> <span class="o">=</span> <span class="bp">None</span>
-<div class="viewcode-block" id="ReturnThread.run"><a class="viewcode-back" href="../../../rst/autopilot.core.utils.html#autopilot.core.utils.ReturnThread.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ReturnThread.run"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.ReturnThread.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Thread__target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_return</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Thread__target</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_Thread__args</span><span class="p">,</span>
                                                 <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_Thread__kwargs</span><span class="p">)</span></div>
-<div class="viewcode-block" id="ReturnThread.join"><a class="viewcode-back" href="../../../rst/autopilot.core.utils.html#autopilot.core.utils.ReturnThread.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ReturnThread.join"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.ReturnThread.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="n">Thread</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return</span></div></div>
 
-<div class="viewcode-block" id="list_subjects"><a class="viewcode-back" href="../../../rst/autopilot.core.utils.html#autopilot.core.utils.list_subjects">[docs]</a><span class="k">def</span> <span class="nf">list_subjects</span><span class="p">(</span><span class="n">pilot_db</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="list_subjects"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.list_subjects">[docs]</a><span class="k">def</span> <span class="nf">list_subjects</span><span class="p">(</span><span class="n">pilot_db</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a dictionary of a pilot_db, return the subjects that are in it.</span>
 
@@ -386,7 +423,7 @@
 
     <span class="k">return</span> <span class="n">subjects</span></div>
 
-<div class="viewcode-block" id="load_pilotdb"><a class="viewcode-back" href="../../../rst/autopilot.core.utils.html#autopilot.core.utils.load_pilotdb">[docs]</a><span class="k">def</span> <span class="nf">load_pilotdb</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="load_pilotdb"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.load_pilotdb">[docs]</a><span class="k">def</span> <span class="nf">load_pilotdb</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Try to load the file_db</span>
 
@@ -446,7 +483,7 @@
 <span class="c1">#     if github is True:</span>
 <span class="c1">#         ips = [&#39;pi@&#39;+v[&#39;ip&#39;] for k,v in pilots.items()]</span>
 <span class="c1">#         ip_string = &quot; &quot;.join(ips)</span>
-<span class="c1">#         call(&#39;parallel-ssh&#39;, &#39;-H&#39;, ip_string, &#39;git --git-dir=/home/pi/git/RPilot/.git pull&#39;)</span>
+<span class="c1">#         call(&#39;parallel-ssh&#39;, &#39;-H&#39;, ip_string, &#39;git --git-dir=/home/pi/git/autopilot/.git pull&#39;)</span>
 
 
 
@@ -483,26 +520,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

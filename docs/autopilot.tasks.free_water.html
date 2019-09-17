@@ -19,13 +19,20 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -40,21 +47,16 @@
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
 
 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -112,10 +114,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -124,9 +128,42 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.training.html">Training a Subject</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#debugging-a-task">Debugging a Task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -240,16 +277,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="free-water">
-<h1>free_water<a class="headerlink" href="#free-water" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-autopilot.tasks.free_water"></span><p><strong>Classes</strong></p>
+  <div class="section" id="module-autopilot.tasks.free_water">
+<span id="free-water"></span><h1>free_water<a class="headerlink" href="#module-autopilot.tasks.free_water" title="Permalink to this headline">¶</a></h1>
+<p><strong>Classes</strong></p>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water" title="autopilot.tasks.free_water.Free_Water"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Free_Water</span></code></a>([stage_block,&nbsp;current_trial,&nbsp;…])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water" title="autopilot.tasks.free_water.Free_Water"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Free_Water</span></code></a>([stage_block,&nbsp;current_trial,&nbsp;…])</td>
 <td>Randomly light up one of the ports, then dispense water when the subject pokes there</td>
 </tr>
 </tbody>
@@ -257,7 +294,7 @@
 <dl class="class">
 <dt id="autopilot.tasks.free_water.Free_Water">
 <em class="property">class </em><code class="descclassname">autopilot.tasks.free_water.</code><code class="descname">Free_Water</code><span class="sig-paren">(</span><em>stage_block=None</em>, <em>current_trial=0</em>, <em>reward=50</em>, <em>allow_repeat=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/free_water.html#Free_Water"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.free_water.Free_Water" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.task.Task</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.task.Task</span></code></a></p>
 <p>Randomly light up one of the ports, then dispense water when the subject pokes there</p>
 <p>Two stages:</p>
 <ul class="simple">
@@ -271,19 +308,19 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.DATA" title="autopilot.tasks.free_water.Free_Water.DATA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DATA</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water.DATA" title="autopilot.tasks.free_water.Free_Water.DATA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DATA</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.HARDWARE" title="autopilot.tasks.free_water.Free_Water.HARDWARE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HARDWARE</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water.HARDWARE" title="autopilot.tasks.free_water.Free_Water.HARDWARE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HARDWARE</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.PARAMS" title="autopilot.tasks.free_water.Free_Water.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water.PARAMS" title="autopilot.tasks.free_water.Free_Water.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
 <td>Dictionary that remembers insertion order</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.PLOT" title="autopilot.tasks.free_water.Free_Water.PLOT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLOT</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water.PLOT" title="autopilot.tasks.free_water.Free_Water.PLOT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLOT</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.STAGE_NAMES" title="autopilot.tasks.free_water.Free_Water.STAGE_NAMES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">STAGE_NAMES</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water.STAGE_NAMES" title="autopilot.tasks.free_water.Free_Water.STAGE_NAMES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">STAGE_NAMES</span></code></a></td>
 <td>list() -&gt; new empty list</td>
 </tr>
 </tbody>
@@ -295,7 +332,7 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.TrialData" title="autopilot.tasks.free_water.Free_Water.TrialData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrialData</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water.TrialData" title="autopilot.tasks.free_water.Free_Water.TrialData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrialData</span></code></a></td>
 <td></td>
 </tr>
 </tbody>
@@ -307,13 +344,13 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.end" title="autopilot.tasks.free_water.Free_Water.end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water.end" title="autopilot.tasks.free_water.Free_Water.end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end</span></code></a>()</td>
 <td>When shutting down, release all hardware objects and turn LEDs off.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.response" title="autopilot.tasks.free_water.Free_Water.response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">response</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water.response" title="autopilot.tasks.free_water.Free_Water.response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">response</span></code></a>()</td>
 <td>Just have to alert the Terminal that the current trial has ended and turn off any lights.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.water" title="autopilot.tasks.free_water.Free_Water.water"><code class="xref py py-obj docutils literal notranslate"><span class="pre">water</span></code></a>(*args,&nbsp;**kwargs)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water.water" title="autopilot.tasks.free_water.Free_Water.water"><code class="xref py py-obj docutils literal notranslate"><span class="pre">water</span></code></a>(*args,&nbsp;**kwargs)</td>
 <td>First stage of task - open a port if it’s poked.</td>
 </tr>
 </tbody>
@@ -349,7 +386,7 @@
 
 <dl class="attribute">
 <dt id="autopilot.tasks.free_water.Free_Water.PARAMS">
-<code class="descname">PARAMS</code><em class="property"> = {'allow_repeat': {'tag': 'Allow Repeated Ports?', 'type': 'check'}, 'reward': {'tag': 'Reward Duration (ms)', 'type': 'int'}}</em><a class="headerlink" href="#autopilot.tasks.free_water.Free_Water.PARAMS" title="Permalink to this definition">¶</a></dt>
+<code class="descname">PARAMS</code><em class="property"> = {'allow_repeat': {'tag': 'Allow Repeated Ports?', 'type': 'bool'}, 'reward': {'tag': 'Reward Duration (ms)', 'type': 'int'}}</em><a class="headerlink" href="#autopilot.tasks.free_water.Free_Water.PARAMS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -427,7 +464,7 @@ and turn off any lights.</p>
         <a href="autopilot.tasks.graduation.html" class="btn btn-neutral float-right" title="graduation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="autopilot.tasks.html" class="btn btn-neutral" title="tasks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="autopilot.tasks.html" class="btn btn-neutral float-left" title="tasks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -453,26 +490,16 @@ and turn off any lights.</p>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

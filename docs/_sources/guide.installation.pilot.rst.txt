@@ -325,7 +325,7 @@ Optional Installation Steps
 sudo dpkg-reconfigure locales
 sudo dpkg-reconfigure keyboard-configuration
 
-xxx. **Optional:** Setup SSH access
+xxx. **Optional:** Setup SSH access and install RSA key
 
 
 

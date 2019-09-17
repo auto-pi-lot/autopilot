@@ -25,12 +25,12 @@ import tables
 
 # TODO: This is lazy, make the paths work.
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from rpilot import prefs
+from autopilot import prefs
 
 if __name__ == '__main__':
     # Parse arguments - this should have been called with a .json prefs file passed
     # We'll try to look in the default location first
-    parser = argparse.ArgumentParser(description="Run an RPilot")
+    parser = argparse.ArgumentParser(description="Run an autopilot")
     parser.add_argument('-f', '--prefs', help="Location of .json prefs file (created during setup_terminal.py)")
     args = parser.parse_args()
 
@@ -50,18 +50,18 @@ if __name__ == '__main__':
 
     if hasattr(prefs, 'AUDIOSERVER') and prefs.CONFIG == 'AUDIO':
         if prefs.AUDIOSERVER == 'pyo':
-            from rpilot.stim.sound import pyoserver
+            from autopilot.stim.sound import pyoserver
         elif prefs.AUDIOSERVER == 'jack':
-            from rpilot.stim.sound import jackclient
+            from autopilot.stim.sound import jackclient
 
 from networking import Pilot_Station, Net_Node, Message
-from rpilot import tasks
+from autopilot import tasks
 import hardware
 
 
 ########################################
 
-class RPilot:
+class autopilot:
     """
     Drives the Raspberry Pi
 
@@ -77,12 +77,12 @@ class RPilot:
         python pilot.py -f prefs_file.json
 
     if the -f flag is not passed, looks in the default location for prefs
-    (ie. `/usr/rpilot/prefs.json`)
+    (ie. `/usr/autopilot/prefs.json`)
 
     Needs the following prefs (typically established by :mod:`.setup.setup_pilot`):
 
     * **NAME** - The name used by networking objects to address this Pilot
-    * **BASEDIR** - The base directory for rpilot files (/usr/rpilot)
+    * **BASEDIR** - The base directory for autopilot files (/usr/autopilot)
     * **PUSHPORT** - Router port used by the Terminal we connect to.
     * **TERMINALIP** - IP Address of our upstream Terminal.
     * **MSGPORT** - Port used by our own networking object
@@ -272,7 +272,7 @@ class RPilot:
         :data:`.tasks.TASK_LIST` , then feed the rest of `value` as kwargs
         into the task object.
 
-        Calls :meth:`.RPilot.run_task` in a new thread
+        Calls :meth:`.autopilot.run_task` in a new thread
 
         Args:
             value (dict): A dictionary of task parameters
@@ -609,7 +609,7 @@ class RPilot:
         """
         Called in a new thread, run the task.
 
-        Opens a file with :meth:`~.RPilot.open_file` , then
+        Opens a file with :meth:`~.autopilot.open_file` , then
         continually calls `task.stages.next` to process stages.
 
         Sends data back to the terminal between every stage.
@@ -669,7 +669,7 @@ class RPilot:
 
 if __name__ == "__main__":
 
-    a = RPilot()
+    a = autopilot()
 
 
 

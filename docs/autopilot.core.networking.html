@@ -19,13 +19,20 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -40,21 +47,16 @@
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
 
 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -112,10 +114,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -124,9 +128,42 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.training.html">Training a Subject</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#debugging-a-task">Debugging a Task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -240,20 +277,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="networking">
-<h1>networking<a class="headerlink" href="#networking" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-autopilot.core.networking"></span><p>Classes for network communication.</p>
+  <div class="section" id="module-autopilot.core.networking">
+<span id="networking"></span><h1>networking<a class="headerlink" href="#module-autopilot.core.networking" title="Permalink to this headline">¶</a></h1>
+<p>Classes for network communication.</p>
 <p>There are two general types of network objects -</p>
 <ul class="simple">
 <li><dl class="first docutils">
-<dt><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> and its children are independent processes that should only be instantiated once</dt>
-<dd>per piece of hardware. They are used to distribute messages between <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net_Node</span></code></a> s,
+<dt><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> and its children are independent processes that should only be instantiated once</dt>
+<dd>per piece of hardware. They are used to distribute messages between <a class="reference internal" href="#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net_Node</span></code></a> s,
 forward messages up the networking tree, and responding to messages that don’t need any input from
-the <a class="reference internal" href="rst/autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a> or <a class="reference internal" href="rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a>.</dd>
+the <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code> or <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a>.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net_Node</span></code></a> is a pop-in networking class that can be given to any other object that</dt>
+<dt><a class="reference internal" href="#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net_Node</span></code></a> is a pop-in networking class that can be given to any other object that</dt>
 <dd>wants to send or receive messages.</dd>
 </dl>
 </li>
@@ -265,20 +302,20 @@ the <a class="reference internal" href="rst/autopilot.core.pilot.html#autopilot.
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Message</span></code></a>(*args,&nbsp;**kwargs)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Message</span></code></a>(*args,&nbsp;**kwargs)</td>
 <td>A formatted message.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Net_Node</span></code></a>(id,&nbsp;upstream,&nbsp;port,&nbsp;listens[,&nbsp;…])</td>
-<td>Drop in networking object to be given to any sub-object behind some external-facing <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object.</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Net_Node</span></code></a>(id,&nbsp;upstream,&nbsp;port,&nbsp;listens[,&nbsp;…])</td>
+<td>Drop in networking object to be given to any sub-object behind some external-facing <a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station" title="autopilot.core.networking.Pilot_Station"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Pilot_Station</span></code></a>()</td>
-<td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <a class="reference internal" href="rst/autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Pilot_Station" title="autopilot.core.networking.Pilot_Station"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Pilot_Station</span></code></a>()</td>
+<td><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Station</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Station</span></code></a>()</td>
 <td>Independent networking class used for messaging between computers.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station" title="autopilot.core.networking.Terminal_Station"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Terminal_Station</span></code></a>(pilots)</td>
-<td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <a class="reference internal" href="rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Terminal_Station" title="autopilot.core.networking.Terminal_Station"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Terminal_Station</span></code></a>(pilots)</td>
+<td><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -287,48 +324,48 @@ the <a class="reference internal" href="rst/autopilot.core.pilot.html#autopilot.
 <em class="property">class </em><code class="descclassname">autopilot.core.networking.</code><code class="descname">Station</code><a class="reference internal" href="_modules/autopilot/core/networking.html#Station"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.networking.Station" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.process.Process</span></code></p>
 <p>Independent networking class used for messaging between computers.</p>
-<p>These objects send and handle <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">networking.Message</span></code></a> s by using a
-dictionary of <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.listens" title="autopilot.core.networking.Station.listens"><code class="xref py py-attr docutils literal notranslate"><span class="pre">listens</span></code></a>, or methods
+<p>These objects send and handle <a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">networking.Message</span></code></a> s by using a
+dictionary of <a class="reference internal" href="#autopilot.core.networking.Station.listens" title="autopilot.core.networking.Station.listens"><code class="xref py py-attr docutils literal notranslate"><span class="pre">listens</span></code></a>, or methods
 that are called to respond to different types of messages.</p>
 <p>Each sent message is given an ID, and a thread is spawned to periodically
 resend it (up until some time-to-live, typically 5 times) until confirmation
 is received.</p>
-<p>By default, the only listen these objects have is <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.l_confirm" title="autopilot.core.networking.Station.l_confirm"><code class="xref py py-meth docutils literal notranslate"><span class="pre">l_confirm()</span></code></a>,
+<p>By default, the only listen these objects have is <a class="reference internal" href="#autopilot.core.networking.Station.l_confirm" title="autopilot.core.networking.Station.l_confirm"><code class="xref py py-meth docutils literal notranslate"><span class="pre">l_confirm()</span></code></a>,
 which responds to message confirmations. Accordingly, <cite>listens</cite> should be added
 by using <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict.update" title="(in Python v2.7)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dict.update()</span></code></a> rather than reassigning the attribute.</p>
-<p>Station objects can be made with or without a <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.pusher" title="autopilot.core.networking.Station.pusher"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pusher</span></code></a>,
+<p>Station objects can be made with or without a <a class="reference internal" href="#autopilot.core.networking.Station.pusher" title="autopilot.core.networking.Station.pusher"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pusher</span></code></a>,
 a <code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.DEALER</span></code> socket that connects to the <code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.ROUTER</span></code>
 socket of an upstream Station object.</p>
 <p>This class should not be instantiated on its own, but should instead
-be subclassed in order to provide methods used by <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.handle_listen" title="autopilot.core.networking.Station.handle_listen"><code class="xref py py-meth docutils literal notranslate"><span class="pre">handle_listen()</span></code></a>.</p>
+be subclassed in order to provide methods used by <a class="reference internal" href="#autopilot.core.networking.Station.handle_listen" title="autopilot.core.networking.Station.handle_listen"><code class="xref py py-meth docutils literal notranslate"><span class="pre">handle_listen()</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.ctx" title="autopilot.core.networking.Station.ctx"><strong>ctx</strong></a> (<a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Context" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Context</span></code></a>) – zeromq context</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.loop" title="autopilot.core.networking.Net_Node.loop"><strong>loop</strong></a> (<a class="reference external" href="https://www.tornadoweb.org/en/stable/ioloop.html#tornado.ioloop.IOLoop" title="(in Tornado v6.0.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tornado.ioloop.IOLoop</span></code></a>) – a tornado ioloop</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.pusher" title="autopilot.core.networking.Station.pusher"><strong>pusher</strong></a> (<a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Socket" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Socket</span></code></a>) – pusher socket - a dealer socket that connects to other routers</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.push_ip" title="autopilot.core.networking.Station.push_ip"><strong>push_ip</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – If we have a dealer, IP to push messages to</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.push_port" title="autopilot.core.networking.Station.push_port"><strong>push_port</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – If we have a dealer, port to push messages to</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.push_id" title="autopilot.core.networking.Station.push_id"><strong>push_id</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – <code class="xref py py-attr docutils literal notranslate"><span class="pre">identity</span></code> of the Router we push to</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.listener" title="autopilot.core.networking.Station.listener"><strong>listener</strong></a> (<a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Socket" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Socket</span></code></a>) – The main router socket to send/recv messages</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.listen_port" title="autopilot.core.networking.Station.listen_port"><strong>listen_port</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Port our router listens on</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.logger" title="autopilot.core.networking.Net_Node.logger"><strong>logger</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Logger" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a>) – Used to log messages and network events.</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.log_handler" title="autopilot.core.networking.Station.log_handler"><strong>log_handler</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.handlers.html#logging.FileHandler" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.FileHandler</span></code></a>) – Handler for logging</li>
-<li><a class="reference internal" href="rst/autopilot.core.pilot.html#autopilot.core.pilot.Pilot.log_formatter" title="autopilot.core.pilot.Pilot.log_formatter"><strong>log_formatter</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Formatter" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></a>) – <p>Formats log entries as:</p>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.ctx" title="autopilot.core.networking.Station.ctx"><strong>ctx</strong></a> (<a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Context" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Context</span></code></a>) – zeromq context</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Net_Node.loop" title="autopilot.core.networking.Net_Node.loop"><strong>loop</strong></a> (<a class="reference external" href="https://www.tornadoweb.org/en/stable/ioloop.html#tornado.ioloop.IOLoop" title="(in Tornado v6.0.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tornado.ioloop.IOLoop</span></code></a>) – a tornado ioloop</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.pusher" title="autopilot.core.networking.Station.pusher"><strong>pusher</strong></a> (<a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Socket" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Socket</span></code></a>) – pusher socket - a dealer socket that connects to other routers</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.push_ip" title="autopilot.core.networking.Station.push_ip"><strong>push_ip</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – If we have a dealer, IP to push messages to</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.push_port" title="autopilot.core.networking.Station.push_port"><strong>push_port</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – If we have a dealer, port to push messages to</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.push_id" title="autopilot.core.networking.Station.push_id"><strong>push_id</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – <code class="xref py py-attr docutils literal notranslate"><span class="pre">identity</span></code> of the Router we push to</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.listener" title="autopilot.core.networking.Station.listener"><strong>listener</strong></a> (<a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Socket" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Socket</span></code></a>) – The main router socket to send/recv messages</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.listen_port" title="autopilot.core.networking.Station.listen_port"><strong>listen_port</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Port our router listens on</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Net_Node.logger" title="autopilot.core.networking.Net_Node.logger"><strong>logger</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Logger" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a>) – Used to log messages and network events.</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.log_handler" title="autopilot.core.networking.Station.log_handler"><strong>log_handler</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.handlers.html#logging.FileHandler" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.FileHandler</span></code></a>) – Handler for logging</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.log_formatter" title="autopilot.core.networking.Station.log_formatter"><strong>log_formatter</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Formatter" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></a>) – <p>Formats log entries as:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2"> : </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
 </li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.id" title="autopilot.core.networking.Station.id"><strong>id</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – What are we known as? What do we set our <code class="xref py py-attr docutils literal notranslate"><span class="pre">identity</span></code> as?</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.ip" title="autopilot.core.networking.Station.ip"><strong>ip</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Device IP</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.listens" title="autopilot.core.networking.Station.listens"><strong>listens</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Dictionary of functions to call for different types of messages. keys match the <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.key" title="autopilot.core.networking.Message.key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.key</span></code></a>.</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.senders" title="autopilot.core.networking.Station.senders"><strong>senders</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Identities of other sockets (keys, ie. directly connected) and their state (values) if they keep one</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.outbox" title="autopilot.core.networking.Net_Node.outbox"><strong>outbox</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Messages that have been sent but have not been confirmed</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.timers" title="autopilot.core.networking.Net_Node.timers"><strong>timers</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – dict of <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Timer" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Timer</span></code></a> s that will check in on outbox messages</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.id" title="autopilot.core.networking.Station.id"><strong>id</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – What are we known as? What do we set our <code class="xref py py-attr docutils literal notranslate"><span class="pre">identity</span></code> as?</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.ip" title="autopilot.core.networking.Station.ip"><strong>ip</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Device IP</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.listens" title="autopilot.core.networking.Station.listens"><strong>listens</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Dictionary of functions to call for different types of messages. keys match the <a class="reference internal" href="#autopilot.core.networking.Message.key" title="autopilot.core.networking.Message.key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.key</span></code></a>.</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.senders" title="autopilot.core.networking.Station.senders"><strong>senders</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Identities of other sockets (keys, ie. directly connected) and their state (values) if they keep one</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Net_Node.outbox" title="autopilot.core.networking.Net_Node.outbox"><strong>outbox</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Messages that have been sent but have not been confirmed</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Net_Node.timers" title="autopilot.core.networking.Net_Node.timers"><strong>timers</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – dict of <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Timer" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Timer</span></code></a> s that will check in on outbox messages</li>
 <li><strong>msg_counter</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">itertools.count</span></code>) – counter to index our sent messages</li>
-<li><a class="reference internal" href="rst/autopilot.core.pilot.html#autopilot.core.pilot.Pilot.file_block" title="autopilot.core.pilot.Pilot.file_block"><strong>file_block</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Event to signal when a file is being received.</li>
+<li><a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.file_block" title="autopilot.core.pilot.autopilot.file_block"><strong>file_block</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Event to signal when a file is being received.</li>
 </ul>
 </td>
 </tr>
@@ -341,31 +378,31 @@ be subclassed in order to provide methods used by <a class="reference internal" 
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.child" title="autopilot.core.networking.Station.child"><code class="xref py py-obj docutils literal notranslate"><span class="pre">child</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Station.child" title="autopilot.core.networking.Station.child"><code class="xref py py-obj docutils literal notranslate"><span class="pre">child</span></code></a></td>
 <td>bool(x) -&gt; bool</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.listens" title="autopilot.core.networking.Station.listens"><code class="xref py py-obj docutils literal notranslate"><span class="pre">listens</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Station.listens" title="autopilot.core.networking.Station.listens"><code class="xref py py-obj docutils literal notranslate"><span class="pre">listens</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.push_id" title="autopilot.core.networking.Station.push_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">push_id</span></code></a></td>
-<td>str(object=’‘) -&gt; string</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Station.push_id" title="autopilot.core.networking.Station.push_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">push_id</span></code></a></td>
+<td>str(object=’’) -&gt; string</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.push_outbox" title="autopilot.core.networking.Station.push_outbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">push_outbox</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Station.push_outbox" title="autopilot.core.networking.Station.push_outbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">push_outbox</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.repeat_interval" title="autopilot.core.networking.Station.repeat_interval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat_interval</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Station.repeat_interval" title="autopilot.core.networking.Station.repeat_interval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat_interval</span></code></a></td>
 <td>float(x) -&gt; floating point number</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.routes" title="autopilot.core.networking.Station.routes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">routes</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Station.routes" title="autopilot.core.networking.Station.routes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">routes</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.send_outbox" title="autopilot.core.networking.Station.send_outbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send_outbox</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Station.send_outbox" title="autopilot.core.networking.Station.send_outbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send_outbox</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.senders" title="autopilot.core.networking.Station.senders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">senders</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Station.senders" title="autopilot.core.networking.Station.senders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">senders</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.timers" title="autopilot.core.networking.Station.timers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timers</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Station.timers" title="autopilot.core.networking.Station.timers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timers</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
 </tbody>
@@ -377,34 +414,34 @@ be subclassed in order to provide methods used by <a class="reference internal" 
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.get_ip" title="autopilot.core.networking.Station.get_ip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ip</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Station.get_ip" title="autopilot.core.networking.Station.get_ip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ip</span></code></a>()</td>
 <td>Find our IP address</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.handle_listen" title="autopilot.core.networking.Station.handle_listen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_listen</span></code></a>(msg)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Station.handle_listen" title="autopilot.core.networking.Station.handle_listen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_listen</span></code></a>(msg)</td>
 <td>Upon receiving a message, call the appropriate listen method in a new thread.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.init_logging" title="autopilot.core.networking.Station.init_logging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_logging</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Station.init_logging" title="autopilot.core.networking.Station.init_logging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_logging</span></code></a>()</td>
 <td>Initialize logging to a timestamped file in <cite>prefs.LOGDIR</cite> .</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.l_confirm" title="autopilot.core.networking.Station.l_confirm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_confirm</span></code></a>(msg)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Station.l_confirm" title="autopilot.core.networking.Station.l_confirm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_confirm</span></code></a>(msg)</td>
 <td>Confirm that a message was received.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.prepare_message" title="autopilot.core.networking.Station.prepare_message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_message</span></code></a>(to,&nbsp;key,&nbsp;value[,&nbsp;repeat,&nbsp;flags])</td>
-<td>If a message originates with us, a <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> class is instantiated, given an ID and the rest of its attributes.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Station.prepare_message" title="autopilot.core.networking.Station.prepare_message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_message</span></code></a>(to,&nbsp;key,&nbsp;value[,&nbsp;repeat,&nbsp;flags])</td>
+<td>If a message originates with us, a <a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> class is instantiated, given an ID and the rest of its attributes.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.push" title="autopilot.core.networking.Station.push"><code class="xref py py-obj docutils literal notranslate"><span class="pre">push</span></code></a>([to,&nbsp;key,&nbsp;value,&nbsp;msg,&nbsp;repeat,&nbsp;flags])</td>
-<td>Send a message via our <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.pusher" title="autopilot.core.networking.Station.pusher"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pusher</span></code></a> , DEALER socket.</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Station.push" title="autopilot.core.networking.Station.push"><code class="xref py py-obj docutils literal notranslate"><span class="pre">push</span></code></a>([to,&nbsp;key,&nbsp;value,&nbsp;msg,&nbsp;repeat,&nbsp;flags])</td>
+<td>Send a message via our <a class="reference internal" href="#autopilot.core.networking.Station.pusher" title="autopilot.core.networking.Station.pusher"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pusher</span></code></a> , DEALER socket.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.repeat" title="autopilot.core.networking.Station.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code></a>()</td>
-<td>Periodically (according to <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.repeat_interval" title="autopilot.core.networking.Station.repeat_interval"><code class="xref py py-attr docutils literal notranslate"><span class="pre">repeat_interval</span></code></a>) resend messages that haven’t been confirmed</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Station.repeat" title="autopilot.core.networking.Station.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code></a>()</td>
+<td>Periodically (according to <a class="reference internal" href="#autopilot.core.networking.Station.repeat_interval" title="autopilot.core.networking.Station.repeat_interval"><code class="xref py py-attr docutils literal notranslate"><span class="pre">repeat_interval</span></code></a>) resend messages that haven’t been confirmed</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.run" title="autopilot.core.networking.Station.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>()</td>
-<td>A <a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Context" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Context</span></code></a> and <code class="xref py py-class docutils literal notranslate"><span class="pre">tornado.IOLoop</span></code> are spawned, the listener and optionally the pusher are instantiated and connected to <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.handle_listen" title="autopilot.core.networking.Station.handle_listen"><code class="xref py py-meth docutils literal notranslate"><span class="pre">handle_listen()</span></code></a> using <a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.eventloop.zmqstream.html#zmq.eventloop.zmqstream.ZMQStream.on_recv" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_recv()</span></code></a> .</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Station.run" title="autopilot.core.networking.Station.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>()</td>
+<td>A <a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Context" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Context</span></code></a> and <code class="xref py py-class docutils literal notranslate"><span class="pre">tornado.IOLoop</span></code> are spawned, the listener and optionally the pusher are instantiated and connected to <a class="reference internal" href="#autopilot.core.networking.Station.handle_listen" title="autopilot.core.networking.Station.handle_listen"><code class="xref py py-meth docutils literal notranslate"><span class="pre">handle_listen()</span></code></a> using <a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.eventloop.zmqstream.html#zmq.eventloop.zmqstream.ZMQStream.on_recv" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_recv()</span></code></a> .</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.send" title="autopilot.core.networking.Station.send"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send</span></code></a>([to,&nbsp;key,&nbsp;value,&nbsp;msg,&nbsp;repeat,&nbsp;flags])</td>
-<td>Send a message via our <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.listener" title="autopilot.core.networking.Station.listener"><code class="xref py py-attr docutils literal notranslate"><span class="pre">listener</span></code></a> , ROUTER socket.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Station.send" title="autopilot.core.networking.Station.send"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send</span></code></a>([to,&nbsp;key,&nbsp;value,&nbsp;msg,&nbsp;repeat,&nbsp;flags])</td>
+<td>Send a message via our <a class="reference internal" href="#autopilot.core.networking.Station.listener" title="autopilot.core.networking.Station.listener"><code class="xref py py-attr docutils literal notranslate"><span class="pre">listener</span></code></a> , ROUTER socket.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.set_logging" title="autopilot.core.networking.Station.set_logging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_logging</span></code></a>(do_logging)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Station.set_logging" title="autopilot.core.networking.Station.set_logging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_logging</span></code></a>(do_logging)</td>
 <td></td>
 </tr>
 </tbody>
@@ -524,7 +561,7 @@ be subclassed in order to provide methods used by <a class="reference internal" 
 <code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/networking.html#Station.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.networking.Station.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Context" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Context</span></code></a> and <code class="xref py py-class docutils literal notranslate"><span class="pre">tornado.IOLoop</span></code> are spawned,
 the listener and optionally the pusher are instantiated and
-connected to <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.handle_listen" title="autopilot.core.networking.Station.handle_listen"><code class="xref py py-meth docutils literal notranslate"><span class="pre">handle_listen()</span></code></a> using
+connected to <a class="reference internal" href="#autopilot.core.networking.Station.handle_listen" title="autopilot.core.networking.Station.handle_listen"><code class="xref py py-meth docutils literal notranslate"><span class="pre">handle_listen()</span></code></a> using
 <a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.eventloop.zmqstream.html#zmq.eventloop.zmqstream.ZMQStream.on_recv" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_recv()</span></code></a> .</p>
 <p>The process is kept open by the <code class="xref py py-class docutils literal notranslate"><span class="pre">tornado.IOLoop</span></code> .</p>
 </dd></dl>
@@ -532,7 +569,7 @@ connected to <a class="reference internal" href="rst/autopilot.core.networking.h
 <dl class="method">
 <dt id="autopilot.core.networking.Station.prepare_message">
 <code class="descname">prepare_message</code><span class="sig-paren">(</span><em>to</em>, <em>key</em>, <em>value</em>, <em>repeat=True</em>, <em>flags=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/networking.html#Station.prepare_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.networking.Station.prepare_message" title="Permalink to this definition">¶</a></dt>
-<dd><p>If a message originates with us, a <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> class
+<dd><p>If a message originates with us, a <a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> class
 is instantiated, given an ID and the rest of its attributes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -554,12 +591,12 @@ must be JSON serializable.</li>
 <dl class="method">
 <dt id="autopilot.core.networking.Station.send">
 <code class="descname">send</code><span class="sig-paren">(</span><em>to=None</em>, <em>key=None</em>, <em>value=None</em>, <em>msg=None</em>, <em>repeat=True</em>, <em>flags=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/networking.html#Station.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.networking.Station.send" title="Permalink to this definition">¶</a></dt>
-<dd><p>Send a message via our <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.listener" title="autopilot.core.networking.Station.listener"><code class="xref py py-attr docutils literal notranslate"><span class="pre">listener</span></code></a> , ROUTER socket.</p>
-<p>Either an already created <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> should be passed as <cite>msg</cite>,
+<dd><p>Send a message via our <a class="reference internal" href="#autopilot.core.networking.Station.listener" title="autopilot.core.networking.Station.listener"><code class="xref py py-attr docutils literal notranslate"><span class="pre">listener</span></code></a> , ROUTER socket.</p>
+<p>Either an already created <a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> should be passed as <cite>msg</cite>,
 or at least <cite>to</cite> and <cite>key</cite> must be provided for a new message created
-by <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.prepare_message" title="autopilot.core.networking.Station.prepare_message"><code class="xref py py-meth docutils literal notranslate"><span class="pre">prepare_message()</span></code></a> .</p>
+by <a class="reference internal" href="#autopilot.core.networking.Station.prepare_message" title="autopilot.core.networking.Station.prepare_message"><code class="xref py py-meth docutils literal notranslate"><span class="pre">prepare_message()</span></code></a> .</p>
 <p>A <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Timer" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Timer</span></code></a> is created to resend the message using
-<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.repeat" title="autopilot.core.networking.Station.repeat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">repeat()</span></code></a> unless <cite>repeat</cite> is False.</p>
+<a class="reference internal" href="#autopilot.core.networking.Station.repeat" title="autopilot.core.networking.Station.repeat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">repeat()</span></code></a> unless <cite>repeat</cite> is False.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -582,16 +619,16 @@ must be JSON serializable.</li>
 <dl class="method">
 <dt id="autopilot.core.networking.Station.push">
 <code class="descname">push</code><span class="sig-paren">(</span><em>to=None</em>, <em>key=None</em>, <em>value=None</em>, <em>msg=None</em>, <em>repeat=True</em>, <em>flags=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/networking.html#Station.push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.networking.Station.push" title="Permalink to this definition">¶</a></dt>
-<dd><p>Send a message via our <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.pusher" title="autopilot.core.networking.Station.pusher"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pusher</span></code></a> , DEALER socket.</p>
-<p>Unlike <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.send" title="autopilot.core.networking.Station.send"><code class="xref py py-meth docutils literal notranslate"><span class="pre">send()</span></code></a> , <cite>to</cite> is not required. Every message
-is always sent to <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.push_id" title="autopilot.core.networking.Station.push_id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">push_id</span></code></a> . <cite>to</cite> can be included
+<dd><p>Send a message via our <a class="reference internal" href="#autopilot.core.networking.Station.pusher" title="autopilot.core.networking.Station.pusher"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pusher</span></code></a> , DEALER socket.</p>
+<p>Unlike <a class="reference internal" href="#autopilot.core.networking.Station.send" title="autopilot.core.networking.Station.send"><code class="xref py py-meth docutils literal notranslate"><span class="pre">send()</span></code></a> , <cite>to</cite> is not required. Every message
+is always sent to <a class="reference internal" href="#autopilot.core.networking.Station.push_id" title="autopilot.core.networking.Station.push_id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">push_id</span></code></a> . <cite>to</cite> can be included
 to send a message further up the network tree to a networking object
 we’re not directly connected to.</p>
-<p>Either an already created <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> should be passed as <cite>msg</cite>,
+<p>Either an already created <a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> should be passed as <cite>msg</cite>,
 or at least <cite>key</cite> must be provided for a new message created
-by <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.prepare_message" title="autopilot.core.networking.Station.prepare_message"><code class="xref py py-meth docutils literal notranslate"><span class="pre">prepare_message()</span></code></a> .</p>
+by <a class="reference internal" href="#autopilot.core.networking.Station.prepare_message" title="autopilot.core.networking.Station.prepare_message"><code class="xref py py-meth docutils literal notranslate"><span class="pre">prepare_message()</span></code></a> .</p>
 <p>A <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Timer" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Timer</span></code></a> is created to resend the message using
-<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.repeat" title="autopilot.core.networking.Station.repeat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">repeat()</span></code></a> unless <cite>repeat</cite> is False.</p>
+<a class="reference internal" href="#autopilot.core.networking.Station.repeat" title="autopilot.core.networking.Station.repeat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">repeat()</span></code></a> unless <cite>repeat</cite> is False.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -615,7 +652,7 @@ must be JSON serializable.</li>
 <dl class="method">
 <dt id="autopilot.core.networking.Station.repeat">
 <code class="descname">repeat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/networking.html#Station.repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.networking.Station.repeat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Periodically (according to <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.repeat_interval" title="autopilot.core.networking.Station.repeat_interval"><code class="xref py py-attr docutils literal notranslate"><span class="pre">repeat_interval</span></code></a>) resend messages that haven’t been confirmed</p>
+<dd><p>Periodically (according to <a class="reference internal" href="#autopilot.core.networking.Station.repeat_interval" title="autopilot.core.networking.Station.repeat_interval"><code class="xref py py-attr docutils literal notranslate"><span class="pre">repeat_interval</span></code></a>) resend messages that haven’t been confirmed</p>
 <p>TTL is decremented, and messages are resent until their TTL is 0.</p>
 </dd></dl>
 
@@ -627,7 +664,7 @@ must be JSON serializable.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – A confirmation message - note that this message has its own unique ID, so the value of this message contains the ID of the message that is being confirmed</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – A confirmation message - note that this message has its own unique ID, so the value of this message contains the ID of the message that is being confirmed</td>
 </tr>
 </tbody>
 </table>
@@ -638,13 +675,13 @@ must be JSON serializable.</li>
 <code class="descname">handle_listen</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/networking.html#Station.handle_listen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.networking.Station.handle_listen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Upon receiving a message, call the appropriate listen method
 in a new thread.</p>
-<p>If the message is <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.to" title="autopilot.core.networking.Message.to"><code class="xref py py-attr docutils literal notranslate"><span class="pre">to</span></code></a> us, send confirmation.</p>
-<p>If the message is not <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.to" title="autopilot.core.networking.Message.to"><code class="xref py py-attr docutils literal notranslate"><span class="pre">to</span></code></a> us, attempt to forward it.</p>
+<p>If the message is <a class="reference internal" href="#autopilot.core.networking.Message.to" title="autopilot.core.networking.Message.to"><code class="xref py py-attr docutils literal notranslate"><span class="pre">to</span></code></a> us, send confirmation.</p>
+<p>If the message is not <a class="reference internal" href="#autopilot.core.networking.Message.to" title="autopilot.core.networking.Message.to"><code class="xref py py-attr docutils literal notranslate"><span class="pre">to</span></code></a> us, attempt to forward it.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – JSON <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.serialize" title="autopilot.core.networking.Message.serialize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Message.serialize()</span></code></a> d message.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – JSON <a class="reference internal" href="#autopilot.core.networking.Message.serialize" title="autopilot.core.networking.Message.serialize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Message.serialize()</span></code></a> d message.</td>
 </tr>
 </tbody>
 </table>
@@ -673,10 +710,10 @@ in a new thread.</p>
 <dl class="class">
 <dt id="autopilot.core.networking.Terminal_Station">
 <em class="property">class </em><code class="descclassname">autopilot.core.networking.</code><code class="descname">Terminal_Station</code><span class="sig-paren">(</span><em>pilots</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/networking.html#Terminal_Station"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.networking.Terminal_Station" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.networking.Station</span></code></a></p>
-<p><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <a class="reference internal" href="rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a>
+<dd><p>Bases: <a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.networking.Station</span></code></a></p>
+<p><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a>
 objects.</p>
-<p>Spawned without a <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.pusher" title="autopilot.core.networking.Station.pusher"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pusher</span></code></a>.</p>
+<p>Spawned without a <a class="reference internal" href="#autopilot.core.networking.Station.pusher" title="autopilot.core.networking.Station.pusher"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pusher</span></code></a>.</p>
 <p><strong>Listens</strong></p>
 <p><strong>Methods</strong></p>
 <table border="1" class="longtable docutils">
@@ -685,31 +722,31 @@ objects.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_change" title="autopilot.core.networking.Terminal_Station.l_change"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_change</span></code></a>(msg)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Terminal_Station.l_change" title="autopilot.core.networking.Terminal_Station.l_change"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_change</span></code></a>(msg)</td>
 <td>Change a parameter on the Pi</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_data" title="autopilot.core.networking.Terminal_Station.l_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_data</span></code></a>(msg)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Terminal_Station.l_data" title="autopilot.core.networking.Terminal_Station.l_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_data</span></code></a>(msg)</td>
 <td>Stash incoming data from a Pilot</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_file" title="autopilot.core.networking.Terminal_Station.l_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_file</span></code></a>(msg)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Terminal_Station.l_file" title="autopilot.core.networking.Terminal_Station.l_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_file</span></code></a>(msg)</td>
 <td>A Pilot needs some file from us.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_handshake" title="autopilot.core.networking.Terminal_Station.l_handshake"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_handshake</span></code></a>(msg)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Terminal_Station.l_handshake" title="autopilot.core.networking.Terminal_Station.l_handshake"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_handshake</span></code></a>(msg)</td>
 <td>A Pi is telling us it’s alive and its IP.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_init" title="autopilot.core.networking.Terminal_Station.l_init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_init</span></code></a>(msg)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Terminal_Station.l_init" title="autopilot.core.networking.Terminal_Station.l_init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_init</span></code></a>(msg)</td>
 <td>Ask all pilots to confirm that they are alive</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_kill" title="autopilot.core.networking.Terminal_Station.l_kill"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_kill</span></code></a>(msg)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Terminal_Station.l_kill" title="autopilot.core.networking.Terminal_Station.l_kill"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_kill</span></code></a>(msg)</td>
 <td>Terminal wants us to die :(</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_ping" title="autopilot.core.networking.Terminal_Station.l_ping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_ping</span></code></a>(msg)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Terminal_Station.l_ping" title="autopilot.core.networking.Terminal_Station.l_ping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_ping</span></code></a>(msg)</td>
 <td>We are asked to confirm that we are alive</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_state" title="autopilot.core.networking.Terminal_Station.l_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_state</span></code></a>(msg)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Terminal_Station.l_state" title="autopilot.core.networking.Terminal_Station.l_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_state</span></code></a>(msg)</td>
 <td>A Pilot has changed state.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_stopall" title="autopilot.core.networking.Terminal_Station.l_stopall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_stopall</span></code></a>(msg)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Terminal_Station.l_stopall" title="autopilot.core.networking.Terminal_Station.l_stopall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_stopall</span></code></a>(msg)</td>
 <td>Stop all pilots and plots</td>
 </tr>
 </tbody>
@@ -731,7 +768,7 @@ objects.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
 </tr>
 </tbody>
 </table>
@@ -746,7 +783,7 @@ objects.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
 </tr>
 </tbody>
 </table>
@@ -764,7 +801,7 @@ objects.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
 </tr>
 </tbody>
 </table>
@@ -778,7 +815,7 @@ objects.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
 </tr>
 </tbody>
 </table>
@@ -788,12 +825,12 @@ objects.</p>
 <dt id="autopilot.core.networking.Terminal_Station.l_kill">
 <code class="descname">l_kill</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/networking.html#Terminal_Station.l_kill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.networking.Terminal_Station.l_kill" title="Permalink to this definition">¶</a></dt>
 <dd><p>Terminal wants us to die :(</p>
-<p>Stop the <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.loop" title="autopilot.core.networking.Station.loop"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Station.loop</span></code></a></p>
+<p>Stop the <a class="reference internal" href="#autopilot.core.networking.Station.loop" title="autopilot.core.networking.Station.loop"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Station.loop</span></code></a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
 </tr>
 </tbody>
 </table>
@@ -809,7 +846,7 @@ and a copy to the relevant plot.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
 </tr>
 </tbody>
 </table>
@@ -824,7 +861,7 @@ and a copy to the relevant plot.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
 </tr>
 </tbody>
 </table>
@@ -839,7 +876,7 @@ and a copy to the relevant plot.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
 </tr>
 </tbody>
 </table>
@@ -858,7 +895,7 @@ and a copy to the relevant plot.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – The value field of the message should contain some
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – The value field of the message should contain some
 relative path to a file contained within <cite>prefs.SOUNDDIR</cite> . eg.
 <cite>‘/songs/sadone.wav’</cite> would return <cite>‘os.path.join(prefs.SOUNDDIR/songs.sadone.wav’</cite></td>
 </tr>
@@ -871,11 +908,11 @@ relative path to a file contained within <cite>prefs.SOUNDDIR</cite> . eg.
 <dl class="class">
 <dt id="autopilot.core.networking.Pilot_Station">
 <em class="property">class </em><code class="descclassname">autopilot.core.networking.</code><code class="descname">Pilot_Station</code><a class="reference internal" href="_modules/autopilot/core/networking.html#Pilot_Station"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.networking.Pilot_Station" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.networking.Station</span></code></a></p>
-<p><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <a class="reference internal" href="rst/autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a>
+<dd><p>Bases: <a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.networking.Station</span></code></a></p>
+<p><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code>
 objects.</p>
-<p>Spawned with a <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.pusher" title="autopilot.core.networking.Station.pusher"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pusher</span></code></a> connected back to the
-<a class="reference internal" href="rst/autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a> .</p>
+<p>Spawned with a <a class="reference internal" href="#autopilot.core.networking.Station.pusher" title="autopilot.core.networking.Station.pusher"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pusher</span></code></a> connected back to the
+<a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a> .</p>
 <p><strong>Listens</strong></p>
 <p><strong>Methods</strong></p>
 <table border="1" class="longtable docutils">
@@ -884,37 +921,37 @@ objects.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_change" title="autopilot.core.networking.Pilot_Station.l_change"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_change</span></code></a>(msg)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Pilot_Station.l_change" title="autopilot.core.networking.Pilot_Station.l_change"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_change</span></code></a>(msg)</td>
 <td>The terminal is changing a parameter</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_child" title="autopilot.core.networking.Pilot_Station.l_child"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_child</span></code></a>(msg)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Pilot_Station.l_child" title="autopilot.core.networking.Pilot_Station.l_child"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_child</span></code></a>(msg)</td>
 <td>Telling our child to run a task.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_cohere" title="autopilot.core.networking.Pilot_Station.l_cohere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_cohere</span></code></a>(msg)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Pilot_Station.l_cohere" title="autopilot.core.networking.Pilot_Station.l_cohere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_cohere</span></code></a>(msg)</td>
 <td>Send our local version of the data table so the terminal can double check</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_continuous" title="autopilot.core.networking.Pilot_Station.l_continuous"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_continuous</span></code></a>(msg)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Pilot_Station.l_continuous" title="autopilot.core.networking.Pilot_Station.l_continuous"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_continuous</span></code></a>(msg)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_file" title="autopilot.core.networking.Pilot_Station.l_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_file</span></code></a>(msg)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Pilot_Station.l_file" title="autopilot.core.networking.Pilot_Station.l_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_file</span></code></a>(msg)</td>
 <td>We are receiving a file.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_forward" title="autopilot.core.networking.Pilot_Station.l_forward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_forward</span></code></a>(msg)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Pilot_Station.l_forward" title="autopilot.core.networking.Pilot_Station.l_forward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_forward</span></code></a>(msg)</td>
 <td>Just forward the message to the pi.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_noop" title="autopilot.core.networking.Pilot_Station.l_noop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_noop</span></code></a>(msg)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Pilot_Station.l_noop" title="autopilot.core.networking.Pilot_Station.l_noop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_noop</span></code></a>(msg)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_ping" title="autopilot.core.networking.Pilot_Station.l_ping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_ping</span></code></a>(msg)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Pilot_Station.l_ping" title="autopilot.core.networking.Pilot_Station.l_ping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_ping</span></code></a>(msg)</td>
 <td>The Terminal wants to know our status</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_start" title="autopilot.core.networking.Pilot_Station.l_start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_start</span></code></a>(msg)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Pilot_Station.l_start" title="autopilot.core.networking.Pilot_Station.l_start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_start</span></code></a>(msg)</td>
 <td>We are being sent a task to start</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_state" title="autopilot.core.networking.Pilot_Station.l_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_state</span></code></a>(msg)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Pilot_Station.l_state" title="autopilot.core.networking.Pilot_Station.l_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_state</span></code></a>(msg)</td>
 <td>Pilot has changed state</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_stop" title="autopilot.core.networking.Pilot_Station.l_stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_stop</span></code></a>(msg)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Pilot_Station.l_stop" title="autopilot.core.networking.Pilot_Station.l_stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_stop</span></code></a>(msg)</td>
 <td>Tell the pi to stop the task</td>
 </tr>
 </tbody>
@@ -933,7 +970,7 @@ objects.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
 </tr>
 </tbody>
 </table>
@@ -951,7 +988,7 @@ objects.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
 </tr>
 </tbody>
 </table>
@@ -966,7 +1003,7 @@ objects.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
 </tr>
 </tbody>
 </table>
@@ -982,7 +1019,7 @@ objects.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – value will contain a dictionary containing a task
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – value will contain a dictionary containing a task
 description.</td>
 </tr>
 </tbody>
@@ -997,7 +1034,7 @@ description.</td>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
 </tr>
 </tbody>
 </table>
@@ -1015,7 +1052,7 @@ description.</td>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – </td>
 </tr>
 </tbody>
 </table>
@@ -1030,7 +1067,7 @@ description.</td>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – value will have ‘path’ and ‘file’,
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – value will have ‘path’ and ‘file’,
 where the path determines where in <cite>prefs.SOUNDDIR</cite> the
 b64 encoded ‘file’ will be saved.</td>
 </tr>
@@ -1071,44 +1108,44 @@ b64 encoded ‘file’ will be saved.</td>
 <em class="property">class </em><code class="descclassname">autopilot.core.networking.</code><code class="descname">Net_Node</code><span class="sig-paren">(</span><em>id</em>, <em>upstream</em>, <em>port</em>, <em>listens</em>, <em>instance=True</em>, <em>do_logging=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/networking.html#Net_Node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.networking.Net_Node" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Drop in networking object to be given to any sub-object
-behind some external-facing <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object.</p>
+behind some external-facing <a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object.</p>
 <p>These objects are intended to communicate locally, within a piece of hardware,
 though not necessarily within the same process.</p>
 <p>To minimize the complexity of the network topology, Net_Nodes
-must communicate through a <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> ROUTER, rather than
+must communicate through a <a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> ROUTER, rather than
 address each other directly.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first simple">
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.context" title="autopilot.core.networking.Net_Node.context"><strong>context</strong></a> (<a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Context" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Context</span></code></a>) – zeromq context</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.loop" title="autopilot.core.networking.Net_Node.loop"><strong>loop</strong></a> (<a class="reference external" href="https://www.tornadoweb.org/en/stable/ioloop.html#tornado.ioloop.IOLoop" title="(in Tornado v6.0.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tornado.ioloop.IOLoop</span></code></a>) – a tornado ioloop</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.sock" title="autopilot.core.networking.Net_Node.sock"><strong>sock</strong></a> (<a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Socket" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Socket</span></code></a>) – Our DEALER socket.</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.id" title="autopilot.core.networking.Station.id"><strong>id</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – What are we known as? What do we set our <code class="xref py py-attr docutils literal notranslate"><span class="pre">identity</span></code> as?</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.upstream" title="autopilot.core.networking.Net_Node.upstream"><strong>upstream</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The identity of the ROUTER socket used by our upstream <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object.</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.port" title="autopilot.core.networking.Net_Node.port"><strong>port</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – The port that our upstream ROUTER socket is bound to</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.listens" title="autopilot.core.networking.Station.listens"><strong>listens</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Dictionary of functions to call for different types of messages. keys match the <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.key" title="autopilot.core.networking.Message.key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.key</span></code></a>.</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.outbox" title="autopilot.core.networking.Net_Node.outbox"><strong>outbox</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Messages that have been sent but have not been confirmed</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.timers" title="autopilot.core.networking.Net_Node.timers"><strong>timers</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – dict of <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Timer" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Timer</span></code></a> s that will check in on outbox messages</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.logger" title="autopilot.core.networking.Net_Node.logger"><strong>logger</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Logger" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a>) – Used to log messages and network events.</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.log_handler" title="autopilot.core.networking.Station.log_handler"><strong>log_handler</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.handlers.html#logging.FileHandler" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.FileHandler</span></code></a>) – Handler for logging</li>
-<li><a class="reference internal" href="rst/autopilot.core.pilot.html#autopilot.core.pilot.Pilot.log_formatter" title="autopilot.core.pilot.Pilot.log_formatter"><strong>log_formatter</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Formatter" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></a>) – <p>Formats log entries as:</p>
+<li><a class="reference internal" href="#autopilot.core.networking.Net_Node.context" title="autopilot.core.networking.Net_Node.context"><strong>context</strong></a> (<a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Context" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Context</span></code></a>) – zeromq context</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Net_Node.loop" title="autopilot.core.networking.Net_Node.loop"><strong>loop</strong></a> (<a class="reference external" href="https://www.tornadoweb.org/en/stable/ioloop.html#tornado.ioloop.IOLoop" title="(in Tornado v6.0.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tornado.ioloop.IOLoop</span></code></a>) – a tornado ioloop</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Net_Node.sock" title="autopilot.core.networking.Net_Node.sock"><strong>sock</strong></a> (<a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Socket" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Socket</span></code></a>) – Our DEALER socket.</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.id" title="autopilot.core.networking.Station.id"><strong>id</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – What are we known as? What do we set our <code class="xref py py-attr docutils literal notranslate"><span class="pre">identity</span></code> as?</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Net_Node.upstream" title="autopilot.core.networking.Net_Node.upstream"><strong>upstream</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The identity of the ROUTER socket used by our upstream <a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object.</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Net_Node.port" title="autopilot.core.networking.Net_Node.port"><strong>port</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – The port that our upstream ROUTER socket is bound to</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.listens" title="autopilot.core.networking.Station.listens"><strong>listens</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Dictionary of functions to call for different types of messages. keys match the <a class="reference internal" href="#autopilot.core.networking.Message.key" title="autopilot.core.networking.Message.key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.key</span></code></a>.</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Net_Node.outbox" title="autopilot.core.networking.Net_Node.outbox"><strong>outbox</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Messages that have been sent but have not been confirmed</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Net_Node.timers" title="autopilot.core.networking.Net_Node.timers"><strong>timers</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – dict of <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Timer" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Timer</span></code></a> s that will check in on outbox messages</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Net_Node.logger" title="autopilot.core.networking.Net_Node.logger"><strong>logger</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Logger" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a>) – Used to log messages and network events.</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.log_handler" title="autopilot.core.networking.Station.log_handler"><strong>log_handler</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.handlers.html#logging.FileHandler" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.FileHandler</span></code></a>) – Handler for logging</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.log_formatter" title="autopilot.core.networking.Station.log_formatter"><strong>log_formatter</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Formatter" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></a>) – <p>Formats log entries as:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2"> : </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
 </li>
 <li><strong>msg_counter</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">itertools.count</span></code>) – counter to index our sent messages</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.loop_thread" title="autopilot.core.networking.Net_Node.loop_thread"><strong>loop_thread</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Thread" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code></a>) – Thread that holds our loop. initialized with <cite>daemon=True</cite></li>
+<li><a class="reference internal" href="#autopilot.core.networking.Net_Node.loop_thread" title="autopilot.core.networking.Net_Node.loop_thread"><strong>loop_thread</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Thread" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code></a>) – Thread that holds our loop. initialized with <cite>daemon=True</cite></li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>id</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – What are we known as? What do we set our <code class="xref py py-attr docutils literal notranslate"><span class="pre">identity</span></code> as?</li>
-<li><strong>upstream</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The identity of the ROUTER socket used by our upstream <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object.</li>
+<li><strong>upstream</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The identity of the ROUTER socket used by our upstream <a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object.</li>
 <li><strong>port</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – The port that our upstream ROUTER socket is bound to</li>
 <li><strong>listens</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Dictionary of functions to call for different types of messages.
-keys match the <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.key" title="autopilot.core.networking.Message.key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.key</span></code></a>.</li>
+keys match the <a class="reference internal" href="#autopilot.core.networking.Message.key" title="autopilot.core.networking.Message.key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.key</span></code></a>.</li>
 <li><strong>instance</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Should the node try and use the existing zmq context and tornado loop?</li>
 </ul>
 </td>
@@ -1122,19 +1159,19 @@ keys match the <a class="reference internal" href="rst/autopilot.core.networking
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.do_logging" title="autopilot.core.networking.Net_Node.do_logging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_logging</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Net_Node.do_logging" title="autopilot.core.networking.Net_Node.do_logging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_logging</span></code></a></td>
 <td>A factory function that returns a new event object.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.listens" title="autopilot.core.networking.Net_Node.listens"><code class="xref py py-obj docutils literal notranslate"><span class="pre">listens</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Net_Node.listens" title="autopilot.core.networking.Net_Node.listens"><code class="xref py py-obj docutils literal notranslate"><span class="pre">listens</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.outbox" title="autopilot.core.networking.Net_Node.outbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outbox</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Net_Node.outbox" title="autopilot.core.networking.Net_Node.outbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outbox</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.repeat_interval" title="autopilot.core.networking.Net_Node.repeat_interval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat_interval</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Net_Node.repeat_interval" title="autopilot.core.networking.Net_Node.repeat_interval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat_interval</span></code></a></td>
 <td>int(x=0) -&gt; int or long</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.timers" title="autopilot.core.networking.Net_Node.timers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timers</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Net_Node.timers" title="autopilot.core.networking.Net_Node.timers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timers</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
 </tbody>
@@ -1146,28 +1183,28 @@ keys match the <a class="reference internal" href="rst/autopilot.core.networking
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.handle_listen" title="autopilot.core.networking.Net_Node.handle_listen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_listen</span></code></a>(msg)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Net_Node.handle_listen" title="autopilot.core.networking.Net_Node.handle_listen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_listen</span></code></a>(msg)</td>
 <td>Upon receiving a message, call the appropriate listen method in a new thread and send confirmation it was received.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.init_logging" title="autopilot.core.networking.Net_Node.init_logging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_logging</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Net_Node.init_logging" title="autopilot.core.networking.Net_Node.init_logging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_logging</span></code></a>()</td>
 <td>Initialize logging to a timestamped file in <cite>prefs.LOGDIR</cite> .</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.init_networking" title="autopilot.core.networking.Net_Node.init_networking"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_networking</span></code></a>()</td>
-<td>Creates socket, connects to specified port on localhost, and starts the <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.threaded_loop" title="autopilot.core.networking.Net_Node.threaded_loop"><code class="xref py py-meth docutils literal notranslate"><span class="pre">threaded_loop()</span></code></a> as a daemon thread.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Net_Node.init_networking" title="autopilot.core.networking.Net_Node.init_networking"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_networking</span></code></a>()</td>
+<td>Creates socket, connects to specified port on localhost, and starts the <a class="reference internal" href="#autopilot.core.networking.Net_Node.threaded_loop" title="autopilot.core.networking.Net_Node.threaded_loop"><code class="xref py py-meth docutils literal notranslate"><span class="pre">threaded_loop()</span></code></a> as a daemon thread.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.l_confirm" title="autopilot.core.networking.Net_Node.l_confirm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_confirm</span></code></a>(value)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Net_Node.l_confirm" title="autopilot.core.networking.Net_Node.l_confirm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_confirm</span></code></a>(value)</td>
 <td>Confirm that a message was received.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.prepare_message" title="autopilot.core.networking.Net_Node.prepare_message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_message</span></code></a>(to,&nbsp;key,&nbsp;value,&nbsp;repeat[,&nbsp;flags])</td>
-<td>Instantiate a <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> class, give it an ID and the rest of its attributes.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Net_Node.prepare_message" title="autopilot.core.networking.Net_Node.prepare_message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_message</span></code></a>(to,&nbsp;key,&nbsp;value,&nbsp;repeat[,&nbsp;flags])</td>
+<td>Instantiate a <a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> class, give it an ID and the rest of its attributes.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.repeat" title="autopilot.core.networking.Net_Node.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code></a>()</td>
-<td>Periodically (according to <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.repeat_interval" title="autopilot.core.networking.Station.repeat_interval"><code class="xref py py-attr docutils literal notranslate"><span class="pre">repeat_interval</span></code></a>) resend messages that haven’t been confirmed</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Net_Node.repeat" title="autopilot.core.networking.Net_Node.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code></a>()</td>
+<td>Periodically (according to <a class="reference internal" href="#autopilot.core.networking.Station.repeat_interval" title="autopilot.core.networking.Station.repeat_interval"><code class="xref py py-attr docutils literal notranslate"><span class="pre">repeat_interval</span></code></a>) resend messages that haven’t been confirmed</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.send" title="autopilot.core.networking.Net_Node.send"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send</span></code></a>([to,&nbsp;key,&nbsp;value,&nbsp;msg,&nbsp;repeat,&nbsp;flags])</td>
-<td>Send a message via our <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.sock" title="autopilot.core.networking.Net_Node.sock"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sock</span></code></a> , DEALER socket.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Net_Node.send" title="autopilot.core.networking.Net_Node.send"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send</span></code></a>([to,&nbsp;key,&nbsp;value,&nbsp;msg,&nbsp;repeat,&nbsp;flags])</td>
+<td>Send a message via our <a class="reference internal" href="#autopilot.core.networking.Net_Node.sock" title="autopilot.core.networking.Net_Node.sock"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sock</span></code></a> , DEALER socket.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.threaded_loop" title="autopilot.core.networking.Net_Node.threaded_loop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">threaded_loop</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Net_Node.threaded_loop" title="autopilot.core.networking.Net_Node.threaded_loop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">threaded_loop</span></code></a>()</td>
 <td>Run in a thread, either starts the IOLoop, or if it is already started (ie.</td>
 </tr>
 </tbody>
@@ -1251,7 +1288,7 @@ keys match the <a class="reference internal" href="rst/autopilot.core.networking
 <dt id="autopilot.core.networking.Net_Node.init_networking">
 <code class="descname">init_networking</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/networking.html#Net_Node.init_networking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.networking.Net_Node.init_networking" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates socket, connects to specified port on localhost,
-and starts the <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.threaded_loop" title="autopilot.core.networking.Net_Node.threaded_loop"><code class="xref py py-meth docutils literal notranslate"><span class="pre">threaded_loop()</span></code></a> as a daemon thread.</p>
+and starts the <a class="reference internal" href="#autopilot.core.networking.Net_Node.threaded_loop" title="autopilot.core.networking.Net_Node.threaded_loop"><code class="xref py py-meth docutils literal notranslate"><span class="pre">threaded_loop()</span></code></a> as a daemon thread.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1269,7 +1306,7 @@ breaks.</p>
 in a new thread and send confirmation it was received.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Unlike <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.handle_listen" title="autopilot.core.networking.Station.handle_listen"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Station.handle_listen()</span></code></a> , only the <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.value" title="autopilot.core.networking.Message.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.value</span></code></a>
+<p class="last">Unlike <a class="reference internal" href="#autopilot.core.networking.Station.handle_listen" title="autopilot.core.networking.Station.handle_listen"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Station.handle_listen()</span></code></a> , only the <a class="reference internal" href="#autopilot.core.networking.Message.value" title="autopilot.core.networking.Message.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.value</span></code></a>
 is given to listen methods. This was initially intended to simplify these
 methods, but this might change in the future to unify the messaging system.</p>
 </div>
@@ -1277,7 +1314,7 @@ methods, but this might change in the future to unify the messaging system.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – JSON <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.serialize" title="autopilot.core.networking.Message.serialize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Message.serialize()</span></code></a> d message.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – JSON <a class="reference internal" href="#autopilot.core.networking.Message.serialize" title="autopilot.core.networking.Message.serialize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Message.serialize()</span></code></a> d message.</td>
 </tr>
 </tbody>
 </table>
@@ -1286,16 +1323,16 @@ methods, but this might change in the future to unify the messaging system.</p>
 <dl class="method">
 <dt id="autopilot.core.networking.Net_Node.send">
 <code class="descname">send</code><span class="sig-paren">(</span><em>to=None</em>, <em>key=None</em>, <em>value=None</em>, <em>msg=None</em>, <em>repeat=True</em>, <em>flags=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/networking.html#Net_Node.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.networking.Net_Node.send" title="Permalink to this definition">¶</a></dt>
-<dd><p>Send a message via our <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.sock" title="autopilot.core.networking.Net_Node.sock"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sock</span></code></a> , DEALER socket.</p>
+<dd><p>Send a message via our <a class="reference internal" href="#autopilot.core.networking.Net_Node.sock" title="autopilot.core.networking.Net_Node.sock"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sock</span></code></a> , DEALER socket.</p>
 <p><cite>to</cite> is not required. Every message
-is always sent to <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.upstream" title="autopilot.core.networking.Net_Node.upstream"><code class="xref py py-attr docutils literal notranslate"><span class="pre">upstream</span></code></a> . <cite>to</cite> can be included
+is always sent to <a class="reference internal" href="#autopilot.core.networking.Net_Node.upstream" title="autopilot.core.networking.Net_Node.upstream"><code class="xref py py-attr docutils literal notranslate"><span class="pre">upstream</span></code></a> . <cite>to</cite> can be included
 to send a message further up the network tree to a networking object
 we’re not directly connected to.</p>
-<p>Either an already created <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> should be passed as <cite>msg</cite>,
+<p>Either an already created <a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> should be passed as <cite>msg</cite>,
 or at least <cite>key</cite> must be provided for a new message created
-by <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.prepare_message" title="autopilot.core.networking.Net_Node.prepare_message"><code class="xref py py-meth docutils literal notranslate"><span class="pre">prepare_message()</span></code></a> .</p>
+by <a class="reference internal" href="#autopilot.core.networking.Net_Node.prepare_message" title="autopilot.core.networking.Net_Node.prepare_message"><code class="xref py py-meth docutils literal notranslate"><span class="pre">prepare_message()</span></code></a> .</p>
 <p>A <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Timer" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Timer</span></code></a> is created to resend the message using
-<a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.repeat" title="autopilot.core.networking.Net_Node.repeat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">repeat()</span></code></a> unless <cite>repeat</cite> is False.</p>
+<a class="reference internal" href="#autopilot.core.networking.Net_Node.repeat" title="autopilot.core.networking.Net_Node.repeat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">repeat()</span></code></a> unless <cite>repeat</cite> is False.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1319,7 +1356,7 @@ must be JSON serializable.</li>
 <dl class="method">
 <dt id="autopilot.core.networking.Net_Node.repeat">
 <code class="descname">repeat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/networking.html#Net_Node.repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.networking.Net_Node.repeat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Periodically (according to <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.repeat_interval" title="autopilot.core.networking.Net_Node.repeat_interval"><code class="xref py py-attr docutils literal notranslate"><span class="pre">repeat_interval</span></code></a>) resend messages that haven’t been confirmed</p>
+<dd><p>Periodically (according to <a class="reference internal" href="#autopilot.core.networking.Net_Node.repeat_interval" title="autopilot.core.networking.Net_Node.repeat_interval"><code class="xref py py-attr docutils literal notranslate"><span class="pre">repeat_interval</span></code></a>) resend messages that haven’t been confirmed</p>
 <p>TTL is decremented, and messages are resent until their TTL is 0.</p>
 </dd></dl>
 
@@ -1340,7 +1377,7 @@ must be JSON serializable.</li>
 <dl class="method">
 <dt id="autopilot.core.networking.Net_Node.prepare_message">
 <code class="descname">prepare_message</code><span class="sig-paren">(</span><em>to</em>, <em>key</em>, <em>value</em>, <em>repeat</em>, <em>flags=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/networking.html#Net_Node.prepare_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.networking.Net_Node.prepare_message" title="Permalink to this definition">¶</a></dt>
-<dd><p>Instantiate a <a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> class, give it an ID and
+<dd><p>Instantiate a <a class="reference internal" href="#autopilot.core.networking.Message" title="autopilot.core.networking.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a> class, give it an ID and
 the rest of its attributes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1382,14 +1419,14 @@ and included in the message.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first simple">
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.id" title="autopilot.core.networking.Station.id"><strong>id</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – ID that uniquely identifies a message.
+<li><a class="reference internal" href="#autopilot.core.networking.Station.id" title="autopilot.core.networking.Station.id"><strong>id</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – ID that uniquely identifies a message.
 format {sender.id}_{number}</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.to" title="autopilot.core.networking.Message.to"><strong>to</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – ID of socket this message is addressed to</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.sender" title="autopilot.core.networking.Message.sender"><strong>sender</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – ID of socket where this message originates</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.key" title="autopilot.core.networking.Message.key"><strong>key</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Type of message, used to select a listen method to process it</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.value" title="autopilot.core.networking.Message.value"><strong>value</strong></a> – Body of message, can be any type but must be JSON serializable.</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.timestamp" title="autopilot.core.networking.Message.timestamp"><strong>timestamp</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Timestamp of message creation</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.ttl" title="autopilot.core.networking.Message.ttl"><strong>ttl</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Time-To-Live, each message is sent this many times at max,
+<li><a class="reference internal" href="#autopilot.core.networking.Message.to" title="autopilot.core.networking.Message.to"><strong>to</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – ID of socket this message is addressed to</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Message.sender" title="autopilot.core.networking.Message.sender"><strong>sender</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – ID of socket where this message originates</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Message.key" title="autopilot.core.networking.Message.key"><strong>key</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Type of message, used to select a listen method to process it</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Message.value" title="autopilot.core.networking.Message.value"><strong>value</strong></a> – Body of message, can be any type but must be JSON serializable.</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Message.timestamp" title="autopilot.core.networking.Message.timestamp"><strong>timestamp</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Timestamp of message creation</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Message.ttl" title="autopilot.core.networking.Message.ttl"><strong>ttl</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Time-To-Live, each message is sent this many times at max,
 each send decrements ttl.</li>
 </ul>
 </td>
@@ -1409,7 +1446,7 @@ each send decrements ttl.</li>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.__contains__" title="autopilot.core.networking.Message.__contains__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__contains__</span></code></a>(key)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Message.__contains__" title="autopilot.core.networking.Message.__contains__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__contains__</span></code></a>(key)</td>
 <td><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1420,7 +1457,7 @@ each send decrements ttl.</li>
 </table>
 </td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.__delitem__" title="autopilot.core.networking.Message.__delitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__delitem__</span></code></a>(key)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Message.__delitem__" title="autopilot.core.networking.Message.__delitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__delitem__</span></code></a>(key)</td>
 <td><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1431,7 +1468,7 @@ each send decrements ttl.</li>
 </table>
 </td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.__getitem__" title="autopilot.core.networking.Message.__getitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__getitem__</span></code></a>(key)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Message.__getitem__" title="autopilot.core.networking.Message.__getitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__getitem__</span></code></a>(key)</td>
 <td><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1442,7 +1479,7 @@ each send decrements ttl.</li>
 </table>
 </td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.__setitem__" title="autopilot.core.networking.Message.__setitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__setitem__</span></code></a>(key,&nbsp;value)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Message.__setitem__" title="autopilot.core.networking.Message.__setitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__setitem__</span></code></a>(key,&nbsp;value)</td>
 <td><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1453,13 +1490,13 @@ each send decrements ttl.</li>
 </table>
 </td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.get_timestamp" title="autopilot.core.networking.Message.get_timestamp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_timestamp</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Message.get_timestamp" title="autopilot.core.networking.Message.get_timestamp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_timestamp</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.serialize" title="autopilot.core.networking.Message.serialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">serialize</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Message.serialize" title="autopilot.core.networking.Message.serialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">serialize</span></code></a>()</td>
 <td>Serializes all attributes in <cite>__dict__</cite> using json.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.validate" title="autopilot.core.networking.Message.validate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Message.validate" title="autopilot.core.networking.Message.validate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate</span></code></a>()</td>
 <td>Checks if <cite>id</cite>, <cite>to</cite>, <cite>sender</cite>, and <cite>key</cite> are all defined.</td>
 </tr>
 </tbody>
@@ -1471,10 +1508,10 @@ each send decrements ttl.</li>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.flags" title="autopilot.core.networking.Message.flags"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flags</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Message.flags" title="autopilot.core.networking.Message.flags"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flags</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.ttl" title="autopilot.core.networking.Message.ttl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ttl</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Message.ttl" title="autopilot.core.networking.Message.ttl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ttl</span></code></a></td>
 <td>int(x=0) -&gt; int or long</td>
 </tr>
 </tbody>
@@ -1627,7 +1664,7 @@ each send decrements ttl.</li>
         <a href="autopilot.core.pilot.html" class="btn btn-neutral float-right" title="pilot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="autopilot.core.hardware.html" class="btn btn-neutral" title="hardware" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="autopilot.core.hardware.html" class="btn btn-neutral float-left" title="hardware" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1653,26 +1690,16 @@ each send decrements ttl.</li>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

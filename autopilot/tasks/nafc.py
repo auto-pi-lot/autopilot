@@ -4,13 +4,13 @@ import itertools
 import tables
 import threading
 
-from rpilot.core import hardware
-from rpilot.tasks import Task
-from rpilot.stim import init_manager
+from autopilot.core import hardware
+from autopilot.tasks import Task
+from autopilot.stim import init_manager
 from collections import OrderedDict as odict
-from rpilot.core.networking import Net_Node
+from autopilot.core.networking import Net_Node
 
-from rpilot import prefs
+from autopilot import prefs
 
 # This declaration allows Subject to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
 # TODO: Move this to __init__
@@ -47,19 +47,19 @@ class Nafc(Task):
 
 
     # List of needed params, returned data and data format.
-    # Params are [name]={'tag': Human Readable Tag, 'type': 'int', 'float', 'check', etc.}
+    # Params are [name]={'tag': Human Readable Tag, 'type': 'int', 'float', 'bool', etc.}
     PARAMS = odict()
     # TODO: Reward no longer just duration -- fix with parameter structure
     PARAMS['reward']         = {'tag':'Reward Duration (ms)',
                                 'type':'int'}
     PARAMS['req_reward']     = {'tag':'Request Rewards',
-                                'type':'check'}
+                                'type':'bool'}
     PARAMS['punish_stim']   = {'tag':'White Noise Punishment',
-                                'type':'check'}
+                                'type':'bool'}
     PARAMS['punish_dur']     = {'tag':'Punishment Duration (ms)',
                                 'type':'int'}
     PARAMS['correction']     = {'tag':'Correction Trials',
-                                'type':'check'}
+                                'type':'bool'}
     PARAMS['correction_pct'] = {'tag':'% Correction Trials',
                                 'type':'int',
                                 'depends':{'correction':True}}

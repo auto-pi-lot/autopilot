@@ -19,13 +19,20 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -40,21 +47,16 @@
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
 
 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -112,10 +114,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -124,9 +128,42 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.training.html">Training a Subject</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Writing a Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#debugging-a-task">Debugging a Task</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -240,6 +277,167 @@
             
   <div class="section" id="writing-a-task">
 <span id="guide-task"></span><h1>Writing a Task<a class="headerlink" href="#writing-a-task" title="Permalink to this headline">¶</a></h1>
+<p>Some concepts of task design are also discussed in section 3.1 of the <a class="reference external" href="auto-pi-lot.com/autopilot_whitepaper.pdf">whitepaper</a>.</p>
+<div class="section" id="the-nafc-task">
+<h2>The Nafc Task<a class="headerlink" href="#the-nafc-task" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Nafc</span></code> class serves as an example for new task designs.</p>
+<p>To demonstrate the general structure of Autopilot tasks, let’s build it from scratch.</p>
+<div class="section" id="the-task-class">
+<h3>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class<a class="headerlink" href="#the-task-class" title="Permalink to this headline">¶</a></h3>
+<p>We start by subclassing the <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.task.Task</span></code></a> class and initializing it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">autopilot.tasks</span> <span class="kn">import</span> <span class="n">Task</span>
+
+<span class="k">class</span> <span class="nc">Nafc</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Nafc</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This gives our new task some basic attributes and methods,
+including the <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task.init_hardware" title="autopilot.tasks.task.Task.init_hardware"><code class="xref py py-meth docutils literal notranslate"><span class="pre">init_hardware()</span></code></a> method for initializing the <code class="docutils literal notranslate"><span class="pre">HARDWARE</span></code> dictionary
+and the <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task.handle_trigger" title="autopilot.tasks.task.Task.handle_trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">handle_trigger()</span></code></a> method for handling GPIO triggers.</p>
+</div>
+<div class="section" id="four-task-attributes">
+<h3>Four Task Attributes<a class="headerlink" href="#four-task-attributes" title="Permalink to this headline">¶</a></h3>
+<p>We then add the four elements of a task description:</p>
+<ol class="arabic simple">
+<li>A <strong>``PARAMS``</strong> dictionary defines what parameters are needed to define the task</li>
+<li>A <strong>``Data``</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">tables.IsDescription</span></code>) descriptor describes what data will be returned from the task</li>
+<li>A <strong>``PLOT``</strong> dictionary that maps the data output to graphical elements in the GUI.</li>
+<li>A <strong>``HARDWARE``</strong> dictionary that describes what hardware will be needed to run the task.</li>
+</ol>
+<div class="section" id="params">
+<h4>PARAMS<a class="headerlink" href="#params" title="Permalink to this headline">¶</a></h4>
+<p>Each parameter needs a human readable <code class="docutils literal notranslate"><span class="pre">tag</span></code> that will be used for GUI elements,
+and a <code class="docutils literal notranslate"><span class="pre">type</span></code>, currently one of:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">int</span></code>: integers</li>
+<li><code class="docutils literal notranslate"><span class="pre">bool</span></code>: boolean (checkboxes in GUI)</li>
+<li><code class="docutils literal notranslate"><span class="pre">list</span></code>: list of possible values in {‘Name’:int} pairs</li>
+<li><code class="docutils literal notranslate"><span class="pre">sounds</span></code>: a <a class="reference internal" href="autopilot.core.gui.html#autopilot.core.gui.Sound_Widget" title="autopilot.core.gui.Sound_Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.gui.Sound_Widget</span></code></a> to define sounds.</li>
+</ul>
+<p>To maintain order when opened by the GUI we use a <code class="xref py py-class docutils literal notranslate"><span class="pre">odict</span></code> rather than a normal dictionary.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">See the <a class="reference internal" href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc" title="autopilot.tasks.nafc.Nafc"><code class="xref py py-class docutils literal notranslate"><span class="pre">Nafc</span></code></a> class for descriptions of the task parameters.</p>
+</div>
+<p>These will be taken as key-value pairs when the task is initialized. ie.:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;correction&#39;</span><span class="p">]</span>     <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span>  <span class="s1">&#39;Correction Trials&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>will be used to initialize the task like:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">Nafc</span><span class="p">(</span><span class="n">correction</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="data">
+<h4>Data<a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h4>
+<p>There are two types of data,</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">TrialData</span></code> - where a single value for several variables is returned per ‘trial’, and</li>
+<li><code class="docutils literal notranslate"><span class="pre">ContinuousData</span></code> - where values and timestamps are taken continuously, without</li>
+</ul>
+<p>Both are defined by <a class="reference external" href="https://www.pytables.org/index.html">pytables</a> <code class="xref py py-class docutils literal notranslate"><span class="pre">tables.IsDescription</span></code> objects.
+Specify each variable that will be returned and its type using a <code class="xref py py-class docutils literal notranslate"><span class="pre">tables.Col</span></code> object:</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">See <a class="reference external" href="https://www.pytables.org/usersguide/libref/declarative_classes.html#col-sub-classes">the pytables documentation</a> for a list of <code class="docutils literal notranslate"><span class="pre">Col</span></code> types</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tables</span>
+
+<span class="k">class</span> <span class="nc">TrialData</span><span class="p">(</span><span class="n">tables</span><span class="o">.</span><span class="n">IsDescription</span><span class="p">):</span>
+    <span class="n">trial_num</span>    <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Int32Col</span><span class="p">()</span>
+    <span class="n">target</span>       <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">StringCol</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">response</span>     <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">StringCol</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">correct</span>      <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Int32Col</span><span class="p">()</span>
+    <span class="n">correction</span>   <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Int32Col</span><span class="p">()</span>
+    <span class="n">RQ_timestamp</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">StringCol</span><span class="p">(</span><span class="mi">26</span><span class="p">)</span>
+    <span class="n">DC_timestamp</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">StringCol</span><span class="p">(</span><span class="mi">26</span><span class="p">)</span>
+    <span class="n">bailed</span>       <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Int32Col</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The column types are names with their type and their bit depth except for the <code class="xref py py-class docutils literal notranslate"><span class="pre">StringCol</span></code>
+which takes a string length in characters.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">TrialData</span></code> object is used by the <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> class when a task is assigned to create the data storage table.</p>
+</div>
+<div class="section" id="plot">
+<h4>PLOT<a class="headerlink" href="#plot" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">PLOT</span></code> dictionary maps the data returned from the task to graphical elements in the <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a>’s <a class="reference internal" href="autopilot.core.plots.html#autopilot.core.plots.Plot" title="autopilot.core.plots.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a>.
+Specifically, when the task is started, the <a class="reference internal" href="autopilot.core.plots.html#autopilot.core.plots.Plot" title="autopilot.core.plots.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a> object creates the graphical element (eg. a <a class="reference internal" href="autopilot.core.plots.html#autopilot.core.plots.Point" title="autopilot.core.plots.Point"><code class="xref py py-class docutils literal notranslate"><span class="pre">Point</span></code></a>)
+and then calls its <code class="docutils literal notranslate"><span class="pre">update</span></code> method with any data that is received through its <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code>.</p>
+<p>Data is plotted either by trial (default) or by timestamp (if <code class="docutils literal notranslate"><span class="pre">PLOT['continuous']</span> <span class="pre">!=</span> <span class="pre">True</span></code>). Numerical data is plotted as-expected, but
+further mappings can be defined by extending the graphical element’s <code class="docutils literal notranslate"><span class="pre">update</span></code> method – eg. ‘L’(eft) maps to 0 and ‘R’(ight) maps to 1 by default.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PLOT</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;target&#39;</span>   <span class="p">:</span> <span class="s1">&#39;point&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;response&#39;</span> <span class="p">:</span> <span class="s1">&#39;segment&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;correct&#39;</span>  <span class="p">:</span> <span class="s1">&#39;rollmean&#39;</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;chance_bar&#39;</span>  <span class="p">:</span> <span class="bp">True</span><span class="p">,</span> <span class="c1"># Draw a red bar at 50%</span>
+    <span class="s1">&#39;roll_window&#39;</span> <span class="p">:</span> <span class="mi">50</span> <span class="c1"># number of trials to roll window over</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">Non-numeric mappings will be supported in the <code class="docutils literal notranslate"><span class="pre">PLOT</span></code> specification after parameters are unified into a single structure.</p>
+</div>
+</div>
+<div class="section" id="hardware">
+<h4>HARDWARE<a class="headerlink" href="#hardware" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">autopilot.core</span> <span class="kn">import</span> <span class="n">hardware</span>
+
+<span class="n">HARDWARE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;POKES&#39;</span><span class="p">:{</span>
+        <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Beambreak</span><span class="p">,</span>
+        <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Beambreak</span><span class="p">,</span>
+        <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Beambreak</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;LEDS&#39;</span><span class="p">:{</span>
+        <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">,</span>
+        <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">,</span>
+        <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">LED_RGB</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;PORTS&#39;</span><span class="p">:{</span>
+        <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Solenoid</span><span class="p">,</span>
+        <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Solenoid</span><span class="p">,</span>
+        <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Solenoid</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="initialization">
+<h3>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="stage-functions">
+<h3>Stage Functions<a class="headerlink" href="#stage-functions" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="request">
+<h4>Request<a class="headerlink" href="#request" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="discrim">
+<h4>Discrim<a class="headerlink" href="#discrim" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="reinforcement">
+<h4>Reinforcement<a class="headerlink" href="#reinforcement" title="Permalink to this headline">¶</a></h4>
+</div>
+</div>
+<div class="section" id="additional-methods">
+<h3>Additional Methods<a class="headerlink" href="#additional-methods" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="nafc-wheel-child-agents">
+<h2>Nafc Wheel - Child Agents<a class="headerlink" href="#nafc-wheel-child-agents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="task-running-styles">
+<h3>Task Running Styles<a class="headerlink" href="#task-running-styles" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>pilot calls stages, blocked with event</li>
+<li>task manages advancement, returns data with node</li>
+</ul>
+</div>
+</div>
 </div>
 
 
@@ -253,7 +451,7 @@
         <a href="guide.hardware.html" class="btn btn-neutral float-right" title="Writing a Hardware Class" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="guide.training.html" class="btn btn-neutral" title="Training a Subject" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="guide.training.html" class="btn btn-neutral float-left" title="Training a Subject" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -279,26 +477,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

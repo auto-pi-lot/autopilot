@@ -19,9 +19,9 @@ import pandas as pd
 import warnings
 from copy import copy
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from rpilot.tasks import GRAD_LIST, TASK_LIST
-from rpilot import prefs
-from rpilot.stim.sound.sounds import STRING_PARAMS
+from autopilot.tasks import GRAD_LIST, TASK_LIST
+from autopilot import prefs
+from autopilot.stim.sound.sounds import STRING_PARAMS
 
 if sys.version_info >= (3,0):
     import queue

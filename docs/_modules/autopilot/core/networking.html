@@ -19,13 +19,20 @@
   
 
   
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
@@ -38,21 +45,16 @@
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
 
 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -110,10 +112,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -122,9 +126,42 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.training.html">Training a Subject</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#debugging-a-task">Debugging a Task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -273,7 +310,7 @@
 
 <span class="c1"># TODO: Periodically ping pis to check that they are still responsive</span>
 
-<div class="viewcode-block" id="Station"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Station">[docs]</a><span class="k">class</span> <span class="nc">Station</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
+<div class="viewcode-block" id="Station"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Station">[docs]</a><span class="k">class</span> <span class="nc">Station</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Independent networking class used for messaging between computers.</span>
 
@@ -379,7 +416,7 @@
         <span class="c1"># Stopping the loop should kill the process, as it&#39;s what&#39;s holding us in run()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Station.run"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Station.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Station.run"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Station.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A :class:`zmq.Context` and :class:`tornado.IOLoop` are spawned,</span>
 <span class="sd">        the listener and optionally the pusher are instantiated and</span>
@@ -414,7 +451,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Starting IOLoop&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Station.prepare_message"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Station.prepare_message">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Station.prepare_message"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Station.prepare_message">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If a message originates with us, a :class:`.Message` class</span>
 <span class="sd">        is instantiated, given an ID and the rest of its attributes.</span>
@@ -445,7 +482,7 @@
         <span class="k">return</span> <span class="n">msg</span></div>
 
 
-<div class="viewcode-block" id="Station.send"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Station.send">[docs]</a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Station.send"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Station.send">[docs]</a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send a message via our :attr:`~.Station.listener` , ROUTER socket.</span>
 
@@ -515,7 +552,7 @@
             <span class="c1"># self.timers[msg.id].start()</span>
             <span class="c1">#self.outbox.put((msg.id))</span>
 
-<div class="viewcode-block" id="Station.push"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Station.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">to</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Station.push"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Station.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">to</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send a message via our :attr:`~.Station.pusher` , DEALER socket.</span>
 
@@ -586,7 +623,7 @@
             <span class="c1">#self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id, &#39;push&#39;))</span>
             <span class="c1">#self.timers[msg.id].start()</span>
 
-<div class="viewcode-block" id="Station.repeat"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Station.repeat">[docs]</a>    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Station.repeat"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Station.repeat">[docs]</a>    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Periodically (according to :attr:`~.repeat_interval`) resend messages that haven&#39;t been confirmed</span>
 
@@ -641,7 +678,7 @@
 
 
 
-<div class="viewcode-block" id="Station.l_confirm"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Station.l_confirm">[docs]</a>    <span class="k">def</span> <span class="nf">l_confirm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Station.l_confirm"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Station.l_confirm">[docs]</a>    <span class="k">def</span> <span class="nf">l_confirm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Confirm that a message was received.</span>
 
@@ -664,7 +701,7 @@
 
         <span class="c1">#self.logger.info(&#39;CONFIRMED MESSAGE {}&#39;.format(msg.value))</span>
 
-<div class="viewcode-block" id="Station.handle_listen"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Station.handle_listen">[docs]</a>    <span class="k">def</span> <span class="nf">handle_listen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Station.handle_listen"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Station.handle_listen">[docs]</a>    <span class="k">def</span> <span class="nf">handle_listen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Upon receiving a message, call the appropriate listen method</span>
 <span class="sd">        in a new thread.</span>
@@ -802,7 +839,7 @@
             <span class="k">elif</span> <span class="n">send_type</span> <span class="o">==</span> <span class="s1">&#39;dealer&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="s1">&#39;CONFIRM&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Station.init_logging"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Station.init_logging">[docs]</a>    <span class="k">def</span> <span class="nf">init_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Station.init_logging"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Station.init_logging">[docs]</a>    <span class="k">def</span> <span class="nf">init_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize logging to a timestamped file in `prefs.LOGDIR` .</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -818,7 +855,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Station Logging Initiated&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Station.get_ip"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Station.get_ip">[docs]</a>    <span class="k">def</span> <span class="nf">get_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Station.get_ip"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Station.get_ip">[docs]</a>    <span class="k">def</span> <span class="nf">get_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find our IP address</span>
 
@@ -839,13 +876,13 @@
 
         <span class="k">return</span> <span class="n">unwrap2</span></div>
 
-<div class="viewcode-block" id="Station.set_logging"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Station.set_logging">[docs]</a>    <span class="k">def</span> <span class="nf">set_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_logging</span><span class="p">):</span>
+<div class="viewcode-block" id="Station.set_logging"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Station.set_logging">[docs]</a>    <span class="k">def</span> <span class="nf">set_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_logging</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">do_logging</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">do_logging</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">do_logging</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div></div>
 
-<div class="viewcode-block" id="Terminal_Station"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station">[docs]</a><span class="k">class</span> <span class="nc">Terminal_Station</span><span class="p">(</span><span class="n">Station</span><span class="p">):</span>
+<div class="viewcode-block" id="Terminal_Station"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Terminal_Station">[docs]</a><span class="k">class</span> <span class="nc">Terminal_Station</span><span class="p">(</span><span class="n">Station</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :class:`~.networking.Station` object used by :class:`~.Terminal`</span>
 <span class="sd">    objects.</span>
@@ -913,7 +950,7 @@
     <span class="c1">##########################</span>
     <span class="c1"># Message Handling Methods</span>
 
-<div class="viewcode-block" id="Terminal_Station.l_ping"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_ping">[docs]</a>    <span class="k">def</span> <span class="nf">l_ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Terminal_Station.l_ping"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_ping">[docs]</a>    <span class="k">def</span> <span class="nf">l_ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We are asked to confirm that we are alive</span>
 
@@ -926,7 +963,7 @@
         <span class="c1"># respond with blank message since the terminal isn&#39;t really stateful</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="s1">&#39;STATE&#39;</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;NOLOG&#39;</span><span class="p">:</span><span class="bp">True</span><span class="p">})</span></div>
 
-<div class="viewcode-block" id="Terminal_Station.l_init"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_init">[docs]</a>    <span class="k">def</span> <span class="nf">l_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Terminal_Station.l_init"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_init">[docs]</a>    <span class="k">def</span> <span class="nf">l_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ask all pilots to confirm that they are alive</span>
 
@@ -942,7 +979,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s1">&#39;PING&#39;</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;NOLOG&#39;</span><span class="p">:</span><span class="bp">True</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="Terminal_Station.l_change"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_change">[docs]</a>    <span class="k">def</span> <span class="nf">l_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Terminal_Station.l_change"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_change">[docs]</a>    <span class="k">def</span> <span class="nf">l_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Change a parameter on the Pi</span>
 
@@ -955,7 +992,7 @@
         <span class="c1"># TODO: Should also handle param changes to GUI objects like ntrials, etc.</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Terminal_Station.l_stopall"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_stopall">[docs]</a>    <span class="k">def</span> <span class="nf">l_stopall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Terminal_Station.l_stopall"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_stopall">[docs]</a>    <span class="k">def</span> <span class="nf">l_stopall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stop all pilots and plots</span>
 
@@ -968,7 +1005,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;P_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="s1">&#39;STOP&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Terminal_Station.l_kill"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_kill">[docs]</a>    <span class="k">def</span> <span class="nf">l_kill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Terminal_Station.l_kill"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_kill">[docs]</a>    <span class="k">def</span> <span class="nf">l_kill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Terminal wants us to die :(</span>
 
@@ -985,7 +1022,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="Terminal_Station.l_data"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_data">[docs]</a>    <span class="k">def</span> <span class="nf">l_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Terminal_Station.l_data"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_data">[docs]</a>    <span class="k">def</span> <span class="nf">l_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stash incoming data from a Pilot</span>
 
@@ -1002,7 +1039,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;P_{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]),</span> <span class="s1">&#39;DATA&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Terminal_Station.l_state"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_state">[docs]</a>    <span class="k">def</span> <span class="nf">l_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Terminal_Station.l_state"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_state">[docs]</a>    <span class="k">def</span> <span class="nf">l_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A Pilot has changed state.</span>
 
@@ -1027,7 +1064,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">senders</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">]</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">value</span></div>
 
-<div class="viewcode-block" id="Terminal_Station.l_handshake"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_handshake">[docs]</a>    <span class="k">def</span> <span class="nf">l_handshake</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Terminal_Station.l_handshake"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_handshake">[docs]</a>    <span class="k">def</span> <span class="nf">l_handshake</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A Pi is telling us it&#39;s alive and its IP.</span>
 
@@ -1041,7 +1078,7 @@
 
 
 
-<div class="viewcode-block" id="Terminal_Station.l_file"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_file">[docs]</a>    <span class="k">def</span> <span class="nf">l_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Terminal_Station.l_file"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_file">[docs]</a>    <span class="k">def</span> <span class="nf">l_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A Pilot needs some file from us.</span>
 
@@ -1067,7 +1104,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="s1">&#39;FILE&#39;</span><span class="p">,</span> <span class="n">file_message</span><span class="p">)</span></div></div>
 
-<div class="viewcode-block" id="Pilot_Station"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station">[docs]</a><span class="k">class</span> <span class="nc">Pilot_Station</span><span class="p">(</span><span class="n">Station</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Station"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Pilot_Station">[docs]</a><span class="k">class</span> <span class="nc">Pilot_Station</span><span class="p">(</span><span class="n">Station</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :class:`~.networking.Station` object used by :class:`~.Pilot`</span>
 <span class="sd">    objects.</span>
@@ -1136,10 +1173,10 @@
     <span class="c1">###########################3</span>
     <span class="c1"># Message/Listen handling methods</span>
 
-<div class="viewcode-block" id="Pilot_Station.l_noop"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_noop">[docs]</a>    <span class="k">def</span> <span class="nf">l_noop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Station.l_noop"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_noop">[docs]</a>    <span class="k">def</span> <span class="nf">l_noop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Pilot_Station.l_state"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_state">[docs]</a>    <span class="k">def</span> <span class="nf">l_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Station.l_state"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_state">[docs]</a>    <span class="k">def</span> <span class="nf">l_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pilot has changed state</span>
 
@@ -1155,7 +1192,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">push_id</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;STATE&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Pilot_Station.l_cohere"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_cohere">[docs]</a>    <span class="k">def</span> <span class="nf">l_cohere</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Station.l_cohere"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_cohere">[docs]</a>    <span class="k">def</span> <span class="nf">l_cohere</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send our local version of the data table so the terminal can double check</span>
 
@@ -1168,7 +1205,7 @@
 
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Pilot_Station.l_ping"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_ping">[docs]</a>    <span class="k">def</span> <span class="nf">l_ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Station.l_ping"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_ping">[docs]</a>    <span class="k">def</span> <span class="nf">l_ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The Terminal wants to know our status</span>
 
@@ -1181,7 +1218,7 @@
         <span class="c1"># don&#39;t bother the pi</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;STATE&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;NOLOG&#39;</span><span class="p">:</span><span class="bp">True</span><span class="p">})</span></div>
 
-<div class="viewcode-block" id="Pilot_Station.l_start"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_start">[docs]</a>    <span class="k">def</span> <span class="nf">l_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Station.l_start"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_start">[docs]</a>    <span class="k">def</span> <span class="nf">l_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We are being sent a task to start</span>
 
@@ -1256,7 +1293,7 @@
         <span class="c1"># once we make sure we have everything, tell the Pilot to start.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pi_id</span><span class="p">,</span> <span class="s1">&#39;START&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Pilot_Station.l_stop"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_stop">[docs]</a>    <span class="k">def</span> <span class="nf">l_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Station.l_stop"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_stop">[docs]</a>    <span class="k">def</span> <span class="nf">l_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tell the pi to stop the task</span>
 
@@ -1265,7 +1302,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pi_id</span><span class="p">,</span> <span class="s1">&#39;STOP&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Pilot_Station.l_change"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_change">[docs]</a>    <span class="k">def</span> <span class="nf">l_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Station.l_change"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_change">[docs]</a>    <span class="k">def</span> <span class="nf">l_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The terminal is changing a parameter</span>
 
@@ -1278,7 +1315,7 @@
         <span class="c1"># TODO: Changing some task parameter from the Terminal</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Pilot_Station.l_file"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_file">[docs]</a>    <span class="k">def</span> <span class="nf">l_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Station.l_file"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_file">[docs]</a>    <span class="k">def</span> <span class="nf">l_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We are receiving a file.</span>
 
@@ -1307,13 +1344,13 @@
         <span class="c1"># If we requested a file, some poor start fn is probably waiting on us</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_block</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Pilot_Station.l_continuous"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_continuous">[docs]</a>    <span class="k">def</span> <span class="nf">l_continuous</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Station.l_continuous"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_continuous">[docs]</a>    <span class="k">def</span> <span class="nf">l_continuous</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">:</span>
             <span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_id</span>
             <span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;DATA&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Pilot_Station.l_child"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_child">[docs]</a>    <span class="k">def</span> <span class="nf">l_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Station.l_child"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_child">[docs]</a>    <span class="k">def</span> <span class="nf">l_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Telling our child to run a task.</span>
 
@@ -1326,7 +1363,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="n">prefs</span><span class="o">.</span><span class="n">CHILDID</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;START&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Pilot_Station.l_forward"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_forward">[docs]</a>    <span class="k">def</span> <span class="nf">l_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Station.l_forward"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_forward">[docs]</a>    <span class="k">def</span> <span class="nf">l_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Just forward the message to the pi.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1338,7 +1375,7 @@
 
 <span class="c1">#####################################</span>
 
-<div class="viewcode-block" id="Net_Node"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node">[docs]</a><span class="k">class</span> <span class="nc">Net_Node</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Net_Node"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Net_Node">[docs]</a><span class="k">class</span> <span class="nc">Net_Node</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Drop in networking object to be given to any sub-object</span>
 <span class="sd">    behind some external-facing :class:`.Station` object.</span>
@@ -1431,7 +1468,7 @@
     <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">closing</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Net_Node.init_networking"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.init_networking">[docs]</a>    <span class="k">def</span> <span class="nf">init_networking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Net_Node.init_networking"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Net_Node.init_networking">[docs]</a>    <span class="k">def</span> <span class="nf">init_networking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates socket, connects to specified port on localhost,</span>
 <span class="sd">        and starts the :meth:`~Net_Node.threaded_loop` as a daemon thread.</span>
@@ -1457,7 +1494,7 @@
 
         <span class="c1">#self.connected = True</span>
 
-<div class="viewcode-block" id="Net_Node.threaded_loop"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.threaded_loop">[docs]</a>    <span class="k">def</span> <span class="nf">threaded_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Net_Node.threaded_loop"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Net_Node.threaded_loop">[docs]</a>    <span class="k">def</span> <span class="nf">threaded_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run in a thread, either starts the IOLoop, or if it</span>
 <span class="sd">        is already started (ie. running in another thread),</span>
@@ -1471,7 +1508,7 @@
                 <span class="c1"># loop already started</span>
                 <span class="k">break</span></div>
 
-<div class="viewcode-block" id="Net_Node.handle_listen"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.handle_listen">[docs]</a>    <span class="k">def</span> <span class="nf">handle_listen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Net_Node.handle_listen"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Net_Node.handle_listen">[docs]</a>    <span class="k">def</span> <span class="nf">handle_listen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Upon receiving a message, call the appropriate listen method</span>
 <span class="sd">        in a new thread and send confirmation it was received.</span>
@@ -1537,7 +1574,7 @@
             <span class="c1"># send confirmation</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="s1">&#39;CONFIRM&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Net_Node.send"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.send">[docs]</a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">flags</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Net_Node.send"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Net_Node.send">[docs]</a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">flags</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send a message via our :attr:`~.Net_Node.sock` , DEALER socket.</span>
 
@@ -1606,7 +1643,7 @@
             <span class="c1"># self.timers[msg.id] = threading.Timer(5.0, self.repeat, args=(msg.id,))</span>
             <span class="c1"># self.timers[msg.id].start()</span>
 
-<div class="viewcode-block" id="Net_Node.repeat"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.repeat">[docs]</a>    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Net_Node.repeat"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Net_Node.repeat">[docs]</a>    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Periodically (according to :attr:`~.repeat_interval`) resend messages that haven&#39;t been confirmed</span>
 
@@ -1639,7 +1676,7 @@
             <span class="c1"># wait to do it again</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">repeat_interval</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Net_Node.l_confirm"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.l_confirm">[docs]</a>    <span class="k">def</span> <span class="nf">l_confirm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Net_Node.l_confirm"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Net_Node.l_confirm">[docs]</a>    <span class="k">def</span> <span class="nf">l_confirm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Confirm that a message was received.</span>
 
@@ -1663,7 +1700,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_logging</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;CONFIRMED MESSAGE {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Net_Node.prepare_message"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.prepare_message">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">repeat</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Net_Node.prepare_message"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Net_Node.prepare_message">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">repeat</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Instantiate a :class:`.Message` class, give it an ID and</span>
 <span class="sd">        the rest of its attributes.</span>
@@ -1702,7 +1739,7 @@
 
         <span class="k">return</span> <span class="n">msg</span></div>
 
-<div class="viewcode-block" id="Net_Node.init_logging"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.init_logging">[docs]</a>    <span class="k">def</span> <span class="nf">init_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Net_Node.init_logging"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Net_Node.init_logging">[docs]</a>    <span class="k">def</span> <span class="nf">init_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize logging to a timestamped file in `prefs.LOGDIR` .</span>
 
@@ -1722,7 +1759,7 @@
 
 
 
-<div class="viewcode-block" id="Message"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Message">[docs]</a><span class="k">class</span> <span class="nc">Message</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Message"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Message">[docs]</a><span class="k">class</span> <span class="nc">Message</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A formatted message.</span>
 
@@ -1790,14 +1827,14 @@
         <span class="k">return</span> <span class="n">me_string</span>
 
     <span class="c1"># enable dictionary-like behavior</span>
-<div class="viewcode-block" id="Message.__getitem__"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Message.__getitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="Message.__getitem__"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Message.__getitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            key:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Message.__setitem__"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Message.__setitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Message.__setitem__"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Message.__setitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            key:</span>
@@ -1805,14 +1842,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="Message.__delitem__"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Message.__delitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="Message.__delitem__"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Message.__delitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            key:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Message.__contains__"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Message.__contains__">[docs]</a>    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="Message.__contains__"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Message.__contains__">[docs]</a>    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            key:</span>
@@ -1822,10 +1859,10 @@
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Message.get_timestamp"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Message.get_timestamp">[docs]</a>    <span class="k">def</span> <span class="nf">get_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Message.get_timestamp"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Message.get_timestamp">[docs]</a>    <span class="k">def</span> <span class="nf">get_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Message.validate"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Message.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Message.validate"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Message.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if `id`, `to`, `sender`, and `key` are all defined.</span>
 
@@ -1841,7 +1878,7 @@
 
 
 
-<div class="viewcode-block" id="Message.serialize"><a class="viewcode-back" href="../../../rst/autopilot.core.networking.html#autopilot.core.networking.Message.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Message.serialize"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Message.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serializes all attributes in `__dict__` using json.</span>
 
@@ -1943,26 +1980,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

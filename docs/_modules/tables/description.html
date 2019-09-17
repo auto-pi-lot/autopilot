@@ -19,13 +19,20 @@
   
 
   
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -38,21 +45,16 @@
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
 
 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -110,10 +112,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -122,9 +126,42 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide.training.html">Training a Subject</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide.training.html#debugging-a-task">Debugging a Task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -343,7 +380,7 @@
         <span class="k">return</span> <span class="n">cname</span><span class="p">[:</span><span class="n">cname</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;Col&#39;</span><span class="p">)]</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_atom</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">atom</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_atom</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">atom</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">_offset</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a Col definition from a PyTables atom.</span>
 
 <span class="sd">        An optional position may be specified as the pos argument.</span>
@@ -353,7 +390,7 @@
         <span class="n">prefix</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">prefix</span><span class="p">()</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">_get_init_args</span><span class="p">()</span>
         <span class="n">colclass</span> <span class="o">=</span> <span class="n">class_</span><span class="o">.</span><span class="n">_class_from_prefix</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">colclass</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">colclass</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">_offset</span><span class="o">=</span><span class="n">_offset</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_sctype</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">sctype</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(),</span> <span class="n">dflt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
@@ -370,7 +407,7 @@
         <span class="k">return</span> <span class="n">class_</span><span class="o">.</span><span class="n">from_atom</span><span class="p">(</span><span class="n">newatom</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_dtype</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">dflt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_dtype</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">dflt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">_offset</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a `Col` definition from a NumPy `dtype`.</span>
 
 <span class="sd">        Optional default value and position may be specified as the</span>
@@ -382,7 +419,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">newatom</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">Atom</span><span class="o">.</span><span class="n">from_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dflt</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">class_</span><span class="o">.</span><span class="n">from_atom</span><span class="p">(</span><span class="n">newatom</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">class_</span><span class="o">.</span><span class="n">from_atom</span><span class="p">(</span><span class="n">newatom</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">_offset</span><span class="o">=</span><span class="n">_offset</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_type</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(),</span> <span class="n">dflt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
@@ -432,6 +469,7 @@
 
             <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
                 <span class="n">pos</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;_offset&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
                 <span class="n">class_from_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_from_prefix</span>
                 <span class="n">atombase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="c1"># The constructor of an abstract atom may have changed</span>
@@ -441,6 +479,7 @@
                     <span class="n">colclass</span> <span class="o">=</span> <span class="n">class_from_prefix</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">()]</span>
                     <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">colclass</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_v_pos</span> <span class="o">=</span> <span class="n">pos</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_v_offset</span> <span class="o">=</span> <span class="n">offset</span>
 
             <span class="fm">__eq__</span> <span class="o">=</span> <span class="n">same_position</span><span class="p">(</span><span class="n">atombase</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">)</span>
             <span class="n">_is_equal_to_atom</span> <span class="o">=</span> <span class="n">same_position</span><span class="p">(</span><span class="n">atombase</span><span class="o">.</span><span class="n">_is_equal_to_atom</span><span class="p">)</span>
@@ -578,7 +617,7 @@
 <span class="sd">        Description - see :ref:`DescriptionClassDescr` instances).</span>
 
 <span class="sd">        .. versionchanged:: 3.0</span>
-<span class="sd">           The *_v_colObjects* attobute has been renamed into</span>
+<span class="sd">           The *_v_colObjects* attribute has been renamed into</span>
 <span class="sd">           *_v_colobjects*.</span>
 
 <span class="sd">    .. attribute:: _v_dflts</span>
@@ -671,10 +710,24 @@
 <span class="sd">        from the associated table or nested column to their respective PyTables</span>
 <span class="sd">        types.</span>
 
+<span class="sd">    .. attribute:: _v_offsets</span>
+
+<span class="sd">        A list of offsets for all the columns.  If the list is empty, means that</span>
+<span class="sd">        there are no padding in the data structure.  However, the support for</span>
+<span class="sd">        offsets is currently limited to flat tables; for nested tables, the</span>
+<span class="sd">        potential padding is always removed (exactly the same as in pre-3.5</span>
+<span class="sd">        versions), and this variable is set to empty.</span>
+
+<span class="sd">        .. versionadded:: 3.5</span>
+<span class="sd">           Previous to this version all the compound types were converted</span>
+<span class="sd">           internally to &#39;packed&#39; types, i.e. with no padding between the</span>
+<span class="sd">           component types.  Starting with 3.5, the holes in native HDF5</span>
+<span class="sd">           types (non-nested) are honored and replicated during dataset</span>
+<span class="sd">           and attribute copies.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classdict</span><span class="p">,</span> <span class="n">nestedlvl</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classdict</span><span class="p">,</span> <span class="n">nestedlvl</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">ptparams</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">classdict</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;cannot create an empty data type&quot;</span><span class="p">)</span>
@@ -697,6 +750,8 @@
 
         <span class="n">cols_with_pos</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># colum (position, name) pairs</span>
         <span class="n">cols_no_pos</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># just column names</span>
+        <span class="n">cols_offsets</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># the offsets of the columns</span>
+        <span class="n">valid_offsets</span> <span class="o">=</span> <span class="bp">False</span>  <span class="c1"># by default there a no valid offsets</span>
 
         <span class="c1"># Check for special variables and convert column descriptions</span>
         <span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">descr</span><span class="p">)</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">classdict</span><span class="p">):</span>
@@ -730,7 +785,7 @@
             <span class="c1"># provided by the user will remain unchanged even if we</span>
             <span class="c1"># tamper with the values of ``_v_pos`` here.</span>
             <span class="k">if</span> <span class="n">columns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="n">descr</span> <span class="o">=</span> <span class="n">Description</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">columns</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_nestedlvl</span><span class="p">)</span>
+                <span class="n">descr</span> <span class="o">=</span> <span class="n">Description</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">columns</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_nestedlvl</span><span class="p">,</span> <span class="n">ptparams</span><span class="o">=</span><span class="n">ptparams</span><span class="p">)</span>
             <span class="n">classdict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">descr</span>
 
             <span class="n">pos</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="s1">&#39;_v_pos&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
@@ -738,17 +793,21 @@
                 <span class="n">cols_no_pos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">cols_with_pos</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pos</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="s1">&#39;_v_offset&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">offset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">cols_offsets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
 
         <span class="c1"># Sort field names:</span>
         <span class="c1">#</span>
         <span class="c1"># 1. Fields with explicit positions, according to their</span>
         <span class="c1">#    positions (and their names if coincident).</span>
-        <span class="c1"># 2. Fields with no position, in alfabetical order.</span>
+        <span class="c1"># 2. Fields with no position, in alphabetical order.</span>
         <span class="n">cols_with_pos</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
         <span class="n">cols_no_pos</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
         <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">cols_with_pos</span><span class="p">]</span> <span class="o">+</span> <span class="n">cols_no_pos</span>
 
         <span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">nested</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="c1"># Get properties for compound types</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">validate</span><span class="p">:</span>
@@ -793,12 +852,36 @@
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># A description</span>
                 <span class="n">nestedFormats</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">object</span><span class="o">.</span><span class="n">_v_nested_formats</span><span class="p">)</span>
                 <span class="n">nestedDType</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">kk</span><span class="p">,</span> <span class="nb">object</span><span class="o">.</span><span class="n">_v_dtype</span><span class="p">))</span>
+                <span class="n">nested</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="c1"># Useful for debugging purposes</span>
+        <span class="c1"># import traceback</span>
+        <span class="c1"># if ptparams is None:</span>
+        <span class="c1">#     print(&quot;*** print_stack:&quot;)</span>
+        <span class="c1">#     traceback.print_stack()</span>
+
+        <span class="c1"># Check whether we are gonna use padding or not.  Two possibilities:</span>
+        <span class="c1">#   1) Make padding True by default (except if ALLOW_PADDING is set to False)</span>
+        <span class="c1">#   2) Make padding False by default (except if ALLOW_PADDING is set to True)</span>
+        <span class="c1"># Currently we choose 1) because it favours honoring padding even on unhandled situations (should be very few).</span>
+        <span class="c1"># However, for development, option 2) is recommended as it catches most of the unhandled situations.</span>
+        <span class="n">allow_padding</span> <span class="o">=</span> <span class="bp">False</span> <span class="k">if</span> <span class="n">ptparams</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ptparams</span><span class="p">[</span><span class="s1">&#39;ALLOW_PADDING&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="bp">True</span>
+        <span class="c1"># allow_padding = True if ptparams is not None and ptparams[&#39;ALLOW_PADDING&#39;] else False</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">allow_padding</span> <span class="ow">and</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">cols_offsets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols_with_pos</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols_offsets</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="ow">not</span> <span class="n">nested</span><span class="p">):</span>  <span class="c1"># TODO: support offsets with nested types</span>
+            <span class="c1"># We have to sort the offsets too, as they must follow the column order.</span>
+            <span class="c1"># As the offsets and the pos should be place in the same order, a single sort is enough here.</span>
+            <span class="n">cols_offsets</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+            <span class="n">valid_offsets</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newdict</span><span class="p">[</span><span class="s1">&#39;_v_offsets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1"># Assign the format list to _v_nested_formats</span>
         <span class="n">newdict</span><span class="p">[</span><span class="s1">&#39;_v_nested_formats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nestedFormats</span>
-        <span class="n">newdict</span><span class="p">[</span><span class="s1">&#39;_v_dtype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">nestedDType</span><span class="p">)</span>
-        <span class="c1"># _v_itemsize is derived from the _v_dtype that already computes this</span>
-        <span class="n">newdict</span><span class="p">[</span><span class="s1">&#39;_v_itemsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">newdict</span><span class="p">[</span><span class="s1">&#39;_v_dtype&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">itemsize</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_nestedlvl</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># Get recursively nested _v_nested_names and _v_nested_descr attrs</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_g_set_nested_names_descr</span><span class="p">()</span>
@@ -809,6 +892,18 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;Using a ``_v_byteorder`` in the description is obsolete. &quot;</span>
                     <span class="s2">&quot;Use the byteorder parameter in the constructor instead.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Compute the dtype with offsets or without</span>
+        <span class="c1"># print(&quot;offsets -&gt;&quot;, cols_offsets, nestedDType, nested, valid_offsets)</span>
+        <span class="k">if</span> <span class="n">valid_offsets</span><span class="p">:</span>
+            <span class="c1"># TODO: support offsets with nested types</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">({</span><span class="s1">&#39;names&#39;</span><span class="p">:</span> <span class="n">newdict</span><span class="p">[</span><span class="s1">&#39;_v_names&#39;</span><span class="p">],</span> <span class="s1">&#39;formats&#39;</span><span class="p">:</span> <span class="n">nestedFormats</span><span class="p">,</span> <span class="s1">&#39;offsets&#39;</span><span class="p">:</span> <span class="n">cols_offsets</span><span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">nestedDType</span><span class="p">)</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s1">&#39;_v_dtype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dtype</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s1">&#39;_v_itemsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s1">&#39;_v_offsets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">dtype</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">dtype</span><span class="o">.</span><span class="n">names</span><span class="p">]</span>
+
 
     <span class="k">def</span> <span class="nf">_g_set_nested_names_descr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Computes the nested names and descriptions for nested datatypes.&quot;&quot;&quot;</span>
@@ -1015,13 +1110,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">descr_from_dtype</span><span class="p">(</span><span class="n">dtype_</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">descr_from_dtype</span><span class="p">(</span><span class="n">dtype_</span><span class="p">,</span> <span class="n">ptparams</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get a description instance and byteorder from a (nested) NumPy dtype.&quot;&quot;&quot;</span>
 
     <span class="n">fields</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">fbyteorder</span> <span class="o">=</span> <span class="s1">&#39;|&#39;</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">dtype_</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
-        <span class="n">dtype</span><span class="p">,</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">dtype_</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">name</span><span class="p">][:</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">dtype</span><span class="p">,</span> <span class="n">offset</span> <span class="o">=</span> <span class="n">dtype_</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">name</span><span class="p">][:</span><span class="mi">2</span><span class="p">]</span>
         <span class="n">kind</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">kind</span>
         <span class="n">byteorder</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">byteorder</span>
         <span class="k">if</span> <span class="n">byteorder</span> <span class="ow">in</span> <span class="s1">&#39;&gt;&lt;=&#39;</span><span class="p">:</span>
@@ -1032,24 +1127,25 @@
             <span class="n">fbyteorder</span> <span class="o">=</span> <span class="n">byteorder</span>
         <span class="c1"># Non-nested column</span>
         <span class="k">if</span> <span class="n">kind</span> <span class="ow">in</span> <span class="s1">&#39;biufSUc&#39;</span><span class="p">:</span>
-            <span class="n">col</span> <span class="o">=</span> <span class="n">Col</span><span class="o">.</span><span class="n">from_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">)</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="n">Col</span><span class="o">.</span><span class="n">from_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">_offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
         <span class="c1"># Nested column</span>
         <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;V&#39;</span> <span class="ow">and</span> <span class="n">dtype</span><span class="o">.</span><span class="n">shape</span> <span class="ow">in</span> <span class="p">[(),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)]:</span>
             <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">():</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;nested descriptions will be converted to scalar&quot;</span><span class="p">)</span>
-            <span class="n">col</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">descr_from_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="o">.</span><span class="n">base</span><span class="p">)</span>
-            <span class="n">col</span><span class="o">.</span><span class="n">_v_pos</span> <span class="o">=</span> <span class="n">pos</span>
+            <span class="n">col</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">descr_from_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="n">ptparams</span><span class="o">=</span><span class="n">ptparams</span><span class="p">)</span>
+            <span class="n">col</span><span class="o">.</span><span class="n">_v_pos</span> <span class="o">=</span> <span class="n">offset</span>
+            <span class="n">col</span><span class="o">.</span><span class="n">_v_offset</span> <span class="o">=</span> <span class="n">offset</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
                 <span class="s2">&quot;structured arrays with columns with type description ``</span><span class="si">%s</span><span class="s2">`` &quot;</span>
                 <span class="s2">&quot;are not supported yet, sorry&quot;</span> <span class="o">%</span> <span class="n">dtype</span><span class="p">)</span>
         <span class="n">fields</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">col</span>
 
-    <span class="k">return</span> <span class="n">Description</span><span class="p">(</span><span class="n">fields</span><span class="p">),</span> <span class="n">fbyteorder</span>
+    <span class="k">return</span> <span class="n">Description</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">ptparams</span><span class="o">=</span><span class="n">ptparams</span><span class="p">),</span> <span class="n">fbyteorder</span>
 
 
-<span class="k">def</span> <span class="nf">dtype_from_descr</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">dtype_from_descr</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ptparams</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get a (nested) NumPy dtype from a description instance and byteorder.</span>
 
 <span class="sd">    The descr parameter can be a Description or IsDescription</span>
@@ -1058,12 +1154,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="n">descr</span> <span class="o">=</span> <span class="n">Description</span><span class="p">(</span><span class="n">descr</span><span class="p">)</span>
+        <span class="n">descr</span> <span class="o">=</span> <span class="n">Description</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="n">ptparams</span><span class="o">=</span><span class="n">ptparams</span><span class="p">)</span>
     <span class="k">elif</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">descr</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="n">IsDescription</span><span class="p">)</span>
           <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="n">IsDescription</span><span class="p">)):</span>
-        <span class="n">descr</span> <span class="o">=</span> <span class="n">Description</span><span class="p">(</span><span class="n">descr</span><span class="p">()</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="n">descr</span> <span class="o">=</span> <span class="n">Description</span><span class="p">(</span><span class="n">descr</span><span class="p">()</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">ptparams</span><span class="o">=</span><span class="n">ptparams</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="n">IsDescription</span><span class="p">):</span>
-        <span class="n">descr</span> <span class="o">=</span> <span class="n">Description</span><span class="p">(</span><span class="n">descr</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="n">descr</span> <span class="o">=</span> <span class="n">Description</span><span class="p">(</span><span class="n">descr</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">ptparams</span><span class="o">=</span><span class="n">ptparams</span><span class="p">)</span>
     <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="n">Description</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;invalid description: </span><span class="si">%r</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">descr</span><span class="p">)</span>
 
@@ -1214,26 +1310,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

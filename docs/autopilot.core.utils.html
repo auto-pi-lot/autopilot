@@ -19,13 +19,20 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -40,21 +47,16 @@
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
 
 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -112,10 +114,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -124,9 +128,42 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.training.html">Training a Subject</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#debugging-a-task">Debugging a Task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -240,25 +277,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="utils">
-<h1>utils<a class="headerlink" href="#utils" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-autopilot.core.utils"></span><p><strong>Classes</strong></p>
+  <div class="section" id="module-autopilot.core.utils">
+<span id="utils"></span><h1>utils<a class="headerlink" href="#module-autopilot.core.utils" title="Permalink to this headline">¶</a></h1>
+<p><strong>Classes</strong></p>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.utils.html#autopilot.core.utils.InvokeEvent" title="autopilot.core.utils.InvokeEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a>(fn,&nbsp;*args,&nbsp;**kwargs)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.utils.InvokeEvent" title="autopilot.core.utils.InvokeEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a>(fn,&nbsp;*args,&nbsp;**kwargs)</td>
 <td>Sends signals to the main QT thread from spawned message threads</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.utils.html#autopilot.core.utils.Invoker" title="autopilot.core.utils.Invoker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Invoker</span></code></a></td>
-<td>Wrapper that calls an evoked event made by <a class="reference internal" href="rst/autopilot.core.utils.html#autopilot.core.utils.InvokeEvent" title="autopilot.core.utils.InvokeEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.utils.Invoker" title="autopilot.core.utils.Invoker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Invoker</span></code></a></td>
+<td>Wrapper that calls an evoked event made by <a class="reference internal" href="#autopilot.core.utils.InvokeEvent" title="autopilot.core.utils.InvokeEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.utils.html#autopilot.core.utils.Param" title="autopilot.core.utils.Param"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Param</span></code></a>(**kwargs)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.utils.Param" title="autopilot.core.utils.Param"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Param</span></code></a>(**kwargs)</td>
 <td>In the future, we will implement a coherent Parameter management system</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.utils.html#autopilot.core.utils.ReturnThread" title="autopilot.core.utils.ReturnThread"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReturnThread</span></code></a>([group,&nbsp;target,&nbsp;name,&nbsp;args,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.utils.ReturnThread" title="autopilot.core.utils.ReturnThread"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReturnThread</span></code></a>([group,&nbsp;target,&nbsp;name,&nbsp;args,&nbsp;…])</td>
 <td>Thread whose .join() method returns the value from the function</td>
 </tr>
 </tbody>
@@ -270,10 +307,10 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.utils.html#autopilot.core.utils.list_subjects" title="autopilot.core.utils.list_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_subjects</span></code></a>([pilot_db])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.utils.list_subjects" title="autopilot.core.utils.list_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_subjects</span></code></a>([pilot_db])</td>
 <td>Given a dictionary of a pilot_db, return the subjects that are in it.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.utils.html#autopilot.core.utils.load_pilotdb" title="autopilot.core.utils.load_pilotdb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_pilotdb</span></code></a>([file_name,&nbsp;reverse])</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.utils.load_pilotdb" title="autopilot.core.utils.load_pilotdb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_pilotdb</span></code></a>([file_name,&nbsp;reverse])</td>
 <td>Try to load the file_db</td>
 </tr>
 </tbody>
@@ -294,7 +331,7 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.utils.html#autopilot.core.utils.Param.__contains__" title="autopilot.core.utils.Param.__contains__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__contains__</span></code></a>(key)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.utils.Param.__contains__" title="autopilot.core.utils.Param.__contains__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__contains__</span></code></a>(key)</td>
 <td><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -305,7 +342,7 @@
 </table>
 </td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.utils.html#autopilot.core.utils.Param.__delitem__" title="autopilot.core.utils.Param.__delitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__delitem__</span></code></a>(key)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.utils.Param.__delitem__" title="autopilot.core.utils.Param.__delitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__delitem__</span></code></a>(key)</td>
 <td><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -316,7 +353,7 @@
 </table>
 </td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.utils.html#autopilot.core.utils.Param.__getitem__" title="autopilot.core.utils.Param.__getitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__getitem__</span></code></a>(key)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.utils.Param.__getitem__" title="autopilot.core.utils.Param.__getitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__getitem__</span></code></a>(key)</td>
 <td><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -327,7 +364,7 @@
 </table>
 </td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.utils.html#autopilot.core.utils.Param.__setitem__" title="autopilot.core.utils.Param.__setitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__setitem__</span></code></a>(key,&nbsp;value)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.utils.Param.__setitem__" title="autopilot.core.utils.Param.__setitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__setitem__</span></code></a>(key,&nbsp;value)</td>
 <td><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -347,7 +384,7 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.utils.html#autopilot.core.utils.Param.types" title="autopilot.core.utils.Param.types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">types</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.utils.Param.types" title="autopilot.core.utils.Param.types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">types</span></code></a></td>
 <td>list() -&gt; new empty list</td>
 </tr>
 </tbody>
@@ -372,7 +409,7 @@
 
 <dl class="attribute">
 <dt id="autopilot.core.utils.Param.types">
-<code class="descname">types</code><em class="property"> = ['int', 'check', 'list']</em><a class="headerlink" href="#autopilot.core.utils.Param.types" title="Permalink to this definition">¶</a></dt>
+<code class="descname">types</code><em class="property"> = ['int', 'bool', 'list']</em><a class="headerlink" href="#autopilot.core.utils.Param.types" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -452,7 +489,7 @@
 <dt id="autopilot.core.utils.Invoker">
 <em class="property">class </em><code class="descclassname">autopilot.core.utils.</code><code class="descname">Invoker</code><a class="reference internal" href="_modules/autopilot/core/utils.html#Invoker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Invoker" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="http://pyside.github.io/docs/pyside/PySide/QtCore/QObject.html#PySide.QtCore.QObject" title="(in PySide v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySide.QtCore.QObject</span></code></a></p>
-<p>Wrapper that calls an evoked event made by <a class="reference internal" href="rst/autopilot.core.utils.html#autopilot.core.utils.InvokeEvent" title="autopilot.core.utils.InvokeEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a></p>
+<p>Wrapper that calls an evoked event made by <a class="reference internal" href="#autopilot.core.utils.InvokeEvent" title="autopilot.core.utils.InvokeEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a></p>
 <p><strong>Methods</strong></p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -460,7 +497,7 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.utils.html#autopilot.core.utils.Invoker.event" title="autopilot.core.utils.Invoker.event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">event</span></code></a>(event)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.utils.Invoker.event" title="autopilot.core.utils.Invoker.event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">event</span></code></a>(event)</td>
 <td><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -506,10 +543,10 @@ thx to <a class="reference external" href="https://stackoverflow.com/a/6894023">
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.core.utils.html#autopilot.core.utils.ReturnThread.join" title="autopilot.core.utils.ReturnThread.join"><code class="xref py py-obj docutils literal notranslate"><span class="pre">join</span></code></a>([timeout])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.utils.ReturnThread.join" title="autopilot.core.utils.ReturnThread.join"><code class="xref py py-obj docutils literal notranslate"><span class="pre">join</span></code></a>([timeout])</td>
 <td>Wait until the thread terminates.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.core.utils.html#autopilot.core.utils.ReturnThread.run" title="autopilot.core.utils.ReturnThread.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.utils.ReturnThread.run" title="autopilot.core.utils.ReturnThread.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>()</td>
 <td>Method representing the thread’s activity.</td>
 </tr>
 </tbody>
@@ -593,7 +630,7 @@ exception.</p>
         <a href="autopilot.tasks.html" class="btn btn-neutral float-right" title="tasks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="autopilot.core.terminal.html" class="btn btn-neutral" title="terminal" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="autopilot.core.terminal.html" class="btn btn-neutral float-left" title="terminal" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -619,26 +656,16 @@ exception.</p>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

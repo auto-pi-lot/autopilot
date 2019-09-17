@@ -5,10 +5,10 @@ import json
 import itertools
 import random
 import datetime
-from rpilot import prefs
+from autopilot import prefs
 
-from rpilot.core import hardware
-from rpilot.tasks.task import Task
+from autopilot.core import hardware
+from autopilot.tasks.task import Task
 
 TASK = 'Free_water'
 
@@ -36,7 +36,7 @@ class Free_Water(Task):
     PARAMS['reward'] = {'tag':'Reward Duration (ms)',
                         'type':'int'}
     PARAMS['allow_repeat'] = {'tag':'Allow Repeated Ports?',
-                              'type':'check'}
+                              'type':'bool'}
 
     # Returned Data
     DATA = {

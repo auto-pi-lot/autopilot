@@ -19,13 +19,20 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -38,21 +45,16 @@
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
 
 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -110,10 +112,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -122,9 +126,42 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../guide.training.html">Training a Subject</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.training.html#debugging-a-task">Debugging a Task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -236,58 +273,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-autopilot.core.plots">
-<span id="autopilot-core-plots-module"></span><h1>autopilot.core.plots module<a class="headerlink" href="#module-autopilot.core.plots" title="Permalink to this headline">¶</a></h1>
-<p>Classes to plot data in the GUI.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Plot objects need to be added to <a class="reference internal" href="#autopilot.core.plots.PLOT_LIST" title="autopilot.core.plots.PLOT_LIST"><code class="xref py py-data docutils literal notranslate"><span class="pre">PLOT_LIST</span></code></a> in order to be reachable.</p>
-</div>
-<p><strong>Classes</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.plots.HLine" title="autopilot.core.plots.HLine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HLine</span></code></a>()</td>
-<td>A Horizontal line.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.plots.Plot" title="autopilot.core.plots.Plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Plot</span></code></a>(pilot[,&nbsp;x_width])</td>
-<td>Widget that hosts a <code class="xref py py-class docutils literal notranslate"><span class="pre">pyqtgraph.PlotWidget</span></code> and manages graphical objects for one pilot depending on the task.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.plots.Plot_Widget" title="autopilot.core.plots.Plot_Widget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Plot_Widget</span></code></a>()</td>
-<td>Main plot widget that holds plots for all pilots</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.plots.Point" title="autopilot.core.plots.Point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Point</span></code></a>([color,&nbsp;size])</td>
-<td>A simple point.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.plots.Roll_Mean" title="autopilot.core.plots.Roll_Mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Roll_Mean</span></code></a>([winsize])</td>
-<td>Shaded area underneath a rolling average.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.plots.Segment" title="autopilot.core.plots.Segment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Segment</span></code></a>(**kwargs)</td>
-<td>A line segment that draws from 0.5 to some endpoint.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.plots.Shaded" title="autopilot.core.plots.Shaded"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shaded</span></code></a>(**kwargs)</td>
-<td>Shaded area for a continuous plot</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.plots.Timer" title="autopilot.core.plots.Timer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Timer</span></code></a>()</td>
-<td>A simple timer that counts…</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Data</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.plots.PLOT_LIST" title="autopilot.core.plots.PLOT_LIST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLOT_LIST</span></code></a></td>
-<td>A dictionary connecting plot keys to objects.</td>
-</tr>
-</tbody>
-</table>
+  <div class="section" id="autopilot-core-plots-module">
+<h1>autopilot.core.plots module<a class="headerlink" href="#autopilot-core-plots-module" title="Permalink to this headline">¶</a></h1>
 <p><strong>Functions</strong></p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -295,583 +282,26 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.plots.gui_event" title="autopilot.core.plots.gui_event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gui_event</span></code></a>(fn)</td>
-<td>Wrapper/decorator around an event that posts GUI events back to the main thread that our window is running in.</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__format__</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__new__</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__reduce__</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__reduce_ex__</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__sizeof__</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__subclasshook__</span></code></td>
+<td></td>
 </tr>
 </tbody>
 </table>
-<dl class="function">
-<dt id="autopilot.core.plots.gui_event">
-<code class="descclassname">autopilot.core.plots.</code><code class="descname">gui_event</code><span class="sig-paren">(</span><em>fn</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#gui_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.gui_event" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrapper/decorator around an event that posts GUI events back to the main
-thread that our window is running in.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fn</strong> (<em>callable</em>) – a function that does something to the GUI</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="class">
-<dt id="autopilot.core.plots.Plot_Widget">
-<em class="property">class </em><code class="descclassname">autopilot.core.plots.</code><code class="descname">Plot_Widget</code><a class="reference internal" href="../_modules/autopilot/core/plots.html#Plot_Widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Plot_Widget" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="http://pyside.github.io/docs/pyside/PySide/QtGui/QWidget.html#PySide.QtGui.QWidget" title="(in PySide v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySide.QtGui.QWidget</span></code></a></p>
-<p>Main plot widget that holds plots for all pilots</p>
-<p>Essentially just a container to give plots a layout and handle any
-logic that should apply to all plots.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.logger" title="autopilot.core.networking.Net_Node.logger"><strong>logger</strong></a> (<cite>logging.Logger</cite>) – The ‘main’ logger</li>
-<li><a class="reference internal" href="#module-autopilot.core.plots" title="autopilot.core.plots"><strong>plots</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – mapping from pilot name to <a class="reference internal" href="#autopilot.core.plots.Plot" title="autopilot.core.plots.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a></li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.plots.Plot_Widget.init_plots" title="autopilot.core.plots.Plot_Widget.init_plots"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_plots</span></code></a>(pilot_list)</td>
-<td>For each pilot, instantiate a <a class="reference internal" href="#autopilot.core.plots.Plot" title="autopilot.core.plots.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a> and add to layout.</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="autopilot.core.plots.Plot_Widget.init_plots">
-<code class="descname">init_plots</code><span class="sig-paren">(</span><em>pilot_list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Plot_Widget.init_plots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Plot_Widget.init_plots" title="Permalink to this definition">¶</a></dt>
-<dd><p>For each pilot, instantiate a <a class="reference internal" href="#autopilot.core.plots.Plot" title="autopilot.core.plots.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a> and add to layout.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pilot_list</strong> (<em>list</em>) – the keys from <code class="xref py py-attr docutils literal notranslate"><span class="pre">Terminal.pilots</span></code></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="autopilot.core.plots.Plot_Widget.staticMetaObject">
-<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#autopilot.core.plots.Plot_Widget.staticMetaObject" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="autopilot.core.plots.Plot">
-<em class="property">class </em><code class="descclassname">autopilot.core.plots.</code><code class="descname">Plot</code><span class="sig-paren">(</span><em>pilot</em>, <em>x_width=50</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="http://pyside.github.io/docs/pyside/PySide/QtGui/QWidget.html#PySide.QtGui.QWidget" title="(in PySide v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySide.QtGui.QWidget</span></code></a></p>
-<p>Widget that hosts a <code class="xref py py-class docutils literal notranslate"><span class="pre">pyqtgraph.PlotWidget</span></code> and manages
-graphical objects for one pilot depending on the task.</p>
-<p><strong>listens</strong></p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="21%" />
-<col width="39%" />
-<col width="40%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Key</th>
-<th class="head">Method</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td><strong>‘START’</strong></td>
-<td><a class="reference internal" href="#autopilot.core.plots.Plot.l_start" title="autopilot.core.plots.Plot.l_start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">l_start()</span></code></a></td>
-<td>starting a new task</td>
-</tr>
-<tr class="row-odd"><td><strong>‘DATA’</strong></td>
-<td><a class="reference internal" href="#autopilot.core.plots.Plot.l_data" title="autopilot.core.plots.Plot.l_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">l_data()</span></code></a></td>
-<td>getting a new datapoint</td>
-</tr>
-<tr class="row-even"><td><strong>‘STOP’</strong></td>
-<td><a class="reference internal" href="#autopilot.core.plots.Plot.l_stop" title="autopilot.core.plots.Plot.l_stop"><code class="xref py py-meth docutils literal notranslate"><span class="pre">l_stop()</span></code></a></td>
-<td>stop the task</td>
-</tr>
-<tr class="row-odd"><td><strong>‘PARAM’</strong></td>
-<td><a class="reference internal" href="#autopilot.core.plots.Plot.l_param" title="autopilot.core.plots.Plot.l_param"><code class="xref py py-meth docutils literal notranslate"><span class="pre">l_param()</span></code></a></td>
-<td>change some parameter</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.plots.Plot.init_plots" title="autopilot.core.plots.Plot.init_plots"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_plots</span></code></a>(**kwargs)</td>
-<td>Make pre-task GUI objects and set basic visual parameters of <cite>self.plot</cite></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.plots.Plot.l_data" title="autopilot.core.plots.Plot.l_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_data</span></code></a>(**kwargs)</td>
-<td>Receive some data, if we were told to plot it, stash the data and update the assigned plot.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.plots.Plot.l_param" title="autopilot.core.plots.Plot.l_param"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_param</span></code></a>(value)</td>
-<td><div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Not implemented</p>
-</div>
-</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.plots.Plot.l_start" title="autopilot.core.plots.Plot.l_start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_start</span></code></a>(**kwargs)</td>
-<td>Starting a task, initialize task-specific plot objects described in the <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task.PLOT" title="autopilot.tasks.task.Task.PLOT"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Task.PLOT</span></code></a> attribute.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.plots.Plot.l_state" title="autopilot.core.plots.Plot.l_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_state</span></code></a>(value)</td>
-<td>Pilot letting us know its state has changed.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.plots.Plot.l_stop" title="autopilot.core.plots.Plot.l_stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_stop</span></code></a>(**kwargs)</td>
-<td>Clean up the plot objects.</td>
-</tr>
-</tbody>
-</table>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first simple">
-<li><a class="reference internal" href="autopilot.core.pilot.html#module-autopilot.core.pilot" title="autopilot.core.pilot"><strong>pilot</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – <p>The name of our pilot, used to set the identity of our socket, specifically:</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;P_{pilot}&#39;</span>
-</pre></div>
-</div>
-</li>
-<li><strong>infobox</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QtGui.QFormLayout</span></code>) – Box to plot basic task information like trial number, etc.</li>
-<li><strong>info</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>Widgets in infobox:</p>
-<ul>
-<li>’N Trials’: <code class="xref py py-class docutils literal notranslate"><span class="pre">QtGui.QLabel</span></code>,</li>
-<li>’Runtime’ : <a class="reference internal" href="#autopilot.core.plots.Timer" title="autopilot.core.plots.Timer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Timer</span></code></a>,</li>
-<li>’Session’ : <code class="xref py py-class docutils literal notranslate"><span class="pre">QtGui.QLabel</span></code>,</li>
-<li>’Protocol’: <code class="xref py py-class docutils literal notranslate"><span class="pre">QtGui.QLabel</span></code>,</li>
-<li>’Step’    : <code class="xref py py-class docutils literal notranslate"><span class="pre">QtGui.QLabel</span></code></li>
-</ul>
-</li>
-<li><strong>plot</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pyqtgraph.PlotWidget</span></code>) – The widget where we draw our plots</li>
-<li><strong>plot_params</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary of plot parameters we receive from the Task class</li>
-<li><strong>data</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary of the data we’ve received</li>
-<li><a class="reference internal" href="#module-autopilot.core.plots" title="autopilot.core.plots"><strong>plots</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – The collection of plots we instantiate based on <cite>plot_params</cite></li>
-<li><a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot.node" title="autopilot.core.pilot.Pilot.node"><strong>node</strong></a> (<a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net_Node</span></code></a>) – Our local net node where we listen for data.</li>
-<li><strong>state</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – state of the pilot, used to keep plot synchronized.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>pilot</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The name of our pilot</li>
-<li><strong>x_width</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – How many trials in the past should we plot?</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="autopilot.core.plots.Plot.init_plots">
-<code class="descname">init_plots</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Plot.init_plots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Plot.init_plots" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make pre-task GUI objects and set basic visual parameters of <cite>self.plot</cite></p>
-</dd></dl>
-
-<dl class="method">
-<dt id="autopilot.core.plots.Plot.l_start">
-<code class="descname">l_start</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Plot.l_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Plot.l_start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Starting a task, initialize task-specific plot objects described in the
-<a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task.PLOT" title="autopilot.tasks.task.Task.PLOT"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Task.PLOT</span></code></a> attribute.</p>
-<p>Matches the data field name (keys of <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task.PLOT" title="autopilot.tasks.task.Task.PLOT"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Task.PLOT</span></code></a> ) to the plot object
-that represents it, eg, to make the standard nafc plot:</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;target&#39;</span>   <span class="p">:</span> <span class="s1">&#39;point&#39;</span><span class="p">,</span>
- <span class="s1">&#39;response&#39;</span> <span class="p">:</span> <span class="s1">&#39;segment&#39;</span><span class="p">,</span>
- <span class="s1">&#39;correct&#39;</span>  <span class="p">:</span> <span class="s1">&#39;rollmean&#39;</span><span class="p">}</span>
-</pre></div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>The same parameter dictionary sent by <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.toggle_start" title="autopilot.core.terminal.Terminal.toggle_start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Terminal.toggle_start()</span></code></a>, including</p>
-<ul class="simple">
-<li>current_trial</li>
-<li>step</li>
-<li>session</li>
-<li>step_name</li>
-<li>task_type</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="autopilot.core.plots.Plot.l_data">
-<code class="descname">l_data</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Plot.l_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Plot.l_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Receive some data, if we were told to plot it, stash the data
-and update the assigned plot.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Value field of a data message sent during a task.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="autopilot.core.plots.Plot.l_stop">
-<code class="descname">l_stop</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Plot.l_stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Plot.l_stop" title="Permalink to this definition">¶</a></dt>
-<dd><p>Clean up the plot objects.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – if “graduation” is a key, don’t stop the timer.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="autopilot.core.plots.Plot.l_param">
-<code class="descname">l_param</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Plot.l_param"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Plot.l_param" title="Permalink to this definition">¶</a></dt>
-<dd><div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Not implemented</p>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> – </td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="autopilot.core.plots.Plot.l_state">
-<code class="descname">l_state</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Plot.l_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Plot.l_state" title="Permalink to this definition">¶</a></dt>
-<dd><p>Pilot letting us know its state has changed. Mostly for the case where
-we think we’re running but the pi doesn’t.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<code class="xref py py-attr docutils literal notranslate"><span class="pre">Pilot.state</span></code>) – the state of our pilot</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="autopilot.core.plots.Plot.staticMetaObject">
-<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#autopilot.core.plots.Plot.staticMetaObject" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="autopilot.core.plots.Point">
-<em class="property">class </em><code class="descclassname">autopilot.core.plots.</code><code class="descname">Point</code><span class="sig-paren">(</span><em>color=(0</em>, <em>0</em>, <em>0)</em>, <em>size=5</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Point" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pyqtgraph.graphicsItems.PlotDataItem.PlotDataItem</span></code></p>
-<p>A simple point.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first simple">
-<li><strong>brush</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QtGui.QBrush</span></code>) – </li>
-<li><strong>pen</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QtGui.QPen</span></code>) – </li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>color</strong> (<em>tuple</em>) – RGB color of points</li>
-<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – width in px.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.plots.Point.update" title="autopilot.core.plots.Point.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(data)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">param data:</th><td class="field-body">an x_width x 2 array where</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="autopilot.core.plots.Point.update">
-<code class="descname">update</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Point.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Point.update" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – an x_width x 2 array where
-column 0 is trial number and column 1 is the value,
-where value can be “L”, “C”, “R” or a float.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="autopilot.core.plots.Point.staticMetaObject">
-<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#autopilot.core.plots.Point.staticMetaObject" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="autopilot.core.plots.Segment">
-<em class="property">class </em><code class="descclassname">autopilot.core.plots.</code><code class="descname">Segment</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Segment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Segment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pyqtgraph.graphicsItems.PlotDataItem.PlotDataItem</span></code></p>
-<p>A line segment that draws from 0.5 to some endpoint.</p>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.plots.Segment.update" title="autopilot.core.plots.Segment.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(data)</td>
-<td>data is doubled and then every other value is set to 0.5,</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="autopilot.core.plots.Segment.update">
-<code class="descname">update</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Segment.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Segment.update" title="Permalink to this definition">¶</a></dt>
-<dd><p>data is doubled and then every other value is set to 0.5,
-then <code class="xref py py-meth docutils literal notranslate"><span class="pre">setData()</span></code> is used with
-<cite>connect=’pairs’</cite> to make line segments.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – an x_width x 2 array where
-column 0 is trial number and column 1 is the value,
-where value can be “L”, “C”, “R” or a float.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="autopilot.core.plots.Segment.staticMetaObject">
-<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#autopilot.core.plots.Segment.staticMetaObject" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="autopilot.core.plots.Roll_Mean">
-<em class="property">class </em><code class="descclassname">autopilot.core.plots.</code><code class="descname">Roll_Mean</code><span class="sig-paren">(</span><em>winsize=10</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Roll_Mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Roll_Mean" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pyqtgraph.graphicsItems.PlotDataItem.PlotDataItem</span></code></p>
-<p>Shaded area underneath a rolling average.</p>
-<p>Typically used as a rolling mean of corrects, so area above and below 0.5 is drawn.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>winsize</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – number of trials in the past to take a rolling mean of</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.plots.Roll_Mean.update" title="autopilot.core.plots.Roll_Mean.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(data)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">param data:</th><td class="field-body">an x_width x 2 array where</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="autopilot.core.plots.Roll_Mean.update">
-<code class="descname">update</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Roll_Mean.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Roll_Mean.update" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – an x_width x 2 array where
-column 0 is trial number and column 1 is the value.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="autopilot.core.plots.Roll_Mean.staticMetaObject">
-<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#autopilot.core.plots.Roll_Mean.staticMetaObject" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="autopilot.core.plots.Shaded">
-<em class="property">class </em><code class="descclassname">autopilot.core.plots.</code><code class="descname">Shaded</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Shaded"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Shaded" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pyqtgraph.graphicsItems.PlotDataItem.PlotDataItem</span></code></p>
-<p>Shaded area for a continuous plot</p>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.plots.Shaded.update" title="autopilot.core.plots.Shaded.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(data)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">param data:</th><td class="field-body">an x_width x 2 array where</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="autopilot.core.plots.Shaded.update">
-<code class="descname">update</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Shaded.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Shaded.update" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – an x_width x 2 array where
-column 0 is time and column 1 is the value.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="autopilot.core.plots.Shaded.staticMetaObject">
-<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#autopilot.core.plots.Shaded.staticMetaObject" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="autopilot.core.plots.Timer">
-<em class="property">class </em><code class="descclassname">autopilot.core.plots.</code><code class="descname">Timer</code><a class="reference internal" href="../_modules/autopilot/core/plots.html#Timer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Timer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="http://pyside.github.io/docs/pyside/PySide/QtGui/QLabel.html#PySide.QtGui.QLabel" title="(in PySide v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySide.QtGui.QLabel</span></code></a></p>
-<p>A simple timer that counts… time…</p>
-<p>Uses a <code class="xref py py-class docutils literal notranslate"><span class="pre">QtCore.QTimer</span></code> connected to <a class="reference internal" href="#autopilot.core.plots.Timer.update_time" title="autopilot.core.plots.Timer.update_time"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Timer.update_time()</span></code></a> .</p>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.plots.Timer.start_timer" title="autopilot.core.plots.Timer.start_timer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start_timer</span></code></a>([update_interval])</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name" colspan="2">param update_interval:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">How often (in ms) the timer should be updated.</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.plots.Timer.stop_timer" title="autopilot.core.plots.Timer.stop_timer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop_timer</span></code></a>()</td>
-<td>you can read the sign ya punk</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.plots.Timer.update_time" title="autopilot.core.plots.Timer.update_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_time</span></code></a>()</td>
-<td>Called every (update_interval) milliseconds to set the text of the timer.</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="autopilot.core.plots.Timer.start_timer">
-<code class="descname">start_timer</code><span class="sig-paren">(</span><em>update_interval=1000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Timer.start_timer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Timer.start_timer" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>update_interval</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – How often (in ms) the timer should be updated.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="autopilot.core.plots.Timer.stop_timer">
-<code class="descname">stop_timer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Timer.stop_timer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Timer.stop_timer" title="Permalink to this definition">¶</a></dt>
-<dd><p>you can read the sign ya punk</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="autopilot.core.plots.Timer.update_time">
-<code class="descname">update_time</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/plots.html#Timer.update_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.Timer.update_time" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called every (update_interval) milliseconds to set the text of the timer.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="autopilot.core.plots.Timer.staticMetaObject">
-<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#autopilot.core.plots.Timer.staticMetaObject" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="autopilot.core.plots.HLine">
-<em class="property">class </em><code class="descclassname">autopilot.core.plots.</code><code class="descname">HLine</code><a class="reference internal" href="../_modules/autopilot/core/plots.html#HLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.HLine" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="http://pyside.github.io/docs/pyside/PySide/QtGui/QFrame.html#PySide.QtGui.QFrame" title="(in PySide v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySide.QtGui.QFrame</span></code></a></p>
-<p>A Horizontal line.</p>
-<dl class="attribute">
-<dt id="autopilot.core.plots.HLine.staticMetaObject">
-<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#autopilot.core.plots.HLine.staticMetaObject" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="data">
-<dt id="autopilot.core.plots.PLOT_LIST">
-<code class="descclassname">autopilot.core.plots.</code><code class="descname">PLOT_LIST</code><em class="property"> = {'point': &lt;class 'autopilot.core.plots.Point'&gt;, 'rollmean': &lt;class 'autopilot.core.plots.Roll_Mean'&gt;, 'segment': &lt;class 'autopilot.core.plots.Segment'&gt;, 'shaded': &lt;class 'autopilot.core.plots.Shaded'&gt;}</em><a class="headerlink" href="#autopilot.core.plots.PLOT_LIST" title="Permalink to this definition">¶</a></dt>
-<dd><p>A dictionary connecting plot keys to objects.</p>
-<div class="admonition-todo admonition" id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">Just reference the plot objects.</p>
-</div>
-</dd></dl>
-
 </div>
 
 
@@ -902,26 +332,16 @@ column 0 is time and column 1 is the value.</td>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
