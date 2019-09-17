@@ -10,7 +10,7 @@ Autopilot is a Python framework to perform behavioral experiments with one or ma
 
 For an overview of Autopilot's motivation, design, and structure, see our `whitepaper <https://auto-pi-lot.com/autopilot-paper.pdf>`_.
 
-
+This documentation is very young and is very much a work in progress! Please `submit an issue <https://github.com/wehr-lab/autopilot/issues/new>`_ with any incompletenesses, confusion, or errors!
 
 
 .. toctree::

@@ -36,7 +36,7 @@ class Free_Water(Task):
     PARAMS['reward'] = {'tag':'Reward Duration (ms)',
                         'type':'int'}
     PARAMS['allow_repeat'] = {'tag':'Allow Repeated Ports?',
-                              'type':'check'}
+                              'type':'bool'}
 
     # Returned Data
     DATA = {

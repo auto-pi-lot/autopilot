@@ -28,7 +28,7 @@ class Task(object):
             PARAMS['reward']         = {'tag':'Reward Duration (ms)',
                                         'type':'int'}
             PARAMS['req_reward']     = {'tag':'Request Rewards',
-                                        'type':'check'}
+                                        'type':'bool'}
 
         HARDWARE (dict): dict for necessary hardware, like::
 

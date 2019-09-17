@@ -138,7 +138,32 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -252,9 +277,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="managers">
-<h1>managers<a class="headerlink" href="#managers" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-autopilot.stim.managers"></span><p>This is a scrappy first draft of a stimulus manager that will be built out
+  <div class="section" id="module-autopilot.stim.managers">
+<span id="managers"></span><h1>managers<a class="headerlink" href="#module-autopilot.stim.managers" title="Permalink to this headline">¶</a></h1>
+<p>This is a scrappy first draft of a stimulus manager that will be built out
 to incorporate arbitrary stimulus logic. For now you can subclass <cite>Stim_Manager</cite> and
 redefine <cite>next_stim</cite></p>
 <div class="admonition-todo admonition" id="index-0">
@@ -268,13 +293,13 @@ redefine <cite>next_stim</cite></p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction" title="autopilot.stim.managers.Bias_Correction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a>([mode,&nbsp;thresh,&nbsp;window])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Bias_Correction" title="autopilot.stim.managers.Bias_Correction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a>([mode,&nbsp;thresh,&nbsp;window])</td>
 <td>Basic Bias correction module.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Proportional" title="autopilot.stim.managers.Proportional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Proportional</span></code></a>(stim)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Proportional" title="autopilot.stim.managers.Proportional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Proportional</span></code></a>(stim)</td>
 <td>Present groups of stimuli with a particular frequency.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a>([stim])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a>([stim])</td>
 <td>Yield sounds according to some set of rules.</td>
 </tr>
 </tbody>
@@ -286,7 +311,7 @@ redefine <cite>next_stim</cite></p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.init_manager" title="autopilot.stim.managers.init_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_manager</span></code></a>(stim)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.init_manager" title="autopilot.stim.managers.init_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_manager</span></code></a>(stim)</td>
 <td></td>
 </tr>
 </tbody>
@@ -317,42 +342,42 @@ redefine <cite>next_stim</cite></p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.compute_correction" title="autopilot.stim.managers.Stim_Manager.compute_correction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_correction</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.compute_correction" title="autopilot.stim.managers.Stim_Manager.compute_correction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_correction</span></code></a>()</td>
 <td>If <cite>self.correction</cite> is true, compute correction trial logic during <cite>next_stim</cite>.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.do_bias" title="autopilot.stim.managers.Stim_Manager.do_bias"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_bias</span></code></a>(**kwargs)</td>
-<td>Instantiate a <a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction" title="autopilot.stim.managers.Bias_Correction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a> module</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.do_bias" title="autopilot.stim.managers.Stim_Manager.do_bias"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_bias</span></code></a>(**kwargs)</td>
+<td>Instantiate a <a class="reference internal" href="#autopilot.stim.managers.Bias_Correction" title="autopilot.stim.managers.Bias_Correction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a> module</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.do_correction" title="autopilot.stim.managers.Stim_Manager.do_correction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_correction</span></code></a>([correction_pct])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.do_correction" title="autopilot.stim.managers.Stim_Manager.do_correction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_correction</span></code></a>([correction_pct])</td>
 <td>Called to set correction trials to True and correction percent.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.end" title="autopilot.stim.managers.Stim_Manager.end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.end" title="autopilot.stim.managers.Stim_Manager.end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end</span></code></a>()</td>
 <td>End all of our stim.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.init_sounds" title="autopilot.stim.managers.Stim_Manager.init_sounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_sounds</span></code></a>(sound_dict)</td>
-<td>Instantiate sound objects, using the ‘type’ value to choose an object from <code class="xref py py-data docutils literal notranslate"><span class="pre">sounds.SOUND_LIST</span></code> .</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.init_sounds" title="autopilot.stim.managers.Stim_Manager.init_sounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_sounds</span></code></a>(sound_dict)</td>
+<td>Instantiate sound objects, using the ‘type’ value to choose an object from <a class="reference internal" href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.SOUND_LIST" title="autopilot.stim.sound.sounds.SOUND_LIST"><code class="xref py py-data docutils literal notranslate"><span class="pre">sounds.SOUND_LIST</span></code></a> .</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.make_punishment" title="autopilot.stim.managers.Stim_Manager.make_punishment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_punishment</span></code></a>(type,&nbsp;duration)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.make_punishment" title="autopilot.stim.managers.Stim_Manager.make_punishment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_punishment</span></code></a>(type,&nbsp;duration)</td>
 <td><div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">Not Implemented</p>
 </div>
 </td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.next_stim" title="autopilot.stim.managers.Stim_Manager.next_stim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">next_stim</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.next_stim" title="autopilot.stim.managers.Stim_Manager.next_stim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">next_stim</span></code></a>()</td>
 <td>Compute and return the next stimulus</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.play_punishment" title="autopilot.stim.managers.Stim_Manager.play_punishment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">play_punishment</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.play_punishment" title="autopilot.stim.managers.Stim_Manager.play_punishment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">play_punishment</span></code></a>()</td>
 <td><div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">Not Implemented</p>
 </div>
 </td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.set_triggers" title="autopilot.stim.managers.Stim_Manager.set_triggers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_triggers</span></code></a>(trig_fn)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.set_triggers" title="autopilot.stim.managers.Stim_Manager.set_triggers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_triggers</span></code></a>(trig_fn)</td>
 <td>Give a callback function to all of our stimuli for when the stimulus ends.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.update" title="autopilot.stim.managers.Stim_Manager.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(response,&nbsp;correct)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.update" title="autopilot.stim.managers.Stim_Manager.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(response,&nbsp;correct)</td>
 <td>At the end of a trial, update the status of our internal variables with the outcome of the trial.</td>
 </tr>
 </tbody>
@@ -369,7 +394,7 @@ redefine <cite>next_stim</cite></p>
 </li>
 <li><strong>target</strong> (<em>'L'</em><em>, </em><em>'R'</em>) – What is the correct port?</li>
 <li><strong>distractor</strong> (<em>'L'</em><em>, </em><em>'R'</em>) – What is the incorrect port?</li>
-<li><a class="reference internal" href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.response" title="autopilot.tasks.free_water.Free_Water.response"><strong>response</strong></a> (<em>'L'</em><em>, </em><em>'R'</em>) – What was the last response?</li>
+<li><a class="reference internal" href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.response" title="autopilot.tasks.free_water.Free_Water.response"><strong>response</strong></a> (<em>'L'</em><em>, </em><em>'R'</em>) – What was the last response?</li>
 <li><strong>correct</strong> (<em>0</em><em>, </em><em>1</em>) – Was the last response correct?</li>
 <li><strong>last_stim</strong> – What was the last stim? (one of <cite>self.stimuli</cite>)</li>
 <li><strong>correction</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Are we doing correction trials?</li>
@@ -409,12 +434,12 @@ redefine <cite>next_stim</cite></p>
 <dl class="method">
 <dt id="autopilot.stim.managers.Stim_Manager.do_bias">
 <code class="descname">do_bias</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager.do_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.do_bias" title="Permalink to this definition">¶</a></dt>
-<dd><p>Instantiate a <a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction" title="autopilot.stim.managers.Bias_Correction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a> module</p>
+<dd><p>Instantiate a <a class="reference internal" href="#autopilot.stim.managers.Bias_Correction" title="autopilot.stim.managers.Bias_Correction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a> module</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kwargs</strong> – parameters to initialize <a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction" title="autopilot.stim.managers.Bias_Correction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a> with.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kwargs</strong> – parameters to initialize <a class="reference internal" href="#autopilot.stim.managers.Bias_Correction" title="autopilot.stim.managers.Bias_Correction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a> with.</td>
 </tr>
 </tbody>
 </table>
@@ -424,7 +449,7 @@ redefine <cite>next_stim</cite></p>
 <dt id="autopilot.stim.managers.Stim_Manager.init_sounds">
 <code class="descname">init_sounds</code><span class="sig-paren">(</span><em>sound_dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager.init_sounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.init_sounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Instantiate sound objects, using the ‘type’ value to choose an object from
-<code class="xref py py-data docutils literal notranslate"><span class="pre">sounds.SOUND_LIST</span></code> .</p>
+<a class="reference internal" href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.SOUND_LIST" title="autopilot.stim.sound.sounds.SOUND_LIST"><code class="xref py py-data docutils literal notranslate"><span class="pre">sounds.SOUND_LIST</span></code></a> .</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -559,7 +584,7 @@ with the outcome of the trial.</p>
 <dl class="class">
 <dt id="autopilot.stim.managers.Proportional">
 <em class="property">class </em><code class="descclassname">autopilot.stim.managers.</code><code class="descname">Proportional</code><span class="sig-paren">(</span><em>stim</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Proportional"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.stim.managers.Stim_Manager</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.stim.managers.Stim_Manager</span></code></a></p>
 <p>Present groups of stimuli with a particular frequency.</p>
 <p>Frequencies do not need to add up to 1, groups will be selected with the frequency
 (frequency)/(sum(frequencies)).</p>
@@ -606,16 +631,16 @@ with the outcome of the trial.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Proportional.init_sounds" title="autopilot.stim.managers.Proportional.init_sounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_sounds</span></code></a>(sound_stim)</td>
-<td>Instantiate sound objects similarly to <a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a>, just organizes them into groups.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Proportional.init_sounds" title="autopilot.stim.managers.Proportional.init_sounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_sounds</span></code></a>(sound_stim)</td>
+<td>Instantiate sound objects similarly to <a class="reference internal" href="#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a>, just organizes them into groups.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Proportional.next_stim" title="autopilot.stim.managers.Proportional.next_stim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">next_stim</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Proportional.next_stim" title="autopilot.stim.managers.Proportional.next_stim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">next_stim</span></code></a>()</td>
 <td>Compute and return the next stimulus</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Proportional.set_triggers" title="autopilot.stim.managers.Proportional.set_triggers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_triggers</span></code></a>(trig_fn)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Proportional.set_triggers" title="autopilot.stim.managers.Proportional.set_triggers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_triggers</span></code></a>(trig_fn)</td>
 <td>Give a callback function to all of our stimuli for when the stimulus ends.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Proportional.store_groups" title="autopilot.stim.managers.Proportional.store_groups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_groups</span></code></a>(stim)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Proportional.store_groups" title="autopilot.stim.managers.Proportional.store_groups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_groups</span></code></a>(stim)</td>
 <td>store groups and frequencies</td>
 </tr>
 </tbody>
@@ -623,7 +648,7 @@ with the outcome of the trial.</p>
 <dl class="method">
 <dt id="autopilot.stim.managers.Proportional.init_sounds">
 <code class="descname">init_sounds</code><span class="sig-paren">(</span><em>sound_stim</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Proportional.init_sounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional.init_sounds" title="Permalink to this definition">¶</a></dt>
-<dd><p>Instantiate sound objects similarly to <a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a>, just organizes them into groups.</p>
+<dd><p>Instantiate sound objects similarly to <a class="reference internal" href="#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a>, just organizes them into groups.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -746,13 +771,13 @@ choice based on history of biased responses.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction.next_bias" title="autopilot.stim.managers.Bias_Correction.next_bias"><code class="xref py py-obj docutils literal notranslate"><span class="pre">next_bias</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Bias_Correction.next_bias" title="autopilot.stim.managers.Bias_Correction.next_bias"><code class="xref py py-obj docutils literal notranslate"><span class="pre">next_bias</span></code></a>()</td>
 <td>Compute the next bias depending on <cite>self.mode</cite></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction.thresholded_linear" title="autopilot.stim.managers.Bias_Correction.thresholded_linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thresholded_linear</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Bias_Correction.thresholded_linear" title="autopilot.stim.managers.Bias_Correction.thresholded_linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thresholded_linear</span></code></a>()</td>
 <td>If we are above the threshold, linearly correct the rate of presentation to favor the rarely responded side.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction.update" title="autopilot.stim.managers.Bias_Correction.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(response,&nbsp;target)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Bias_Correction.update" title="autopilot.stim.managers.Bias_Correction.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(response,&nbsp;target)</td>
 <td>Store some new response and target values</td>
 </tr>
 </tbody>
@@ -765,7 +790,7 @@ choice based on history of biased responses.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Some threshold <a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a> uses to decide left vs right.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Some threshold <a class="reference internal" href="#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a> uses to decide left vs right.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></td>
 </tr>

@@ -226,8 +226,6 @@ close w/ a view of the data.
 
 
 
-.. [#f1] Yes we are aware that the "two-alternative forced choice" task described here is actually maybe called a "yes-no task" because there is only one stimulus presented at a time. The literature appears stuck with this term, however.
-
 
 Debugging a Task
 ================
@@ -244,3 +242,8 @@ and then printing the end of the logs with ``journalctl``::
 
     # print the -end of the logs for system -unit autopilot
     journalctl -u autopilot -e
+
+
+
+.. [#f1] Yes we are aware that the "two-alternative forced choice" task described here is actually maybe called a "yes-no task" because there is only one stimulus presented at a time. The literature appears stuck with this term, however.
+

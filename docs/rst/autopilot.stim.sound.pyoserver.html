@@ -136,7 +136,32 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -248,8 +273,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="autopilot-stim-sound-pyoserver-module">
-<h1>autopilot.stim.sound.pyoserver module<a class="headerlink" href="#autopilot-stim-sound-pyoserver-module" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-autopilot.stim.sound.pyoserver">
+<span id="autopilot-stim-sound-pyoserver-module"></span><h1>autopilot.stim.sound.pyoserver module<a class="headerlink" href="#module-autopilot.stim.sound.pyoserver" title="Permalink to this headline">¶</a></h1>
 <p><strong>Functions</strong></p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -257,26 +282,30 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__format__</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__new__</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__reduce__</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__reduce_ex__</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__sizeof__</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__subclasshook__</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.pyoserver.pyo_server" title="autopilot.stim.sound.pyoserver.pyo_server"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyo_server</span></code></a>([debug])</td>
+<td>Returns a booted and started pyo audio server</td>
 </tr>
 </tbody>
 </table>
+<dl class="function">
+<dt id="autopilot.stim.sound.pyoserver.pyo_server">
+<code class="descclassname">autopilot.stim.sound.pyoserver.</code><code class="descname">pyo_server</code><span class="sig-paren">(</span><em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/sound/pyoserver.html#pyo_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.pyoserver.pyo_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a booted and started pyo audio server</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Use of pyo is generally discouraged due to dropout issues and
+the general opacity of the module.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>debug</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – If true, setVerbosity of pyo server to 8.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 
 

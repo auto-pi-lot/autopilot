@@ -21,7 +21,7 @@ class Param(object):
     type = None # string that describes the type of input or param
 
     # possible types
-    types = ['int', 'check', 'list']
+    types = ['int', 'bool', 'list']
 
     def __init__(self, **kwargs):
         """

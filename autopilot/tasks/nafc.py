@@ -47,19 +47,19 @@ class Nafc(Task):
 
 
     # List of needed params, returned data and data format.
-    # Params are [name]={'tag': Human Readable Tag, 'type': 'int', 'float', 'check', etc.}
+    # Params are [name]={'tag': Human Readable Tag, 'type': 'int', 'float', 'bool', etc.}
     PARAMS = odict()
     # TODO: Reward no longer just duration -- fix with parameter structure
     PARAMS['reward']         = {'tag':'Reward Duration (ms)',
                                 'type':'int'}
     PARAMS['req_reward']     = {'tag':'Request Rewards',
-                                'type':'check'}
+                                'type':'bool'}
     PARAMS['punish_stim']   = {'tag':'White Noise Punishment',
-                                'type':'check'}
+                                'type':'bool'}
     PARAMS['punish_dur']     = {'tag':'Punishment Duration (ms)',
                                 'type':'int'}
     PARAMS['correction']     = {'tag':'Correction Trials',
-                                'type':'check'}
+                                'type':'bool'}
     PARAMS['correction_pct'] = {'tag':'% Correction Trials',
                                 'type':'int',
                                 'depends':{'correction':True}}

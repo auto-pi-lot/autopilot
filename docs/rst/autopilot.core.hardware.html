@@ -136,7 +136,32 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -380,7 +405,7 @@ or, will this device be used to trigger some event? If <cite>True</cite>,
 will be given a callback by <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>, and <a class="reference internal" href="#autopilot.core.hardware.Hardware.assign_cb" title="autopilot.core.hardware.Hardware.assign_cb"><code class="xref py py-meth docutils literal notranslate"><span class="pre">assign_cb()</span></code></a>
 must be redefined.</li>
 <li><a class="reference internal" href="#autopilot.core.hardware.Hardware.pin" title="autopilot.core.hardware.Hardware.pin"><strong>pin</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – The BCM pin used by this device, or None if no pin is used.</li>
-<li><a class="reference internal" href="#autopilot.core.hardware.LED_RGB.type" title="autopilot.core.hardware.LED_RGB.type"><strong>type</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – What is this device known as in <cite>.prefs</cite>? Not required.</li>
+<li><a class="reference internal" href="../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Speech.type" title="autopilot.stim.sound.sounds.Speech.type"><strong>type</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – What is this device known as in <cite>.prefs</cite>? Not required.</li>
 <li><a class="reference internal" href="#autopilot.core.hardware.Wheel.input" title="autopilot.core.hardware.Wheel.input"><strong>input</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Is this an input device?</li>
 <li><a class="reference internal" href="#autopilot.core.hardware.Hardware.output" title="autopilot.core.hardware.Hardware.output"><strong>output</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Is this an output device?</li>
 </ul>

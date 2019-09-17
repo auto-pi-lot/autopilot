@@ -138,7 +138,32 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -257,7 +282,7 @@
 <p class="first admonition-title">Warning</p>
 <p class="last">DO NOT hardcode prefs here.</p>
 </div>
-<p>A prefs.json file should be generated with an appropriate <a class="reference internal" href="rst/autopilot.setup.html#module-autopilot.setup" title="autopilot.setup"><code class="xref py py-mod docutils literal notranslate"><span class="pre">autopilot.setup</span></code></a> routine</p>
+<p>A prefs.json file should be generated with an appropriate <code class="xref py py-mod docutils literal notranslate"><span class="pre">autopilot.setup</span></code> routine</p>
 <p>Before importing any other autopilot module,</p>
 <p class="rubric">Examples</p>
 <p>from autopilot import prefs
@@ -273,16 +298,16 @@ prefs.init(prefs_file)</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.prefs.html#autopilot.prefs.add" title="autopilot.prefs.add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add</span></code></a>(param,&nbsp;value)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">add</span></code>(param,&nbsp;value)</td>
 <td>Add a pref after init</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.prefs.html#autopilot.prefs.compute_calibration" title="autopilot.prefs.compute_calibration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_calibration</span></code></a>([path,&nbsp;calibration,&nbsp;…])</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_calibration</span></code>([path,&nbsp;calibration,&nbsp;…])</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.prefs.html#autopilot.prefs.git_version" title="autopilot.prefs.git_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">git_version</span></code></a>(repo_dir)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">git_version</span></code>(repo_dir)</td>
 <td>Get the git hash of the current commit.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.prefs.html#autopilot.prefs.init" title="autopilot.prefs.init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init</span></code></a>(fn)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">init</span></code>(fn)</td>
 <td>Initialize prefs on autopilot start.</td>
 </tr>
 </tbody>
@@ -294,7 +319,7 @@ prefs.init(prefs_file)</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.prefs.html#autopilot.prefs.prefdict" title="autopilot.prefs.prefdict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefdict</span></code></a></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefdict</span></code></td>
 <td>stores a dictionary of preferences that mirrors the global variables.</td>
 </tr>
 </tbody>

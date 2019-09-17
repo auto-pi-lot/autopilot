@@ -136,7 +136,32 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -326,7 +351,7 @@ redefine <cite>next_stim</cite></p>
 <td>End all of our stim.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.init_sounds" title="autopilot.stim.managers.Stim_Manager.init_sounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_sounds</span></code></a>(sound_dict)</td>
-<td>Instantiate sound objects, using the ‘type’ value to choose an object from <code class="xref py py-data docutils literal notranslate"><span class="pre">sounds.SOUND_LIST</span></code> .</td>
+<td>Instantiate sound objects, using the ‘type’ value to choose an object from <a class="reference internal" href="../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.SOUND_LIST" title="autopilot.stim.sound.sounds.SOUND_LIST"><code class="xref py py-data docutils literal notranslate"><span class="pre">sounds.SOUND_LIST</span></code></a> .</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.make_punishment" title="autopilot.stim.managers.Stim_Manager.make_punishment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_punishment</span></code></a>(type,&nbsp;duration)</td>
 <td><div class="admonition warning">
@@ -420,7 +445,7 @@ redefine <cite>next_stim</cite></p>
 <dt id="autopilot.stim.managers.Stim_Manager.init_sounds">
 <code class="descname">init_sounds</code><span class="sig-paren">(</span><em>sound_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/stim/managers.html#Stim_Manager.init_sounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.init_sounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Instantiate sound objects, using the ‘type’ value to choose an object from
-<code class="xref py py-data docutils literal notranslate"><span class="pre">sounds.SOUND_LIST</span></code> .</p>
+<a class="reference internal" href="../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.SOUND_LIST" title="autopilot.stim.sound.sounds.SOUND_LIST"><code class="xref py py-data docutils literal notranslate"><span class="pre">sounds.SOUND_LIST</span></code></a> .</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

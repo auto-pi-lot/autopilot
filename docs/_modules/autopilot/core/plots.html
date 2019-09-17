@@ -136,7 +136,32 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -280,7 +305,7 @@
 <span class="c1"># Plot list at the bottom!</span>
 <span class="c1">###########</span>
 
-<div class="viewcode-block" id="gui_event"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.gui_event">[docs]</a><span class="k">def</span> <span class="nf">gui_event</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+<div class="viewcode-block" id="gui_event"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.gui_event">[docs]</a><span class="k">def</span> <span class="nf">gui_event</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper/decorator around an event that posts GUI events back to the main</span>
 <span class="sd">    thread that our window is running in.</span>
@@ -301,7 +326,7 @@
     <span class="k">return</span> <span class="n">wrapper_gui_event</span></div>
 
 
-<div class="viewcode-block" id="Plot_Widget"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Plot_Widget">[docs]</a><span class="k">class</span> <span class="nc">Plot_Widget</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="Plot_Widget"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Plot_Widget">[docs]</a><span class="k">class</span> <span class="nc">Plot_Widget</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main plot widget that holds plots for all pilots</span>
 
@@ -346,7 +371,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Plot_Widget.init_plots"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Plot_Widget.init_plots">[docs]</a>    <span class="k">def</span> <span class="nf">init_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pilot_list</span><span class="p">):</span>
+<div class="viewcode-block" id="Plot_Widget.init_plots"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Plot_Widget.init_plots">[docs]</a>    <span class="k">def</span> <span class="nf">init_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pilot_list</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For each pilot, instantiate a :class:`.Plot` and add to layout.</span>
 
@@ -401,7 +426,7 @@
     <span class="c1">#     return groupbox</span>
 
 
-<div class="viewcode-block" id="Plot"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Plot">[docs]</a><span class="k">class</span> <span class="nc">Plot</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="Plot"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Plot">[docs]</a><span class="k">class</span> <span class="nc">Plot</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Widget that hosts a :class:`pyqtgraph.PlotWidget` and manages</span>
 <span class="sd">    graphical objects for one pilot depending on the task.</span>
@@ -495,7 +520,7 @@
                              <span class="n">instance</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Plot.init_plots"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Plot.init_plots">[docs]</a>    <span class="nd">@gui_event</span>
+<div class="viewcode-block" id="Plot.init_plots"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Plot.init_plots">[docs]</a>    <span class="nd">@gui_event</span>
     <span class="k">def</span> <span class="nf">init_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make pre-task GUI objects and set basic visual parameters of `self.plot`</span>
@@ -545,7 +570,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">setXRange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xrange</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">xrange</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">setYRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Plot.l_start"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Plot.l_start">[docs]</a>    <span class="nd">@gui_event</span>
+<div class="viewcode-block" id="Plot.l_start"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Plot.l_start">[docs]</a>    <span class="nd">@gui_event</span>
     <span class="k">def</span> <span class="nf">l_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Starting a task, initialize task-specific plot objects described in the</span>
@@ -598,7 +623,7 @@
 
         <span class="c1"># Make plot items for each data type</span>
         <span class="k">for</span> <span class="n">data</span><span class="p">,</span> <span class="n">plot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_params</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="c1"># TODO: Better way of doing params for plots, might just have to suck it up and make dict another level</span>
+            <span class="c1"># TODO: Better way of doing params for plots, redo when params are refactored</span>
             <span class="k">if</span> <span class="n">plot</span> <span class="o">==</span> <span class="s1">&#39;rollmean&#39;</span> <span class="ow">and</span> <span class="s1">&#39;roll_window&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">data</span><span class="p">]</span> <span class="o">=</span> <span class="n">Roll_Mean</span><span class="p">(</span><span class="n">winsize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_params</span><span class="p">[</span><span class="s1">&#39;roll_window&#39;</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="n">data</span><span class="p">])</span>
@@ -612,7 +637,7 @@
 
 
 
-<div class="viewcode-block" id="Plot.l_data"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Plot.l_data">[docs]</a>    <span class="nd">@gui_event</span>
+<div class="viewcode-block" id="Plot.l_data"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Plot.l_data">[docs]</a>    <span class="nd">@gui_event</span>
     <span class="k">def</span> <span class="nf">l_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Receive some data, if we were told to plot it, stash the data</span>
@@ -656,7 +681,7 @@
 
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Plot.l_stop"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Plot.l_stop">[docs]</a>    <span class="nd">@gui_event</span>
+<div class="viewcode-block" id="Plot.l_stop"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Plot.l_stop">[docs]</a>    <span class="nd">@gui_event</span>
     <span class="k">def</span> <span class="nf">l_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clean up the plot objects.</span>
@@ -680,7 +705,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;IDLE&#39;</span></div>
 
-<div class="viewcode-block" id="Plot.l_param"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Plot.l_param">[docs]</a>    <span class="k">def</span> <span class="nf">l_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Plot.l_param"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Plot.l_param">[docs]</a>    <span class="k">def</span> <span class="nf">l_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Warning:</span>
 <span class="sd">            Not implemented</span>
@@ -690,7 +715,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Plot.l_state"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Plot.l_state">[docs]</a>    <span class="k">def</span> <span class="nf">l_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Plot.l_state"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Plot.l_state">[docs]</a>    <span class="k">def</span> <span class="nf">l_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pilot letting us know its state has changed. Mostly for the case where</span>
 <span class="sd">        we think we&#39;re running but the pi doesn&#39;t.</span>
@@ -709,7 +734,7 @@
 
 <span class="c1">###################################</span>
 <span class="c1"># Curve subclasses</span>
-<div class="viewcode-block" id="Point"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Point">[docs]</a><span class="k">class</span> <span class="nc">Point</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">PlotDataItem</span><span class="p">):</span>
+<div class="viewcode-block" id="Point"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Point">[docs]</a><span class="k">class</span> <span class="nc">Point</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">PlotDataItem</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A simple point.</span>
 
@@ -734,7 +759,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pen</span>   <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span>  <span class="o">=</span> <span class="n">size</span>
 
-<div class="viewcode-block" id="Point.update"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Point.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="Point.update"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Point.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            data (:class:`numpy.ndarray`): an x_width x 2 array where</span>
@@ -753,7 +778,7 @@
                              <span class="n">brush</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">brush</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">pen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pen</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="Segment"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Segment">[docs]</a><span class="k">class</span> <span class="nc">Segment</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">PlotDataItem</span><span class="p">):</span>
+<div class="viewcode-block" id="Segment"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Segment">[docs]</a><span class="k">class</span> <span class="nc">Segment</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">PlotDataItem</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A line segment that draws from 0.5 to some endpoint.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -761,7 +786,7 @@
         <span class="c1"># type: () -&gt; None</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Segment</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Segment.update"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Segment.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="Segment.update"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Segment.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        data is doubled and then every other value is set to 0.5,</span>
 <span class="sd">        then :meth:`~pyqtgraph.PlotDataItem.curve.setData` is used with</span>
@@ -786,7 +811,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">curve</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">connect</span><span class="o">=</span><span class="s1">&#39;pairs&#39;</span><span class="p">,</span> <span class="n">pen</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="Roll_Mean"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Roll_Mean">[docs]</a><span class="k">class</span> <span class="nc">Roll_Mean</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">PlotDataItem</span><span class="p">):</span>
+<div class="viewcode-block" id="Roll_Mean"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Roll_Mean">[docs]</a><span class="k">class</span> <span class="nc">Roll_Mean</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">PlotDataItem</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Shaded area underneath a rolling average.</span>
 
@@ -809,7 +834,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">brush</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">mkBrush</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">brush</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Roll_Mean.update"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Roll_Mean.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="Roll_Mean.update"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Roll_Mean.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            data (:class:`numpy.ndarray`): an x_width x 2 array where</span>
@@ -826,7 +851,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">curve</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">ys</span><span class="p">,</span> <span class="n">fillLevel</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span></div></div>
 
-<div class="viewcode-block" id="Shaded"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Shaded">[docs]</a><span class="k">class</span> <span class="nc">Shaded</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">PlotDataItem</span><span class="p">):</span>
+<div class="viewcode-block" id="Shaded"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Shaded">[docs]</a><span class="k">class</span> <span class="nc">Shaded</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">PlotDataItem</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Shaded area for a continuous plot</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -847,7 +872,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">max_num</span> <span class="o">=</span> <span class="mi">0</span>
 
 
-<div class="viewcode-block" id="Shaded.update"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Shaded.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="Shaded.update"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Shaded.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            data (:class:`numpy.ndarray`): an x_width x 2 array where</span>
@@ -868,7 +893,7 @@
 
 
 
-<div class="viewcode-block" id="Timer"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Timer">[docs]</a><span class="k">class</span> <span class="nc">Timer</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span><span class="p">):</span>
+<div class="viewcode-block" id="Timer"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Timer">[docs]</a><span class="k">class</span> <span class="nc">Timer</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A simple timer that counts... time...</span>
 
@@ -883,7 +908,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="bp">None</span>
 
-<div class="viewcode-block" id="Timer.start_timer"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Timer.start_timer">[docs]</a>    <span class="k">def</span> <span class="nf">start_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_interval</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+<div class="viewcode-block" id="Timer.start_timer"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Timer.start_timer">[docs]</a>    <span class="k">def</span> <span class="nf">start_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_interval</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            update_interval (float): How often (in ms) the timer should be updated.</span>
@@ -891,14 +916,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">update_interval</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Timer.stop_timer"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Timer.stop_timer">[docs]</a>    <span class="k">def</span> <span class="nf">stop_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Timer.stop_timer"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Timer.stop_timer">[docs]</a>    <span class="k">def</span> <span class="nf">stop_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        you can read the sign ya punk</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Timer.update_time"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.Timer.update_time">[docs]</a>    <span class="k">def</span> <span class="nf">update_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Timer.update_time"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.Timer.update_time">[docs]</a>    <span class="k">def</span> <span class="nf">update_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called every (update_interval) milliseconds to set the text of the timer.</span>
 
@@ -915,7 +940,7 @@
 <span class="c1">#     pass</span>
 
 
-<div class="viewcode-block" id="HLine"><a class="viewcode-back" href="../../../rst/autopilot.core.plots.html#autopilot.core.plots.HLine">[docs]</a><span class="k">class</span> <span class="nc">HLine</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QFrame</span><span class="p">):</span>
+<div class="viewcode-block" id="HLine"><a class="viewcode-back" href="../../../autopilot.core.plots.html#autopilot.core.plots.HLine">[docs]</a><span class="k">class</span> <span class="nc">HLine</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QFrame</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A Horizontal line.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

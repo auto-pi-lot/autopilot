@@ -349,7 +349,7 @@ class Plot(QtGui.QWidget):
 
         # Make plot items for each data type
         for data, plot in self.plot_params['data'].items():
-            # TODO: Better way of doing params for plots, might just have to suck it up and make dict another level
+            # TODO: Better way of doing params for plots, redo when params are refactored
             if plot == 'rollmean' and 'roll_window' in self.plot_params.keys():
                 self.plots[data] = Roll_Mean(winsize=self.plot_params['roll_window'])
                 self.plot.addItem(self.plots[data])

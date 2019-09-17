@@ -136,7 +136,32 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -310,7 +335,7 @@
 
 <span class="c1">########################################</span>
 
-<div class="viewcode-block" id="autopilot"><a class="viewcode-back" href="../../../rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot">[docs]</a><span class="k">class</span> <span class="nc">autopilot</span><span class="p">:</span>
+<div class="viewcode-block" id="autopilot"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot">[docs]</a><span class="k">class</span> <span class="nc">autopilot</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Drives the Raspberry Pi</span>
 
@@ -456,7 +481,7 @@
 
         <span class="c1"># TODO Synchronize system clock w/ time from terminal.</span>
 
-<div class="viewcode-block" id="autopilot.init_logging"><a class="viewcode-back" href="../../../rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.init_logging">[docs]</a>    <span class="k">def</span> <span class="nf">init_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="autopilot.init_logging"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.init_logging">[docs]</a>    <span class="k">def</span> <span class="nf">init_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start logging to a timestamped file in `prefs.LOGDIR`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -476,7 +501,7 @@
     <span class="c1"># Station</span>
     <span class="c1">#################################################################</span>
 
-<div class="viewcode-block" id="autopilot.get_ip"><a class="viewcode-back" href="../../../rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.get_ip">[docs]</a>    <span class="k">def</span> <span class="nf">get_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="autopilot.get_ip"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.get_ip">[docs]</a>    <span class="k">def</span> <span class="nf">get_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get our IP</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -493,7 +518,7 @@
 
         <span class="k">return</span> <span class="n">unwrap2</span></div>
 
-<div class="viewcode-block" id="autopilot.handshake"><a class="viewcode-back" href="../../../rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.handshake">[docs]</a>    <span class="k">def</span> <span class="nf">handshake</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="autopilot.handshake"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.handshake">[docs]</a>    <span class="k">def</span> <span class="nf">handshake</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send the terminal our name and IP to signal that we are alive</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -505,7 +530,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parentid</span><span class="p">,</span> <span class="s1">&#39;HANDSHAKE&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">hello</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="autopilot.update_state"><a class="viewcode-back" href="../../../rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.update_state">[docs]</a>    <span class="k">def</span> <span class="nf">update_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="autopilot.update_state"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.update_state">[docs]</a>    <span class="k">def</span> <span class="nf">update_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send our current state to the Terminal,</span>
 <span class="sd">        our Station object will cache this and will handle any</span>
@@ -513,7 +538,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parentid</span><span class="p">,</span> <span class="s1">&#39;STATE&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;NOLOG&#39;</span><span class="p">:</span><span class="bp">True</span><span class="p">})</span></div>
 
-<div class="viewcode-block" id="autopilot.l_start"><a class="viewcode-back" href="../../../rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_start">[docs]</a>    <span class="k">def</span> <span class="nf">l_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="autopilot.l_start"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_start">[docs]</a>    <span class="k">def</span> <span class="nf">l_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start running a task.</span>
 
@@ -551,7 +576,7 @@
 
         <span class="c1"># TODO: Send a message back to the terminal with the runtime if there is one so it can handle timed stops</span>
 
-<div class="viewcode-block" id="autopilot.l_stop"><a class="viewcode-back" href="../../../rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_stop">[docs]</a>    <span class="k">def</span> <span class="nf">l_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="autopilot.l_stop"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_stop">[docs]</a>    <span class="k">def</span> <span class="nf">l_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stop the task.</span>
 
@@ -581,7 +606,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;IDLE&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_state</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="autopilot.l_param"><a class="viewcode-back" href="../../../rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_param">[docs]</a>    <span class="k">def</span> <span class="nf">l_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="autopilot.l_param"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_param">[docs]</a>    <span class="k">def</span> <span class="nf">l_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Change a task parameter mid-run</span>
 
@@ -593,7 +618,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="autopilot.l_cal_port"><a class="viewcode-back" href="../../../rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_cal_port">[docs]</a>    <span class="k">def</span> <span class="nf">l_cal_port</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="autopilot.l_cal_port"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_cal_port">[docs]</a>    <span class="k">def</span> <span class="nf">l_cal_port</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="n">port</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span>
         <span class="n">n_clicks</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;n_clicks&#39;</span><span class="p">]</span>
         <span class="n">open_dur</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;dur&#39;</span><span class="p">]</span>
@@ -601,7 +626,7 @@
 
         <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calibrate_port</span><span class="p">,</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">n_clicks</span><span class="p">,</span> <span class="n">open_dur</span><span class="p">,</span> <span class="n">iti</span><span class="p">))</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="autopilot.calibrate_port"><a class="viewcode-back" href="../../../rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.calibrate_port">[docs]</a>    <span class="k">def</span> <span class="nf">calibrate_port</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port_name</span><span class="p">,</span> <span class="n">n_clicks</span><span class="p">,</span> <span class="n">open_dur</span><span class="p">,</span> <span class="n">iti</span><span class="p">):</span>
+<div class="viewcode-block" id="autopilot.calibrate_port"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.calibrate_port">[docs]</a>    <span class="k">def</span> <span class="nf">calibrate_port</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port_name</span><span class="p">,</span> <span class="n">n_clicks</span><span class="p">,</span> <span class="n">open_dur</span><span class="p">,</span> <span class="n">iti</span><span class="p">):</span>
         <span class="n">pin_num</span> <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">PINS</span><span class="p">[</span><span class="s1">&#39;PORTS&#39;</span><span class="p">][</span><span class="n">port_name</span><span class="p">]</span>
         <span class="n">port</span> <span class="o">=</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Solenoid</span><span class="p">(</span><span class="n">pin_num</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">open_dur</span><span class="p">))</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;click_num&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -622,7 +647,7 @@
 
         <span class="n">port</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="autopilot.l_cal_result"><a class="viewcode-back" href="../../../rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_cal_result">[docs]</a>    <span class="k">def</span> <span class="nf">l_cal_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="autopilot.l_cal_result"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_cal_result">[docs]</a>    <span class="k">def</span> <span class="nf">l_cal_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the results of a port calibration</span>
 
@@ -650,7 +675,7 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cal_fn</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cal_file</span><span class="p">:</span>
             <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">calibration</span><span class="p">,</span> <span class="n">cal_file</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="autopilot.l_bandwidth"><a class="viewcode-back" href="../../../rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_bandwidth">[docs]</a>    <span class="k">def</span> <span class="nf">l_bandwidth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="autopilot.l_bandwidth"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_bandwidth">[docs]</a>    <span class="k">def</span> <span class="nf">l_bandwidth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send messages with a poissonian process according to the settings in value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -718,7 +743,7 @@
 
 
 
-<div class="viewcode-block" id="autopilot.calibration_curve"><a class="viewcode-back" href="../../../rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.calibration_curve">[docs]</a>    <span class="k">def</span> <span class="nf">calibration_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">calibration</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="autopilot.calibration_curve"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.calibration_curve">[docs]</a>    <span class="k">def</span> <span class="nf">calibration_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">calibration</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        # compute curve to compute duration from desired volume</span>
 
@@ -768,7 +793,7 @@
     <span class="c1"># Hardware Init</span>
     <span class="c1">#################################################################</span>
 
-<div class="viewcode-block" id="autopilot.init_audio"><a class="viewcode-back" href="../../../rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.init_audio">[docs]</a>    <span class="k">def</span> <span class="nf">init_audio</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="autopilot.init_audio"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.init_audio">[docs]</a>    <span class="k">def</span> <span class="nf">init_audio</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize an audio server depending on the value of</span>
 <span class="sd">        `prefs.AUDIOSERVER`</span>
@@ -783,7 +808,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">jackclient</span><span class="o">.</span><span class="n">JackClient</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="autopilot.blank_LEDs"><a class="viewcode-back" href="../../../rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.blank_LEDs">[docs]</a>    <span class="k">def</span> <span class="nf">blank_LEDs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="autopilot.blank_LEDs"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.blank_LEDs">[docs]</a>    <span class="k">def</span> <span class="nf">blank_LEDs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If any &#39;LEDS&#39; are defined in `prefs.PINS` ,</span>
 <span class="sd">        instantiate them, set their color to [0,0,0],</span>
@@ -801,7 +826,7 @@
     <span class="c1">#################################################################</span>
     <span class="c1"># Trial Running and Management</span>
     <span class="c1">#################################################################</span>
-<div class="viewcode-block" id="autopilot.open_file"><a class="viewcode-back" href="../../../rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.open_file">[docs]</a>    <span class="k">def</span> <span class="nf">open_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="autopilot.open_file"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.open_file">[docs]</a>    <span class="k">def</span> <span class="nf">open_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setup a table to store data locally.</span>
 
@@ -854,7 +879,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">h5f</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span></div>
 
-<div class="viewcode-block" id="autopilot.run_task"><a class="viewcode-back" href="../../../rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="autopilot.run_task"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called in a new thread, run the task.</span>
 

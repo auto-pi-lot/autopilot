@@ -19,13 +19,20 @@
   
 
   
+  <script type="text/javascript" src="../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../../../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
@@ -38,21 +45,16 @@
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
 
 
-
-  
-  <script src="../../../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -110,10 +112,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../../guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -122,9 +126,42 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../guide.training.html">Training a Subject</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../guide.training.html#debugging-a-task">Debugging a Task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -291,7 +328,7 @@
 <span class="sd">:class:`multiprocessing.Lock`: Lock that enforces a single writer to the `QUEUE` at a time.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="JackClient"><a class="viewcode-back" href="../../../../rst/autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient">[docs]</a><span class="k">class</span> <span class="nc">JackClient</span><span class="p">(</span><span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
+<div class="viewcode-block" id="JackClient"><a class="viewcode-back" href="../../../../autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient">[docs]</a><span class="k">class</span> <span class="nc">JackClient</span><span class="p">(</span><span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Client that dumps frames of audio directly into a running jackd client.</span>
 
@@ -343,7 +380,7 @@
         <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;PLAY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">play_evt</span>
         <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;STOP&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_evt</span>
 
-<div class="viewcode-block" id="JackClient.boot_server"><a class="viewcode-back" href="../../../../rst/autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient.boot_server">[docs]</a>    <span class="k">def</span> <span class="nf">boot_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="JackClient.boot_server"><a class="viewcode-back" href="../../../../autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient.boot_server">[docs]</a>    <span class="k">def</span> <span class="nf">boot_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by :meth:`.JackClient.run` to boot the server upon starting the process.</span>
 
@@ -385,7 +422,7 @@
                 <span class="c1"># TODO: Limited, obvs. want to handle arbitrary output arrangements.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">outports</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">target_ports</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="JackClient.run"><a class="viewcode-back" href="../../../../rst/autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="JackClient.run"><a class="viewcode-back" href="../../../../autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the process, boot the server, start processing frames and wait for the end.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -405,13 +442,13 @@
     <span class="c1">#     # TODO: shut down server but also reset module level variables</span>
     <span class="c1">#     pass</span>
 
-<div class="viewcode-block" id="JackClient.quit"><a class="viewcode-back" href="../../../../rst/autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient.quit">[docs]</a>    <span class="k">def</span> <span class="nf">quit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="JackClient.quit"><a class="viewcode-back" href="../../../../autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient.quit">[docs]</a>    <span class="k">def</span> <span class="nf">quit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the :attr:`.JackClient.quit_evt`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">quit_evt</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="JackClient.process"><a class="viewcode-back" href="../../../../rst/autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frames</span><span class="p">):</span>
+<div class="viewcode-block" id="JackClient.process"><a class="viewcode-back" href="../../../../autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frames</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process a frame of audio.</span>
 
@@ -485,26 +522,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

@@ -145,7 +145,7 @@ if __name__ == "__main__":
     else:
         prof_file = os.path.join(os.path.expanduser('~'), '.profile')
 
-    alias_cmd = "alias terminal='{}'".format(launch_file)
+    alias_cmd = "\n#autopilot terminal alias\n\nalias terminal='{}'".format(launch_file)
 
     with open(prof_file, 'a+') as profile:
         profile.write(alias_cmd)

@@ -136,7 +136,32 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -256,7 +281,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
 
-<div class="viewcode-block" id="Graduation"><a class="viewcode-back" href="../../../rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation">[docs]</a><span class="k">class</span> <span class="nc">Graduation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Graduation"><a class="viewcode-back" href="../../../autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation">[docs]</a><span class="k">class</span> <span class="nc">Graduation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base Graduation object.</span>
 
@@ -274,7 +299,7 @@
 <span class="sd">    list: list of any data columns that this object should be given.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Graduation.update"><a class="viewcode-back" href="../../../rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
+<div class="viewcode-block" id="Graduation.update"><a class="viewcode-back" href="../../../autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            :class:`~tables.tableextension.Row` : Trial row</span>
@@ -282,7 +307,7 @@
         <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;The update method was not redefined by the subclass!&#39;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="Accuracy"><a class="viewcode-back" href="../../../rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy">[docs]</a><span class="k">class</span> <span class="nc">Accuracy</span><span class="p">(</span><span class="n">Graduation</span><span class="p">):</span>
+<div class="viewcode-block" id="Accuracy"><a class="viewcode-back" href="../../../autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy">[docs]</a><span class="k">class</span> <span class="nc">Accuracy</span><span class="p">(</span><span class="n">Graduation</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Graduate stage based on percent accuracy over some window of trials.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -311,7 +336,7 @@
 
 
 
-<div class="viewcode-block" id="Accuracy.update"><a class="viewcode-back" href="../../../rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
+<div class="viewcode-block" id="Accuracy.update"><a class="viewcode-back" href="../../../autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get &#39;correct&#39; from the row object. If this trial puts us over the</span>
 <span class="sd">        threshold, return True, else False.</span>
@@ -337,7 +362,7 @@
             <span class="k">return</span> <span class="bp">False</span></div></div>
 
 
-<div class="viewcode-block" id="NTrials"><a class="viewcode-back" href="../../../rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.NTrials">[docs]</a><span class="k">class</span> <span class="nc">NTrials</span><span class="p">(</span><span class="n">Graduation</span><span class="p">):</span>
+<div class="viewcode-block" id="NTrials"><a class="viewcode-back" href="../../../autopilot.tasks.graduation.html#autopilot.tasks.graduation.NTrials">[docs]</a><span class="k">class</span> <span class="nc">NTrials</span><span class="p">(</span><span class="n">Graduation</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Graduate after doing n trials</span>
 
@@ -358,7 +383,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_trials</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_trials</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">count</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">current_trial</span><span class="p">))</span>
 
-<div class="viewcode-block" id="NTrials.update"><a class="viewcode-back" href="../../../rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.NTrials.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
+<div class="viewcode-block" id="NTrials.update"><a class="viewcode-back" href="../../../autopilot.tasks.graduation.html#autopilot.tasks.graduation.NTrials.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If we&#39;re past n_trials in this trial, return True, else False.</span>
 

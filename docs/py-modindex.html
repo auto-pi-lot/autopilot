@@ -139,7 +139,32 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -262,132 +287,97 @@
        <td><img src="_static/minus.png" class="toggler"
               id="toggle-1" style="display: none" alt="-" /></td>
        <td>
-       <a href="rst/autopilot.html#module-autopilot"><code class="xref">autopilot</code></a></td><td>
+       <code class="xref">autopilot</code></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.core.html#module-autopilot.core"><code class="xref">autopilot.core</code></a></td><td>
+       <a href="autopilot.core.html#module-autopilot.core"><code class="xref">autopilot.core</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.core.hardware.html#module-autopilot.core.hardware"><code class="xref">autopilot.core.hardware</code></a></td><td>
+       <a href="autopilot.core.gui.html#module-autopilot.core.gui"><code class="xref">autopilot.core.gui</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.core.networking.html#module-autopilot.core.networking"><code class="xref">autopilot.core.networking</code></a></td><td>
+       <a href="autopilot.core.networking.html#module-autopilot.core.networking"><code class="xref">autopilot.core.networking</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.core.pilot.html#module-autopilot.core.pilot"><code class="xref">autopilot.core.pilot</code></a></td><td>
+       <a href="autopilot.core.pilot.html#module-autopilot.core.pilot"><code class="xref">autopilot.core.pilot</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.core.plots.html#module-autopilot.core.plots"><code class="xref">autopilot.core.plots</code></a></td><td>
+       <a href="autopilot.core.plots.html#module-autopilot.core.plots"><code class="xref">autopilot.core.plots</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.core.reward.html#module-autopilot.core.reward"><code class="xref">autopilot.core.reward</code></a></td><td>
+       <a href="autopilot.core.subject.html#module-autopilot.core.subject"><code class="xref">autopilot.core.subject</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.core.styles.html#module-autopilot.core.styles"><code class="xref">autopilot.core.styles</code></a></td><td>
+       <a href="autopilot.core.terminal.html#module-autopilot.core.terminal"><code class="xref">autopilot.core.terminal</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.core.utils.html#module-autopilot.core.utils"><code class="xref">autopilot.core.utils</code></a></td><td>
+       <a href="autopilot.core.utils.html#module-autopilot.core.utils"><code class="xref">autopilot.core.utils</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.prefs.html#module-autopilot.prefs"><code class="xref">autopilot.prefs</code></a></td><td>
+       <a href="autopilot.setup.setup_terminal.html#module-autopilot.setup.setup_terminal"><code class="xref">autopilot.setup.setup_terminal</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.setup.html#module-autopilot.setup"><code class="xref">autopilot.setup</code></a></td><td>
+       <a href="autopilot.stim.managers.html#module-autopilot.stim.managers"><code class="xref">autopilot.stim.managers</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.setup.setup_pilot.html#module-autopilot.setup.setup_pilot"><code class="xref">autopilot.setup.setup_pilot</code></a></td><td>
+       <a href="autopilot.stim.sound.jackclient.html#module-autopilot.stim.sound.jackclient"><code class="xref">autopilot.stim.sound.jackclient</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.setup.setup_scale.html#module-autopilot.setup.setup_scale"><code class="xref">autopilot.setup.setup_scale</code></a></td><td>
+       <a href="autopilot.stim.sound.pyoserver.html#module-autopilot.stim.sound.pyoserver"><code class="xref">autopilot.stim.sound.pyoserver</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.setup.setup_terminal.html#module-autopilot.setup.setup_terminal"><code class="xref">autopilot.setup.setup_terminal</code></a></td><td>
+       <a href="autopilot.stim.sound.sounds.html#module-autopilot.stim.sound.sounds"><code class="xref">autopilot.stim.sound.sounds</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.stim.html#module-autopilot.stim"><code class="xref">autopilot.stim</code></a></td><td>
+       <a href="autopilot.tasks.free_water.html#module-autopilot.tasks.free_water"><code class="xref">autopilot.tasks.free_water</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.stim.managers.html#module-autopilot.stim.managers"><code class="xref">autopilot.stim.managers</code></a></td><td>
+       <a href="autopilot.tasks.graduation.html#module-autopilot.tasks.graduation"><code class="xref">autopilot.tasks.graduation</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.stim.visual.html#module-autopilot.stim.visual"><code class="xref">autopilot.stim.visual</code></a></td><td>
+       <a href="autopilot.tasks.nafc.html#module-autopilot.tasks.nafc"><code class="xref">autopilot.tasks.nafc</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.stim.visual.visuals.html#module-autopilot.stim.visual.visuals"><code class="xref">autopilot.stim.visual.visuals</code></a></td><td>
+       <a href="autopilot.tasks.task.html#module-autopilot.tasks.task"><code class="xref">autopilot.tasks.task</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.tasks.html#module-autopilot.tasks"><code class="xref">autopilot.tasks</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.tasks.children.html#module-autopilot.tasks.children"><code class="xref">autopilot.tasks.children</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.tasks.free_water.html#module-autopilot.tasks.free_water"><code class="xref">autopilot.tasks.free_water</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.tasks.gonogo.html#module-autopilot.tasks.gonogo"><code class="xref">autopilot.tasks.gonogo</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.tasks.graduation.html#module-autopilot.tasks.graduation"><code class="xref">autopilot.tasks.graduation</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.tasks.nafc.html#module-autopilot.tasks.nafc"><code class="xref">autopilot.tasks.nafc</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.tasks.task.html#module-autopilot.tasks.task"><code class="xref">autopilot.tasks.task</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="rst/autopilot.viz.html#module-autopilot.viz"><code class="xref">autopilot.viz</code></a></td><td>
+       <a href="autopilot.viz.html#module-autopilot.viz"><code class="xref">autopilot.viz</code></a></td><td>
        <em></em></td></tr>
    </table>
 

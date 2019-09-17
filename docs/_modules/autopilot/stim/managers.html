@@ -136,7 +136,32 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -264,7 +289,7 @@
     <span class="k">if</span> <span class="n">prefs</span><span class="o">.</span><span class="n">CONFIG</span> <span class="o">==</span> <span class="s1">&#39;AUDIO&#39;</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">autopilot.stim.sound</span> <span class="kn">import</span> <span class="n">sounds</span>
 
-<div class="viewcode-block" id="init_manager"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.init_manager">[docs]</a><span class="k">def</span> <span class="nf">init_manager</span><span class="p">(</span><span class="n">stim</span><span class="p">):</span>
+<div class="viewcode-block" id="init_manager"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.init_manager">[docs]</a><span class="k">def</span> <span class="nf">init_manager</span><span class="p">(</span><span class="n">stim</span><span class="p">):</span>
     <span class="k">if</span> <span class="s1">&#39;manager&#39;</span> <span class="ow">in</span> <span class="n">stim</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">stim</span><span class="p">[</span><span class="s1">&#39;manager&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">MANAGER_MAP</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">manager</span> <span class="o">=</span> <span class="n">stim</span><span class="p">[</span><span class="s1">&#39;manager&#39;</span><span class="p">]</span>
@@ -275,7 +300,7 @@
         <span class="k">return</span> <span class="n">Stim_Manager</span><span class="p">(</span><span class="n">stim</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Stim_Manager"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager">[docs]</a><span class="k">class</span> <span class="nc">Stim_Manager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Stim_Manager"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager">[docs]</a><span class="k">class</span> <span class="nc">Stim_Manager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Yield sounds according to some set of rules.</span>
 
@@ -339,7 +364,7 @@
             <span class="k">if</span> <span class="s1">&#39;sounds&#39;</span> <span class="ow">in</span> <span class="n">stim</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">init_sounds</span><span class="p">(</span><span class="n">stim</span><span class="p">[</span><span class="s1">&#39;sounds&#39;</span><span class="p">])</span>
 
-<div class="viewcode-block" id="Stim_Manager.do_correction"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.do_correction">[docs]</a>    <span class="k">def</span> <span class="nf">do_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">correction_pct</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
+<div class="viewcode-block" id="Stim_Manager.do_correction"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.do_correction">[docs]</a>    <span class="k">def</span> <span class="nf">do_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">correction_pct</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called to set correction trials to True and correction percent.</span>
 
@@ -349,7 +374,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">correction</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">correction_pct</span> <span class="o">=</span> <span class="n">correction_pct</span></div>
 
-<div class="viewcode-block" id="Stim_Manager.do_bias"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.do_bias">[docs]</a>    <span class="k">def</span> <span class="nf">do_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Stim_Manager.do_bias"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.do_bias">[docs]</a>    <span class="k">def</span> <span class="nf">do_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Instantiate a :class:`.Bias_Correction` module</span>
 
@@ -358,7 +383,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="n">Bias_Correction</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Stim_Manager.init_sounds"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.init_sounds">[docs]</a>    <span class="k">def</span> <span class="nf">init_sounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sound_dict</span><span class="p">):</span>
+<div class="viewcode-block" id="Stim_Manager.init_sounds"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.init_sounds">[docs]</a>    <span class="k">def</span> <span class="nf">init_sounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sound_dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Instantiate sound objects, using the &#39;type&#39; value to choose an object from</span>
 <span class="sd">        :data:`.sounds.SOUND_LIST` .</span>
@@ -384,7 +409,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">stimuli</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">sounds</span><span class="o">.</span><span class="n">SOUND_LIST</span><span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]](</span><span class="o">**</span><span class="n">v</span><span class="p">)]</span></div>
 
-<div class="viewcode-block" id="Stim_Manager.set_triggers"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.set_triggers">[docs]</a>    <span class="k">def</span> <span class="nf">set_triggers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trig_fn</span><span class="p">):</span>
+<div class="viewcode-block" id="Stim_Manager.set_triggers"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.set_triggers">[docs]</a>    <span class="k">def</span> <span class="nf">set_triggers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trig_fn</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Give a callback function to all of our stimuli for when the stimulus ends.</span>
 
@@ -399,7 +424,7 @@
             <span class="k">for</span> <span class="n">astim</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
                 <span class="n">astim</span><span class="o">.</span><span class="n">set_trigger</span><span class="p">(</span><span class="n">trig_fn</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Stim_Manager.make_punishment"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.make_punishment">[docs]</a>    <span class="k">def</span> <span class="nf">make_punishment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
+<div class="viewcode-block" id="Stim_Manager.make_punishment"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.make_punishment">[docs]</a>    <span class="k">def</span> <span class="nf">make_punishment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Warning:</span>
 <span class="sd">            Not Implemented</span>
@@ -416,14 +441,14 @@
         <span class="c1">#     #self.stimuli[&#39;punish&#39;].set_trigger(change_to_green)</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Stim_Manager.play_punishment"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.play_punishment">[docs]</a>    <span class="k">def</span> <span class="nf">play_punishment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Stim_Manager.play_punishment"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.play_punishment">[docs]</a>    <span class="k">def</span> <span class="nf">play_punishment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Warning:</span>
 <span class="sd">            Not Implemented</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Stim_Manager.next_stim"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.next_stim">[docs]</a>    <span class="k">def</span> <span class="nf">next_stim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Stim_Manager.next_stim"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.next_stim">[docs]</a>    <span class="k">def</span> <span class="nf">next_stim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute and return the next stimulus</span>
 
@@ -465,7 +490,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">distractor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_stim</span></div>
 
-<div class="viewcode-block" id="Stim_Manager.compute_correction"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.compute_correction">[docs]</a>    <span class="k">def</span> <span class="nf">compute_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Stim_Manager.compute_correction"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.compute_correction">[docs]</a>    <span class="k">def</span> <span class="nf">compute_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If `self.correction` is true, compute correction trial logic during</span>
 <span class="sd">        `next_stim`.</span>
@@ -497,7 +522,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">False</span></div>
 
-<div class="viewcode-block" id="Stim_Manager.update"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">correct</span><span class="p">):</span>
+<div class="viewcode-block" id="Stim_Manager.update"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">correct</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        At the end of a trial, update the status of our internal variables</span>
 <span class="sd">        with the outcome of the trial.</span>
@@ -511,7 +536,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Stim_Manager.end"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.end">[docs]</a>    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Stim_Manager.end"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.end">[docs]</a>    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        End all of our stim. Stim should have an `.end()` method of their own</span>
 
@@ -524,7 +549,7 @@
                 <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
                     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;stim does not have an end method! </span><span class="se">\n</span><span class="s1">{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stim</span><span class="p">)))</span></div></div>
 
-<div class="viewcode-block" id="Proportional"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Proportional">[docs]</a><span class="k">class</span> <span class="nc">Proportional</span><span class="p">(</span><span class="n">Stim_Manager</span><span class="p">):</span>
+<div class="viewcode-block" id="Proportional"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Proportional">[docs]</a><span class="k">class</span> <span class="nc">Proportional</span><span class="p">(</span><span class="n">Stim_Manager</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Present groups of stimuli with a particular frequency.</span>
 
@@ -567,7 +592,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">store_groups</span><span class="p">(</span><span class="n">stim</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Proportional.init_sounds"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Proportional.init_sounds">[docs]</a>    <span class="k">def</span> <span class="nf">init_sounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sound_stim</span><span class="p">):</span>
+<div class="viewcode-block" id="Proportional.init_sounds"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Proportional.init_sounds">[docs]</a>    <span class="k">def</span> <span class="nf">init_sounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sound_stim</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Instantiate sound objects similarly to :class:`.Stim_Manager`, just organizes them into groups.</span>
 
@@ -609,7 +634,7 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">stimuli</span><span class="p">[</span><span class="n">group_name</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">sounds</span><span class="o">.</span><span class="n">SOUND_LIST</span><span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]](</span><span class="o">**</span><span class="n">v</span><span class="p">)]</span></div>
 
-<div class="viewcode-block" id="Proportional.store_groups"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Proportional.store_groups">[docs]</a>    <span class="k">def</span> <span class="nf">store_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stim</span><span class="p">):</span>
+<div class="viewcode-block" id="Proportional.store_groups"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Proportional.store_groups">[docs]</a>    <span class="k">def</span> <span class="nf">store_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stim</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        store groups and frequencies</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -632,7 +657,7 @@
 
 
 
-<div class="viewcode-block" id="Proportional.set_triggers"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Proportional.set_triggers">[docs]</a>    <span class="k">def</span> <span class="nf">set_triggers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trig_fn</span><span class="p">):</span>
+<div class="viewcode-block" id="Proportional.set_triggers"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Proportional.set_triggers">[docs]</a>    <span class="k">def</span> <span class="nf">set_triggers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trig_fn</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Give a callback function to all of our stimuli for when the stimulus ends.</span>
 
@@ -649,7 +674,7 @@
                     <span class="n">astim</span><span class="o">.</span><span class="n">set_trigger</span><span class="p">(</span><span class="n">trig_fn</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Proportional.next_stim"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Proportional.next_stim">[docs]</a>    <span class="k">def</span> <span class="nf">next_stim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Proportional.next_stim"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Proportional.next_stim">[docs]</a>    <span class="k">def</span> <span class="nf">next_stim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute and return the next stimulus</span>
 
@@ -699,7 +724,7 @@
 
 
 
-<div class="viewcode-block" id="Bias_Correction"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction">[docs]</a><span class="k">class</span> <span class="nc">Bias_Correction</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Bias_Correction"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction">[docs]</a><span class="k">class</span> <span class="nc">Bias_Correction</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Basic Bias correction module. Modifies the threshold of random stimulus</span>
 <span class="sd">    choice based on history of biased responses.</span>
@@ -726,7 +751,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">responses</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">targets</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Bias_Correction.next_bias"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction.next_bias">[docs]</a>    <span class="k">def</span> <span class="nf">next_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Bias_Correction.next_bias"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction.next_bias">[docs]</a>    <span class="k">def</span> <span class="nf">next_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the next bias depending on `self.mode`</span>
 
@@ -739,7 +764,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;thresholded_linear&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresholded_linear</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Bias_Correction.thresholded_linear"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction.thresholded_linear">[docs]</a>    <span class="k">def</span> <span class="nf">thresholded_linear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Bias_Correction.thresholded_linear"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction.thresholded_linear">[docs]</a>    <span class="k">def</span> <span class="nf">thresholded_linear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If we are above the threshold, linearly correct the rate of</span>
 <span class="sd">        presentation to favor the rarely responded side.</span>
@@ -757,7 +782,7 @@
             <span class="k">return</span> <span class="mf">0.5</span></div>
 
 
-<div class="viewcode-block" id="Bias_Correction.update"><a class="viewcode-back" href="../../../rst/autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<div class="viewcode-block" id="Bias_Correction.update"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Store some new response and target values</span>
 

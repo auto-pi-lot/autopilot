@@ -137,7 +137,32 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -268,6 +293,7 @@
  | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
+ | <a href="#Q"><strong>Q</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
@@ -279,30 +305,30 @@
 <h2 id="_">_</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.__contains__">__contains__() (autopilot.core.networking.Message method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.__contains__">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.__contains__">__contains__() (autopilot.core.networking.Message method)</a>
 
       <ul>
-        <li><a href="autopilot.core.utils.html#autopilot.core.utils.Param.__contains__">(autopilot.core.utils.Param method)</a>, <a href="rst/autopilot.core.utils.html#autopilot.core.utils.Param.__contains__">[1]</a>
+        <li><a href="autopilot.core.utils.html#autopilot.core.utils.Param.__contains__">(autopilot.core.utils.Param method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.__delitem__">__delitem__() (autopilot.core.networking.Message method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.__delitem__">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.__delitem__">__delitem__() (autopilot.core.networking.Message method)</a>
 
       <ul>
-        <li><a href="autopilot.core.utils.html#autopilot.core.utils.Param.__delitem__">(autopilot.core.utils.Param method)</a>, <a href="rst/autopilot.core.utils.html#autopilot.core.utils.Param.__delitem__">[1]</a>
+        <li><a href="autopilot.core.utils.html#autopilot.core.utils.Param.__delitem__">(autopilot.core.utils.Param method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.__getitem__">__getitem__() (autopilot.core.networking.Message method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.__getitem__">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.__getitem__">__getitem__() (autopilot.core.networking.Message method)</a>
 
       <ul>
-        <li><a href="autopilot.core.utils.html#autopilot.core.utils.Param.__getitem__">(autopilot.core.utils.Param method)</a>, <a href="rst/autopilot.core.utils.html#autopilot.core.utils.Param.__getitem__">[1]</a>
+        <li><a href="autopilot.core.utils.html#autopilot.core.utils.Param.__getitem__">(autopilot.core.utils.Param method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.__setitem__">__setitem__() (autopilot.core.networking.Message method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.__setitem__">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.__setitem__">__setitem__() (autopilot.core.networking.Message method)</a>
 
       <ul>
-        <li><a href="autopilot.core.utils.html#autopilot.core.utils.Param.__setitem__">(autopilot.core.utils.Param method)</a>, <a href="rst/autopilot.core.utils.html#autopilot.core.utils.Param.__setitem__">[1]</a>
+        <li><a href="autopilot.core.utils.html#autopilot.core.utils.Param.__setitem__">(autopilot.core.utils.Param method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -311,85 +337,89 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy">Accuracy (class in autopilot.tasks.graduation)</a>, <a href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy">[1]</a>
+      <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy">Accuracy (class in autopilot.tasks.graduation)</a>
 </li>
-      <li><a href="autopilot.prefs.html#autopilot.prefs.add">add() (in module autopilot.prefs)</a>, <a href="rst/autopilot.prefs.html#autopilot.prefs.add">[1]</a>
+      <li><a href="autopilot.prefs.html#autopilot.prefs.add">add() (in module autopilot.prefs)</a>
 </li>
-      <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.HardwareForm.afterEditing">afterEditing() (autopilot.setup.setup_pilot.HardwareForm method)</a>, <a href="rst/autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.HardwareForm.afterEditing">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.add_sound">add_sound() (autopilot.core.gui.Sound_Widget method)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.add_step">add_step() (autopilot.core.gui.Protocol_Wizard method)</a>
+</li>
+      <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.HardwareForm.afterEditing">afterEditing() (autopilot.setup.setup_pilot.HardwareForm method)</a>
 
       <ul>
-        <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.PilotSetupForm.afterEditing">(autopilot.setup.setup_pilot.PilotSetupForm method)</a>, <a href="rst/autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.PilotSetupForm.afterEditing">[1]</a>
+        <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.PilotSetupForm.afterEditing">(autopilot.setup.setup_pilot.PilotSetupForm method)</a>
 </li>
-        <li><a href="autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.TerminalSetupForm.afterEditing">(autopilot.setup.setup_terminal.TerminalSetupForm method)</a>, <a href="rst/autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.TerminalSetupForm.afterEditing">[1]</a>
+        <li><a href="autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.TerminalSetupForm.afterEditing">(autopilot.setup.setup_terminal.TerminalSetupForm method)</a>
 </li>
       </ul></li>
-      <li><a href="rst/autopilot.core.reward.html#autopilot.core.reward.Reward.as_dict">as_dict() (autopilot.core.reward.Reward method)</a>
-</li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.assign_cb">assign_cb() (autopilot.core.hardware.Beambreak method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.assign_cb">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.assign_cb">assign_cb() (autopilot.core.hardware.Beambreak method)</a>
 
       <ul>
-        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.assign_cb">(autopilot.core.hardware.Hardware method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.assign_cb">[1]</a>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.assign_cb">(autopilot.core.hardware.Hardware method)</a>
 </li>
-        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.assign_cb">(autopilot.core.hardware.Wheel method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.assign_cb">[1]</a>
-</li>
-      </ul></li>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot">autopilot (class in autopilot.core.pilot)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot">[1]</a>
-
-      <ul>
-        <li><a href="rst/autopilot.html#module-autopilot">(module)</a>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.assign_cb">(autopilot.core.hardware.Wheel method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.html#module-autopilot.core">autopilot.core (module)</a>, <a href="rst/autopilot.core.html#module-autopilot.core">[1]</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.assign_protocol">assign_protocol() (autopilot.core.subject.Subject method)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#module-autopilot.core.hardware">autopilot.core.hardware (module)</a>, <a href="rst/autopilot.core.hardware.html#module-autopilot.core.hardware">[1]</a>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot">autopilot (class in autopilot.core.pilot)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#module-autopilot.core.networking">autopilot.core.networking (module)</a>, <a href="rst/autopilot.core.networking.html#module-autopilot.core.networking">[1]</a>
+      <li><a href="autopilot.core.html#module-autopilot.core">autopilot.core (module)</a>
 </li>
-      <li><a href="autopilot.core.pilot.html#module-autopilot.core.pilot">autopilot.core.pilot (module)</a>, <a href="rst/autopilot.core.pilot.html#module-autopilot.core.pilot">[1]</a>
+      <li><a href="autopilot.core.gui.html#module-autopilot.core.gui">autopilot.core.gui (module)</a>
 </li>
-      <li><a href="autopilot.core.plots.html#module-autopilot.core.plots">autopilot.core.plots (module)</a>, <a href="rst/autopilot.core.plots.html#module-autopilot.core.plots">[1]</a>
+      <li><a href="autopilot.core.hardware.html#module-autopilot.core.hardware">autopilot.core.hardware (module)</a>
 </li>
-      <li><a href="rst/autopilot.core.reward.html#module-autopilot.core.reward">autopilot.core.reward (module)</a>
+      <li><a href="autopilot.core.networking.html#module-autopilot.core.networking">autopilot.core.networking (module)</a>
 </li>
-      <li><a href="rst/autopilot.core.styles.html#module-autopilot.core.styles">autopilot.core.styles (module)</a>
+      <li><a href="autopilot.core.pilot.html#module-autopilot.core.pilot">autopilot.core.pilot (module)</a>
+</li>
+      <li><a href="autopilot.core.plots.html#module-autopilot.core.plots">autopilot.core.plots (module)</a>
+</li>
+      <li><a href="autopilot.core.subject.html#module-autopilot.core.subject">autopilot.core.subject (module)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.utils.html#module-autopilot.core.utils">autopilot.core.utils (module)</a>, <a href="rst/autopilot.core.utils.html#module-autopilot.core.utils">[1]</a>
+      <li><a href="autopilot.core.terminal.html#module-autopilot.core.terminal">autopilot.core.terminal (module)</a>
 </li>
-      <li><a href="autopilot.prefs.html#module-autopilot.prefs">autopilot.prefs (module)</a>, <a href="rst/autopilot.prefs.html#module-autopilot.prefs">[1]</a>
+      <li><a href="autopilot.core.utils.html#module-autopilot.core.utils">autopilot.core.utils (module)</a>
 </li>
-      <li><a href="autopilot.setup.html#module-autopilot.setup">autopilot.setup (module)</a>, <a href="rst/autopilot.setup.html#module-autopilot.setup">[1]</a>
+      <li><a href="autopilot.prefs.html#module-autopilot.prefs">autopilot.prefs (module)</a>
 </li>
-      <li><a href="autopilot.setup.setup_pilot.html#module-autopilot.setup.setup_pilot">autopilot.setup.setup_pilot (module)</a>, <a href="rst/autopilot.setup.setup_pilot.html#module-autopilot.setup.setup_pilot">[1]</a>
+      <li><a href="autopilot.setup.html#module-autopilot.setup">autopilot.setup (module)</a>
 </li>
-      <li><a href="autopilot.setup.setup_scale.html#module-autopilot.setup.setup_scale">autopilot.setup.setup_scale (module)</a>, <a href="rst/autopilot.setup.setup_scale.html#module-autopilot.setup.setup_scale">[1]</a>
+      <li><a href="autopilot.setup.setup_pilot.html#module-autopilot.setup.setup_pilot">autopilot.setup.setup_pilot (module)</a>
 </li>
-      <li><a href="autopilot.setup.setup_terminal.html#module-autopilot.setup.setup_terminal">autopilot.setup.setup_terminal (module)</a>, <a href="rst/autopilot.setup.setup_terminal.html#module-autopilot.setup.setup_terminal">[1]</a>
+      <li><a href="autopilot.setup.setup_scale.html#module-autopilot.setup.setup_scale">autopilot.setup.setup_scale (module)</a>
 </li>
-      <li><a href="autopilot.stim.html#module-autopilot.stim">autopilot.stim (module)</a>, <a href="rst/autopilot.stim.html#module-autopilot.stim">[1]</a>
+      <li><a href="autopilot.setup.setup_terminal.html#module-autopilot.setup.setup_terminal">autopilot.setup.setup_terminal (module)</a>
 </li>
-      <li><a href="autopilot.stim.managers.html#module-autopilot.stim.managers">autopilot.stim.managers (module)</a>, <a href="rst/autopilot.stim.managers.html#module-autopilot.stim.managers">[1]</a>
+      <li><a href="autopilot.stim.html#module-autopilot.stim">autopilot.stim (module)</a>
 </li>
-      <li><a href="rst/autopilot.stim.visual.html#module-autopilot.stim.visual">autopilot.stim.visual (module)</a>
+      <li><a href="autopilot.stim.managers.html#module-autopilot.stim.managers">autopilot.stim.managers (module)</a>
 </li>
-      <li><a href="rst/autopilot.stim.visual.visuals.html#module-autopilot.stim.visual.visuals">autopilot.stim.visual.visuals (module)</a>
+      <li><a href="autopilot.stim.sound.html#module-autopilot.stim.sound">autopilot.stim.sound (module)</a>
 </li>
-      <li><a href="autopilot.tasks.html#module-autopilot.tasks">autopilot.tasks (module)</a>, <a href="rst/autopilot.tasks.html#module-autopilot.tasks">[1]</a>
+      <li><a href="autopilot.stim.sound.jackclient.html#module-autopilot.stim.sound.jackclient">autopilot.stim.sound.jackclient (module)</a>
 </li>
-      <li><a href="rst/autopilot.tasks.children.html#module-autopilot.tasks.children">autopilot.tasks.children (module)</a>
+      <li><a href="autopilot.stim.sound.pyoserver.html#module-autopilot.stim.sound.pyoserver">autopilot.stim.sound.pyoserver (module)</a>
 </li>
-      <li><a href="autopilot.tasks.free_water.html#module-autopilot.tasks.free_water">autopilot.tasks.free_water (module)</a>, <a href="rst/autopilot.tasks.free_water.html#module-autopilot.tasks.free_water">[1]</a>
+      <li><a href="autopilot.stim.sound.sounds.html#module-autopilot.stim.sound.sounds">autopilot.stim.sound.sounds (module)</a>
 </li>
-      <li><a href="rst/autopilot.tasks.gonogo.html#module-autopilot.tasks.gonogo">autopilot.tasks.gonogo (module)</a>
+      <li><a href="autopilot.tasks.html#module-autopilot.tasks">autopilot.tasks (module)</a>
 </li>
-      <li><a href="autopilot.tasks.graduation.html#module-autopilot.tasks.graduation">autopilot.tasks.graduation (module)</a>, <a href="rst/autopilot.tasks.graduation.html#module-autopilot.tasks.graduation">[1]</a>
+      <li><a href="autopilot.tasks.free_water.html#module-autopilot.tasks.free_water">autopilot.tasks.free_water (module)</a>
 </li>
-      <li><a href="autopilot.tasks.nafc.html#module-autopilot.tasks.nafc">autopilot.tasks.nafc (module)</a>, <a href="rst/autopilot.tasks.nafc.html#module-autopilot.tasks.nafc">[1]</a>
+      <li><a href="autopilot.tasks.graduation.html#module-autopilot.tasks.graduation">autopilot.tasks.graduation (module)</a>
 </li>
-      <li><a href="autopilot.tasks.task.html#module-autopilot.tasks.task">autopilot.tasks.task (module)</a>, <a href="rst/autopilot.tasks.task.html#module-autopilot.tasks.task">[1]</a>
+      <li><a href="autopilot.tasks.nafc.html#module-autopilot.tasks.nafc">autopilot.tasks.nafc (module)</a>
 </li>
-      <li><a href="autopilot.viz.html#module-autopilot.viz">autopilot.viz (module)</a>, <a href="rst/autopilot.viz.html#module-autopilot.viz">[1]</a>
+      <li><a href="autopilot.tasks.task.html#module-autopilot.tasks.task">autopilot.tasks.task (module)</a>
+</li>
+      <li><a href="autopilot.viz.html#module-autopilot.viz">autopilot.viz (module)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Autopilot_Style">Autopilot_Style (class in autopilot.core.gui)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -397,17 +427,25 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.BCM_TO_BOARD">BCM_TO_BOARD (in module autopilot.core.hardware)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.BCM_TO_BOARD">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test">Bandwidth_Test (class in autopilot.core.gui)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak">Beambreak (class in autopilot.core.hardware)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Beambreak">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.BCM_TO_BOARD">BCM_TO_BOARD (in module autopilot.core.hardware)</a>
+</li>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak">Beambreak (class in autopilot.core.hardware)</a>
+</li>
+      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction">Bias_Correction (class in autopilot.stim.managers)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction">Bias_Correction (class in autopilot.stim.managers)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction">[1]</a>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.blank_LEDs">blank_LEDs() (autopilot.core.pilot.autopilot method)</a>
 </li>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.blank_LEDs">blank_LEDs() (autopilot.core.pilot.autopilot method)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.blank_LEDs">[1]</a>
+      <li><a href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.BLOCKSIZE">BLOCKSIZE (in module autopilot.stim.sound.jackclient)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.BOARD_TO_BCM">BOARD_TO_BCM (in module autopilot.core.hardware)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.BOARD_TO_BCM">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.BOARD_TO_BCM">BOARD_TO_BCM (in module autopilot.core.hardware)</a>
+</li>
+      <li><a href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient.boot_server">boot_server() (autopilot.stim.sound.jackclient.JackClient method)</a>
+</li>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.buffer">buffer() (autopilot.stim.sound.sounds.Jack_Sound method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -415,61 +453,85 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.calc_move">calc_move() (autopilot.core.hardware.Wheel method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.calc_move">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Biography_Tab.calc_minmass">calc_minmass() (autopilot.core.gui.New_Subject_Wizard.Biography_Tab method)</a>
 </li>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.calibrate_port">calibrate_port() (autopilot.core.pilot.autopilot method)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.calibrate_port">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.calc_move">calc_move() (autopilot.core.hardware.Wheel method)</a>
 </li>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.calibration_curve">calibration_curve() (autopilot.core.pilot.autopilot method)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.calibration_curve">[1]</a>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.calibrate_port">calibrate_port() (autopilot.core.pilot.autopilot method)</a>
 </li>
-      <li><a href="rst/autopilot.stim.visual.visuals.html#autopilot.stim.visual.visuals.Visual.callback">callback (autopilot.stim.visual.visuals.Visual attribute)</a>
+      <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.calibrate_ports">calibrate_ports() (autopilot.core.terminal.Terminal method)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.check_thresh">check_thresh() (autopilot.core.hardware.Wheel method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.check_thresh">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Calibrate_Water">Calibrate_Water (class in autopilot.core.gui)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.child">child (autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.child">[1]</a>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.calibration_curve">calibration_curve() (autopilot.core.pilot.autopilot method)</a>
 </li>
-      <li><a href="rst/autopilot.tasks.gonogo.html#autopilot.tasks.gonogo.GoNoGo.CHILDREN">CHILDREN (autopilot.tasks.gonogo.GoNoGo attribute)</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.check_depends">check_depends() (autopilot.core.gui.Protocol_Wizard method)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.clear_cb">clear_cb() (autopilot.core.hardware.Beambreak method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.clear_cb">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.check_thresh">check_thresh() (autopilot.core.hardware.Wheel method)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.color_series">color_series() (autopilot.core.hardware.LED_RGB method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.color_series">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.child">child (autopilot.core.networking.Station attribute)</a>
 </li>
-      <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy.COLS">COLS (autopilot.tasks.graduation.Accuracy attribute)</a>, <a href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy.COLS">[1]</a>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.chunk">chunk() (autopilot.stim.sound.sounds.Jack_Sound method)</a>
+</li>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.clear_cb">clear_cb() (autopilot.core.hardware.Beambreak method)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Graduation_Widget.clear_params">clear_params() (autopilot.core.gui.Graduation_Widget method)</a>
 
       <ul>
-        <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation.COLS">(autopilot.tasks.graduation.Graduation attribute)</a>, <a href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation.COLS">[1]</a>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.clear_params">(autopilot.core.gui.Protocol_Wizard method)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.Add_Sound_Dialog.clear_params">(autopilot.core.gui.Sound_Widget.Add_Sound_Dialog method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.TrialData.columns">columns (autopilot.tasks.free_water.Free_Water.TrialData attribute)</a>, <a href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.TrialData.columns">[1]</a>
-
-      <ul>
-        <li><a href="rst/autopilot.tasks.gonogo.html#autopilot.tasks.gonogo.GoNoGo.TrialData.columns">(autopilot.tasks.gonogo.GoNoGo.TrialData attribute)</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.close_hdf">close_hdf() (autopilot.core.subject.Subject method)</a>
 </li>
-        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.TrialData.columns">(autopilot.tasks.nafc.Nafc.TrialData attribute)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.TrialData.columns">[1]</a>
+      <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.closeEvent">closeEvent() (autopilot.core.terminal.Terminal method)</a>
 </li>
-      </ul></li>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.color_series">color_series() (autopilot.core.hardware.LED_RGB method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.prefs.html#autopilot.prefs.compute_calibration">compute_calibration() (in module autopilot.prefs)</a>, <a href="rst/autopilot.prefs.html#autopilot.prefs.compute_calibration">[1]</a>
-</li>
-      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.compute_correction">compute_correction() (autopilot.stim.managers.Stim_Manager method)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.compute_correction">[1]</a>
-</li>
-      <li><a href="rst/autopilot.core.reward.html#autopilot.core.reward.Constant_Volume.compute_duration">compute_duration() (autopilot.core.reward.Constant_Volume method)</a>
-</li>
-      <li><a href="rst/autopilot.core.reward.html#autopilot.core.reward.Constant_Time">Constant_Time (class in autopilot.core.reward)</a>
-</li>
-      <li><a href="rst/autopilot.core.reward.html#autopilot.core.reward.Constant_Volume">Constant_Volume (class in autopilot.core.reward)</a>
-</li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.context">context (autopilot.core.networking.Net_Node attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.context">[1]</a>
-</li>
-      <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.HardwareForm.create">create() (autopilot.setup.setup_pilot.HardwareForm method)</a>, <a href="rst/autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.HardwareForm.create">[1]</a>
+      <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy.COLS">COLS (autopilot.tasks.graduation.Accuracy attribute)</a>
 
       <ul>
-        <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.PilotSetupForm.create">(autopilot.setup.setup_pilot.PilotSetupForm method)</a>, <a href="rst/autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.PilotSetupForm.create">[1]</a>
-</li>
-        <li><a href="autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.TerminalSetupForm.create">(autopilot.setup.setup_terminal.TerminalSetupForm method)</a>, <a href="rst/autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.TerminalSetupForm.create">[1]</a>
+        <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation.COLS">(autopilot.tasks.graduation.Graduation attribute)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.ctx">ctx (autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.ctx">[1]</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.Hash_Table.columns">columns (autopilot.core.subject.Subject.Hash_Table attribute)</a>
+
+      <ul>
+        <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.History_Table.columns">(autopilot.core.subject.Subject.History_Table attribute)</a>
+</li>
+        <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.Weight_Table.columns">(autopilot.core.subject.Subject.Weight_Table attribute)</a>
+</li>
+        <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.TrialData.columns">(autopilot.tasks.free_water.Free_Water.TrialData attribute)</a>
+</li>
+        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.TrialData.columns">(autopilot.tasks.nafc.Nafc.TrialData attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autopilot.prefs.html#autopilot.prefs.compute_calibration">compute_calibration() (in module autopilot.prefs)</a>
+</li>
+      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.compute_correction">compute_correction() (autopilot.stim.managers.Stim_Manager method)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.context">context (autopilot.core.networking.Net_Node attribute)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Control_Panel">Control_Panel (class in autopilot.core.gui)</a>
+</li>
+      <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.HardwareForm.create">create() (autopilot.setup.setup_pilot.HardwareForm method)</a>
+
+      <ul>
+        <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.PilotSetupForm.create">(autopilot.setup.setup_pilot.PilotSetupForm method)</a>
+</li>
+        <li><a href="autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.TerminalSetupForm.create">(autopilot.setup.setup_terminal.TerminalSetupForm method)</a>
+</li>
+      </ul></li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Control_Panel.create_subject">create_subject() (autopilot.core.gui.Control_Panel method)</a>
+
+      <ul>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Pilot_Panel.create_subject">(autopilot.core.gui.Pilot_Panel method)</a>
+</li>
+      </ul></li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.ctx">ctx (autopilot.core.networking.Station attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -477,29 +539,37 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.DATA">DATA (autopilot.tasks.free_water.Free_Water attribute)</a>, <a href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.DATA">[1]</a>
+      <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.DATA">DATA (autopilot.tasks.free_water.Free_Water attribute)</a>
 </li>
-      <li><a href="rst/autopilot.tasks.gonogo.html#autopilot.tasks.gonogo.GoNoGo.delayed_set">delayed_set() (autopilot.tasks.gonogo.GoNoGo method)</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.data_thread">data_thread() (autopilot.core.subject.Subject method)</a>
 </li>
-      <li><a href="rst/autopilot.tasks.gonogo.html#autopilot.tasks.gonogo.GoNoGo.discrim">discrim() (autopilot.tasks.gonogo.GoNoGo method)</a>
+      <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.discrim">discrim() (autopilot.tasks.nafc.Nafc method)</a>
+</li>
+      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.do_bias">do_bias() (autopilot.stim.managers.Stim_Manager method)</a>
+</li>
+      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.do_correction">do_correction() (autopilot.stim.managers.Stim_Manager method)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.do_logging">do_logging (autopilot.core.networking.Net_Node attribute)</a>
 
       <ul>
-        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.discrim">(autopilot.tasks.nafc.Nafc method)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.discrim">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.do_logging">(autopilot.core.networking.Station attribute)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.do_bias">do_bias() (autopilot.stim.managers.Stim_Manager method)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.do_bias">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Drag_List">Drag_List (class in autopilot.core.gui)</a>
 </li>
-      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.do_correction">do_correction() (autopilot.stim.managers.Stim_Manager method)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.do_correction">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Drag_List.dragEnterEvent">dragEnterEvent() (autopilot.core.gui.Drag_List method)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.do_logging">do_logging (autopilot.core.networking.Net_Node attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.do_logging">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Drag_List.dragMoveEvent">dragMoveEvent() (autopilot.core.gui.Drag_List method)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Drag_List.dropEvent">dropEvent() (autopilot.core.gui.Drag_List method)</a>
 
       <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.do_logging">(autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.do_logging">[1]</a>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Subject_List.dropEvent">(autopilot.core.gui.Subject_List method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.dur_from_vol">dur_from_vol() (autopilot.core.hardware.Solenoid method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.dur_from_vol">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.dur_from_vol">dur_from_vol() (autopilot.core.hardware.Solenoid method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -507,21 +577,23 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.end">end() (autopilot.stim.managers.Stim_Manager method)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.end">[1]</a>
+      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.end">end() (autopilot.stim.managers.Stim_Manager method)</a>
 
       <ul>
-        <li><a href="rst/autopilot.tasks.children.html#autopilot.tasks.children.Wheel_Child.end">(autopilot.tasks.children.Wheel_Child method)</a>
+        <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.end">(autopilot.stim.sound.sounds.Jack_Sound method)</a>
 </li>
-        <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.end">(autopilot.tasks.free_water.Free_Water method)</a>, <a href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.end">[1]</a>
+        <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.end">(autopilot.tasks.free_water.Free_Water method)</a>
 </li>
-        <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.end">(autopilot.tasks.task.Task method)</a>, <a href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.end">[1]</a>
+        <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.end">(autopilot.tasks.task.Task method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.utils.html#autopilot.core.utils.Invoker.event">event() (autopilot.core.utils.Invoker method)</a>, <a href="rst/autopilot.core.utils.html#autopilot.core.utils.Invoker.event">[1]</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.ensure_structure">ensure_structure() (autopilot.core.subject.Subject method)</a>
 </li>
-      <li><a href="autopilot.core.utils.html#autopilot.core.utils.InvokeEvent.EVENT_TYPE">EVENT_TYPE (autopilot.core.utils.InvokeEvent attribute)</a>, <a href="rst/autopilot.core.utils.html#autopilot.core.utils.InvokeEvent.EVENT_TYPE">[1]</a>
+      <li><a href="autopilot.core.utils.html#autopilot.core.utils.Invoker.event">event() (autopilot.core.utils.Invoker method)</a>
+</li>
+      <li><a href="autopilot.core.utils.html#autopilot.core.utils.InvokeEvent.EVENT_TYPE">EVENT_TYPE (autopilot.core.utils.InvokeEvent attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -529,25 +601,35 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.file_block">file_block (autopilot.core.pilot.autopilot attribute)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.file_block">[1]</a>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.File">File (class in autopilot.stim.sound.sounds)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Flag">Flag (class in autopilot.core.hardware)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Flag">[1]</a>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.file_block">file_block (autopilot.core.pilot.autopilot attribute)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.flags">flags (autopilot.core.networking.Message attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.flags">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Drag_List.fileDropped">fileDropped (autopilot.core.gui.Drag_List attribute)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.flash">flash() (autopilot.core.hardware.LED_RGB method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.flash">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.files_dropped">files_dropped() (autopilot.core.gui.Sound_Widget method)</a>
+</li>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Flag">Flag (class in autopilot.core.hardware)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.flags">flags (autopilot.core.networking.Message attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.flash_leds">flash_leds() (autopilot.tasks.nafc.Nafc method)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.flash_leds">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.flash">flash() (autopilot.core.hardware.LED_RGB method)</a>
+</li>
+      <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.flash_leds">flash_leds() (autopilot.tasks.nafc.Nafc method)</a>
 
       <ul>
-        <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.flash_leds">(autopilot.tasks.task.Task method)</a>, <a href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.flash_leds">[1]</a>
+        <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.flash_leds">(autopilot.tasks.task.Task method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water">Free_Water (class in autopilot.tasks.free_water)</a>, <a href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water">[1]</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.flush_current">flush_current() (autopilot.core.subject.Subject method)</a>
 </li>
-      <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.TrialData">Free_Water.TrialData (class in autopilot.tasks.free_water)</a>, <a href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.TrialData">[1]</a>
+      <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water">Free_Water (class in autopilot.tasks.free_water)</a>
+</li>
+      <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.TrialData">Free_Water.TrialData (class in autopilot.tasks.free_water)</a>
+</li>
+      <li><a href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.FS">FS (in module autopilot.stim.sound.jackclient)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -555,71 +637,81 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.get_ip">get_ip() (autopilot.core.networking.Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.get_ip">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.get_ip">get_ip() (autopilot.core.networking.Station method)</a>
 
       <ul>
-        <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.get_ip">(autopilot.core.pilot.autopilot method)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.get_ip">[1]</a>
+        <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.get_ip">(autopilot.core.pilot.autopilot method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.get_name">get_name() (autopilot.core.hardware.Hardware method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.get_name">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.get_name">get_name() (autopilot.core.hardware.Hardware method)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.get_timestamp">get_timestamp() (autopilot.core.networking.Message method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.get_timestamp">[1]</a>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.get_nsamples">get_nsamples() (autopilot.stim.sound.sounds.Jack_Sound method)</a>
 </li>
-      <li><a href="rst/autopilot.stim.visual.visuals.html#autopilot.stim.visual.visuals.Visual.get_window">get_window() (autopilot.stim.visual.visuals.Visual method)</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.get_step_history">get_step_history() (autopilot.core.subject.Subject method)</a>
 </li>
-      <li><a href="autopilot.prefs.html#autopilot.prefs.git_version">git_version() (in module autopilot.prefs)</a>, <a href="rst/autopilot.prefs.html#autopilot.prefs.git_version">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.get_timestamp">get_timestamp() (autopilot.core.networking.Message method)</a>
+
+      <ul>
+        <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.get_timestamp">(autopilot.core.subject.Subject method)</a>
+</li>
+      </ul></li>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.get_trial_data">get_trial_data() (autopilot.core.subject.Subject method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="rst/autopilot.tasks.gonogo.html#autopilot.tasks.gonogo.GoNoGo">GoNoGo (class in autopilot.tasks.gonogo)</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.get_weight">get_weight() (autopilot.core.subject.Subject method)</a>
 </li>
-      <li><a href="rst/autopilot.tasks.gonogo.html#autopilot.tasks.gonogo.GoNoGo.TrialData">GoNoGo.TrialData (class in autopilot.tasks.gonogo)</a>
+      <li><a href="autopilot.prefs.html#autopilot.prefs.git_version">git_version() (in module autopilot.prefs)</a>
 </li>
-      <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.GRAD_LIST">GRAD_LIST (in module autopilot.tasks.graduation)</a>, <a href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.GRAD_LIST">[1]</a>
+      <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.GRAD_LIST">GRAD_LIST (in module autopilot.tasks.graduation)</a>
 </li>
-      <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation">Graduation (class in autopilot.tasks.graduation)</a>, <a href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation">[1]</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.graduate">graduate() (autopilot.core.subject.Subject method)</a>
 </li>
-      <li><a href="rst/autopilot.stim.visual.visuals.html#autopilot.stim.visual.visuals.Grating">Grating (class in autopilot.stim.visual.visuals)</a>
+      <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation">Graduation (class in autopilot.tasks.graduation)</a>
 </li>
-      <li><a href="rst/autopilot.stim.visual.visuals.html#autopilot.stim.visual.visuals.Grating_Continuous">Grating_Continuous (class in autopilot.stim.visual.visuals)</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Graduation_Widget">Graduation_Widget (class in autopilot.core.gui)</a>
 </li>
-      <li><a href="autopilot.core.plots.html#autopilot.core.plots.gui_event">gui_event() (in module autopilot.core.plots)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.gui_event">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.gui_event">gui_event() (in module autopilot.core.gui)</a>
+
+      <ul>
+        <li><a href="autopilot.core.plots.html#autopilot.core.plots.gui_event">(in module autopilot.core.plots)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.handle_listen">handle_listen() (autopilot.core.networking.Net_Node method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.handle_listen">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.handle_listen">handle_listen() (autopilot.core.networking.Net_Node method)</a>
 
       <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.handle_listen">(autopilot.core.networking.Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.handle_listen">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.handle_listen">(autopilot.core.networking.Station method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.handle_trigger">handle_trigger() (autopilot.tasks.task.Task method)</a>, <a href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.handle_trigger">[1]</a>
+      <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.handle_trigger">handle_trigger() (autopilot.tasks.task.Task method)</a>
 </li>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.handshake">handshake() (autopilot.core.pilot.autopilot method)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.handshake">[1]</a>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.handshake">handshake() (autopilot.core.pilot.autopilot method)</a>
 </li>
-      <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.HARDWARE">HARDWARE (autopilot.tasks.free_water.Free_Water attribute)</a>, <a href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.HARDWARE">[1]</a>
+      <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.HARDWARE">HARDWARE (autopilot.tasks.free_water.Free_Water attribute)</a>
 
       <ul>
-        <li><a href="rst/autopilot.tasks.gonogo.html#autopilot.tasks.gonogo.GoNoGo.HARDWARE">(autopilot.tasks.gonogo.GoNoGo attribute)</a>
+        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.HARDWARE">(autopilot.tasks.nafc.Nafc attribute)</a>
 </li>
-        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.HARDWARE">(autopilot.tasks.nafc.Nafc attribute)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.HARDWARE">[1]</a>
+        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel.HARDWARE">(autopilot.tasks.nafc.Nafc_Wheel attribute)</a>
 </li>
-        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel.HARDWARE">(autopilot.tasks.nafc.Nafc_Wheel attribute)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel.HARDWARE">[1]</a>
-</li>
-        <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.HARDWARE">(autopilot.tasks.task.Task attribute)</a>, <a href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.HARDWARE">[1]</a>
+        <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.HARDWARE">(autopilot.tasks.task.Task attribute)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware">Hardware (class in autopilot.core.hardware)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware">Hardware (class in autopilot.core.hardware)</a>
 </li>
-      <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.HardwareForm">HardwareForm (class in autopilot.setup.setup_pilot)</a>, <a href="rst/autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.HardwareForm">[1]</a>
+      <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.HardwareForm">HardwareForm (class in autopilot.setup.setup_pilot)</a>
 </li>
-      <li><a href="autopilot.core.plots.html#autopilot.core.plots.HLine">HLine (class in autopilot.core.plots)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.HLine">[1]</a>
+      <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.heartbeat">heartbeat() (autopilot.core.terminal.Terminal method)</a>
+</li>
+      <li><a href="autopilot.core.plots.html#autopilot.core.plots.HLine">HLine (class in autopilot.core.plots)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -627,63 +719,93 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.id">id (autopilot.core.networking.Message attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.id">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.id">id (autopilot.core.networking.Message attribute)</a>
 
       <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.id">(autopilot.core.networking.Net_Node attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.id">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.id">(autopilot.core.networking.Net_Node attribute)</a>
 </li>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.id">(autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.id">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.id">(autopilot.core.networking.Station attribute)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.prefs.html#autopilot.prefs.init">init() (in module autopilot.prefs)</a>, <a href="rst/autopilot.prefs.html#autopilot.prefs.init">[1]</a>
+      <li><a href="autopilot.prefs.html#autopilot.prefs.init">init() (in module autopilot.prefs)</a>
 </li>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.init_audio">init_audio() (autopilot.core.pilot.autopilot method)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.init_audio">[1]</a>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.init_audio">init_audio() (autopilot.core.pilot.autopilot method)</a>
 </li>
-      <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.init_hardware">init_hardware() (autopilot.tasks.task.Task method)</a>, <a href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.init_hardware">[1]</a>
+      <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.init_hardware">init_hardware() (autopilot.tasks.task.Task method)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.init_logging">init_logging() (autopilot.core.networking.Net_Node method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.init_logging">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.init_logging">init_logging() (autopilot.core.networking.Net_Node method)</a>
 
       <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.init_logging">(autopilot.core.networking.Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.init_logging">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.init_logging">(autopilot.core.networking.Station method)</a>
 </li>
-        <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.init_logging">(autopilot.core.pilot.autopilot method)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.init_logging">[1]</a>
+        <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.init_logging">(autopilot.core.pilot.autopilot method)</a>
+</li>
+        <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.init_logging">(autopilot.core.terminal.Terminal method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.init_manager">init_manager() (in module autopilot.stim.managers)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.init_manager">[1]</a>
+      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.init_manager">init_manager() (in module autopilot.stim.managers)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.init_networking">init_networking() (autopilot.core.networking.Net_Node method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.init_networking">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.init_networking">init_networking() (autopilot.core.networking.Net_Node method)</a>
 
       <ul>
-        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel.init_networking">(autopilot.tasks.nafc.Nafc_Wheel method)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel.init_networking">[1]</a>
+        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel.init_networking">(autopilot.tasks.nafc.Nafc_Wheel method)</a>
+</li>
+      </ul></li>
+      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot.init_plots">init_plots() (autopilot.core.plots.Plot method)</a>
+
+      <ul>
+        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot_Widget.init_plots">(autopilot.core.plots.Plot_Widget method)</a>
+</li>
+      </ul></li>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.File.init_sound">init_sound() (autopilot.stim.sound.sounds.File method)</a>
+
+      <ul>
+        <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Noise.init_sound">(autopilot.stim.sound.sounds.Noise method)</a>
+</li>
+        <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Tone.init_sound">(autopilot.stim.sound.sounds.Tone method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot.init_plots">init_plots() (autopilot.core.plots.Plot method)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Plot.init_plots">[1]</a>
+      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Proportional.init_sounds">init_sounds() (autopilot.stim.managers.Proportional method)</a>
 
       <ul>
-        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot_Widget.init_plots">(autopilot.core.plots.Plot_Widget method)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Plot_Widget.init_plots">[1]</a>
+        <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.init_sounds">(autopilot.stim.managers.Stim_Manager method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Proportional.init_sounds">init_sounds() (autopilot.stim.managers.Proportional method)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Proportional.init_sounds">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.init_ui">init_ui() (autopilot.core.gui.Bandwidth_Test method)</a>
 
       <ul>
-        <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.init_sounds">(autopilot.stim.managers.Stim_Manager method)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.init_sounds">[1]</a>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Calibrate_Water.init_ui">(autopilot.core.gui.Calibrate_Water method)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Control_Panel.init_ui">(autopilot.core.gui.Control_Panel method)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Pilot_Panel.init_ui">(autopilot.core.gui.Pilot_Panel method)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Pilot_Ports.init_ui">(autopilot.core.gui.Pilot_Ports method)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Reassign.init_ui">(autopilot.core.gui.Reassign method)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Weights.init_ui">(autopilot.core.gui.Weights method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.input">input (autopilot.core.hardware.Beambreak attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.input">[1]</a>
+      <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.initUI">initUI() (autopilot.core.terminal.Terminal method)</a>
+</li>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.input">input (autopilot.core.hardware.Beambreak attribute)</a>
 
       <ul>
-        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.input">(autopilot.core.hardware.Hardware attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.input">[1]</a>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.input">(autopilot.core.hardware.Hardware attribute)</a>
 </li>
-        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.input">(autopilot.core.hardware.Wheel attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.input">[1]</a>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.input">(autopilot.core.hardware.Wheel attribute)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.utils.html#autopilot.core.utils.InvokeEvent">InvokeEvent (class in autopilot.core.utils)</a>, <a href="rst/autopilot.core.utils.html#autopilot.core.utils.InvokeEvent">[1]</a>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.int_to_float">int_to_float() (in module autopilot.stim.sound.sounds)</a>
 </li>
-      <li><a href="autopilot.core.utils.html#autopilot.core.utils.Invoker">Invoker (class in autopilot.core.utils)</a>, <a href="rst/autopilot.core.utils.html#autopilot.core.utils.Invoker">[1]</a>
+      <li><a href="autopilot.core.utils.html#autopilot.core.utils.InvokeEvent">InvokeEvent (class in autopilot.core.utils)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.ip">ip (autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.ip">[1]</a>
+      <li><a href="autopilot.core.utils.html#autopilot.core.utils.Invoker">Invoker (class in autopilot.core.utils)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.ip">ip (autopilot.core.networking.Station attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -691,7 +813,13 @@
 <h2 id="J">J</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.utils.html#autopilot.core.utils.ReturnThread.join">join() (autopilot.core.utils.ReturnThread method)</a>, <a href="rst/autopilot.core.utils.html#autopilot.core.utils.ReturnThread.join">[1]</a>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound">Jack_Sound (class in autopilot.stim.sound.sounds)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient">JackClient (class in autopilot.stim.sound.jackclient)</a>
+</li>
+      <li><a href="autopilot.core.utils.html#autopilot.core.utils.ReturnThread.join">join() (autopilot.core.utils.ReturnThread method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -699,7 +827,7 @@
 <h2 id="K">K</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.key">key (autopilot.core.networking.Message attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.key">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.key">key (autopilot.core.networking.Message attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -707,145 +835,161 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_bandwidth">l_bandwidth() (autopilot.core.pilot.autopilot method)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_bandwidth">[1]</a>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_bandwidth">l_bandwidth() (autopilot.core.pilot.autopilot method)</a>
 </li>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_cal_port">l_cal_port() (autopilot.core.pilot.autopilot method)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_cal_port">[1]</a>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_cal_port">l_cal_port() (autopilot.core.pilot.autopilot method)</a>
 </li>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_cal_result">l_cal_result() (autopilot.core.pilot.autopilot method)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_cal_result">[1]</a>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_cal_result">l_cal_result() (autopilot.core.pilot.autopilot method)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_change">l_change() (autopilot.core.networking.Pilot_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_change">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_change">l_change() (autopilot.core.networking.Pilot_Station method)</a>
 
       <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_change">(autopilot.core.networking.Terminal_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_change">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_change">(autopilot.core.networking.Terminal_Station method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_child">l_child() (autopilot.core.networking.Pilot_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_child">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_child">l_child() (autopilot.core.networking.Pilot_Station method)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.l_clear">l_clear() (autopilot.core.hardware.Wheel method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.l_clear">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.l_clear">l_clear() (autopilot.core.hardware.Wheel method)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_cohere">l_cohere() (autopilot.core.networking.Pilot_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_cohere">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_cohere">l_cohere() (autopilot.core.networking.Pilot_Station method)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.l_confirm">l_confirm() (autopilot.core.networking.Net_Node method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.l_confirm">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.l_confirm">l_confirm() (autopilot.core.networking.Net_Node method)</a>
 
       <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.l_confirm">(autopilot.core.networking.Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.l_confirm">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.l_confirm">(autopilot.core.networking.Station method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_continuous">l_continuous() (autopilot.core.networking.Pilot_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_continuous">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_continuous">l_continuous() (autopilot.core.networking.Pilot_Station method)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_data">l_data() (autopilot.core.networking.Terminal_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_data">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_data">l_data() (autopilot.core.networking.Terminal_Station method)</a>
 
       <ul>
-        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot.l_data">(autopilot.core.plots.Plot method)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Plot.l_data">[1]</a>
+        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot.l_data">(autopilot.core.plots.Plot method)</a>
+</li>
+        <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.l_data">(autopilot.core.terminal.Terminal method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_file">l_file() (autopilot.core.networking.Pilot_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_file">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_file">l_file() (autopilot.core.networking.Pilot_Station method)</a>
 
       <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_file">(autopilot.core.networking.Terminal_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_file">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_file">(autopilot.core.networking.Terminal_Station method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_forward">l_forward() (autopilot.core.networking.Pilot_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_forward">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_forward">l_forward() (autopilot.core.networking.Pilot_Station method)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_handshake">l_handshake() (autopilot.core.networking.Terminal_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_handshake">[1]</a>
-</li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_init">l_init() (autopilot.core.networking.Terminal_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_init">[1]</a>
-</li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_kill">l_kill() (autopilot.core.networking.Terminal_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_kill">[1]</a>
-</li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.l_measure">l_measure() (autopilot.core.hardware.Wheel method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.l_measure">[1]</a>
-</li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_noop">l_noop() (autopilot.core.networking.Pilot_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_noop">[1]</a>
-</li>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_param">l_param() (autopilot.core.pilot.autopilot method)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_param">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_handshake">l_handshake() (autopilot.core.networking.Terminal_Station method)</a>
 
       <ul>
-        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot.l_param">(autopilot.core.plots.Plot method)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Plot.l_param">[1]</a>
+        <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.l_handshake">(autopilot.core.terminal.Terminal method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_ping">l_ping() (autopilot.core.networking.Pilot_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_ping">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_init">l_init() (autopilot.core.networking.Terminal_Station method)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_kill">l_kill() (autopilot.core.networking.Terminal_Station method)</a>
+</li>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.l_measure">l_measure() (autopilot.core.hardware.Wheel method)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_noop">l_noop() (autopilot.core.networking.Pilot_Station method)</a>
+</li>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_param">l_param() (autopilot.core.pilot.autopilot method)</a>
 
       <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_ping">(autopilot.core.networking.Terminal_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_ping">[1]</a>
+        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot.l_param">(autopilot.core.plots.Plot method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_start">l_start() (autopilot.core.networking.Pilot_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_start">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_ping">l_ping() (autopilot.core.networking.Pilot_Station method)</a>
 
       <ul>
-        <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_start">(autopilot.core.pilot.autopilot method)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_start">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_ping">(autopilot.core.networking.Terminal_Station method)</a>
 </li>
-        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot.l_start">(autopilot.core.plots.Plot method)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Plot.l_start">[1]</a>
+        <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.l_ping">(autopilot.core.terminal.Terminal method)</a>
+</li>
+      </ul></li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Pilot_Ports.l_progress">l_progress() (autopilot.core.gui.Pilot_Ports method)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_start">l_start() (autopilot.core.networking.Pilot_Station method)</a>
+
+      <ul>
+        <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_start">(autopilot.core.pilot.autopilot method)</a>
+</li>
+        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot.l_start">(autopilot.core.plots.Plot method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_state">l_state() (autopilot.core.networking.Pilot_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_state">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_state">l_state() (autopilot.core.networking.Pilot_Station method)</a>
 
       <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_state">(autopilot.core.networking.Terminal_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_state">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_state">(autopilot.core.networking.Terminal_Station method)</a>
 </li>
-        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot.l_state">(autopilot.core.plots.Plot method)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Plot.l_state">[1]</a>
+        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot.l_state">(autopilot.core.plots.Plot method)</a>
+</li>
+        <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.l_state">(autopilot.core.terminal.Terminal method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.l_stop">l_stop() (autopilot.core.hardware.Wheel method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.l_stop">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.l_stop">l_stop() (autopilot.core.hardware.Wheel method)</a>
 
       <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_stop">(autopilot.core.networking.Pilot_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_stop">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_stop">(autopilot.core.networking.Pilot_Station method)</a>
 </li>
-        <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_stop">(autopilot.core.pilot.autopilot method)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_stop">[1]</a>
+        <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_stop">(autopilot.core.pilot.autopilot method)</a>
 </li>
-        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot.l_stop">(autopilot.core.plots.Plot method)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Plot.l_stop">[1]</a>
+        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot.l_stop">(autopilot.core.plots.Plot method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_stopall">l_stopall() (autopilot.core.networking.Terminal_Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_stopall">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_stopall">l_stopall() (autopilot.core.networking.Terminal_Station method)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB">LED_RGB (class in autopilot.core.hardware)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB">LED_RGB (class in autopilot.core.hardware)</a>
 </li>
-      <li><a href="autopilot.core.utils.html#autopilot.core.utils.list_subjects">list_subjects() (in module autopilot.core.utils)</a>, <a href="rst/autopilot.core.utils.html#autopilot.core.utils.list_subjects">[1]</a>
-</li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.listen_port">listen_port (autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.listen_port">[1]</a>
-</li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.listener">listener (autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.listener">[1]</a>
-</li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.listens">listens (autopilot.core.networking.Net_Node attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.listens">[1]</a>
+      <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.list_subjects">list_subjects() (autopilot.core.terminal.Terminal method)</a>
 
       <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.listens">(autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.listens">[1]</a>
+        <li><a href="autopilot.core.utils.html#autopilot.core.utils.list_subjects">(in module autopilot.core.utils)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.utils.html#autopilot.core.utils.load_pilotdb">load_pilotdb() (in module autopilot.core.utils)</a>, <a href="rst/autopilot.core.utils.html#autopilot.core.utils.load_pilotdb">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.listen_port">listen_port (autopilot.core.networking.Station attribute)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.log_formatter">log_formatter (autopilot.core.networking.Net_Node attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.log_formatter">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.listener">listener (autopilot.core.networking.Station attribute)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.listens">listens (autopilot.core.networking.Net_Node attribute)</a>
 
       <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.log_formatter">(autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.log_formatter">[1]</a>
-</li>
-        <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.log_formatter">(autopilot.core.pilot.autopilot attribute)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.log_formatter">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.listens">(autopilot.core.networking.Station attribute)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.log_handler">log_handler (autopilot.core.networking.Net_Node attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.log_handler">[1]</a>
+      <li><a href="autopilot.core.utils.html#autopilot.core.utils.load_pilotdb">load_pilotdb() (in module autopilot.core.utils)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.log_formatter">log_formatter (autopilot.core.networking.Net_Node attribute)</a>
 
       <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.log_handler">(autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.log_handler">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.log_formatter">(autopilot.core.networking.Station attribute)</a>
 </li>
-        <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.log_handler">(autopilot.core.pilot.autopilot attribute)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.log_handler">[1]</a>
+        <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.log_formatter">(autopilot.core.pilot.autopilot attribute)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.logger">logger (autopilot.core.networking.Net_Node attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.logger">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.log_handler">log_handler (autopilot.core.networking.Net_Node attribute)</a>
 
       <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.logger">(autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.logger">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.log_handler">(autopilot.core.networking.Station attribute)</a>
 </li>
-        <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.logger">(autopilot.core.pilot.autopilot attribute)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.logger">[1]</a>
+        <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.log_handler">(autopilot.core.pilot.autopilot attribute)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.loop">loop (autopilot.core.networking.Net_Node attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.loop">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.logger">logger (autopilot.core.networking.Net_Node attribute)</a>
 
       <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.loop">(autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.loop">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.logger">(autopilot.core.networking.Station attribute)</a>
+</li>
+        <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.logger">(autopilot.core.pilot.autopilot attribute)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.loop_thread">loop_thread (autopilot.core.networking.Net_Node attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.loop_thread">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.loop">loop (autopilot.core.networking.Net_Node attribute)</a>
+
+      <ul>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.loop">(autopilot.core.networking.Station attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.loop_thread">loop_thread (autopilot.core.networking.Net_Node attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -853,25 +997,25 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.make_dir">make_dir() (in module autopilot.setup.setup_pilot)</a>, <a href="rst/autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.make_dir">[1]</a>
+      <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.make_dir">make_dir() (in module autopilot.setup.setup_pilot)</a>
 
       <ul>
-        <li><a href="autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.make_dir">(in module autopilot.setup.setup_terminal)</a>, <a href="rst/autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.make_dir">[1]</a>
+        <li><a href="autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.make_dir">(in module autopilot.setup.setup_terminal)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.make_punishment">make_punishment() (autopilot.stim.managers.Stim_Manager method)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.make_punishment">[1]</a>
+      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.make_punishment">make_punishment() (autopilot.stim.managers.Stim_Manager method)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message">Message (class in autopilot.core.networking)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Message">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message">Message (class in autopilot.core.networking)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.mode">mode (autopilot.core.hardware.Solenoid attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.mode">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.mode">mode (autopilot.core.hardware.Solenoid attribute)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Scale.MODEL">MODEL (autopilot.core.hardware.Scale attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Scale.MODEL">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Scale.MODEL">MODEL (autopilot.core.hardware.Scale attribute)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.MODES">MODES (autopilot.core.hardware.Wheel attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.MODES">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.MODES">MODES (autopilot.core.hardware.Wheel attribute)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.MOVE_DTYPE">MOVE_DTYPE (autopilot.core.hardware.Wheel attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.MOVE_DTYPE">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.MOVE_DTYPE">MOVE_DTYPE (autopilot.core.hardware.Wheel attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -879,31 +1023,43 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc">Nafc (class in autopilot.tasks.nafc)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc">[1]</a>
+      <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc">Nafc (class in autopilot.tasks.nafc)</a>
 </li>
-      <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.TrialData">Nafc.TrialData (class in autopilot.tasks.nafc)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.TrialData">[1]</a>
+      <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.TrialData">Nafc.TrialData (class in autopilot.tasks.nafc)</a>
 </li>
-      <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel">Nafc_Wheel (class in autopilot.tasks.nafc)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel">[1]</a>
+      <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel">Nafc_Wheel (class in autopilot.tasks.nafc)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node">Net_Node (class in autopilot.core.networking)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node">Net_Node (class in autopilot.core.networking)</a>
 </li>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.networking">networking (autopilot.core.pilot.autopilot attribute)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.networking">[1]</a>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.networking">networking (autopilot.core.pilot.autopilot attribute)</a>
+</li>
+      <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.new_pilot">new_pilot() (autopilot.core.terminal.Terminal method)</a>
+</li>
+      <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.new_protocol">new_protocol() (autopilot.core.terminal.Terminal method)</a>
+</li>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.new_subject_file">new_subject_file() (autopilot.core.subject.Subject method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction.next_bias">next_bias() (autopilot.stim.managers.Bias_Correction method)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction.next_bias">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard">New_Subject_Wizard (class in autopilot.core.gui)</a>
 </li>
-      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Proportional.next_stim">next_stim() (autopilot.stim.managers.Proportional method)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Proportional.next_stim">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Biography_Tab">New_Subject_Wizard.Biography_Tab (class in autopilot.core.gui)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Task_Tab">New_Subject_Wizard.Task_Tab (class in autopilot.core.gui)</a>
+</li>
+      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction.next_bias">next_bias() (autopilot.stim.managers.Bias_Correction method)</a>
+</li>
+      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Proportional.next_stim">next_stim() (autopilot.stim.managers.Proportional method)</a>
 
       <ul>
-        <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.next_stim">(autopilot.stim.managers.Stim_Manager method)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.next_stim">[1]</a>
+        <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.next_stim">(autopilot.stim.managers.Stim_Manager method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.node">node (autopilot.core.pilot.autopilot attribute)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.node">[1]</a>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.node">node (autopilot.core.pilot.autopilot attribute)</a>
 </li>
-      <li><a href="rst/autopilot.tasks.children.html#autopilot.tasks.children.Wheel_Child.noop">noop() (autopilot.tasks.children.Wheel_Child method)</a>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Noise">Noise (class in autopilot.stim.sound.sounds)</a>
 </li>
-      <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.NTrials">NTrials (class in autopilot.tasks.graduation)</a>, <a href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.NTrials">[1]</a>
+      <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.NTrials">NTrials (class in autopilot.tasks.graduation)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -911,26 +1067,28 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.SetupApp.onStart">onStart() (autopilot.setup.setup_pilot.SetupApp method)</a>, <a href="rst/autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.SetupApp.onStart">[1]</a>
+      <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.SetupApp.onStart">onStart() (autopilot.setup.setup_pilot.SetupApp method)</a>
 
       <ul>
-        <li><a href="autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.SetupApp.onStart">(autopilot.setup.setup_terminal.SetupApp method)</a>, <a href="rst/autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.SetupApp.onStart">[1]</a>
+        <li><a href="autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.SetupApp.onStart">(autopilot.setup.setup_terminal.SetupApp method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.open">open() (autopilot.core.hardware.Solenoid method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.open">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.open">open() (autopilot.core.hardware.Solenoid method)</a>
 </li>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.open_file">open_file() (autopilot.core.pilot.autopilot method)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.open_file">[1]</a>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.open_file">open_file() (autopilot.core.pilot.autopilot method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.outbox">outbox (autopilot.core.networking.Net_Node attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.outbox">[1]</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.open_hdf">open_hdf() (autopilot.core.subject.Subject method)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.output">output (autopilot.core.hardware.Hardware attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.output">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.outbox">outbox (autopilot.core.networking.Net_Node attribute)</a>
+</li>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.output">output (autopilot.core.hardware.Hardware attribute)</a>
 
       <ul>
-        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.output">(autopilot.core.hardware.LED_RGB attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.output">[1]</a>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.output">(autopilot.core.hardware.LED_RGB attribute)</a>
 </li>
-        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.output">(autopilot.core.hardware.Solenoid attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.output">[1]</a>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.output">(autopilot.core.hardware.Solenoid attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -939,105 +1097,147 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.utils.html#autopilot.core.utils.Param">Param (class in autopilot.core.utils)</a>, <a href="rst/autopilot.core.utils.html#autopilot.core.utils.Param">[1]</a>
+      <li><a href="autopilot.core.utils.html#autopilot.core.utils.Param">Param (class in autopilot.core.utils)</a>
 </li>
-      <li><a href="rst/autopilot.core.reward.html#autopilot.core.reward.Constant_Time.PARAMS">PARAMS (autopilot.core.reward.Constant_Time attribute)</a>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.File.PARAMS">PARAMS (autopilot.stim.sound.sounds.File attribute)</a>
 
       <ul>
-        <li><a href="rst/autopilot.core.reward.html#autopilot.core.reward.Constant_Volume.PARAMS">(autopilot.core.reward.Constant_Volume attribute)</a>
+        <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.PARAMS">(autopilot.stim.sound.sounds.Jack_Sound attribute)</a>
 </li>
-        <li><a href="rst/autopilot.core.reward.html#autopilot.core.reward.Reward.PARAMS">(autopilot.core.reward.Reward attribute)</a>
+        <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Noise.PARAMS">(autopilot.stim.sound.sounds.Noise attribute)</a>
 </li>
-        <li><a href="rst/autopilot.stim.visual.visuals.html#autopilot.stim.visual.visuals.Grating.PARAMS">(autopilot.stim.visual.visuals.Grating attribute)</a>
+        <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Speech.PARAMS">(autopilot.stim.sound.sounds.Speech attribute)</a>
 </li>
-        <li><a href="rst/autopilot.stim.visual.visuals.html#autopilot.stim.visual.visuals.Grating_Continuous.PARAMS">(autopilot.stim.visual.visuals.Grating_Continuous attribute)</a>
+        <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Tone.PARAMS">(autopilot.stim.sound.sounds.Tone attribute)</a>
 </li>
-        <li><a href="rst/autopilot.tasks.children.html#autopilot.tasks.children.Wheel_Child.PARAMS">(autopilot.tasks.children.Wheel_Child attribute)</a>
+        <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.PARAMS">(autopilot.tasks.free_water.Free_Water attribute)</a>
 </li>
-        <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.PARAMS">(autopilot.tasks.free_water.Free_Water attribute)</a>, <a href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.PARAMS">[1]</a>
+        <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy.PARAMS">(autopilot.tasks.graduation.Accuracy attribute)</a>
 </li>
-        <li><a href="rst/autopilot.tasks.gonogo.html#autopilot.tasks.gonogo.GoNoGo.PARAMS">(autopilot.tasks.gonogo.GoNoGo attribute)</a>
+        <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation.PARAMS">(autopilot.tasks.graduation.Graduation attribute)</a>
 </li>
-        <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy.PARAMS">(autopilot.tasks.graduation.Accuracy attribute)</a>, <a href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy.PARAMS">[1]</a>
+        <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.NTrials.PARAMS">(autopilot.tasks.graduation.NTrials attribute)</a>
 </li>
-        <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation.PARAMS">(autopilot.tasks.graduation.Graduation attribute)</a>, <a href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation.PARAMS">[1]</a>
+        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PARAMS">(autopilot.tasks.nafc.Nafc attribute)</a>
 </li>
-        <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.NTrials.PARAMS">(autopilot.tasks.graduation.NTrials attribute)</a>, <a href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.NTrials.PARAMS">[1]</a>
+        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel.PARAMS">(autopilot.tasks.nafc.Nafc_Wheel attribute)</a>
 </li>
-        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PARAMS">(autopilot.tasks.nafc.Nafc attribute)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PARAMS">[1]</a>
-</li>
-        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel.PARAMS">(autopilot.tasks.nafc.Nafc_Wheel attribute)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel.PARAMS">[1]</a>
-</li>
-        <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.PARAMS">(autopilot.tasks.task.Task attribute)</a>, <a href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.PARAMS">[1]</a>
+        <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.PARAMS">(autopilot.tasks.task.Task attribute)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station">Pilot_Station (class in autopilot.core.networking)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Pilot_Station">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.pass_set_param_function">pass_set_param_function() (autopilot.core.gui.Sound_Widget method)</a>
 </li>
-      <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.PilotSetupForm">PilotSetupForm (class in autopilot.setup.setup_pilot)</a>, <a href="rst/autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.PilotSetupForm">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Pilot_Button">Pilot_Button (class in autopilot.core.gui)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.pin">pin (autopilot.core.hardware.Hardware attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.pin">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Pilot_Panel">Pilot_Panel (class in autopilot.core.gui)</a>
 </li>
-      <li><a href="rst/autopilot.stim.visual.visuals.html#autopilot.stim.visual.visuals.Grating.play">play() (autopilot.stim.visual.visuals.Grating method)</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Pilot_Ports">Pilot_Ports (class in autopilot.core.gui)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station">Pilot_Station (class in autopilot.core.networking)</a>
+</li>
+      <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.PilotSetupForm">PilotSetupForm (class in autopilot.setup.setup_pilot)</a>
+</li>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.pin">pin (autopilot.core.hardware.Hardware attribute)</a>
+</li>
+      <li><a href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.PLAY">PLAY (in module autopilot.stim.sound.jackclient)</a>
+</li>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.play">play() (autopilot.stim.sound.sounds.Jack_Sound method)</a>
 
       <ul>
-        <li><a href="rst/autopilot.stim.visual.visuals.html#autopilot.stim.visual.visuals.Grating_Continuous.play">(autopilot.stim.visual.visuals.Grating_Continuous method)</a>
+        <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Pyo_Sound.play">(autopilot.stim.sound.sounds.Pyo_Sound method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.play_punishment">play_punishment() (autopilot.stim.managers.Stim_Manager method)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.play_punishment">[1]</a>
+      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.play_punishment">play_punishment() (autopilot.stim.managers.Stim_Manager method)</a>
 </li>
-      <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.PLOT">PLOT (autopilot.tasks.free_water.Free_Water attribute)</a>, <a href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.PLOT">[1]</a>
+      <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.PLOT">PLOT (autopilot.tasks.free_water.Free_Water attribute)</a>
 
       <ul>
-        <li><a href="rst/autopilot.tasks.gonogo.html#autopilot.tasks.gonogo.GoNoGo.PLOT">(autopilot.tasks.gonogo.GoNoGo attribute)</a>
+        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PLOT">(autopilot.tasks.nafc.Nafc attribute)</a>
 </li>
-        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PLOT">(autopilot.tasks.nafc.Nafc attribute)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PLOT">[1]</a>
+        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel.PLOT">(autopilot.tasks.nafc.Nafc_Wheel attribute)</a>
 </li>
-        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel.PLOT">(autopilot.tasks.nafc.Nafc_Wheel attribute)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel.PLOT">[1]</a>
-</li>
-        <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.PLOT">(autopilot.tasks.task.Task attribute)</a>, <a href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.PLOT">[1]</a>
+        <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.PLOT">(autopilot.tasks.task.Task attribute)</a>
 </li>
       </ul></li>
+      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot">Plot (class in autopilot.core.plots)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot">Plot (class in autopilot.core.plots)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Plot">[1]</a>
+      <li><a href="autopilot.core.plots.html#autopilot.core.plots.PLOT_LIST">PLOT_LIST (in module autopilot.core.plots)</a>
 </li>
-      <li><a href="autopilot.core.plots.html#autopilot.core.plots.PLOT_LIST">PLOT_LIST (in module autopilot.core.plots)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.PLOT_LIST">[1]</a>
+      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot_Widget">Plot_Widget (class in autopilot.core.plots)</a>
 </li>
-      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot_Widget">Plot_Widget (class in autopilot.core.plots)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Plot_Widget">[1]</a>
+      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Point">Point (class in autopilot.core.plots)</a>
 </li>
-      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Point">Point (class in autopilot.core.plots)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Point">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Subject_List.populate_list">populate_list() (autopilot.core.gui.Subject_List method)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.port">port (autopilot.core.networking.Net_Node attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.port">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.populate_lists">populate_lists() (autopilot.core.gui.Sound_Widget method)</a>
 </li>
-      <li><a href="autopilot.prefs.html#autopilot.prefs.prefdict">prefdict (in module autopilot.prefs)</a>, <a href="rst/autopilot.prefs.html#autopilot.prefs.prefdict">[1]</a>
-</li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.prepare_message">prepare_message() (autopilot.core.networking.Net_Node method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.prepare_message">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Graduation_Widget.populate_params">populate_params() (autopilot.core.gui.Graduation_Widget method)</a>
 
       <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.prepare_message">(autopilot.core.networking.Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.prepare_message">[1]</a>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.populate_params">(autopilot.core.gui.Protocol_Wizard method)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.Add_Sound_Dialog.populate_params">(autopilot.core.gui.Sound_Widget.Add_Sound_Dialog method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Proportional">Proportional (class in autopilot.stim.managers)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Proportional">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Reassign.populate_steps">populate_steps() (autopilot.core.gui.Reassign method)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Pull">Pull (class in autopilot.core.hardware)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Pull">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.port">port (autopilot.core.networking.Net_Node attribute)</a>
 </li>
-      <li><a href="rst/autopilot.tasks.gonogo.html#autopilot.tasks.gonogo.GoNoGo.punish">punish() (autopilot.tasks.gonogo.GoNoGo method)</a>
+      <li><a href="autopilot.prefs.html#autopilot.prefs.prefdict">prefdict (in module autopilot.prefs)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.prepare_message">prepare_message() (autopilot.core.networking.Net_Node method)</a>
 
       <ul>
-        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.punish">(autopilot.tasks.nafc.Nafc method)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.punish">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.prepare_message">(autopilot.core.networking.Station method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.push">push() (autopilot.core.networking.Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.push">[1]</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.prepare_run">prepare_run() (autopilot.core.subject.Subject method)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.push_id">push_id (autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.push_id">[1]</a>
+      <li><a href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient.process">process() (autopilot.stim.sound.jackclient.JackClient method)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.push_ip">push_ip (autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.push_ip">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.process_test">process_test() (autopilot.core.gui.Bandwidth_Test method)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.push_outbox">push_outbox (autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.push_outbox">[1]</a>
+      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Proportional">Proportional (class in autopilot.stim.managers)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.push_port">push_port (autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.push_port">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Task_Tab.protocol_changed">protocol_changed() (autopilot.core.gui.New_Subject_Wizard.Task_Tab method)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.pusher">pusher (autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.pusher">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard">Protocol_Wizard (class in autopilot.core.gui)</a>
+</li>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Pull">Pull (class in autopilot.core.hardware)</a>
+</li>
+      <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.punish">punish() (autopilot.tasks.nafc.Nafc method)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.push">push() (autopilot.core.networking.Station method)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.push_id">push_id (autopilot.core.networking.Station attribute)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.push_ip">push_ip (autopilot.core.networking.Station attribute)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.push_outbox">push_outbox (autopilot.core.networking.Station attribute)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.push_port">push_port (autopilot.core.networking.Station attribute)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.pusher">pusher (autopilot.core.networking.Station attribute)</a>
+</li>
+      <li><a href="autopilot.stim.sound.pyoserver.html#autopilot.stim.sound.pyoserver.pyo_server">pyo_server() (in module autopilot.stim.sound.pyoserver)</a>
+</li>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Pyo_Sound">Pyo_Sound (class in autopilot.stim.sound.sounds)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Q">Q</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.Q_LOCK">Q_LOCK (in module autopilot.stim.sound.jackclient)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.QUEUE">QUEUE (in module autopilot.stim.sound.jackclient)</a>
+</li>
+      <li><a href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient.quit">quit() (autopilot.stim.sound.jackclient.JackClient method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1045,71 +1245,77 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="rst/autopilot.tasks.gonogo.html#autopilot.tasks.gonogo.random">random() (in module autopilot.tasks.gonogo)</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Reassign">Reassign (class in autopilot.core.gui)</a>
 </li>
-      <li><a href="rst/autopilot.tasks.gonogo.html#autopilot.tasks.gonogo.GoNoGo.reinforce">reinforce() (autopilot.tasks.gonogo.GoNoGo method)</a>
+      <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.reassign_protocols">reassign_protocols() (autopilot.core.terminal.Terminal method)</a>
 </li>
-      <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.reinforcement">reinforcement() (autopilot.tasks.nafc.Nafc method)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.reinforcement">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.register_msg">register_msg() (autopilot.core.gui.Bandwidth_Test method)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.release">release() (autopilot.core.hardware.Beambreak method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.release">[1]</a>
+      <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.reinforcement">reinforcement() (autopilot.tasks.nafc.Nafc method)</a>
+</li>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.release">release() (autopilot.core.hardware.Beambreak method)</a>
 
       <ul>
-        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.release">(autopilot.core.hardware.Hardware method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.release">[1]</a>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.release">(autopilot.core.hardware.Hardware method)</a>
 </li>
-        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.release">(autopilot.core.hardware.LED_RGB method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.release">[1]</a>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.release">(autopilot.core.hardware.LED_RGB method)</a>
 </li>
-        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Pull.release">(autopilot.core.hardware.Pull method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Pull.release">[1]</a>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Pull.release">(autopilot.core.hardware.Pull method)</a>
 </li>
-        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.release">(autopilot.core.hardware.Solenoid method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.release">[1]</a>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.release">(autopilot.core.hardware.Solenoid method)</a>
 </li>
-        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.release">(autopilot.core.hardware.Wheel method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.release">[1]</a>
-</li>
-      </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.repeat">repeat() (autopilot.core.networking.Net_Node method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.repeat">[1]</a>
-
-      <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.repeat">(autopilot.core.networking.Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.repeat">[1]</a>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.release">(autopilot.core.hardware.Wheel method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.repeat_interval">repeat_interval (autopilot.core.networking.Net_Node attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.repeat_interval">[1]</a>
-
-      <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.repeat_interval">(autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.repeat_interval">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.remove_sound">remove_sound() (autopilot.core.gui.Sound_Widget method)</a>
 </li>
-      </ul></li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.remove_step">remove_step() (autopilot.core.gui.Protocol_Wizard method)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Pilot_Panel.remove_subject">remove_subject() (autopilot.core.gui.Pilot_Panel method)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.rename_step">rename_step() (autopilot.core.gui.Protocol_Wizard method)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.reorder_steps">reorder_steps() (autopilot.core.gui.Protocol_Wizard method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="rst/autopilot.tasks.gonogo.html#autopilot.tasks.gonogo.GoNoGo.request">request() (autopilot.tasks.gonogo.GoNoGo method)</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.repeat">repeat() (autopilot.core.networking.Net_Node method)</a>
 
       <ul>
-        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.request">(autopilot.tasks.nafc.Nafc method)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.request">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.repeat">(autopilot.core.networking.Station method)</a>
 </li>
       </ul></li>
-      <li><a href="rst/autopilot.tasks.gonogo.html#autopilot.tasks.gonogo.GoNoGo.respond">respond() (autopilot.tasks.gonogo.GoNoGo method)</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.repeat_interval">repeat_interval (autopilot.core.networking.Net_Node attribute)</a>
 
       <ul>
-        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.respond">(autopilot.tasks.nafc.Nafc method)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.respond">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.repeat_interval">(autopilot.core.networking.Station attribute)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.response">response() (autopilot.tasks.free_water.Free_Water method)</a>, <a href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.response">[1]</a>
+      <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.request">request() (autopilot.tasks.nafc.Nafc method)</a>
 </li>
-      <li><a href="autopilot.core.utils.html#autopilot.core.utils.ReturnThread">ReturnThread (class in autopilot.core.utils)</a>, <a href="rst/autopilot.core.utils.html#autopilot.core.utils.ReturnThread">[1]</a>
+      <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.reset_ui">reset_ui() (autopilot.core.terminal.Terminal method)</a>
 </li>
-      <li><a href="rst/autopilot.core.reward.html#autopilot.core.reward.Reward">Reward (class in autopilot.core.reward)</a>
+      <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.respond">respond() (autopilot.tasks.nafc.Nafc method)</a>
 </li>
-      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Roll_Mean">Roll_Mean (class in autopilot.core.plots)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Roll_Mean">[1]</a>
+      <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.response">response() (autopilot.tasks.free_water.Free_Water method)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.routes">routes (autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.routes">[1]</a>
+      <li><a href="autopilot.core.utils.html#autopilot.core.utils.ReturnThread">ReturnThread (class in autopilot.core.utils)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.run">run() (autopilot.core.networking.Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.run">[1]</a>
+      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Roll_Mean">Roll_Mean (class in autopilot.core.plots)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.routes">routes (autopilot.core.networking.Station attribute)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.run">run() (autopilot.core.networking.Station method)</a>
 
       <ul>
-        <li><a href="autopilot.core.utils.html#autopilot.core.utils.ReturnThread.run">(autopilot.core.utils.ReturnThread method)</a>, <a href="rst/autopilot.core.utils.html#autopilot.core.utils.ReturnThread.run">[1]</a>
+        <li><a href="autopilot.core.utils.html#autopilot.core.utils.ReturnThread.run">(autopilot.core.utils.ReturnThread method)</a>
+</li>
+        <li><a href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient.run">(autopilot.stim.sound.jackclient.JackClient method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.run_task">run_task() (autopilot.core.pilot.autopilot method)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.run_task">[1]</a>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.run_task">run_task() (autopilot.core.pilot.autopilot method)</a>
 </li>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.running">running (autopilot.core.pilot.autopilot attribute)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.running">[1]</a>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.running">running (autopilot.core.pilot.autopilot attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1117,111 +1323,213 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Scale">Scale (class in autopilot.core.hardware)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Scale">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.save">save() (autopilot.core.gui.Bandwidth_Test method)</a>
 </li>
-      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Segment">Segment (class in autopilot.core.plots)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Segment">[1]</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.save_data">save_data() (autopilot.core.subject.Subject method)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.send">send() (autopilot.core.networking.Net_Node method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.send">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Scale">Scale (class in autopilot.core.hardware)</a>
+</li>
+      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Segment">Segment (class in autopilot.core.plots)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.send">send() (autopilot.core.networking.Net_Node method)</a>
 
       <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.send">(autopilot.core.networking.Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.send">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.send">(autopilot.core.networking.Station method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.send_outbox">send_outbox (autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.send_outbox">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.send_outbox">send_outbox (autopilot.core.networking.Station attribute)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.sender">sender (autopilot.core.networking.Message attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.sender">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.send_test">send_test() (autopilot.core.gui.Bandwidth_Test method)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.senders">senders (autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.senders">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.sender">sender (autopilot.core.networking.Message attribute)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.serialize">serialize() (autopilot.core.networking.Message method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.serialize">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.senders">senders (autopilot.core.networking.Station attribute)</a>
 </li>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.server">server (autopilot.core.pilot.autopilot attribute)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.server">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.serialize">serialize() (autopilot.core.networking.Message method)</a>
 </li>
-      <li><a href="rst/autopilot.stim.visual.visuals.html#autopilot.stim.visual.visuals.Grating.set">set() (autopilot.stim.visual.visuals.Grating method)</a>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.server">server (autopilot.core.pilot.autopilot attribute)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.set_color">set_color() (autopilot.core.hardware.LED_RGB method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.set_color">[1]</a>
+      <li><a href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.SERVER">SERVER (in module autopilot.stim.sound.jackclient)</a>
 </li>
-      <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.set_leds">set_leds() (autopilot.tasks.task.Task method)</a>, <a href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.set_leds">[1]</a>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.server_type">server_type (autopilot.stim.sound.sounds.Jack_Sound attribute)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.set_logging">set_logging() (autopilot.core.networking.Station method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.set_logging">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.set_color">set_color() (autopilot.core.hardware.LED_RGB method)</a>
 </li>
-      <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.set_reward">set_reward() (autopilot.tasks.task.Task method)</a>, <a href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.set_reward">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.set_graduation">set_graduation() (autopilot.core.gui.Protocol_Wizard method)</a>
 </li>
-      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Proportional.set_triggers">set_triggers() (autopilot.stim.managers.Proportional method)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Proportional.set_triggers">[1]</a>
+      <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.set_leds">set_leds() (autopilot.tasks.task.Task method)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.set_logging">set_logging() (autopilot.core.networking.Station method)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.set_param">set_param() (autopilot.core.gui.Protocol_Wizard method)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Reassign.set_protocol">set_protocol() (autopilot.core.gui.Reassign method)</a>
+</li>
+      <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.set_reward">set_reward() (autopilot.tasks.task.Task method)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.set_sounds">set_sounds() (autopilot.core.gui.Protocol_Wizard method)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Pilot_Button.set_state">set_state() (autopilot.core.gui.Pilot_Button method)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Reassign.set_step">set_step() (autopilot.core.gui.Reassign method)</a>
+</li>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.set_trigger">set_trigger() (autopilot.stim.sound.sounds.Jack_Sound method)</a>
 
       <ul>
-        <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.set_triggers">(autopilot.stim.managers.Stim_Manager method)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.set_triggers">[1]</a>
+        <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Pyo_Sound.set_trigger">(autopilot.stim.sound.sounds.Pyo_Sound method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.SetupApp">SetupApp (class in autopilot.setup.setup_pilot)</a>, <a href="rst/autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.SetupApp">[1]</a>
+      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Proportional.set_triggers">set_triggers() (autopilot.stim.managers.Proportional method)</a>
 
       <ul>
-        <li><a href="autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.SetupApp">(class in autopilot.setup.setup_terminal)</a>, <a href="rst/autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.SetupApp">[1]</a>
+        <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.set_triggers">(autopilot.stim.managers.Stim_Manager method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Shaded">Shaded (class in autopilot.core.plots)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Shaded">[1]</a>
-</li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.sock">sock (autopilot.core.networking.Net_Node attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.sock">[1]</a>
-</li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Solenoid">Solenoid (class in autopilot.core.hardware)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Solenoid">[1]</a>
-</li>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.stage_block">stage_block (autopilot.core.pilot.autopilot attribute)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.stage_block">[1]</a>
-</li>
-      <li><a href="rst/autopilot.tasks.children.html#autopilot.tasks.children.Wheel_Child.STAGE_NAMES">STAGE_NAMES (autopilot.tasks.children.Wheel_Child attribute)</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Weights.set_weight">set_weight() (autopilot.core.gui.Weights method)</a>
 
       <ul>
-        <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.STAGE_NAMES">(autopilot.tasks.free_water.Free_Water attribute)</a>, <a href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.STAGE_NAMES">[1]</a>
-</li>
-        <li><a href="rst/autopilot.tasks.gonogo.html#autopilot.tasks.gonogo.GoNoGo.STAGE_NAMES">(autopilot.tasks.gonogo.GoNoGo attribute)</a>
-</li>
-        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.STAGE_NAMES">(autopilot.tasks.nafc.Nafc attribute)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.STAGE_NAMES">[1]</a>
-</li>
-        <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.STAGE_NAMES">(autopilot.tasks.task.Task attribute)</a>, <a href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.STAGE_NAMES">[1]</a>
+        <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.set_weight">(autopilot.core.subject.Subject method)</a>
 </li>
       </ul></li>
+      <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.SetupApp">SetupApp (class in autopilot.setup.setup_pilot)</a>
+
+      <ul>
+        <li><a href="autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.SetupApp">(class in autopilot.setup.setup_terminal)</a>
+</li>
+      </ul></li>
+      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Shaded">Shaded (class in autopilot.core.plots)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.sock">sock (autopilot.core.networking.Net_Node attribute)</a>
+</li>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Solenoid">Solenoid (class in autopilot.core.hardware)</a>
+</li>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.SOUND_LIST">SOUND_LIST (in module autopilot.stim.sound.sounds)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Sound_Widget">Sound_Widget (class in autopilot.core.gui)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.Add_Sound_Dialog">Sound_Widget.Add_Sound_Dialog (class in autopilot.core.gui)</a>
+</li>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Speech">Speech (class in autopilot.stim.sound.sounds)</a>
+</li>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.stage_block">stage_block (autopilot.core.pilot.autopilot attribute)</a>
+</li>
+      <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.STAGE_NAMES">STAGE_NAMES (autopilot.tasks.free_water.Free_Water attribute)</a>
+
+      <ul>
+        <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.STAGE_NAMES">(autopilot.tasks.nafc.Nafc attribute)</a>
+</li>
+        <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.STAGE_NAMES">(autopilot.tasks.task.Task attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.start">start() (autopilot.core.gui.Bandwidth_Test method)</a>
+
+      <ul>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.start">(autopilot.core.hardware.Wheel method)</a>
+</li>
+      </ul></li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Pilot_Ports.start_calibration">start_calibration() (autopilot.core.gui.Pilot_Ports method)</a>
+</li>
+      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Timer.start_timer">start_timer() (autopilot.core.plots.Timer method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.start">start() (autopilot.core.hardware.Wheel method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.start">[1]</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.stash_current">stash_current() (autopilot.core.subject.Subject method)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Autopilot_Style.staticMetaObject">staticMetaObject (autopilot.core.gui.Autopilot_Style attribute)</a>
 
       <ul>
-        <li><a href="rst/autopilot.stim.visual.visuals.html#autopilot.stim.visual.visuals.Grating_Continuous.start">(autopilot.stim.visual.visuals.Grating_Continuous method)</a>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.staticMetaObject">(autopilot.core.gui.Bandwidth_Test attribute)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Calibrate_Water.staticMetaObject">(autopilot.core.gui.Calibrate_Water attribute)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Control_Panel.staticMetaObject">(autopilot.core.gui.Control_Panel attribute)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Drag_List.staticMetaObject">(autopilot.core.gui.Drag_List attribute)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Graduation_Widget.staticMetaObject">(autopilot.core.gui.Graduation_Widget attribute)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.staticMetaObject">(autopilot.core.gui.New_Subject_Wizard attribute)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Biography_Tab.staticMetaObject">(autopilot.core.gui.New_Subject_Wizard.Biography_Tab attribute)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Task_Tab.staticMetaObject">(autopilot.core.gui.New_Subject_Wizard.Task_Tab attribute)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Pilot_Button.staticMetaObject">(autopilot.core.gui.Pilot_Button attribute)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Pilot_Panel.staticMetaObject">(autopilot.core.gui.Pilot_Panel attribute)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Pilot_Ports.staticMetaObject">(autopilot.core.gui.Pilot_Ports attribute)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.staticMetaObject">(autopilot.core.gui.Protocol_Wizard attribute)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Reassign.staticMetaObject">(autopilot.core.gui.Reassign attribute)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.staticMetaObject">(autopilot.core.gui.Sound_Widget attribute)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.Add_Sound_Dialog.staticMetaObject">(autopilot.core.gui.Sound_Widget.Add_Sound_Dialog attribute)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Subject_List.staticMetaObject">(autopilot.core.gui.Subject_List attribute)</a>
+</li>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Weights.staticMetaObject">(autopilot.core.gui.Weights attribute)</a>
+</li>
+        <li><a href="autopilot.core.plots.html#autopilot.core.plots.HLine.staticMetaObject">(autopilot.core.plots.HLine attribute)</a>
+</li>
+        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot.staticMetaObject">(autopilot.core.plots.Plot attribute)</a>
+</li>
+        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot_Widget.staticMetaObject">(autopilot.core.plots.Plot_Widget attribute)</a>
+</li>
+        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Point.staticMetaObject">(autopilot.core.plots.Point attribute)</a>
+</li>
+        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Roll_Mean.staticMetaObject">(autopilot.core.plots.Roll_Mean attribute)</a>
+</li>
+        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Segment.staticMetaObject">(autopilot.core.plots.Segment attribute)</a>
+</li>
+        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Shaded.staticMetaObject">(autopilot.core.plots.Shaded attribute)</a>
+</li>
+        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Timer.staticMetaObject">(autopilot.core.plots.Timer attribute)</a>
+</li>
+        <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.staticMetaObject">(autopilot.core.terminal.Terminal attribute)</a>
+</li>
+        <li><a href="autopilot.core.utils.html#autopilot.core.utils.Invoker.staticMetaObject">(autopilot.core.utils.Invoker attribute)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Timer.start_timer">start_timer() (autopilot.core.plots.Timer method)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Timer.start_timer">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station">Station (class in autopilot.core.networking)</a>
 </li>
-      <li><a href="autopilot.core.plots.html#autopilot.core.plots.HLine.staticMetaObject">staticMetaObject (autopilot.core.plots.HLine attribute)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.HLine.staticMetaObject">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Task_Tab.step_changed">step_changed() (autopilot.core.gui.New_Subject_Wizard.Task_Tab method)</a>
+</li>
+      <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.stim_end">stim_end() (autopilot.tasks.nafc.Nafc method)</a>
+</li>
+      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager">Stim_Manager (class in autopilot.stim.managers)</a>
+</li>
+      <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.stim_start">stim_start() (autopilot.tasks.nafc.Nafc method)</a>
+</li>
+      <li><a href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.STOP">STOP (in module autopilot.stim.sound.jackclient)</a>
+</li>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.stop_run">stop_run() (autopilot.core.subject.Subject method)</a>
+</li>
+      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Timer.stop_timer">stop_timer() (autopilot.core.plots.Timer method)</a>
+</li>
+      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Proportional.store_groups">store_groups() (autopilot.stim.managers.Proportional method)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Graduation_Widget.store_param">store_param() (autopilot.core.gui.Graduation_Widget method)</a>
 
       <ul>
-        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot.staticMetaObject">(autopilot.core.plots.Plot attribute)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Plot.staticMetaObject">[1]</a>
-</li>
-        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Plot_Widget.staticMetaObject">(autopilot.core.plots.Plot_Widget attribute)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Plot_Widget.staticMetaObject">[1]</a>
-</li>
-        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Point.staticMetaObject">(autopilot.core.plots.Point attribute)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Point.staticMetaObject">[1]</a>
-</li>
-        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Roll_Mean.staticMetaObject">(autopilot.core.plots.Roll_Mean attribute)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Roll_Mean.staticMetaObject">[1]</a>
-</li>
-        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Segment.staticMetaObject">(autopilot.core.plots.Segment attribute)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Segment.staticMetaObject">[1]</a>
-</li>
-        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Shaded.staticMetaObject">(autopilot.core.plots.Shaded attribute)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Shaded.staticMetaObject">[1]</a>
-</li>
-        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Timer.staticMetaObject">(autopilot.core.plots.Timer attribute)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Timer.staticMetaObject">[1]</a>
-</li>
-        <li><a href="autopilot.core.utils.html#autopilot.core.utils.Invoker.staticMetaObject">(autopilot.core.utils.Invoker attribute)</a>, <a href="rst/autopilot.core.utils.html#autopilot.core.utils.Invoker.staticMetaObject">[1]</a>
+        <li><a href="autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.Add_Sound_Dialog.store_param">(autopilot.core.gui.Sound_Widget.Add_Sound_Dialog method)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station">Station (class in autopilot.core.networking)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station">[1]</a>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.STRING_PARAMS">STRING_PARAMS (in module autopilot.stim.sound.sounds)</a>
 </li>
-      <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.stim_end">stim_end() (autopilot.tasks.nafc.Nafc method)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.stim_end">[1]</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject">Subject (class in autopilot.core.subject)</a>
 </li>
-      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager">Stim_Manager (class in autopilot.stim.managers)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager">[1]</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.Hash_Table">Subject.Hash_Table (class in autopilot.core.subject)</a>
 </li>
-      <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.stim_start">stim_start() (autopilot.tasks.nafc.Nafc method)</a>, <a href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.stim_start">[1]</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.History_Table">Subject.History_Table (class in autopilot.core.subject)</a>
 </li>
-      <li><a href="rst/autopilot.stim.visual.visuals.html#autopilot.stim.visual.visuals.Grating_Continuous.stop">stop() (autopilot.stim.visual.visuals.Grating_Continuous method)</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.Weight_Table">Subject.Weight_Table (class in autopilot.core.subject)</a>
 </li>
-      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Timer.stop_timer">stop_timer() (autopilot.core.plots.Timer method)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Timer.stop_timer">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Subject_List">Subject_List (class in autopilot.core.gui)</a>
 </li>
-      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Proportional.store_groups">store_groups() (autopilot.stim.managers.Proportional method)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Proportional.store_groups">[1]</a>
+      <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.subject_weights">subject_weights() (autopilot.core.terminal.Terminal method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1229,77 +1537,91 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.utils.html#autopilot.core.utils.Param.tag">tag (autopilot.core.utils.Param attribute)</a>, <a href="rst/autopilot.core.utils.html#autopilot.core.utils.Param.tag">[1]</a>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Pyo_Sound.table_wrap">table_wrap() (autopilot.stim.sound.sounds.Pyo_Sound method)</a>
 </li>
-      <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task">Task (class in autopilot.tasks.task)</a>, <a href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task">[1]</a>
+      <li><a href="autopilot.core.utils.html#autopilot.core.utils.Param.tag">tag (autopilot.core.utils.Param attribute)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station">Terminal_Station (class in autopilot.core.networking)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Terminal_Station">[1]</a>
+      <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task">Task (class in autopilot.tasks.task)</a>
 </li>
-      <li><a href="autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.TerminalSetupForm">TerminalSetupForm (class in autopilot.setup.setup_terminal)</a>, <a href="rst/autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.TerminalSetupForm">[1]</a>
+      <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal">Terminal (class in autopilot.core.terminal)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.threaded_color_series">threaded_color_series() (autopilot.core.hardware.LED_RGB method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.threaded_color_series">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station">Terminal_Station (class in autopilot.core.networking)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.threaded_loop">threaded_loop() (autopilot.core.networking.Net_Node method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.threaded_loop">[1]</a>
+      <li><a href="autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.TerminalSetupForm">TerminalSetupForm (class in autopilot.setup.setup_terminal)</a>
 </li>
-      <li><a href="rst/autopilot.stim.visual.visuals.html#autopilot.stim.visual.visuals.Grating.threadfn">threadfn() (autopilot.stim.visual.visuals.Grating method)</a>
+      <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.test_bandwidth">test_bandwidth() (autopilot.core.terminal.Terminal method)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.thresh_trig">thresh_trig() (autopilot.core.hardware.Wheel method)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.thresh_trig">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.threaded_color_series">threaded_color_series() (autopilot.core.hardware.LED_RGB method)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.THRESH_TYPES">THRESH_TYPES (autopilot.core.hardware.Wheel attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.THRESH_TYPES">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.threaded_loop">threaded_loop() (autopilot.core.networking.Net_Node method)</a>
 </li>
-      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction.thresholded_linear">thresholded_linear() (autopilot.stim.managers.Bias_Correction method)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction.thresholded_linear">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.thresh_trig">thresh_trig() (autopilot.core.hardware.Wheel method)</a>
 </li>
-      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Timer">Timer (class in autopilot.core.plots)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Timer">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.THRESH_TYPES">THRESH_TYPES (autopilot.core.hardware.Wheel attribute)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.timers">timers (autopilot.core.networking.Net_Node attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.timers">[1]</a>
+      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction.thresholded_linear">thresholded_linear() (autopilot.stim.managers.Bias_Correction method)</a>
+</li>
+      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Timer">Timer (class in autopilot.core.plots)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.timers">timers (autopilot.core.networking.Net_Node attribute)</a>
 
       <ul>
-        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.timers">(autopilot.core.networking.Station attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Station.timers">[1]</a>
+        <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.timers">(autopilot.core.networking.Station attribute)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.timestamp">timestamp (autopilot.core.networking.Message attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.timestamp">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.timestamp">timestamp (autopilot.core.networking.Message attribute)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.to">to (autopilot.core.networking.Message attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.to">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.to">to (autopilot.core.networking.Message attribute)</a>
 </li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Pilot_Button.toggle_start">toggle_start() (autopilot.core.gui.Pilot_Button method)</a>
+
+      <ul>
+        <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.toggle_start">(autopilot.core.terminal.Terminal method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.TrialData">TrialData (autopilot.tasks.task.Task attribute)</a>, <a href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.TrialData">[1]</a>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Tone">Tone (class in autopilot.stim.sound.sounds)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.trigger">trigger (autopilot.core.hardware.Beambreak attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.trigger">[1]</a>
+      <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.TrialData">TrialData (autopilot.tasks.task.Task attribute)</a>
+</li>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.trigger">trigger (autopilot.core.hardware.Beambreak attribute)</a>
 
       <ul>
-        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Flag.trigger">(autopilot.core.hardware.Flag attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Flag.trigger">[1]</a>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Flag.trigger">(autopilot.core.hardware.Flag attribute)</a>
 </li>
-        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.trigger">(autopilot.core.hardware.Hardware attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.trigger">[1]</a>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.trigger">(autopilot.core.hardware.Hardware attribute)</a>
 </li>
-        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.trigger">(autopilot.core.hardware.Wheel attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.trigger">[1]</a>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.trigger">(autopilot.core.hardware.Wheel attribute)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.ttl">ttl (autopilot.core.networking.Message attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.ttl">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.ttl">ttl (autopilot.core.networking.Message attribute)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.type">type (autopilot.core.hardware.Beambreak attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.type">[1]</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.type">type (autopilot.core.hardware.Beambreak attribute)</a>
 
       <ul>
-        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.type">(autopilot.core.hardware.Hardware attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Hardware.type">[1]</a>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.type">(autopilot.core.hardware.Hardware attribute)</a>
 </li>
-        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.type">(autopilot.core.hardware.LED_RGB attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.type">[1]</a>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.type">(autopilot.core.hardware.LED_RGB attribute)</a>
 </li>
-        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.type">(autopilot.core.hardware.Solenoid attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.type">[1]</a>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.type">(autopilot.core.hardware.Solenoid attribute)</a>
 </li>
-        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.type">(autopilot.core.hardware.Wheel attribute)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel.type">[1]</a>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.type">(autopilot.core.hardware.Wheel attribute)</a>
+</li>
+        <li><a href="autopilot.core.utils.html#autopilot.core.utils.Param.type">(autopilot.core.utils.Param attribute)</a>
+</li>
+        <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.File.type">(autopilot.stim.sound.sounds.File attribute)</a>
+</li>
+        <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.type">(autopilot.stim.sound.sounds.Jack_Sound attribute)</a>
+</li>
+        <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Noise.type">(autopilot.stim.sound.sounds.Noise attribute)</a>
+</li>
+        <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Speech.type">(autopilot.stim.sound.sounds.Speech attribute)</a>
+</li>
+        <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Tone.type">(autopilot.stim.sound.sounds.Tone attribute)</a>
 </li>
       </ul></li>
-      <li><a href="rst/autopilot.core.reward.html#autopilot.core.reward.Constant_Time.TYPE">TYPE (autopilot.core.reward.Constant_Time attribute)</a>
-
-      <ul>
-        <li><a href="rst/autopilot.core.reward.html#autopilot.core.reward.Constant_Volume.TYPE">(autopilot.core.reward.Constant_Volume attribute)</a>
-</li>
-        <li><a href="rst/autopilot.core.reward.html#autopilot.core.reward.Reward.TYPE">(autopilot.core.reward.Reward attribute)</a>
-</li>
-      </ul></li>
-      <li><a href="autopilot.core.utils.html#autopilot.core.utils.Param.type">type (autopilot.core.utils.Param attribute)</a>, <a href="rst/autopilot.core.utils.html#autopilot.core.utils.Param.type">[1]</a>
-</li>
-      <li><a href="autopilot.core.utils.html#autopilot.core.utils.Param.types">types (autopilot.core.utils.Param attribute)</a>, <a href="rst/autopilot.core.utils.html#autopilot.core.utils.Param.types">[1]</a>
+      <li><a href="autopilot.core.utils.html#autopilot.core.utils.Param.types">types (autopilot.core.utils.Param attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1307,41 +1629,57 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.unfold_values">unfold_values() (in module autopilot.setup.setup_pilot)</a>, <a href="rst/autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.unfold_values">[1]</a>
+      <li><a href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.unfold_values">unfold_values() (in module autopilot.setup.setup_pilot)</a>
 
       <ul>
-        <li><a href="autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.unfold_values">(in module autopilot.setup.setup_terminal)</a>, <a href="rst/autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.unfold_values">[1]</a>
+        <li><a href="autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.unfold_values">(in module autopilot.setup.setup_terminal)</a>
 </li>
       </ul></li>
-      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Point.update">update() (autopilot.core.plots.Point method)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Point.update">[1]</a>
+      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Point.update">update() (autopilot.core.plots.Point method)</a>
 
       <ul>
-        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Roll_Mean.update">(autopilot.core.plots.Roll_Mean method)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Roll_Mean.update">[1]</a>
+        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Roll_Mean.update">(autopilot.core.plots.Roll_Mean method)</a>
 </li>
-        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Segment.update">(autopilot.core.plots.Segment method)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Segment.update">[1]</a>
+        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Segment.update">(autopilot.core.plots.Segment method)</a>
 </li>
-        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Shaded.update">(autopilot.core.plots.Shaded method)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Shaded.update">[1]</a>
+        <li><a href="autopilot.core.plots.html#autopilot.core.plots.Shaded.update">(autopilot.core.plots.Shaded method)</a>
 </li>
-        <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction.update">(autopilot.stim.managers.Bias_Correction method)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction.update">[1]</a>
+        <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction.update">(autopilot.stim.managers.Bias_Correction method)</a>
 </li>
-        <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.update">(autopilot.stim.managers.Stim_Manager method)</a>, <a href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.update">[1]</a>
+        <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.update">(autopilot.stim.managers.Stim_Manager method)</a>
 </li>
-        <li><a href="rst/autopilot.stim.visual.visuals.html#autopilot.stim.visual.visuals.Grating.update">(autopilot.stim.visual.visuals.Grating method)</a>
+        <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy.update">(autopilot.tasks.graduation.Accuracy method)</a>
 </li>
-        <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy.update">(autopilot.tasks.graduation.Accuracy method)</a>, <a href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy.update">[1]</a>
+        <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation.update">(autopilot.tasks.graduation.Graduation method)</a>
 </li>
-        <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation.update">(autopilot.tasks.graduation.Graduation method)</a>, <a href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation.update">[1]</a>
-</li>
-        <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.NTrials.update">(autopilot.tasks.graduation.NTrials method)</a>, <a href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.NTrials.update">[1]</a>
+        <li><a href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.NTrials.update">(autopilot.tasks.graduation.NTrials method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.update_state">update_state() (autopilot.core.pilot.autopilot method)</a>, <a href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.update_state">[1]</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.update_biography">update_biography() (autopilot.core.subject.Subject method)</a>
 </li>
-      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Timer.update_time">update_time() (autopilot.core.plots.Timer method)</a>, <a href="rst/autopilot.core.plots.html#autopilot.core.plots.Timer.update_time">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Control_Panel.update_db">update_db() (autopilot.core.gui.Control_Panel method)</a>
 </li>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.upstream">upstream (autopilot.core.networking.Net_Node attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.upstream">[1]</a>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.update_history">update_history() (autopilot.core.subject.Subject method)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.update_pbar">update_pbar() (autopilot.core.gui.Bandwidth_Test method)</a>
+</li>
+      <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.update_protocols">update_protocols() (autopilot.core.terminal.Terminal method)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Biography_Tab.update_return_dict">update_return_dict() (autopilot.core.gui.New_Subject_Wizard.Biography_Tab method)</a>
+</li>
+      <li><a href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.update_state">update_state() (autopilot.core.pilot.autopilot method)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Task_Tab.update_step_box">update_step_box() (autopilot.core.gui.New_Subject_Wizard.Task_Tab method)</a>
+</li>
+      <li><a href="autopilot.core.plots.html#autopilot.core.plots.Timer.update_time">update_time() (autopilot.core.plots.Timer method)</a>
+</li>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Pilot_Ports.update_volumes">update_volumes() (autopilot.core.gui.Pilot_Ports method)</a>
+</li>
+      <li><a href="autopilot.core.subject.html#autopilot.core.subject.Subject.update_weights">update_weights() (autopilot.core.subject.Subject method)</a>
+</li>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.upstream">upstream (autopilot.core.networking.Net_Node attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1349,13 +1687,13 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.validate">validate() (autopilot.core.networking.Message method)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.validate">[1]</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.validate">validate() (autopilot.core.networking.Message method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.value">value (autopilot.core.networking.Message attribute)</a>, <a href="rst/autopilot.core.networking.html#autopilot.core.networking.Message.value">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.validate_list">validate_list() (autopilot.core.gui.Bandwidth_Test method)</a>
 </li>
-      <li><a href="rst/autopilot.stim.visual.visuals.html#autopilot.stim.visual.visuals.Visual">Visual (class in autopilot.stim.visual.visuals)</a>
+      <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.value">value (autopilot.core.networking.Message attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1363,13 +1701,15 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.water">water() (autopilot.tasks.free_water.Free_Water method)</a>, <a href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.water">[1]</a>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.wait_trigger">wait_trigger() (autopilot.stim.sound.sounds.Jack_Sound method)</a>
+</li>
+      <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.water">water() (autopilot.tasks.free_water.Free_Water method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel">Wheel (class in autopilot.core.hardware)</a>, <a href="rst/autopilot.core.hardware.html#autopilot.core.hardware.Wheel">[1]</a>
+      <li><a href="autopilot.core.gui.html#autopilot.core.gui.Weights">Weights (class in autopilot.core.gui)</a>
 </li>
-      <li><a href="rst/autopilot.tasks.children.html#autopilot.tasks.children.Wheel_Child">Wheel_Child (class in autopilot.tasks.children)</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel">Wheel (class in autopilot.core.hardware)</a>
 </li>
   </ul></td>
 </tr></table>

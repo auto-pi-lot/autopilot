@@ -138,7 +138,32 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -252,19 +277,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="nafc">
-<h1>nafc<a class="headerlink" href="#nafc" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-autopilot.tasks.nafc"></span><p><strong>Classes</strong></p>
+  <div class="section" id="module-autopilot.tasks.nafc">
+<span id="nafc"></span><h1>nafc<a class="headerlink" href="#module-autopilot.tasks.nafc" title="Permalink to this headline">¶</a></h1>
+<p><strong>Classes</strong></p>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc" title="autopilot.tasks.nafc.Nafc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Nafc</span></code></a>([stage_block,&nbsp;stim,&nbsp;reward,&nbsp;…])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc" title="autopilot.tasks.nafc.Nafc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Nafc</span></code></a>([stage_block,&nbsp;stim,&nbsp;reward,&nbsp;…])</td>
 <td>A Two-alternative forced choice task.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel" title="autopilot.tasks.nafc.Nafc_Wheel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Nafc_Wheel</span></code></a>(**kwargs)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc_Wheel" title="autopilot.tasks.nafc.Nafc_Wheel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Nafc_Wheel</span></code></a>(**kwargs)</td>
 <td>2afc using a wheel run on a child pi as the input device</td>
 </tr>
 </tbody>
@@ -272,7 +297,7 @@
 <dl class="class">
 <dt id="autopilot.tasks.nafc.Nafc">
 <em class="property">class </em><code class="descclassname">autopilot.tasks.nafc.</code><code class="descname">Nafc</code><span class="sig-paren">(</span><em>stage_block=None</em>, <em>stim=None</em>, <em>reward=50</em>, <em>req_reward=False</em>, <em>punish_stim=False</em>, <em>punish_dur=100</em>, <em>correction=False</em>, <em>correction_pct=50.0</em>, <em>bias_mode=False</em>, <em>bias_threshold=20</em>, <em>current_trial=0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/nafc.html#Nafc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.nafc.Nafc" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.task.Task</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.task.Task</span></code></a></p>
 <p>A Two-alternative forced choice task.</p>
 <p><em>(can’t have number as first character of class.)</em></p>
 <p><strong>Stages</strong></p>
@@ -288,16 +313,16 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.HARDWARE" title="autopilot.tasks.nafc.Nafc.HARDWARE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HARDWARE</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.HARDWARE" title="autopilot.tasks.nafc.Nafc.HARDWARE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HARDWARE</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PARAMS" title="autopilot.tasks.nafc.Nafc.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.PARAMS" title="autopilot.tasks.nafc.Nafc.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
 <td>Dictionary that remembers insertion order</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PLOT" title="autopilot.tasks.nafc.Nafc.PLOT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLOT</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.PLOT" title="autopilot.tasks.nafc.Nafc.PLOT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLOT</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.STAGE_NAMES" title="autopilot.tasks.nafc.Nafc.STAGE_NAMES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">STAGE_NAMES</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.STAGE_NAMES" title="autopilot.tasks.nafc.Nafc.STAGE_NAMES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">STAGE_NAMES</span></code></a></td>
 <td>list() -&gt; new empty list</td>
 </tr>
 </tbody>
@@ -309,7 +334,7 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.TrialData" title="autopilot.tasks.nafc.Nafc.TrialData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrialData</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.TrialData" title="autopilot.tasks.nafc.Nafc.TrialData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrialData</span></code></a></td>
 <td></td>
 </tr>
 </tbody>
@@ -321,28 +346,28 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.discrim" title="autopilot.tasks.nafc.Nafc.discrim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">discrim</span></code></a>(*args,&nbsp;**kwargs)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.discrim" title="autopilot.tasks.nafc.Nafc.discrim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">discrim</span></code></a>(*args,&nbsp;**kwargs)</td>
 <td>Stage 1:  respond to input, set reward/punishment triggers on target/distractor ports</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.flash_leds" title="autopilot.tasks.nafc.Nafc.flash_leds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flash_leds</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.flash_leds" title="autopilot.tasks.nafc.Nafc.flash_leds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flash_leds</span></code></a>()</td>
 <td>flash lights for punish_dir</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.punish" title="autopilot.tasks.nafc.Nafc.punish"><code class="xref py py-obj docutils literal notranslate"><span class="pre">punish</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.punish" title="autopilot.tasks.nafc.Nafc.punish"><code class="xref py py-obj docutils literal notranslate"><span class="pre">punish</span></code></a>()</td>
 <td>Flash lights, play punishment sound if set</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.reinforcement" title="autopilot.tasks.nafc.Nafc.reinforcement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reinforcement</span></code></a>(*args,&nbsp;**kwargs)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.reinforcement" title="autopilot.tasks.nafc.Nafc.reinforcement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reinforcement</span></code></a>(*args,&nbsp;**kwargs)</td>
 <td>Stage 2 - deliver reward/punishment, end trial.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.request" title="autopilot.tasks.nafc.Nafc.request"><code class="xref py py-obj docutils literal notranslate"><span class="pre">request</span></code></a>(*args,&nbsp;**kwargs)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.request" title="autopilot.tasks.nafc.Nafc.request"><code class="xref py py-obj docutils literal notranslate"><span class="pre">request</span></code></a>(*args,&nbsp;**kwargs)</td>
 <td>Stage 0: compute stimulus, set request trigger in center port.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.respond" title="autopilot.tasks.nafc.Nafc.respond"><code class="xref py py-obj docutils literal notranslate"><span class="pre">respond</span></code></a>(pin)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.respond" title="autopilot.tasks.nafc.Nafc.respond"><code class="xref py py-obj docutils literal notranslate"><span class="pre">respond</span></code></a>(pin)</td>
 <td>Set self.response</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.stim_end" title="autopilot.tasks.nafc.Nafc.stim_end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stim_end</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.stim_end" title="autopilot.tasks.nafc.Nafc.stim_end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stim_end</span></code></a>()</td>
 <td>called by stimulus callback</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.stim_start" title="autopilot.tasks.nafc.Nafc.stim_start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stim_start</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.stim_start" title="autopilot.tasks.nafc.Nafc.stim_start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stim_start</span></code></a>()</td>
 <td>mark discrim_playing = true</td>
 </tr>
 </tbody>
@@ -354,8 +379,8 @@
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first simple">
 <li><strong>target</strong> (<em>&quot;L&quot;</em><em>, </em><em>&quot;R&quot;</em>) – Correct response</li>
 <li><strong>distractor</strong> (<em>&quot;L&quot;</em><em>, </em><em>&quot;R&quot;</em>) – Incorrect response</li>
-<li><a class="reference internal" href="rst/autopilot.stim.html#module-autopilot.stim" title="autopilot.stim"><strong>stim</strong></a> – Current stimulus</li>
-<li><a class="reference internal" href="rst/autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.response" title="autopilot.tasks.free_water.Free_Water.response"><strong>response</strong></a> (<em>&quot;L&quot;</em><em>, </em><em>&quot;R&quot;</em>) – Response to discriminand</li>
+<li><strong>stim</strong> – Current stimulus</li>
+<li><a class="reference internal" href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.response" title="autopilot.tasks.free_water.Free_Water.response"><strong>response</strong></a> (<em>&quot;L&quot;</em><em>, </em><em>&quot;R&quot;</em>) – Response to discriminand</li>
 <li><strong>correct</strong> (<em>0</em><em>, </em><em>1</em>) – Current trial was correct/incorrect</li>
 <li><strong>correction_trial</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – If using correction trials, last trial was a correction trial</li>
 <li><strong>trial_counter</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">itertools.count</span></code>) – Which trial are we on?</li>
@@ -381,7 +406,7 @@
 <li><strong>punish_dur</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Duration of white noise in ms</li>
 <li><strong>correction</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Should we do correction trials?</li>
 <li><strong>correction_pct</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – (0-1), What proportion of trials should randomly be correction trials?</li>
-<li><strong>bias_mode</strong> (<em>False</em><em>, </em><em>&quot;thresholded_linear&quot;</em>) – False, or some bias correction type (see <a class="reference internal" href="rst/autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction" title="autopilot.stim.managers.Bias_Correction"><code class="xref py py-class docutils literal notranslate"><span class="pre">managers.Bias_Correction</span></code></a> )</li>
+<li><strong>bias_mode</strong> (<em>False</em><em>, </em><em>&quot;thresholded_linear&quot;</em>) – False, or some bias correction type (see <a class="reference internal" href="autopilot.stim.managers.html#autopilot.stim.managers.Bias_Correction" title="autopilot.stim.managers.Bias_Correction"><code class="xref py py-class docutils literal notranslate"><span class="pre">managers.Bias_Correction</span></code></a> )</li>
 <li><strong>bias_threshold</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – If using a bias correction mode, what threshold should bias be corrected for?</li>
 <li><strong>current_trial</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – If starting at nonzero trial number, which?</li>
 <li><strong>**kwargs</strong> – </li>
@@ -397,7 +422,7 @@
 
 <dl class="attribute">
 <dt id="autopilot.tasks.nafc.Nafc.PARAMS">
-<code class="descname">PARAMS</code><em class="property"> = {'bias_mode': {'tag': 'Bias Correction Mode', 'type': 'list', 'values': {'None': 0, 'Proportional': 1, 'Thresholded Proportional': 2}}, 'bias_threshold': {'depends': {'bias_mode': 2}, 'tag': 'Bias Correction Threshold (%)', 'type': 'int'}, 'correction': {'tag': 'Correction Trials', 'type': 'check'}, 'correction_pct': {'depends': {'correction': True}, 'tag': '% Correction Trials', 'type': 'int'}, 'punish_dur': {'tag': 'Punishment Duration (ms)', 'type': 'int'}, 'punish_stim': {'tag': 'White Noise Punishment', 'type': 'check'}, 'req_reward': {'tag': 'Request Rewards', 'type': 'check'}, 'reward': {'tag': 'Reward Duration (ms)', 'type': 'int'}, 'stim': {'tag': 'Sounds', 'type': 'sounds'}}</em><a class="headerlink" href="#autopilot.tasks.nafc.Nafc.PARAMS" title="Permalink to this definition">¶</a></dt>
+<code class="descname">PARAMS</code><em class="property"> = {'bias_mode': {'tag': 'Bias Correction Mode', 'type': 'list', 'values': {'None': 0, 'Proportional': 1, 'Thresholded Proportional': 2}}, 'bias_threshold': {'depends': {'bias_mode': 2}, 'tag': 'Bias Correction Threshold (%)', 'type': 'int'}, 'correction': {'tag': 'Correction Trials', 'type': 'bool'}, 'correction_pct': {'depends': {'correction': True}, 'tag': '% Correction Trials', 'type': 'int'}, 'punish_dur': {'tag': 'Punishment Duration (ms)', 'type': 'int'}, 'punish_stim': {'tag': 'White Noise Punishment', 'type': 'bool'}, 'req_reward': {'tag': 'Request Rewards', 'type': 'bool'}, 'reward': {'tag': 'Reward Duration (ms)', 'type': 'int'}, 'stim': {'tag': 'Sounds', 'type': 'sounds'}}</em><a class="headerlink" href="#autopilot.tasks.nafc.Nafc.PARAMS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -539,7 +564,7 @@
 <dl class="class">
 <dt id="autopilot.tasks.nafc.Nafc_Wheel">
 <em class="property">class </em><code class="descclassname">autopilot.tasks.nafc.</code><code class="descname">Nafc_Wheel</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/nafc.html#Nafc_Wheel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.nafc.Nafc_Wheel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc" title="autopilot.tasks.nafc.Nafc"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.nafc.Nafc</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#autopilot.tasks.nafc.Nafc" title="autopilot.tasks.nafc.Nafc"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.nafc.Nafc</span></code></a></p>
 <p>2afc using a wheel run on a child pi as the input device</p>
 <p><strong>Attributes</strong></p>
 <table border="1" class="longtable docutils">
@@ -548,13 +573,13 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel.HARDWARE" title="autopilot.tasks.nafc.Nafc_Wheel.HARDWARE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HARDWARE</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc_Wheel.HARDWARE" title="autopilot.tasks.nafc.Nafc_Wheel.HARDWARE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HARDWARE</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel.PARAMS" title="autopilot.tasks.nafc.Nafc_Wheel.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc_Wheel.PARAMS" title="autopilot.tasks.nafc.Nafc_Wheel.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
 <td>Dictionary that remembers insertion order</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel.PLOT" title="autopilot.tasks.nafc.Nafc_Wheel.PLOT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLOT</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc_Wheel.PLOT" title="autopilot.tasks.nafc.Nafc_Wheel.PLOT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLOT</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
 </tbody>
@@ -566,7 +591,7 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel.init_networking" title="autopilot.tasks.nafc.Nafc_Wheel.init_networking"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_networking</span></code></a>(kwargs)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc_Wheel.init_networking" title="autopilot.tasks.nafc.Nafc_Wheel.init_networking"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_networking</span></code></a>(kwargs)</td>
 <td></td>
 </tr>
 </tbody>
@@ -583,7 +608,7 @@
 
 <dl class="attribute">
 <dt id="autopilot.tasks.nafc.Nafc_Wheel.PARAMS">
-<code class="descname">PARAMS</code><em class="property"> = {'bias_mode': {'tag': 'Bias Correction Mode', 'type': 'list', 'values': {'None': 0, 'Proportional': 1, 'Thresholded Proportional': 2}}, 'bias_threshold': {'depends': {'bias_mode': 2}, 'tag': 'Bias Correction Threshold (%)', 'type': 'int'}, 'correction': {'tag': 'Correction Trials', 'type': 'check'}, 'correction_pct': {'depends': {'correction': True}, 'tag': '% Correction Trials', 'type': 'int'}, 'punish_dur': {'tag': 'Punishment Duration (ms)', 'type': 'int'}, 'punish_stim': {'tag': 'White Noise Punishment', 'type': 'check'}, 'req_reward': {'tag': 'Request Rewards', 'type': 'check'}, 'reward': {'tag': 'Reward Duration (ms)', 'type': 'int'}, 'stim': {'tag': 'Sounds', 'type': 'sounds'}}</em><a class="headerlink" href="#autopilot.tasks.nafc.Nafc_Wheel.PARAMS" title="Permalink to this definition">¶</a></dt>
+<code class="descname">PARAMS</code><em class="property"> = {'bias_mode': {'tag': 'Bias Correction Mode', 'type': 'list', 'values': {'None': 0, 'Proportional': 1, 'Thresholded Proportional': 2}}, 'bias_threshold': {'depends': {'bias_mode': 2}, 'tag': 'Bias Correction Threshold (%)', 'type': 'int'}, 'correction': {'tag': 'Correction Trials', 'type': 'bool'}, 'correction_pct': {'depends': {'correction': True}, 'tag': '% Correction Trials', 'type': 'int'}, 'punish_dur': {'tag': 'Punishment Duration (ms)', 'type': 'int'}, 'punish_stim': {'tag': 'White Noise Punishment', 'type': 'bool'}, 'req_reward': {'tag': 'Request Rewards', 'type': 'bool'}, 'reward': {'tag': 'Reward Duration (ms)', 'type': 'int'}, 'stim': {'tag': 'Sounds', 'type': 'sounds'}}</em><a class="headerlink" href="#autopilot.tasks.nafc.Nafc_Wheel.PARAMS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">

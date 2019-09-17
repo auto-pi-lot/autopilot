@@ -138,7 +138,32 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -252,9 +277,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="graduation">
-<h1>graduation<a class="headerlink" href="#graduation" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-autopilot.tasks.graduation"></span><p>Object that implement Graduation criteria to move between
+  <div class="section" id="module-autopilot.tasks.graduation">
+<span id="graduation"></span><h1>graduation<a class="headerlink" href="#module-autopilot.tasks.graduation" title="Permalink to this headline">¶</a></h1>
+<p>Object that implement Graduation criteria to move between
 different tasks in a protocol.</p>
 <p><strong>Classes</strong></p>
 <table border="1" class="longtable docutils">
@@ -263,13 +288,13 @@ different tasks in a protocol.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy" title="autopilot.tasks.graduation.Accuracy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Accuracy</span></code></a>([threshold,&nbsp;window])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.graduation.Accuracy" title="autopilot.tasks.graduation.Accuracy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Accuracy</span></code></a>([threshold,&nbsp;window])</td>
 <td>Graduate stage based on percent accuracy over some window of trials.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation" title="autopilot.tasks.graduation.Graduation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Graduation</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.graduation.Graduation" title="autopilot.tasks.graduation.Graduation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Graduation</span></code></a></td>
 <td>Base Graduation object.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.NTrials" title="autopilot.tasks.graduation.NTrials"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NTrials</span></code></a>(n_trials[,&nbsp;current_trial])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.graduation.NTrials" title="autopilot.tasks.graduation.NTrials"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NTrials</span></code></a>(n_trials[,&nbsp;current_trial])</td>
 <td>Graduate after doing n trials</td>
 </tr>
 </tbody>
@@ -281,7 +306,7 @@ different tasks in a protocol.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.GRAD_LIST" title="autopilot.tasks.graduation.GRAD_LIST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GRAD_LIST</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.graduation.GRAD_LIST" title="autopilot.tasks.graduation.GRAD_LIST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GRAD_LIST</span></code></a></td>
 <td>Mapping from string reference of graduation type to object.</td>
 </tr>
 </tbody>
@@ -300,10 +325,10 @@ different tasks in a protocol.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation.COLS" title="autopilot.tasks.graduation.Graduation.COLS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">COLS</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.graduation.Graduation.COLS" title="autopilot.tasks.graduation.Graduation.COLS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">COLS</span></code></a></td>
 <td>list of any data columns that this object should be given.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation.PARAMS" title="autopilot.tasks.graduation.Graduation.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.graduation.Graduation.PARAMS" title="autopilot.tasks.graduation.Graduation.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
 <td>list of parameters to be defined</td>
 </tr>
 </tbody>
@@ -315,7 +340,7 @@ different tasks in a protocol.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation.update" title="autopilot.tasks.graduation.Graduation.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(row)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.graduation.Graduation.update" title="autopilot.tasks.graduation.Graduation.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(row)</td>
 <td>:param <code class="xref py py-class docutils literal notranslate"><span class="pre">Row</span></code>: Trial row</td>
 </tr>
 </tbody>
@@ -359,7 +384,7 @@ different tasks in a protocol.</p>
 <dl class="class">
 <dt id="autopilot.tasks.graduation.Accuracy">
 <em class="property">class </em><code class="descclassname">autopilot.tasks.graduation.</code><code class="descname">Accuracy</code><span class="sig-paren">(</span><em>threshold=0.75</em>, <em>window=500</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#Accuracy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.Accuracy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation" title="autopilot.tasks.graduation.Graduation"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.graduation.Graduation</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#autopilot.tasks.graduation.Graduation" title="autopilot.tasks.graduation.Graduation"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.graduation.Graduation</span></code></a></p>
 <p>Graduate stage based on percent accuracy over some window of trials.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -381,10 +406,10 @@ different tasks in a protocol.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy.COLS" title="autopilot.tasks.graduation.Accuracy.COLS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">COLS</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.graduation.Accuracy.COLS" title="autopilot.tasks.graduation.Accuracy.COLS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">COLS</span></code></a></td>
 <td>list() -&gt; new empty list</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy.PARAMS" title="autopilot.tasks.graduation.Accuracy.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.graduation.Accuracy.PARAMS" title="autopilot.tasks.graduation.Accuracy.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
 <td>list() -&gt; new empty list</td>
 </tr>
 </tbody>
@@ -396,7 +421,7 @@ different tasks in a protocol.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Accuracy.update" title="autopilot.tasks.graduation.Accuracy.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(row)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.graduation.Accuracy.update" title="autopilot.tasks.graduation.Accuracy.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(row)</td>
 <td>Get ‘correct’ from the row object.</td>
 </tr>
 </tbody>
@@ -435,7 +460,7 @@ threshold, return True, else False.</p>
 <dl class="class">
 <dt id="autopilot.tasks.graduation.NTrials">
 <em class="property">class </em><code class="descclassname">autopilot.tasks.graduation.</code><code class="descname">NTrials</code><span class="sig-paren">(</span><em>n_trials</em>, <em>current_trial=0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#NTrials"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.NTrials" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation" title="autopilot.tasks.graduation.Graduation"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.graduation.Graduation</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#autopilot.tasks.graduation.Graduation" title="autopilot.tasks.graduation.Graduation"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.graduation.Graduation</span></code></a></p>
 <p>Graduate after doing n trials</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -460,7 +485,7 @@ threshold, return True, else False.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.NTrials.PARAMS" title="autopilot.tasks.graduation.NTrials.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.graduation.NTrials.PARAMS" title="autopilot.tasks.graduation.NTrials.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
 <td>list() -&gt; new empty list</td>
 </tr>
 </tbody>
@@ -472,7 +497,7 @@ threshold, return True, else False.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.NTrials.update" title="autopilot.tasks.graduation.NTrials.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(row)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.graduation.NTrials.update" title="autopilot.tasks.graduation.NTrials.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(row)</td>
 <td>If we’re past n_trials in this trial, return True, else False.</td>
 </tr>
 </tbody>

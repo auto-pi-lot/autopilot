@@ -1,4 +1,3 @@
-# from taskontrol.templates.nafc import Nafc
 from autopilot.tasks.task import Task
 from autopilot.tasks.nafc import Nafc, Nafc_Wheel
 from autopilot.tasks.gonogo import GoNoGo

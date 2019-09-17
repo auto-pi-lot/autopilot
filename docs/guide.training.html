@@ -138,7 +138,32 @@
 <li class="toctree-l2"><a class="reference internal" href="#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -321,7 +346,7 @@ Protocols are stored as <code class="docutils literal notranslate"><span class="
 This is related to the unification of the parameter structure in Autopilot 0.3 (see <a class="reference internal" href="todo.html#todo"><span class="std std-ref">To-Do</span></a>).
 Protocols can be edited after creation in the Protocol Wizard using the format examples in the manual protocol creation section below.</p>
 </div>
-<p>The Protocol Wizard allows you to build protocols using all the tasks in <a class="reference internal" href="rst/autopilot.tasks.html#module-autopilot.tasks" title="autopilot.tasks"><code class="xref py py-mod docutils literal notranslate"><span class="pre">autopilot.tasks</span></code></a> (specifically that are registered in the <a href="#id1"><span class="problematic" id="id2">:var:`autopilot.tasks.TASK_LIST`</span></a>).
+<p>The Protocol Wizard allows you to build protocols using all the tasks in <code class="xref py py-mod docutils literal notranslate"><span class="pre">autopilot.tasks</span></code> (specifically that are registered in the <a href="#id1"><span class="problematic" id="id2">:var:`autopilot.tasks.TASK_LIST`</span></a>).
 It extracts the <cite>PARAMS</cite> dictionary from each task class, adds a few general parameters, and allows the user to fill them.</p>
 <p>For this example, we will create a protocol for a freely-moving two-alternative forced choice task <a class="footnote-reference" href="#f1" id="id3">[1]</a> .
 This task has three ‘nosepokes,’ which consist of an IR break beam sensor, a solenoid, and an LED.
@@ -393,7 +418,7 @@ In this example we will program a three-step shaping regimen:</p>
 </ol>
 <p>2. Adding general task parameters <code class="docutils literal notranslate"><span class="pre">stim</span></code>, <code class="docutils literal notranslate"><span class="pre">reward</span></code>, <code class="docutils literal notranslate"><span class="pre">graduation</span></code>, <code class="docutils literal notranslate"><span class="pre">step_name</span></code>, and <code class="docutils literal notranslate"><span class="pre">task_type</span></code>.
 These are just examples, the <code class="docutils literal notranslate"><span class="pre">stim</span></code> and <code class="docutils literal notranslate"><span class="pre">reward</span></code> fields can be any parameters consumed by a <code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.stim.managers.Reward_Manager</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.stim.managers.Stimulus_Manager</span></code>.
-The <code class="docutils literal notranslate"><span class="pre">graduation</span></code> field can be any parameters consumed by a <a class="reference internal" href="rst/autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation" title="autopilot.tasks.graduation.Graduation"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.graduation.Graduation</span></code></a> object. The <code class="docutils literal notranslate"><span class="pre">step_name</span></code> and <code class="docutils literal notranslate"><span class="pre">task_type</span></code> need to be strings, the <code class="docutils literal notranslate"><span class="pre">task_type</span></code> corresponding to a key in the <a href="#id4"><span class="problematic" id="id5">:var:`autopilot.tasks.TASK_LIST`</span></a>.:</p>
+The <code class="docutils literal notranslate"><span class="pre">graduation</span></code> field can be any parameters consumed by a <a class="reference internal" href="autopilot.tasks.graduation.html#autopilot.tasks.graduation.Graduation" title="autopilot.tasks.graduation.Graduation"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.graduation.Graduation</span></code></a> object. The <code class="docutils literal notranslate"><span class="pre">step_name</span></code> and <code class="docutils literal notranslate"><span class="pre">task_type</span></code> need to be strings, the <code class="docutils literal notranslate"><span class="pre">task_type</span></code> corresponding to a key in the <a href="#id4"><span class="problematic" id="id5">:var:`autopilot.tasks.TASK_LIST`</span></a>.:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
     <span class="s1">&#39;stim&#39;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;sounds&#39;</span><span class="p">,</span>
@@ -423,7 +448,7 @@ The <code class="docutils literal notranslate"><span class="pre">graduation</spa
 </div>
 <div class="section" id="creating-a-subject">
 <h2>Creating a Subject<a class="headerlink" href="#creating-a-subject" title="Permalink to this headline">¶</a></h2>
-<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.subject.Subject</span></code> stores the data, protocol, and history of a subject.
+<p>A <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.subject.Subject</span></code></a> stores the data, protocol, and history of a subject.
 Each subject is implicitly assigned to a Pilot by virtue of the structure of the <code class="docutils literal notranslate"><span class="pre">pilot_db.json</span></code> file, but they can be switched by editing that file.</p>
 <ol class="arabic simple">
 <li>Create a subject by clicking the <code class="docutils literal notranslate"><span class="pre">+</span></code> button in the control panel of a particular Pilot</li>
@@ -466,12 +491,6 @@ as well as the basic directory and table structure to enable the subject to stor
 <li>The Terminal will initialize the Pilot’s plot using the parameters in the task’s <code class="docutils literal notranslate"><span class="pre">PLOT</span></code> dictionary and display data as it is received.</li>
 </ol>
 <p>close w/ a view of the data.</p>
-<table class="docutils footnote" frame="void" id="f1" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id3">[1]</a></td><td>Yes we are aware that the “two-alternative forced choice” task described here is actually maybe called a “yes-no task” because there is only one stimulus presented at a time. The literature appears stuck with this term, however.</td></tr>
-</tbody>
-</table>
 </div>
 <div class="section" id="debugging-a-task">
 <h2>Debugging a Task<a class="headerlink" href="#debugging-a-task" title="Permalink to this headline">¶</a></h2>
@@ -488,6 +507,12 @@ as well as the basic directory and table structure to enable the subject to stor
 <span class="n">journalctl</span> <span class="o">-</span><span class="n">u</span> <span class="n">autopilot</span> <span class="o">-</span><span class="n">e</span>
 </pre></div>
 </div>
+<table class="docutils footnote" frame="void" id="f1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[1]</a></td><td>Yes we are aware that the “two-alternative forced choice” task described here is actually maybe called a “yes-no task” because there is only one stimulus presented at a time. The literature appears stuck with this term, however.</td></tr>
+</tbody>
+</table>
 </div>
 </div>
 

@@ -136,7 +136,32 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -389,7 +414,7 @@ task defines which pins it needs. Currently the default configuration asks for</
 <li><a class="reference internal" href="#autopilot.core.pilot.autopilot.file_block" title="autopilot.core.pilot.autopilot.file_block"><strong>file_block</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Flag used to wait for file transfers</li>
 <li><strong>state</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – ‘RUNNING’, ‘STOPPING’, ‘IDLE’ - signals what this pilot is up to</li>
 <li><strong>pulls</strong> (<em>list</em>) – list of <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Pull" title="autopilot.core.hardware.Pull"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pull</span></code></a> objects to keep pins pulled up or down</li>
-<li><a class="reference internal" href="#autopilot.core.pilot.autopilot.server" title="autopilot.core.pilot.autopilot.server"><strong>server</strong></a> – Either a <code class="xref py py-func docutils literal notranslate"><span class="pre">pyo_server()</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">JackClient</span></code> , sound server.</li>
+<li><a class="reference internal" href="#autopilot.core.pilot.autopilot.server" title="autopilot.core.pilot.autopilot.server"><strong>server</strong></a> – Either a <a class="reference internal" href="autopilot.stim.sound.pyoserver.html#autopilot.stim.sound.pyoserver.pyo_server" title="autopilot.stim.sound.pyoserver.pyo_server"><code class="xref py py-func docutils literal notranslate"><span class="pre">pyo_server()</span></code></a> or <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient" title="autopilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">JackClient</span></code></a> , sound server.</li>
 <li><a class="reference internal" href="#autopilot.core.pilot.autopilot.node" title="autopilot.core.pilot.autopilot.node"><strong>node</strong></a> (<a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">networking.Net_Node</span></code></a>) – Our Net_Node we use to communicate with our main networking object</li>
 <li><a class="reference internal" href="#autopilot.core.pilot.autopilot.networking" title="autopilot.core.pilot.autopilot.networking"><strong>networking</strong></a> (<a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station" title="autopilot.core.networking.Pilot_Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">networking.Pilot_Station</span></code></a>) – Our networking object to communicate with the outside world</li>
 <li><a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Station.ip" title="autopilot.core.networking.Station.ip"><strong>ip</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Our IPv4 address</li>
@@ -574,8 +599,8 @@ into the task object.</p>
 <dd><p>Initialize an audio server depending on the value of
 <cite>prefs.AUDIOSERVER</cite></p>
 <ul class="simple">
-<li>‘pyo’ = <code class="xref py py-func docutils literal notranslate"><span class="pre">pyoserver.pyo_server()</span></code></li>
-<li>‘jack’ = <code class="xref py py-class docutils literal notranslate"><span class="pre">jackclient.JackClient</span></code></li>
+<li>‘pyo’ = <a class="reference internal" href="autopilot.stim.sound.pyoserver.html#autopilot.stim.sound.pyoserver.pyo_server" title="autopilot.stim.sound.pyoserver.pyo_server"><code class="xref py py-func docutils literal notranslate"><span class="pre">pyoserver.pyo_server()</span></code></a></li>
+<li>‘jack’ = <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient" title="autopilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">jackclient.JackClient</span></code></a></li>
 </ul>
 </dd></dl>
 

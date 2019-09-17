@@ -138,7 +138,32 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -257,7 +282,7 @@
 <p>Run as a module as root.</p>
 <p>Run as a module as root.</p>
 <p>Creates a <code class="xref py py-class docutils literal notranslate"><span class="pre">npyscreen.SplitForm</span></code> to prompt the user in the command line
-for parameters to set up a <code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code> .</p>
+for parameters to set up a <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a> .</p>
 <p>Sets the following prefs:</p>
 <ul class="simple">
 <li><strong>BASEDIR</strong> - Base directory for all local autopilot data, typically <cite>/usr/autopilot</cite></li>
@@ -276,10 +301,10 @@ for parameters to set up a <code class="xref py py-class docutils literal notran
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.SetupApp" title="autopilot.setup.setup_terminal.SetupApp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SetupApp</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.setup.setup_terminal.SetupApp" title="autopilot.setup.setup_terminal.SetupApp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SetupApp</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.TerminalSetupForm" title="autopilot.setup.setup_terminal.TerminalSetupForm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TerminalSetupForm</span></code></a>([draw_line_at])</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.setup.setup_terminal.TerminalSetupForm" title="autopilot.setup.setup_terminal.TerminalSetupForm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TerminalSetupForm</span></code></a>([draw_line_at])</td>
 <td></td>
 </tr>
 </tbody>
@@ -291,10 +316,10 @@ for parameters to set up a <code class="xref py py-class docutils literal notran
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.make_dir" title="autopilot.setup.setup_terminal.make_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_dir</span></code></a>(adir)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.setup.setup_terminal.make_dir" title="autopilot.setup.setup_terminal.make_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_dir</span></code></a>(adir)</td>
 <td>Make a directory if it doesn’t exist and set its permissions to <cite>0777</cite></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.unfold_values" title="autopilot.setup.setup_terminal.unfold_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unfold_values</span></code></a>(v)</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.setup.setup_terminal.unfold_values" title="autopilot.setup.setup_terminal.unfold_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unfold_values</span></code></a>(v)</td>
 <td>Unfold nested values from the SetupForm.</td>
 </tr>
 </tbody>
@@ -310,10 +335,10 @@ for parameters to set up a <code class="xref py py-class docutils literal notran
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.TerminalSetupForm.afterEditing" title="autopilot.setup.setup_terminal.TerminalSetupForm.afterEditing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">afterEditing</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.setup.setup_terminal.TerminalSetupForm.afterEditing" title="autopilot.setup.setup_terminal.TerminalSetupForm.afterEditing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">afterEditing</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.TerminalSetupForm.create" title="autopilot.setup.setup_terminal.TerminalSetupForm.create"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.setup.setup_terminal.TerminalSetupForm.create" title="autopilot.setup.setup_terminal.TerminalSetupForm.create"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create</span></code></a>()</td>
 <td>Programmers should over-ride this in derived classes, creating widgets here</td>
 </tr>
 </tbody>
@@ -342,7 +367,7 @@ for parameters to set up a <code class="xref py py-class docutils literal notran
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.SetupApp.onStart" title="autopilot.setup.setup_terminal.SetupApp.onStart"><code class="xref py py-obj docutils literal notranslate"><span class="pre">onStart</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.setup.setup_terminal.SetupApp.onStart" title="autopilot.setup.setup_terminal.SetupApp.onStart"><code class="xref py py-obj docutils literal notranslate"><span class="pre">onStart</span></code></a>()</td>
 <td>Override this method to perform any initialisation.</td>
 </tr>
 </tbody>

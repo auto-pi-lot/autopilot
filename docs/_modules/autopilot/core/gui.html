@@ -19,13 +19,20 @@
   
 
   
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
@@ -38,21 +45,16 @@
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
 
 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -110,10 +112,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -122,9 +126,42 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.training.html">Training a Subject</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#debugging-a-task">Debugging a Task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -279,7 +316,7 @@
 <span class="kn">import</span> <span class="nn">time</span>
 
 
-<div class="viewcode-block" id="gui_event"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.gui_event">[docs]</a><span class="k">def</span> <span class="nf">gui_event</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+<div class="viewcode-block" id="gui_event"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.gui_event">[docs]</a><span class="k">def</span> <span class="nf">gui_event</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper/decorator around an event that posts GUI events back to the main</span>
 <span class="sd">    thread that our window is running in.</span>
@@ -300,7 +337,7 @@
     <span class="k">return</span> <span class="n">wrapper_gui_event</span></div>
 
 
-<div class="viewcode-block" id="Control_Panel"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Control_Panel">[docs]</a><span class="k">class</span> <span class="nc">Control_Panel</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="Control_Panel"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Control_Panel">[docs]</a><span class="k">class</span> <span class="nc">Control_Panel</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A :class:`QtGui.QWidget` that contains the controls for all pilots.</span>
 
 <span class="sd">    Specifically, for each pilot, it contains</span>
@@ -372,7 +409,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">,</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Control_Panel.init_ui"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Control_Panel.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Control_Panel.init_ui"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Control_Panel.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called on init, creates the UI components.</span>
 
@@ -402,7 +439,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">pilot_panel</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">subject_list</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Control_Panel.create_subject"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Control_Panel.create_subject">[docs]</a>    <span class="k">def</span> <span class="nf">create_subject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pilot</span><span class="p">):</span>
+<div class="viewcode-block" id="Control_Panel.create_subject"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Control_Panel.create_subject">[docs]</a>    <span class="k">def</span> <span class="nf">create_subject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pilot</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Becomes :py:attr:`.Pilot_Panel.create_fn`.</span>
 <span class="sd">        Opens a :py:class:`.New_Subject_Wizard` to create a new subject file and assign protocol.</span>
@@ -473,7 +510,7 @@
     <span class="c1">#</span>
     <span class="c1">#</span>
 
-<div class="viewcode-block" id="Control_Panel.update_db"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Control_Panel.update_db">[docs]</a>    <span class="k">def</span> <span class="nf">update_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Control_Panel.update_db"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Control_Panel.update_db">[docs]</a>    <span class="k">def</span> <span class="nf">update_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gathers any changes in :class:`Subject_List` s and dumps :py:attr:`.pilots` to :py:attr:`.prefs.PILOT_DB`</span>
 
@@ -517,7 +554,7 @@
 <span class="c1"># Control Panel Widgets</span>
 <span class="c1">###################################</span>
 
-<div class="viewcode-block" id="Subject_List"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Subject_List">[docs]</a><span class="k">class</span> <span class="nc">Subject_List</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QListWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject_List"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Subject_List">[docs]</a><span class="k">class</span> <span class="nc">Subject_List</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QListWidget</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A trivial modification of :class:`~.QtGui.QListWidget` that updates</span>
 <span class="sd">    :py:attr:`~.Terminal.pilots` when an item in the list is dragged to another location.</span>
@@ -550,14 +587,14 @@
         <span class="c1"># drop_fn gets called on a dropEvent (after calling the superclass method)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">drop_fn</span> <span class="o">=</span> <span class="n">drop_fn</span>
 
-<div class="viewcode-block" id="Subject_List.populate_list"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Subject_List.populate_list">[docs]</a>    <span class="k">def</span> <span class="nf">populate_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject_List.populate_list"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Subject_List.populate_list">[docs]</a>    <span class="k">def</span> <span class="nf">populate_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds each item in :py:attr:`Subject_List.subjects` to the list.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">m</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Subject_List.dropEvent"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Subject_List.dropEvent">[docs]</a>    <span class="k">def</span> <span class="nf">dropEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject_List.dropEvent"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Subject_List.dropEvent">[docs]</a>    <span class="k">def</span> <span class="nf">dropEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A trivial redefinition of :py:meth:`.QtGui.QListWidget.dropEvent`</span>
 <span class="sd">        that calls the parent `dropEvent` and then calls :py:attr:`~.Subject_List.drop_fn`</span>
@@ -571,7 +608,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">drop_fn</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="Pilot_Panel"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Pilot_Panel">[docs]</a><span class="k">class</span> <span class="nc">Pilot_Panel</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Panel"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Pilot_Panel">[docs]</a><span class="k">class</span> <span class="nc">Pilot_Panel</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A little panel with</span>
 
@@ -609,7 +646,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Pilot_Panel.init_ui"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Pilot_Panel.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Panel.init_ui"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Pilot_Panel.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes UI elements - creates widgets and adds to :py:attr:`Pilot_Panel.layout` .</span>
 <span class="sd">        Called on init.</span>
@@ -635,7 +672,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">setRowStretch</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">setRowStretch</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Pilot_Panel.remove_subject"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Pilot_Panel.remove_subject">[docs]</a>    <span class="k">def</span> <span class="nf">remove_subject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Panel.remove_subject"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Pilot_Panel.remove_subject">[docs]</a>    <span class="k">def</span> <span class="nf">remove_subject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove the currently selected subject in :py:attr:`Pilot_Panel.subject_list`,</span>
 <span class="sd">        and calls the :py:meth:`Control_Panel.update_db` method.</span>
@@ -658,14 +695,14 @@
             <span class="c1"># the drop fn updates the db</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">subject_list</span><span class="o">.</span><span class="n">drop_fn</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Pilot_Panel.create_subject"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Pilot_Panel.create_subject">[docs]</a>    <span class="k">def</span> <span class="nf">create_subject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Panel.create_subject"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Pilot_Panel.create_subject">[docs]</a>    <span class="k">def</span> <span class="nf">create_subject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Just calls :py:meth:`Control_Panel.create_subject` with our `pilot` as the argument</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_fn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pilot</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="Pilot_Button"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Pilot_Button">[docs]</a><span class="k">class</span> <span class="nc">Pilot_Button</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Button"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Pilot_Button">[docs]</a><span class="k">class</span> <span class="nc">Pilot_Button</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pilot</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">subject_list</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">start_fn</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A subclass of (toggled) :class:`QtGui.QPushButton` that incorporates the style logic of a</span>
@@ -721,7 +758,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toggle_start</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Pilot_Button.toggle_start"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Pilot_Button.toggle_start">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Button.toggle_start"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Pilot_Button.toggle_start">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Minor window dressing to call the :py:meth:`~.Pilot_Button.start_fn` with the</span>
 <span class="sd">        appropriate pilot, subject, and whether the task is starting or stopping</span>
@@ -747,7 +784,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;START&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">start_fn</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pilot</span><span class="p">,</span> <span class="n">current_subject</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Pilot_Button.set_state"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Pilot_Button.set_state">[docs]</a>    <span class="nd">@gui_event</span>
+<div class="viewcode-block" id="Pilot_Button.set_state"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Pilot_Button.set_state">[docs]</a>    <span class="nd">@gui_event</span>
     <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
         <span class="c1"># if we&#39;re good, do nothing.</span>
         <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">:</span>
@@ -789,7 +826,7 @@
 
 <span class="c1"># TODO: Change these classes to use the update params windows</span>
 
-<div class="viewcode-block" id="New_Subject_Wizard"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard">[docs]</a><span class="k">class</span> <span class="nc">New_Subject_Wizard</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="p">):</span>
+<div class="viewcode-block" id="New_Subject_Wizard"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard">[docs]</a><span class="k">class</span> <span class="nc">New_Subject_Wizard</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A popup that prompts you to define variables for a new :class:`.subject.Subject` object</span>
 
@@ -832,7 +869,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;Setup New Subject&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="New_Subject_Wizard.Biography_Tab"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Biography_Tab">[docs]</a>    <span class="k">class</span> <span class="nc">Biography_Tab</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="New_Subject_Wizard.Biography_Tab"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Biography_Tab">[docs]</a>    <span class="k">class</span> <span class="nc">Biography_Tab</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A widget that allows defining basic biographical attributes about a subject</span>
 
@@ -914,7 +951,7 @@
             <span class="c1"># Dictionary to return values</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="New_Subject_Wizard.Biography_Tab.update_return_dict"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Biography_Tab.update_return_dict">[docs]</a>        <span class="k">def</span> <span class="nf">update_return_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+<div class="viewcode-block" id="New_Subject_Wizard.Biography_Tab.update_return_dict"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Biography_Tab.update_return_dict">[docs]</a>        <span class="k">def</span> <span class="nf">update_return_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Called by lambda functions by the widgets, eg.::</span>
 
@@ -927,7 +964,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span></div>
             <span class="c1"># When values changed, update return dict</span>
 
-<div class="viewcode-block" id="New_Subject_Wizard.Biography_Tab.calc_minmass"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Biography_Tab.calc_minmass">[docs]</a>        <span class="k">def</span> <span class="nf">calc_minmass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="New_Subject_Wizard.Biography_Tab.calc_minmass"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Biography_Tab.calc_minmass">[docs]</a>        <span class="k">def</span> <span class="nf">calc_minmass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Calculates the minimum mass for a subject based on its baseline mass</span>
 <span class="sd">            and the allowable percentage of that baseline</span>
@@ -937,7 +974,7 @@
             <span class="n">pct</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minmass_pct</span><span class="o">.</span><span class="n">text</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mi">100</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">minmass</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">baseline</span><span class="o">*</span><span class="n">pct</span><span class="p">))</span></div></div>
 
-<div class="viewcode-block" id="New_Subject_Wizard.Task_Tab"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Task_Tab">[docs]</a>    <span class="k">class</span> <span class="nc">Task_Tab</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="New_Subject_Wizard.Task_Tab"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Task_Tab">[docs]</a>    <span class="k">class</span> <span class="nc">Task_Tab</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A tab for selecting a task and step to assign to the subject.</span>
 
@@ -981,7 +1018,7 @@
             <span class="c1"># Dict to return values</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="New_Subject_Wizard.Task_Tab.update_step_box"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Task_Tab.update_step_box">[docs]</a>        <span class="k">def</span> <span class="nf">update_step_box</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="New_Subject_Wizard.Task_Tab.update_step_box"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Task_Tab.update_step_box">[docs]</a>        <span class="k">def</span> <span class="nf">update_step_box</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Clears any steps that might be in the step selection box,</span>
 <span class="sd">            loads the protocol file and repopulates it.</span>
@@ -1005,14 +1042,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">step_selection</span><span class="o">.</span><span class="n">insertItems</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">step_list</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">step_selection</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="New_Subject_Wizard.Task_Tab.protocol_changed"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Task_Tab.protocol_changed">[docs]</a>        <span class="k">def</span> <span class="nf">protocol_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="New_Subject_Wizard.Task_Tab.protocol_changed"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Task_Tab.protocol_changed">[docs]</a>        <span class="k">def</span> <span class="nf">protocol_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            When the protocol is changed, save the value and call :py:meth:`.update_step_box`.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_listbox</span><span class="o">.</span><span class="n">currentItem</span><span class="p">()</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_step_box</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="New_Subject_Wizard.Task_Tab.step_changed"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Task_Tab.step_changed">[docs]</a>        <span class="k">def</span> <span class="nf">step_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="New_Subject_Wizard.Task_Tab.step_changed"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Task_Tab.step_changed">[docs]</a>        <span class="k">def</span> <span class="nf">step_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            When the step is changed, save it.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
@@ -1022,7 +1059,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;step&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_ind</span><span class="p">[</span><span class="n">current_step</span><span class="p">]</span></div></div></div>
 
 
-<div class="viewcode-block" id="Protocol_Wizard"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard">[docs]</a><span class="k">class</span> <span class="nc">Protocol_Wizard</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="p">):</span>
+<div class="viewcode-block" id="Protocol_Wizard"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard">[docs]</a><span class="k">class</span> <span class="nc">Protocol_Wizard</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A dialog window to create a new protocol.</span>
 
@@ -1061,7 +1098,7 @@
 <span class="sd">    The available types include:</span>
 
 <span class="sd">    * **int** - integer</span>
-<span class="sd">    * **check** - boolean checkbox</span>
+<span class="sd">    * **bool** - boolean boolbox</span>
 <span class="sd">    * **list** - a list of `values` to choose from</span>
 <span class="sd">    * **sounds** - a :class:`.Sound_Widget` that allows sounds to be defined.</span>
 <span class="sd">    * **graduation** - a :class:`.Graduation_Widget` that allows graduation criteria to be defined</span>
@@ -1140,7 +1177,7 @@
         <span class="c1"># List to store dicts of steps and params</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">=</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="Protocol_Wizard.add_step"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.add_step">[docs]</a>    <span class="k">def</span> <span class="nf">add_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Protocol_Wizard.add_step"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.add_step">[docs]</a>    <span class="k">def</span> <span class="nf">add_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads `PARAMS` from task object, adds base parameters to :py:attr:`.steps` list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1165,7 +1202,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">step_list</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">new_item</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">step_list</span><span class="o">.</span><span class="n">setCurrentItem</span><span class="p">(</span><span class="n">new_item</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Protocol_Wizard.rename_step"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.rename_step">[docs]</a>    <span class="k">def</span> <span class="nf">rename_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Protocol_Wizard.rename_step"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.rename_step">[docs]</a>    <span class="k">def</span> <span class="nf">rename_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When the step name widget&#39;s text is changed,</span>
 <span class="sd">        fire this function to update :py:attr:`.step_list` which updates</span>
@@ -1176,7 +1213,7 @@
         <span class="n">current_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_list</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step_list</span><span class="o">.</span><span class="n">currentRow</span><span class="p">())</span>
         <span class="n">current_step</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">sender_text</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Protocol_Wizard.remove_step"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.remove_step">[docs]</a>    <span class="k">def</span> <span class="nf">remove_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Protocol_Wizard.remove_step"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.remove_step">[docs]</a>    <span class="k">def</span> <span class="nf">remove_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove step from :py:attr:`.step_list` and :py:attr:`.steps`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1184,7 +1221,7 @@
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="n">step_index</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">step_list</span><span class="o">.</span><span class="n">takeItem</span><span class="p">(</span><span class="n">step_index</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Protocol_Wizard.populate_params"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.populate_params">[docs]</a>    <span class="k">def</span> <span class="nf">populate_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Protocol_Wizard.populate_params"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.populate_params">[docs]</a>    <span class="k">def</span> <span class="nf">populate_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calls :py:meth:`.clear_params` and then creates widgets to edit parameter values.</span>
 <span class="sd">        Returns:</span>
@@ -1215,7 +1252,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="n">step_index</span><span class="p">][</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">param_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">rowtag</span><span class="p">,</span><span class="n">input_widget</span><span class="p">)</span>
 
-            <span class="k">elif</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;check&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;bool&#39;</span><span class="p">:</span>
                 <span class="n">rowtag</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;tag&#39;</span><span class="p">])</span>
                 <span class="n">input_widget</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QCheckBox</span><span class="p">()</span>
                 <span class="n">input_widget</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
@@ -1268,7 +1305,7 @@
 
         <span class="c1"># TODO: Implement dependencies between parameters</span>
 
-<div class="viewcode-block" id="Protocol_Wizard.clear_params"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.clear_params">[docs]</a>    <span class="k">def</span> <span class="nf">clear_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Protocol_Wizard.clear_params"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.clear_params">[docs]</a>    <span class="k">def</span> <span class="nf">clear_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clears widgets from parameter window</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1277,7 +1314,7 @@
             <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">widget</span><span class="p">():</span>
                 <span class="n">child</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Protocol_Wizard.reorder_steps"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.reorder_steps">[docs]</a>    <span class="k">def</span> <span class="nf">reorder_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="Protocol_Wizard.reorder_steps"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.reorder_steps">[docs]</a>    <span class="k">def</span> <span class="nf">reorder_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When steps are dragged into a different order, update the step dictionary</span>
 
@@ -1290,7 +1327,7 @@
         <span class="n">after</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">after</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">before</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Protocol_Wizard.set_param"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.set_param">[docs]</a>    <span class="k">def</span> <span class="nf">set_param</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Protocol_Wizard.set_param"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.set_param">[docs]</a>    <span class="k">def</span> <span class="nf">set_param</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Callback function connected to the signal each widget uses to signal it has changed.</span>
 
@@ -1303,7 +1340,7 @@
 
         <span class="k">if</span> <span class="n">sender_type</span> <span class="o">==</span> <span class="s1">&#39;int&#39;</span> <span class="ow">or</span> <span class="n">sender_type</span> <span class="o">==</span> <span class="s1">&#39;str&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="n">current_step</span><span class="p">][</span><span class="n">param_name</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sender</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">sender_type</span> <span class="o">==</span> <span class="s1">&#39;check&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">sender_type</span> <span class="o">==</span> <span class="s1">&#39;bool&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="n">current_step</span><span class="p">][</span><span class="n">param_name</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sender</span><span class="o">.</span><span class="n">isChecked</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">sender_type</span> <span class="o">==</span> <span class="s1">&#39;list&#39;</span><span class="p">:</span>
             <span class="n">list_text</span> <span class="o">=</span> <span class="n">sender</span><span class="o">.</span><span class="n">currentItem</span><span class="p">()</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
@@ -1312,7 +1349,7 @@
         <span class="k">elif</span> <span class="n">sender_type</span> <span class="o">==</span> <span class="s1">&#39;sounds&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="n">current_step</span><span class="p">][</span><span class="n">param_name</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sound_widget</span><span class="o">.</span><span class="n">sound_dict</span></div>
 
-<div class="viewcode-block" id="Protocol_Wizard.set_sounds"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.set_sounds">[docs]</a>    <span class="k">def</span> <span class="nf">set_sounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Protocol_Wizard.set_sounds"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.set_sounds">[docs]</a>    <span class="k">def</span> <span class="nf">set_sounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stores parameters that define sounds.</span>
 
@@ -1325,7 +1362,7 @@
         <span class="c1">#else:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="n">current_step</span><span class="p">][</span><span class="s1">&#39;stim&#39;</span><span class="p">][</span><span class="s1">&#39;sounds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sound_widget</span><span class="o">.</span><span class="n">sound_dict</span></div>
 
-<div class="viewcode-block" id="Protocol_Wizard.set_graduation"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.set_graduation">[docs]</a>    <span class="k">def</span> <span class="nf">set_graduation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Protocol_Wizard.set_graduation"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.set_graduation">[docs]</a>    <span class="k">def</span> <span class="nf">set_graduation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stores parameters that define graduation criteria in `self.steps`</span>
 
@@ -1338,7 +1375,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="n">current_step</span><span class="p">][</span><span class="s1">&#39;graduation&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="n">grad_type</span><span class="p">,</span><span class="s1">&#39;value&#39;</span><span class="p">:</span><span class="n">grad_params</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="Protocol_Wizard.check_depends"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.check_depends">[docs]</a>    <span class="k">def</span> <span class="nf">check_depends</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Protocol_Wizard.check_depends"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard.check_depends">[docs]</a>    <span class="k">def</span> <span class="nf">check_depends</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handle dependencies between parameters, eg. if &quot;correction trials&quot; are unchecked,</span>
 <span class="sd">        the box that defines the correction trial percentage should be grayed out.</span>
@@ -1350,7 +1387,7 @@
         <span class="c1"># I mean if it really matters</span>
         <span class="k">pass</span></div></div>
 
-<div class="viewcode-block" id="Graduation_Widget"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Graduation_Widget">[docs]</a><span class="k">class</span> <span class="nc">Graduation_Widget</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="Graduation_Widget"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Graduation_Widget">[docs]</a><span class="k">class</span> <span class="nc">Graduation_Widget</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A widget used in :class:`.Protocol_Wizard` to define graduation parameters.</span>
 
@@ -1398,7 +1435,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">populate_params</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Graduation_Widget.populate_params"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Graduation_Widget.populate_params">[docs]</a>    <span class="k">def</span> <span class="nf">populate_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Graduation_Widget.populate_params"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Graduation_Widget.populate_params">[docs]</a>    <span class="k">def</span> <span class="nf">populate_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Repopulate the widget with fields to edit graduation parameters, fill fields</span>
 <span class="sd">        if we are passed `params`.</span>
@@ -1429,7 +1466,7 @@
                     <span class="n">edit_box</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">param_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="n">edit_box</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Graduation_Widget.clear_params"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Graduation_Widget.clear_params">[docs]</a>    <span class="k">def</span> <span class="nf">clear_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Graduation_Widget.clear_params"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Graduation_Widget.clear_params">[docs]</a>    <span class="k">def</span> <span class="nf">clear_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clear any parameter widgets we have.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1438,7 +1475,7 @@
             <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">widget</span><span class="p">():</span>
                 <span class="n">child</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Graduation_Widget.store_param"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Graduation_Widget.store_param">[docs]</a>    <span class="k">def</span> <span class="nf">store_param</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Graduation_Widget.store_param"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Graduation_Widget.store_param">[docs]</a>    <span class="k">def</span> <span class="nf">store_param</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When a parameter is edited, save it in our param_dict, and also call our</span>
 <span class="sd">        `set_graduation` method, which should be :py:meth:`.Protocol_Wizard.set_graduation`</span>
@@ -1456,7 +1493,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">set_graduation</span><span class="p">()</span></div></div>
 
-<div class="viewcode-block" id="Drag_List"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Drag_List">[docs]</a><span class="k">class</span> <span class="nc">Drag_List</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QListWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="Drag_List"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Drag_List">[docs]</a><span class="k">class</span> <span class="nc">Drag_List</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QListWidget</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A :class:`QtGui.QListWidget` that is capable of having files dragged &amp; dropped.</span>
 
@@ -1477,7 +1514,7 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">Drag_List</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setAcceptDrops</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Drag_List.dragEnterEvent"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Drag_List.dragEnterEvent">[docs]</a>    <span class="k">def</span> <span class="nf">dragEnterEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+<div class="viewcode-block" id="Drag_List.dragEnterEvent"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Drag_List.dragEnterEvent">[docs]</a>    <span class="k">def</span> <span class="nf">dragEnterEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When files are dragged over us, if they have paths in them,</span>
 <span class="sd">        accept the event.</span>
@@ -1490,7 +1527,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">e</span><span class="o">.</span><span class="n">ignore</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Drag_List.dragMoveEvent"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Drag_List.dragMoveEvent">[docs]</a>    <span class="k">def</span> <span class="nf">dragMoveEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<div class="viewcode-block" id="Drag_List.dragMoveEvent"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Drag_List.dragMoveEvent">[docs]</a>    <span class="k">def</span> <span class="nf">dragMoveEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If the `dragEnterEvent` was accepted, while the drag is being moved within us,</span>
 <span class="sd">        `setDropAction` to :class:`.QtCore.Qt.CopyAction`</span>
@@ -1504,7 +1541,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">event</span><span class="o">.</span><span class="n">ignore</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Drag_List.dropEvent"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Drag_List.dropEvent">[docs]</a>    <span class="k">def</span> <span class="nf">dropEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<div class="viewcode-block" id="Drag_List.dropEvent"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Drag_List.dropEvent">[docs]</a>    <span class="k">def</span> <span class="nf">dropEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When the files are finally dropped, if they contain paths,</span>
 <span class="sd">        emit the list of paths through the `fileDropped` signal.</span>
@@ -1523,7 +1560,7 @@
             <span class="n">event</span><span class="o">.</span><span class="n">ignore</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="Sound_Widget"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Sound_Widget">[docs]</a><span class="k">class</span> <span class="nc">Sound_Widget</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="Sound_Widget"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Sound_Widget">[docs]</a><span class="k">class</span> <span class="nc">Sound_Widget</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A widget that allows sounds to be parameterized.</span>
 
@@ -1608,7 +1645,7 @@
 
         <span class="c1"># TODO:Add drag and drop for files</span>
 
-<div class="viewcode-block" id="Sound_Widget.pass_set_param_function"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.pass_set_param_function">[docs]</a>    <span class="k">def</span> <span class="nf">pass_set_param_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">set_param_fnxn</span><span class="p">):</span>
+<div class="viewcode-block" id="Sound_Widget.pass_set_param_function"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.pass_set_param_function">[docs]</a>    <span class="k">def</span> <span class="nf">pass_set_param_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">set_param_fnxn</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Receives :py:meth:`.Protocol_Wizard.set_sounds`</span>
 
@@ -1617,7 +1654,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_sounds</span> <span class="o">=</span> <span class="n">set_param_fnxn</span></div>
 
-<div class="viewcode-block" id="Sound_Widget.add_sound"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.add_sound">[docs]</a>    <span class="k">def</span> <span class="nf">add_sound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">side</span><span class="p">):</span>
+<div class="viewcode-block" id="Sound_Widget.add_sound"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.add_sound">[docs]</a>    <span class="k">def</span> <span class="nf">add_sound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">side</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When the &quot;+&quot; button on either side is pressed, open an :class:`.Add_Sound_Dialog`.</span>
 
@@ -1636,7 +1673,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">right_list</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">new_sound</span><span class="o">.</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_sounds</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Sound_Widget.remove_sound"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.remove_sound">[docs]</a>    <span class="k">def</span> <span class="nf">remove_sound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">side</span><span class="p">):</span>
+<div class="viewcode-block" id="Sound_Widget.remove_sound"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.remove_sound">[docs]</a>    <span class="k">def</span> <span class="nf">remove_sound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">side</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When the &quot;-&quot; button is pressed, remove the currently highlighted sound.</span>
 
@@ -1654,7 +1691,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">right_list</span><span class="o">.</span><span class="n">takeItem</span><span class="p">(</span><span class="n">current_sound</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_sounds</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Sound_Widget.populate_lists"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.populate_lists">[docs]</a>    <span class="k">def</span> <span class="nf">populate_lists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sound_dict</span><span class="p">):</span>
+<div class="viewcode-block" id="Sound_Widget.populate_lists"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.populate_lists">[docs]</a>    <span class="k">def</span> <span class="nf">populate_lists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sound_dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Populates the sound lists after re-selecting a step.</span>
 
@@ -1668,7 +1705,7 @@
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sound_dict</span><span class="p">[</span><span class="s1">&#39;R&#39;</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">right_list</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Sound_Widget.files_dropped"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.files_dropped">[docs]</a>    <span class="k">def</span> <span class="nf">files_dropped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+<div class="viewcode-block" id="Sound_Widget.files_dropped"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.files_dropped">[docs]</a>    <span class="k">def</span> <span class="nf">files_dropped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Warning:</span>
 <span class="sd">            This was programmed hastily and is pretty idiosyncratic to my use.</span>
@@ -1726,7 +1763,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">set_sounds</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Sound_Widget.Add_Sound_Dialog"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.Add_Sound_Dialog">[docs]</a>    <span class="k">class</span> <span class="nc">Add_Sound_Dialog</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="p">):</span>
+<div class="viewcode-block" id="Sound_Widget.Add_Sound_Dialog"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.Add_Sound_Dialog">[docs]</a>    <span class="k">class</span> <span class="nc">Add_Sound_Dialog</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Presents a dialog to define a new sound.</span>
 
@@ -1769,7 +1806,7 @@
             <span class="c1"># dict for storing params</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">param_dict</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="Sound_Widget.Add_Sound_Dialog.populate_params"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.Add_Sound_Dialog.populate_params">[docs]</a>        <span class="k">def</span> <span class="nf">populate_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Sound_Widget.Add_Sound_Dialog.populate_params"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.Add_Sound_Dialog.populate_params">[docs]</a>        <span class="k">def</span> <span class="nf">populate_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            When a sound type is selected, make a :class:`.QtGui.QLineEdit` for each</span>
 <span class="sd">            `PARAM` in its definition.</span>
@@ -1785,7 +1822,7 @@
                 <span class="n">edit_box</span><span class="o">.</span><span class="n">editingFinished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">store_param</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">param_layout</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="n">edit_box</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Sound_Widget.Add_Sound_Dialog.clear_params"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.Add_Sound_Dialog.clear_params">[docs]</a>        <span class="k">def</span> <span class="nf">clear_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Sound_Widget.Add_Sound_Dialog.clear_params"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.Add_Sound_Dialog.clear_params">[docs]</a>        <span class="k">def</span> <span class="nf">clear_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Clear all current widgets</span>
 <span class="sd">            &quot;&quot;&quot;</span>
@@ -1794,7 +1831,7 @@
                 <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">widget</span><span class="p">():</span>
                     <span class="n">child</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Sound_Widget.Add_Sound_Dialog.store_param"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.Add_Sound_Dialog.store_param">[docs]</a>        <span class="k">def</span> <span class="nf">store_param</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Sound_Widget.Add_Sound_Dialog.store_param"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Sound_Widget.Add_Sound_Dialog.store_param">[docs]</a>        <span class="k">def</span> <span class="nf">store_param</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            When one of our edit boxes is edited, stash the parameter in `param_dict`</span>
 <span class="sd">            &quot;&quot;&quot;</span>
@@ -1807,7 +1844,7 @@
 <span class="c1"># Tools</span>
 <span class="c1">######################################</span>
 
-<div class="viewcode-block" id="Bandwidth_Test"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test">[docs]</a><span class="k">class</span> <span class="nc">Bandwidth_Test</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="p">):</span>
+<div class="viewcode-block" id="Bandwidth_Test"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test">[docs]</a><span class="k">class</span> <span class="nc">Bandwidth_Test</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test the limits of the rate of messaging from the connected Pilots.</span>
 
@@ -1855,7 +1892,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Bandwidth_Test.init_ui"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Bandwidth_Test.init_ui"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Look we&#39;re just making the stuff in the window over here alright? relax.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1952,7 +1989,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Bandwidth_Test.start"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Bandwidth_Test.start"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the test!!!</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2031,7 +2068,7 @@
 
 
 
-<div class="viewcode-block" id="Bandwidth_Test.send_test"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.send_test">[docs]</a>    <span class="k">def</span> <span class="nf">send_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">n_msg</span><span class="p">,</span> <span class="n">confirm</span><span class="p">):</span>
+<div class="viewcode-block" id="Bandwidth_Test.send_test"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.send_test">[docs]</a>    <span class="k">def</span> <span class="nf">send_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">n_msg</span><span class="p">,</span> <span class="n">confirm</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">finished_pilots</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">messages</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -2048,7 +2085,7 @@
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_pilots</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;BANDWIDTH&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Bandwidth_Test.process_test"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.process_test">[docs]</a>    <span class="nd">@gui_event</span>
+<div class="viewcode-block" id="Bandwidth_Test.process_test"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.process_test">[docs]</a>    <span class="nd">@gui_event</span>
     <span class="k">def</span> <span class="nf">process_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">n_msg</span><span class="p">,</span> <span class="n">confirm</span><span class="p">):</span>
 
         <span class="c1"># start a timer that continues the test if messages are dropped</span>
@@ -2129,7 +2166,7 @@
 
 
 
-<div class="viewcode-block" id="Bandwidth_Test.save"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.save">[docs]</a>    <span class="nd">@gui_event</span>
+<div class="viewcode-block" id="Bandwidth_Test.save"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.save">[docs]</a>    <span class="nd">@gui_event</span>
     <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Select save file location for test results (csv) and then save them there</span>
@@ -2159,7 +2196,7 @@
 
 
 
-<div class="viewcode-block" id="Bandwidth_Test.register_msg"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.register_msg">[docs]</a>    <span class="k">def</span> <span class="nf">register_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Bandwidth_Test.register_msg"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.register_msg">[docs]</a>    <span class="k">def</span> <span class="nf">register_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Receive message from pilot, stash timestamp, number and pilot</span>
 
@@ -2203,13 +2240,13 @@
 
 
 
-<div class="viewcode-block" id="Bandwidth_Test.update_pbar"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.update_pbar">[docs]</a>    <span class="nd">@gui_event</span>
+<div class="viewcode-block" id="Bandwidth_Test.update_pbar"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.update_pbar">[docs]</a>    <span class="nd">@gui_event</span>
     <span class="k">def</span> <span class="nf">update_pbar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">this_pbar</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">val</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span></div>
 
 
 
-<div class="viewcode-block" id="Bandwidth_Test.validate_list"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.validate_list">[docs]</a>    <span class="k">def</span> <span class="nf">validate_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Bandwidth_Test.validate_list"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Bandwidth_Test.validate_list">[docs]</a>    <span class="k">def</span> <span class="nf">validate_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks that the entries in :py:attr:`Bandwidth_Test.rates` and :py:attr:`Bandwidth_Test.payloads` are well formed.</span>
 
@@ -2273,7 +2310,7 @@
 
 
 
-<div class="viewcode-block" id="Calibrate_Water"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Calibrate_Water">[docs]</a><span class="k">class</span> <span class="nc">Calibrate_Water</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="p">):</span>
+<div class="viewcode-block" id="Calibrate_Water"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Calibrate_Water">[docs]</a><span class="k">class</span> <span class="nc">Calibrate_Water</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A window to calibrate the volume of water dispensed per ms.</span>
 
@@ -2293,7 +2330,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Calibrate_Water.init_ui"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Calibrate_Water.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Calibrate_Water.init_ui"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Calibrate_Water.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
 
         <span class="c1"># Container Widget</span>
@@ -2344,7 +2381,7 @@
 
 
 
-<div class="viewcode-block" id="Pilot_Ports"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Pilot_Ports">[docs]</a><span class="k">class</span> <span class="nc">Pilot_Ports</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Ports"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Pilot_Ports">[docs]</a><span class="k">class</span> <span class="nc">Pilot_Ports</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Each pilot&#39;s ports and buttons to control repeated release.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2377,7 +2414,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Pilot_Ports.init_ui"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Pilot_Ports.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Ports.init_ui"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Pilot_Ports.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Init the layout for one pilot&#39;s ports:</span>
 
@@ -2475,7 +2512,7 @@
 
 
 
-<div class="viewcode-block" id="Pilot_Ports.update_volumes"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Pilot_Ports.update_volumes">[docs]</a>    <span class="k">def</span> <span class="nf">update_volumes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Ports.update_volumes"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Pilot_Ports.update_volumes">[docs]</a>    <span class="k">def</span> <span class="nf">update_volumes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sender</span><span class="p">()</span><span class="o">.</span><span class="n">objectName</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">port</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -2503,7 +2540,7 @@
 
         <span class="c1">#self.flowrates[port].setText(&quot;{} uL/ms&quot;.format(flowrate))</span>
 
-<div class="viewcode-block" id="Pilot_Ports.start_calibration"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Pilot_Ports.start_calibration">[docs]</a>    <span class="k">def</span> <span class="nf">start_calibration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot_Ports.start_calibration"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Pilot_Ports.start_calibration">[docs]</a>    <span class="k">def</span> <span class="nf">start_calibration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sender</span><span class="p">()</span><span class="o">.</span><span class="n">objectName</span><span class="p">()</span>
 
         <span class="c1"># stash params at the time of starting calibration</span>
@@ -2522,7 +2559,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pilot</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;CALIBRATE_PORT&quot;</span><span class="p">,</span>
                        <span class="n">value</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Pilot_Ports.l_progress"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Pilot_Ports.l_progress">[docs]</a>    <span class="nd">@gui_event</span>
+<div class="viewcode-block" id="Pilot_Ports.l_progress"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Pilot_Ports.l_progress">[docs]</a>    <span class="nd">@gui_event</span>
     <span class="k">def</span> <span class="nf">l_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Value should contain</span>
@@ -2540,7 +2577,7 @@
 
 
 
-<div class="viewcode-block" id="Reassign"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Reassign">[docs]</a><span class="k">class</span> <span class="nc">Reassign</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="p">):</span>
+<div class="viewcode-block" id="Reassign"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Reassign">[docs]</a><span class="k">class</span> <span class="nc">Reassign</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A dialog that lets subjects be batch reassigned to new protocols or steps.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2561,7 +2598,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol_dir</span> <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">PROTOCOLDIR</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Reassign.init_ui"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Reassign.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Reassign.init_ui"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Reassign.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes graphical elements.</span>
 
@@ -2614,7 +2651,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">main_layout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Reassign.populate_steps"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Reassign.populate_steps">[docs]</a>    <span class="k">def</span> <span class="nf">populate_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
+<div class="viewcode-block" id="Reassign.populate_steps"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Reassign.populate_steps">[docs]</a>    <span class="k">def</span> <span class="nf">populate_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When a protocol is selected, populate the selection box with the steps that can be chosen.</span>
 
@@ -2639,7 +2676,7 @@
 
         <span class="n">step_box</span><span class="o">.</span><span class="n">insertItems</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">step_list</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Reassign.set_protocol"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Reassign.set_protocol">[docs]</a>    <span class="k">def</span> <span class="nf">set_protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Reassign.set_protocol"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Reassign.set_protocol">[docs]</a>    <span class="k">def</span> <span class="nf">set_protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When the protocol is changed, stash that and call :py:meth:`.Reassign.populate_steps` .</span>
 <span class="sd">        Returns:</span>
@@ -2655,7 +2692,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">populate_steps</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Reassign.set_step"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Reassign.set_step">[docs]</a>    <span class="k">def</span> <span class="nf">set_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Reassign.set_step"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Reassign.set_step">[docs]</a>    <span class="k">def</span> <span class="nf">set_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When the step is changed, stash that.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2669,7 +2706,7 @@
 
 
 
-<div class="viewcode-block" id="Weights"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Weights">[docs]</a><span class="k">class</span> <span class="nc">Weights</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QTableWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="Weights"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Weights">[docs]</a><span class="k">class</span> <span class="nc">Weights</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QTableWidget</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A table for viewing and editing the most recent subject weights.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2701,7 +2738,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">changed_cells</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># if we change cells, store the row, column and value so terminal can update</span>
 
 
-<div class="viewcode-block" id="Weights.init_ui"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Weights.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Weights.init_ui"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Weights.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialized graphical elements. Literally just filling a table.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2739,7 +2776,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sortItems</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Weights.set_weight"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Weights.set_weight">[docs]</a>    <span class="k">def</span> <span class="nf">set_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+<div class="viewcode-block" id="Weights.set_weight"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Weights.set_weight">[docs]</a>    <span class="k">def</span> <span class="nf">set_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates the most recent weights in :attr:`.gui.Weights.subjects` objects.</span>
 
@@ -2769,7 +2806,7 @@
 <span class="c1">#####################################################</span>
 <span class="c1"># Custom Autopilot Qt Style</span>
 
-<div class="viewcode-block" id="Autopilot_Style"><a class="viewcode-back" href="../../../rst/autopilot.core.gui.html#autopilot.core.gui.Autopilot_Style">[docs]</a><span class="k">class</span> <span class="nc">Autopilot_Style</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPlastiqueStyle</span><span class="p">):</span>
+<div class="viewcode-block" id="Autopilot_Style"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Autopilot_Style">[docs]</a><span class="k">class</span> <span class="nc">Autopilot_Style</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPlastiqueStyle</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Autopilot_Style</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
@@ -2824,7 +2861,7 @@
 <span class="c1">#</span>
 <span class="c1">#                 The available types include:</span>
 <span class="c1">#                 - **int** - integer</span>
-<span class="c1">#                 - **check** - boolean checkbox</span>
+<span class="c1">#                 - **bool** - boolean boolbox</span>
 <span class="c1">#                 - **list** - a list of `values` to choose from</span>
 <span class="c1">#                 - **sounds** - a :class:`Sound_Widget` that allows sounds to be defined.</span>
 <span class="c1">#</span>
@@ -2895,7 +2932,7 @@
 <span class="c1">#                 if k in self.params.keys():</span>
 <span class="c1">#                     input_widget.setText(self.params[k])</span>
 <span class="c1">#                 self.param_layout.addRow(rowtag,input_widget)</span>
-<span class="c1">#             elif v[&#39;type&#39;] == &#39;check&#39;:</span>
+<span class="c1">#             elif v[&#39;type&#39;] == &#39;bool&#39;:</span>
 <span class="c1">#                 rowtag = QtGui.QLabel(v[&#39;tag&#39;])</span>
 <span class="c1">#                 input_widget = QtGui.QCheckBox()</span>
 <span class="c1">#                 input_widget.setObjectName(k)</span>
@@ -2953,7 +2990,7 @@
 <span class="c1">#</span>
 <span class="c1">#         if sender_type == &#39;int&#39; or sender_type == &#39;str&#39;:</span>
 <span class="c1">#             new_val = sender.text()</span>
-<span class="c1">#         elif sender_type == &#39;check&#39;:</span>
+<span class="c1">#         elif sender_type == &#39;bool&#39;:</span>
 <span class="c1">#             new_val = sender.isChecked()</span>
 <span class="c1">#         elif sender_type == &#39;list&#39;:</span>
 <span class="c1">#             list_text = sender.currentItem().text()</span>
@@ -3171,26 +3208,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

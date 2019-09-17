@@ -138,7 +138,32 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#task-running-styles">Task Running Styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
@@ -252,16 +277,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="task">
-<h1>task<a class="headerlink" href="#task" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-autopilot.tasks.task"></span><p><strong>Classes</strong></p>
+  <div class="section" id="module-autopilot.tasks.task">
+<span id="task"></span><h1>task<a class="headerlink" href="#module-autopilot.tasks.task" title="Permalink to this headline">¶</a></h1>
+<p><strong>Classes</strong></p>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Task</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Task</span></code></a>()</td>
 <td>Generic Task metaclass</td>
 </tr>
 </tbody>
@@ -276,17 +301,17 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PARAMS" title="autopilot.tasks.nafc.Nafc.PARAMS"><strong>PARAMS</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/collections.html#collections.OrderedDict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.OrderedDict</span></code></a>) – <p>Params to define task, like:</p>
+<li><a class="reference internal" href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PARAMS" title="autopilot.tasks.nafc.Nafc.PARAMS"><strong>PARAMS</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/collections.html#collections.OrderedDict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.OrderedDict</span></code></a>) – <p>Params to define task, like:</p>
 <p>PARAMS = odict()
 PARAMS[‘reward’]         = {‘tag’:’Reward Duration (ms)’,</p>
 <blockquote>
 <div>’type’:’int’}</div></blockquote>
 <dl class="docutils">
 <dt>PARAMS[‘req_reward’]     = {‘tag’:’Request Rewards’,</dt>
-<dd>’type’:’check’}</dd>
+<dd>’type’:’bool’}</dd>
 </dl>
 </li>
-<li><a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.HARDWARE" title="autopilot.tasks.task.Task.HARDWARE"><strong>HARDWARE</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>dict for necessary hardware, like:</p>
+<li><a class="reference internal" href="#autopilot.tasks.task.Task.HARDWARE" title="autopilot.tasks.task.Task.HARDWARE"><strong>HARDWARE</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>dict for necessary hardware, like:</p>
 <dl class="docutils">
 <dt>HARDWARE = {</dt>
 <dd><dl class="first docutils">
@@ -302,7 +327,7 @@ PARAMS[‘reward’]         = {‘tag’:’Reward Duration (ms)’,</p>
 </dl>
 <p>}</p>
 </li>
-<li><a class="reference internal" href="rst/autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PLOT" title="autopilot.tasks.nafc.Nafc.PLOT"><strong>PLOT</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>Dict of plotting parameters, like:</p>
+<li><a class="reference internal" href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PLOT" title="autopilot.tasks.nafc.Nafc.PLOT"><strong>PLOT</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>Dict of plotting parameters, like:</p>
 <dl class="docutils">
 <dt>PLOT = {</dt>
 <dd><dl class="first docutils">
@@ -331,15 +356,15 @@ DC_timestamp = tables.StringCol(26)
 bailed = tables.Int32Col()</dd>
 </dl>
 </li>
-<li><a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.STAGE_NAMES" title="autopilot.tasks.task.Task.STAGE_NAMES"><strong>STAGE_NAMES</strong></a> (<em>list</em>) – List of stage method names</li>
-<li><a class="reference internal" href="rst/autopilot.core.pilot.html#autopilot.core.pilot.autopilot.stage_block" title="autopilot.core.pilot.autopilot.stage_block"><strong>stage_block</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Signal when task stages complete.</li>
+<li><a class="reference internal" href="#autopilot.tasks.task.Task.STAGE_NAMES" title="autopilot.tasks.task.Task.STAGE_NAMES"><strong>STAGE_NAMES</strong></a> (<em>list</em>) – List of stage method names</li>
+<li><a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.stage_block" title="autopilot.core.pilot.autopilot.stage_block"><strong>stage_block</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Signal when task stages complete.</li>
 <li><strong>punish_stim</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Do a punishment stimulus</li>
 <li><strong>stages</strong> (<em>iterator</em>) – Some generator or iterator that continuously returns the next stage method of a trial</li>
 <li><strong>triggers</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Some mapping of some pin to callback methods</li>
 <li><strong>pins</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Dict to store references to hardware</li>
 <li><strong>pin_id</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Reverse dictionary, pin numbers back to pin letters.</li>
 <li><strong>punish_block</strong> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Event to mark when punishment is occuring</li>
-<li><a class="reference internal" href="rst/autopilot.core.networking.html#autopilot.core.networking.Net_Node.logger" title="autopilot.core.networking.Net_Node.logger"><strong>logger</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Logger" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a>) – gets the ‘main’ logger for now.</li>
+<li><a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.logger" title="autopilot.core.networking.Net_Node.logger"><strong>logger</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Logger" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a>) – gets the ‘main’ logger for now.</li>
 </ul>
 </td>
 </tr>
@@ -352,16 +377,16 @@ bailed = tables.Int32Col()</dd>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.HARDWARE" title="autopilot.tasks.task.Task.HARDWARE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HARDWARE</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.task.Task.HARDWARE" title="autopilot.tasks.task.Task.HARDWARE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HARDWARE</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.PARAMS" title="autopilot.tasks.task.Task.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.task.Task.PARAMS" title="autopilot.tasks.task.Task.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
 <td>Dictionary that remembers insertion order</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.PLOT" title="autopilot.tasks.task.Task.PLOT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLOT</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.task.Task.PLOT" title="autopilot.tasks.task.Task.PLOT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLOT</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.STAGE_NAMES" title="autopilot.tasks.task.Task.STAGE_NAMES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">STAGE_NAMES</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.task.Task.STAGE_NAMES" title="autopilot.tasks.task.Task.STAGE_NAMES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">STAGE_NAMES</span></code></a></td>
 <td>list() -&gt; new empty list</td>
 </tr>
 </tbody>
@@ -373,22 +398,22 @@ bailed = tables.Int32Col()</dd>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.end" title="autopilot.tasks.task.Task.end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.task.Task.end" title="autopilot.tasks.task.Task.end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end</span></code></a>()</td>
 <td>Release all hardware objects</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.flash_leds" title="autopilot.tasks.task.Task.flash_leds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flash_leds</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.task.Task.flash_leds" title="autopilot.tasks.task.Task.flash_leds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flash_leds</span></code></a>()</td>
 <td>flash lights for punish_dir</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.handle_trigger" title="autopilot.tasks.task.Task.handle_trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_trigger</span></code></a>(pin,&nbsp;level,&nbsp;tick)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.task.Task.handle_trigger" title="autopilot.tasks.task.Task.handle_trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_trigger</span></code></a>(pin,&nbsp;level,&nbsp;tick)</td>
 <td>All GPIO triggers call this function with the pin number, level (high, low), and ticks since booting pigpio.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.init_hardware" title="autopilot.tasks.task.Task.init_hardware"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_hardware</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.task.Task.init_hardware" title="autopilot.tasks.task.Task.init_hardware"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_hardware</span></code></a>()</td>
 <td>Use the HARDWARE dict that specifies what we need to run the task</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.set_leds" title="autopilot.tasks.task.Task.set_leds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_leds</span></code></a>([color_dict])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.task.Task.set_leds" title="autopilot.tasks.task.Task.set_leds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_leds</span></code></a>([color_dict])</td>
 <td>Set the color of all LEDs at once.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.set_reward" title="autopilot.tasks.task.Task.set_reward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_reward</span></code></a>([vol,&nbsp;duration,&nbsp;port])</td>
+<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.task.Task.set_reward" title="autopilot.tasks.task.Task.set_reward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_reward</span></code></a>([vol,&nbsp;duration,&nbsp;port])</td>
 <td>Set the reward value for each of the ‘PORTS’.</td>
 </tr>
 </tbody>
@@ -424,7 +449,7 @@ bailed = tables.Int32Col()</dd>
 <dd><p>Use the HARDWARE dict that specifies what we need to run the task
 alongside the PINS subdict in <code class="xref py py-mod docutils literal notranslate"><span class="pre">prefs</span></code> to tell us how
 they’re plugged in to the pi</p>
-<p>Instantiate the hardware, assign it <a class="reference internal" href="rst/autopilot.tasks.task.html#autopilot.tasks.task.Task.handle_trigger" title="autopilot.tasks.task.Task.handle_trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Task.handle_trigger()</span></code></a>
+<p>Instantiate the hardware, assign it <a class="reference internal" href="#autopilot.tasks.task.Task.handle_trigger" title="autopilot.tasks.task.Task.handle_trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Task.handle_trigger()</span></code></a>
 as a callback if it is a trigger.</p>
 </dd></dl>
 

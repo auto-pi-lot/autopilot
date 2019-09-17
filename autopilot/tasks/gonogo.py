@@ -26,7 +26,7 @@ class GoNoGo(Task):
     # Class attributes
 
     # List of needed params, returned data and data format.
-    # Params are [name]={'tag': Human Readable Tag, 'type': 'int', 'float', 'check', etc.}
+    # Params are [name]={'tag': Human Readable Tag, 'type': 'int', 'float', 'bool', etc.}
     PARAMS = odict()
     PARAMS['reward'] = {'tag': 'Reward Duration (ms)',
                         'type': 'int'}

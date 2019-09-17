@@ -824,7 +824,7 @@ class Protocol_Wizard(QtGui.QDialog):
     The available types include:
 
     * **int** - integer
-    * **check** - boolean checkbox
+    * **bool** - boolean boolbox
     * **list** - a list of `values` to choose from
     * **sounds** - a :class:`.Sound_Widget` that allows sounds to be defined.
     * **graduation** - a :class:`.Graduation_Widget` that allows graduation criteria to be defined
@@ -978,7 +978,7 @@ class Protocol_Wizard(QtGui.QDialog):
                     self.steps[step_index][k]['value'] = ''
                 self.param_layout.addRow(rowtag,input_widget)
 
-            elif v['type'] == 'check':
+            elif v['type'] == 'bool':
                 rowtag = QtGui.QLabel(v['tag'])
                 input_widget = QtGui.QCheckBox()
                 input_widget.setObjectName(k)
@@ -1066,7 +1066,7 @@ class Protocol_Wizard(QtGui.QDialog):
 
         if sender_type == 'int' or sender_type == 'str':
             self.steps[current_step][param_name]['value'] = sender.text()
-        elif sender_type == 'check':
+        elif sender_type == 'bool':
             self.steps[current_step][param_name]['value'] = sender.isChecked()
         elif sender_type == 'list':
             list_text = sender.currentItem().text()
@@ -2587,7 +2587,7 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #
 #                 The available types include:
 #                 - **int** - integer
-#                 - **check** - boolean checkbox
+#                 - **bool** - boolean boolbox
 #                 - **list** - a list of `values` to choose from
 #                 - **sounds** - a :class:`Sound_Widget` that allows sounds to be defined.
 #
@@ -2658,7 +2658,7 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #                 if k in self.params.keys():
 #                     input_widget.setText(self.params[k])
 #                 self.param_layout.addRow(rowtag,input_widget)
-#             elif v['type'] == 'check':
+#             elif v['type'] == 'bool':
 #                 rowtag = QtGui.QLabel(v['tag'])
 #                 input_widget = QtGui.QCheckBox()
 #                 input_widget.setObjectName(k)
@@ -2716,7 +2716,7 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #
 #         if sender_type == 'int' or sender_type == 'str':
 #             new_val = sender.text()
-#         elif sender_type == 'check':
+#         elif sender_type == 'bool':
 #             new_val = sender.isChecked()
 #         elif sender_type == 'list':
 #             list_text = sender.currentItem().text()
