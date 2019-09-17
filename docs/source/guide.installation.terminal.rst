@@ -27,6 +27,7 @@ and the Python packages:
 * scipy
 * tornado
 * inputs
+* pyqtgraph - must be installed after Qt + pyside
 
 **macOS:**::
     brew install hdf5 zmq
@@ -91,21 +92,28 @@ MacOS's g++ is pretty whacky, it's easier to install from the Mac Package (with 
 * `Download Qt4 for Mac <https://download.qt.io/archive/qt/4.8/4.8.5/qt-mac-opensource-4.8.5.dmg>`_
 * Mount image, run setup
 
-Compiling & Installing PySide - Linux
+Compiling & Installing PySide - Linux + macOS
 -----------------------------
 
 1. Clone the PySide repository::
 
     git clone https://github.com/PySide/pyside-setup.git
 
-2. Run the ``setup.py`` script to build the wheel and then install. Note that you need to provide the location of ``qmake`` from Qt4 manually, which can usually be found with ``which qmake``::
+2. **macOS** - Manually specify the location of the Qt includes in the ``setup.py`` file (see `this github issue <https://github.com/NixOS/nixpkgs/issues/25619#issuecomment-404113402>`_). At line ~609 replace::
+
+    cmake_cmd.append('-DALTERNATIVE_QT_INCLUDE_DIR=' + self.qtinfo.headers_dir)
+
+with::
+
+    cmake_cmd.append('-DALTERNATIVE_QT_INCLUDE_DIR=/Library/Frameworks/' )
+    cmake_cmd.append('-DCMAKE_CXX_FLAGS=-F/Library/Frameworks/')
+
+
+3. Run the ``setup.py`` script to build the wheel and then install. Note that macOS doesn't support the ``--standalone`` flag, so it must be removed.::
 
     cd pyside-setup
     python setup.py bdist_wheel --qmake=</location/of/qt4/qmake> --standalone
     sudo -H pip install dist/<name-of-pyside-wheel>.whl
 
 
-Installing PySide - Mac
------------------------
 
-Mac has PySide

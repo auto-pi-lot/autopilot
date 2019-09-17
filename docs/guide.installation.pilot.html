@@ -19,13 +19,20 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -40,21 +47,16 @@
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
 
 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -112,10 +114,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -124,6 +128,14 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.training.html">Training a Subject</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a></li>
@@ -266,7 +278,7 @@
 <p><strong>Audio Configuration</strong></p>
 <p>If the <code class="docutils literal notranslate"><span class="pre">CONFIG</span></code> is set to <code class="docutils literal notranslate"><span class="pre">VISUAL</span></code>, these options are ignored. We will make the setup menu responsive in future versions (see <a class="reference internal" href="todo.html#todo"><span class="std std-ref">To-Do</span></a>).</p>
 <ul class="simple">
-<li><strong>Audio Server:</strong> While both options use <code class="docutils literal notranslate"><span class="pre">jack</span></code> as a backend, choose between using our internal <a class="reference internal" href="rst/autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient" title="autopilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">JackClient</span></code></a> that dumps samples directly into Jack streams (strongly recommended) or <a class="reference external" href="http://ajaxsoundstudio.com/software/pyo/">pyo</a> which is a more flexible synthesis library but has issues with latency and reliability and will likely be deprecated in future versions</li>
+<li><strong>Audio Server:</strong> While both options use <code class="docutils literal notranslate"><span class="pre">jack</span></code> as a backend, choose between using our internal <code class="xref py py-class docutils literal notranslate"><span class="pre">JackClient</span></code> that dumps samples directly into Jack streams (strongly recommended) or <a class="reference external" href="http://ajaxsoundstudio.com/software/pyo/">pyo</a> which is a more flexible synthesis library but has issues with latency and reliability and will likely be deprecated in future versions</li>
 <li><strong>N Audio Channels:</strong> How many audio channels should be used for output.</li>
 <li><strong>Output Ports:</strong> The indices of output that should be used (depending on whether you have connected a speaker to the left or right audio out, for example)</li>
 <li><strong>Sampling Rate:</strong> The sampling rate that will be used by the jack server.</li>
@@ -611,7 +623,7 @@ winType = “glfw”</p>
 <p>sudo dpkg-reconfigure locales
 sudo dpkg-reconfigure keyboard-configuration</p>
 <ol class="lowerroman simple" start="30">
-<li><strong>Optional:</strong> Setup SSH access</li>
+<li><strong>Optional:</strong> Setup SSH access and install RSA key</li>
 </ol>
 </div>
 </div>
@@ -628,7 +640,7 @@ sudo dpkg-reconfigure keyboard-configuration</p>
         <a href="guide.installation.terminal.html" class="btn btn-neutral float-right" title="Terminal Setup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="guide.installation.html" class="btn btn-neutral" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="guide.installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -654,26 +666,16 @@ sudo dpkg-reconfigure keyboard-configuration</p>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

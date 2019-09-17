@@ -19,13 +19,20 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -38,21 +45,16 @@
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
 
 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -110,10 +112,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -122,6 +126,14 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../guide.training.html">Training a Subject</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../guide.task.html">Writing a Task</a></li>
@@ -245,7 +257,7 @@
 <dt><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> and its children are independent processes that should only be instantiated once</dt>
 <dd>per piece of hardware. They are used to distribute messages between <a class="reference internal" href="#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net_Node</span></code></a> s,
 forward messages up the networking tree, and responding to messages that don’t need any input from
-the <a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a> or <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a>.</dd>
+the <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code>.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
@@ -268,13 +280,13 @@ the <a class="reference internal" href="autopilot.core.pilot.html#autopilot.core
 <td>Drop in networking object to be given to any sub-object behind some external-facing <a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Pilot_Station" title="autopilot.core.networking.Pilot_Station"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Pilot_Station</span></code></a>()</td>
-<td><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a></td>
+<td><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Station</span></code></a>()</td>
 <td>Independent networking class used for messaging between computers.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Terminal_Station" title="autopilot.core.networking.Terminal_Station"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Terminal_Station</span></code></a>(pilots)</td>
-<td><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a></td>
+<td><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -312,19 +324,19 @@ be subclassed in order to provide methods used by <a class="reference internal" 
 <li><a class="reference internal" href="#autopilot.core.networking.Station.listen_port" title="autopilot.core.networking.Station.listen_port"><strong>listen_port</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Port our router listens on</li>
 <li><a class="reference internal" href="#autopilot.core.networking.Net_Node.logger" title="autopilot.core.networking.Net_Node.logger"><strong>logger</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Logger" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a>) – Used to log messages and network events.</li>
 <li><a class="reference internal" href="#autopilot.core.networking.Station.log_handler" title="autopilot.core.networking.Station.log_handler"><strong>log_handler</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.handlers.html#logging.FileHandler" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.FileHandler</span></code></a>) – Handler for logging</li>
-<li><a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot.log_formatter" title="autopilot.core.pilot.Pilot.log_formatter"><strong>log_formatter</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Formatter" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></a>) – <p>Formats log entries as:</p>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.log_formatter" title="autopilot.core.networking.Station.log_formatter"><strong>log_formatter</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Formatter" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></a>) – <p>Formats log entries as:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2"> : </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
 </li>
-<li><a class="reference internal" href="#autopilot.core.networking.Station.id" title="autopilot.core.networking.Station.id"><strong>id</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – What are we known as? What do we set our <code class="xref py py-attr docutils literal notranslate"><span class="pre">identity</span></code> as?</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Message.id" title="autopilot.core.networking.Message.id"><strong>id</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – What are we known as? What do we set our <code class="xref py py-attr docutils literal notranslate"><span class="pre">identity</span></code> as?</li>
 <li><a class="reference internal" href="#autopilot.core.networking.Station.ip" title="autopilot.core.networking.Station.ip"><strong>ip</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Device IP</li>
 <li><a class="reference internal" href="#autopilot.core.networking.Station.listens" title="autopilot.core.networking.Station.listens"><strong>listens</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Dictionary of functions to call for different types of messages. keys match the <a class="reference internal" href="#autopilot.core.networking.Message.key" title="autopilot.core.networking.Message.key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.key</span></code></a>.</li>
 <li><a class="reference internal" href="#autopilot.core.networking.Station.senders" title="autopilot.core.networking.Station.senders"><strong>senders</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Identities of other sockets (keys, ie. directly connected) and their state (values) if they keep one</li>
 <li><a class="reference internal" href="#autopilot.core.networking.Net_Node.outbox" title="autopilot.core.networking.Net_Node.outbox"><strong>outbox</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Messages that have been sent but have not been confirmed</li>
 <li><a class="reference internal" href="#autopilot.core.networking.Net_Node.timers" title="autopilot.core.networking.Net_Node.timers"><strong>timers</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – dict of <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Timer" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Timer</span></code></a> s that will check in on outbox messages</li>
 <li><strong>msg_counter</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">itertools.count</span></code>) – counter to index our sent messages</li>
-<li><a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot.file_block" title="autopilot.core.pilot.Pilot.file_block"><strong>file_block</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Event to signal when a file is being received.</li>
+<li><a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.file_block" title="autopilot.core.pilot.autopilot.file_block"><strong>file_block</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Event to signal when a file is being received.</li>
 </ul>
 </td>
 </tr>
@@ -344,7 +356,7 @@ be subclassed in order to provide methods used by <a class="reference internal" 
 <td>dict() -&gt; new empty dictionary</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Station.push_id" title="autopilot.core.networking.Station.push_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">push_id</span></code></a></td>
-<td>str(object=’‘) -&gt; string</td>
+<td>str(object=’’) -&gt; string</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#autopilot.core.networking.Station.push_outbox" title="autopilot.core.networking.Station.push_outbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">push_outbox</span></code></a></td>
 <td>dict() -&gt; new empty dictionary</td>
@@ -670,7 +682,7 @@ in a new thread.</p>
 <dt id="autopilot.core.networking.Terminal_Station">
 <em class="property">class </em><code class="descclassname">autopilot.core.networking.</code><code class="descname">Terminal_Station</code><span class="sig-paren">(</span><em>pilots</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/core/networking.html#Terminal_Station"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.networking.Terminal_Station" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.networking.Station</span></code></a></p>
-<p><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a>
+<p><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code>
 objects.</p>
 <p>Spawned without a <a class="reference internal" href="#autopilot.core.networking.Station.pusher" title="autopilot.core.networking.Station.pusher"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pusher</span></code></a>.</p>
 <p><strong>Listens</strong></p>
@@ -868,10 +880,10 @@ relative path to a file contained within <cite>prefs.SOUNDDIR</cite> . eg.
 <dt id="autopilot.core.networking.Pilot_Station">
 <em class="property">class </em><code class="descclassname">autopilot.core.networking.</code><code class="descname">Pilot_Station</code><a class="reference internal" href="../_modules/autopilot/core/networking.html#Pilot_Station"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.networking.Pilot_Station" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.networking.Station</span></code></a></p>
-<p><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a>
+<p><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code>
 objects.</p>
 <p>Spawned with a <a class="reference internal" href="#autopilot.core.networking.Station.pusher" title="autopilot.core.networking.Station.pusher"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pusher</span></code></a> connected back to the
-<a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a> .</p>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code> .</p>
 <p><strong>Listens</strong></p>
 <p><strong>Methods</strong></p>
 <table border="1" class="longtable docutils">
@@ -1081,7 +1093,7 @@ address each other directly.</p>
 <li><a class="reference internal" href="#autopilot.core.networking.Net_Node.context" title="autopilot.core.networking.Net_Node.context"><strong>context</strong></a> (<a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Context" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Context</span></code></a>) – zeromq context</li>
 <li><a class="reference internal" href="#autopilot.core.networking.Net_Node.loop" title="autopilot.core.networking.Net_Node.loop"><strong>loop</strong></a> (<a class="reference external" href="https://www.tornadoweb.org/en/stable/ioloop.html#tornado.ioloop.IOLoop" title="(in Tornado v6.0.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tornado.ioloop.IOLoop</span></code></a>) – a tornado ioloop</li>
 <li><a class="reference internal" href="#autopilot.core.networking.Net_Node.sock" title="autopilot.core.networking.Net_Node.sock"><strong>sock</strong></a> (<a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Socket" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Socket</span></code></a>) – Our DEALER socket.</li>
-<li><a class="reference internal" href="#autopilot.core.networking.Station.id" title="autopilot.core.networking.Station.id"><strong>id</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – What are we known as? What do we set our <code class="xref py py-attr docutils literal notranslate"><span class="pre">identity</span></code> as?</li>
+<li><a class="reference internal" href="#autopilot.core.networking.Message.id" title="autopilot.core.networking.Message.id"><strong>id</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – What are we known as? What do we set our <code class="xref py py-attr docutils literal notranslate"><span class="pre">identity</span></code> as?</li>
 <li><a class="reference internal" href="#autopilot.core.networking.Net_Node.upstream" title="autopilot.core.networking.Net_Node.upstream"><strong>upstream</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The identity of the ROUTER socket used by our upstream <a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object.</li>
 <li><a class="reference internal" href="#autopilot.core.networking.Net_Node.port" title="autopilot.core.networking.Net_Node.port"><strong>port</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – The port that our upstream ROUTER socket is bound to</li>
 <li><a class="reference internal" href="#autopilot.core.networking.Station.listens" title="autopilot.core.networking.Station.listens"><strong>listens</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Dictionary of functions to call for different types of messages. keys match the <a class="reference internal" href="#autopilot.core.networking.Message.key" title="autopilot.core.networking.Message.key"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.key</span></code></a>.</li>
@@ -1089,7 +1101,7 @@ address each other directly.</p>
 <li><a class="reference internal" href="#autopilot.core.networking.Net_Node.timers" title="autopilot.core.networking.Net_Node.timers"><strong>timers</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – dict of <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Timer" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Timer</span></code></a> s that will check in on outbox messages</li>
 <li><a class="reference internal" href="#autopilot.core.networking.Net_Node.logger" title="autopilot.core.networking.Net_Node.logger"><strong>logger</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Logger" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a>) – Used to log messages and network events.</li>
 <li><a class="reference internal" href="#autopilot.core.networking.Station.log_handler" title="autopilot.core.networking.Station.log_handler"><strong>log_handler</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.handlers.html#logging.FileHandler" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.FileHandler</span></code></a>) – Handler for logging</li>
-<li><a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot.log_formatter" title="autopilot.core.pilot.Pilot.log_formatter"><strong>log_formatter</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Formatter" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></a>) – <p>Formats log entries as:</p>
+<li><a class="reference internal" href="#autopilot.core.networking.Station.log_formatter" title="autopilot.core.networking.Station.log_formatter"><strong>log_formatter</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Formatter" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></a>) – <p>Formats log entries as:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2"> : </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
@@ -1378,7 +1390,7 @@ and included in the message.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first simple">
-<li><a class="reference internal" href="#autopilot.core.networking.Station.id" title="autopilot.core.networking.Station.id"><strong>id</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – ID that uniquely identifies a message.
+<li><a class="reference internal" href="#autopilot.core.networking.Message.id" title="autopilot.core.networking.Message.id"><strong>id</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – ID that uniquely identifies a message.
 format {sender.id}_{number}</li>
 <li><a class="reference internal" href="#autopilot.core.networking.Message.to" title="autopilot.core.networking.Message.to"><strong>to</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – ID of socket this message is addressed to</li>
 <li><a class="reference internal" href="#autopilot.core.networking.Message.sender" title="autopilot.core.networking.Message.sender"><strong>sender</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – ID of socket where this message originates</li>
@@ -1640,26 +1652,16 @@ each send decrements ttl.</li>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

@@ -19,13 +19,20 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -38,21 +45,16 @@
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
 
 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -110,10 +112,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#compiling-installing-qt4">Compiling &amp; Installing Qt4</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#compiling-installing-pyside">Compiling &amp; Installing PySide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
 </ul>
 </li>
 </ul>
@@ -122,6 +126,14 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../guide.training.html">Training a Subject</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.training.html#debugging-a-task">Debugging a Task</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../guide.task.html">Writing a Task</a></li>
@@ -236,9 +248,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-autopilot.tasks.task_scripts">
-<span id="autopilot-tasks-task-scripts-module"></span><h1>autopilot.tasks.task_scripts module<a class="headerlink" href="#module-autopilot.tasks.task_scripts" title="Permalink to this headline">¶</a></h1>
-<p>Sometimes a GUI just doesn’t cut it for making tasks, eg. those with many steps, many stimuli, etc.</p>
+  <div class="section" id="autopilot-tasks-task-scripts-module">
+<h1>autopilot.tasks.task_scripts module<a class="headerlink" href="#autopilot-tasks-task-scripts-module" title="Permalink to this headline">¶</a></h1>
 <p><strong>Functions</strong></p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -246,35 +257,26 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.task_scripts.manystep_speech" title="autopilot.tasks.task_scripts.manystep_speech"><code class="xref py py-obj docutils literal notranslate"><span class="pre">manystep_speech</span></code></a>(token_dir,&nbsp;out_fn)</td>
-<td>Makes a protocol with</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__format__</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__new__</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__reduce__</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__reduce_ex__</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__sizeof__</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__subclasshook__</span></code></td>
+<td></td>
 </tr>
 </tbody>
 </table>
-<dl class="function">
-<dt id="autopilot.tasks.task_scripts.manystep_speech">
-<code class="descclassname">autopilot.tasks.task_scripts.</code><code class="descname">manystep_speech</code><span class="sig-paren">(</span><em>token_dir</em>, <em>out_fn</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/autopilot/tasks/task_scripts.html#manystep_speech"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.task_scripts.manystep_speech" title="Permalink to this definition">¶</a></dt>
-<dd><p>Makes a protocol with</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="n">one</span> <span class="n">free</span> <span class="n">water</span> <span class="n">step</span> <span class="k">with</span> <span class="mi">200</span> <span class="n">trials</span>
-<span class="o">*</span> <span class="n">one</span> <span class="n">request</span> <span class="n">rewards</span> <span class="n">tone</span> <span class="n">discrimination</span> <span class="n">step</span> <span class="mi">300</span> <span class="n">trials</span>
-<span class="o">*</span> <span class="n">one</span> <span class="n">tone</span> <span class="n">discim</span> <span class="n">step</span> <span class="mi">75</span><span class="o">%</span> <span class="n">accuracy</span> <span class="n">over</span> <span class="mi">400</span> <span class="n">trials</span>
-<span class="o">*</span> <span class="n">many</span> <span class="n">steps</span> <span class="n">that</span> <span class="n">introduce</span> <span class="n">new</span> <span class="n">tokens</span> <span class="n">pairwise</span><span class="o">.</span>
-</pre></div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>token_dir</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – where the speech tokens are</li>
-<li><strong>write_dir</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – where to write the task .json file</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </div>
 
 
@@ -305,26 +307,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
