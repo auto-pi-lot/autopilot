@@ -602,12 +602,12 @@ class Subject:
         except IndexError:
             self.session = 0
 
-        try:
-            cont_table = h5f.get_node(group_name, 'continuous_data')
-            #self.cont_row   = self.cont_table.row
-            #self.cont_keys  = self.cont_table.colnames
-        except:
-            pass
+        # try:
+        #     #cont_table = h5f.get_node(group_name, 'continuous_data')
+        #     #self.cont_row   = self.cont_table.row
+        #     #self.cont_keys  = self.cont_table.colnames
+        # except:
+        #     pass
 
         if not any([cont_table, trial_table]):
             Exception("No data tables exist for step {}! Is there a Trial or Continuous data descriptor in the task class?".format(self.step))
@@ -688,24 +688,56 @@ class Subject:
         trial_keys = trial_table.colnames
         trial_row = trial_table.row
 
+        # try to get continuous data table if any
+        try:
+            continuous_table = h5f.get_node(group_name, 'continuous_data')
+            continuous_keys  = continuous_table.colnames
+            continous_row    = continuous_table.row
+        except AttributeError:
+            continuous_table = False
+
         # start getting data
         # stop when 'END' gets put in the queue
         for data in iter(queue.get, 'END'):
+
             # wrap everything in try because this thread shouldn't crash
             try:
+                # if we get continuous data, this should be simple because we always get a whole row
+                # there must be a more elegant way to check if something is a key and it is true...
+                # yet here we are
+                if 'continuous' in data.keys():
+                    if not continuous_table:
+                        # TODO log this
+                        Exception('Received continuous data, but no continuous data descriptor was specified in task.\nreceived data: {}'.format(data))
+                    else:
+                        for k, v in data:
+                            if k in continuous_keys:
+                                continuous_row[k] = v
+                        # also store session
+                        continuous_row['session'] = self.session
+                        continuous_row.append()
+
+                    # continue with data processing loop
+                    continue
+
+
+
                 # Check if this is the same
                 # if we've already recorded a trial number for this row,
                 # and the trial number we just got is not the same,
                 # we edit that row if we already have some data on it or else start a new row
                 if 'trial_num' in data.keys():
                     if (trial_row['trial_num']) and (trial_row['trial_num'] != data['trial_num']):
+
                         # find row with this trial number if it exists
-                        other_row = [r for r in trial_table.where("trial_num == {}".format(data['trial_num']))]
                         # this will return a list of rows with matching trial_num.
                         # if it's empty, we didn't receive a TRIAL_END and should create a new row
+                        other_row = [r for r in trial_table.where("trial_num == {}".format(data['trial_num']))]
+
                         if len(other_row) == 0:
-                            trial_row.append()
                             # proceed to fill the row below
+                            trial_row.append()
+
                         elif len(other_row) == 1:
                             # update the row and continue so we don't double write
                             # have to be in the middle of iteration to use update()
@@ -714,13 +746,13 @@ class Subject:
                                     row[k] = v
                                 row.update()
                             continue
+
                         else:
                             # we have more than one row with this trial_num.
                             # shouldn't happen, but we dont' want to throw any data away
                             Warning('Found multiple rows with same trial_num: {}'.format(data['trial_num']))
                             # continue just for data conservancy's sake
                             trial_row.append()
-
 
                 for k, v in data.items():
                     # some bug where some columns are not always detected,

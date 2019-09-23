@@ -149,7 +149,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#initialization">Initialization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#stage-methods">Stage Methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#request">Request</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#discrim">Discrim</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reinforcement">Reinforcement</a></li>
@@ -159,7 +159,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#task-running-styles">Task Running Styles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#additional-prefs">Additional Prefs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
 </ul>
 </li>
 </ul>
@@ -301,10 +302,10 @@ and the <a class="reference internal" href="autopilot.tasks.task.html#autopilot.
 <h3>Four Task Attributes<a class="headerlink" href="#four-task-attributes" title="Permalink to this headline">¶</a></h3>
 <p>We then add the four elements of a task description:</p>
 <ol class="arabic simple">
-<li>A <strong>``PARAMS``</strong> dictionary defines what parameters are needed to define the task</li>
-<li>A <strong>``Data``</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">tables.IsDescription</span></code>) descriptor describes what data will be returned from the task</li>
-<li>A <strong>``PLOT``</strong> dictionary that maps the data output to graphical elements in the GUI.</li>
-<li>A <strong>``HARDWARE``</strong> dictionary that describes what hardware will be needed to run the task.</li>
+<li>A <strong>PARAMS</strong> dictionary defines what parameters are needed to define the task</li>
+<li>A <strong>Data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">tables.IsDescription</span></code>) descriptor describes what data will be returned from the task</li>
+<li>A <strong>PLOT</strong> dictionary that maps the data output to graphical elements in the GUI.</li>
+<li>A <strong>HARDWARE</strong> dictionary that describes what hardware will be needed to run the task.</li>
 </ol>
 <div class="section" id="params">
 <h4>PARAMS<a class="headerlink" href="#params" title="Permalink to this headline">¶</a></h4>
@@ -314,20 +315,48 @@ and a <code class="docutils literal notranslate"><span class="pre">type</span></
 <li><code class="docutils literal notranslate"><span class="pre">int</span></code>: integers</li>
 <li><code class="docutils literal notranslate"><span class="pre">bool</span></code>: boolean (checkboxes in GUI)</li>
 <li><code class="docutils literal notranslate"><span class="pre">list</span></code>: list of possible values in {‘Name’:int} pairs</li>
-<li><code class="docutils literal notranslate"><span class="pre">sounds</span></code>: a <a class="reference internal" href="autopilot.core.gui.html#autopilot.core.gui.Sound_Widget" title="autopilot.core.gui.Sound_Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.gui.Sound_Widget</span></code></a> to define sounds.</li>
+<li><code class="docutils literal notranslate"><span class="pre">sounds</span></code>: a <code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.gui.Sound_Widget</span></code> to define sounds.</li>
 </ul>
 <p>To maintain order when opened by the GUI we use a <code class="xref py py-class docutils literal notranslate"><span class="pre">odict</span></code> rather than a normal dictionary.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">odict</span>
+
+<span class="n">PARAMS</span> <span class="o">=</span> <span class="n">odict</span><span class="p">()</span>
+<span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;reward&#39;</span><span class="p">]</span>         <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span><span class="s1">&#39;Reward Duration (ms)&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;int&#39;</span><span class="p">}</span>
+<span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;req_reward&#39;</span><span class="p">]</span>     <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span><span class="s1">&#39;Request Rewards&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;bool&#39;</span><span class="p">}</span>
+<span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;punish_stim&#39;</span><span class="p">]</span>    <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span><span class="s1">&#39;White Noise Punishment&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;bool&#39;</span><span class="p">}</span>
+<span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;punish_dur&#39;</span><span class="p">]</span>     <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span><span class="s1">&#39;Punishment Duration (ms)&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;int&#39;</span><span class="p">}</span>
+<span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;correction&#39;</span><span class="p">]</span>     <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span><span class="s1">&#39;Correction Trials&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;bool&#39;</span><span class="p">}</span>
+<span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;correction_pct&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span><span class="s1">&#39;% Correction Trials&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;int&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;depends&#39;</span><span class="p">:{</span><span class="s1">&#39;correction&#39;</span><span class="p">:</span><span class="bp">True</span><span class="p">}}</span>
+<span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;bias_mode&#39;</span><span class="p">]</span>      <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span><span class="s1">&#39;Bias Correction Mode&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;list&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;values&#39;</span><span class="p">:{</span><span class="s1">&#39;None&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+                                      <span class="s1">&#39;Proportional&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
+                                      <span class="s1">&#39;Thresholded Proportional&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">}}</span>
+<span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;bias_threshold&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span> <span class="s1">&#39;Bias Correction Threshold (%)&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;int&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;depends&#39;</span><span class="p">:{</span><span class="s1">&#39;bias_mode&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">}}</span>
+<span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;stim&#39;</span><span class="p">]</span>           <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span><span class="s1">&#39;Sounds&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;sounds&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">See the <a class="reference internal" href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc" title="autopilot.tasks.nafc.Nafc"><code class="xref py py-class docutils literal notranslate"><span class="pre">Nafc</span></code></a> class for descriptions of the task parameters.</p>
+<p class="last">See the <code class="xref py py-class docutils literal notranslate"><span class="pre">Nafc</span></code> class for descriptions of the task parameters.</p>
 </div>
 <p>These will be taken as key-value pairs when the task is initialized. ie.:</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;correction&#39;</span><span class="p">]</span>     <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span>  <span class="s1">&#39;Correction Trials&#39;</span><span class="p">,</span>
-                            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span><span class="p">}</span>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;correction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span>  <span class="s1">&#39;Correction Trials&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>will be used to initialize the task like:</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">Nafc</span><span class="p">(</span><span class="n">correction</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">Nafc</span><span class="p">(</span><span class="n">correction</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c1"># or False</span>
 </pre></div>
 </div>
 </div>
@@ -336,8 +365,12 @@ and a <code class="docutils literal notranslate"><span class="pre">type</span></
 <p>There are two types of data,</p>
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">TrialData</span></code> - where a single value for several variables is returned per ‘trial’, and</li>
-<li><code class="docutils literal notranslate"><span class="pre">ContinuousData</span></code> - where values and timestamps are taken continuously, without</li>
+<li><code class="docutils literal notranslate"><span class="pre">ContinuousData</span></code> - where values and timestamps are taken continuously, with either a fixed or variable interval</li>
 </ul>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">Support for saving continuous data is in place, but less tested than trial data storage. See <a href="#id1"><span class="problematic" id="id2">:ref:`todo`_</span></a>.</p>
+</div>
 <p>Both are defined by <a class="reference external" href="https://www.pytables.org/index.html">pytables</a> <code class="xref py py-class docutils literal notranslate"><span class="pre">tables.IsDescription</span></code> objects.
 Specify each variable that will be returned and its type using a <code class="xref py py-class docutils literal notranslate"><span class="pre">tables.Col</span></code> object:</p>
 <div class="admonition note">
@@ -359,15 +392,22 @@ Specify each variable that will be returned and its type using a <code class="xr
 </div>
 <p>The column types are names with their type and their bit depth except for the <code class="xref py py-class docutils literal notranslate"><span class="pre">StringCol</span></code>
 which takes a string length in characters.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">TrialData</span></code> object is used by the <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> class when a task is assigned to create the data storage table.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">TrialData</span></code> object is used by the <code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code> class when a task is assigned to create the data storage table.</p>
 </div>
 <div class="section" id="plot">
 <h4>PLOT<a class="headerlink" href="#plot" title="Permalink to this headline">¶</a></h4>
-<p>The <code class="docutils literal notranslate"><span class="pre">PLOT</span></code> dictionary maps the data returned from the task to graphical elements in the <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a>’s <a class="reference internal" href="autopilot.core.plots.html#autopilot.core.plots.Plot" title="autopilot.core.plots.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a>.
-Specifically, when the task is started, the <a class="reference internal" href="autopilot.core.plots.html#autopilot.core.plots.Plot" title="autopilot.core.plots.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a> object creates the graphical element (eg. a <a class="reference internal" href="autopilot.core.plots.html#autopilot.core.plots.Point" title="autopilot.core.plots.Point"><code class="xref py py-class docutils literal notranslate"><span class="pre">Point</span></code></a>)
+<p>The <code class="docutils literal notranslate"><span class="pre">PLOT</span></code> dictionary maps the data returned from the task to graphical elements in the <code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code>’s <code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code>.
+Specifically, when the task is started, the <code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code> object creates the graphical element (eg. a <code class="xref py py-class docutils literal notranslate"><span class="pre">Point</span></code>)
 and then calls its <code class="docutils literal notranslate"><span class="pre">update</span></code> method with any data that is received through its <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code>.</p>
-<p>Data is plotted either by trial (default) or by timestamp (if <code class="docutils literal notranslate"><span class="pre">PLOT['continuous']</span> <span class="pre">!=</span> <span class="pre">True</span></code>). Numerical data is plotted as-expected, but
+<p>Data-to-graphical mappings are defined in a <code class="docutils literal notranslate"><span class="pre">data</span></code> subdictionary, and additional parameters can be passed to the plot – in the below example, for example,
+a <code class="docutils literal notranslate"><span class="pre">chance_bar</span></code> is drawn as a horizontal line across the plot. By default it is drawn at 0.5, but its height can be set with an additional parameter <code class="docutils literal notranslate"><span class="pre">chance_level</span></code>.
+Available graphical primitives are registered in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">plots.PLOT_LIST</span></code>, and additional parameters are documented in the <code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code> class.</p>
+<p>Data is plotted either by trial (default) or by timestamp (if <code class="docutils literal notranslate"><span class="pre">PLOT['continuous']</span> <span class="pre">!=</span> <span class="pre">True</span></code>). Numerical data is plotted (on the y-axis) as expected, but
 further mappings can be defined by extending the graphical element’s <code class="docutils literal notranslate"><span class="pre">update</span></code> method – eg. ‘L’(eft) maps to 0 and ‘R’(ight) maps to 1 by default.</p>
+<div class="admonition-todo admonition" id="index-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">Non-numeric mappings will be supported in the <code class="docutils literal notranslate"><span class="pre">PLOT</span></code> specification after parameters are unified into a single structure.</p>
+</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PLOT</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s1">&#39;target&#39;</span>   <span class="p">:</span> <span class="s1">&#39;point&#39;</span><span class="p">,</span>
@@ -375,17 +415,23 @@ further mappings can be defined by extending the graphical element’s <code cla
         <span class="s1">&#39;correct&#39;</span>  <span class="p">:</span> <span class="s1">&#39;rollmean&#39;</span>
     <span class="p">},</span>
     <span class="s1">&#39;chance_bar&#39;</span>  <span class="p">:</span> <span class="bp">True</span><span class="p">,</span> <span class="c1"># Draw a red bar at 50%</span>
-    <span class="s1">&#39;roll_window&#39;</span> <span class="p">:</span> <span class="mi">50</span> <span class="c1"># number of trials to roll window over</span>
+    <span class="s1">&#39;roll_window&#39;</span> <span class="p">:</span> <span class="mi">50</span>    <span class="c1"># n trials to take rolling mean over</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<div class="admonition-todo admonition" id="index-0">
+<p>The above <code class="docutils literal notranslate"><span class="pre">PLOT</span></code> dictionary produces this pretty little plot:</p>
+<div class="admonition-todo admonition" id="index-2">
 <p class="first admonition-title">Todo</p>
-<p class="last">Non-numeric mappings will be supported in the <code class="docutils literal notranslate"><span class="pre">PLOT</span></code> specification after parameters are unified into a single structure.</p>
+<p class="last">screenshot of default nafc plot</p>
 </div>
 </div>
 <div class="section" id="hardware">
 <h4>HARDWARE<a class="headerlink" href="#hardware" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">HARDWARE</span></code> dictionary maps a hardware type (eg. <code class="docutils literal notranslate"><span class="pre">POKES</span></code>) and identifier (eg. <code class="docutils literal notranslate"><span class="pre">'L'</span></code>)
+to a <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware" title="autopilot.core.hardware.Hardware"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hardware</span></code></a> object. The task uses the hardware parameterization in the
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">prefs</span></code> file (also see <a class="reference internal" href="guide.installation.pilot.html#setup-pilot"><span class="std std-ref">Pilot Setup</span></a>) to instantiate each of the hardware objects, so their naming
+system must match (ie. there must be a <code class="docutils literal notranslate"><span class="pre">prefs.PINS['POKES']['L']</span></code> entry in <code class="docutils literal notranslate"><span class="pre">prefs</span></code> for a task that has a
+<code class="docutils literal notranslate"><span class="pre">task.HARDWARE['POKES']['L']</span></code> object).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">autopilot.core</span> <span class="kn">import</span> <span class="n">hardware</span>
 
 <span class="n">HARDWARE</span> <span class="o">=</span> <span class="p">{</span>
@@ -411,31 +457,285 @@ further mappings can be defined by extending the graphical element’s <code cla
 </div>
 <div class="section" id="initialization">
 <h3>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h3>
+<p>First, the parameters that are given to the task when it is initialized are stored as attributes, either by unpacking <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Nafc</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</pre></div>
 </div>
-<div class="section" id="stage-functions">
-<h3>Stage Functions<a class="headerlink" href="#stage-functions" title="Permalink to this headline">¶</a></h3>
+<p>Or explicitly, which is recommended as it is more transparent:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Nafc</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_block</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">reward</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">req_reward</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                 <span class="n">punish_stim</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">punish_dur</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">correction</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">correction_pct</span><span class="o">=</span><span class="mf">50.</span><span class="p">,</span>
+                 <span class="n">bias_mode</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">bias_threshold</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">current_trial</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">req_reward</span>     <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">req_reward</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">punish_stim</span>    <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">punish_stim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">punish_dur</span>     <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">punish_dur</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">correction</span>     <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">correction</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">correction_pct</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">correction_pct</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias_mode</span>      <span class="o">=</span> <span class="n">bias_mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias_threshold</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">bias_threshold</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span>
+
+        <span class="c1"># etc...</span>
+</pre></div>
+</div>
+<p>Then the hardware is instantiated using a method inherited from the <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">init_hardware</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Stimulus managers need to be instantiated separately. Currently, stimulus management details like
+correction trial percentage or bias correction are given as separate parameters, but will be included in the
+<code class="docutils literal notranslate"><span class="pre">stim</span></code> parameter in the future:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># use the init_manager wrapper to choose the correct stimulus manager</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">stim_manager</span> <span class="o">=</span> <span class="n">init_manager</span><span class="p">(</span><span class="n">stim</span><span class="p">)</span>
+
+<span class="c1"># give the sounds a function to call when they end</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">stim_manager</span><span class="o">.</span><span class="n">set_triggers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stim_end</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">correction</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">stim_manager</span><span class="o">.</span><span class="n">do_correction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">correction_pct</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_mode</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">stim_manager</span><span class="o">.</span><span class="n">do_bias</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_mode</span><span class="p">,</span>
+                              <span class="n">thresh</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_threshold</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>There are a few attributes that can be set at initialization that are unique:</p>
+<ul class="simple">
+<li><strong>stage_block</strong> - if the task is structured such that the <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code> calls each stage method and returns the resulting data, this <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a> is used to wait between stages – an example will be shown below.</li>
+<li><strong>stages</strong> - an iterator or generator that yields stage methods.</li>
+</ul>
+<p>In this example we have structured the task such that its stages (described below) are called in an endless cycle:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This allows us to cycle through the task by just repeatedly calling self.stages.next()</span>
+<span class="n">stage_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">discrim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reinforcement</span><span class="p">]</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">stages</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">cycle</span><span class="p">(</span><span class="n">stage_list</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="stage-methods">
+<h3>Stage Methods<a class="headerlink" href="#stage-methods" title="Permalink to this headline">¶</a></h3>
+<p>The logic of a task is implemented in one or several <strong>stages</strong>. This example Nafc class uses three:</p>
+<ol class="arabic simple">
+<li><code class="docutils literal notranslate"><span class="pre">request</span></code> - precomputes the target and distractor ports, caches the stimulus, and sets the stimulus to play when the center port is entered</li>
+<li><code class="docutils literal notranslate"><span class="pre">discrim</span></code> - sets the reward and punishment triggers for the target and distractor ports</li>
+<li><code class="docutils literal notranslate"><span class="pre">reinforcement</span></code> - computes the trial result and readies the task for the next trial.</li>
+</ol>
+<p>This task does not call its own stage methods, as we will see in the Wheel task example,
+but allows the <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code> to control them, and advances through stages using a
+<code class="docutils literal notranslate"><span class="pre">stage_block</span></code> that allows passage whenever a GPIO trigger is activated. Data is returned from each of the stage methods and is then
+returned to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code> by the <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code>.</p>
 <div class="section" id="request">
 <h4>Request<a class="headerlink" href="#request" title="Permalink to this headline">¶</a></h4>
+<p>First, the <code class="docutils literal notranslate"><span class="pre">stage_block</span></code> is cleared so that the task will not advance until one of the triggers is called.
+The target and distractor ports are yielded by the <code class="docutils literal notranslate"><span class="pre">stim_manager</span></code> along with the stimulus object.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c1"># Set the event block</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="c1"># get next stim</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">distractor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_manager</span><span class="o">.</span><span class="n">next_stim</span><span class="p">()</span>
+    <span class="c1"># buffer it</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">stim</span><span class="o">.</span><span class="n">buffer</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Then triggers are stored under the name of the trigger (eg. <cite>‘C’</cite> for a trigger that comes from the center poke).
+All triggers need to be callable, and can be set either individually or as a series, as in this example.
+A <code class="docutils literal notranslate"><span class="pre">lambda</span></code> function is used to set a trigger with arguments – the center LED is set from green to blue when the stimulus starts playing.</p>
+<p>A single task class can support multiple operating modes depending on its parameters. If the task has been asked to give
+request rewards (see <a class="reference internal" href="guide.training.html#training"><span class="std std-ref">Training a Subject</span></a>), it adds an additional trigger to open the center solenoid.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># set the center light to green before the stimulus is played.</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">set_leds</span><span class="p">({</span><span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">]})</span>
+
+<span class="c1"># Set sound trigger and LEDs</span>
+<span class="c1"># We make two triggers to play the sound and change the light color</span>
+<span class="n">change_to_blue</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s1">&#39;LEDS&#39;</span><span class="p">][</span><span class="s1">&#39;C&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">])</span>
+
+<span class="c1"># set triggers</span>
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">req_reward</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">stim</span><span class="o">.</span><span class="n">play</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">stim_start</span><span class="p">,</span>
+                          <span class="n">change_to_blue</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s1">&#39;PORTS&#39;</span><span class="p">][</span><span class="s1">&#39;C&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">open</span><span class="p">]</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">stim</span><span class="o">.</span><span class="n">play</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">stim_start</span><span class="p">,</span>
+                          <span class="n">change_to_blue</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Finally, the data for this stage of the trial is gathered and returned to the Pilot.
+Since stimuli have variable numbers and names of parameters, both the table set up by the <code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code> and
+the data returning routine here extract stimulus parameters programmatically.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">current_trial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trial_counter</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;target&#39;</span>     <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span>
+    <span class="s1">&#39;trial_num&#39;</span>  <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_trial</span><span class="p">,</span>
+    <span class="s1">&#39;correction&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">correction_trial</span>
+<span class="p">}</span>
+<span class="c1"># get stim info and add to data dict</span>
+<span class="n">sound_info</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stim</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim</span><span class="o">.</span><span class="n">PARAMS</span><span class="p">}</span>
+<span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">sound_info</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">stim</span><span class="o">.</span><span class="n">type</span><span class="p">})</span>
+
+<span class="k">return</span> <span class="n">data</span>
+</pre></div>
+</div>
+<p>At the end of this function, the center LED is green, and if the subject pokes the center port the stimulus will play and then the next stage method will be called.</p>
+<p>The center LED also turns from green to blue when the stimulus begins to play and then turns off when it is finished. This relies on
+additional methods that will be explained below.</p>
 </div>
 <div class="section" id="discrim">
 <h4>Discrim<a class="headerlink" href="#discrim" title="Permalink to this headline">¶</a></h4>
+<p>The discrim method simply sets the next round of triggers and returns the request timestamp from the current trial.
+If either the <code class="docutils literal notranslate"><span class="pre">target</span></code> or <code class="docutils literal notranslate"><span class="pre">distractor</span></code> ports are triggered, the appropriate solenoid is opened or the <code class="docutils literal notranslate"><span class="pre">punish</span></code> method is called.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">trial_num</span></code> is returned each stage for an additional layer of redundancy in data alignment.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">discrim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c1"># clear stage block to wait for triggers</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="c1"># set triggers</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">]</span>     <span class="o">=</span> <span class="p">[</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">),</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s1">&#39;PORTS&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">open</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">distractor</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">distractor</span><span class="p">),</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">punish</span><span class="p">]</span>
+
+    <span class="c1"># Only data is the timestamp</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;RQ_timestamp&#39;</span> <span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+            <span class="s1">&#39;trial_num&#39;</span>    <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_trial</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">data</span>
+</pre></div>
+</div>
+<div class="admonition-todo admonition" id="index-3">
+<p class="first admonition-title">Todo</p>
+<p class="last">pigpio can give us 5 microsecond measurement precision for triggers, currently we just use <a class="reference external" href="https://docs.python.org/2/library/datetime.html#datetime.datetime.now" title="(in Python v2.7)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">datetime.datetime.now()</span></code></a>
+for timestamps, but highly accurate timestamps can be had by stashing the <code class="docutils literal notranslate"><span class="pre">ticks</span></code> argument given by pigpio to the
+<a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task.handle_trigger" title="autopilot.tasks.task.Task.handle_trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">handle_trigger()</span></code></a> method. We will implement this if you don’t first :)</p>
+</div>
 </div>
 <div class="section" id="reinforcement">
 <h4>Reinforcement<a class="headerlink" href="#reinforcement" title="Permalink to this headline">¶</a></h4>
+<p>This method computes the results of the tasks and returns them with another timestamp.
+This stage doesn’t clear the <code class="docutils literal notranslate"><span class="pre">stage_block</span></code> because we want the next trial to be started immediately after
+this stage completes.</p>
+<p>The results of the current trial are given to the stimulus manager’s <code class="xref py py-meth docutils literal notranslate"><span class="pre">update()</span></code> method
+so that it can keep track of trial history and do things like bias correction, etc.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">TRIAL_END</span></code> flag in the data signals to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code> class that the trial is finished
+and its row of data should be written to disk. This, along with providing the <code class="docutils literal notranslate"><span class="pre">trial_num</span></code> on each stage,
+ensure that data is not misaligned between trials.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">reinforcement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">correct</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">correct</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># update stim manager</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">stim_manager</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">correct</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;DC_timestamp&#39;</span> <span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+        <span class="s1">&#39;response&#39;</span>     <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span>
+        <span class="s1">&#39;correct&#39;</span>      <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">correct</span><span class="p">,</span>
+        <span class="s1">&#39;trial_num&#39;</span>    <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_trial</span><span class="p">,</span>
+        <span class="s1">&#39;TRIAL_END&#39;</span>    <span class="p">:</span> <span class="bp">True</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">data</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="additional-methods">
 <h3>Additional Methods<a class="headerlink" href="#additional-methods" title="Permalink to this headline">¶</a></h3>
+<p>Autopilot doesn’t confine the logic of a task to its stage methods, instead users can use additional methods
+to give their task additional functionality.</p>
+<p>These can range from trivial methods that just store values, such as the <code class="docutils literal notranslate"><span class="pre">respond</span></code> and <code class="docutils literal notranslate"><span class="pre">stim_start</span></code> methods:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">respond</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">pin</span>
+
+<span class="k">def</span> <span class="nf">stim_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">discrim_playing</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</div>
+<p>To more complex methods that operate effectively like stages, like the <code class="docutils literal notranslate"><span class="pre">punish</span></code> method, which flashes the LEDs and plays
+a punishment stimulus like white noise if it has been configured to do so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">punish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># clear the punish block to the task doesn&#39;t advance while</span>
+    <span class="c1"># punishment is delivered</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">punish_block</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="c1"># if there is some punishment stimulus, play it</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">punish_stim</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stim_manager</span><span class="o">.</span><span class="n">play_punishment</span><span class="p">()</span>
+
+    <span class="c1"># flash LEDs and then clear the block once they are finished.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">flash_leds</span><span class="p">()</span>
+    <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">punish_dur</span> <span class="o">/</span> <span class="mf">1000.</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">punish_block</span><span class="o">.</span><span class="n">set</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Additionally, since we gave the stimulus manager a trigger method that is called
+when the stimulus ends, we can turn the light blue when a stimulus is playing, and
+turn it off when it finishes</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">stim_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    called by stimulus callback</span>
+
+<span class="sd">    set outside lights blue</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Called by the discrim sound&#39;s table trigger when playback is finished</span>
+    <span class="c1"># Used in punishing leaving early</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">discrim_playing</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="c1">#if not self.bailed and self.current_stage == 1:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">set_leds</span><span class="p">({</span><span class="s1">&#39;L&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;R&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">]})</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="nafc-wheel-child-agents">
 <h2>Nafc Wheel - Child Agents<a class="headerlink" href="#nafc-wheel-child-agents" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="task-running-styles">
-<h3>Task Running Styles<a class="headerlink" href="#task-running-styles" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>pilot calls stages, blocked with event</li>
-<li>task manages advancement, returns data with node</li>
-</ul>
+<p>To demonstrate a) another run style – the task controls its operation and submits data directly from a networking node,
+as opposed to the Pilot driven task style above – and b) the use of Child agents, we’ll build the
+distributed Go/No-Go task described in section 4.3 of the Autopilot whitepaper.</p>
+<div class="section" id="additional-prefs">
+<h3>Additional Prefs<a class="headerlink" href="#additional-prefs" title="Permalink to this headline">¶</a></h3>
+<p>To use a Child with this task, we will need to have a second Raspberry Pi setup with the same routine as a Pilot, except it needs the following values in its <code class="docutils literal notranslate"><span class="pre">prefs.json</span></code> file:</p>
+<p><strong>Child Prefs</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NAME&quot;</span> <span class="p">:</span> <span class="s2">&quot;wheel_child&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;LINEAGE&quot;</span> <span class="p">:</span> <span class="s2">&quot;CHILD&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;PARENTID&quot;</span> <span class="p">:</span> <span class="s2">&quot;parent_pilot&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;PARENTIP&quot;</span> <span class="p">:</span> <span class="s2">&quot;ip.of.parent.pilot&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;PARENTPORT&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;MSGPORT of parent&gt;&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>And the parent pilot needs to have</p>
+<p><strong>Parent Prefs</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>{
+    &quot;NAME&quot;: &quot;parent_pilot&quot;,
+    &quot;CHILDID&quot;: &quot;
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="go-no-go-parameterization">
+<h3>Go/No-Go Parameterization<a class="headerlink" href="#go-no-go-parameterization" title="Permalink to this headline">¶</a></h3>
+<p>The parameterization for this task is similar to that of the Nafc task above with a few extensions…</p>
+<p>We add one additional data descriptor that describes the continuous data that will be sent from the <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel" title="autopilot.core.hardware.Wheel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wheel</span></code></a> object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ContinuousData</span><span class="p">(</span><span class="n">tables</span><span class="o">.</span><span class="n">IsDescription</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Float64Col</span><span class="p">()</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Float64Col</span><span class="p">()</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Float64Col</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The hardware specification is also similar, with one additional <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Flag" title="autopilot.core.hardware.Flag"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flag</span></code></a> object which
+behaves identically to the <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak" title="autopilot.core.hardware.Beambreak"><code class="xref py py-class docutils literal notranslate"><span class="pre">Beambreak</span></code></a> object with reversed logic (triggered by 0-&gt;1 rather than 1-&gt;0).</p>
+<p>Finally, we add an additional <code class="docutils literal notranslate"><span class="pre">CHILDREN</span></code> dictionary to specify that</p>
+<blockquote>
+<div>STAGE_NAMES = [“request”, “discrim”, “reinforcement”]</div></blockquote>
 </div>
 </div>
 </div>

@@ -149,7 +149,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-methods">Stage Methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
@@ -159,7 +159,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#task-running-styles">Task Running Styles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
 </ul>
 </li>
 </ul>
@@ -434,17 +435,17 @@ server.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><a class="reference internal" href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PARAMS" title="autopilot.tasks.nafc.Nafc.PARAMS"><strong>PARAMS</strong></a> (<em>list</em>) – List of strings of parameters that need to be defined for this sound</li>
+<li><a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task.PARAMS" title="autopilot.tasks.task.Task.PARAMS"><strong>PARAMS</strong></a> (<em>list</em>) – List of strings of parameters that need to be defined for this sound</li>
 <li><a class="reference internal" href="#autopilot.stim.sound.sounds.Speech.type" title="autopilot.stim.sound.sounds.Speech.type"><strong>type</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Human readable name of sound type</li>
 <li><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Duration of sound in ms</li>
 <li><strong>amplitude</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Amplitude of sound as proportion of 1 (eg 0.5 is half amplitude)</li>
 <li><strong>table</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – A Numpy array of samples</li>
 <li><strong>chunks</strong> (<em>list</em>) – <code class="xref py py-attr docutils literal notranslate"><span class="pre">table</span></code> split up into chunks of <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.BLOCKSIZE" title="autopilot.stim.sound.jackclient.BLOCKSIZE"><code class="xref py py-data docutils literal notranslate"><span class="pre">BLOCKSIZE</span></code></a></li>
-<li><strong>trigger</strong> (<em>callable</em>) – A function that is called when the sound completes</li>
+<li><a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.trigger" title="autopilot.core.hardware.Beambreak.trigger"><strong>trigger</strong></a> (<em>callable</em>) – A function that is called when the sound completes</li>
 <li><strong>nsamples</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of samples in the sound</li>
 <li><strong>fs</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – sampling rate of client from <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.FS" title="autopilot.stim.sound.jackclient.FS"><code class="xref py py-data docutils literal notranslate"><span class="pre">jackclient.FS</span></code></a></li>
 <li><strong>blocksize</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – blocksize of clietn from <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.BLOCKSIZE" title="autopilot.stim.sound.jackclient.BLOCKSIZE"><code class="xref py py-data docutils literal notranslate"><span class="pre">jackclient.BLOCKSIZE</span></code></a></li>
-<li><a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.server" title="autopilot.core.pilot.autopilot.server"><strong>server</strong></a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Jack_Client</span></code>) – Current Jack Client</li>
+<li><strong>server</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Jack_Client</span></code>) – Current Jack Client</li>
 <li><strong>q</strong> (<a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Queue</span></code></a>) – Audio Buffer queue from <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.QUEUE" title="autopilot.stim.sound.jackclient.QUEUE"><code class="xref py py-data docutils literal notranslate"><span class="pre">jackclient.QUEUE</span></code></a></li>
 <li><strong>q_lock</strong> (<a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Lock" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Lock</span></code></a>) – Audio Buffer lock from <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.Q_LOCK" title="autopilot.stim.sound.jackclient.Q_LOCK"><code class="xref py py-data docutils literal notranslate"><span class="pre">jackclient.Q_LOCK</span></code></a></li>
 <li><strong>play_evt</strong> (<a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Event</span></code></a>) – play event from <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.PLAY" title="autopilot.stim.sound.jackclient.PLAY"><code class="xref py py-data docutils literal notranslate"><span class="pre">jackclient.PLAY</span></code></a></li>

@@ -149,7 +149,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-methods">Stage Methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
@@ -159,7 +159,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#task-running-styles">Task Running Styles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
 </ul>
 </li>
 </ul>
@@ -286,7 +287,7 @@
 <dt><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> and its children are independent processes that should only be instantiated once</dt>
 <dd>per piece of hardware. They are used to distribute messages between <a class="reference internal" href="#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net_Node</span></code></a> s,
 forward messages up the networking tree, and responding to messages that don’t need any input from
-the <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code> or <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a>.</dd>
+the <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code>.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
@@ -315,7 +316,7 @@ the <code class="xref py py-class docutils literal notranslate"><span class="pre
 <td>Independent networking class used for messaging between computers.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.networking.Terminal_Station" title="autopilot.core.networking.Terminal_Station"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Terminal_Station</span></code></a>(pilots)</td>
-<td><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a></td>
+<td><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -365,7 +366,7 @@ be subclassed in order to provide methods used by <a class="reference internal" 
 <li><a class="reference internal" href="#autopilot.core.networking.Net_Node.outbox" title="autopilot.core.networking.Net_Node.outbox"><strong>outbox</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Messages that have been sent but have not been confirmed</li>
 <li><a class="reference internal" href="#autopilot.core.networking.Net_Node.timers" title="autopilot.core.networking.Net_Node.timers"><strong>timers</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – dict of <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Timer" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Timer</span></code></a> s that will check in on outbox messages</li>
 <li><strong>msg_counter</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">itertools.count</span></code>) – counter to index our sent messages</li>
-<li><a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.file_block" title="autopilot.core.pilot.autopilot.file_block"><strong>file_block</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Event to signal when a file is being received.</li>
+<li><strong>file_block</strong> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Event to signal when a file is being received.</li>
 </ul>
 </td>
 </tr>
@@ -711,7 +712,7 @@ in a new thread.</p>
 <dt id="autopilot.core.networking.Terminal_Station">
 <em class="property">class </em><code class="descclassname">autopilot.core.networking.</code><code class="descname">Terminal_Station</code><span class="sig-paren">(</span><em>pilots</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/networking.html#Terminal_Station"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.networking.Terminal_Station" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.networking.Station</span></code></a></p>
-<p><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a>
+<p><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code>
 objects.</p>
 <p>Spawned without a <a class="reference internal" href="#autopilot.core.networking.Station.pusher" title="autopilot.core.networking.Station.pusher"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pusher</span></code></a>.</p>
 <p><strong>Listens</strong></p>
@@ -912,7 +913,7 @@ relative path to a file contained within <cite>prefs.SOUNDDIR</cite> . eg.
 <p><a class="reference internal" href="#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object used by <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code>
 objects.</p>
 <p>Spawned with a <a class="reference internal" href="#autopilot.core.networking.Station.pusher" title="autopilot.core.networking.Station.pusher"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pusher</span></code></a> connected back to the
-<a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a> .</p>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code> .</p>
 <p><strong>Listens</strong></p>
 <p><strong>Methods</strong></p>
 <table border="1" class="longtable docutils">

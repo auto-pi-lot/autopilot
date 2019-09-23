@@ -147,7 +147,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#initialization">Initialization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#stage-methods">Stage Methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#request">Request</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#discrim">Discrim</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#reinforcement">Reinforcement</a></li>
@@ -157,7 +157,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#task-running-styles">Task Running Styles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-prefs">Additional Prefs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
 </ul>
 </li>
 </ul>
@@ -1348,6 +1349,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">:</span>
             <span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_id</span>
             <span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span>
+            <span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;continuous&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;DATA&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Pilot_Station.l_child"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_child">[docs]</a>    <span class="k">def</span> <span class="nf">l_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>

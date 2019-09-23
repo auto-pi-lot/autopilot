@@ -149,7 +149,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-methods">Stage Methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
@@ -159,7 +159,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#task-running-styles">Task Running Styles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
 </ul>
 </li>
 </ul>
@@ -301,7 +302,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><a class="reference internal" href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PARAMS" title="autopilot.tasks.nafc.Nafc.PARAMS"><strong>PARAMS</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/collections.html#collections.OrderedDict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.OrderedDict</span></code></a>) – <p>Params to define task, like:</p>
+<li><a class="reference internal" href="#autopilot.tasks.task.Task.PARAMS" title="autopilot.tasks.task.Task.PARAMS"><strong>PARAMS</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/collections.html#collections.OrderedDict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.OrderedDict</span></code></a>) – <p>Params to define task, like:</p>
 <p>PARAMS = odict()
 PARAMS[‘reward’]         = {‘tag’:’Reward Duration (ms)’,</p>
 <blockquote>
@@ -327,7 +328,7 @@ PARAMS[‘reward’]         = {‘tag’:’Reward Duration (ms)’,</p>
 </dl>
 <p>}</p>
 </li>
-<li><a class="reference internal" href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PLOT" title="autopilot.tasks.nafc.Nafc.PLOT"><strong>PLOT</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>Dict of plotting parameters, like:</p>
+<li><a class="reference internal" href="#autopilot.tasks.task.Task.PLOT" title="autopilot.tasks.task.Task.PLOT"><strong>PLOT</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>Dict of plotting parameters, like:</p>
 <dl class="docutils">
 <dt>PLOT = {</dt>
 <dd><dl class="first docutils">
@@ -357,7 +358,7 @@ bailed = tables.Int32Col()</dd>
 </dl>
 </li>
 <li><a class="reference internal" href="#autopilot.tasks.task.Task.STAGE_NAMES" title="autopilot.tasks.task.Task.STAGE_NAMES"><strong>STAGE_NAMES</strong></a> (<em>list</em>) – List of stage method names</li>
-<li><a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.stage_block" title="autopilot.core.pilot.autopilot.stage_block"><strong>stage_block</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Signal when task stages complete.</li>
+<li><strong>stage_block</strong> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Signal when task stages complete.</li>
 <li><strong>punish_stim</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Do a punishment stimulus</li>
 <li><strong>stages</strong> (<em>iterator</em>) – Some generator or iterator that continuously returns the next stage method of a trial</li>
 <li><strong>triggers</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Some mapping of some pin to callback methods</li>

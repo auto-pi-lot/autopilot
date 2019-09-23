@@ -147,7 +147,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#initialization">Initialization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#stage-functions">Stage Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#stage-methods">Stage Methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#request">Request</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#discrim">Discrim</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#reinforcement">Reinforcement</a></li>
@@ -157,7 +157,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#task-running-styles">Task Running Styles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-prefs">Additional Prefs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
 </ul>
 </li>
 </ul>
@@ -275,8 +276,14 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Classes to plot data in the GUI.</span>
 
+<span class="sd">.. todo::</span>
+
+<span class="sd">    Add all possible plot objects and options in list.</span>
+
 <span class="sd">Note:</span>
 <span class="sd">    Plot objects need to be added to :data:`~.plots.PLOT_LIST` in order to be reachable.</span>
+
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># Classes for plots</span>
@@ -444,6 +451,16 @@
 <span class="sd">    +-------------+------------------------+-------------------------+</span>
 <span class="sd">    | **&#39;PARAM&#39;** | :meth:`~.Plot.l_param` | change some parameter   |</span>
 <span class="sd">    +-------------+------------------------+-------------------------+</span>
+
+<span class="sd">    **Plot Parameters**</span>
+
+<span class="sd">    The plot is built from the ``PLOT={data:plot_element}`` mappings described in the :class:`~autopilot.tasks.task.Task` class.</span>
+<span class="sd">    Additional parameters can be specified in the ``PLOT`` dictionary. Currently:</span>
+
+<span class="sd">    * **continuous** (bool): whether the data should be plotted against the trial number (False or NA) or against time (True)</span>
+<span class="sd">    * **chance_bar** (bool): Whether to draw a red horizontal line at chance level (default: 0.5)</span>
+<span class="sd">    * **chance_level** (float): The position in the y-axis at which the ``chance_bar`` should be drawn</span>
+<span class="sd">    * **roll_window** (int): The number of trials :class:`~.Roll_Mean` take the average over.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        pilot (str): The name of our pilot, used to set the identity of our socket, specifically::</span>
@@ -616,7 +633,17 @@
         <span class="c1"># TODO: Make this more general, make cases for each non-&#39;data&#39; key</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_params</span><span class="p">[</span><span class="s1">&#39;chance_bar&#39;</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">getPlotItem</span><span class="p">()</span><span class="o">.</span><span class="n">addLine</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">pen</span><span class="o">=</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_params</span><span class="p">[</span><span class="s1">&#39;chance_level&#39;</span><span class="p">]:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">chance_level</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_params</span><span class="p">[</span><span class="s1">&#39;chance_level&#39;</span><span class="p">])</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="n">chance_level</span> <span class="o">=</span> <span class="mf">0.5</span>
+                        <span class="c1"># TODO: Log this.</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">getPlotItem</span><span class="p">()</span><span class="o">.</span><span class="n">addLine</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">chance_level</span><span class="p">,</span> <span class="n">pen</span><span class="o">=</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">getPlotItem</span><span class="p">()</span><span class="o">.</span><span class="n">addLine</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">pen</span><span class="o">=</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="c1"># No big deal, chance bar wasn&#39;t set</span>
             <span class="k">pass</span>
