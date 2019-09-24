@@ -1,6 +1,0 @@
-gui_event
-=========
-
-.. currentmodule:: autopilot.core.gui
-
-.. autofunction:: gui_event

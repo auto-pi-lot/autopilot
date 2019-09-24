@@ -38,10 +38,10 @@ and the Python packages:
 Scripted Terminal Setup
 =======================
 
-1. The :any:`~autopilot.setup.presetup_terminal.sh` script automates the manual presetup below. It..
+1. The :source:`presetup_terminal.sh<autopilot.setup.presetup_terminal.sh>` script automates the manual presetup below. It..
     * Downloads, compiles, and installs Qt4
     * Downloads, compiled, and installs PySide
-2. The :any:`~autopilot.setup.setup_terminal` script sets two configuration options
+2. The :source:`setup_terminal.py<autopilot.setup.setup_terminal>` script sets two configuration options
     * **BASE_DIR:** The base directory used by Autopilot to store data, configuration, etc.
     * **MSGPORT:** The port used by the Terminal to send and receive messages.
 

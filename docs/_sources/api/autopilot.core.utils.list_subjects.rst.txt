@@ -1,6 +1,0 @@
-list_subjects
-=============
-
-.. currentmodule:: autopilot.core.utils
-
-.. autofunction:: list_subjects

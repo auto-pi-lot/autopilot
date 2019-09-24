@@ -185,7 +185,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.plots.html">plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.subject.html">mouse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.subject.html">subject</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.utils.html">utils</a></li>
 </ul>
@@ -724,62 +724,62 @@
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s1">&#39;LEDS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">v</span><span class="o">.</span><span class="n">flash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">punish_dur</span><span class="p">)</span></div></div>
 
-
-<div class="viewcode-block" id="Nafc_Wheel"><a class="viewcode-back" href="../../../autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel">[docs]</a><span class="k">class</span> <span class="nc">Nafc_Wheel</span><span class="p">(</span><span class="n">Nafc</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    2afc using a wheel run on a child pi as the input device</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">HARDWARE</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;POKES&#39;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Beambreak</span><span class="p">,</span>
-        <span class="p">},</span>
-        <span class="s1">&#39;FLAGS&#39;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Flag</span><span class="p">,</span>
-            <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Flag</span>
-        <span class="p">},</span>
-        <span class="s1">&#39;LEDS&#39;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="c1"># TODO: use LEDs, RGB vs. white LED option in init</span>
-            <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">,</span>
-            <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">,</span>
-            <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">LED_RGB</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-
-    <span class="n">PLOT</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="s1">&#39;shaded&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;response&#39;</span><span class="p">:</span><span class="s1">&#39;segment&#39;</span>
-        <span class="p">},</span>
-        <span class="s1">&#39;continuous&#39;</span> <span class="p">:</span> <span class="bp">True</span>
-    <span class="p">}</span>
-
-    <span class="n">PARAMS</span> <span class="o">=</span> <span class="n">Nafc</span><span class="o">.</span><span class="n">PARAMS</span>
-
-
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_networking</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-
-        <span class="nb">super</span><span class="p">(</span><span class="n">Nafc_Wheel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-
-        <span class="c1"># TODO: Update PARAMS with wheel params</span>
-<div class="viewcode-block" id="Nafc_Wheel.init_networking"><a class="viewcode-back" href="../../../autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Wheel.init_networking">[docs]</a>    <span class="k">def</span> <span class="nf">init_networking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="n">Net_Node</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;T_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span><span class="p">),</span>
-                             <span class="n">upstream</span><span class="o">=</span><span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span>
-                             <span class="n">port</span><span class="o">=</span><span class="n">prefs</span><span class="o">.</span><span class="n">MSGPORT</span><span class="p">,</span>
-                             <span class="n">listens</span> <span class="o">=</span> <span class="p">{},</span>
-                             <span class="n">instance</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-
-        <span class="n">value</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;child&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;parent&#39;</span><span class="p">:</span><span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span> <span class="s1">&#39;subject&#39;</span><span class="p">:</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]},</span>
-            <span class="s1">&#39;task_type&#39;</span><span class="p">:</span> <span class="s1">&#39;Wheel Child&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;subject&#39;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span>
-        <span class="p">}</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;CHILD&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div></div>
-
+<span class="c1">#</span>
+<span class="c1"># class Nafc_Wheel(Nafc):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     2afc using a wheel run on a child pi as the input device</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     HARDWARE = {</span>
+<span class="c1">#         &#39;POKES&#39;: {</span>
+<span class="c1">#             &#39;C&#39;: hardware.Beambreak,</span>
+<span class="c1">#         },</span>
+<span class="c1">#         &#39;FLAGS&#39;: {</span>
+<span class="c1">#             &#39;L&#39;: hardware.Flag,</span>
+<span class="c1">#             &#39;R&#39;: hardware.Flag</span>
+<span class="c1">#         },</span>
+<span class="c1">#         &#39;LEDS&#39;: {</span>
+<span class="c1">#             # TODO: use LEDs, RGB vs. white LED option in init</span>
+<span class="c1">#             &#39;L&#39;: hardware.LED_RGB,</span>
+<span class="c1">#             &#39;C&#39;: hardware.LED_RGB,</span>
+<span class="c1">#             &#39;R&#39;: hardware.LED_RGB</span>
+<span class="c1">#         }</span>
+<span class="c1">#     }</span>
+<span class="c1">#</span>
+<span class="c1">#     PLOT = {</span>
+<span class="c1">#         &#39;data&#39;: {</span>
+<span class="c1">#             &#39;x&#39;:&#39;shaded&#39;,</span>
+<span class="c1">#             &#39;response&#39;:&#39;segment&#39;</span>
+<span class="c1">#         },</span>
+<span class="c1">#         &#39;continuous&#39; : True</span>
+<span class="c1">#     }</span>
+<span class="c1">#</span>
+<span class="c1">#     PARAMS = Nafc.PARAMS</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#     def __init__(self, **kwargs):</span>
+<span class="c1">#         self.init_networking(kwargs)</span>
+<span class="c1">#</span>
+<span class="c1">#         super(Nafc_Wheel, self).__init__(**kwargs)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#         # TODO: Update PARAMS with wheel params</span>
+<span class="c1">#     def init_networking(self, kwargs):</span>
+<span class="c1">#</span>
+<span class="c1">#         self.node = Net_Node(id=&quot;T_{}&quot;.format(prefs.NAME),</span>
+<span class="c1">#                              upstream=prefs.NAME,</span>
+<span class="c1">#                              port=prefs.MSGPORT,</span>
+<span class="c1">#                              listens = {},</span>
+<span class="c1">#                              instance=True)</span>
+<span class="c1">#</span>
+<span class="c1">#         value = {</span>
+<span class="c1">#             &#39;child&#39;: {&#39;parent&#39;:prefs.NAME, &#39;subject&#39;:kwargs[&#39;subject&#39;]},</span>
+<span class="c1">#             &#39;task_type&#39;: &#39;Wheel Child&#39;,</span>
+<span class="c1">#             &#39;subject&#39;: kwargs[&#39;subject&#39;]</span>
+<span class="c1">#         }</span>
+<span class="c1">#</span>
+<span class="c1">#         self.node.send(key=&#39;CHILD&#39;, value=value)</span>
+<span class="c1">#</span>
 
 
 
