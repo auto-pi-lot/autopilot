@@ -61,6 +61,8 @@ if prefs.AGENT in ['pilot']:
         'U': pigpio.PUD_UP,
         'D': pigpio.PUD_DOWN
     }
+
+
 # TODO: needs better handling, pigpio crashes sometimes and we should know
 #except ImportError:
 #    pass
@@ -694,7 +696,18 @@ class Wheel(Hardware):
     MOVE_DTYPE = [('vel', 'i4'), ('dir', 'U5'), ('timestamp', 'f8')]
 
     def __init__(self, mouse_idx=0, fs=10, thresh=100, thresh_type='dist', start=True,
-                 gpio_trig=False, pins=None, mode='vel_total', integrate_dur=5):
+                 digi_out = False, mode='vel_total', integrate_dur=5):
+        """
+        Args:
+            mouse_idx (int):
+            fs (int):
+            thresh (int):
+            thresh_type ('dist'):
+            start (bool):
+            digi_out (:class:`~.Digital_Out`, bool):
+            mode ('vel_total'):
+            integrate_dur (int):
+        """
 
         # try to get mouse from inputs
         # TODO: More robust - specify mouse by hardware attrs
@@ -750,22 +763,7 @@ class Wheel(Hardware):
                              )
 
         # if we are being used in a child object, we send our trigger via a GPIO pin
-        self.gpio_trig = gpio_trig
-        self.pins = pins
-        if self.gpio_trig:
-            self.pig = pigpio.pi()
-
-            # FIXME: This doesn't make a whole hell of a lot of sense to me
-            # why would we want a wheel with all the power of god to trigger whatever pins it wants
-            # probably should be a single pin, or at least flexible.
-
-            pins_temp = pins
-            self.pins = {}
-            for k, v in pins_temp.items():
-                self.pins[k] = BOARD_TO_BCM[int(v)]
-                self.pig.set_mode(self.pins[k], pigpio.OUTPUT)
-                self.pig.write(self.pins[k], 0)
-
+        self.digi_out = digi_out
 
 
 
@@ -864,8 +862,6 @@ class Wheel(Hardware):
             thresh_val = self.thresh_val[self.thresh_val['timestamp'] > time.time()-self.integrate_dur]
 
             thresh_update = self.calc_move(thresh_val)
-            #print(thresh_update)
-            #sys.stdout.flush()
 
             if (thresh_update < self.thresh) and (self.measure_time+self.integrate_dur < time.time()):
                 do_trigger = True
@@ -912,21 +908,11 @@ class Wheel(Hardware):
 
         return distance
 
-    def thresh_trig(self, which=None):
+    def thresh_trig(self):
 
-        if not which:
-            if self.gpio_trig:
-                for pin in self.pins.values():
-                    print("TRIGGERING", pin)
-                    sys.stdout.flush()
-                    #self.pig.gpio_trigger(pin, 100, 1)
-                    self.pig.write(pin, 1)
-                    time.sleep(0.5)
-                    self.pig.write(pin, 0)
 
-        else:
-            if self.gpio_trig:
-                self.pig.gpio_trigger(self.pins[which], 100, 1)
+        if self.digi_out:
+            self.digi_out.pulse()
 
         self.measure_evt.clear()
 
@@ -964,7 +950,6 @@ class Wheel(Hardware):
 
         self.measure_evt.set()
 
-        print('MEASURING!!!!!')
         sys.stdout.flush()
 
     def l_clear(self, value):
@@ -1068,6 +1053,59 @@ class Pull(Hardware):
         Simply releases the pigpio client.
         """
         self.pig.stop()
+
+class Digital_Out(Hardware):
+    """
+    Send digital output pulses over a GPIO pin.
+
+    """
+
+    output = True
+    type="DIGITAL_OUT"
+
+    def __init__(self, pin, pulse_width=100, polarity=False):
+        """
+        Args:
+            pin (int):
+            pulse_width (int): Width of digital output pulse (us). range: 1-100
+            polarity (bool): Whether 'off' is Low (False, default) and pulses bring the voltage High, or vice versa (True)
+        """
+
+        self.pig = pigpio.pi()
+
+        # convert from board to bcm numbering
+        self.pin = BOARD_TO_BCM[int(pin)]
+
+        self.pulse_width = np.clip(pulse_width, 0, 100).astype(np.int)
+
+        # get logic direction
+        self.on = 1
+        self.off = 0
+        self.polarity = polarity
+        if not self.polarity:
+            self.on = 0
+            self.off = 1
+
+        # setup pin
+        self.pig.set_mode(self.pin, pigpio.OUTPUT)
+        self.pig.write(self.pin, self.off)
+
+    def pulse(self, duration=None):
+
+        if not duration:
+            self.pig.gpio_trigger(self.pin, self.pulse_width, self.on)
+
+        elif duration:
+            duration = np.clip(duration, 0, 100).astype(np.int)
+            self.pig.gpio_trigger(self.pin,
+                                  duration,
+                                  self.on)
+
+    def release(self):
+        self.pig.write(self.pin, 0)
+        self.pig.stop()
+
+
 
 
 

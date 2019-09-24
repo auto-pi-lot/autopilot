@@ -1074,6 +1074,7 @@ class Pilot_Station(Station):
         if self.child:
             msg.value['pilot'] = self.parent_id
             msg.value['subject'] = self.subject
+            msg.value['continuous'] = True
             self.push(to='T', key='DATA', value=msg.value, repeat=False)
 
     def l_child(self, msg):

@@ -5208,6 +5208,7 @@ html {
 }
 
 .wy-nav-content {
+    background: #fcfcfc;
     padding: 1.618em 3.236em;
     height: 100%;
     max-width: 800px;

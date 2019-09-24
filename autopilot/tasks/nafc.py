@@ -437,62 +437,62 @@ class Nafc(Task):
         for k, v in self.pins['LEDS'].items():
             v.flash(self.punish_dur)
 
-
-class Nafc_Wheel(Nafc):
-    """
-    2afc using a wheel run on a child pi as the input device
-    """
-    HARDWARE = {
-        'POKES': {
-            'C': hardware.Beambreak,
-        },
-        'FLAGS': {
-            'L': hardware.Flag,
-            'R': hardware.Flag
-        },
-        'LEDS': {
-            # TODO: use LEDs, RGB vs. white LED option in init
-            'L': hardware.LED_RGB,
-            'C': hardware.LED_RGB,
-            'R': hardware.LED_RGB
-        }
-    }
-
-    PLOT = {
-        'data': {
-            'x':'shaded',
-            'response':'segment'
-        },
-        'continuous' : True
-    }
-
-    PARAMS = Nafc.PARAMS
-
-
-
-    def __init__(self, **kwargs):
-        self.init_networking(kwargs)
-
-        super(Nafc_Wheel, self).__init__(**kwargs)
-
-
-        # TODO: Update PARAMS with wheel params
-    def init_networking(self, kwargs):
-
-        self.node = Net_Node(id="T_{}".format(prefs.NAME),
-                             upstream=prefs.NAME,
-                             port=prefs.MSGPORT,
-                             listens = {},
-                             instance=True)
-
-        value = {
-            'child': {'parent':prefs.NAME, 'subject':kwargs['subject']},
-            'task_type': 'Wheel Child',
-            'subject': kwargs['subject']
-        }
-
-        self.node.send(key='CHILD', value=value)
-
+#
+# class Nafc_Wheel(Nafc):
+#     """
+#     2afc using a wheel run on a child pi as the input device
+#     """
+#     HARDWARE = {
+#         'POKES': {
+#             'C': hardware.Beambreak,
+#         },
+#         'FLAGS': {
+#             'L': hardware.Flag,
+#             'R': hardware.Flag
+#         },
+#         'LEDS': {
+#             # TODO: use LEDs, RGB vs. white LED option in init
+#             'L': hardware.LED_RGB,
+#             'C': hardware.LED_RGB,
+#             'R': hardware.LED_RGB
+#         }
+#     }
+#
+#     PLOT = {
+#         'data': {
+#             'x':'shaded',
+#             'response':'segment'
+#         },
+#         'continuous' : True
+#     }
+#
+#     PARAMS = Nafc.PARAMS
+#
+#
+#
+#     def __init__(self, **kwargs):
+#         self.init_networking(kwargs)
+#
+#         super(Nafc_Wheel, self).__init__(**kwargs)
+#
+#
+#         # TODO: Update PARAMS with wheel params
+#     def init_networking(self, kwargs):
+#
+#         self.node = Net_Node(id="T_{}".format(prefs.NAME),
+#                              upstream=prefs.NAME,
+#                              port=prefs.MSGPORT,
+#                              listens = {},
+#                              instance=True)
+#
+#         value = {
+#             'child': {'parent':prefs.NAME, 'subject':kwargs['subject']},
+#             'task_type': 'Wheel Child',
+#             'subject': kwargs['subject']
+#         }
+#
+#         self.node.send(key='CHILD', value=value)
+#
 
 
 

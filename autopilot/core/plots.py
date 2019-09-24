@@ -1,8 +1,14 @@
 """
 Classes to plot data in the GUI.
 
+.. todo::
+
+    Add all possible plot objects and options in list.
+
 Note:
     Plot objects need to be added to :data:`~.plots.PLOT_LIST` in order to be reachable.
+
+
 """
 
 # Classes for plots
@@ -170,6 +176,16 @@ class Plot(QtGui.QWidget):
     +-------------+------------------------+-------------------------+
     | **'PARAM'** | :meth:`~.Plot.l_param` | change some parameter   |
     +-------------+------------------------+-------------------------+
+
+    **Plot Parameters**
+
+    The plot is built from the ``PLOT={data:plot_element}`` mappings described in the :class:`~autopilot.tasks.task.Task` class.
+    Additional parameters can be specified in the ``PLOT`` dictionary. Currently:
+
+    * **continuous** (bool): whether the data should be plotted against the trial number (False or NA) or against time (True)
+    * **chance_bar** (bool): Whether to draw a red horizontal line at chance level (default: 0.5)
+    * **chance_level** (float): The position in the y-axis at which the ``chance_bar`` should be drawn
+    * **roll_window** (int): The number of trials :class:`~.Roll_Mean` take the average over.
 
     Attributes:
         pilot (str): The name of our pilot, used to set the identity of our socket, specifically::
@@ -342,7 +358,17 @@ class Plot(QtGui.QWidget):
         # TODO: Make this more general, make cases for each non-'data' key
         try:
             if self.plot_params['chance_bar']:
-                self.plot.getPlotItem().addLine(y=0.5, pen=(255,0,0))
+                if self.plot_params['chance_level']:
+                    try:
+                        chance_level = float(self.plot_params['chance_level'])
+                    except ValueError:
+                        chance_level = 0.5
+                        # TODO: Log this.
+
+                    self.plot.getPlotItem().addLine(y=chance_level, pen=(255, 0, 0))
+
+                else:
+                    self.plot.getPlotItem().addLine(y=0.5, pen=(255, 0, 0))
         except KeyError:
             # No big deal, chance bar wasn't set
             pass

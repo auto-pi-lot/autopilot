@@ -1,3 +1,11 @@
+"""
+I must have gotten distracted while doing this, as reward management is not implemented yet,
+rewards are managed by the :meth:`~autopilot.tasks.task.Task.set_reward` method in the :class:`~autopilot.tasks.task.Task` class
+in a pretty embarassing division of labor.
+
+Will make a new ``managers`` top-level module for stimulus and reward managers.
+"""
+
 from autopilot import prefs
 import os
 
