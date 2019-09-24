@@ -125,6 +125,7 @@ class GoNoGo(Task):
         # wait for the subject to hold the wheel still
         # Set the event lock
         self.stage_block.clear()
+        # wait on any ongoing punishment stimulus
         self.punish_block.wait()
 
         # Reset all the variables that need to be
@@ -136,7 +137,6 @@ class GoNoGo(Task):
 
         # calculate orientation change
         # half the time, don't change, otherwise, do change
-
         if random() < 0.5:
             self.shift = 0
             self.target = False

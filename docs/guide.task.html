@@ -158,9 +158,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#additional-methods">Additional Methods</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-child-task">The Child Task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a-very-smart-wheel">A Very Smart Wheel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
 </ul>
 </li>
 </ul>
@@ -694,11 +698,16 @@ turn it off when it finishes</p>
 </div>
 </div>
 </div>
-<div class="section" id="nafc-wheel-child-agents">
-<h2>Nafc Wheel - Child Agents<a class="headerlink" href="#nafc-wheel-child-agents" title="Permalink to this headline">¶</a></h2>
-<p>To demonstrate a) another run style – the task controls its operation and submits data directly from a networking node,
-as opposed to the Pilot driven task style above – and b) the use of Child agents, we’ll build the
-distributed Go/No-Go task described in section 4.3 of the Autopilot whitepaper.</p>
+<div class="section" id="distributed-go-no-go-using-child-agents">
+<h2>Distributed Go/No-Go - Using Child Agents<a class="headerlink" href="#distributed-go-no-go-using-child-agents" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-right">
+<img alt="_images/gonogo.png" src="_images/gonogo.png" />
+</div>
+<p>To demonstrate the use of Child agents, we’ll build the distributed Go/No-Go task described in section 4.3 of the Autopilot whitepaper.</p>
+<p>In short, a subject runs on a circular running wheel whose velocity is measured by a laser computer mouse.
+When the subject ‘fixates’ by slowing below a threshold velocity, an drifting Gabor grating is presented.
+If the grating changes angles, the subject is rewarded if they lick in an IR beambreak sensor.
+If the grating doesn’t change angles, the subject is rewarded if they refrain from licking until the stimulus has ended.</p>
 <div class="section" id="additional-prefs">
 <h3>Additional Prefs<a class="headerlink" href="#additional-prefs" title="Permalink to this headline">¶</a></h3>
 <p>To use a Child with this task, we will need to have a second Raspberry Pi setup with the same routine as a Pilot, except it needs the following values in its <code class="docutils literal notranslate"><span class="pre">prefs.json</span></code> file:</p>
@@ -714,16 +723,55 @@ distributed Go/No-Go task described in section 4.3 of the Autopilot whitepaper.<
 </div>
 <p>And the parent pilot needs to have</p>
 <p><strong>Parent Prefs</strong></p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>{
-    &quot;NAME&quot;: &quot;parent_pilot&quot;,
-    &quot;CHILDID&quot;: &quot;
-}
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;parent_pilot&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;CHILDID&quot;</span><span class="p">:</span> <span class="s2">&quot;wheel_child&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;LINEAGE&quot;</span><span class="p">:</span> <span class="s2">&quot;PARENT&quot;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="go-no-go-parameterization">
 <h3>Go/No-Go Parameterization<a class="headerlink" href="#go-no-go-parameterization" title="Permalink to this headline">¶</a></h3>
 <p>The parameterization for this task is similar to that of the Nafc task above with a few extensions…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">autopilot.tasks</span> <span class="kn">import</span> <span class="n">Task</span>
+
+<span class="k">class</span> <span class="nc">GoNoGo</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
+
+
+    <span class="c1"># Task parameterization</span>
+    <span class="n">PARAMS</span> <span class="o">=</span> <span class="n">odict</span><span class="p">()</span>
+    <span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;reward&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span> <span class="s1">&#39;Reward Duration (ms)&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">}</span>
+    <span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;timeout&#39;</span><span class="p">]</span>        <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span><span class="s1">&#39;Delay Timeout (ms)&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;int&#39;</span><span class="p">}</span>
+    <span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;stim&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span>  <span class="s1">&#39;Visuals&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;visuals&#39;</span><span class="p">}</span>
+
+    <span class="c1"># Plot parameterization</span>
+    <span class="n">PLOT</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;shaded&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="s1">&#39;point&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;response&#39;</span><span class="p">:</span> <span class="s1">&#39;segment&#39;</span>
+        <span class="p">},</span>
+        <span class="c1"># our plot will use time as its x-axis rather than the trial number</span>
+        <span class="s1">&#39;continuous&#39;</span><span class="p">:</span> <span class="bp">True</span>
+    <span class="p">}</span>
+
+    <span class="c1"># TrialData descriptor</span>
+    <span class="k">class</span> <span class="nc">TrialData</span><span class="p">(</span><span class="n">tables</span><span class="o">.</span><span class="n">IsDescription</span><span class="p">):</span>
+        <span class="n">trial_num</span>    <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Int32Col</span><span class="p">()</span>
+        <span class="n">target</span>       <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">BoolCol</span><span class="p">()</span>
+        <span class="n">response</span>     <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">StringCol</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">correct</span>      <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Int32Col</span><span class="p">()</span>
+        <span class="n">RQ_timestamp</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">StringCol</span><span class="p">(</span><span class="mi">26</span><span class="p">)</span>
+        <span class="n">DC_timestamp</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">StringCol</span><span class="p">(</span><span class="mi">26</span><span class="p">)</span>
+        <span class="n">shift</span>        <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Float32Col</span><span class="p">()</span>
+        <span class="n">angle</span>        <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Float32Col</span><span class="p">()</span>
+        <span class="n">delay</span>        <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Float32Col</span><span class="p">()</span>
+</pre></div>
+</div>
 <p>We add one additional data descriptor that describes the continuous data that will be sent from the <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel" title="autopilot.core.hardware.Wheel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wheel</span></code></a> object:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ContinuousData</span><span class="p">(</span><span class="n">tables</span><span class="o">.</span><span class="n">IsDescription</span><span class="p">):</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Float64Col</span><span class="p">()</span>
@@ -733,9 +781,349 @@ distributed Go/No-Go task described in section 4.3 of the Autopilot whitepaper.<
 </div>
 <p>The hardware specification is also similar, with one additional <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Flag" title="autopilot.core.hardware.Flag"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flag</span></code></a> object which
 behaves identically to the <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak" title="autopilot.core.hardware.Beambreak"><code class="xref py py-class docutils literal notranslate"><span class="pre">Beambreak</span></code></a> object with reversed logic (triggered by 0-&gt;1 rather than 1-&gt;0).</p>
-<p>Finally, we add an additional <code class="docutils literal notranslate"><span class="pre">CHILDREN</span></code> dictionary to specify that</p>
-<blockquote>
-<div>STAGE_NAMES = [“request”, “discrim”, “reinforcement”]</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">HARDWARE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;POKES&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Beambreak</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;LEDS&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;PORTS&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Solenoid</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;FLAGS&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;F&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Flag</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Finally, we add an additional <code class="docutils literal notranslate"><span class="pre">CHILDREN</span></code> dictionary to specify the type of Child
+that we need to run the task, as well as any additional parameters needed to configure it.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">task_type</span></code> must refer to some key in the <a href="#id3"><span class="problematic" id="id4">:var:`autopilot.tasks.CHILDREN_LIST`</span></a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <code class="docutils literal notranslate"><span class="pre">Child</span></code> agent is a subconfiguration of the <code class="docutils literal notranslate"><span class="pre">Pilot</span></code> agent, they will be delineated more
+explicitly as the agent framework is solidified.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CHILDREN</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;WHEEL&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;task_type&#39;</span><span class="p">:</span> <span class="s2">&quot;Wheel Child&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id5">
+<h3>Initialization<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>When initializing this task, we need to make our own <a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net_Node</span></code></a> object
+as well as initialize our child. Assuming that the child is
+connected to the parent and appropriately configured (see the
+additional params above), then things should go smoothly.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Some of the parameters – most egregiously the Grating stimulus – are
+hardcoded in the initialization routine. <strong>This is bad practice</strong> but
+an unfortunately necessary evil because the visual stimulus infrastructure is not well developed yet.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">autopilot.stim.visual.visuals</span> <span class="kn">import</span> <span class="n">Grating</span>
+
+<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">reward</span> <span class="o">=</span> <span class="mf">50.</span><span class="p">,</span> <span class="n">timeout</span> <span class="o">=</span> <span class="mf">1000.</span><span class="p">,</span> <span class="n">stage_block</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+             <span class="n">punish_dur</span> <span class="o">=</span> <span class="mf">500.</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">GoNoGo</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="c1"># we receive a stage_block from the pilot as usual, we won&#39;t use it</span>
+    <span class="c1"># for task operation though.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span> <span class="o">=</span> <span class="n">stage_block</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">trial_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+    <span class="c1"># save parameters passed to us as arguments</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">punish_dur</span> <span class="o">=</span> <span class="n">punish_dur</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">reward</span> <span class="o">=</span> <span class="n">reward</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span>
+
+
+    <span class="c1"># init hardware and set reward as before</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">init_hardware</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">set_reward</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reward</span><span class="p">)</span>
+
+    <span class="c1"># hardcoding stimulus while visual stim still immature</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">stim</span> <span class="o">=</span> <span class="n">Grating</span><span class="p">(</span><span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">rate</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">stages</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">cycle</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">discrim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reinforce</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><strong>Initializing the :class:`~autopilot.core.networking.Net_Node`.</strong></p>
+<p>It gets the following arguments:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">id</span></code>: The name that is used to identify the task’s networking object so other networking objects can send it messages. We prefix the pilot’s <code class="docutils literal notranslate"><span class="pre">prefs.NAME</span></code> with <code class="docutils literal notranslate"><span class="pre">T_</span></code> because it is a task, though this is not required.</li>
+<li><code class="docutils literal notranslate"><span class="pre">upstream</span></code>: The name of the network node that is directly upstream from us, we will be sending our messages to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code> that is running us – and thus address it by its name</li>
+<li><code class="docutils literal notranslate"><span class="pre">port</span></code>: The port of our upstream mode, most commonly the <code class="docutils literal notranslate"><span class="pre">prefs.MSGPORT</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">listens</span></code>: A dictionary that maps messages with different <a href="#id6"><span class="problematic" id="id7">``</span></a>KEY``s to specific handling methods. Since we don’t need to receive any data for this task, this is blank,</li>
+<li><code class="docutils literal notranslate"><span class="pre">instance</span></code>: Optional, denotes whether this node shouldn’t be the only node that exists within the Agent – ie. it uses the same instance of the <code class="docutils literal notranslate"><span class="pre">tornado</span></code> IOLoop as other nodes.</li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="n">Net_Node</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;T_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span><span class="p">),</span>
+                     <span class="n">upstream</span><span class="o">=</span><span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span>
+                     <span class="n">port</span><span class="o">=</span><span class="n">prefs</span><span class="o">.</span><span class="n">MSGPORT</span><span class="p">,</span>
+                     <span class="n">listens</span><span class="o">=</span><span class="p">{},</span>
+                     <span class="n">instance</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And then to initialize our Child we construct a message to send along to it.</p>
+<p>Note that we send the message to <code class="docutils literal notranslate"><span class="pre">prefs.NAME</span></code> – we don’t want to have to know the IP address/etc.
+for our child because it connects to us – so the <a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object handles
+sending it along with its <a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_child" title="autopilot.core.networking.Pilot_Station.l_child"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Pilot_Station.l_child()</span></code></a> <code class="docutils literal notranslate"><span class="pre">listen</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># construct a message to send to the child</span>
+<span class="n">value</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;child&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;parent&#39;</span><span class="p">:</span> <span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span> <span class="s1">&#39;subject&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">},</span>
+    <span class="s1">&#39;task_type&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">CHILDREN</span><span class="p">[</span><span class="s1">&#39;WHEEL&#39;</span><span class="p">][</span><span class="s1">&#39;task_type&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;subject&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span>
+<span class="p">}</span>
+
+<span class="c1"># send to the station object with a &#39;CHILD&#39; key</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;CHILD&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-child-task">
+<h3>The Child Task<a class="headerlink" href="#the-child-task" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Wheel_Child</span></code> task is a very thin
+wrapper around a <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel" title="autopilot.core.hardware.Wheel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wheel</span></code></a> object, which does most of the work.</p>
+<p>It creates a <code class="docutils literal notranslate"><span class="pre">stages</span></code> iterator with a function that returns nothing to fit in with the general task structure.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Wheel_Child</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">STAGE_NAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;collect&#39;</span><span class="p">]</span>
+
+    <span class="n">PARAMS</span> <span class="o">=</span> <span class="n">odict</span><span class="p">()</span>
+    <span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;fs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span> <span class="s1">&#39;Velocity Reporting Rate (Hz)&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">}</span>
+    <span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;thresh&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span> <span class="s1">&#39;Distance Threshold&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">}</span>
+
+    <span class="n">HARDWARE</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;OUTPUT&quot;</span><span class="p">:</span> <span class="n">Digital_Out</span><span class="p">,</span>
+        <span class="s2">&quot;WHEEL&quot;</span><span class="p">:</span>  <span class="n">Wheel</span>
+    <span class="p">}</span>
+
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_block</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">thresh</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">fs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span> <span class="o">=</span> <span class="n">thresh</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hardware</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hardware</span><span class="p">[</span><span class="s1">&#39;OUTPUT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Digital_Out</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">PINS</span><span class="p">[</span><span class="s1">&#39;OUTPUT&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hardware</span><span class="p">[</span><span class="s1">&#39;WHEEL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Wheel</span><span class="p">(</span><span class="n">digi_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hardware</span><span class="p">[</span><span class="s1">&#39;OUTPUT&#39;</span><span class="p">],</span>
+                                       <span class="n">fs</span>       <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">,</span>
+                                       <span class="n">thresh</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span><span class="p">,</span>
+                                       <span class="n">mode</span>     <span class="o">=</span> <span class="s2">&quot;steady&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stages</span> <span class="o">=</span> <span class="n">cycle</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">noop</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span> <span class="o">=</span> <span class="n">stage_block</span>
+
+    <span class="k">def</span> <span class="nf">noop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># just fitting in with the task structure.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hardware</span><span class="p">[</span><span class="s1">&#39;WHEEL&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="a-very-smart-wheel">
+<h3>A Very Smart Wheel<a class="headerlink" href="#a-very-smart-wheel" title="Permalink to this headline">¶</a></h3>
+<p>Most of the Child’s contribution to the task is performed by the <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel" title="autopilot.core.hardware.Wheel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wheel</span></code></a> object.</p>
+<p>The Wheel accesses a USB mouse connected to the Pilot,
+continuously collects its movements, and reports them back to the
+Terminal with a specified frequency (<code class="docutils literal notranslate"><span class="pre">fs</span></code>) with an internal <a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net_Node</span></code></a></p>
+<p>An abbreviated version…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">inputs</span> <span class="kn">import</span> <span class="n">devices</span>
+
+<span class="k">class</span> <span class="nc">Wheel</span><span class="p">(</span><span class="n">Hardware</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mouse_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">thresh</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">thresh_type</span><span class="o">=</span><span class="s1">&#39;dist&#39;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                 <span class="n">digi_out</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;vel_total&#39;</span><span class="p">,</span> <span class="n">integrate_dur</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mouse</span> <span class="o">=</span> <span class="n">devices</span><span class="o">.</span><span class="n">mice</span><span class="p">[</span><span class="n">mouse_idx</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">fs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span> <span class="o">=</span> <span class="n">thresh</span>
+        <span class="c1"># time between updates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_dur</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The Wheel has three message types,</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">'MEASURE'</span></code> - the main task is telling us to monitor for a threshold crossing, ie. previous trial is over and it’s ready for another one.</li>
+<li><code class="docutils literal notranslate"><span class="pre">'CLEAR'</span></code> - stop measuring for a threshold crossing event!</li>
+<li><code class="docutils literal notranslate"><span class="pre">'STOP'</span></code> - the task is over, clear resources and shut down.</li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># initialize networking</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">listens</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;MEASURE&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_measure</span><span class="p">,</span>
+                    <span class="s1">&#39;CLEAR&#39;</span>  <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_clear</span><span class="p">,</span>
+                    <span class="s1">&#39;STOP&#39;</span>   <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_stop</span><span class="p">}</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="n">Net_Node</span><span class="p">(</span><span class="s1">&#39;wheel_{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mouse_idx</span><span class="p">),</span>
+                         <span class="n">upstream</span><span class="o">=</span><span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span>
+                         <span class="n">port</span><span class="o">=</span><span class="n">prefs</span><span class="o">.</span><span class="n">MSGPORT</span><span class="p">,</span>
+                         <span class="n">listens</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">listens</span><span class="p">,</span>
+                         <span class="p">)</span>
+
+    <span class="c1"># if we are being used in a child object,</span>
+    <span class="c1"># we send our trigger via a GPIO pin</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">digi_out</span> <span class="o">=</span> <span class="n">digi_out</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">if</span> <span class="n">start</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_record</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The wheel starts two threads, one that captures mouse movement events and
+puts them in a queue, and another that processes movements, transmits them
+to the Terminal, and handles the threshold triggers when the subject falls
+below a certain velocity.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_mouse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># read mouse movements and put them in a queue</span>
+    <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">quit_evt</span><span class="p">:</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mouse</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_record</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+    <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_mouse</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="c1"># a threading.Event is used to terminate the wheel&#39;s operation</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">quit_evt</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+
+    <span class="c1"># ... mouse movements are collected into a 2d numpy array ...</span>
+
+    <span class="c1"># if the main task has told us to measure for a velocity threshold</span>
+    <span class="c1"># we check if our recent movements (move) trigger the threshold</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">measure_evt</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+        <span class="n">do_trigger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_thresh</span><span class="p">(</span><span class="n">move</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">do_trigger</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thresh_trig</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">measure_evt</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="c1"># and we report recent movements back to the Terminal</span>
+    <span class="c1"># the recent velocities and timestamp have been calculated as</span>
+    <span class="c1"># x_vel, y_vel, and nowtime</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;CONTINUOUS&#39;</span><span class="p">,</span>
+                   <span class="n">value</span><span class="o">=</span><span class="p">{</span>
+                       <span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="n">x_vel</span><span class="p">,</span>
+                       <span class="s1">&#39;y&#39;</span><span class="p">:</span><span class="n">y_vel</span><span class="p">,</span>
+                       <span class="s1">&#39;t&#39;</span><span class="p">:</span><span class="n">nowtime</span>
+                   <span class="p">})</span>
+</pre></div>
+</div>
+<p>If the threshold is triggered, a method (…``thresh_trig``…) is called that
+sends a voltage pulse through the <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Digital_Out" title="autopilot.core.hardware.Digital_Out"><code class="xref py py-class docutils literal notranslate"><span class="pre">Digital_Out</span></code></a>
+given to it by the Child task.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">thresh_trig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">digi_out</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digi_out</span><span class="o">.</span><span class="n">pulse</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="go-no-go-stage-methods">
+<h3>Go/No-Go Stage Methods<a class="headerlink" href="#go-no-go-stage-methods" title="Permalink to this headline">¶</a></h3>
+<p>After the child is initialized, the Parent pilot begins to call the three stage
+functions for the task in a cycle</p>
+<p>Very similar to the Nafc task above…</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">request</span></code> - Tell the Child to begin measuring for a velocity threshold crossing, prepare the stimulus for delivery</li>
+<li><code class="docutils literal notranslate"><span class="pre">discrim</span></code> - Present the stimulus</li>
+<li><code class="docutils literal notranslate"><span class="pre">reinforce</span></code> - Reward the subject if they were correct</li>
+</ul>
+<p>The code here has been abbreviated for the purpose of the example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># Set the event lock</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="c1"># wait on any ongoing punishment stimulus</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">punish_block</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+
+
+    <span class="c1"># set triggers</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span><span class="p">[</span><span class="s1">&#39;F&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="s1">&#39;shift&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shift</span> <span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="c1"># tell our wheel to start measuring</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="p">[</span><span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span> <span class="n">prefs</span><span class="o">.</span><span class="n">CHILDID</span><span class="p">,</span> <span class="s1">&#39;wheel_0&#39;</span><span class="p">],</span>
+                   <span class="n">key</span><span class="o">=</span><span class="s2">&quot;MEASURE&quot;</span><span class="p">,</span>
+                   <span class="n">value</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mode&#39;</span><span class="p">:</span><span class="s1">&#39;steady&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;thresh&#39;</span><span class="p">:</span><span class="mi">100</span><span class="p">})</span>
+
+    <span class="c1"># return data from current stage</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">current_trial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trial_counter</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="c1"># whether to &#39;go&#39; or &#39;not go&#39;</span>
+        <span class="s1">&#39;shift&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">shift</span><span class="p">,</span>   <span class="c1"># how much to shift the</span>
+                               <span class="c1"># angle of the stimulus</span>
+        <span class="s1">&#39;trial_num&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_trial</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">data</span>
+
+
+<span class="k">def</span> <span class="nf">discrim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># if the subject licks on a good trial, reward.</span>
+    <span class="c1"># set a trigger to respond false if delay time elapses</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="bp">True</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s1">&#39;PORTS&#39;</span><span class="p">][</span><span class="s1">&#39;C&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">open</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="bp">False</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">punish</span><span class="p">]</span>
+    <span class="c1"># otherwise punish</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="bp">True</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">punish</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="bp">False</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s1">&#39;PORTS&#39;</span><span class="p">][</span><span class="s1">&#39;C&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">open</span><span class="p">]</span>
+
+    <span class="c1"># the stimulus has just started playing, wait a bit and then shift it (if we&#39;re gonna</span>
+    <span class="c1"># choose a random delay</span>
+    <span class="n">delay</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shift</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">delay</span> <span class="o">=</span> <span class="p">(</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mf">3000.0</span><span class="p">)</span><span class="o">+</span><span class="mf">1000.0</span>
+        <span class="c1"># a delay timer is set that shifts the stimulus after</span>
+        <span class="c1"># &lt;delay&gt; milliseconds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delayed_set</span><span class="p">(</span><span class="n">delay</span><span class="p">,</span> <span class="s1">&#39;shift&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shift</span><span class="p">)</span>
+
+    <span class="c1"># trigger the timeout in 5 seconds</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_trigger</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="bp">None</span><span class="p">))</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="c1"># return data to the pilot</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;delay&#39;</span><span class="p">:</span> <span class="n">delay</span><span class="p">,</span>
+        <span class="s1">&#39;RQ_timestamp&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+        <span class="s1">&#39;trial_num&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_trial</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">data</span>
+
+
+<span class="k">def</span> <span class="nf">reinforce</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+    <span class="c1"># stop timer if it&#39;s still going</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;DC_timestamp&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+        <span class="s1">&#39;response&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span>
+        <span class="s1">&#39;correct&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">correct</span><span class="p">,</span>
+        <span class="s1">&#39;trial_num&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_trial</span><span class="p">,</span>
+        <span class="s1">&#39;TRIAL_END&#39;</span><span class="p">:</span> <span class="bp">True</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">data</span>
+</pre></div>
+</div>
 </div>
 </div>
 </div>

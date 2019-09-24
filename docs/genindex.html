@@ -157,9 +157,13 @@
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-methods">Additional Methods</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id5">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-child-task">The Child Task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
 </ul>
 </li>
 </ul>
@@ -472,12 +476,14 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.DATA">DATA (autopilot.tasks.free_water.Free_Water attribute)</a>
 </li>
-      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.do_bias">do_bias() (autopilot.stim.managers.Stim_Manager method)</a>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Digital_Out">Digital_Out (class in autopilot.core.hardware)</a>
 </li>
-      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.do_correction">do_correction() (autopilot.stim.managers.Stim_Manager method)</a>
+      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.do_bias">do_bias() (autopilot.stim.managers.Stim_Manager method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.do_correction">do_correction() (autopilot.stim.managers.Stim_Manager method)</a>
+</li>
       <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.do_logging">do_logging (autopilot.core.networking.Net_Node attribute)</a>
 
       <ul>
@@ -836,13 +842,15 @@
       </ul></li>
       <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.open">open() (autopilot.core.hardware.Solenoid method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.outbox">outbox (autopilot.core.networking.Net_Node attribute)</a>
 </li>
-      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.output">output (autopilot.core.hardware.Hardware attribute)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Digital_Out.output">output (autopilot.core.hardware.Digital_Out attribute)</a>
 
       <ul>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.output">(autopilot.core.hardware.Hardware attribute)</a>
+</li>
         <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.output">(autopilot.core.hardware.LED_RGB attribute)</a>
 </li>
         <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Solenoid.output">(autopilot.core.hardware.Solenoid attribute)</a>
@@ -892,10 +900,10 @@
         <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Pyo_Sound.play">(autopilot.stim.sound.sounds.Pyo_Sound method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.play_punishment">play_punishment() (autopilot.stim.managers.Stim_Manager method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.PLOT">PLOT (autopilot.tasks.free_water.Free_Water attribute)</a>
 
       <ul>
@@ -917,6 +925,8 @@
       <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Proportional">Proportional (class in autopilot.stim.managers)</a>
 </li>
       <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Pull">Pull (class in autopilot.core.hardware)</a>
+</li>
+      <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Digital_Out.pulse">pulse() (autopilot.core.hardware.Digital_Out method)</a>
 </li>
       <li><a href="autopilot.core.networking.html#autopilot.core.networking.Station.push">push() (autopilot.core.networking.Station method)</a>
 </li>
@@ -957,6 +967,8 @@
       <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.release">release() (autopilot.core.hardware.Beambreak method)</a>
 
       <ul>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Digital_Out.release">(autopilot.core.hardware.Digital_Out method)</a>
+</li>
         <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.release">(autopilot.core.hardware.Hardware method)</a>
 </li>
         <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.release">(autopilot.core.hardware.LED_RGB method)</a>
@@ -1118,8 +1130,6 @@
 </li>
       <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.TrialData">TrialData (autopilot.tasks.task.Task attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.trigger">trigger (autopilot.core.hardware.Beambreak attribute)</a>
 
       <ul>
@@ -1130,11 +1140,15 @@
         <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel.trigger">(autopilot.core.hardware.Wheel attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autopilot.core.networking.html#autopilot.core.networking.Message.ttl">ttl (autopilot.core.networking.Message attribute)</a>
 </li>
       <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak.type">type (autopilot.core.hardware.Beambreak attribute)</a>
 
       <ul>
+        <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Digital_Out.type">(autopilot.core.hardware.Digital_Out attribute)</a>
+</li>
         <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware.type">(autopilot.core.hardware.Hardware attribute)</a>
 </li>
         <li><a href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB.type">(autopilot.core.hardware.LED_RGB attribute)</a>

@@ -156,9 +156,13 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-methods">Additional Methods</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id5">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-child-task">The Child Task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
 </ul>
 </li>
 </ul>
@@ -336,6 +340,8 @@
         <span class="s1">&#39;U&#39;</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_UP</span><span class="p">,</span>
         <span class="s1">&#39;D&#39;</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_DOWN</span>
     <span class="p">}</span>
+
+
 <span class="c1"># TODO: needs better handling, pigpio crashes sometimes and we should know</span>
 <span class="c1">#except ImportError:</span>
 <span class="c1">#    pass</span>
@@ -969,7 +975,18 @@
     <span class="n">MOVE_DTYPE</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;vel&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;dir&#39;</span><span class="p">,</span> <span class="s1">&#39;U5&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;timestamp&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">)]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mouse_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">thresh</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">thresh_type</span><span class="o">=</span><span class="s1">&#39;dist&#39;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-                 <span class="n">gpio_trig</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">pins</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;vel_total&#39;</span><span class="p">,</span> <span class="n">integrate_dur</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+                 <span class="n">digi_out</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;vel_total&#39;</span><span class="p">,</span> <span class="n">integrate_dur</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            mouse_idx (int):</span>
+<span class="sd">            fs (int):</span>
+<span class="sd">            thresh (int):</span>
+<span class="sd">            thresh_type (&#39;dist&#39;):</span>
+<span class="sd">            start (bool):</span>
+<span class="sd">            digi_out (:class:`~.Digital_Out`, bool):</span>
+<span class="sd">            mode (&#39;vel_total&#39;):</span>
+<span class="sd">            integrate_dur (int):</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># try to get mouse from inputs</span>
         <span class="c1"># TODO: More robust - specify mouse by hardware attrs</span>
@@ -1025,22 +1042,7 @@
                              <span class="p">)</span>
 
         <span class="c1"># if we are being used in a child object, we send our trigger via a GPIO pin</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gpio_trig</span> <span class="o">=</span> <span class="n">gpio_trig</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pins</span> <span class="o">=</span> <span class="n">pins</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpio_trig</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pig</span> <span class="o">=</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">pi</span><span class="p">()</span>
-
-            <span class="c1"># FIXME: This doesn&#39;t make a whole hell of a lot of sense to me</span>
-            <span class="c1"># why would we want a wheel with all the power of god to trigger whatever pins it wants</span>
-            <span class="c1"># probably should be a single pin, or at least flexible.</span>
-
-            <span class="n">pins_temp</span> <span class="o">=</span> <span class="n">pins</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pins</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pins_temp</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">BOARD_TO_BCM</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">OUTPUT</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">digi_out</span> <span class="o">=</span> <span class="n">digi_out</span>
 
 
 
@@ -1139,8 +1141,6 @@
             <span class="n">thresh_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">integrate_dur</span><span class="p">]</span>
 
             <span class="n">thresh_update</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_move</span><span class="p">(</span><span class="n">thresh_val</span><span class="p">)</span>
-            <span class="c1">#print(thresh_update)</span>
-            <span class="c1">#sys.stdout.flush()</span>
 
             <span class="k">if</span> <span class="p">(</span><span class="n">thresh_update</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">measure_time</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">integrate_dur</span> <span class="o">&lt;</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()):</span>
                 <span class="n">do_trigger</span> <span class="o">=</span> <span class="bp">True</span>
@@ -1187,21 +1187,11 @@
 
         <span class="k">return</span> <span class="n">distance</span></div>
 
-<div class="viewcode-block" id="Wheel.thresh_trig"><a class="viewcode-back" href="../../../autopilot.core.hardware.html#autopilot.core.hardware.Wheel.thresh_trig">[docs]</a>    <span class="k">def</span> <span class="nf">thresh_trig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Wheel.thresh_trig"><a class="viewcode-back" href="../../../autopilot.core.hardware.html#autopilot.core.hardware.Wheel.thresh_trig">[docs]</a>    <span class="k">def</span> <span class="nf">thresh_trig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">which</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpio_trig</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">pin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;TRIGGERING&quot;</span><span class="p">,</span> <span class="n">pin</span><span class="p">)</span>
-                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-                    <span class="c1">#self.pig.gpio_trigger(pin, 100, 1)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpio_trig</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">gpio_trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="n">which</span><span class="p">],</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">digi_out</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">digi_out</span><span class="o">.</span><span class="n">pulse</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">measure_evt</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
@@ -1239,7 +1229,6 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">measure_evt</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
-        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;MEASURING!!!!!&#39;</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Wheel.l_clear"><a class="viewcode-back" href="../../../autopilot.core.hardware.html#autopilot.core.hardware.Wheel.l_clear">[docs]</a>    <span class="k">def</span> <span class="nf">l_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -1343,6 +1332,59 @@
 <span class="sd">        Simply releases the pigpio client.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div></div>
+
+<div class="viewcode-block" id="Digital_Out"><a class="viewcode-back" href="../../../autopilot.core.hardware.html#autopilot.core.hardware.Digital_Out">[docs]</a><span class="k">class</span> <span class="nc">Digital_Out</span><span class="p">(</span><span class="n">Hardware</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Send digital output pulses over a GPIO pin.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;DIGITAL_OUT&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="p">,</span> <span class="n">pulse_width</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            pin (int):</span>
+<span class="sd">            pulse_width (int): Width of digital output pulse (us). range: 1-100</span>
+<span class="sd">            polarity (bool): Whether &#39;off&#39; is Low (False, default) and pulses bring the voltage High, or vice versa (True)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span> <span class="o">=</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">pi</span><span class="p">()</span>
+
+        <span class="c1"># convert from board to bcm numbering</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin</span> <span class="o">=</span> <span class="n">BOARD_TO_BCM</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">)]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pulse_width</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">pulse_width</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+
+        <span class="c1"># get logic direction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">off</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">polarity</span> <span class="o">=</span> <span class="n">polarity</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">polarity</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">on</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">off</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># setup pin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">OUTPUT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Digital_Out.pulse"><a class="viewcode-back" href="../../../autopilot.core.hardware.html#autopilot.core.hardware.Digital_Out.pulse">[docs]</a>    <span class="k">def</span> <span class="nf">pulse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">duration</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">gpio_trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pulse_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">duration</span><span class="p">:</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">gpio_trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span>
+                                  <span class="n">duration</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">on</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Digital_Out.release"><a class="viewcode-back" href="../../../autopilot.core.hardware.html#autopilot.core.hardware.Digital_Out.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div></div>
+
+
 
 
 

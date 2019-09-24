@@ -158,9 +158,13 @@
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-methods">Additional Methods</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="guide.task.html#nafc-wheel-child-agents">Nafc Wheel - Child Agents</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id5">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-child-task">The Child Task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
 </ul>
 </li>
 </ul>
@@ -302,7 +306,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><a class="reference internal" href="#autopilot.tasks.task.Task.PARAMS" title="autopilot.tasks.task.Task.PARAMS"><strong>PARAMS</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/collections.html#collections.OrderedDict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.OrderedDict</span></code></a>) – <p>Params to define task, like:</p>
+<li><a class="reference internal" href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.PARAMS" title="autopilot.tasks.free_water.Free_Water.PARAMS"><strong>PARAMS</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/collections.html#collections.OrderedDict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.OrderedDict</span></code></a>) – <p>Params to define task, like:</p>
 <p>PARAMS = odict()
 PARAMS[‘reward’]         = {‘tag’:’Reward Duration (ms)’,</p>
 <blockquote>
@@ -312,7 +316,7 @@ PARAMS[‘reward’]         = {‘tag’:’Reward Duration (ms)’,</p>
 <dd>’type’:’bool’}</dd>
 </dl>
 </li>
-<li><a class="reference internal" href="#autopilot.tasks.task.Task.HARDWARE" title="autopilot.tasks.task.Task.HARDWARE"><strong>HARDWARE</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>dict for necessary hardware, like:</p>
+<li><a class="reference internal" href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.HARDWARE" title="autopilot.tasks.free_water.Free_Water.HARDWARE"><strong>HARDWARE</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>dict for necessary hardware, like:</p>
 <dl class="docutils">
 <dt>HARDWARE = {</dt>
 <dd><dl class="first docutils">
