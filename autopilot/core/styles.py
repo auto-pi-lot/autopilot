@@ -11,25 +11,22 @@ https://doc.qt.io/qt-5/stylesheet-reference.html#
 
 TERMINAL = """
 * {
-background: white;
-
-	font-family: "FreeSans";
+    background: #fff;
+	font-family: FreeSans;
 }
 
 QWidget *, QDialog, QLayout {
 background: white;
 }
 
-QWidget {
-}
+
 
 QPushButton {
 	color: #666;
 	background-color: #eee;
-	font: normal "FreeSans" 20px;
 	padding: 5px 5px;
 	border-radius: 5px;
-	border: 1px solid rgba(0,0,0,0.3);
+	border: 3px solid rgba(0,0,0,1);
 	border-bottom-width: 3px;
 }
 
@@ -51,4 +48,12 @@ QMenuBar, QMenuBar * {
 
 PLOT = """
 AxisItem
+"""
+
+CONTROL_PANEL = """
+font-family: "FreeSans";
+border-bottom: 1px solid #000;
+border-right: 1px solid #000;
+
+
 """

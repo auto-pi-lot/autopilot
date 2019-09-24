@@ -215,8 +215,6 @@ class Terminal(QtGui.QMainWindow):
         * :class:`.plots.Plot_Widget`
         """
 
-        # set stylesheet for main window
-        self.setStyleSheet(styles.TERMINAL)
 
         # set central widget
         self.widget = QtGui.QWidget()
@@ -359,6 +357,12 @@ class Terminal(QtGui.QMainWindow):
         #
         self.control_panel.setMaximumHeight(winheight)
         self.data_panel.setMaximumHeight(winheight)
+
+        # set stylesheet for main window
+        self.setStyleSheet(styles.TERMINAL)
+
+        # set fonts to antialias
+        self.setFont(self.font().setStyleStrategy(QtGui.QFont.PreferAntialias))
 
         self.show()
         logging.info('UI Initialized')
@@ -790,7 +794,7 @@ if __name__ == "__main__":
     #    prefs = json.load(prefs_file_open)
 
     app = QtGui.QApplication(sys.argv)
-    app.setStyle('plastique') # Keeps some GTK errors at bay
+    #app.setStyle('plastique') # Keeps some GTK errors at bay
     ex = Terminal()
     sys.exit(app.exec_())
 

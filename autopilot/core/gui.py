@@ -37,6 +37,7 @@ from autopilot.core.networking import Net_Node
 from functools import wraps
 from autopilot.core.utils import InvokeEvent
 from autopilot.core.plots import gui_event
+from autopilot.core import styles
 
 import pdb
 import time
@@ -134,6 +135,7 @@ class Control_Panel(QtGui.QWidget):
         self.init_ui()
 
         self.setSizePolicy(QtGui.QSizePolicy.Maximum,QtGui.QSizePolicy.Maximum)
+        self.setStyleSheet(styles.CONTROL_PANEL)
 
     def init_ui(self):
         """
@@ -379,7 +381,7 @@ class Pilot_Panel(QtGui.QWidget):
         """
         # type: () -> None
         label = QtGui.QLabel(self.pilot)
-        label.setStyleSheet("font: bold 14pt; text-align:right;")
+        label.setStyleSheet("font: bold 14pt; text-align:right")
         label.setAlignment(QtCore.Qt.AlignVCenter)
         self.button = Pilot_Button(self.pilot, self.subject_list, self.start_fn)
         add_button = QtGui.QPushButton("+")
