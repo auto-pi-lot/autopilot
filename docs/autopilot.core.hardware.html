@@ -169,7 +169,15 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.hardware.html#gpio-with-pigpio">GPIO with pigpio</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.hardware.html#input-beambreak">Input - Beambreak</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.hardware.html#output-led-rgb">Output - LED_RGB</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.hardware.html#usb-hardware-with-inputs">USB Hardware with inputs</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
 <ul class="current">
@@ -179,7 +187,7 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">mouse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">subject</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
 </ul>
@@ -412,13 +420,13 @@ even if not explicitly.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><a class="reference internal" href="#autopilot.core.hardware.Hardware.trigger" title="autopilot.core.hardware.Hardware.trigger"><strong>trigger</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Is this object a discrete event input device?
+<li><a class="reference internal" href="#autopilot.core.hardware.Beambreak.trigger" title="autopilot.core.hardware.Beambreak.trigger"><strong>trigger</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Is this object a discrete event input device?
 or, will this device be used to trigger some event? If <cite>True</cite>,
 will be given a callback by <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>, and <a class="reference internal" href="#autopilot.core.hardware.Hardware.assign_cb" title="autopilot.core.hardware.Hardware.assign_cb"><code class="xref py py-meth docutils literal notranslate"><span class="pre">assign_cb()</span></code></a>
 must be redefined.</li>
 <li><a class="reference internal" href="#autopilot.core.hardware.Hardware.pin" title="autopilot.core.hardware.Hardware.pin"><strong>pin</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – The BCM pin used by this device, or None if no pin is used.</li>
 <li><a class="reference internal" href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Speech.type" title="autopilot.stim.sound.sounds.Speech.type"><strong>type</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – What is this device known as in <cite>.prefs</cite>? Not required.</li>
-<li><a class="reference internal" href="#autopilot.core.hardware.Beambreak.input" title="autopilot.core.hardware.Beambreak.input"><strong>input</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Is this an input device?</li>
+<li><a class="reference internal" href="#autopilot.core.hardware.Wheel.input" title="autopilot.core.hardware.Wheel.input"><strong>input</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Is this an input device?</li>
 <li><a class="reference internal" href="#autopilot.core.hardware.Hardware.output" title="autopilot.core.hardware.Hardware.output"><strong>output</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Is this an output device?</li>
 </ul>
 </td>

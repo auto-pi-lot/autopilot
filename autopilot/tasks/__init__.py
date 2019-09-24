@@ -1,5 +1,5 @@
 from autopilot.tasks.task import Task
-from autopilot.tasks.nafc import Nafc, Nafc_Wheel
+from autopilot.tasks.nafc import Nafc
 from autopilot.tasks.gonogo import GoNoGo
 from autopilot.tasks.free_water import Free_Water
 from autopilot.tasks.graduation import GRAD_LIST

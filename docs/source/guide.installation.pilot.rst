@@ -6,7 +6,7 @@ Pilot Setup
 Scripted Installation
 =====================
 
-The pilot preinstallation and setup routines are in two scripts, :ref:`autopilot.setup.presetup_pilot.sh` and :ref:`autopilot.setup.setup_pilot.py`.
+The pilot preinstallation and setup routines are in two scripts, :ref:`presetup_pilot.sh<autopilot.setup.presetup_pilot.sh>` and :ref:`setup_pilot.py<autopilot.setup.setup_pilot.py>`.
 
 Setting up a pilot then just requires you run those two scripts, which will prompt you as you go::
 
@@ -23,7 +23,7 @@ The ``setup_pilot`` script produces the ``prefs.json`` file (see :mod:`~autopilo
 * **Pilot name:** The name that will be used to address messages to the Pilot and identify it across the system. This should be unique within a swarm.
 * **Base Directory:** The parent directory that will be used for all Autopilot data -- preferences files, data, logs, etc.
 * **Lineage:** ("Are we a parent or a child?") - can be ``PARENT`` or ``CHILD``.
-* **Configuration:** (Still experimental) Whether the Pilot has been set up for audio stimuli (and thus launches a ``jack` server, etc.), visual stimuli (`X11` server) or neither.
+* **Configuration:** (Still experimental) Whether the Pilot has been set up for audio stimuli (and thus launches a ``jack`` server, etc.), visual stimuli (`X11` server) or neither.
 * **Child/Parent Settings:** The ID of any parent or child that this pilot has. Since Autopilot's networking structure is treelike (see the whitepaper), an IP and Port are only necessary for a child that is connecting to a parent
 * **Push/Message Port:** The ``push`` port is the port that messages are pushed to and should correspond to the port used by the upstream node, whether that be a Terminal or a Parent. The ``message`` port is the port opened to receive messages by the Pilot's :class:`~autopilot.core.networking.Station` object.
 * **Terminal IP:** The IP address of the Terminal. Ideally the Terminal has a static, local IP address, but this can be changed at any time by editing the ``prefs.json`` file.
@@ -55,10 +55,10 @@ These settings create a ``PINS`` dictionary that maps hardware objects based on 
 
 The ``PINS`` that are set by default are
 
-* **POKES** - IR :class:`~autopilot.core.hardware.Beambreak`s, digital logic input
-* **LEDS** - :class:`~autopilot.core.hardware.LED_RGB`s, which use 3 pins modulated by PWM to output RGB colors.
-* **PORTS** - :class:`~autopilot.core.hardware.Solenoid`s, which dispense water rewards, digital logic output.
-* **FLAGS** - :class:`~autopilot.core.hardware.Flag`s, which are a trivial subclass of :class:`~autopilot.core.hardware.Beambreak` with their default logic directions reversed.
+* **POKES** - IR :class:`~autopilot.core.hardware.Beambreak` s, digital logic input
+* **LEDS** - :class:`~autopilot.core.hardware.LED_RGB` s, which use 3 pins modulated by PWM to output RGB colors.
+* **PORTS** - :class:`~autopilot.core.hardware.Solenoid` s, which dispense water rewards, digital logic output.
+* **FLAGS** - :class:`~autopilot.core.hardware.Flag` s, which are a trivial subclass of :class:`~autopilot.core.hardware.Beambreak` with their default logic directions reversed.
 
 TODO:
 
@@ -152,11 +152,11 @@ Rasbian Installation
 
 
 Raspbian Performance Improvements
---------------------------------
+---------------------------------
 
 All of these are, strictly speaking, optional, but there's not really a good reason not to do them...
 
-8. Change the CPU Governor - Change the CPU Governor - normally the RPi keeps a low clock speed when not under load, raising it when load increases. this can cause audible glitches which are obviously to be avoided.
+#. Change the CPU Governor - Change the CPU Governor - normally the RPi keeps a low clock speed when not under load, raising it when load increases. this can cause audible glitches which are obviously to be avoided.
     * the RPi has a startup script (confusingly, /etc/init.d/raspi-config) that sets the cpu governor to on demand. disable it
         - ``sudo systemctl disable raspi-config``
     * Add a line to ``etc/rc.local``, which runs on boot, that changes the governor to "performance"
@@ -168,7 +168,7 @@ All of these are, strictly speaking, optional, but there's not really a good rea
 
             sudo sed -i '/^exit 0/i echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor' /etc/rc.local
 
-9. Disable Bluetooth
+#. Disable Bluetooth
     * Add ``dtoverlay=pi3-disable-bt`` to ``/boot/config.txt``, or use this::
 
         sudo sed -i '$s/$/\ndtoverlay=pi3-disable-bt/' /boot/config.txt
@@ -179,15 +179,17 @@ All of these are, strictly speaking, optional, but there's not really a good rea
         sudo systemctl disable bluealsa.service
         sudo systemctl disable bluetooth.service
 
-10.  You can decrease the memory that is allocated to the video card, but keep in mind pigpio allocates its memory from the GPU store. Don't reduce to lower than ~8MB
+#.  You can decrease the memory that is allocated to the video card, but keep in mind pigpio allocates its memory from the GPU store. Don't reduce to lower than ~8MB
+
     * ``sudo raspi-config`` > Advanced > Memory Split
+
 
 Audio Setup
 -----------
 
 Autopilot uses `Jack Audio <http://jackaudio.org/>`_ to play sounds.
 
-11. Clone jack::
+#. Clone jack::
 
     git clone git://github.com/jackaudio/jack2 --depth 1
 
@@ -221,15 +223,18 @@ We also use the the `Hifiberry Amp 2 <https://www.hifiberry.com/shop/boards/hifi
 16. Turn onboard audio off and enable hifiberry overlays in ``/boot/config.txt``.
 
     Comment out::
+
         # dtparam=audio=on
 
     Add::
+
         dtoverlay=hifiberry-dacplus
         dtoverlay=i2s-mmap
         dtparam=i2c1=on
         dtparam=i2c_arm=on
 
     Or use these commands which do it for you::
+
         sudo sed -i 's/^dtparam=audio=on/#dtparam=audio=on/g' /boot/config.txt
         sudo sed -i '$s/$/\ndtoverlay=hifiberry-dacplus\ndtoverlay=i2s-mmap\ndtoverlay=i2c-mmap\ndtparam=i2c1=on\ndtparam=i2c_arm=on/' /boot/config.txt
 
@@ -300,7 +305,7 @@ If you're using Autopilot to present visual stimuli, it runs in an X11 instance 
     * ``sudo raspi-config`` > advanced > GL Driver > "GL (FakeKMS)"
     * then reboot
 
-22. Psychopy uses a few video backends, but in our experience `glfw <https://www.glfw.org/>`_ is the fastest. We have to `compile it manually <https://www.glfw.org/docs/latest/compile_guide.html`_::
+22. Psychopy uses a few video backends, but in our experience `glfw <https://www.glfw.org/>`_ is the fastest. We have to `compile it manually <https://www.glfw.org/docs/latest/compile_guide.html>`_::
 
 git clone https://github.com/glfw/glfw
 cd glfw

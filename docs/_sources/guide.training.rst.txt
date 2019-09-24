@@ -5,8 +5,6 @@ Training a Subject
 
 After you have set up a `Terminal <setup_terminal>`_ and a `Pilot <setup_pilot>`_, launch the Terminal.
 
-.. todo::
-    Screenshot of terminal
 
 Connecting the Pilot
 ====================
@@ -15,8 +13,7 @@ If the ``TERMINAL_IP`` and port information is correctly set in the ``prefs.json
 It will send a ``handshake`` message that lets the Terminal know of its existence, its IP address, and its state.
 Once the Terminal receives its initial message, it will refresh, adding an entry to its ``pilot_db.json`` file and displaying a control panel for the pilot.
 
-.. todo::
-    Screenshot of terminal with pilot
+.. figure:: ../_images/terminal.png
 
 If the Pilot is not automatically detected, a pilot can be manually added with its name and IP using the "New Pilot" command in the file menu.
 
@@ -25,48 +22,6 @@ Creating a Protocol
 
 A Protocol is one or a collection of tasks which the subject can 'graduate' through based on configurable graduation criteria.
 Protocols are stored as ``.json`` files in the ``protocols`` directory within ``prefs.BASEDIR``.
-
-.. code-block:: json
-
-    {
-        "bias_mode": false,
-        "correction": true,
-        "graduation": {
-            "type": "accuracy",
-            "value": {
-                "threshold": ".80",
-                "type": "accuracy",
-                "window": "1000"
-            }
-        },
-        "pct_correction": "10",
-        "punish_dur": "5000",
-        "punish_sound": false,
-        "req_reward": false,
-        "reward": {
-            "type": "volume",
-            "value": "2.5"
-        },
-        "step_name": "step_3",
-        "stim": {
-            'type': 'sounds',
-            'sounds': {
-                'L': {
-                    "type": "tone",
-                    "frequency": "5000",
-                    "amplitude": "0.01",
-                    "duration": "100"
-                },
-                'R': {
-                    "type": "tone",
-                    "frequency": "10000",
-                    "amplitude": "0.01",
-                    "duration": "100"
-                }
-            }
-        },
-        "task_type": "2AFC"
-    }
 
 Using the Protocol Wizard
 -------------------------
@@ -95,43 +50,129 @@ In this example we will program a three-step shaping regimen:
 
 1. To start, select ``New Protocol`` from the 'file' menu.
 
-.. todo::
-    screenshot of protocol wizard
+.. figure:: ../_images/protocol_1.png
 
 
 2. Add a step from the list of tasks in the leftmost column by selecting it and pressing the '+' button. Here we are adding the Free Water step.
 
-.. todo::
+.. figure:: ../_images/protocol_2.png
 
-    screenshot of add button
 
 3. Specify the parameters for the task in the rightmost window -- we give 20ms of water every time the subject poke, etc.
 
-.. todo::
+.. figure:: ../_images/protocol_3.png
 
-    screenshot of parameters set, including explication of each
 
 4. Add the second "Request Rewards" step, the remaining options that are configured are:
 * list
 * of
 * options
 
-.. todo::
-
-    screen shot of final task stage.
+.. figure:: ../_images/protocol_5.png
 
 
 5. Press ok, save and name the protocol file.
 
-.. todo::
-
-    screenshot of saving dialog
-
 6. That leaves us with a protocol file:
 
-.. todo::
+.. code-block:: json
 
-    include generated protocol file.
+    [
+        {
+            "allow_repeat": false,
+            "graduation": {
+                "type": "n_trials",
+                "value": {
+                    "current_trial": "0",
+                    "n_trials": "100",
+                    "type": "n_trials"
+                }
+            },
+            "reward": "20",
+            "step_name": "Free Water",
+            "task_type": "Free Water"
+        },
+        {
+            "bias_mode": 0,
+            "correction": true,
+            "correction_pct": "10",
+            "graduation": {
+                "type": "n_trials",
+                "value": {
+                    "current_trial": "0",
+                    "n_trials": "200",
+                    "type": "n_trials"
+                }
+            },
+            "punish_stim": false,
+            "req_reward": true,
+            "reward": "20",
+            "step_name": "request_rewards",
+            "stim": {
+                "sounds": {
+                    "L": [
+                        {
+                            "amplitude": "0.01",
+                            "duration": "100",
+                            "frequency": "4000",
+                            "type": "Tone"
+                        }
+                    ],
+                    "R": [
+                        {
+                            "amplitude": "0.01",
+                            "duration": "100",
+                            "frequency": "10000",
+                            "type": "Tone"
+                        }
+                    ]
+                },
+                "tag": "Sounds",
+                "type": "sounds"
+            },
+            "task_type": "2AFC"
+        },
+        {
+            "bias_mode": 0,
+            "correction": true,
+            "correction_pct": "10",
+            "graduation": {
+                "type": "accuracy",
+                "value": {
+                    "threshold": "80",
+                    "type": "accuracy",
+                    "window": "1000"
+                }
+            },
+            "punish_stim": false,
+            "req_reward": false,
+            "reward": "20",
+            "step_name": "2AFC",
+            "stim": {
+                "sounds": {
+                    "L": [
+                        {
+                            "amplitude": "0.01",
+                            "duration": "25",
+                            "frequency": "100",
+                            "type": "Tone"
+                        }
+                    ],
+                    "R": [
+                        {
+                            "amplitude": "0.01",
+                            "duration": "100",
+                            "frequency": "100",
+                            "type": "Tone"
+                        }
+                    ]
+                },
+                "tag": "Sounds",
+                "type": "sounds"
+            },
+            "task_type": "2AFC"
+        }
+    ]
 
 
 
@@ -180,16 +221,14 @@ An example for our speech task can be found in :mod:`autopilot.tasks.protocol_sc
 Creating a Subject
 ==================
 
-A :class:`autopilot.core.subject.Subject` stores the data, protocol, and history of a subject.
+A :class:`~autopilot.core.subject.Subject` stores the data, protocol, and history of a subject.
 Each subject is implicitly assigned to a Pilot by virtue of the structure of the ``pilot_db.json`` file, but they can be switched by editing that file.
 
 1. Create a subject by clicking the ``+`` button in the control panel of a particular Pilot
 
-.. todo::
-
-    screenshot of plus button
-
 2. Fill out the basic biographical information
+
+.. figure:: ../_images/subject_2.png
 
 .. todo::
 
@@ -197,33 +236,21 @@ Each subject is implicitly assigned to a Pilot by virtue of the structure of the
 
 3. Assign the subject to a protocol and step. Notice how the task we created earlier is here!
 
-.. todo::
-
-    screenshot of task assignment
+.. figure:: ../_images/subject_3.png
 
 
 By creating one, we create an HDF5 file that stores a serialized version of the ``.json`` protocol file that was generated above,
 as well as the basic directory and table structure to enable the subject to store data from running the task.
 
-.. todo::
-
-    screenshot of subject .h5 file.
+.. figure:: ../_images/subject_4.png
 
 
 Running the Task
 ================
 
-1. Select the subject's name and press the play button! The Terminal will send a ``START`` message to the Pilot that includes the parameter dictionary for the current step, and if the Pilot is configured with the hardware required in the ``HARDWARE`` dictionary of the task, it should run.
-
-.. todo::
-
-    screenshot of play button
+1. Select the subject's name and press the start button! The Terminal will send a ``START`` message to the Pilot that includes the parameter dictionary for the current step, and if the Pilot is configured with the hardware required in the ``HARDWARE`` dictionary of the task, it should run.
 
 2. The Terminal will initialize the Pilot's plot using the parameters in the task's ``PLOT`` dictionary and display data as it is received.
-
-
-close w/ a view of the data.
-
 
 
 

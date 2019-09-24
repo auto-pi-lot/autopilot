@@ -1,6 +1,0 @@
-load_pilotdb
-============
-
-.. currentmodule:: autopilot.core.utils
-
-.. autofunction:: load_pilotdb

@@ -169,7 +169,15 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.hardware.html#gpio-with-pigpio">GPIO with pigpio</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.hardware.html#input-beambreak">Input - Beambreak</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.hardware.html#output-led-rgb">Output - LED_RGB</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.hardware.html#usb-hardware-with-inputs">USB Hardware with inputs</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
 <ul class="current">
@@ -179,7 +187,7 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">mouse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">subject</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
 </ul>
@@ -280,35 +288,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="tasks">
-<h1>tasks<a class="headerlink" href="#tasks" title="Permalink to this headline">¶</a></h1>
-<p><strong>Functions</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__format__</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__new__</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__reduce__</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__reduce_ex__</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__sizeof__</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">__subclasshook__</span></code></td>
-<td></td>
-</tr>
-</tbody>
-</table>
+  <div class="section" id="module-autopilot.tasks">
+<span id="tasks"></span><h1>tasks<a class="headerlink" href="#module-autopilot.tasks" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.tasks.free_water.html">free_water</a></li>

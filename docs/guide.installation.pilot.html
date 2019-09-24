@@ -169,7 +169,15 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.hardware.html#gpio-with-pigpio">GPIO with pigpio</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.hardware.html#input-beambreak">Input - Beambreak</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.hardware.html#output-led-rgb">Output - LED_RGB</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.hardware.html#usb-hardware-with-inputs">USB Hardware with inputs</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
 <ul>
@@ -179,7 +187,7 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">mouse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">subject</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
 </ul>
@@ -286,7 +294,7 @@
 <span id="setup-pilot"></span><h1>Pilot Setup<a class="headerlink" href="#pilot-setup" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="scripted-installation">
 <h2>Scripted Installation<a class="headerlink" href="#scripted-installation" title="Permalink to this headline">¶</a></h2>
-<p>The pilot preinstallation and setup routines are in two scripts, <span class="xref std std-ref">autopilot.setup.presetup_pilot.sh</span> and <span class="xref std std-ref">autopilot.setup.setup_pilot.py</span>.</p>
+<p>The pilot preinstallation and setup routines are in two scripts, <span class="xref std std-ref">presetup_pilot.sh</span> and <span class="xref std std-ref">setup_pilot.py</span>.</p>
 <p>Setting up a pilot then just requires you run those two scripts, which will prompt you as you go:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">&lt;</span><span class="n">repo_directory</span><span class="o">&gt;/</span><span class="n">autopilot</span><span class="o">/</span><span class="n">setup</span>
 <span class="o">./</span><span class="n">presetup_pilot</span><span class="o">.</span><span class="n">sh</span>
@@ -300,7 +308,7 @@
 <li><strong>Pilot name:</strong> The name that will be used to address messages to the Pilot and identify it across the system. This should be unique within a swarm.</li>
 <li><strong>Base Directory:</strong> The parent directory that will be used for all Autopilot data – preferences files, data, logs, etc.</li>
 <li><strong>Lineage:</strong> (“Are we a parent or a child?”) - can be <code class="docutils literal notranslate"><span class="pre">PARENT</span></code> or <code class="docutils literal notranslate"><span class="pre">CHILD</span></code>.</li>
-<li><strong>Configuration:</strong> (Still experimental) Whether the Pilot has been set up for audio stimuli (and thus launches a <a href="#id1"><span class="problematic" id="id2">``</span></a>jack` server, etc.), visual stimuli (<cite>X11</cite> server) or neither.</li>
+<li><strong>Configuration:</strong> (Still experimental) Whether the Pilot has been set up for audio stimuli (and thus launches a <code class="docutils literal notranslate"><span class="pre">jack</span></code> server, etc.), visual stimuli (<cite>X11</cite> server) or neither.</li>
 <li><strong>Child/Parent Settings:</strong> The ID of any parent or child that this pilot has. Since Autopilot’s networking structure is treelike (see the whitepaper), an IP and Port are only necessary for a child that is connecting to a parent</li>
 <li><strong>Push/Message Port:</strong> The <code class="docutils literal notranslate"><span class="pre">push</span></code> port is the port that messages are pushed to and should correspond to the port used by the upstream node, whether that be a Terminal or a Parent. The <code class="docutils literal notranslate"><span class="pre">message</span></code> port is the port opened to receive messages by the Pilot’s <a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Station" title="autopilot.core.networking.Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Station</span></code></a> object.</li>
 <li><strong>Terminal IP:</strong> The IP address of the Terminal. Ideally the Terminal has a static, local IP address, but this can be changed at any time by editing the <code class="docutils literal notranslate"><span class="pre">prefs.json</span></code> file.</li>
@@ -334,10 +342,10 @@
 <p>These settings create a <code class="docutils literal notranslate"><span class="pre">PINS</span></code> dictionary that maps hardware objects based on their type and name to a GPIO pin number. These names are the same as those used by tasks to parameterize hardware requirements.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">PINS</span></code> that are set by default are</p>
 <ul class="simple">
-<li><strong>POKES</strong> - IR :class:<a href="#id3"><span class="problematic" id="id4">`</span></a>~autopilot.core.hardware.Beambreak`s, digital logic input</li>
-<li><strong>LEDS</strong> - :class:<a href="#id5"><span class="problematic" id="id6">`</span></a>~autopilot.core.hardware.LED_RGB`s, which use 3 pins modulated by PWM to output RGB colors.</li>
-<li><strong>PORTS</strong> - :class:<a href="#id7"><span class="problematic" id="id8">`</span></a>~autopilot.core.hardware.Solenoid`s, which dispense water rewards, digital logic output.</li>
-<li><strong>FLAGS</strong> - <code class="xref py py-class docutils literal notranslate"><span class="pre">Beambreak</span></code> with their default logic directions reversed.</li>
+<li><strong>POKES</strong> - IR <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak" title="autopilot.core.hardware.Beambreak"><code class="xref py py-class docutils literal notranslate"><span class="pre">Beambreak</span></code></a> s, digital logic input</li>
+<li><strong>LEDS</strong> - <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB" title="autopilot.core.hardware.LED_RGB"><code class="xref py py-class docutils literal notranslate"><span class="pre">LED_RGB</span></code></a> s, which use 3 pins modulated by PWM to output RGB colors.</li>
+<li><strong>PORTS</strong> - <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Solenoid" title="autopilot.core.hardware.Solenoid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Solenoid</span></code></a> s, which dispense water rewards, digital logic output.</li>
+<li><strong>FLAGS</strong> - <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Flag" title="autopilot.core.hardware.Flag"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flag</span></code></a> s, which are a trivial subclass of <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak" title="autopilot.core.hardware.Beambreak"><code class="xref py py-class docutils literal notranslate"><span class="pre">Beambreak</span></code></a> with their default logic directions reversed.</li>
 </ul>
 <p>TODO:</p>
 <blockquote>
@@ -464,7 +472,7 @@
 <div class="section" id="raspbian-performance-improvements">
 <h3>Raspbian Performance Improvements<a class="headerlink" href="#raspbian-performance-improvements" title="Permalink to this headline">¶</a></h3>
 <p>All of these are, strictly speaking, optional, but there’s not really a good reason not to do them…</p>
-<ol class="arabic" start="8">
+<ol class="arabic">
 <li><dl class="first docutils">
 <dt>Change the CPU Governor - Change the CPU Governor - normally the RPi keeps a low clock speed when not under load, raising it when load increases. this can cause audible glitches which are obviously to be avoided.</dt>
 <dd><ul class="first last">
@@ -517,21 +525,23 @@
 </dl>
 </li>
 <li><p class="first">You can decrease the memory that is allocated to the video card, but keep in mind pigpio allocates its memory from the GPU store. Don’t reduce to lower than ~8MB</p>
-</li>
-</ol>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">raspi-config</span></code> &gt; Advanced &gt; Memory Split</li>
 </ul>
-</div></blockquote>
+</li>
+</ol>
 </div>
 <div class="section" id="audio-setup">
 <h3>Audio Setup<a class="headerlink" href="#audio-setup" title="Permalink to this headline">¶</a></h3>
 <p>Autopilot uses <a class="reference external" href="http://jackaudio.org/">Jack Audio</a> to play sounds.</p>
-<ol class="arabic" start="11">
+<ol class="arabic">
 <li><p class="first">Clone jack:</p>
-<p>git clone git://github.com/jackaudio/jack2 –depth 1</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">jackaudio</span><span class="o">/</span><span class="n">jack2</span> <span class="o">--</span><span class="n">depth</span> <span class="mi">1</span>
+</pre></div>
+</div>
 </li>
+</ol>
+<ol class="arabic" start="12">
 <li><p class="first">Configure, build, install:</p>
 <p>cd jack2
 # use ./waf –help to list compile options
@@ -558,21 +568,22 @@ sudo sh -c “echo &#64;audio - rtprio 75 &gt;&gt; /etc/security/limits.conf”<
 <p>sudo adduser pi i2c</p>
 </li>
 <li><p class="first">Turn onboard audio off and enable hifiberry overlays in <code class="docutils literal notranslate"><span class="pre">/boot/config.txt</span></code>.</p>
-<dl class="docutils">
-<dt>Comment out::</dt>
-<dd><p class="first last"># dtparam=audio=on</p>
-</dd>
-<dt>Add::</dt>
-<dd><p class="first last">dtoverlay=hifiberry-dacplus
-dtoverlay=i2s-mmap
-dtparam=i2c1=on
-dtparam=i2c_arm=on</p>
-</dd>
-<dt>Or use these commands which do it for you::</dt>
-<dd><p class="first last">sudo sed -i ‘s/^dtparam=audio=on/#dtparam=audio=on/g’ /boot/config.txt
-sudo sed -i ‘$s/$/ndtoverlay=hifiberry-dacplusndtoverlay=i2s-mmapndtoverlay=i2c-mmapndtparam=i2c1=onndtparam=i2c_arm=on/’ /boot/config.txt</p>
-</dd>
-</dl>
+<p>Comment out:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># dtparam=audio=on</span>
+</pre></div>
+</div>
+<p>Add:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">dtoverlay</span><span class="o">=</span><span class="n">hifiberry</span><span class="o">-</span><span class="n">dacplus</span>
+<span class="n">dtoverlay</span><span class="o">=</span><span class="n">i2s</span><span class="o">-</span><span class="n">mmap</span>
+<span class="n">dtparam</span><span class="o">=</span><span class="n">i2c1</span><span class="o">=</span><span class="n">on</span>
+<span class="n">dtparam</span><span class="o">=</span><span class="n">i2c_arm</span><span class="o">=</span><span class="n">on</span>
+</pre></div>
+</div>
+<p>Or use these commands which do it for you:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;s/^dtparam=audio=on/#dtparam=audio=on/g&#39;</span> <span class="o">/</span><span class="n">boot</span><span class="o">/</span><span class="n">config</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">sudo</span> <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;$s/$/</span><span class="se">\n</span><span class="s1">dtoverlay=hifiberry-dacplus</span><span class="se">\n</span><span class="s1">dtoverlay=i2s-mmap</span><span class="se">\n</span><span class="s1">dtoverlay=i2c-mmap</span><span class="se">\n</span><span class="s1">dtparam=i2c1=on</span><span class="se">\n</span><span class="s1">dtparam=i2c_arm=on/&#39;</span> <span class="o">/</span><span class="n">boot</span><span class="o">/</span><span class="n">config</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
 </li>
 <li><p class="first">Edit ALSA configuration (<code class="docutils literal notranslate"><span class="pre">/etc/asound.conf</span></code>) so hifiberry is default sound card. M</p>
 <p>Make it look like this:</p>
@@ -591,7 +602,7 @@ ctl.!default {
 </li>
 <li><p class="first">Reboot and test with <code class="docutils literal notranslate"><span class="pre">aplay</span> <span class="pre">-l</span></code> which shoudl look something like this:</p>
 <p><a class="reference external" href="mailto:pi&#37;&#52;&#48;raspberrypi">pi<span>&#64;</span>raspberrypi</a>:~ $ aplay -l
-<a href="#id9"><span class="problematic" id="id10">**</span></a>** List of PLAYBACK Hardware Devices <a href="#id11"><span class="problematic" id="id12">**</span></a>**
+<a href="#id1"><span class="problematic" id="id2">**</span></a>** List of PLAYBACK Hardware Devices <a href="#id3"><span class="problematic" id="id4">**</span></a>**
 card 0: sndrpihifiberry [snd_rpi_hifiberry_dacplus], device 0: HiFiBerry DAC+ HiFi pcm512x-hifi-0 []</p>
 <blockquote>
 <div><p>Subdevices: 1/1
@@ -630,7 +641,7 @@ pip install </p>
 </li>
 </ol>
 <ol class="arabic simple" start="22">
-<li>Psychopy uses a few video backends, but in our experience <a class="reference external" href="https://www.glfw.org/">glfw</a> is the fastest. We have to <a href="#id13"><span class="problematic" id="id14">`compile it manually &lt;https://www.glfw.org/docs/latest/compile_guide.html`_</span></a>:</li>
+<li>Psychopy uses a few video backends, but in our experience <a class="reference external" href="https://www.glfw.org/">glfw</a> is the fastest. We have to <a class="reference external" href="https://www.glfw.org/docs/latest/compile_guide.html">compile it manually</a>:</li>
 </ol>
 <p>git clone <a class="reference external" href="https://github.com/glfw/glfw">https://github.com/glfw/glfw</a>
 cd glfw

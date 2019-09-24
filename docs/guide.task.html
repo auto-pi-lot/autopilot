@@ -169,7 +169,15 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.hardware.html#gpio-with-pigpio">GPIO with pigpio</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.hardware.html#input-beambreak">Input - Beambreak</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.hardware.html#output-led-rgb">Output - LED_RGB</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.hardware.html#usb-hardware-with-inputs">USB Hardware with inputs</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
 <ul>
@@ -179,7 +187,7 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">mouse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">subject</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
 </ul>
@@ -319,7 +327,7 @@ and a <code class="docutils literal notranslate"><span class="pre">type</span></
 <li><code class="docutils literal notranslate"><span class="pre">int</span></code>: integers</li>
 <li><code class="docutils literal notranslate"><span class="pre">bool</span></code>: boolean (checkboxes in GUI)</li>
 <li><code class="docutils literal notranslate"><span class="pre">list</span></code>: list of possible values in {‘Name’:int} pairs</li>
-<li><code class="docutils literal notranslate"><span class="pre">sounds</span></code>: a <code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.gui.Sound_Widget</span></code> to define sounds.</li>
+<li><code class="docutils literal notranslate"><span class="pre">sounds</span></code>: a <a class="reference internal" href="autopilot.core.gui.html#autopilot.core.gui.Sound_Widget" title="autopilot.core.gui.Sound_Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.gui.Sound_Widget</span></code></a> to define sounds.</li>
 </ul>
 <p>To maintain order when opened by the GUI we use a <code class="xref py py-class docutils literal notranslate"><span class="pre">odict</span></code> rather than a normal dictionary.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">odict</span>
@@ -352,7 +360,7 @@ and a <code class="docutils literal notranslate"><span class="pre">type</span></
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">See the <code class="xref py py-class docutils literal notranslate"><span class="pre">Nafc</span></code> class for descriptions of the task parameters.</p>
+<p class="last">See the <a class="reference internal" href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc" title="autopilot.tasks.nafc.Nafc"><code class="xref py py-class docutils literal notranslate"><span class="pre">Nafc</span></code></a> class for descriptions of the task parameters.</p>
 </div>
 <p>These will be taken as key-value pairs when the task is initialized. ie.:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">PARAMS</span><span class="p">[</span><span class="s1">&#39;correction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag&#39;</span><span class="p">:</span>  <span class="s1">&#39;Correction Trials&#39;</span><span class="p">,</span>
@@ -396,16 +404,16 @@ Specify each variable that will be returned and its type using a <code class="xr
 </div>
 <p>The column types are names with their type and their bit depth except for the <code class="xref py py-class docutils literal notranslate"><span class="pre">StringCol</span></code>
 which takes a string length in characters.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">TrialData</span></code> object is used by the <code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code> class when a task is assigned to create the data storage table.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">TrialData</span></code> object is used by the <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> class when a task is assigned to create the data storage table.</p>
 </div>
 <div class="section" id="plot">
 <h4>PLOT<a class="headerlink" href="#plot" title="Permalink to this headline">¶</a></h4>
-<p>The <code class="docutils literal notranslate"><span class="pre">PLOT</span></code> dictionary maps the data returned from the task to graphical elements in the <code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code>’s <code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code>.
-Specifically, when the task is started, the <code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code> object creates the graphical element (eg. a <code class="xref py py-class docutils literal notranslate"><span class="pre">Point</span></code>)
+<p>The <code class="docutils literal notranslate"><span class="pre">PLOT</span></code> dictionary maps the data returned from the task to graphical elements in the <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a>’s <a class="reference internal" href="autopilot.core.plots.html#autopilot.core.plots.Plot" title="autopilot.core.plots.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a>.
+Specifically, when the task is started, the <a class="reference internal" href="autopilot.core.plots.html#autopilot.core.plots.Plot" title="autopilot.core.plots.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a> object creates the graphical element (eg. a <a class="reference internal" href="autopilot.core.plots.html#autopilot.core.plots.Point" title="autopilot.core.plots.Point"><code class="xref py py-class docutils literal notranslate"><span class="pre">Point</span></code></a>)
 and then calls its <code class="docutils literal notranslate"><span class="pre">update</span></code> method with any data that is received through its <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code>.</p>
 <p>Data-to-graphical mappings are defined in a <code class="docutils literal notranslate"><span class="pre">data</span></code> subdictionary, and additional parameters can be passed to the plot – in the below example, for example,
 a <code class="docutils literal notranslate"><span class="pre">chance_bar</span></code> is drawn as a horizontal line across the plot. By default it is drawn at 0.5, but its height can be set with an additional parameter <code class="docutils literal notranslate"><span class="pre">chance_level</span></code>.
-Available graphical primitives are registered in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">plots.PLOT_LIST</span></code>, and additional parameters are documented in the <code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code> class.</p>
+Available graphical primitives are registered in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">plots.PLOT_LIST</span></code>, and additional parameters are documented in the <a class="reference internal" href="autopilot.core.plots.html#autopilot.core.plots.Plot" title="autopilot.core.plots.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a> class.</p>
 <p>Data is plotted either by trial (default) or by timestamp (if <code class="docutils literal notranslate"><span class="pre">PLOT['continuous']</span> <span class="pre">!=</span> <span class="pre">True</span></code>). Numerical data is plotted (on the y-axis) as expected, but
 further mappings can be defined by extending the graphical element’s <code class="docutils literal notranslate"><span class="pre">update</span></code> method – eg. ‘L’(eft) maps to 0 and ‘R’(ight) maps to 1 by default.</p>
 <div class="admonition-todo admonition" id="index-1">
@@ -531,7 +539,7 @@ correction trial percentage or bias correction are given as separate parameters,
 <p>This task does not call its own stage methods, as we will see in the Wheel task example,
 but allows the <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code> to control them, and advances through stages using a
 <code class="docutils literal notranslate"><span class="pre">stage_block</span></code> that allows passage whenever a GPIO trigger is activated. Data is returned from each of the stage methods and is then
-returned to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code> by the <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code>.</p>
+returned to the <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a> by the <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code>.</p>
 <div class="section" id="request">
 <h4>Request<a class="headerlink" href="#request" title="Permalink to this headline">¶</a></h4>
 <p>First, the <code class="docutils literal notranslate"><span class="pre">stage_block</span></code> is cleared so that the task will not advance until one of the triggers is called.
@@ -571,7 +579,7 @@ request rewards (see <a class="reference internal" href="guide.training.html#tra
 </pre></div>
 </div>
 <p>Finally, the data for this stage of the trial is gathered and returned to the Pilot.
-Since stimuli have variable numbers and names of parameters, both the table set up by the <code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code> and
+Since stimuli have variable numbers and names of parameters, both the table set up by the <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> and
 the data returning routine here extract stimulus parameters programmatically.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">current_trial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trial_counter</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
 <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
@@ -626,7 +634,7 @@ This stage doesn’t clear the <code class="docutils literal notranslate"><span 
 this stage completes.</p>
 <p>The results of the current trial are given to the stimulus manager’s <code class="xref py py-meth docutils literal notranslate"><span class="pre">update()</span></code> method
 so that it can keep track of trial history and do things like bias correction, etc.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">TRIAL_END</span></code> flag in the data signals to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code> class that the trial is finished
+<p>The <code class="docutils literal notranslate"><span class="pre">TRIAL_END</span></code> flag in the data signals to the <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> class that the trial is finished
 and its row of data should be written to disk. This, along with providing the <code class="docutils literal notranslate"><span class="pre">trial_num</span></code> on each stage,
 ensure that data is not misaligned between trials.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">reinforcement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -931,7 +939,7 @@ wrapper around a <a class="reference internal" href="autopilot.core.hardware.htm
 </div>
 </div>
 <div class="section" id="a-very-smart-wheel">
-<h3>A Very Smart Wheel<a class="headerlink" href="#a-very-smart-wheel" title="Permalink to this headline">¶</a></h3>
+<span id="wheel-guide-one"></span><h3>A Very Smart Wheel<a class="headerlink" href="#a-very-smart-wheel" title="Permalink to this headline">¶</a></h3>
 <p>Most of the Child’s contribution to the task is performed by the <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel" title="autopilot.core.hardware.Wheel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wheel</span></code></a> object.</p>
 <p>The Wheel accesses a USB mouse connected to the Pilot,
 continuously collects its movements, and reports them back to the
@@ -1124,6 +1132,7 @@ functions for the task in a cycle</p>
     <span class="k">return</span> <span class="n">data</span>
 </pre></div>
 </div>
+<p>Viola.</p>
 </div>
 </div>
 </div>

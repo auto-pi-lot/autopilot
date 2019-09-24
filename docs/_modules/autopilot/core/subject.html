@@ -167,7 +167,15 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide.hardware.html">Writing a Hardware Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.hardware.html">Writing a Hardware Class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.hardware.html#gpio-with-pigpio">GPIO with pigpio</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.hardware.html#input-beambreak">Input - Beambreak</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.hardware.html#output-led-rgb">Output - LED_RGB</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.hardware.html#usb-hardware-with-inputs">USB Hardware with inputs</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
 <ul>
@@ -177,7 +185,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.plots.html">plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.subject.html">mouse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.subject.html">subject</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.utils.html">utils</a></li>
 </ul>
@@ -881,12 +889,12 @@
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">cont_table</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">group_name</span><span class="p">,</span> <span class="s1">&#39;continuous_data&#39;</span><span class="p">)</span>
-            <span class="c1">#self.cont_row   = self.cont_table.row</span>
-            <span class="c1">#self.cont_keys  = self.cont_table.colnames</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">pass</span>
+        <span class="c1"># try:</span>
+        <span class="c1">#     #cont_table = h5f.get_node(group_name, &#39;continuous_data&#39;)</span>
+        <span class="c1">#     #self.cont_row   = self.cont_table.row</span>
+        <span class="c1">#     #self.cont_keys  = self.cont_table.colnames</span>
+        <span class="c1"># except:</span>
+        <span class="c1">#     pass</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">cont_table</span><span class="p">,</span> <span class="n">trial_table</span><span class="p">]):</span>
             <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No data tables exist for step {}! Is there a Trial or Continuous data descriptor in the task class?&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">))</span>
@@ -967,24 +975,56 @@
         <span class="n">trial_keys</span> <span class="o">=</span> <span class="n">trial_table</span><span class="o">.</span><span class="n">colnames</span>
         <span class="n">trial_row</span> <span class="o">=</span> <span class="n">trial_table</span><span class="o">.</span><span class="n">row</span>
 
+        <span class="c1"># try to get continuous data table if any</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">continuous_table</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">group_name</span><span class="p">,</span> <span class="s1">&#39;continuous_data&#39;</span><span class="p">)</span>
+            <span class="n">continuous_keys</span>  <span class="o">=</span> <span class="n">continuous_table</span><span class="o">.</span><span class="n">colnames</span>
+            <span class="n">continous_row</span>    <span class="o">=</span> <span class="n">continuous_table</span><span class="o">.</span><span class="n">row</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">continuous_table</span> <span class="o">=</span> <span class="bp">False</span>
+
         <span class="c1"># start getting data</span>
         <span class="c1"># stop when &#39;END&#39; gets put in the queue</span>
         <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="s1">&#39;END&#39;</span><span class="p">):</span>
+
             <span class="c1"># wrap everything in try because this thread shouldn&#39;t crash</span>
             <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># if we get continuous data, this should be simple because we always get a whole row</span>
+                <span class="c1"># there must be a more elegant way to check if something is a key and it is true...</span>
+                <span class="c1"># yet here we are</span>
+                <span class="k">if</span> <span class="s1">&#39;continuous&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">continuous_table</span><span class="p">:</span>
+                        <span class="c1"># TODO log this</span>
+                        <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Received continuous data, but no continuous data descriptor was specified in task.</span><span class="se">\n</span><span class="s1">received data: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">continuous_keys</span><span class="p">:</span>
+                                <span class="n">continuous_row</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+                        <span class="c1"># also store session</span>
+                        <span class="n">continuous_row</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
+                        <span class="n">continuous_row</span><span class="o">.</span><span class="n">append</span><span class="p">()</span>
+
+                    <span class="c1"># continue with data processing loop</span>
+                    <span class="k">continue</span>
+
+
+
                 <span class="c1"># Check if this is the same</span>
                 <span class="c1"># if we&#39;ve already recorded a trial number for this row,</span>
                 <span class="c1"># and the trial number we just got is not the same,</span>
                 <span class="c1"># we edit that row if we already have some data on it or else start a new row</span>
                 <span class="k">if</span> <span class="s1">&#39;trial_num&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                     <span class="k">if</span> <span class="p">(</span><span class="n">trial_row</span><span class="p">[</span><span class="s1">&#39;trial_num&#39;</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span><span class="n">trial_row</span><span class="p">[</span><span class="s1">&#39;trial_num&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;trial_num&#39;</span><span class="p">]):</span>
+
                         <span class="c1"># find row with this trial number if it exists</span>
-                        <span class="n">other_row</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">trial_table</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;trial_num == {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;trial_num&#39;</span><span class="p">]))]</span>
                         <span class="c1"># this will return a list of rows with matching trial_num.</span>
                         <span class="c1"># if it&#39;s empty, we didn&#39;t receive a TRIAL_END and should create a new row</span>
+                        <span class="n">other_row</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">trial_table</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;trial_num == {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;trial_num&#39;</span><span class="p">]))]</span>
+
                         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">other_row</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                            <span class="n">trial_row</span><span class="o">.</span><span class="n">append</span><span class="p">()</span>
                             <span class="c1"># proceed to fill the row below</span>
+                            <span class="n">trial_row</span><span class="o">.</span><span class="n">append</span><span class="p">()</span>
+
                         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">other_row</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                             <span class="c1"># update the row and continue so we don&#39;t double write</span>
                             <span class="c1"># have to be in the middle of iteration to use update()</span>
@@ -993,13 +1033,13 @@
                                     <span class="n">row</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
                                 <span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
                             <span class="k">continue</span>
+
                         <span class="k">else</span><span class="p">:</span>
                             <span class="c1"># we have more than one row with this trial_num.</span>
                             <span class="c1"># shouldn&#39;t happen, but we dont&#39; want to throw any data away</span>
                             <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;Found multiple rows with same trial_num: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;trial_num&#39;</span><span class="p">]))</span>
                             <span class="c1"># continue just for data conservancy&#39;s sake</span>
                             <span class="n">trial_row</span><span class="o">.</span><span class="n">append</span><span class="p">()</span>
-
 
                 <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="c1"># some bug where some columns are not always detected,</span>

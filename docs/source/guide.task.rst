@@ -753,9 +753,11 @@ It creates a ``stages`` iterator with a function that returns nothing to fit in 
             self.hardware['WHEEL'].release()
             self.stage_block.set()
 
+.. _wheel_guide_one:
 
 A Very Smart Wheel
 ------------------
+
 
 Most of the Child's contribution to the task is performed by the :class:`~autopilot.core.hardware.Wheel` object.
 

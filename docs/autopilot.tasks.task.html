@@ -169,7 +169,15 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.hardware.html#gpio-with-pigpio">GPIO with pigpio</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.hardware.html#input-beambreak">Input - Beambreak</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.hardware.html#output-led-rgb">Output - LED_RGB</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.hardware.html#usb-hardware-with-inputs">USB Hardware with inputs</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
 <ul class="current">
@@ -179,7 +187,7 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">mouse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">subject</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
 </ul>
@@ -306,7 +314,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><a class="reference internal" href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.PARAMS" title="autopilot.tasks.free_water.Free_Water.PARAMS"><strong>PARAMS</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/collections.html#collections.OrderedDict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.OrderedDict</span></code></a>) – <p>Params to define task, like:</p>
+<li><a class="reference internal" href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PARAMS" title="autopilot.tasks.nafc.Nafc.PARAMS"><strong>PARAMS</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/collections.html#collections.OrderedDict" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.OrderedDict</span></code></a>) – <p>Params to define task, like:</p>
 <p>PARAMS = odict()
 PARAMS[‘reward’]         = {‘tag’:’Reward Duration (ms)’,</p>
 <blockquote>
@@ -316,7 +324,7 @@ PARAMS[‘reward’]         = {‘tag’:’Reward Duration (ms)’,</p>
 <dd>’type’:’bool’}</dd>
 </dl>
 </li>
-<li><a class="reference internal" href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.HARDWARE" title="autopilot.tasks.free_water.Free_Water.HARDWARE"><strong>HARDWARE</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>dict for necessary hardware, like:</p>
+<li><a class="reference internal" href="#autopilot.tasks.task.Task.HARDWARE" title="autopilot.tasks.task.Task.HARDWARE"><strong>HARDWARE</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>dict for necessary hardware, like:</p>
 <dl class="docutils">
 <dt>HARDWARE = {</dt>
 <dd><dl class="first docutils">
@@ -332,7 +340,7 @@ PARAMS[‘reward’]         = {‘tag’:’Reward Duration (ms)’,</p>
 </dl>
 <p>}</p>
 </li>
-<li><a class="reference internal" href="#autopilot.tasks.task.Task.PLOT" title="autopilot.tasks.task.Task.PLOT"><strong>PLOT</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>Dict of plotting parameters, like:</p>
+<li><a class="reference internal" href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PLOT" title="autopilot.tasks.nafc.Nafc.PLOT"><strong>PLOT</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>Dict of plotting parameters, like:</p>
 <dl class="docutils">
 <dt>PLOT = {</dt>
 <dd><dl class="first docutils">
@@ -362,7 +370,7 @@ bailed = tables.Int32Col()</dd>
 </dl>
 </li>
 <li><a class="reference internal" href="#autopilot.tasks.task.Task.STAGE_NAMES" title="autopilot.tasks.task.Task.STAGE_NAMES"><strong>STAGE_NAMES</strong></a> (<em>list</em>) – List of stage method names</li>
-<li><strong>stage_block</strong> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Signal when task stages complete.</li>
+<li><a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.stage_block" title="autopilot.core.pilot.autopilot.stage_block"><strong>stage_block</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Signal when task stages complete.</li>
 <li><strong>punish_stim</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Do a punishment stimulus</li>
 <li><strong>stages</strong> (<em>iterator</em>) – Some generator or iterator that continuously returns the next stage method of a trial</li>
 <li><strong>triggers</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Some mapping of some pin to callback methods</li>
