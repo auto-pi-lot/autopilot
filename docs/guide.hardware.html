@@ -169,7 +169,15 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Writing a Hardware Class</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Writing a Hardware Class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#gpio-with-pigpio">GPIO with pigpio</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#input-beambreak">Input - Beambreak</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#output-led-rgb">Output - LED_RGB</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#usb-hardware-with-inputs">USB Hardware with inputs</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
 <ul>
@@ -282,6 +290,228 @@
             
   <div class="section" id="writing-a-hardware-class">
 <span id="guide-hardware"></span><h1>Writing a Hardware Class<a class="headerlink" href="#writing-a-hardware-class" title="Permalink to this headline">¶</a></h1>
+<p>There are precious few requirements for <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware" title="autopilot.core.hardware.Hardware"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hardware</span></code></a> objects in Autopilot.</p>
+<ul class="simple">
+<li>Each class should have a <code class="docutils literal notranslate"><span class="pre">release()</span></code> method that stops any running threads and releases any system resources – especially those held by pigpio.</li>
+<li><dl class="first docutils">
+<dt>Each class should define a handful of class attributes when relevant</dt>
+<dd><ul class="first last">
+<li><code class="docutils literal notranslate"><span class="pre">trigger</span></code> (bool) - whether the device is used to trigger an event. if <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">assign_cb()</span></code> must be defined and the device will be given a callback function by the instantiating <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> class</li>
+<li><code class="docutils literal notranslate"><span class="pre">type</span></code> (str) - what this device should be known as in <code class="docutils literal notranslate"><span class="pre">prefs</span></code>. Not enforced currently, but will be.</li>
+<li><code class="docutils literal notranslate"><span class="pre">input</span></code> and <code class="docutils literal notranslate"><span class="pre">output</span></code> (bool) - whether the device is an input or output device, if either</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>When making threaded methods, care should be taken not to spawn an excessive number of running threads, but this is a performance rather than a structural limit.</li>
+</ul>
+<p>To use a hardware object in a task, its parameters (especially the pin number for pigpio-based hardware) should be
+stored in <code class="docutils literal notranslate"><span class="pre">prefs.json</span></code>.</p>
+<p>A few basic Hardware classes are dissected in this section to illustrate basic principles of their design,
+but we expect Hardware objects to be extremely variable in their implementation and application.</p>
+<div class="section" id="gpio-with-pigpio">
+<h2>GPIO with pigpio<a class="headerlink" href="#gpio-with-pigpio" title="Permalink to this headline">¶</a></h2>
+<p>Autopilot uses <a class="reference external" href="http://abyz.me.uk/rpi/pigpio/">pigpio</a> to interface with the Raspberry Pi’s GPIO pins.
+All <a class="reference external" href="http://abyz.me.uk/rpi/pigpio/">pigpio</a> objects require that a pigpiod daemon is running as a background
+process. Typically this is managed by systemd or the launch script generated for Pilots.</p>
+<p>When instantiating a piece of hardware, it must connect to pigpiod by creating a <a class="reference external" href="http://abyz.me.uk/rpi/pigpio/python.html#pigpio.pi">pigpio.pi</a> object,
+which allows communication with the GPIO.</p>
+<div class="section" id="input-beambreak">
+<h3>Input - Beambreak<a class="headerlink" href="#input-beambreak" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak" title="autopilot.core.hardware.Beambreak"><code class="xref py py-class docutils literal notranslate"><span class="pre">Beambreak</span></code></a> class is a digital input class that registers (by default)
+a high-to-low logic transition and calls a callback function. When it is initialized, it
+connects to a GPIO pin, configures it for input, and sets the pull-up (or down) resistor.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Beambreak</span><span class="p">(</span><span class="n">Hardware</span><span class="p">):</span>
+    <span class="c1"># this class description has been simplified for clarity</span>
+
+    <span class="n">trigger</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="nb">type</span>    <span class="o">=</span> <span class="s1">&#39;POKES&#39;</span>
+    <span class="nb">input</span>   <span class="o">=</span> <span class="bp">True</span>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="p">,</span> <span class="n">pull_ud</span><span class="o">=</span><span class="s1">&#39;U&#39;</span><span class="p">,</span> <span class="n">trigger_ud</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="n">event</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="c1"># Make pigpio instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span> <span class="o">=</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">pi</span><span class="p">()</span>
+
+        <span class="c1"># Convert pin from board to bcm numbering</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin</span> <span class="o">=</span> <span class="n">BOARD_TO_BCM</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">)]</span>
+
+        <span class="c1"># save which direction our trigger should be</span>
+        <span class="c1"># TRIGGER_MAP takes string directions - eg. &#39;D&#39; for &#39;Down&#39;</span>
+        <span class="c1"># or falling edge detection - and converts them to</span>
+        <span class="c1"># pigpio constants</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trigger_ud</span> <span class="o">=</span> <span class="n">TRIGGER_MAP</span><span class="p">[</span><span class="n">trigger_ud</span><span class="p">]</span>
+
+        <span class="c1"># Setup pin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">INPUT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_pull_up_down</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pull_ud</span><span class="p">)</span>
+
+        <span class="c1"># create empty list of callbacks</span>
+        <span class="c1"># (to handle multiple callbacks, if needed)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span> <span class="o">=</span> <span class="p">[]</span>
+</pre></div>
+</div>
+<p>Since <code class="docutils literal notranslate"><span class="pre">trigger</span> <span class="pre">==</span> <span class="pre">True</span></code>, the instantiating task class will try to give it a method to call
+to handle the trigger. We redefine <code class="docutils literal notranslate"><span class="pre">assign_cb()</span></code> to make use of pigpio’s callback functionality.
+Since pigpio can handle multiple callback functions, one can optionally specify <code class="docutils literal notranslate"><span class="pre">add=True</span></code>
+to prevent any previous callbacks from being cleared. This has been omitted in this example for clarity,
+but can be inspected in the API documentation for the <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak" title="autopilot.core.hardware.Beambreak"><code class="xref py py-class docutils literal notranslate"><span class="pre">Beambreak</span></code></a> class.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">assign_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_fn</span><span class="p">):</span>
+    <span class="n">cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger_ud</span><span class="p">,</span> <span class="n">callback_fn</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To clean up the connection to the pin made by this instance of the object, we must also redefine
+the <code class="docutils literal notranslate"><span class="pre">release</span></code> method. We also redefine <code class="docutils literal notranslate"><span class="pre">__del__</span></code> to attempt cleanup if the object is garbage-collected
+without explicitly calling <code class="docutils literal notranslate"><span class="pre">release()</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="output-led-rgb">
+<h3>Output - LED_RGB<a class="headerlink" href="#output-led-rgb" title="Permalink to this headline">¶</a></h3>
+<p>This <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.LED_RGB" title="autopilot.core.hardware.LED_RGB"><code class="xref py py-class docutils literal notranslate"><span class="pre">LED_RGB</span></code></a> class is a bit different. It’s an output device, yes, but it also manages
+multiple pins, uses pulse-width modulation rather than strict binary logic, and
+has a few extra tricks up its sleeve.</p>
+<p>Its initialization is similar to <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Beambreak" title="autopilot.core.hardware.Beambreak"><code class="xref py py-class docutils literal notranslate"><span class="pre">Beambreak</span></code></a> except we add
+a few <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a> s to handle threaded lighting routines. LEDs can either be
+<a class="reference external" href="https://forum.digikey.com/t/common-anode-vs-common-cathode/808">common anode or common cathode</a>
+which affects the polarity of the pulse-width modulated signal, but handling different LED polarity
+has been omitted for brevity.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">LED_RGB</span><span class="p">(</span><span class="n">Hardware</span><span class="p">):</span>
+    <span class="c1"># this class has also been simplified for clarity</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;LEDS&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pins</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+
+        <span class="c1"># Dict to store color for after flash trains</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stored_color</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Event to wait on setting colors if we&#39;re flashing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flash_block</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flash_block</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+        <span class="c1"># Event to kill the flash thread if the object is deleted</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_thread</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="c1"># Initialize connection to pigpio daemon</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span> <span class="o">=</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">pi</span><span class="p">()</span>
+
+        <span class="c1"># Convert to BCM numbers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pins</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">BOARD_TO_BCM</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="c1"># set pin mode to output and make sure they&#39;re turned off</span>
+        <span class="k">for</span> <span class="n">pin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">OUTPUT</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_PWM_dutycycle</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Setting colors is straightforward - we are given a length-3 tuple of 8-bit (0-255) RGB color values
+and set the pulse-width modulated duty cycle accordingly. We use a recursive <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Timer" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Timer</span></code></a>
+in order to manage timed light flashes – after some duration, the <cite>set_color()</cite> method is called
+turning the lights off.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">timed</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+
+    <span class="c1"># unpack color</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;r&#39;</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s1">&#39;g&#39;</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">2</span><span class="p">])}</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">color</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_PWM_dutycycle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="c1"># If this is is a timed blink, start thread to turn led off</span>
+    <span class="k">if</span> <span class="n">timed</span><span class="p">:</span>
+        <span class="c1"># timed should be a float or int specifying the delay in ms</span>
+        <span class="n">offtimer</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">timed</span><span class="p">)</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">set_color</span><span class="p">,</span>
+                                   <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;col&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]})</span>
+        <span class="n">offtimer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>In order to implement flash trains or other rapid sequences of lights, we make a
+<code class="docutils literal notranslate"><span class="pre">color_series</span></code> method that takes a list of rgb tuples and either a single duration (which
+is applied to all colors in the series) or a series of durations of equal length to the list of colors.</p>
+<p><code class="docutils literal notranslate"><span class="pre">color_series</span></code> is a convenience function that spawns a thread to handle the color series without blocking.
+The actual <code class="docutils literal notranslate"><span class="pre">threaded_color_series</span></code> method has a few extra bells and whistles to make sure
+series don’t overlap with one another, it is simplified here to illustrate the principle.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">color_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">durations</span><span class="p">):</span>
+    <span class="n">series_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">threaded_color_series</span><span class="p">,</span>
+                                     <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
+                                        <span class="s1">&#39;colors&#39;</span>   <span class="p">:</span> <span class="n">colors</span><span class="p">,</span>
+                                        <span class="s1">&#39;durations&#39;</span> <span class="p">:</span> <span class="n">durations</span>
+                                     <span class="p">})</span>
+    <span class="n">series_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">threaded_color_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">durations</span><span class="p">):</span>
+    <span class="c1"># assume len(colors) == len(duration)</span>
+    <span class="c1"># for this example. Iterate through both, setting colors</span>
+    <span class="k">for</span> <span class="n">color</span><span class="p">,</span> <span class="n">duration</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">colors</span><span class="p">,</span> <span class="n">durations</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">duration</span><span class="o">/</span><span class="mf">1000.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With one more layer of abstraction we can create a <code class="docutils literal notranslate"><span class="pre">flash</span></code> method that lets us cycle through
+colors with a specific frequency rather than by defining color and duration series by hand</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">flash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="p">((</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))):</span>
+
+    <span class="c1"># Get number of flashes in duration rounded down</span>
+    <span class="n">n_rep</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">/</span> <span class="mf">1000.0</span> <span class="o">*</span> <span class="n">frequency</span><span class="p">)</span>
+
+    <span class="c1"># Invert frequency to duration for single flash</span>
+    <span class="c1"># divide by 2 b/c each &#39;color&#39; is half the duration</span>
+    <span class="n">single_dur</span> <span class="o">=</span> <span class="p">((</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">frequency</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.</span>
+
+    <span class="c1"># make tuples of flashes and durations</span>
+    <span class="n">flashes</span> <span class="o">=</span> <span class="n">colors</span> <span class="o">*</span> <span class="n">n_rep</span>
+    <span class="n">durations</span> <span class="o">=</span> <span class="p">[</span><span class="n">duration</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_rep</span>
+
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">color_series</span><span class="p">(</span><span class="n">flashes</span><span class="p">,</span> <span class="n">durations</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">release</span></code> function is also the same, we just make sure to turn the LEDs off before we leave them</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">set_color</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="usb-hardware-with-inputs">
+<h2>USB Hardware with inputs<a class="headerlink" href="#usb-hardware-with-inputs" title="Permalink to this headline">¶</a></h2>
+<p>USB hardware logic is much more variable than GPIO-based hardware, so we’ll wait for you to help
+us with good examples!</p>
+<p>For example, the <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel" title="autopilot.core.hardware.Wheel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wheel</span></code></a> class
+discussed previously in <a class="reference internal" href="guide.task.html#wheel-guide-one"><span class="std std-ref">A Very Smart Wheel</span></a> reads mouse events with the <a class="reference external" href="https://inputs.readthedocs.io/en/latest/">inputs</a>
+package like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">inputs</span> <span class="kn">import</span> <span class="n">devices</span>
+
+<span class="n">mouse</span> <span class="o">=</span> <span class="n">devices</span><span class="o">.</span><span class="n">mice</span><span class="p">[</span><span class="n">some_index_for_your_mouse</span><span class="p">]</span>
+<span class="n">event</span> <span class="o">=</span> <span class="n">mouse</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>the <code class="docutils literal notranslate"><span class="pre">event</span></code> object has three attributes of interest, <code class="docutils literal notranslate"><span class="pre">event.state</span></code>, <code class="docutils literal notranslate"><span class="pre">event.code</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">event.timestamp</span></code>. The <code class="docutils literal notranslate"><span class="pre">code</span></code> tells us if the event was a movement (ie. <code class="docutils literal notranslate"><span class="pre">REL_X</span></code> or <code class="docutils literal notranslate"><span class="pre">REL_Y</span></code>
+in the case of computer mice, as opposed to click events), and the <code class="docutils literal notranslate"><span class="pre">state</span></code> tells us how much.</p>
+<p>The <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel" title="autopilot.core.hardware.Wheel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wheel</span></code></a> class then creates a numpy array of movements like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># filter events</span>
+<span class="n">events</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">events</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;REL_X&#39;</span><span class="p">,</span> <span class="s1">&#39;REL_Y)]</span>
+
+<span class="c1"># extract tuples of attributes</span>
+<span class="n">events</span> <span class="o">=</span> <span class="p">[(</span><span class="n">e</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">events</span><span class="p">]</span>
+
+<span class="c1"># convert to numpy array</span>
+<span class="n">events</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 

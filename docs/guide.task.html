@@ -169,7 +169,15 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.hardware.html#gpio-with-pigpio">GPIO with pigpio</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.hardware.html#input-beambreak">Input - Beambreak</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.hardware.html#output-led-rgb">Output - LED_RGB</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.hardware.html#usb-hardware-with-inputs">USB Hardware with inputs</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation:</span></p>
 <ul>
@@ -931,7 +939,7 @@ wrapper around a <a class="reference internal" href="autopilot.core.hardware.htm
 </div>
 </div>
 <div class="section" id="a-very-smart-wheel">
-<h3>A Very Smart Wheel<a class="headerlink" href="#a-very-smart-wheel" title="Permalink to this headline">¶</a></h3>
+<span id="wheel-guide-one"></span><h3>A Very Smart Wheel<a class="headerlink" href="#a-very-smart-wheel" title="Permalink to this headline">¶</a></h3>
 <p>Most of the Child’s contribution to the task is performed by the <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Wheel" title="autopilot.core.hardware.Wheel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wheel</span></code></a> object.</p>
 <p>The Wheel accesses a USB mouse connected to the Pilot,
 continuously collects its movements, and reports them back to the
@@ -1124,6 +1132,7 @@ functions for the task in a cycle</p>
     <span class="k">return</span> <span class="n">data</span>
 </pre></div>
 </div>
+<p>Viola.</p>
 </div>
 </div>
 </div>
