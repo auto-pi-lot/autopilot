@@ -77,6 +77,7 @@ from inputs import devices
 
 import threading
 import time
+import struct
 from datetime import datetime
 import numpy as np
 if sys.version_info >= (3,0):
@@ -1135,7 +1136,7 @@ class I2C_9DOF(Hardware):
     _GYRO_DPS_DIGIT_245DPS = 0.00875
     _GYRO_DPS_DIGIT_500DPS = 0.01750
     _GYRO_DPS_DIGIT_2000DPS = 0.07000
-    _TEMP_LSB_DEGREE_CELSIUS = 8  # 1°C = 8, 25° = 200, etc.
+    _TEMP_LSB_DEGREE_CELSIUS = 8  # 1C = 8, 25 = 200, etc.
     _REGISTER_WHO_AM_I_XG = 0x0F
     _REGISTER_CTRL_REG1_G = 0x10
     _REGISTER_CTRL_REG2_G = 0x11
@@ -1217,6 +1218,65 @@ class I2C_9DOF(Hardware):
         self.pig.i2c_write_byte_data(self.magnet, self._REGISTER_CTRL_REG3_M, 0x00)
 
 
+        # set accelerometer range
+        self.accel_range = self.ACCELRANGE_2G
+
+    @property
+    def accel_range(self):
+        """The accelerometer range.  Must be a value of:
+          - ACCELRANGE_2G
+          - ACCELRANGE_4G
+          - ACCELRANGE_8G
+          - ACCELRANGE_16G
+        """
+        reg = self.pig.i2c_read_byte_data(self.accel, self._REGISTER_CTRL_REG6_XL)
+        return (reg & 0b00011000) & 0xFF
+
+    @accel_range.setter
+    def accel_range(self, val):
+        assert val in (self.ACCELRANGE_2G, self.ACCELRANGE_4G,
+                       self.ACCELRANGE_8G, self.ACCELRANGE_16G)
+        reg = self.pig.i2c_read_byte_data(self.accel, self._REGISTER_CTRL_REG6_XL)
+
+
+        reg = (reg & ~(0b00011000)) & 0xFF
+        reg |= val
+        self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG6_XL, reg)
+        if val == self.ACCELRANGE_2G:
+            self._accel_mg_lsb = self._ACCEL_MG_LSB_2G
+        elif val == self.ACCELRANGE_4G:
+            self._accel_mg_lsb = self._ACCEL_MG_LSB_4G
+        elif val == self.ACCELRANGE_8G:
+            self._accel_mg_lsb = self._ACCEL_MG_LSB_8G
+        elif val == self.ACCELRANGE_16G:
+            self._accel_mg_lsb = self._ACCEL_MG_LSB_16G
+
+    def read_accel(self):
+        """
+        Read the raw (unscaled) accelerometer data
+
+        Returns:
+            accel (tuple): x, y, z acceleration
+        """
+
+        # taking some code from the pigpio examples
+        # http://abyz.me.uk/rpi/pigpio/code/i2c_ADXL345_py.zip
+        # and adapting with the sparkfun code in main docstring
+        (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_XL, 6)
+        if s >= 0:
+            return struct.unpack('<3h', buffer(b))
+
+    @property
+    def acceleration(self):
+        """
+        The calibrated  x, y, z acceleration in m/s^2
+
+        Returns:
+            accel (tuple): x, y, z acceleration
+
+        """
+        raw = self.read_accel()
+        return map(lambda x: x*self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD, raw)
 
 
 
