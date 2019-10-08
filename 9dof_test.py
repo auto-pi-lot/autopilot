@@ -1,3 +1,4 @@
+import pigpio
 import struct
 
 class I2C_9DOF(object):
