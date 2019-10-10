@@ -220,7 +220,7 @@ class Camera_Spin(object):
         out_dir = self.tmp_dir(new=True)
         frame_n = 0
         # TODO: Get this from prefs, just testing this
-        out_vid_fn = "{}_{}.mp4".format(self.serial, datetime.now().strftime("%y%m%d-%H%M%S"))
+        out_vid_fn = os.path.join(os.path.expanduser('~'), "{}_{}.mp4".format(self.serial, datetime.now().strftime("%y%m%d-%H%M%S")))
 
         vid_out = io.FFmpegWriter(out_vid_fn,
             inputdict={
