@@ -1118,7 +1118,8 @@ class I2C_9DOF(Hardware):
     - SDA: I2C.1 SDA (pin 3)
     - SCL: I2C.1 SCL (pin 5)
 
-    This class uses code from the `Adafruit Circuitfun <https://github.com/adafruit/Adafruit_CircuitPython_LSM9DS1>`_ library
+    This class uses code from the `Adafruit Circuitfun <https://github.com/adafruit/Adafruit_CircuitPython_LSM9DS1>`_ library,
+    modified to use pigpio
     """
 
     _ADDRESS_ACCELGYRO = 0x6B
