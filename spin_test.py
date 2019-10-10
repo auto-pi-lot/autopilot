@@ -97,8 +97,15 @@ class Camera_Spin(object):
             self.cam.AcquisitionFrameRate.SetValue(fps)
 
 
+    @property
+    def bin(self):
+        return (self.cam.BinningHorizontal.GetValue(), self.cam.BinningHorizontal.GetValue())
 
-
+    @bin.setter
+    def bin(self, new_bin):
+        # TODO: Check if acquiring yno
+        self.cam.BinningHorizontal.SetValue(int(new_bin[0]))
+        self.cam.BinningVertical.SetValue(int(new_bin[1]))
 
 
     @property
@@ -152,7 +159,8 @@ class Camera_Spin(object):
         self.cam.EndAcquisition()
 
         # compute returns
-        fps = 1./np.diff(ifi)
+        # ifi is in nanoseconds...
+        fps = 1./(np.diff(ifi)/1e3)
         mean_fps = np.mean(fps)
         sd_fps = np.std(fps)
 
@@ -173,7 +181,7 @@ class Camera_Spin(object):
 
     def release(self):
         # FIXME: Should check if finished writing to video before deleting tmp dir
-        os.rmdir(self.tmp_dir)
+        #os.rmdir(self.tmp_dir)
         self.cam.DeInit()
         self.cam_list.Clear()
         del self.cam
