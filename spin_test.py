@@ -116,7 +116,6 @@ class Camera_Spin(object):
         self._frame = None
 
 
-
     @property
     def bin(self):
         return (self.cam.BinningHorizontal.GetValue(), self.cam.BinningHorizontal.GetValue())
@@ -207,7 +206,7 @@ class Camera_Spin(object):
 
         # compute returns
         # ifi is in nanoseconds...
-        fps = 1./(np.diff(ifi))
+        fps = 1./(np.diff(ifi)/1e3)
         mean_fps = np.mean(fps)
         sd_fps = np.std(fps)
 
