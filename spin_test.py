@@ -282,8 +282,8 @@ class Camera_Spin(object):
 
         self.system.ReleaseInstance()
 
-acam = Camera_Spin(fps=100)
-print('camera instantiated as \'acam\'')
+#acam = Camera_Spin(fps=100)
+#print('camera instantiated as \'acam\'')
 
 
 
