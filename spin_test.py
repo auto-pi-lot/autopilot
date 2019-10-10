@@ -158,10 +158,13 @@ class Camera_Spin(object):
         ifi = []
 
         # start a writer to stash frames
-        if writer:
-            self.write_q = Queue()
-            self.writer = threading.Thread(target=self._writer, args=(self.write_q,))
-            self.writer.start()
+        try:
+            if writer:
+                self.write_q = Queue()
+                self.writer = threading.Thread(target=self._writer, args=(self.write_q,))
+                self.writer.start()
+        except Exception as e:
+            print(e)
 
         while frame < n_frames:
             img = self.cam.GetNextImage()
