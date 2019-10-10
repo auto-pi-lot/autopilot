@@ -240,12 +240,17 @@ class Camera_Spin(object):
 
 
         for img in iter(q.get, 'END'):
-            #fname = os.path.join(out_dir, "{}_{:06d}.tif".format(self.serial, frame_n))
-            #img.Save(fname)
-            img_arr = img.GetNDArray()
-            #print(img_arr.shape)
-            vid_out.writeFrame(img_arr)
-            img.Release()
+            try:
+                #fname = os.path.join(out_dir, "{}_{:06d}.tif".format(self.serial, frame_n))
+                #img.Save(fname)
+                img_arr = img.GetNDArray()
+                #print(img_arr.shape)
+                vid_out.writeFrame(img_arr)
+                img.Release()
+            except:
+                # TODO: do this better
+                pass
+
 
         vid_out.close()
         # convert to video
