@@ -23,19 +23,20 @@ class Camera_Spin(object):
 
     """
 
-    def __init__(self, cam_serial=None, bin=(4, 4), fps=None, exposure=0.9):
+    def __init__(self, serial=None, bin=(4, 4), fps=None, exposure=0.9):
         """
 
 
         Args:
-            cam_serial (str): Serial number of the camera to be initialized
+            serial (str): Serial number of the camera to be initialized
             bin (tuple): How many pixels to bin (Horizontally, Vertically).
             fps (int): frames per second. If None, automatic exposure and continuous acquisition are used.
             exposure (int, float): Either a float from 0-1 to set the proportion of the frame interval (0.9 is default) or absolute time in us
         """
 
         # FIXME: Hardcoding just for testing
-        cam_serial = '19269891'
+        serial = '19269891'
+        self.serial = serial
 
         # find our camera!
         # get the spinnaker system handle
@@ -43,12 +44,12 @@ class Camera_Spin(object):
         # need to hang on to camera list for some reason, could be cargo cult code
         self.cam_list = self.system.GetCameras()
 
-        if cam_serial:
-            self.cam = self.cam_list.GetBySerial(cam_serial)
+        if self.serial:
+            self.cam = self.cam_list.GetBySerial(self.serial)
         else:
             Warning(
                 'No camera serial number provided, trying to get the first camera.\nAddressing cameras by serial number is STRONGLY recommended to avoid randomly using the wrong one')
-            cam_serial = 'noserial'
+            self.serial = 'noserial'
             self.cam = self.cam_list.GetByIndex(0)
 
         # initialize the cam - need to do this before messing w the values
@@ -162,7 +163,7 @@ class Camera_Spin(object):
         ##########################
         # make a temporary directory to save images into
         self.tmp_dir = os.path.join(os.path.expanduser('~'),
-                                    '.tmp_capture_{}_{}'.format(cam_serial, datetime.now().strftime("%y%m%d-%H%M%S")))
+                                    '.tmp_capture_{}_{}'.format(self.serial, datetime.now().strftime("%y%m%d-%H%M%S")))
         os.mkdir(self.tmp_dir)
 
 
