@@ -7,6 +7,12 @@ import time
 from datetime import datetime
 import PySpin
 import os
+import sys
+from tqdm import tqdm
+from skvideo import io
+
+from Queue import Queue
+import threading
 
 
 
@@ -95,6 +101,7 @@ class Camera_Spin(object):
         if fps:
             self.cam.AcquisitionFrameRateEnable.SetValue(True)
             self.cam.AcquisitionFrameRate.SetValue(fps)
+        self.fps = fps
 
 
     @property
@@ -129,7 +136,7 @@ class Camera_Spin(object):
 
         return info_dict
 
-    def fps_test(self, n_frames=1000):
+    def fps_test(self, n_frames=1000, writer=True):
         """
         Try to acquire frames, return mean fps and inter-frame intervals
 
@@ -150,13 +157,24 @@ class Camera_Spin(object):
         # list of inter-frame intervals
         ifi = []
 
+        # start a writer to stash frames
+        try:
+            if writer:
+                self.write_q = Queue()
+                self.writer = threading.Thread(target=self._writer, args=(self.write_q,))
+                self.writer.start()
+        except Exception as e:
+            print(e)
+
         while frame < n_frames:
             img = self.cam.GetNextImage()
-            ifi.append(img.GetTimeStamp() / float(1e6))
-            img.Release()
+            ifi.append(img.GetTimeStamp() / float(1e9))
+            self.write_q.put_nowait(img)
+            #img.Release()
             frame += 1
 
         self.cam.EndAcquisition()
+        self.write_q.put_nowait('END')
 
         # compute returns
         # ifi is in nanoseconds...
@@ -164,15 +182,75 @@ class Camera_Spin(object):
         mean_fps = np.mean(fps)
         sd_fps = np.std(fps)
 
+        print('Waiting on video writer...')
+
+        self.writer.join()
+
         return mean_fps, sd_fps, ifi
+
+    def tmp_dir(self, new=False):
+        if new or not hasattr(self, '_tmp_dir'):
+            self._tmp_dir = os.path.join(os.path.expanduser('~'),
+                                    '.tmp_capture_{}_{}'.format(self.serial, datetime.now().strftime("%y%m%d-%H%M%S")))
+            os.mkdir(self._tmp_dir)
+
+        return self._tmp_dir
+
+
 
     def _capture(self):
 
         ##########################
         # make a temporary directory to save images into
-        self.tmp_dir = os.path.join(os.path.expanduser('~'),
-                                    '.tmp_capture_{}_{}'.format(self.serial, datetime.now().strftime("%y%m%d-%H%M%S")))
-        os.mkdir(self.tmp_dir)
+        #self.tmp_dir = os.path.join(os.path.expanduser('~'),
+        #                            '.tmp_capture_{}_{}'.format(self.serial, datetime.now().strftime("%y%m%d-%H%M%S")))
+        #os.mkdir(self.tmp_dir)
+        pass
+
+    def _writer(self, q):
+        """
+        Thread to write frames to file, then compress to video.
+
+        Todo:
+            need to wrap this all up in capture method
+
+        Returns:
+
+        """
+        out_dir = self.tmp_dir(new=True)
+        frame_n = 0
+        # TODO: Get this from prefs, just testing this
+        out_vid_fn = os.path.join(os.path.expanduser('~'), "{}_{}.mp4".format(self.serial, datetime.now().strftime("%y%m%d-%H%M%S")))
+
+        vid_out = io.FFmpegWriter(out_vid_fn,
+            inputdict={
+                '-r': str(self.fps),
+        },
+            outputdict={
+                '-vcodec': 'libx264',
+                '-pix_fmt': 'yuv420p',
+                '-r': str(self.fps),
+                '-preset': 'fast'
+            },
+            verbosity=1
+        )
+
+
+        for img in iter(q.get, 'END'):
+            #fname = os.path.join(out_dir, "{}_{:06d}.tif".format(self.serial, frame_n))
+            #img.Save(fname)
+            img_arr = img.GetNDArray()
+            #print(img_arr.shape)
+            vid_out.writeFrame(img_arr)
+            img.Release()
+
+        vid_out.close()
+        # convert to video
+
+
+
+
+
 
 
     def __del__(self):
@@ -182,10 +260,18 @@ class Camera_Spin(object):
     def release(self):
         # FIXME: Should check if finished writing to video before deleting tmp dir
         #os.rmdir(self.tmp_dir)
-        self.cam.DeInit()
-        self.cam_list.Clear()
-        del self.cam
-        del self.cam_list
+        try:
+            self.cam.DeInit()
+            del self.cam
+        except AttributeError:
+            pass
+
+        try:
+            self.cam_list.Clear()
+            del self.cam_list
+        except AttributeError:
+            pass
+
         self.system.ReleaseInstance()
 
 
