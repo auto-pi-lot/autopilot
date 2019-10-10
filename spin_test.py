@@ -169,12 +169,14 @@ class Camera_Spin(object):
         while frame < n_frames:
             img = self.cam.GetNextImage()
             ifi.append(img.GetTimeStamp() / float(1e9))
-            self.write_q.put_nowait(img)
+            if writer:
+                self.write_q.put_nowait(img)
             #img.Release()
             frame += 1
 
         self.cam.EndAcquisition()
-        self.write_q.put_nowait('END')
+        if writer:
+            self.write_q.put_nowait('END')
 
         # compute returns
         # ifi is in nanoseconds...
@@ -182,9 +184,10 @@ class Camera_Spin(object):
         mean_fps = np.mean(fps)
         sd_fps = np.std(fps)
 
-        print('Waiting on video writer...')
+        if writer:
+            print('Waiting on video writer...')
 
-        self.writer.join()
+            self.writer.join()
 
         return mean_fps, sd_fps, ifi
 
@@ -274,7 +277,8 @@ class Camera_Spin(object):
 
         self.system.ReleaseInstance()
 
-
+acam = Camera_Spin(fps=100)
+print('camera instantiated as \'acam\'')
 
 
 
