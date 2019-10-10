@@ -9,7 +9,7 @@ import PySpin
 import os
 import sys
 from tqdm import tqdm
-import skvideo
+from skvideo import io
 
 from Queue import Queue
 import threading
@@ -219,7 +219,7 @@ class Camera_Spin(object):
         # TODO: Get this from prefs, just testing this
         out_vid_fn = "{}_{}.mp4".format(self.serial, datetime.now().strftime("%y%m%d-%H%M%S"))
 
-        vid_out = skvideo.io.FFmpegWriter(out_vid_fn,
+        vid_out = io.FFmpegWriter(out_vid_fn,
             inputdict={
                 '-r': self.fps,
         },
