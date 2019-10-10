@@ -96,10 +96,7 @@ class Camera_Spin(object):
             self.cam.AcquisitionFrameRate.SetValue(fps)
 
 
-        ##########################
-        # make a temporary directory to save images into
-        self.tmp_dir = os.path.join(os.path.expanduser('~'), '.tmp_capture_{}_{}'.format(cam_serial, datetime.now().strftime("%y%m%d-%H%M%S")))
-        os.mkdir(self.tmp_dir)
+
 
 
 
@@ -161,7 +158,12 @@ class Camera_Spin(object):
         return mean_fps, sd_fps, ifi
 
     def _capture(self):
-        pass
+
+        ##########################
+        # make a temporary directory to save images into
+        self.tmp_dir = os.path.join(os.path.expanduser('~'),
+                                    '.tmp_capture_{}_{}'.format(cam_serial, datetime.now().strftime("%y%m%d-%H%M%S")))
+        os.mkdir(self.tmp_dir)
 
 
     def __del__(self):
