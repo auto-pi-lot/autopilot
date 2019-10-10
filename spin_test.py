@@ -232,7 +232,7 @@ class Camera_Spin(object):
         )
 
 
-        for img in iter(q, 'END'):
+        for img in iter(q.get, 'END'):
             #fname = os.path.join(out_dir, "{}_{:06d}.tif".format(self.serial, frame_n))
             #img.Save(fname)
             img_arr = img.GetNDArray()
