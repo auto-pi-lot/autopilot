@@ -29,7 +29,7 @@ class Camera_Spin(object):
 
     """
 
-    def __init__(self, serial=None, bin=(4, 4), fps=None, exposure=0.9):
+    def __init__(self, serial=None, bin=(4, 4), fps=None, exposure=None):
         """
 
 
@@ -169,22 +169,25 @@ class Camera_Spin(object):
         while frame < n_frames:
             img = self.cam.GetNextImage()
             ifi.append(img.GetTimeStamp() / float(1e9))
-            self.write_q.put_nowait(img)
+            if writer:
+                self.write_q.put_nowait(img)
             #img.Release()
             frame += 1
 
         self.cam.EndAcquisition()
-        self.write_q.put_nowait('END')
+        if writer:
+            self.write_q.put_nowait('END')
 
         # compute returns
         # ifi is in nanoseconds...
-        fps = 1./(np.diff(ifi)/1e3)
+        fps = 1./(np.diff(ifi))
         mean_fps = np.mean(fps)
         sd_fps = np.std(fps)
 
-        print('Waiting on video writer...')
+        if writer:
+            print('Waiting on video writer...')
 
-        self.writer.join()
+            self.writer.join()
 
         return mean_fps, sd_fps, ifi
 
@@ -237,12 +240,17 @@ class Camera_Spin(object):
 
 
         for img in iter(q.get, 'END'):
-            #fname = os.path.join(out_dir, "{}_{:06d}.tif".format(self.serial, frame_n))
-            #img.Save(fname)
-            img_arr = img.GetNDArray()
-            #print(img_arr.shape)
-            vid_out.writeFrame(img_arr)
-            img.Release()
+            try:
+                #fname = os.path.join(out_dir, "{}_{:06d}.tif".format(self.serial, frame_n))
+                #img.Save(fname)
+                img_arr = img.GetNDArray()
+                #print(img_arr.shape)
+                vid_out.writeFrame(img_arr)
+                img.Release()
+            except:
+                # TODO: do this better
+                pass
+
 
         vid_out.close()
         # convert to video
@@ -274,7 +282,8 @@ class Camera_Spin(object):
 
         self.system.ReleaseInstance()
 
-
+#acam = Camera_Spin(fps=100)
+#print('camera instantiated as \'acam\'')
 
 
 
