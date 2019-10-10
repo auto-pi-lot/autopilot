@@ -230,7 +230,7 @@ class Camera_Spin(object):
                 '-vcodec': 'libx264',
                 '-pix_fmt': 'yuv420p',
                 '-r': str(self.fps),
-                '-preset': 'fastest'
+                '-preset': 'fast'
             }
         )
 
@@ -239,6 +239,7 @@ class Camera_Spin(object):
             #fname = os.path.join(out_dir, "{}_{:06d}.tif".format(self.serial, frame_n))
             #img.Save(fname)
             img_arr = img.GetNDArray()
+            print(img_arr.shape)
             vid_out.writeFrame(img_arr)
             img.Release()
 
