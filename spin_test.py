@@ -29,7 +29,7 @@ class Camera_Spin(object):
 
     """
 
-    def __init__(self, serial=None, bin=(4, 4), fps=None, exposure=0.9):
+    def __init__(self, serial=None, bin=(4, 4), fps=None, exposure=None):
         """
 
 
@@ -178,7 +178,7 @@ class Camera_Spin(object):
 
         # compute returns
         # ifi is in nanoseconds...
-        fps = 1./(np.diff(ifi)/1e3)
+        fps = 1./(np.diff(ifi))
         mean_fps = np.mean(fps)
         sd_fps = np.std(fps)
 
