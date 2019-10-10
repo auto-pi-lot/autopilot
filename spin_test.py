@@ -231,7 +231,8 @@ class Camera_Spin(object):
                 '-pix_fmt': 'yuv420p',
                 '-r': str(self.fps),
                 '-preset': 'fast'
-            }
+            },
+            verbosity=1
         )
 
 
