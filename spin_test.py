@@ -221,12 +221,12 @@ class Camera_Spin(object):
 
         vid_out = io.FFmpegWriter(out_vid_fn,
             inputdict={
-                '-r': self.fps,
+                '-r': str(self.fps),
         },
             outputdict={
                 '-vcodec': 'libx264',
                 '-pix_fmt': 'yuv420p',
-                '-r': self.fps,
+                '-r': str(self.fps),
                 '-preset': 'fastest'
             }
         )
