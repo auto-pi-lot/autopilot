@@ -67,8 +67,12 @@ class Camera_Spin(object):
         # configure binning - should come before fps because fps is dependent on binning
         if bin:
             self.cam.BinningSelector.SetValue(PySpin.BinningSelector_All)
-            self.cam.BinningHorizontalMode.SetValue(PySpin.BinningHorizontalMode_Average)
-            self.cam.BinningVerticalMode.SetValue(PySpin.BinningVerticalMode_Average)
+            try:
+                self.cam.BinningHorizontalMode.SetValue(PySpin.BinningHorizontalMode_Average)
+                self.cam.BinningVerticalMode.SetValue(PySpin.BinningVerticalMode_Average)
+            except PySpin.SpinnakerException:
+                Warning('Average binning not supported, using sum')
+
             self.cam.BinningHorizontal.SetValue(int(bin[0]))
             self.cam.BinningVertical.SetValue(int(bin[1]))
 
@@ -169,6 +173,8 @@ class Camera_Spin(object):
         os.rmdir(self.tmp_dir)
         self.cam.DeInit()
         self.cam_list.Clear()
+        del self.cam
+        del self.cam_list
         self.system.ReleaseInstance()
 
 
