@@ -240,7 +240,7 @@ class Camera_Spin(object):
             #fname = os.path.join(out_dir, "{}_{:06d}.tif".format(self.serial, frame_n))
             #img.Save(fname)
             img_arr = img.GetNDArray()
-            print(img_arr.shape)
+            #print(img_arr.shape)
             vid_out.writeFrame(img_arr)
             img.Release()
 
