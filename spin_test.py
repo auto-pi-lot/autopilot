@@ -260,10 +260,18 @@ class Camera_Spin(object):
     def release(self):
         # FIXME: Should check if finished writing to video before deleting tmp dir
         #os.rmdir(self.tmp_dir)
-        self.cam.DeInit()
-        self.cam_list.Clear()
-        del self.cam
-        del self.cam_list
+        try:
+            self.cam.DeInit()
+            del self.cam
+        except AttributeError:
+            pass
+
+        try:
+            self.cam_list.Clear()
+            del self.cam_list
+        except AttributeError:
+            pass
+
         self.system.ReleaseInstance()
 
 
