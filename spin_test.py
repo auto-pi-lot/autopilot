@@ -174,7 +174,7 @@ class Camera_Spin(object):
             #img.Release()
             frame += 1
 
-        self.cam.EndAcquisition()
+
         if writer:
             self.write_q.put_nowait('END')
 
@@ -188,6 +188,8 @@ class Camera_Spin(object):
             print('Waiting on video writer...')
 
             self.writer.join()
+
+        self.cam.EndAcquisition()
 
         return mean_fps, sd_fps, ifi
 
