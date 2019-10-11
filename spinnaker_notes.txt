@@ -7,7 +7,7 @@ https://www.jianshu.com/p/e12a5521bdd2
 
 re setting binning and feature hierarchy:
 http://softwareservices.ptgrey.com/BFS-U3-16S2/latest/Model/public/ImageFormatControl.html
-
+http://softwareservices.ptgrey.com/BFS-U3-16S2/latest/Model/public/index.html
 
 
 add backports
