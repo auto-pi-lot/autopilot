@@ -1,5 +1,9 @@
-# RPilot
+# Autopilot
 
-Full README coming with full release
+Distributed behavioral experiments with lots of Raspberry Pis
 
-for now see the docs at [http://docs.rpilot.net](http://docs.rpilot.net/)
+README coming soon, for now 
+
+* [Read the paper](https://www.biorxiv.org/content/10.1101/807693v1)for an introduction,
+* [Read the docs](http://docs.auto-pi-lot.com) to get started,
+* [Visit the site](https://auto-pi-lot.com) for more.
