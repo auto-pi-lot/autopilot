@@ -148,7 +148,7 @@ class GoNoGo(Task):
 
         # Set sound trigger and LEDs
         # We make two triggers to play the sound and change the light color
-        change_to_blue = lambda: self.pins['LEDS']['C'].set_color([0, 0, 255])
+        change_to_blue = lambda: self.hardware['LEDS']['C'].set_color([0, 0, 255])
 
         # set triggers
         self.triggers['F'] = [change_to_blue, lambda: self.stim.play('shift', self.shift )]
@@ -178,12 +178,12 @@ class GoNoGo(Task):
         # if the subject licks on a good trial, reward.
         # set a trigger to respond false if delay time elapses
         if self.target:
-            self.triggers['C'] = [lambda: self.respond(True), self.pins['PORTS']['C'].open]
+            self.triggers['C'] = [lambda: self.respond(True), self.hardware['PORTS']['C'].open]
             self.triggers['T'] = [lambda: self.respond(False), self.punish]
         # otherwise punish
         else:
             self.triggers['C'] = [lambda: self.respond(True), self.punish]
-            self.triggers['T'] = [lambda: self.respond(False), self.pins['PORTS']['C'].open]
+            self.triggers['T'] = [lambda: self.respond(False), self.hardware['PORTS']['C'].open]
 
         # the stimulus has just started playing, wait a bit and then shift it (if we're gonna
         # choose a random delay

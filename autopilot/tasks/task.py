@@ -104,7 +104,7 @@ class Task(object):
         self.trial_counter = None  # will be init'd by the subtask because will use the current trial
 
         # Hardware
-        self.pins = {}  # dict to store references to hardware
+        self.hardware = {}  # dict to store references to hardware
         self.pin_id = {}  # pin numbers back to pin lettering
 
         self.punish_block = threading.Event()
@@ -120,21 +120,21 @@ class Task(object):
     def init_hardware(self):
         """
         Use the HARDWARE dict that specifies what we need to run the task
-        alongside the PINS subdict in :mod:`prefs` to tell us how
+        alongside the HARDWARE subdict in :mod:`prefs` to tell us how
         they're plugged in to the pi
 
         Instantiate the hardware, assign it :meth:`.Task.handle_trigger`
         as a callback if it is a trigger.
         """
         # We use the HARDWARE dict that specifies what we need to run the task
-        # alongside the PINS subdict in the prefs structure to tell us how they're plugged in to the pi
-        self.pins = {}
+        # alongside the HARDWARE subdict in the prefs structure to tell us how they're plugged in to the pi
+        self.hardware = {}
         self.pin_id = {} # Reverse dict to identify pokes
-        pin_numbers = prefs.PINS
+        pin_numbers = prefs.HARDWARE
 
         # We first iterate through the types of hardware we need
         for type, values in self.HARDWARE.items():
-            self.pins[type] = {}
+            self.hardware[type] = {}
             # then iterate through each pin and handler of this type
             for pin, handler in values.items():
                 try:
@@ -145,7 +145,7 @@ class Task(object):
                         hw.assign_cb(self.handle_trigger)
 
                     # add to forward and backwards pin dicts
-                    self.pins[type][pin] = hw
+                    self.hardware[type][pin] = hw
                     back_pins = pin_numbers[type][pin]
                     if isinstance(back_pins, int) or isinstance(back_pins, basestring):
                         self.pin_id[back_pins] = pin
@@ -173,7 +173,7 @@ class Task(object):
             Warning('given both volume and duration, using volume.')
 
         if not port:
-            for k, port in self.pins['PORTS'].items():
+            for k, port in self.hardware['PORTS'].items():
                 if vol:
                     try:
                         port.dur_from_vol(vol)
@@ -186,13 +186,13 @@ class Task(object):
             try:
                 if vol:
                     try:
-                        self.pins['PORTS'][port].dur_from_vol(vol)
+                        self.hardware['PORTS'][port].dur_from_vol(vol)
                     except AttributeError:
                         Warning('No calibration found, using duration = 20ms instead')
                         port.duration = 0.02
 
                 else:
-                    self.pins['PORTS'][port].duration = float(duration)/1000.
+                    self.hardware['PORTS'][port].duration = float(duration) / 1000.
             except KeyError:
                 Exception('No port found named {}'.format(port))
 
@@ -214,7 +214,7 @@ class Task(object):
         """
         # All triggers call this function with the pin number, level (high, low), and ticks since booting pigpio
 
-        # We get fed pins as BCM numbers, convert to board number and then back to letters
+        # We get fed hardware as BCM numbers, convert to board number and then back to letters
         if isinstance(pin, int):
             pin = hardware.BCM_TO_BOARD[pin]
             pin = self.pin_id[pin]
@@ -266,7 +266,7 @@ class Task(object):
         # All others are turned off
         if not color_dict:
             color_dict = {}
-        for k, v in self.pins['LEDS'].items():
+        for k, v in self.hardware['LEDS'].items():
             if k in color_dict.keys():
                 v.set_color(color_dict[k])
             else:
@@ -276,14 +276,14 @@ class Task(object):
         """
         flash lights for punish_dir
         """
-        for k, v in self.pins['LEDS'].items():
+        for k, v in self.hardware['LEDS'].items():
             v.flash(self.punish_dur)
 
     def end(self):
         """
         Release all hardware objects
         """
-        for k, v in self.pins.items():
+        for k, v in self.hardware.items():
             for pin, obj in v.items():
                 obj.release()
 

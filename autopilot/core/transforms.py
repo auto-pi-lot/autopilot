@@ -29,10 +29,10 @@ class Img2Loc_binarymass(object):
         else:
             Exception("Unknown method, must be one of {}, got : {}".format(self.METHODS, method))
 
-    def __call__(self, input):
-        return self.method_fn(input)
+    def __call__(self, *args, **kwargs):
+        return self.method_fn(*args, **kwargs)
 
-    def largest(self, input):
+    def largest(self, input, return_image=False):
 
         # TODO: Check if rgb or gray, convert if so
 
@@ -47,7 +47,10 @@ class Img2Loc_binarymass(object):
         largest_ind = np.argmax(stats[:,-1])
 
         # return centroid of largest object
-        return centroids[largest_ind]
+        if return_image:
+            return centroids[largest_ind], thresh
+        else:
+            return centroids[largest_ind]
 
 
 

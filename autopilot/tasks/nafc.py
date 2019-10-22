@@ -269,11 +269,11 @@ class Nafc(Task):
 
         # Set sound trigger and LEDs
         # We make two triggers to play the sound and change the light color
-        change_to_blue = lambda: self.pins['LEDS']['C'].set_color([0,0,255])
+        change_to_blue = lambda: self.hardware['LEDS']['C'].set_color([0, 0, 255])
 
         # set triggers
         if self.req_reward is True:
-            self.triggers['C'] = [self.stim.play, self.stim_start, change_to_blue, self.pins['PORTS']['C'].open]
+            self.triggers['C'] = [self.stim.play, self.stim_start, change_to_blue, self.hardware['PORTS']['C'].open]
         else:
             self.triggers['C'] = [self.stim.play, self.stim_start, change_to_blue]
 
@@ -315,7 +315,7 @@ class Nafc(Task):
         # moust just poked in center, set response triggers
         self.stage_block.clear()
 
-        self.triggers[self.target] = [lambda: self.respond(self.target), self.pins['PORTS'][self.target].open]
+        self.triggers[self.target] = [lambda: self.respond(self.target), self.hardware['PORTS'][self.target].open]
         self.triggers[self.distractor] = [lambda: self.respond(self.distractor), self.punish]
 
         # TODO: Handle timeout
@@ -427,14 +427,14 @@ class Nafc(Task):
     #     self.stage_block.set()
 
     # def clear_triggers(self):
-    #     for pin in self.pins.values():
+    #     for pin in self.hardware.values():
     #         pin.clear_cb()
 
     def flash_leds(self):
         """
         flash lights for punish_dir
         """
-        for k, v in self.pins['LEDS'].items():
+        for k, v in self.hardware['LEDS'].items():
             v.flash(self.punish_dur)
 
 #
@@ -582,7 +582,7 @@ class Nafc(Task):
 #
 #
 #         if self.req_reward is True:
-#             self.triggers['C'] = [self.pins['PORTS']['C'].open, sound_trigger, self.stim_end]
+#             self.triggers['C'] = [self.hardware['PORTS']['C'].open, sound_trigger, self.stim_end]
 #         else:
 #             self.triggers['C'] = [sound_trigger, self.stim_end]
 #         self.set_leds({'C': [0, 255, 0]})
@@ -622,7 +622,7 @@ class Nafc(Task):
 #                 except:
 #                     pass
 #
-#         for k, v in self.pins.items():
+#         for k, v in self.hardware.items():
 #             for pin, obj in v.items():
 #                 if k == "LEDS":
 #                     obj.set_color([0,0,0])

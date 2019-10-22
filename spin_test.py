@@ -10,6 +10,7 @@ import os
 import sys
 from tqdm import tqdm
 from skvideo import io
+import cv2
 
 from Queue import Queue
 import threading
@@ -41,7 +42,7 @@ class Camera_Spin(object):
         """
 
         # FIXME: Hardcoding just for testing
-        serial = '19269891'
+        #serial = '19269891'
         self.serial = serial
 
         # find our camera!
@@ -103,6 +104,18 @@ class Camera_Spin(object):
             self.cam.AcquisitionFrameRate.SetValue(fps)
         self.fps = fps
 
+        # used to quit the stream thread
+        self.quitting = threading.Event()
+        self.quitting.clear()
+
+        # if created, thread that streams frames
+        self.stream_thread = None
+
+        # if we are in capture mode, we allow frames to be grabbed from our .frame attribute
+        self.capture = False
+        self._frame = None
+
+
 
     @property
     def bin(self):
@@ -135,6 +148,14 @@ class Camera_Spin(object):
             info_dict[node_feature.GetName()] = node_feature.ToString()
 
         return info_dict
+
+    @property
+    def frame(self):
+        if not self.capture:
+            return False
+
+        return (self._frame.GetNDArray(), self._frame.GetTimeStamp())
+
 
     def fps_test(self, n_frames=1000, writer=True):
         """
@@ -201,16 +222,67 @@ class Camera_Spin(object):
 
         return self._tmp_dir
 
-
+    def capture(self):
+        self.capture_thread = threading.Thread(target=self._stream)
+        self.capture_thread.setDaemon(True)
+        self.capture_thread.start()
+        self.capture = True
 
     def _capture(self):
+        self.quitting.clear()
 
-        ##########################
-        # make a temporary directory to save images into
-        #self.tmp_dir = os.path.join(os.path.expanduser('~'),
-        #                            '.tmp_capture_{}_{}'.format(self.serial, datetime.now().strftime("%y%m%d-%H%M%S")))
-        #os.mkdir(self.tmp_dir)
-        pass
+
+        # start acquitision
+        self.cam.BeginAcquisition()
+        while not self.quitting.is_set():
+            self._frame = self.cam.GetNextImage()
+
+        self.cam.EndAcquisition()
+
+        self.capture = False
+
+
+
+
+    def stream(self, target):
+        """
+
+        Args:
+            target (:class:`~Queue.Queue`, str): Either a Queue to dump frames into, or a network address to stream to.
+
+        Returns:
+
+        """
+
+        self.stream_thread = threading.Thread(target=self._stream, args=(target,))
+        self.stream_thread.setDaemon(True)
+        self.stream_thread.start()
+
+
+
+
+    def _stream(self, target):
+        self.quitting.clear()
+
+        stream_type = None
+        if isinstance(target, Queue):
+            stream_type = "queue"
+
+
+        # start acquitision
+        self.cam.BeginAcquisition()
+        while not self.quitting.is_set():
+            img = self.cam.GetNextImage()
+
+            if stream_type == "queue":
+                target.put_nowait((img.GetNDArray(), img.GetTimeStamp()))
+
+        self.cam.EndAcquisition()
+
+        if stream_type == "queue":
+            target.put_nowait('END')
+
+
 
     def _writer(self, q):
         """
@@ -260,7 +332,14 @@ class Camera_Spin(object):
 
 
 
+    def stop(self):
+        """
+        just stop acquisition or streaming, but don't release all resources
+        Returns:
 
+        """
+
+        self.quitting.set()
 
 
     def __del__(self):
@@ -270,6 +349,9 @@ class Camera_Spin(object):
     def release(self):
         # FIXME: Should check if finished writing to video before deleting tmp dir
         #os.rmdir(self.tmp_dir)
+        # set quit flag to end stream thread if any.
+        self.quitting.set()
+
         try:
             self.cam.DeInit()
             del self.cam
@@ -287,8 +369,82 @@ class Camera_Spin(object):
 #acam = Camera_Spin(fps=100)
 #print('camera instantiated as \'acam\'')
 
+import cv2
+import numpy as np
+
+class Img2Loc_binarymass(object):
+    METHODS = ('largest')
+    def __init__(self, dark_object=True, method="largest"):
+        """
+
+        Args:
+            dark_object (bool): Is the object dark on a light background (default) or light on a dark background?
+            method (str): one of "largest" (find the largest object in each frame)
+        """
+
+        self.dark_object = dark_object
+
+        if method in self.METHODS:
+            self.method = method
+            self.method_fn = getattr(self, self.method)
+        else:
+            Exception("Unknown method, must be one of {}, got : {}".format(self.METHODS, method))
+
+    def __call__(self, *args, **kwargs):
+        return self.method_fn(*args, **kwargs)
+
+    def largest(self, input, return_image=False):
+
+        # TODO: Check if rgb or gray, convert if so
+
+        # blur and binarize with otsu's method
+        blur = cv2.GaussianBlur(input, (3,3),0)
+        ret, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+
+        # get connected components
+        n_components, labels, stats, centroids = cv2.connectedComponentsWithStats(thresh)
+
+        # find largest component
+        largest_ind = np.argmax(stats[:,-1])
+
+        # return centroid of largest object
+        if return_image:
+            return centroids[largest_ind], thresh
+        else:
+            return centroids[largest_ind]
 
 
+# class OpenCV_Streamer(object):
+#
+#     def __init__(self):
+
+
+
+
+
+
+
+
+if __name__ == "__main__":
+    cam = Camera_Spin(serial = '19269891', fps=100)
+    transform = Img2Loc_binarymass()
+
+    testwin = cv2.namedWindow('test')
+
+    q = Queue()
+
+    cam.stream(q)
+
+    try:
+        while True:
+            (img, ts) = q.get()
+            bw = transform(img)
+            cv2.imshow('test', bw)
+
+
+    except KeyboardInterrupt:
+        cam.release()
+        cv2.destroyAllWindows()
 
 
 

@@ -28,7 +28,7 @@ class Wheel_Child(object):
         self.thresh = thresh
 
         self.hardware = {}
-        self.hardware['OUTPUT'] = Digital_Out(prefs.PINS['OUTPUT'])
+        self.hardware['OUTPUT'] = Digital_Out(prefs.HARDWARE['OUTPUT'])
         self.hardware['WHEEL'] = Wheel(digi_out = self.hardware['OUTPUT'],
                                        fs       = self.fs,
                                        thresh   = self.thresh,
