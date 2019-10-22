@@ -423,12 +423,8 @@ class Img2Loc_binarymass(object):
 
 
 
-
-
-
-
-if __name__ == "__main__":
-    cam = Camera_Spin(serial = '19269891', fps=100)
+def run_test(cam):
+    #cam = Camera_Spin(serial='19269891', fps=100)
     transform = Img2Loc_binarymass()
 
     testwin = cv2.namedWindow('test', cv2.WINDOW_FULLSCREEN)
@@ -450,7 +446,12 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         cam.release()
-        #cv2.destroyAllWindows()
+        # cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    cam = Camera_Spin(serial='19269891', fps=100)
+    transform = Img2Loc_binarymass()
 
 
 
