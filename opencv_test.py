@@ -7,6 +7,7 @@ from itertools import count
 import os
 from skvideo import io
 from tqdm import tqdm, trange
+from datetime import datetime
 
 # import the Queue class from Python 3
 if sys.version_info >= (3, 0):
