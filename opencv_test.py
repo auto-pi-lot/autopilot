@@ -73,7 +73,8 @@ class Camera(object):
 
     @property
     def frame(self):
-        return self.stream.read()
+        _, frame = self.stream.read()
+        return frame
 
     @property
     def v4l_info(self):
