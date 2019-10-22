@@ -429,7 +429,7 @@ if __name__ == "__main__":
     cam = Camera_Spin(serial = '19269891', fps=100)
     transform = Img2Loc_binarymass()
 
-    testwin = cv2.namedWindow('test')
+    testwin = cv2.namedWindow('test', cv2.WINDOW_FULLSCREEN)
 
     q = Queue()
 
@@ -437,9 +437,10 @@ if __name__ == "__main__":
 
     try:
         while True:
-            (img, ts) = q.get()
+            (img, ts) = q.get_nowait()
             bw = transform(img)
             cv2.imshow('test', bw)
+            cv2.waitKey(0)
 
 
     except KeyboardInterrupt:
