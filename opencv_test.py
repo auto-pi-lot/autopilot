@@ -28,48 +28,52 @@ class Camera(object):
         self.stream = cv2.VideoCapture(camera_idx)
 
         self.stopped = False
+    #
+    #     self.q = Queue(maxsize=queue_size)
+    #
+    # def start(self):
+    #     t = Thread(target=self.update)
+    #     t.daemon = True
+    #     t.start()
 
-        self.q = Queue(maxsize=queue_size)
 
-    def start(self):
-        t = Thread(target=self.update)
-        t.daemon = True
-        t.start()
-
-
-
-    def update(self):
-        # keep looping infinitely
-        while True:
-            # if the thread indicator variable is set, stop the
-            # thread
-            if self.stopped:
-                return
-
-            # otherwise, ensure the queue has room in it
-            if not self.q.full():
-                # read the next frame from the file
-                (grabbed, frame) = self.stream.read()
-
-                # if the `grabbed` boolean is `False`, then we have
-                # reached the end of the video file
-                if not grabbed:
-                    self.stop()
-                    return
-
-                # add the frame to the queue
-                self.q.put(frame)
+    #
+    # def update(self):
+    #     # keep looping infinitely
+    #     while True:
+    #         # if the thread indicator variable is set, stop the
+    #         # thread
+    #         if self.stopped:
+    #             return
+    #
+    #         # otherwise, ensure the queue has room in it
+    #         if not self.q.full():
+    #             # read the next frame from the file
+    #             (grabbed, frame) = self.stream.read()
+    #
+    #             # if the `grabbed` boolean is `False`, then we have
+    #             # reached the end of the video file
+    #             if not grabbed:
+    #                 self.stop()
+    #                 return
+    #
+    #             # add the frame to the queue
+    #             self.q.put(frame)
+    #
+    # @property
+    # def frame(self):
+    #     return self.q.get()
+    #
+    # @property
+    # def more(self):
+    #     return self.q.qsize() > 0
+    #
+    # def stop(self):
+    #     self.stopped = True
 
     @property
     def frame(self):
-        return self.q.get()
-
-    @property
-    def more(self):
-        return self.q.qsize() > 0
-
-    def stop(self):
-        self.stopped = True
+        return self.stream.read()
 
     @property
     def v4l_info(self):
@@ -130,13 +134,13 @@ if __name__ == "__main__":
                                   '-preset': 'fast'
                               }
                               )
-
+    print('output initialized')
 
     start_time = time.time()
     #frame_count = count()
 
     cam = Camera()
-    cam.start()
+    #cam.start()
 
     for i in trange(n_frames):
         vid_out.writeFrame(cam.frame)
