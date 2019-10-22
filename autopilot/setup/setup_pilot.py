@@ -13,7 +13,7 @@ Sets the following params:
 * **PUSHPORT** - Router port used by the Terminal we connect to.
 * **TERMINALIP** - IP Address of our upstream Terminal.
 * **MSGPORT** - Port used by our own networking object
-* **PINS** - Any hardware and its mapping to GPIO pins. No pins are required to be set, instead each
+* **HARDWARE** - Any hardware and its mapping to GPIO pins. No pins are required to be set, instead each
   task defines which pins it needs. Currently the default configuration asks for
 
     * POKES - :class:`.hardware.Beambreak`
@@ -82,25 +82,25 @@ class PilotSetupForm(nps.Form):
 class HardwareForm(nps.Form):
     def create(self):
         self.input = odict({
-            'PINS':{
+            'HARDWARE':{
                 'POKES':{
-                    'L':self.add(nps.TitleText, name="PINS - POKES - L", value="24"),
-                    'C': self.add(nps.TitleText, name="PINS - POKES - C", value="8"),
-                    'R': self.add(nps.TitleText, name="PINS - POKES - R", value="10"),
+                    'L':self.add(nps.TitleText, name="HARDWARE - POKES - L", value="24"),
+                    'C': self.add(nps.TitleText, name="HARDWARE - POKES - C", value="8"),
+                    'R': self.add(nps.TitleText, name="HARDWARE - POKES - R", value="10"),
                 },
                 'LEDS': {
-                    'L': self.add(nps.TitleText, name="PINS - LEDS - L", value="[11, 13, 15]"),
-                    'C': self.add(nps.TitleText, name="PINS - LEDS - C", value="[22, 18, 16]"),
-                    'R': self.add(nps.TitleText, name="PINS - LEDS - R", value="[19, 21, 23]"),
+                    'L': self.add(nps.TitleText, name="HARDWARE - LEDS - L", value="[11, 13, 15]"),
+                    'C': self.add(nps.TitleText, name="HARDWARE - LEDS - C", value="[22, 18, 16]"),
+                    'R': self.add(nps.TitleText, name="HARDWARE - LEDS - R", value="[19, 21, 23]"),
                 },
                 'PORTS': {
-                    'L': self.add(nps.TitleText, name="PINS - PORTS - L", value="31"),
-                    'C': self.add(nps.TitleText, name="PINS - PORTS - C", value="33"),
-                    'R': self.add(nps.TitleText, name="PINS - PORTS - R", value="37"),
+                    'L': self.add(nps.TitleText, name="HARDWARE - PORTS - L", value="31"),
+                    'C': self.add(nps.TitleText, name="HARDWARE - PORTS - C", value="33"),
+                    'R': self.add(nps.TitleText, name="HARDWARE - PORTS - R", value="37"),
                 },
                 'FLAGS': {
-                    'L': self.add(nps.TitleText, name="PINS - FLAGS - L", value=""),
-                    'R': self.add(nps.TitleText, name="PINS - FLAGS - R", value="")
+                    'L': self.add(nps.TitleText, name="HARDWARE - FLAGS - L", value=""),
+                    'R': self.add(nps.TitleText, name="HARDWARE - FLAGS - R", value="")
                 }},
             'PULLUPS': self.add(nps.TitleText, name="Pins to pull up on boot",
                                 value="[7]"),
@@ -203,8 +203,8 @@ if __name__ == "__main__":
 
 
     # convert string LED pin specifier to list
-    for k, v in params['PINS']['LEDS'].items():
-        params['PINS']['LEDS'][k] = json.loads(v)
+    for k, v in params['HARDWARE']['LEDS'].items():
+        params['HARDWARE']['LEDS'][k] = json.loads(v)
 
     # replace fs in jackd string
     params['JACKDSTRING'] = params['JACKDSTRING'].replace('fs', str(params['FS']))
@@ -213,7 +213,7 @@ if __name__ == "__main__":
     params['PIGPIOMASK'] = str(params['PIGPIOMASK'])
 
     # make the string a dict
-    # print(params['PULLPINS'])
+    # print(params['PULLHARDWARE'])
     params['PULLUPS'] = json.loads(params['PULLUPS'])
     params['PULLDOWNS'] = json.loads(params['PULLDOWNS'])
 
