@@ -112,7 +112,7 @@ class Camera_Spin(object):
         self.stream_thread = None
 
         # if we are in capture mode, we allow frames to be grabbed from our .frame attribute
-        self.capture = False
+        self.capturing = False
         self._frame = None
 
 
@@ -151,7 +151,7 @@ class Camera_Spin(object):
 
     @property
     def frame(self):
-        if not self.capture:
+        if not self.capturing:
             return False
 
         return (self._frame.GetNDArray(), self._frame.GetTimeStamp())
@@ -226,7 +226,7 @@ class Camera_Spin(object):
         self.capture_thread = threading.Thread(target=self._stream)
         self.capture_thread.setDaemon(True)
         self.capture_thread.start()
-        self.capture = True
+        self.capturing = True
 
     def _capture(self):
         self.quitting.clear()
@@ -239,7 +239,7 @@ class Camera_Spin(object):
 
         self.cam.EndAcquisition()
 
-        self.capture = False
+        self.capturing = False
 
 
 
