@@ -165,7 +165,7 @@ class Stim_Manager(object):
         # If we want a punishment sound...
         # if self.punish_sound:
         #     self.stimuli['punish'] = sounds.Noise(self.punish_dur)
-        #     #change_to_green = lambda: self.pins['LEDS']['C'].set_color([0, 255, 0])
+        #     #change_to_green = lambda: self.hardware['LEDS']['C'].set_color([0, 255, 0])
         #     #self.stimuli['punish'].set_trigger(change_to_green)
         pass
 

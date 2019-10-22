@@ -10,8 +10,9 @@ import os
 import sys
 from tqdm import tqdm
 from skvideo import io
+import cv2
 
-from Queue import Queue
+from Queue import Queue, Empty
 import threading
 
 
@@ -41,7 +42,7 @@ class Camera_Spin(object):
         """
 
         # FIXME: Hardcoding just for testing
-        serial = '19269891'
+        #serial = '19269891'
         self.serial = serial
 
         # find our camera!
@@ -103,6 +104,18 @@ class Camera_Spin(object):
             self.cam.AcquisitionFrameRate.SetValue(fps)
         self.fps = fps
 
+        # used to quit the stream thread
+        self.quitting = threading.Event()
+        self.quitting.clear()
+
+        # if created, thread that streams frames
+        self.stream_thread = None
+
+        # if we are in capture mode, we allow frames to be grabbed from our .frame attribute
+        self.capturing = False
+        self._frame = None
+
+
 
     @property
     def bin(self):
@@ -135,6 +148,20 @@ class Camera_Spin(object):
             info_dict[node_feature.GetName()] = node_feature.ToString()
 
         return info_dict
+
+    @property
+    def frame(self):
+        if not self.capturing:
+            return (False, False)
+
+        try:
+            img = self._frame.GetNDArray()
+            ts = self._frame.GetTimeStamp()
+        except AttributeError:
+            return (False, False)
+
+        return (img, ts)
+
 
     def fps_test(self, n_frames=1000, writer=True):
         """
@@ -201,16 +228,69 @@ class Camera_Spin(object):
 
         return self._tmp_dir
 
-
+    def capture(self):
+        self.capture_thread = threading.Thread(target=self._capture)
+        self.capture_thread.setDaemon(True)
+        self.capture_thread.start()
+        self.capturing = True
 
     def _capture(self):
+        self.quitting.clear()
 
-        ##########################
-        # make a temporary directory to save images into
-        #self.tmp_dir = os.path.join(os.path.expanduser('~'),
-        #                            '.tmp_capture_{}_{}'.format(self.serial, datetime.now().strftime("%y%m%d-%H%M%S")))
-        #os.mkdir(self.tmp_dir)
-        pass
+
+        # start acquitision
+        self.cam.BeginAcquisition()
+        while not self.quitting.is_set():
+            self._frame = self.cam.GetNextImage()
+
+        self.cam.EndAcquisition()
+
+        self.capturing = False
+
+
+
+
+    def stream(self, target):
+        """
+
+        Args:
+            target (:class:`~Queue.Queue`, str): Either a Queue to dump frames into, or a network address to stream to.
+
+        Returns:
+
+        """
+
+        self.stream_thread = threading.Thread(target=self._stream, args=(target,))
+        self.stream_thread.setDaemon(True)
+        self.stream_thread.start()
+
+
+
+
+    def _stream(self, target):
+        self.quitting.clear()
+
+        stream_type = None
+        if isinstance(target, Queue):
+            stream_type = "queue"
+
+
+        # start acquitision
+        self.cam.BeginAcquisition()
+        while not self.quitting.is_set():
+            img = self.cam.GetNextImage()
+
+            if stream_type == "queue":
+                target.put_nowait((img.GetNDArray(), img.GetTimeStamp()))
+
+            img.Release()
+
+        self.cam.EndAcquisition()
+
+        if stream_type == "queue":
+            target.put_nowait('END')
+
+
 
     def _writer(self, q):
         """
@@ -260,7 +340,14 @@ class Camera_Spin(object):
 
 
 
+    def stop(self):
+        """
+        just stop acquisition or streaming, but don't release all resources
+        Returns:
 
+        """
+
+        self.quitting.set()
 
 
     def __del__(self):
@@ -270,6 +357,9 @@ class Camera_Spin(object):
     def release(self):
         # FIXME: Should check if finished writing to video before deleting tmp dir
         #os.rmdir(self.tmp_dir)
+        # set quit flag to end stream thread if any.
+        self.quitting.set()
+
         try:
             self.cam.DeInit()
             del self.cam
@@ -287,7 +377,146 @@ class Camera_Spin(object):
 #acam = Camera_Spin(fps=100)
 #print('camera instantiated as \'acam\'')
 
+import cv2
+import numpy as np
 
+class Img2Loc_binarymass(object):
+    METHODS = ('largest')
+    def __init__(self, dark_object=True, method="largest"):
+        """
+
+        Args:
+            dark_object (bool): Is the object dark on a light background (default) or light on a dark background?
+            method (str): one of "largest" (find the largest object in each frame)
+        """
+
+        self.dark_object = dark_object
+
+        if method in self.METHODS:
+            self.method = method
+            self.method_fn = getattr(self, self.method)
+        else:
+            Exception("Unknown method, must be one of {}, got : {}".format(self.METHODS, method))
+
+        self.bg_subtract = cv2.createBackgroundSubtractorMOG2(detectShadows=False, history=1000)
+
+        self.bg_frame = None
+
+    def __call__(self, *args, **kwargs):
+        return self.method_fn(*args, **kwargs)
+
+    def largest(self, input, return_image=False):
+
+        # TODO: Check if rgb or gray, convert if so
+
+        if self.bg_frame is None:
+            self.bg_frame = input.copy()
+        # blur and binarize with otsu's method
+
+        blur = cv2.GaussianBlur(input, (3,3),0)
+        fg_mask = self.bg_subtract.apply(blur)
+        #ret, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+
+        # get connected components
+        n_components, labels, stats, centroids = cv2.connectedComponentsWithStats(fg_mask)
+
+        # find largest component
+        if stats.shape[0] <=1:
+            largest_ind = 0
+        else:
+            largest_ind = np.argmax(stats[1:,-1])+1
+        out_im  = np.zeros(labels.shape, dtype=np.uint8)
+        out_im[labels==largest_ind] = 255
+
+        # only update fgf of bg frame
+        fg_mask = fg_mask.astype(np.bool)
+        self.bg_frame[fg_mask] = input[fg_mask]
+
+        #labels = np.floor(255/np.max(labels.flatten()))*labels
+        #labels = labels.astype(np.uint8)
+
+        # return centroid of largest object
+        # if return_image:
+        #     return centroids[largest_ind], fg_mask
+        # else:
+        #     return centroids[largest_ind]
+        if return_image:
+            return centroids[largest_ind], out_im, self.bg_frame
+        else:
+            return False
+
+def rect_contains(rect, pt):
+    return rect[0] < pt[0] < rect[2] and rect[1] < pt[1] < rect[3]
+
+def label_image(frame, bboxes, centroid):
+    #print(centroid)
+    frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
+    frame = cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 10, (255,0,0), 5)
+    for box in bboxes:
+        if rect_contains(box, centroid):
+            frame = cv2.rectangle(frame, (box[0], box[1]), (box[2], box[3]), (255,0,0), 2)
+        else:
+            frame = cv2.rectangle(frame, (box[0], box[1]), (box[2], box[3]), (0, 0, 255), 1)
+
+    return frame
+
+
+
+
+# class OpenCV_Streamer(object):
+#
+#     def __init__(self):
+
+
+
+
+
+
+if __name__ == "__main__":
+    bboxes = [(0,0,100,150), (200,200,250,250)]
+
+    cam = Camera_Spin(serial='19269891', fps=100)
+
+    #cam = Camera_Spin(serial='19269891', fps=100)
+    transform = Img2Loc_binarymass()
+
+    testwin = cv2.namedWindow('test', cv2.WND_PROP_FULLSCREEN)
+    cv2.setWindowProperty('test', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    cv2.resizeWindow('test', 1920,1080)
+    q = Queue()
+
+    cam.capture()
+
+    try:
+        while True:
+            try:
+                img, ts = cam.frame
+                if isinstance(img, bool):
+                    continue
+                centroid, bw, fg_mask = transform(img, return_image=True)
+                frame = label_image(bw, bboxes, centroid)
+                show_im = np.hstack([cv2.cvtColor(img, cv2.COLOR_GRAY2RGB),
+                                     cv2.cvtColor(fg_mask, cv2.COLOR_GRAY2RGB),
+                                     frame])
+
+                cv2.imshow('test', show_im)
+                k = cv2.waitKey(1) & 0xFF
+
+                if k == ord('q'):
+                    break
+            except Empty:
+                pass
+
+
+    except KeyboardInterrupt:
+        cam.release()
+        # cv2.destroyAllWindows()
+
+    except Exception as e:
+        print(e)
+
+    finally:
+        cam.release()
 
 
 

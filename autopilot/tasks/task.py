@@ -120,14 +120,14 @@ class Task(object):
     def init_hardware(self):
         """
         Use the HARDWARE dict that specifies what we need to run the task
-        alongside the PINS subdict in :mod:`prefs` to tell us how
+        alongside the HARDWARE subdict in :mod:`prefs` to tell us how
         they're plugged in to the pi
 
         Instantiate the hardware, assign it :meth:`.Task.handle_trigger`
         as a callback if it is a trigger.
         """
         # We use the HARDWARE dict that specifies what we need to run the task
-        # alongside the PINS subdict in the prefs structure to tell us how they're plugged in to the pi
+        # alongside the HARDWARE subdict in the prefs structure to tell us how they're plugged in to the pi
         self.hardware = {}
         self.pin_id = {} # Reverse dict to identify pokes
         pin_numbers = prefs.HARDWARE
@@ -192,7 +192,7 @@ class Task(object):
                         port.duration = 0.02
 
                 else:
-                    self.hardware['PORTS'][port].duration = float(duration)/1000.
+                    self.hardware['PORTS'][port].duration = float(duration) / 1000.
             except KeyError:
                 Exception('No port found named {}'.format(port))
 
@@ -214,7 +214,7 @@ class Task(object):
         """
         # All triggers call this function with the pin number, level (high, low), and ticks since booting pigpio
 
-        # We get fed pins as BCM numbers, convert to board number and then back to letters
+        # We get fed hardware as BCM numbers, convert to board number and then back to letters
         if isinstance(pin, int):
             pin = hardware.BCM_TO_BOARD[pin]
             pin = self.pin_id[pin]

@@ -54,14 +54,14 @@ if __name__ == '__main__':
         elif prefs.AUDIOSERVER == 'jack':
             from autopilot.stim.sound import jackclient
 
-from networking import Pilot_Station, Net_Node, Message
+from .networking import Pilot_Station, Net_Node, Message
 from autopilot import tasks
-import hardware
+from . import hardware
 
 
 ########################################
 
-class autopilot:
+class Pilot:
     """
     Drives the Raspberry Pi
 
@@ -86,7 +86,7 @@ class autopilot:
     * **PUSHPORT** - Router port used by the Terminal we connect to.
     * **TERMINALIP** - IP Address of our upstream Terminal.
     * **MSGPORT** - Port used by our own networking object
-    * **PINS** - Any hardware and its mapping to GPIO pins. No pins are required to be set, instead each
+    * **HARDWARE** - Any hardware and its mapping to GPIO pins. No pins are required to be set, instead each
       task defines which pins it needs. Currently the default configuration asks for
 
         * POKES - :class:`.hardware.Beambreak`
@@ -680,7 +680,7 @@ class autopilot:
 
 if __name__ == "__main__":
 
-    a = autopilot()
+    a = Pilot()
 
 
 

@@ -275,6 +275,7 @@ class Nafc(Task):
 
         # Set sound trigger and LEDs
         # We make two triggers to play the sound and change the light color
+
         # set triggers
         self.triggers['C'] = [self.stim.play, self.stim_start]
         if self.stim_light:

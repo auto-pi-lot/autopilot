@@ -57,6 +57,8 @@
 - separate file and console handlers like https://docs.python.org/3/howto/logging-cookbook.html
 - setup terminal to be a ntp server by default https://help.ubuntu.com/lts/serverguide/NTP.html https://opensource.com/article/18/12/manage-ntp-chrony https://raspberrytips.com/time-sync-raspberry-pi/
 - set status of pis to unknown if no response from pings
+- make arrayqueue to efficiently stream frames https://stackoverflow.com/a/38775513
+- for transforms: http://www.dabeaz.com/coroutines/ http://www.dabeaz.com/finalgenerator/
 - change the relevant methods in the jack sound class to be @parameters
 
 
