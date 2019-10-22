@@ -25,6 +25,7 @@ class Camera(mp.Process):
     """
 
     def __init__(self, camera_idx = 0, queue_size = 128):
+        super(Camera, self).__init__()
         self._v4l_info = None
 
         self.stream = cv2.VideoCapture(camera_idx)
