@@ -127,14 +127,14 @@ if __name__ == "__main__":
 
     out_vid_fn = os.path.join(os.path.expanduser('~'),
                               "opencv_{}.mp4".format(datetime.now().strftime("%y%m%d-%H%M%S")))
-
-    vid_out = io.FFmpegWriter(out_vid_fn,
-                              outputdict={
-                                  '-vcodec': 'libx264',
-                                  '-pix_fmt': 'yuv420p',
-                                  '-preset': 'fast'
-                              }
-                              )
+    #
+    # vid_out = io.FFmpegWriter(out_vid_fn,
+    #                           outputdict={
+    #                               '-vcodec': 'libx264',
+    #                               '-pix_fmt': 'yuv420p',
+    #                               '-preset': 'fast'
+    #                           }
+    #                           )
     print('output initialized')
 
     start_time = time.time()
@@ -144,12 +144,13 @@ if __name__ == "__main__":
     #cam.start()
 
     for i in trange(n_frames):
-        vid_out.writeFrame(cam.frame)
+        newframe = cam.frame
+        # vid_out.writeFrame(cam.frame)
 
     end_time = time.time()
 
     cam.stop()
-    vid_out.close()
+    #vid_out.close()
 
     print('Total Frames : {}\nElapsed Time (s): {}\nFPS: {}'.format(n_frames, end_time-start_time, (float(n_frames)/(end_time-start_time))))
 
