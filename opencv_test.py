@@ -166,9 +166,12 @@ if __name__ == "__main__":
     cam.start()
 
     for i in trange(n_frames):
+<<<<<<< HEAD
         #newframe = cam.frame
         #if newframe == False:
         #    Warning('error getting frame')
+=======
+>>>>>>> 33eb0be... opencv test
         vid_out.writeFrame(cam.frame)
 
     end_time = time.time()
