@@ -1,5 +1,5 @@
 import cv2
-from threading import Thread
+from threading import Thread, Event
 from subprocess import Popen, PIPE
 import sys
 import time
@@ -27,14 +27,22 @@ class Camera(object):
 
         self.stream = cv2.VideoCapture(camera_idx)
 
-        self.stopped = False
+        self.stopped = Event()
+        self.stopped.clear()
     #
     #     self.q = Queue(maxsize=queue_size)
     #
-    # def start(self):
-    #     t = Thread(target=self.update)
-    #     t.daemon = True
-    #     t.start()
+    def start(self):
+        t = Thread(target=self._update)
+        t.daemon = True
+        t.start()
+
+    def _update(self):
+        while not self.stopped.is_set():
+            self._frame = self.stream.read()
+
+
+
 
 
     #
@@ -73,8 +81,8 @@ class Camera(object):
 
     @property
     def frame(self):
-        _, frame = self.stream.read()
-        return frame
+        #_, frame = self.stream.read()
+        return self._frame
 
     @property
     def v4l_info(self):
@@ -149,7 +157,7 @@ if __name__ == "__main__":
 
     end_time = time.time()
 
-    cam.stop()
+    #cam.stop()
     #vid_out.close()
 
     print('Total Frames : {}\nElapsed Time (s): {}\nFPS: {}'.format(n_frames, end_time-start_time, (float(n_frames)/(end_time-start_time))))
