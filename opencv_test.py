@@ -84,8 +84,9 @@ class Camera(mp.Process):
     # def more(self):
     #     return self.q.qsize() > 0
     #
-    def stop(self):
+    def release(self):
         self.stopped.set()
+        self.stream.release()
 
     @property
     def frame(self):
