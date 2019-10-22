@@ -223,7 +223,7 @@ class Camera_Spin(object):
         return self._tmp_dir
 
     def capture(self):
-        self.capture_thread = threading.Thread(target=self._stream)
+        self.capture_thread = threading.Thread(target=self._capture)
         self.capture_thread.setDaemon(True)
         self.capture_thread.start()
         self.capturing = True
