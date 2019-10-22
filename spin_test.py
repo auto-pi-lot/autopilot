@@ -277,6 +277,8 @@ class Camera_Spin(object):
             if stream_type == "queue":
                 target.put_nowait((img.GetNDArray(), img.GetTimeStamp()))
 
+            img.Release()
+
         self.cam.EndAcquisition()
 
         if stream_type == "queue":
@@ -429,7 +431,7 @@ if __name__ == "__main__":
     cam = Camera_Spin(serial = '19269891', fps=100)
     transform = Img2Loc_binarymass()
 
-    #testwin = cv2.namedWindow('test', cv2.WINDOW_FULLSCREEN)
+    testwin = cv2.namedWindow('test', cv2.WINDOW_FULLSCREEN)
 
     q = Queue()
 
@@ -440,8 +442,8 @@ if __name__ == "__main__":
             try:
                 (img, ts) = q.get()
                 bw = transform(img)
-            #cv2.imshow('test', bw)
-            #cv2.waitKey(0)
+                cv2.imshow('test', bw)
+                cv2.waitKey(0)
             except Empty:
                 pass
 
