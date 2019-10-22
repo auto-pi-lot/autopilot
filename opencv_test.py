@@ -147,10 +147,14 @@ if __name__ == "__main__":
                               "opencv_{}.mp4".format(datetime.now().strftime("%y%m%d-%H%M%S")))
 
     vid_out = io.FFmpegWriter(out_vid_fn,
+                              inputdict = {
+                                  '-r': '30'
+                              },
                               outputdict={
                                   '-vcodec': 'libx264',
                                   '-pix_fmt': 'yuv420p',
-                                  '-preset': 'fast'
+                                  '-preset': 'veryfast',
+                                  '-r': '30'
                               }
                               )
     print('output initialized')
