@@ -274,9 +274,6 @@ class Nafc(Task):
             self.correction_trial = self.stim_manager.correction_trial
 
         # Set sound trigger and LEDs
-        # We make two triggers to play the sound and change the light color
-
-        # set triggers
         self.triggers['C'] = [self.stim.play, self.stim_start]
         if self.stim_light:
             change_to_blue = lambda: self.hardware['LEDS']['C'].set_color([0, 0, 255])

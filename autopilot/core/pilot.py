@@ -163,7 +163,6 @@ class Pilot:
         if hasattr(prefs, 'AUDIOSERVER') and 'AUDIO' in prefs.CONFIG:
             self.init_audio()
 
-
         # Init Station
         # Listen dictionary - what do we do when we receive different messages?
         self.listens = {
