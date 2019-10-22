@@ -17,7 +17,9 @@ if sys.version_info >= (3, 0):
 else:
     from Queue import Queue
 
-class Camera(object):
+import multiprocessing as mp
+
+class Camera(mp.Process):
     """
     https://www.pyimagesearch.com/2017/02/06/faster-video-file-fps-with-cv2-videocapture-and-opencv/
     """
@@ -27,17 +29,18 @@ class Camera(object):
 
         self.stream = cv2.VideoCapture(camera_idx)
 
-        self.stopped = Event()
+        self.stopped = mp.Event()
         self.stopped.clear()
 
         self._frame = False
 
-        self.q = Queue(maxsize=queue_size)
+        self.q = mp.Queue(maxsize=queue_size)
 
-    def start(self):
-        t = Thread(target=self._update)
-        t.daemon = True
-        t.start()
+    def run(self):
+        self._update()
+        # t = Thread(target=self._update)
+        # t.daemon = True
+        # t.start()
 
     def _update(self):
         while not self.stopped.is_set():
