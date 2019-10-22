@@ -29,6 +29,8 @@ class Camera(object):
 
         self.stopped = Event()
         self.stopped.clear()
+
+        self._frame = False
     #
     #     self.q = Queue(maxsize=queue_size)
     #
@@ -39,7 +41,7 @@ class Camera(object):
 
     def _update(self):
         while not self.stopped.is_set():
-            self._frame = self.stream.read()
+            _, self._frame = self.stream.read()
 
 
 
@@ -76,12 +78,13 @@ class Camera(object):
     # def more(self):
     #     return self.q.qsize() > 0
     #
-    # def stop(self):
-    #     self.stopped = True
+    def stop(self):
+        self.stopped.set()
 
     @property
     def frame(self):
         #_, frame = self.stream.read()
+
         return self._frame
 
     @property
@@ -149,15 +152,17 @@ if __name__ == "__main__":
     #frame_count = count()
 
     cam = Camera()
-    #cam.start()
+    cam.start()
 
     for i in trange(n_frames):
         newframe = cam.frame
+        if newframe == False:
+            Warning('error getting frame')
         # vid_out.writeFrame(cam.frame)
 
     end_time = time.time()
 
-    #cam.stop()
+    cam.stop()
     #vid_out.close()
 
     print('Total Frames : {}\nElapsed Time (s): {}\nFPS: {}'.format(n_frames, end_time-start_time, (float(n_frames)/(end_time-start_time))))
