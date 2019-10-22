@@ -158,8 +158,8 @@ if __name__ == "__main__":
 
     for i in trange(n_frames):
         newframe = cam.frame
-        if newframe == False:
-            Warning('error getting frame')
+        #if newframe == False:
+        #    Warning('error getting frame')
         # vid_out.writeFrame(cam.frame)
 
     end_time = time.time()
