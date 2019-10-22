@@ -12,7 +12,7 @@ from tqdm import tqdm
 from skvideo import io
 import cv2
 
-from Queue import Queue
+from Queue import Queue, Empty
 import threading
 
 
@@ -437,10 +437,13 @@ if __name__ == "__main__":
 
     try:
         while True:
-            (img, ts) = q.get_nowait()
-            bw = transform(img)
+            try:
+                (img, ts) = q.get()
+                bw = transform(img)
             #cv2.imshow('test', bw)
             #cv2.waitKey(0)
+            except Empty:
+                pass
 
 
     except KeyboardInterrupt:
