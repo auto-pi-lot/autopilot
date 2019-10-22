@@ -31,9 +31,9 @@ class Camera(object):
         self.stopped.clear()
 
         self._frame = False
-    #
-    #     self.q = Queue(maxsize=queue_size)
-    #
+
+        self.q = Queue(maxsize=queue_size)
+
     def start(self):
         t = Thread(target=self._update)
         t.daemon = True
@@ -42,6 +42,8 @@ class Camera(object):
     def _update(self):
         while not self.stopped.is_set():
             _, self._frame = self.stream.read()
+            if not self.q.full():
+                self.q.put_nowait(self._frame)
 
 
 
@@ -85,7 +87,7 @@ class Camera(object):
     def frame(self):
         #_, frame = self.stream.read()
 
-        return self._frame
+        return self.q.get()
 
     @property
     def v4l_info(self):
