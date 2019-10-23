@@ -451,7 +451,7 @@ if __name__ == "__main__":
                     continue
                 _, bw = transform(img, return_image=True)
                 cv2.imshow('test', bw)
-                cv2.waitKey(0)
+                k = cv2.waitKey(1) & 0xFF
             except Empty:
                 pass
 
