@@ -435,9 +435,9 @@ def rect_contains(rect, pt):
     return rect[0] < pt[0] < rect[2] and rect[1] < pt[1] < rect[3]
 
 def label_image(frame, bboxes, centroid):
-
+    print(centroid)
     frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
-    frame = cv2.circle(frame, (centroid[0], centroid[1]), 10, (255,0,0), 5)
+    frame = cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 10, (255,0,0), 5)
     for box in bboxes:
         if rect_contains(box, centroid):
             frame = cv2.rectangle(frame, (box[0], box[1]), (box[2], box[3]), (255,0,0), 2)
