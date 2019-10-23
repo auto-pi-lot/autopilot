@@ -466,7 +466,7 @@ if __name__ == "__main__":
 
     testwin = cv2.namedWindow('test', cv2.WND_PROP_FULLSCREEN)
     cv2.setWindowProperty('test', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-    cv2.resizeWindow('test', 720,720)
+    cv2.resizeWindow('test', 1920,1080)
     q = Queue()
 
     cam.capture()
@@ -479,8 +479,9 @@ if __name__ == "__main__":
                     continue
                 centroid, bw = transform(img, return_image=True)
                 frame = label_image(bw, bboxes, centroid)
+                show_im = np.hstack([bw, frame])
 
-                cv2.imshow('test', frame)
+                cv2.imshow('test', show_im)
                 k = cv2.waitKey(1) & 0xFF
 
                 if k == ord('q'):
