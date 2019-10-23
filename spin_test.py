@@ -431,16 +431,16 @@ if __name__ == "__main__":
     #cam = Camera_Spin(serial='19269891', fps=100)
     transform = Img2Loc_binarymass()
 
-    testwin = cv2.namedWindow('test', cv2.WINDOW_NORMAL)
+    testwin = cv2.namedWindow('test', cv2.WINDOW_FULLSCREEN)
 
     q = Queue()
 
-    cam.stream(q)
+    cam.capture()
 
     try:
         while True:
             try:
-                img, ts = q.get(10)
+                img, ts = cam.frame
                 _, bw = transform(img, return_image=True)
                 cv2.imshow('test', bw)
                 cv2.waitKey(0)
