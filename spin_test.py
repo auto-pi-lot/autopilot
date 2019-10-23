@@ -496,6 +496,9 @@ if __name__ == "__main__":
         cam.release()
         # cv2.destroyAllWindows()
 
+    except Exception as e:
+        print(e)
+
     finally:
         cam.release()
 
