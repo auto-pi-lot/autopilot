@@ -425,6 +425,7 @@ class Img2Loc_binarymass(object):
         out_im[labels==largest_ind] = 255
 
         labels = np.floor(255/np.max(labels.flatten()))*labels
+        labels = labels.astype(np.uint8)
 
         # return centroid of largest object
         # if return_image:
