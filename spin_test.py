@@ -398,7 +398,7 @@ class Img2Loc_binarymass(object):
         else:
             Exception("Unknown method, must be one of {}, got : {}".format(self.METHODS, method))
 
-        self.bg_subtract = cv2.createBackgroundSubtractorMOG2(detectShadows=False, history=500)
+        self.bg_subtract = cv2.createBackgroundSubtractorMOG2(detectShadows=False, history=1000)
 
         self.bg_frame = None
 
