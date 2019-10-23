@@ -435,12 +435,12 @@ if __name__ == "__main__":
 
     q = Queue()
 
-    cam.capture()
+    cam.stream(q)
 
     try:
         while True:
             try:
-                (img, ts) = cam.frame
+                img, ts = q.get(10)
                 _, bw = transform(img, return_img=True)
                 cv2.imshow('test', bw)
                 cv2.waitKey(0)
