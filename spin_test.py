@@ -398,7 +398,7 @@ class Img2Loc_binarymass(object):
         else:
             Exception("Unknown method, must be one of {}, got : {}".format(self.METHODS, method))
 
-        self.bg_subtract = cv2.createBackgroundSubtractorMOG2(detectShadows=False)
+        self.bg_subtract = cv2.createBackgroundSubtractorMOG2(detectShadows=False, history=1000)
 
     def __call__(self, *args, **kwargs):
         return self.method_fn(*args, **kwargs)
@@ -410,7 +410,7 @@ class Img2Loc_binarymass(object):
         # blur and binarize with otsu's method
 
         blur = cv2.GaussianBlur(input, (3,3),0)
-        fg_mask = self.bg_subtract.apply(blur)
+        fg_mask = 1-self.bg_subtract.apply(blur)
         #ret, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 
         # get connected components
@@ -435,7 +435,7 @@ def rect_contains(rect, pt):
     return rect[0] < pt[0] < rect[2] and rect[1] < pt[1] < rect[3]
 
 def label_image(frame, bboxes, centroid):
-    print(centroid)
+    #print(centroid)
     frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
     frame = cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 10, (255,0,0), 5)
     for box in bboxes:
