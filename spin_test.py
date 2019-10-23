@@ -431,13 +431,13 @@ def run_test(cam):
 
     q = Queue()
 
-    cam.stream(q)
+    cam.capture()
 
     try:
         while True:
             try:
-                (img, ts) = q.get()
-                bw = transform(img)
+                (img, ts) = cam.frame
+                _, bw = transform(img, return_img=True)
                 cv2.imshow('test', bw)
                 cv2.waitKey(0)
             except Empty:
