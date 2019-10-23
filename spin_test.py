@@ -398,6 +398,8 @@ class Img2Loc_binarymass(object):
         else:
             Exception("Unknown method, must be one of {}, got : {}".format(self.METHODS, method))
 
+        self.bg_subtract = cv2.createBackgroundSubtractorMOG2()
+
     def __call__(self, *args, **kwargs):
         return self.method_fn(*args, **kwargs)
 
@@ -406,20 +408,26 @@ class Img2Loc_binarymass(object):
         # TODO: Check if rgb or gray, convert if so
 
         # blur and binarize with otsu's method
-        blur = cv2.GaussianBlur(input, (3,3),0)
-        ret, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+
+        blur = cv2.GaussianBlur(input, (2,2),0)
+        fg_mask = self.bg_subtract.apply(blur)
+        #ret, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 
         # get connected components
-        n_components, labels, stats, centroids = cv2.connectedComponentsWithStats(thresh)
+        #n_components, labels, stats, centroids = cv2.connectedComponentsWithStats(thresh)
 
         # find largest component
-        largest_ind = np.argmax(stats[:,-1])
+        #largest_ind = np.argmax(stats[:,-1])
 
         # return centroid of largest object
+        # if return_image:
+        #     return centroids[largest_ind], fg_mask
+        # else:
+        #     return centroids[largest_ind]
         if return_image:
-            return centroids[largest_ind], thresh
+            return False, fg_mask
         else:
-            return centroids[largest_ind]
+            return False
 
 
 # class OpenCV_Streamer(object):
@@ -437,7 +445,8 @@ if __name__ == "__main__":
     #cam = Camera_Spin(serial='19269891', fps=100)
     transform = Img2Loc_binarymass()
 
-    testwin = cv2.namedWindow('test', cv2.WINDOW_FULLSCREEN)
+    testwin = cv2.namedWindow('test', cv2.WND_PROP_FULLSCREEN)
+    cv2.setWindowProperty('test', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
     q = Queue()
 
