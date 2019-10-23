@@ -400,6 +400,8 @@ class Img2Loc_binarymass(object):
 
         self.bg_subtract = cv2.createBackgroundSubtractorMOG2(detectShadows=False, history=500)
 
+        self.bg_frame = None
+
     def __call__(self, *args, **kwargs):
         return self.method_fn(*args, **kwargs)
 
@@ -407,6 +409,8 @@ class Img2Loc_binarymass(object):
 
         # TODO: Check if rgb or gray, convert if so
 
+        if self.bg_frame is None:
+            self.bg_frame = input.copy()
         # blur and binarize with otsu's method
 
         blur = cv2.GaussianBlur(input, (3,3),0)
@@ -424,6 +428,9 @@ class Img2Loc_binarymass(object):
         out_im  = np.zeros(labels.shape, dtype=np.uint8)
         out_im[labels==largest_ind] = 255
 
+        # only update fgf of bg frame
+        self.bg_frame[fg_mask] = input[fg_mask]
+
         #labels = np.floor(255/np.max(labels.flatten()))*labels
         #labels = labels.astype(np.uint8)
 
@@ -433,7 +440,7 @@ class Img2Loc_binarymass(object):
         # else:
         #     return centroids[largest_ind]
         if return_image:
-            return centroids[largest_ind], out_im, fg_mask
+            return centroids[largest_ind], out_im, self.bg_frame
         else:
             return False
 
