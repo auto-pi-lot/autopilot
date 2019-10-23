@@ -152,7 +152,7 @@ class Camera_Spin(object):
     @property
     def frame(self):
         if not self.capturing:
-            return False
+            return (False, False)
 
         return (self._frame.GetNDArray(), self._frame.GetTimeStamp())
 
@@ -441,6 +441,8 @@ if __name__ == "__main__":
         while True:
             try:
                 img, ts = cam.frame
+                if isinstance(img, bool):
+                    continue
                 _, bw = transform(img, return_image=True)
                 cv2.imshow('test', bw)
                 cv2.waitKey(0)
