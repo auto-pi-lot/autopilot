@@ -398,7 +398,7 @@ class Img2Loc_binarymass(object):
         else:
             Exception("Unknown method, must be one of {}, got : {}".format(self.METHODS, method))
 
-        self.bg_subtract = cv2.createBackgroundSubtractorMOG2(detectShadows=False, history=1000)
+        self.bg_subtract = cv2.createBackgroundSubtractorMOG2(detectShadows=False, history=500)
 
     def __call__(self, *args, **kwargs):
         return self.method_fn(*args, **kwargs)
@@ -424,8 +424,8 @@ class Img2Loc_binarymass(object):
         out_im  = np.zeros(labels.shape, dtype=np.uint8)
         out_im[labels==largest_ind] = 255
 
-        labels = np.floor(255/np.max(labels.flatten()))*labels
-        labels = labels.astype(np.uint8)
+        #labels = np.floor(255/np.max(labels.flatten()))*labels
+        #labels = labels.astype(np.uint8)
 
         # return centroid of largest object
         # if return_image:
@@ -433,7 +433,7 @@ class Img2Loc_binarymass(object):
         # else:
         #     return centroids[largest_ind]
         if return_image:
-            return centroids[largest_ind], out_im, labels
+            return centroids[largest_ind], out_im, fg_mask
         else:
             return False
 
@@ -485,10 +485,10 @@ if __name__ == "__main__":
                 img, ts = cam.frame
                 if isinstance(img, bool):
                     continue
-                centroid, bw, labels = transform(img, return_image=True)
+                centroid, bw, fg_mask = transform(img, return_image=True)
                 frame = label_image(bw, bboxes, centroid)
                 show_im = np.hstack([cv2.cvtColor(img, cv2.COLOR_GRAY2RGB),
-                                     cv2.cvtColor(labels, cv2.COLOR_GRAY2RGB),
+                                     cv2.cvtColor(fg_mask, cv2.COLOR_GRAY2RGB),
                                      frame])
 
                 cv2.imshow('test', show_im)
