@@ -435,12 +435,14 @@ def rect_contains(rect, pt):
     return rect[0] < pt[0] < rect[2] and rect[1] < pt[1] < rect[3]
 
 def label_image(frame, bboxes, centroid):
+
     frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
+    frame = cv2.circle(frame, centroid, 10, (255,0,0), 5)
     for box in bboxes:
         if rect_contains(box, centroid):
-            frame = cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]), (255,0,0), 2)
+            frame = cv2.rectangle(frame, (box[0], box[1]), (box[2], box[3]), (255,0,0), 2)
         else:
-            frame = cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]), (0, 0, 255), 1)
+            frame = cv2.rectangle(frame, (box[0], box[1]), (box[2], box[3]), (0, 0, 255), 1)
 
     return frame
 
@@ -457,7 +459,7 @@ def label_image(frame, bboxes, centroid):
 
 
 if __name__ == "__main__":
-    bboxes = [(0,0,50,50), (100,100,200,200)]
+    bboxes = [(0,0,100,150), (200,200,250,250)]
 
     cam = Camera_Spin(serial='19269891', fps=100)
 
