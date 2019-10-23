@@ -429,6 +429,7 @@ class Img2Loc_binarymass(object):
         out_im[labels==largest_ind] = 255
 
         # only update fgf of bg frame
+        fg_mask = fg_mask.astype(np.bool)
         self.bg_frame[fg_mask] = input[fg_mask]
 
         #labels = np.floor(255/np.max(labels.flatten()))*labels
