@@ -410,16 +410,19 @@ class Img2Loc_binarymass(object):
         # blur and binarize with otsu's method
 
         blur = cv2.GaussianBlur(input, (3,3),0)
-        fg_mask = 255-self.bg_subtract.apply(blur)
+        fg_mask = self.bg_subtract.apply(blur)
         #ret, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 
         # get connected components
         n_components, labels, stats, centroids = cv2.connectedComponentsWithStats(fg_mask)
 
         # find largest component
-        largest_ind = np.argmax(stats[1:,-1])
+        if stats.shape[0] <=1:
+            largest_ind = 0
+        else:
+            largest_ind = np.argmax(stats[1:,-1])+1
         out_im  = np.zeros(labels.shape, dtype=np.uint8)
-        out_im[labels==(largest_ind+1)] = 255
+        out_im[labels==largest_ind] = 255
 
         labels = np.floor(255/np.max(labels.flatten()))*labels
 
@@ -429,7 +432,7 @@ class Img2Loc_binarymass(object):
         # else:
         #     return centroids[largest_ind]
         if return_image:
-            return centroids[(largest_ind+1)], out_im, labels
+            return centroids[largest_ind], out_im, labels
         else:
             return False
 
