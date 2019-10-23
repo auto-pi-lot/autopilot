@@ -398,7 +398,7 @@ class Img2Loc_binarymass(object):
         else:
             Exception("Unknown method, must be one of {}, got : {}".format(self.METHODS, method))
 
-        self.bg_subtract = cv2.createBackgroundSubtractorMOG2()
+        self.bg_subtract = cv2.createBackgroundSubtractorMOG2(detectShadows=False, history=1000)
 
     def __call__(self, *args, **kwargs):
         return self.method_fn(*args, **kwargs)
@@ -414,10 +414,12 @@ class Img2Loc_binarymass(object):
         #ret, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 
         # get connected components
-        #n_components, labels, stats, centroids = cv2.connectedComponentsWithStats(thresh)
+        n_components, labels, stats, centroids = cv2.connectedComponentsWithStats(fg_mask)
 
         # find largest component
-        #largest_ind = np.argmax(stats[:,-1])
+        largest_ind = np.argmax(stats[:,-1])
+        out_im  = np.zeros(labels.shape, dtype=np.uint8)
+        out_im[labels==largest_ind] = 255
 
         # return centroid of largest object
         # if return_image:
@@ -425,9 +427,24 @@ class Img2Loc_binarymass(object):
         # else:
         #     return centroids[largest_ind]
         if return_image:
-            return False, fg_mask
+            return centroids[largest_ind], out_im
         else:
             return False
+
+def rect_contains(rect, pt):
+    return rect[0] < pt[0] < rect[2] and rect[1] < pt[1] < rect[3]
+
+def label_image(frame, bboxes, centroid):
+
+    for box in bboxes:
+        if rect_contains(box, centroid):
+            frame = cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]), (255,0,0), 2)
+        else:
+            frame = cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]), (0, 0, 255), 1)
+
+    return frame
+
+
 
 
 # class OpenCV_Streamer(object):
@@ -440,6 +457,8 @@ class Img2Loc_binarymass(object):
 
 
 if __name__ == "__main__":
+    bboxes = [(0,0,50,50), (100,100,200,200)]
+
     cam = Camera_Spin(serial='19269891', fps=100)
 
     #cam = Camera_Spin(serial='19269891', fps=100)
@@ -458,9 +477,14 @@ if __name__ == "__main__":
                 img, ts = cam.frame
                 if isinstance(img, bool):
                     continue
-                _, bw = transform(img, return_image=True)
-                cv2.imshow('test', bw)
+                centroid, bw = transform(img, return_image=True)
+                frame = label_image(bw, bboxes, centroid)
+
+                cv2.imshow('test', frame)
                 k = cv2.waitKey(1) & 0xFF
+
+                if k == ord('q'):
+                    break
             except Empty:
                 pass
 
@@ -468,6 +492,9 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         cam.release()
         # cv2.destroyAllWindows()
+
+    finally:
+        cam.release()
 
 
 
