@@ -417,9 +417,11 @@ class Img2Loc_binarymass(object):
         n_components, labels, stats, centroids = cv2.connectedComponentsWithStats(fg_mask)
 
         # find largest component
-        largest_ind = np.argmax(stats[:,-1])
+        largest_ind = np.argmax(stats[1:,-1])
         out_im  = np.zeros(labels.shape, dtype=np.uint8)
-        out_im[labels==largest_ind] = 255
+        out_im[labels==(largest_ind+1)] = 255
+
+        labels = np.floor(255/np.max(labels.flatten()))*labels
 
         # return centroid of largest object
         # if return_image:
@@ -427,7 +429,7 @@ class Img2Loc_binarymass(object):
         # else:
         #     return centroids[largest_ind]
         if return_image:
-            return centroids[largest_ind], out_im
+            return centroids[(largest_ind+1)], out_im, labels
         else:
             return False
 
@@ -479,9 +481,11 @@ if __name__ == "__main__":
                 img, ts = cam.frame
                 if isinstance(img, bool):
                     continue
-                centroid, bw = transform(img, return_image=True)
+                centroid, bw, labels = transform(img, return_image=True)
                 frame = label_image(bw, bboxes, centroid)
-                show_im = np.hstack([cv2.cvtColor(bw, cv2.COLOR_GRAY2RGB), frame])
+                show_im = np.hstack([cv2.cvtColor(bw, cv2.COLOR_GRAY2RGB),
+                                     cv2.cvtColor(labels, cv2.COLOR_GRAY2RGB),
+                                     frame])
 
                 cv2.imshow('test', show_im)
                 k = cv2.waitKey(1) & 0xFF
