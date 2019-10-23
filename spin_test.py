@@ -487,7 +487,7 @@ if __name__ == "__main__":
                     continue
                 centroid, bw, labels = transform(img, return_image=True)
                 frame = label_image(bw, bboxes, centroid)
-                show_im = np.hstack([cv2.cvtColor(bw, cv2.COLOR_GRAY2RGB),
+                show_im = np.hstack([cv2.cvtColor(img, cv2.COLOR_GRAY2RGB),
                                      cv2.cvtColor(labels, cv2.COLOR_GRAY2RGB),
                                      frame])
 
