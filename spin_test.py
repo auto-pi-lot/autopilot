@@ -398,7 +398,7 @@ class Img2Loc_binarymass(object):
         else:
             Exception("Unknown method, must be one of {}, got : {}".format(self.METHODS, method))
 
-        self.bg_subtract = cv2.createBackgroundSubtractorMOG2(detectShadows=False, history=1000)
+        self.bg_subtract = cv2.createBackgroundSubtractorMOG2(detectShadows=False)
 
     def __call__(self, *args, **kwargs):
         return self.method_fn(*args, **kwargs)
@@ -435,7 +435,7 @@ def rect_contains(rect, pt):
     return rect[0] < pt[0] < rect[2] and rect[1] < pt[1] < rect[3]
 
 def label_image(frame, bboxes, centroid):
-
+    frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
     for box in bboxes:
         if rect_contains(box, centroid):
             frame = cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]), (255,0,0), 2)
@@ -466,7 +466,7 @@ if __name__ == "__main__":
 
     testwin = cv2.namedWindow('test', cv2.WND_PROP_FULLSCREEN)
     cv2.setWindowProperty('test', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-
+    cv2.resizeWindow('test', 720,720)
     q = Queue()
 
     cam.capture()
