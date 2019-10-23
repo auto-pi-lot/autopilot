@@ -409,7 +409,7 @@ class Img2Loc_binarymass(object):
 
         # blur and binarize with otsu's method
 
-        blur = cv2.GaussianBlur(input, (2,2),0)
+        blur = cv2.GaussianBlur(input, (3,3),0)
         fg_mask = self.bg_subtract.apply(blur)
         #ret, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 
