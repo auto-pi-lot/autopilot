@@ -154,7 +154,13 @@ class Camera_Spin(object):
         if not self.capturing:
             return (False, False)
 
-        return (self._frame.GetNDArray(), self._frame.GetTimeStamp())
+        try:
+            img = self._frame.GetNDArray()
+            ts = self._frame.GetTimeStamp()
+        except AttributeError:
+            return (False, False)
+
+        return (img, ts)
 
 
     def fps_test(self, n_frames=1000, writer=True):
