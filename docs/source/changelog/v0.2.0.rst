@@ -1,0 +1,9 @@
+.. _changelog_v020:
+
+v0.2.0 (October 26, 2019)
+-------------------------
+
+Can't change what just started existing!
+
+Release version of autopilot consistent with explanation in https://www.biorxiv.org/content/10.1101/807693v1
+

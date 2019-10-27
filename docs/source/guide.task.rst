@@ -3,7 +3,7 @@
 Writing a Task
 **************
 
-Some concepts of task design are also discussed in section 3.1 of the `whitepaper <auto-pi-lot.com/autopilot_whitepaper.pdf>`_.
+Some concepts of task design are also discussed in section 3.1 of the `whitepaper <https://www.biorxiv.org/content/10.1101/807693v1>`_.
 
 
 
@@ -17,7 +17,7 @@ To demonstrate the general structure of Autopilot tasks, let's build it from scr
 The :class:`~autopilot.tasks.Task` class
 ----------------------------------------
 
-We start by subclassing the :class:`autopilot.tasks.task.Task` class and initializing it.
+We start by subclassing the :class:`~autopilot.tasks.task.Task` class and initializing it.
 
 .. code-block:: python
 
@@ -108,7 +108,7 @@ There are two types of data,
 
 .. todo::
 
-    Support for saving continuous data is in place, but less tested than trial data storage. See :ref:`todo`_.
+    Support for saving continuous data is in place, but less tested than trial data storage. See  :ref:`todo`.
 
 Both are defined by `pytables <https://www.pytables.org/index.html>`_ :class:`tables.IsDescription` objects.
 Specify each variable that will be returned and its type using a :class:`tables.Col` object:
@@ -609,7 +609,7 @@ behaves identically to the :class:`~autopilot.core.hardware.Beambreak` object wi
 Finally, we add an additional ``CHILDREN`` dictionary to specify the type of Child
 that we need to run the task, as well as any additional parameters needed to configure it.
 
-The ``task_type`` must refer to some key in the :var:`autopilot.tasks.CHILDREN_LIST`.
+The ``task_type`` must refer to some key in the :data:`autopilot.tasks.CHILDREN_LIST`.
 
 .. note::
 
@@ -669,9 +669,9 @@ additional params above), then things should go smoothly.
         self.stages = itertools.cycle([self.request, self.discrim, self.reinforce])
 
 
-**Initializing the :class:`~autopilot.core.networking.Net_Node`.**
+**Initializing the Net Node.**
 
-It gets the following arguments:
+The :class:`~autopilot.core.networking.Net_Node` gets the following arguments:
 
 * ``id``: The name that is used to identify the task's networking object so other networking objects can send it messages. We prefix the pilot's ``prefs.NAME`` with ``T_`` because it is a task, though this is not required.
 * ``upstream``: The name of the network node that is directly upstream from us, we will be sending our messages to the :class:`~autopilot.core.pilot.Pilot` that is running us -- and thus address it by its name

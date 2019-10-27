@@ -1,16 +1,19 @@
 """
 Note:
-    Let's start by saying all the GUI code is a little screwy.
+    Currently, the GUI code is some of the oldest code in the library --
+    in particular much of it was developed before the network infrastructure was mature.
+    As a result, a lot of modules are interdependent (eg. pass objects between each other).
+    This will be corrected before v1.0
 
-    It was developed before much of the rest of the package, and
-    thus has some severe violations of modularity - passing
-    methods back and forth between objects, etc.
-
-    AKA it was developed much before I knew how Python worked.
-
-    That being said...
 
 These classes implement the GUI used by the Terminal.
+
+The GUI is built using `PySide <https://pypi.org/project/PySide/>`_, a Python wrapper around Qt4.
+
+These classes are all currently used only by the :class:`~.autopilot.core.terminal.Terminal`.
+
+If performing any GUI operations in another thread (eg. as a callback from a networking object),
+the method must be decorated with `@gui_event` which will call perform the update in the main thread as required by Qt.
 """
 
 import sys
@@ -36,7 +39,7 @@ from autopilot.stim.sound import sounds
 from autopilot.core.networking import Net_Node
 from functools import wraps
 from autopilot.core.utils import InvokeEvent
-from autopilot.core.plots import gui_event
+#from autopilot.core.plots import gui_event
 from autopilot.core import styles
 
 import pdb

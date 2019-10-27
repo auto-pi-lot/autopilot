@@ -23,11 +23,21 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'0.2',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -36,7 +46,6 @@
   
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
 
@@ -98,9 +107,16 @@
             
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Setup a Pilot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Pilot Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
@@ -112,7 +128,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
@@ -160,7 +176,7 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id5">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id1">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -186,6 +202,7 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.styles.html">styles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">subject</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
@@ -223,6 +240,13 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-2">Version 0.2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.2.0.html">v0.2.0 (October 26, 2019)</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             
@@ -390,6 +414,8 @@
 </li>
       <li><a href="autopilot.core.plots.html#module-autopilot.core.plots">autopilot.core.plots (module)</a>
 </li>
+      <li><a href="autopilot.core.styles.html#module-autopilot.core.styles">autopilot.core.styles (module)</a>
+</li>
       <li><a href="autopilot.core.subject.html#module-autopilot.core.subject">autopilot.core.subject (module)</a>
 </li>
   </ul></td>
@@ -431,6 +457,8 @@
       <li><a href="autopilot.tasks.task.html#module-autopilot.tasks.task">autopilot.tasks.task (module)</a>
 </li>
       <li><a href="autopilot.viz.html#module-autopilot.viz">autopilot.viz (module)</a>
+</li>
+      <li><a href="autopilot.viz.trial_viewer.html#module-autopilot.viz.trial_viewer">autopilot.viz.trial_viewer (module)</a>
 </li>
       <li><a href="autopilot.core.gui.html#autopilot.core.gui.Autopilot_Style">Autopilot_Style (class in autopilot.core.gui)</a>
 </li>
@@ -967,6 +995,10 @@
 </li>
       </ul></li>
       <li><a href="autopilot.core.utils.html#autopilot.core.utils.load_pilotdb">load_pilotdb() (in module autopilot.core.utils)</a>
+</li>
+      <li><a href="autopilot.viz.trial_viewer.html#autopilot.viz.trial_viewer.load_subject_data">load_subject_data() (in module autopilot.viz.trial_viewer)</a>
+</li>
+      <li><a href="autopilot.viz.trial_viewer.html#autopilot.viz.trial_viewer.load_subject_dir">load_subject_dir() (in module autopilot.viz.trial_viewer)</a>
 </li>
       <li><a href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.log_formatter">log_formatter (autopilot.core.networking.Net_Node attribute)</a>
 
@@ -1506,6 +1538,8 @@
 </li>
       <li><a href="autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Task_Tab.step_changed">step_changed() (autopilot.core.gui.New_Subject_Wizard.Task_Tab method)</a>
 </li>
+      <li><a href="autopilot.viz.trial_viewer.html#autopilot.viz.trial_viewer.step_viewer">step_viewer() (in module autopilot.viz.trial_viewer)</a>
+</li>
       <li><a href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.stim_end">stim_end() (autopilot.tasks.nafc.Nafc method)</a>
 </li>
       <li><a href="autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager">Stim_Manager (class in autopilot.stim.managers)</a>
@@ -1588,9 +1622,11 @@
         <li><a href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.toggle_start">(autopilot.core.terminal.Terminal method)</a>
 </li>
       </ul></li>
+      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Tone">Tone (class in autopilot.stim.sound.sounds)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Tone">Tone (class in autopilot.stim.sound.sounds)</a>
+      <li><a href="autopilot.viz.trial_viewer.html#autopilot.viz.trial_viewer.trial_viewer">trial_viewer() (in module autopilot.viz.trial_viewer)</a>
 </li>
       <li><a href="autopilot.tasks.task.html#autopilot.tasks.task.Task.TrialData">TrialData (autopilot.tasks.task.Task attribute)</a>
 </li>

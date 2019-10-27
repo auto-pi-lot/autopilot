@@ -1,0 +1,10 @@
+sphinx>=1.8.5
+autodocsumm>=0.1.11
+sphinx_rtd_theme
+pyo
+inputs
+pyqtgraph
+JACK-Client
+npyscreen
+bokeh
+colorcet

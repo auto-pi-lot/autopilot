@@ -22,11 +22,21 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'0.2',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -35,7 +45,6 @@
   
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="viz" href="autopilot.viz.html" />
@@ -99,9 +108,16 @@
             
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Setup a Pilot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Pilot Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
@@ -113,7 +129,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
@@ -161,7 +177,7 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id5">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id1">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -187,6 +203,7 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.styles.html">styles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">subject</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
@@ -224,6 +241,13 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-2">Version 0.2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.2.0.html">v0.2.0 (October 26, 2019)</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             
@@ -306,60 +330,6 @@ and vice versa.</p>
 <p class="first admonition-title">Todo</p>
 <p class="last">Implement sound level and filter calibration</p>
 </div>
-<p><strong>Classes</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.File" title="autopilot.stim.sound.sounds.File"><code class="xref py py-obj docutils literal notranslate"><span class="pre">File</span></code></a>(path[,&nbsp;amplitude])</td>
-<td>A .wav file.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Jack_Sound" title="autopilot.stim.sound.sounds.Jack_Sound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Jack_Sound</span></code></a>()</td>
-<td>Base class for sounds that use the <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient" title="autopilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">JackClient</span></code></a> audio server.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Noise" title="autopilot.stim.sound.sounds.Noise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Noise</span></code></a>(duration[,&nbsp;amplitude])</td>
-<td>White Noise</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Pyo_Sound" title="autopilot.stim.sound.sounds.Pyo_Sound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Pyo_Sound</span></code></a>()</td>
-<td>Metaclass for pyo sound objects.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Speech" title="autopilot.stim.sound.sounds.Speech"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Speech</span></code></a>(path,&nbsp;speaker,&nbsp;consonant,&nbsp;vowel,&nbsp;token)</td>
-<td>Speech subclass of File sound.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Tone" title="autopilot.stim.sound.sounds.Tone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Tone</span></code></a>(frequency,&nbsp;duration[,&nbsp;amplitude])</td>
-<td>The Humble Sine Wave</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Data</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.SOUND_LIST" title="autopilot.stim.sound.sounds.SOUND_LIST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SOUND_LIST</span></code></a></td>
-<td>Sounds must be added to this SOUND_LIST so they can be indexed by the string keys used elsewhere.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.STRING_PARAMS" title="autopilot.stim.sound.sounds.STRING_PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">STRING_PARAMS</span></code></a></td>
-<td>These parameters should be given string columns rather than float columns.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Functions</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.int_to_float" title="autopilot.stim.sound.sounds.int_to_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int_to_float</span></code></a>(audio)</td>
-<td>Convert 16 or 32 bit integer audio to 32 bit float.</td>
-</tr>
-</tbody>
-</table>
 <dl class="class">
 <dt id="autopilot.stim.sound.sounds.Pyo_Sound">
 <em class="property">class </em><code class="descclassname">autopilot.stim.sound.sounds.</code><code class="descname">Pyo_Sound</code><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#Pyo_Sound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.Pyo_Sound" title="Permalink to this definition">¶</a></dt>
@@ -371,32 +341,6 @@ and vice versa.</p>
 the general opacity of the module. As such this object is
 intentionally left undocumented.</p>
 </div>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Pyo_Sound.play" title="autopilot.stim.sound.sounds.Pyo_Sound.play"><code class="xref py py-obj docutils literal notranslate"><span class="pre">play</span></code></a>()</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Pyo_Sound.set_trigger" title="autopilot.stim.sound.sounds.Pyo_Sound.set_trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_trigger</span></code></a>(trig_fn)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">param trig_fn:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Pyo_Sound.table_wrap" title="autopilot.stim.sound.sounds.Pyo_Sound.table_wrap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">table_wrap</span></code></a>(audio[,&nbsp;duration])</td>
-<td>Records a PyoAudio generator into a sound table, returns a</td>
-</tr>
-</tbody>
-</table>
 <dl class="method">
 <dt id="autopilot.stim.sound.sounds.Pyo_Sound.play">
 <code class="descname">play</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#Pyo_Sound.play"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.Pyo_Sound.play" title="Permalink to this definition">¶</a></dt>
@@ -468,94 +412,22 @@ server.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Attributes</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Jack_Sound.PARAMS" title="autopilot.stim.sound.sounds.Jack_Sound.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
-<td>list of strings of parameters to be defined</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Jack_Sound.server_type" title="autopilot.stim.sound.sounds.Jack_Sound.server_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">server_type</span></code></a></td>
-<td>type of server, always ‘jack’ for <cite>Jack_Sound</cite> s.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Jack_Sound.type" title="autopilot.stim.sound.sounds.Jack_Sound.type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></td>
-<td>string human readable name of sound</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Jack_Sound.buffer" title="autopilot.stim.sound.sounds.Jack_Sound.buffer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">buffer</span></code></a>()</td>
-<td>Dump chunks into the sound queue.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Jack_Sound.chunk" title="autopilot.stim.sound.sounds.Jack_Sound.chunk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chunk</span></code></a>()</td>
-<td>Split our <cite>table</cite> up into a list of <code class="xref py py-attr docutils literal notranslate"><span class="pre">Jack_Sound.blocksize</span></code> chunks.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Jack_Sound.end" title="autopilot.stim.sound.sounds.Jack_Sound.end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end</span></code></a>()</td>
-<td>Release any resources held by this sound</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Jack_Sound.get_nsamples" title="autopilot.stim.sound.sounds.Jack_Sound.get_nsamples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nsamples</span></code></a>()</td>
-<td>given our fs and duration, how many samples do we need?</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Jack_Sound.play" title="autopilot.stim.sound.sounds.Jack_Sound.play"><code class="xref py py-obj docutils literal notranslate"><span class="pre">play</span></code></a>()</td>
-<td>Play ourselves.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Jack_Sound.set_trigger" title="autopilot.stim.sound.sounds.Jack_Sound.set_trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_trigger</span></code></a>(trig_fn)</td>
-<td>Set a trigger function to be called when the <code class="xref py py-attr docutils literal notranslate"><span class="pre">stop_evt</span></code> is set.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Jack_Sound.wait_trigger" title="autopilot.stim.sound.sounds.Jack_Sound.wait_trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_trigger</span></code></a>()</td>
-<td>Wait for the stop_evt trigger to be set for at least a second after the sound should have ended.</td>
-</tr>
-</tbody>
-</table>
 <dl class="attribute">
 <dt id="autopilot.stim.sound.sounds.Jack_Sound.PARAMS">
 <code class="descname">PARAMS</code><em class="property"> = []</em><a class="headerlink" href="#autopilot.stim.sound.sounds.Jack_Sound.PARAMS" title="Permalink to this definition">¶</a></dt>
-<dd><p>list of strings of parameters to be defined</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">list</td>
-</tr>
-</tbody>
-</table>
+<dd><p><em>list</em> – list of strings of parameters to be defined</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="autopilot.stim.sound.sounds.Jack_Sound.type">
 <code class="descname">type</code><em class="property"> = None</em><a class="headerlink" href="#autopilot.stim.sound.sounds.Jack_Sound.type" title="Permalink to this definition">¶</a></dt>
-<dd><p>string human readable name of sound</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a></td>
-</tr>
-</tbody>
-</table>
+<dd><p><em>str</em> – string human readable name of sound</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="autopilot.stim.sound.sounds.Jack_Sound.server_type">
 <code class="descname">server_type</code><em class="property"> = 'jack'</em><a class="headerlink" href="#autopilot.stim.sound.sounds.Jack_Sound.server_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>type of server, always ‘jack’ for <cite>Jack_Sound</cite> s.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a></td>
-</tr>
-</tbody>
-</table>
+<dd><p><em>str</em> – type of server, always ‘jack’ for <cite>Jack_Sound</cite> s.</p>
 </dd></dl>
 
 <dl class="method">
@@ -638,33 +510,6 @@ the sound should have ended.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Attributes</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Tone.PARAMS" title="autopilot.stim.sound.sounds.Tone.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
-<td>list() -&gt; new empty list</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Tone.type" title="autopilot.stim.sound.sounds.Tone.type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></td>
-<td>str(object=’’) -&gt; string</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Tone.init_sound" title="autopilot.stim.sound.sounds.Tone.init_sound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_sound</span></code></a>()</td>
-<td>Create a sine wave table using pyo or numpy, depending on the server type.</td>
-</tr>
-</tbody>
-</table>
 <dl class="attribute">
 <dt id="autopilot.stim.sound.sounds.Tone.PARAMS">
 <code class="descname">PARAMS</code><em class="property"> = ['frequency', 'duration', 'amplitude']</em><a class="headerlink" href="#autopilot.stim.sound.sounds.Tone.PARAMS" title="Permalink to this definition">¶</a></dt>
@@ -701,33 +546,6 @@ the sound should have ended.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Attributes</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Noise.PARAMS" title="autopilot.stim.sound.sounds.Noise.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
-<td>list() -&gt; new empty list</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Noise.type" title="autopilot.stim.sound.sounds.Noise.type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></td>
-<td>str(object=’’) -&gt; string</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Noise.init_sound" title="autopilot.stim.sound.sounds.Noise.init_sound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_sound</span></code></a>()</td>
-<td>Create a table of Noise using pyo or numpy, depending on the server_type</td>
-</tr>
-</tbody>
-</table>
 <dl class="attribute">
 <dt id="autopilot.stim.sound.sounds.Noise.PARAMS">
 <code class="descname">PARAMS</code><em class="property"> = ['duration', 'amplitude']</em><a class="headerlink" href="#autopilot.stim.sound.sounds.Noise.PARAMS" title="Permalink to this definition">¶</a></dt>
@@ -751,34 +569,7 @@ the sound should have ended.</p>
 <em class="property">class </em><code class="descclassname">autopilot.stim.sound.sounds.</code><code class="descname">File</code><span class="sig-paren">(</span><em>path</em>, <em>amplitude=0.01</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#File"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.File" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A .wav file.</p>
-<p id="index-1"><strong>Attributes</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.File.PARAMS" title="autopilot.stim.sound.sounds.File.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
-<td>list() -&gt; new empty list</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.File.type" title="autopilot.stim.sound.sounds.File.type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></td>
-<td>str(object=’’) -&gt; string</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.File.init_sound" title="autopilot.stim.sound.sounds.File.init_sound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_sound</span></code></a>()</td>
-<td>Load the wavfile with <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/tutorial/io.html#module-scipy.io.wavfile" title="(in SciPy v1.3.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.io.wavfile</span></code></a> , converting int to float as needed.</td>
-</tr>
-</tbody>
-</table>
-<div class="admonition-todo admonition">
+<div class="admonition-todo admonition" id="index-1">
 <p class="first admonition-title">Todo</p>
 <p class="last">Generalize this to other audio types if needed.</p>
 </div>
@@ -808,7 +599,7 @@ the sound should have ended.</p>
 <dl class="method">
 <dt id="autopilot.stim.sound.sounds.File.init_sound">
 <code class="descname">init_sound</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#File.init_sound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.File.init_sound" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load the wavfile with <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/tutorial/io.html#module-scipy.io.wavfile" title="(in SciPy v1.3.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.io.wavfile</span></code></a> ,
+<dd><p>Load the wavfile with <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/io.html#module-scipy.io.wavfile" title="(in SciPy v1.3.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.io.wavfile</span></code></a> ,
 converting int to float as needed.</p>
 <p>Create a sound table, resampling sound if needed.</p>
 </dd></dl>
@@ -832,21 +623,6 @@ converting int to float as needed.</p>
 <li><strong>token</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Which token is this for a given combination of speaker, consonant, and vowel</li>
 </ul>
 </td>
-</tr>
-</tbody>
-</table>
-<p><strong>Attributes</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Speech.PARAMS" title="autopilot.stim.sound.sounds.Speech.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
-<td>list() -&gt; new empty list</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.sound.sounds.Speech.type" title="autopilot.stim.sound.sounds.Speech.type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></td>
-<td>str(object=’’) -&gt; string</td>
 </tr>
 </tbody>
 </table>

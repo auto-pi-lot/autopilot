@@ -22,11 +22,21 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'0.2',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -35,7 +45,6 @@
   
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="graduation" href="autopilot.tasks.graduation.html" />
@@ -99,9 +108,16 @@
             
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Setup a Pilot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Pilot Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
@@ -113,7 +129,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
@@ -161,7 +177,7 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id5">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id1">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -187,6 +203,7 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.styles.html">styles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">subject</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
@@ -224,6 +241,13 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-2">Version 0.2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.2.0.html">v0.2.0 (October 26, 2019)</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             
@@ -292,18 +316,6 @@
             
   <div class="section" id="module-autopilot.tasks.free_water">
 <span id="free-water"></span><h1>free_water<a class="headerlink" href="#module-autopilot.tasks.free_water" title="Permalink to this headline">¶</a></h1>
-<p><strong>Classes</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water" title="autopilot.tasks.free_water.Free_Water"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Free_Water</span></code></a>([stage_block,&nbsp;current_trial,&nbsp;…])</td>
-<td>Randomly light up one of the ports, then dispense water when the subject pokes there</td>
-</tr>
-</tbody>
-</table>
 <dl class="class">
 <dt id="autopilot.tasks.free_water.Free_Water">
 <em class="property">class </em><code class="descclassname">autopilot.tasks.free_water.</code><code class="descname">Free_Water</code><span class="sig-paren">(</span><em>stage_block=None</em>, <em>current_trial=0</em>, <em>reward=50</em>, <em>allow_repeat=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/free_water.html#Free_Water"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.free_water.Free_Water" title="Permalink to this definition">¶</a></dt>
@@ -314,60 +326,6 @@
 <li>waiting for response, and</li>
 <li>reporting the response afterwards</li>
 </ul>
-<p><strong>Attributes</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water.DATA" title="autopilot.tasks.free_water.Free_Water.DATA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DATA</span></code></a></td>
-<td>dict() -&gt; new empty dictionary</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water.HARDWARE" title="autopilot.tasks.free_water.Free_Water.HARDWARE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HARDWARE</span></code></a></td>
-<td>dict() -&gt; new empty dictionary</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water.PARAMS" title="autopilot.tasks.free_water.Free_Water.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
-<td>Dictionary that remembers insertion order</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water.PLOT" title="autopilot.tasks.free_water.Free_Water.PLOT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLOT</span></code></a></td>
-<td>dict() -&gt; new empty dictionary</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water.STAGE_NAMES" title="autopilot.tasks.free_water.Free_Water.STAGE_NAMES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">STAGE_NAMES</span></code></a></td>
-<td>list() -&gt; new empty list</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Miscallaneous</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water.TrialData" title="autopilot.tasks.free_water.Free_Water.TrialData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrialData</span></code></a></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water.end" title="autopilot.tasks.free_water.Free_Water.end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end</span></code></a>()</td>
-<td>When shutting down, release all hardware objects and turn LEDs off.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water.response" title="autopilot.tasks.free_water.Free_Water.response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">response</span></code></a>()</td>
-<td>Just have to alert the Terminal that the current trial has ended and turn off any lights.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.free_water.Free_Water.water" title="autopilot.tasks.free_water.Free_Water.water"><code class="xref py py-obj docutils literal notranslate"><span class="pre">water</span></code></a>(*args,&nbsp;**kwargs)</td>
-<td>First stage of task - open a port if it’s poked.</td>
-</tr>
-</tbody>
-</table>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -420,7 +378,7 @@
 
 <dl class="attribute">
 <dt id="autopilot.tasks.free_water.Free_Water.HARDWARE">
-<code class="descname">HARDWARE</code><em class="property"> = {'LEDS': {'C': &lt;class 'autopilot.core.hardware.LED_RGB'&gt;, 'L': &lt;class 'autopilot.core.hardware.LED_RGB'&gt;, 'R': &lt;class 'autopilot.core.hardware.LED_RGB'&gt;}, 'POKES': {'C': &lt;class 'autopilot.core.hardware.Beambreak'&gt;, 'L': &lt;class 'autopilot.core.hardware.Beambreak'&gt;, 'R': &lt;class 'autopilot.core.hardware.Beambreak'&gt;}, 'PORTS': {'C': &lt;class 'autopilot.core.hardware.Solenoid'&gt;, 'L': &lt;class 'autopilot.core.hardware.Solenoid'&gt;, 'R': &lt;class 'autopilot.core.hardware.Solenoid'&gt;}}</em><a class="headerlink" href="#autopilot.tasks.free_water.Free_Water.HARDWARE" title="Permalink to this definition">¶</a></dt>
+<code class="descname">HARDWARE</code><em class="property"> = {'LEDS': {'C': &lt;class 'autopilot.core.hardware.LED_RGB'&gt;, 'R': &lt;class 'autopilot.core.hardware.LED_RGB'&gt;, 'L': &lt;class 'autopilot.core.hardware.LED_RGB'&gt;}, 'POKES': {'C': &lt;class 'autopilot.core.hardware.Beambreak'&gt;, 'R': &lt;class 'autopilot.core.hardware.Beambreak'&gt;, 'L': &lt;class 'autopilot.core.hardware.Beambreak'&gt;}, 'PORTS': {'C': &lt;class 'autopilot.core.hardware.Solenoid'&gt;, 'R': &lt;class 'autopilot.core.hardware.Solenoid'&gt;, 'L': &lt;class 'autopilot.core.hardware.Solenoid'&gt;}}</em><a class="headerlink" href="#autopilot.tasks.free_water.Free_Water.HARDWARE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">

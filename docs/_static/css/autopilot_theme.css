@@ -116,7 +116,7 @@ ul, ol, dl {
     margin: 0;
     padding: 0;
     list-style: none;
-    list-style-image: none
+    list-style-image: none;
 }
 
 li {
@@ -4992,7 +4992,7 @@ html {
     color: #ffffff;
     font-family: 'Cutive Mono', monospace;
 }
-}
+
 
 .wy-menu-vertical a:hover {
     background-color: #4e4a4a;
@@ -5103,7 +5103,7 @@ html {
     position: absolute;
     opacity: 1;
     width: 100%;
-    opacity: 0
+    opacity: 0;
 }
 
 [data-menu-wrap].move-center {
@@ -5160,8 +5160,8 @@ html {
 .wy-nav-top {
     display: none;
     /*background-image: url(../grid.png);*/
-    background: #ff0000;
-    color: #000;
+    background: #252525;
+    color: #f2f2f2;
     padding: .4045em .809em;
     position: relative;
     line-height: 50px;
@@ -5180,8 +5180,10 @@ html {
 }
 
 .wy-nav-top a {
-    color: #000;
-    font-weight: bold
+    color: #f2f2f2;
+    font-size: 14pt;
+    font-family: "Cutive Mono", monospace;
+    /*font-weight: bold*/
 }
 
 .wy-nav-top img {

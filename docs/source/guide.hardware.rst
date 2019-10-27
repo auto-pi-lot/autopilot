@@ -18,7 +18,7 @@ stored in ``prefs.json``.
 A few basic Hardware classes are dissected in this section to illustrate basic principles of their design,
 but we expect Hardware objects to be extremely variable in their implementation and application.
 
-.. to-do::
+.. todo::
 
     In future versions of Autopilot, the structure of hardware ``prefs`` will be formalized similarly to
     the preamble of tasks to make establishing and maintaining parameterizations more transparent.

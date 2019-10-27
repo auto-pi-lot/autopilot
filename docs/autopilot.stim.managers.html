@@ -22,11 +22,21 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'0.2',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -35,7 +45,6 @@
   
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="sound" href="autopilot.stim.sound.html" />
@@ -99,9 +108,16 @@
             
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Setup a Pilot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Pilot Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
@@ -113,7 +129,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
@@ -161,7 +177,7 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id5">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id1">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -187,6 +203,7 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.styles.html">styles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">subject</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
@@ -224,6 +241,13 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-2">Version 0.2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.2.0.html">v0.2.0 (October 26, 2019)</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             
@@ -299,36 +323,6 @@ redefine <cite>next_stim</cite></p>
 <p class="first admonition-title">Todo</p>
 <p class="last">Make this more general, for more than just sounds.</p>
 </div>
-<p><strong>Classes</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Bias_Correction" title="autopilot.stim.managers.Bias_Correction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a>([mode,&nbsp;thresh,&nbsp;window])</td>
-<td>Basic Bias correction module.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Proportional" title="autopilot.stim.managers.Proportional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Proportional</span></code></a>(stim)</td>
-<td>Present groups of stimuli with a particular frequency.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a>([stim])</td>
-<td>Yield sounds according to some set of rules.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Functions</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.init_manager" title="autopilot.stim.managers.init_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_manager</span></code></a>(stim)</td>
-<td></td>
-</tr>
-</tbody>
-</table>
 <dl class="function">
 <dt id="autopilot.stim.managers.init_manager">
 <code class="descclassname">autopilot.stim.managers.</code><code class="descname">init_manager</code><span class="sig-paren">(</span><em>stim</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#init_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.init_manager" title="Permalink to this definition">¶</a></dt>
@@ -348,53 +342,6 @@ redefine <cite>next_stim</cite></p>
 </li>
 <li>bias correction - above some bias threshold, skew the correct answers to the less-responded side</li>
 </ul>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.compute_correction" title="autopilot.stim.managers.Stim_Manager.compute_correction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_correction</span></code></a>()</td>
-<td>If <cite>self.correction</cite> is true, compute correction trial logic during <cite>next_stim</cite>.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.do_bias" title="autopilot.stim.managers.Stim_Manager.do_bias"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_bias</span></code></a>(**kwargs)</td>
-<td>Instantiate a <a class="reference internal" href="#autopilot.stim.managers.Bias_Correction" title="autopilot.stim.managers.Bias_Correction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a> module</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.do_correction" title="autopilot.stim.managers.Stim_Manager.do_correction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_correction</span></code></a>([correction_pct])</td>
-<td>Called to set correction trials to True and correction percent.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.end" title="autopilot.stim.managers.Stim_Manager.end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end</span></code></a>()</td>
-<td>End all of our stim.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.init_sounds" title="autopilot.stim.managers.Stim_Manager.init_sounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_sounds</span></code></a>(sound_dict)</td>
-<td>Instantiate sound objects, using the ‘type’ value to choose an object from <a class="reference internal" href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.SOUND_LIST" title="autopilot.stim.sound.sounds.SOUND_LIST"><code class="xref py py-data docutils literal notranslate"><span class="pre">sounds.SOUND_LIST</span></code></a> .</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.make_punishment" title="autopilot.stim.managers.Stim_Manager.make_punishment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_punishment</span></code></a>(type,&nbsp;duration)</td>
-<td><div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Not Implemented</p>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.next_stim" title="autopilot.stim.managers.Stim_Manager.next_stim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">next_stim</span></code></a>()</td>
-<td>Compute and return the next stimulus</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.play_punishment" title="autopilot.stim.managers.Stim_Manager.play_punishment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">play_punishment</span></code></a>()</td>
-<td><div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Not Implemented</p>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.set_triggers" title="autopilot.stim.managers.Stim_Manager.set_triggers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_triggers</span></code></a>(trig_fn)</td>
-<td>Give a callback function to all of our stimuli for when the stimulus ends.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Stim_Manager.update" title="autopilot.stim.managers.Stim_Manager.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(response,&nbsp;correct)</td>
-<td>At the end of a trial, update the status of our internal variables with the outcome of the trial.</td>
-</tr>
-</tbody>
-</table>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -637,27 +584,6 @@ with the outcome of the trial.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Proportional.init_sounds" title="autopilot.stim.managers.Proportional.init_sounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_sounds</span></code></a>(sound_stim)</td>
-<td>Instantiate sound objects similarly to <a class="reference internal" href="#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a>, just organizes them into groups.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Proportional.next_stim" title="autopilot.stim.managers.Proportional.next_stim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">next_stim</span></code></a>()</td>
-<td>Compute and return the next stimulus</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Proportional.set_triggers" title="autopilot.stim.managers.Proportional.set_triggers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_triggers</span></code></a>(trig_fn)</td>
-<td>Give a callback function to all of our stimuli for when the stimulus ends.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Proportional.store_groups" title="autopilot.stim.managers.Proportional.store_groups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">store_groups</span></code></a>(stim)</td>
-<td>store groups and frequencies</td>
-</tr>
-</tbody>
-</table>
 <dl class="method">
 <dt id="autopilot.stim.managers.Proportional.init_sounds">
 <code class="descname">init_sounds</code><span class="sig-paren">(</span><em>sound_stim</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Proportional.init_sounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional.init_sounds" title="Permalink to this definition">¶</a></dt>
@@ -774,24 +700,6 @@ choice based on history of biased responses.</p>
 <li><strong>window</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – number of trials to calculate bias over</li>
 </ul>
 </td>
-</tr>
-</tbody>
-</table>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Bias_Correction.next_bias" title="autopilot.stim.managers.Bias_Correction.next_bias"><code class="xref py py-obj docutils literal notranslate"><span class="pre">next_bias</span></code></a>()</td>
-<td>Compute the next bias depending on <cite>self.mode</cite></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.stim.managers.Bias_Correction.thresholded_linear" title="autopilot.stim.managers.Bias_Correction.thresholded_linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thresholded_linear</span></code></a>()</td>
-<td>If we are above the threshold, linearly correct the rate of presentation to favor the rarely responded side.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.stim.managers.Bias_Correction.update" title="autopilot.stim.managers.Bias_Correction.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(response,&nbsp;target)</td>
-<td>Store some new response and target values</td>
 </tr>
 </tbody>
 </table>

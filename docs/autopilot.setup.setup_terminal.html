@@ -22,11 +22,21 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'0.2',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -35,7 +45,6 @@
   
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="prefs" href="autopilot.prefs.html" />
@@ -99,9 +108,16 @@
             
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Setup a Pilot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Pilot Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
@@ -113,7 +129,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
@@ -161,7 +177,7 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id5">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id1">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -187,6 +203,7 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.styles.html">styles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">subject</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
@@ -224,6 +241,13 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-2">Version 0.2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.2.0.html">v0.2.0 (October 26, 2019)</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             
@@ -307,55 +331,10 @@ for parameters to set up a <a class="reference internal" href="autopilot.core.te
 <li><strong>REPODIR</strong> - Path to autopilot git repo</li>
 <li><strong>PILOT_DB</strong> - Location of <cite>pilot_db.json</cite> used to populate <code class="xref py py-attr docutils literal notranslate"><span class="pre">pilots</span></code></li>
 </ul>
-<p><strong>Classes</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.setup.setup_terminal.SetupApp" title="autopilot.setup.setup_terminal.SetupApp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SetupApp</span></code></a>()</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.setup.setup_terminal.TerminalSetupForm" title="autopilot.setup.setup_terminal.TerminalSetupForm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TerminalSetupForm</span></code></a>([draw_line_at])</td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Functions</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.setup.setup_terminal.make_dir" title="autopilot.setup.setup_terminal.make_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_dir</span></code></a>(adir)</td>
-<td>Make a directory if it doesn’t exist and set its permissions to <cite>0777</cite></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.setup.setup_terminal.unfold_values" title="autopilot.setup.setup_terminal.unfold_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unfold_values</span></code></a>(v)</td>
-<td>Unfold nested values from the SetupForm.</td>
-</tr>
-</tbody>
-</table>
 <dl class="class">
 <dt id="autopilot.setup.setup_terminal.TerminalSetupForm">
 <em class="property">class </em><code class="descclassname">autopilot.setup.setup_terminal.</code><code class="descname">TerminalSetupForm</code><span class="sig-paren">(</span><em>draw_line_at=None</em>, <em>*args</em>, <em>**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/setup/setup_terminal.html#TerminalSetupForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.setup.setup_terminal.TerminalSetupForm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">npyscreen.fmForm.SplitForm</span></code></p>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.setup.setup_terminal.TerminalSetupForm.afterEditing" title="autopilot.setup.setup_terminal.TerminalSetupForm.afterEditing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">afterEditing</span></code></a>()</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.setup.setup_terminal.TerminalSetupForm.create" title="autopilot.setup.setup_terminal.TerminalSetupForm.create"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create</span></code></a>()</td>
-<td>Programmers should over-ride this in derived classes, creating widgets here</td>
-</tr>
-</tbody>
-</table>
 <dl class="method">
 <dt id="autopilot.setup.setup_terminal.TerminalSetupForm.create">
 <code class="descname">create</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/setup/setup_terminal.html#TerminalSetupForm.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.setup.setup_terminal.TerminalSetupForm.create" title="Permalink to this definition">¶</a></dt>
@@ -373,18 +352,6 @@ for parameters to set up a <a class="reference internal" href="autopilot.core.te
 <dt id="autopilot.setup.setup_terminal.SetupApp">
 <em class="property">class </em><code class="descclassname">autopilot.setup.setup_terminal.</code><code class="descname">SetupApp</code><a class="reference internal" href="_modules/autopilot/setup/setup_terminal.html#SetupApp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.setup.setup_terminal.SetupApp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">npyscreen.apNPSApplicationManaged.NPSAppManaged</span></code></p>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.setup.setup_terminal.SetupApp.onStart" title="autopilot.setup.setup_terminal.SetupApp.onStart"><code class="xref py py-obj docutils literal notranslate"><span class="pre">onStart</span></code></a>()</td>
-<td>Override this method to perform any initialisation.</td>
-</tr>
-</tbody>
-</table>
 <dl class="method">
 <dt id="autopilot.setup.setup_terminal.SetupApp.onStart">
 <code class="descname">onStart</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/setup/setup_terminal.html#SetupApp.onStart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.setup.setup_terminal.SetupApp.onStart" title="Permalink to this definition">¶</a></dt>

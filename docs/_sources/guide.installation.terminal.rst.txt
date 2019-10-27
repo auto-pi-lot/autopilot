@@ -38,10 +38,10 @@ and the Python packages:
 Scripted Terminal Setup
 =======================
 
-1. The :source:`presetup_terminal.sh<autopilot.setup.presetup_terminal.sh>` script automates the manual presetup below. It..
+1. The `resetup_terminal.sh>` script automates the manual presetup below. It..
     * Downloads, compiles, and installs Qt4
     * Downloads, compiled, and installs PySide
-2. The :source:`setup_terminal.py<autopilot.setup.setup_terminal>` script sets two configuration options
+2. The `setup_terminal.sh` script sets two configuration options
     * **BASE_DIR:** The base directory used by Autopilot to store data, configuration, etc.
     * **MSGPORT:** The port used by the Terminal to send and receive messages.
 
@@ -57,7 +57,8 @@ Both of these steps take an enormous amount of time, so plan to start the compil
 Compiling & Installing Qt4 - Linux
 ----------------------------------
 
-Note:
+.. todo:
+
     Since Autopilot was developed, `PySide 2 <https://pypi.org/project/PySide2/>`_ which uses Qt5 has been released. We will be upgrading Autopilot to use it in the next minor release.
 
 1. Download `Qt4.8.7 <https://download.qt.io/archive/qt/4.8/4.8.7/qt-everywhere-opensource-src-4.8.7.zip>`_

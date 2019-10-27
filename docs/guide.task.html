@@ -22,11 +22,21 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'0.2',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -35,7 +45,6 @@
   
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Writing a Hardware Class" href="guide.hardware.html" />
@@ -99,9 +108,16 @@
             
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Setup a Pilot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Pilot Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
@@ -113,7 +129,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
@@ -161,7 +177,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id5">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -187,6 +203,7 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.styles.html">styles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">subject</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
@@ -224,6 +241,13 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-2">Version 0.2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.2.0.html">v0.2.0 (October 26, 2019)</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             
@@ -290,14 +314,14 @@
             
   <div class="section" id="writing-a-task">
 <span id="guide-task"></span><h1>Writing a Task<a class="headerlink" href="#writing-a-task" title="Permalink to this headline">¶</a></h1>
-<p>Some concepts of task design are also discussed in section 3.1 of the <a class="reference external" href="auto-pi-lot.com/autopilot_whitepaper.pdf">whitepaper</a>.</p>
+<p>Some concepts of task design are also discussed in section 3.1 of the <a class="reference external" href="https://www.biorxiv.org/content/10.1101/807693v1">whitepaper</a>.</p>
 <div class="section" id="the-nafc-task">
 <h2>The Nafc Task<a class="headerlink" href="#the-nafc-task" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Nafc</span></code> class serves as an example for new task designs.</p>
 <p>To demonstrate the general structure of Autopilot tasks, let’s build it from scratch.</p>
 <div class="section" id="the-task-class">
 <h3>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class<a class="headerlink" href="#the-task-class" title="Permalink to this headline">¶</a></h3>
-<p>We start by subclassing the <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.task.Task</span></code></a> class and initializing it.</p>
+<p>We start by subclassing the <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> class and initializing it.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">autopilot.tasks</span> <span class="kn">import</span> <span class="n">Task</span>
 
 <span class="k">class</span> <span class="nc">Nafc</span><span class="p">(</span><span class="n">Task</span><span class="p">):</span>
@@ -381,7 +405,7 @@ and a <code class="docutils literal notranslate"><span class="pre">type</span></
 </ul>
 <div class="admonition-todo admonition" id="index-0">
 <p class="first admonition-title">Todo</p>
-<p class="last">Support for saving continuous data is in place, but less tested than trial data storage. See <a href="#id1"><span class="problematic" id="id2">:ref:`todo`_</span></a>.</p>
+<p class="last">Support for saving continuous data is in place, but less tested than trial data storage. See  <a class="reference internal" href="todo.html#todo"><span class="std std-ref">To-Do</span></a>.</p>
 </div>
 <p>Both are defined by <a class="reference external" href="https://www.pytables.org/index.html">pytables</a> <code class="xref py py-class docutils literal notranslate"><span class="pre">tables.IsDescription</span></code> objects.
 Specify each variable that will be returned and its type using a <code class="xref py py-class docutils literal notranslate"><span class="pre">tables.Col</span></code> object:</p>
@@ -441,7 +465,7 @@ further mappings can be defined by extending the graphical element’s <code cla
 <h4>HARDWARE<a class="headerlink" href="#hardware" title="Permalink to this headline">¶</a></h4>
 <p>The <code class="docutils literal notranslate"><span class="pre">HARDWARE</span></code> dictionary maps a hardware type (eg. <code class="docutils literal notranslate"><span class="pre">POKES</span></code>) and identifier (eg. <code class="docutils literal notranslate"><span class="pre">'L'</span></code>)
 to a <a class="reference internal" href="autopilot.core.hardware.html#autopilot.core.hardware.Hardware" title="autopilot.core.hardware.Hardware"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hardware</span></code></a> object. The task uses the hardware parameterization in the
-<code class="xref py py-mod docutils literal notranslate"><span class="pre">prefs</span></code> file (also see <a class="reference internal" href="guide.installation.pilot.html#setup-pilot"><span class="std std-ref">Pilot Setup</span></a>) to instantiate each of the hardware objects, so their naming
+<a class="reference internal" href="autopilot.prefs.html#module-autopilot.prefs" title="autopilot.prefs"><code class="xref py py-mod docutils literal notranslate"><span class="pre">prefs</span></code></a> file (also see <a class="reference internal" href="guide.installation.pilot.html#setup-pilot"><span class="std std-ref">Pilot Setup</span></a>) to instantiate each of the hardware objects, so their naming
 system must match (ie. there must be a <code class="docutils literal notranslate"><span class="pre">prefs.PINS['POKES']['L']</span></code> entry in <code class="docutils literal notranslate"><span class="pre">prefs</span></code> for a task that has a
 <code class="docutils literal notranslate"><span class="pre">task.HARDWARE['POKES']['L']</span></code> object).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">autopilot.core</span> <span class="kn">import</span> <span class="n">hardware</span>
@@ -807,7 +831,7 @@ behaves identically to the <a class="reference internal" href="autopilot.core.ha
 </div>
 <p>Finally, we add an additional <code class="docutils literal notranslate"><span class="pre">CHILDREN</span></code> dictionary to specify the type of Child
 that we need to run the task, as well as any additional parameters needed to configure it.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">task_type</span></code> must refer to some key in the <a href="#id3"><span class="problematic" id="id4">:var:`autopilot.tasks.CHILDREN_LIST`</span></a>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">task_type</span></code> must refer to some key in the <code class="xref py py-data docutils literal notranslate"><span class="pre">autopilot.tasks.CHILDREN_LIST</span></code>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The <code class="docutils literal notranslate"><span class="pre">Child</span></code> agent is a subconfiguration of the <code class="docutils literal notranslate"><span class="pre">Pilot</span></code> agent, they will be delineated more
@@ -821,8 +845,8 @@ explicitly as the agent framework is solidified.</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="id5">
-<h3>Initialization<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id1">
+<h3>Initialization<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>When initializing this task, we need to make our own <a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net_Node</span></code></a> object
 as well as initialize our child. Assuming that the child is
 connected to the parent and appropriately configured (see the
@@ -861,13 +885,13 @@ an unfortunately necessary evil because the visual stimulus infrastructure is no
     <span class="bp">self</span><span class="o">.</span><span class="n">stages</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">cycle</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">discrim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reinforce</span><span class="p">])</span>
 </pre></div>
 </div>
-<p><strong>Initializing the :class:`~autopilot.core.networking.Net_Node`.</strong></p>
-<p>It gets the following arguments:</p>
+<p><strong>Initializing the Net Node.</strong></p>
+<p>The <a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net_Node</span></code></a> gets the following arguments:</p>
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">id</span></code>: The name that is used to identify the task’s networking object so other networking objects can send it messages. We prefix the pilot’s <code class="docutils literal notranslate"><span class="pre">prefs.NAME</span></code> with <code class="docutils literal notranslate"><span class="pre">T_</span></code> because it is a task, though this is not required.</li>
 <li><code class="docutils literal notranslate"><span class="pre">upstream</span></code>: The name of the network node that is directly upstream from us, we will be sending our messages to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code> that is running us – and thus address it by its name</li>
 <li><code class="docutils literal notranslate"><span class="pre">port</span></code>: The port of our upstream mode, most commonly the <code class="docutils literal notranslate"><span class="pre">prefs.MSGPORT</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">listens</span></code>: A dictionary that maps messages with different <a href="#id6"><span class="problematic" id="id7">``</span></a>KEY``s to specific handling methods. Since we don’t need to receive any data for this task, this is blank,</li>
+<li><code class="docutils literal notranslate"><span class="pre">listens</span></code>: A dictionary that maps messages with different <a href="#id2"><span class="problematic" id="id3">``</span></a>KEY``s to specific handling methods. Since we don’t need to receive any data for this task, this is blank,</li>
 <li><code class="docutils literal notranslate"><span class="pre">instance</span></code>: Optional, denotes whether this node shouldn’t be the only node that exists within the Agent – ie. it uses the same instance of the <code class="docutils literal notranslate"><span class="pre">tornado</span></code> IOLoop as other nodes.</li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="n">Net_Node</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;T_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span><span class="p">),</span>
