@@ -122,7 +122,7 @@ class I2C_9DOF(Hardware):
     GYROSCALE_500DPS = (0b01 << 3)  # +/- 500 degrees/s rotation
     GYROSCALE_2000DPS = (0b11 << 3)  # +/- 2000 degrees/s rotation
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
 
         # Initialize the pigpio connection
         self.pig = pigpio.pi()
