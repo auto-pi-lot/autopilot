@@ -52,7 +52,7 @@ class Video_Child(object):
     PARAMS['cams'] = {'tag': 'Dictionary of camera params, or list of dicts',
                       'type': ('dict', 'list')}
 
-    def __init__(self, cams, start=True, **kwargs):
+    def __init__(self, cams=None, stage_block = None, start=True, **kwargs):
         """
         Args:
             cams (dict, list): Should be a dictionary of camera parameters or a list of dicts. Dicts should have, at least::
@@ -64,6 +64,9 @@ class Video_Child(object):
                 }
         """
 
+        if cams is None:
+            Exception('Need to give us a cams dictionary!')
+            
         self.cams = {}
 
 
