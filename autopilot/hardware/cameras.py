@@ -4,9 +4,11 @@ from subprocess import Popen, PIPE
 import sys
 import time
 from itertools import count
+import json_tricks
 import os
 from skvideo import io
 import numpy as np
+import base64
 #from tqdm import tqdm, trange
 from datetime import datetime
 
@@ -32,7 +34,7 @@ from autopilot import prefs
 
 
 
-class Camera_OpenCV(object):
+class Camera_OpenCV(mp.Process):
     """
     https://www.pyimagesearch.com/2017/02/06/faster-video-file-fps-with-cv2-videocapture-and-opencv/
     """
@@ -80,16 +82,16 @@ class Camera_OpenCV(object):
 
 
 
-    # def run(self):
-    #     self._update()
-    #     # t = Thread(target=self._update)
-    #     # t.daemon = True
-    #     # t.start()
+    def run(self):
+        self._update()
+        # t = Thread(target=self._update)
+        # t.daemon = True
+        # t.start()
 
-    def start(self):
-        self.thread = threading.Thread(target=self._update)
-        self.thread.daemon = True
-        self.thread.start()
+    # def start(self):
+    #     self.thread = threading.Thread(target=self._update)
+    #     self.thread.daemon = True
+    #     self.thread.start()
 
     def _update(self):
 
@@ -108,15 +110,17 @@ class Camera_OpenCV(object):
         while not self.stopped.is_set():
             _, self._frame = self.vid.read()
             timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
+            print(timestamp)
+            sys.stdout.flush()
             if self.stream:
                 self.node.send(key='CONTINUOUS',
-                               value={self.name:self._frame,
+                               value={self.name:(self._frame.dtype, self._frame.shape, base64.b64encode(self._frame)),
                                       'timestamp':timestamp},
                                repeat=False)
 
             if self.queue:
                 if not self.q.full():
-                    self.q.put_nowait(self._frame)
+                    self.q.put_nowait((self._frame, timestamp))
 
     def release(self):
         self.stopped.set()

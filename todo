@@ -62,6 +62,7 @@
 - change the relevant methods in the jack sound class to be @parameters
 
 - move core.hardware to autopilot.hardware
+- general debugging mode that enables logging, normally disable logging.
 
 .. automodsumm:: rpilot.core.gui
     :toctree:

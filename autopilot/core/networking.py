@@ -1153,7 +1153,7 @@ class Net_Node(object):
     loop_thread = None
     repeat_interval = 5 # how many seconds to wait before trying to repeat a message
 
-    def __init__(self, id, upstream, port, listens, instance=True, do_logging=True):
+    def __init__(self, id, upstream, port, listens, instance=True, do_logging=False):
         """
         Args:
             id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
@@ -1547,14 +1547,14 @@ class Message(object):
         if 'timestamp' not in kwargs.keys():
             self.get_timestamp()
 
-        self.DETECTED_MINPRINT = False
+        # self.DETECTED_MINPRINT = False
 
     def __str__(self):
         # type: () -> str
-        if len(str(self.value))>100:
-            self.DETECTED_MINPRINT = True
+        # if len(str(self.value))>100:
+        #     self.DETECTED_MINPRINT = True
 
-        if self.key == 'FILE' or ('MINPRINT' in self.flags.keys()) or self.DETECTED_MINPRINT:
+        if self.key == 'FILE' or ('MINPRINT' in self.flags.keys()):
             me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}".format(self.id, self.to, self.sender, self.key)
         else:
             me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}; VALUE: {}".format(self.id, self.to, self.sender, self.key, self.value)
@@ -1568,8 +1568,8 @@ class Message(object):
         Args:
             key:
         """
-        value = self._check_dec(self.__dict__[key])
-        return value
+        #value = self._check_dec(self.__dict__[key])
+        return self.__dict__[key]
 
     def __setitem__(self, key, value):
         """
@@ -1577,16 +1577,16 @@ class Message(object):
             key:
             value:
         """
-        value = self._check_enc(value)
+        #value = self._check_enc(value)
         self.__dict__[key] = value
 
     def __setattr__(self, key, value):
-        value = self._check_enc(value)
+        #value = self._check_enc(value)
         self.__dict__[key] = value
 
     def __getattr__(self, key):
-        value = self._check_dec(self.__dict__[key])
-        return value
+        #value = self._check_dec(self.__dict__[key])
+        return self.__dict__[key]
 
     def _check_enc(self, value):
         if isinstance(value, np.ndarray):
@@ -1607,7 +1607,7 @@ class Message(object):
         elif isinstance(value, dict):
             for k, v in value.items():
                 value[k] = self._check_dec(v)
-        elif isintance(value, list):
+        elif isinstance(value, list):
             value = [self._check_dec(v) for v in value]
         return value
 

@@ -67,13 +67,14 @@ class Parallax(Task):
                 {'type': 'Camera_OpenCV',
                  'name': 'head_1',
                  'camera_idx': 0,
-                 'stream': True,
+                 'stream': False,
+                 'queue': True
                  },
-                {'type': 'Camera_OpenCV',
-                 'name': 'head_2',
-                 'camera_idx': 2,
-                 'stream': True,
-                 }
+                # {'type': 'Camera_OpenCV',
+                #  'name': 'head_2',
+                #  'camera_idx': 2,
+                #  'stream': True,
+                #  }
             ]
         }
     }
