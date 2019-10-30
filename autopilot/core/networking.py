@@ -1541,9 +1541,7 @@ class Message(object):
             Exception("Messages cannot be constructed with positional arguments")
 
         for k, v in kwargs.items():
-            if isinstance(v, np.ndarray):
-                v = json_tricks.dumps(v)
-            setattr(self, k, v)
+            self[k] = v
 
         # if we're not a previous message being recreated, get a timestamp for our creation
         if 'timestamp' not in kwargs.keys():
@@ -1570,13 +1568,7 @@ class Message(object):
         Args:
             key:
         """
-        value = self.__dict__[key]
-
-        # if numpy array, reconstitute
-        if isinstance(value, basestring):
-            if value.startswith('{"__ndarray__'):
-                value = json_tricks.loads(value)
-
+        value = self._check_dec(self.__dict__[key])
         return value
 
     def __setitem__(self, key, value):
@@ -1585,9 +1577,32 @@ class Message(object):
             key:
             value:
         """
+        value = self._check_enc(value)
+        self.__dict__[key] = value
+
+    def _check_enc(self, value):
         if isinstance(value, np.ndarray):
             value = json_tricks.dumps(value)
-        self.__dict__[key] = value
+        elif isinstance(value, dict):
+            for k, v in value.items():
+                value[k] = self._check_enc(v)
+        elif isinstance(value, list):
+            value = [self._check_enc(v) for v in value]
+        return value
+
+    def _check_dec(self, value):
+
+        # if numpy array, reconstitute
+        if isinstance(value, basestring):
+            if value.startswith('{"__ndarray__'):
+                value = json_tricks.loads(value)
+        elif isinstance(value, dict):
+            for k, v in value.items():
+                value[k] = self._check_dec(v)
+        elif isintance(value, list):
+            value = [self._check_dec(v) for v in value]
+        return value
+
 
     def __delitem__(self, key):
         """
