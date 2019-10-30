@@ -66,7 +66,8 @@ sudo apt-get install -y \
     python-pandas \
     python-tables \
     libzmq-dev \
-    libffi-dev
+    libffi-dev \
+    blosc
 
 # install necessary python packages
 
