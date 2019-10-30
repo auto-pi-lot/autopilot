@@ -855,7 +855,7 @@ class Terminal_Station(Station):
 
         if not self.plot_timer:
             self.start_plot_timer()
-            
+
         # Send through to terminal
         #msg.value.update({'continuous':True})
         self.send(to='_T', msg=msg)
@@ -1264,7 +1264,7 @@ class Net_Node(object):
                 keys match the :attr:`.Message.key`.
             instance (bool): Should the node try and use the existing zmq context and tornado loop?
             upstream_ip (str): If this Net_Node is being used on its own (ie. not behind a :class:`.Station`), it can directly connect to another node at this IP. Otherwise use 'localhost' to connect to a station.
-            route_port (int): Typically, Net_Nodes only have a single Dealer socket and receive messages from their encapsulating :class:`.Station`, but 
+            route_port (int): Typically, Net_Nodes only have a single Dealer socket and receive messages from their encapsulating :class:`.Station`, but
                 if you want to take this node offroad and use it independently, an int here binds a Router to the port.
         """
         if instance:
@@ -1341,7 +1341,7 @@ class Net_Node(object):
         #     self.router.bind('tcp://*:{}'.format(self.route_port))
         #     self.router = ZMQStream(self.router, self.loop)
         #     self.router.on_recv(self.handle_listen)
-            
+
 
         self.loop_thread = threading.Thread(target=self.threaded_loop)
         if self.daemon:
@@ -1464,7 +1464,7 @@ class Net_Node(object):
             msg (`.Message`): An already created message.
             repeat (bool): Should this message be resent if confirmation is not received?
             flags (dict):
-            force_to (bool): If we really really want to use the 'to' field to address messages 
+            force_to (bool): If we really really want to use the 'to' field to address messages
                 (eg. node being used for direct communication), overrides default behavior of sending to upstream.
         """
         # send message via the dealer
@@ -1843,6 +1843,8 @@ class Message(object):
         else:
             me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}; VALUE: {}".format(self.id, self.to, self.sender, self.key, self.value)
         #me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}".format(self.id, self.to, self.sender, self.key)
+
+
 
         return me_string
 
