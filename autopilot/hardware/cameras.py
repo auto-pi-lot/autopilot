@@ -7,6 +7,7 @@ from skvideo import io
 from skvideo.utils import vshape
 import numpy as np
 import base64
+#from tqdm import tqdm, trange
 from datetime import datetime
 import multiprocessing as mp
 import time
