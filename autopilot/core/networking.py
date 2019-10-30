@@ -1569,7 +1569,7 @@ class Message(object):
             key:
         """
         #value = self._check_dec(self.__dict__[key])
-        return value
+        return self.__dict__[key]
 
     def __setitem__(self, key, value):
         """
@@ -1586,7 +1586,7 @@ class Message(object):
 
     def __getattr__(self, key):
         #value = self._check_dec(self.__dict__[key])
-        return value
+        return self.__dict__[key]
 
     def _check_enc(self, value):
         if isinstance(value, np.ndarray):
