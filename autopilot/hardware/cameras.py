@@ -69,13 +69,13 @@ class Camera_OpenCV(mp.Process):
             self.listens = {
                 'STOP': self.release
             }
-            self.node = Net_Node(
-                self.name,
-                upstream=prefs.NAME,
-                port=prefs.MSGPORT,
-                listens=self.listens,
-                instance = False
-            )
+            # self.node = Net_Node(
+            #     self.name,
+            #     upstream=prefs.NAME,
+            #     port=prefs.MSGPORT,
+            #     listens=self.listens,
+            #     instance = False
+            # )
 
 
 
@@ -86,6 +86,15 @@ class Camera_OpenCV(mp.Process):
         # t.start()
 
     def _update(self):
+        if self.stream:
+            self.node = Net_Node(
+                self.name,
+                upstream=prefs.NAME,
+                port=prefs.MSGPORT,
+                listens=self.listens,
+                instance = False
+            )
+
         while not self.stopped.is_set():
             _, self._frame = self.vid.read()
             timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
