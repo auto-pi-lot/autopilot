@@ -3,7 +3,7 @@ from autopilot.tasks.nafc import Nafc, Nafc_Gap
 from autopilot.tasks.gonogo import GoNoGo
 from autopilot.tasks.free_water import Free_Water
 from autopilot.tasks.graduation import GRAD_LIST
-from autopilot.tasks.children import Wheel_Child
+from autopilot.tasks.children import Wheel_Child, Video_Child
 
 
 TASK_LIST = {'2AFC':Nafc,
@@ -16,6 +16,7 @@ TASK_LIST = {'2AFC':Nafc,
              #'Gap 2AFC':Gap_2AFC}
 
 CHILDREN_LIST = {
-    'Wheel Child':Wheel_Child
+    'Wheel Child':Wheel_Child,
+    'Video Child':Video_Child
 }
 
