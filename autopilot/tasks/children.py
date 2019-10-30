@@ -7,6 +7,9 @@ from autopilot import prefs
 from autopilot.core.hardware import Wheel, Digital_Out
 from autopilot.hardware import cameras
 from itertools import cycle
+from Queue import Empty
+import json_tricks
+import threading
 
 class Wheel_Child(object):
     STAGE_NAMES = ['collect']
@@ -92,6 +95,33 @@ class Video_Child(object):
 
         self.stages = cycle([self.noop])
         self.stage_block = stage_block
+
+        self.thread = threading.Thread(target=self._stream)
+        self.thread.daemon = True
+        self.thread.start()
+
+
+    def _stream(self):
+        self.node = Net_Node(
+            "T_CHILD",
+            upstream=prefs.NAME,
+            port=prefs.MSGPORT,
+            listens = {},
+            instance=True
+        )
+
+        while True:
+            for name, cam in self.cams.items():
+                try:
+                    frame, timestamp = cam.q.get_nowait()
+                    self.node.send(key='CONTINUOUS',
+                                   value={cam.name:json_tricks.dumps(frame),
+                                          'timestamp':timestamp},
+                                   repeat=False)
+                except Empty:
+                    pass
+
+
 
     def noop(self):
         # just fitting in with the task structure.

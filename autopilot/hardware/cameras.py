@@ -117,7 +117,7 @@ class Camera_OpenCV(mp.Process):
 
             if self.queue:
                 if not self.q.full():
-                    self.q.put_nowait(self._frame)
+                    self.q.put_nowait((self._frame, timestamp))
 
     def release(self):
         self.stopped.set()
