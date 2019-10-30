@@ -116,9 +116,10 @@ class Video_Child(object):
                 try:
                     frame, timestamp = cam.q.get_nowait()
                     self.node.send(key='CONTINUOUS',
-                                   value={cam.name:json_tricks.dumps(frame),
+                                   value={cam.name:frame,
                                           'timestamp':timestamp},
-                                   repeat=False)
+                                   repeat=False,
+                                   flags={'MINPRINT':True})
                 except Empty:
                     pass
 
