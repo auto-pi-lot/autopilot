@@ -24,6 +24,8 @@ import os
 import multiprocessing
 import base64
 import socket
+import struct
+import blosc
 from copy import copy
 from tornado.ioloop import IOLoop
 from zmq.eventloop.zmqstream import ZMQStream
@@ -448,8 +450,9 @@ class Station(multiprocessing.Process):
         if len(msg)==1:
             # from our dealer
             send_type = 'dealer'
-            msg = json.loads(msg[0])
-            msg = Message(**msg)
+            #msg = json.loads(msg[0])
+            #msg = Message(**msg)
+            msg = Message(msg[0])
 
         elif len(msg)>=2:
             # from the router
@@ -471,8 +474,9 @@ class Station(multiprocessing.Process):
                 self.listener.send_multipart(msg)
                 return
 
-            msg = json.loads(msg[-1])
-            msg = Message(**msg)
+            #msg = json.loads(msg[-1])
+            #msg = Message(**msg)
+            msg = Message(msg[-1])
 
             # if this is a new sender, add them to the list
             if msg['sender'] not in self.senders.keys():
@@ -1253,9 +1257,10 @@ class Net_Node(object):
         # messages from dealers are single frames because we only have one connected partner
         # and that's the dealer spec lol
 
-        msg = json.loads(msg[0])
+        #msg = json.loads(msg[0])
 
-        msg = Message(**msg)
+        #msg = Message(**msg)
+        msg = Message(msg[0])
 
         # Check if our listen was sent properly
         if not msg.validate():
@@ -1537,8 +1542,12 @@ class Message(object):
         self.timestamp = None
         self.ttl = 5
 
-        if len(args)>0:
-            Exception("Messages cannot be constructed with positional arguments")
+
+        if len(args)>1:
+            Exception("Messages can only be constructed with a single positional argument, which is assumed to be a serialized message")
+        elif len(args)>0:
+            deserialized = json.loads(args[0], object_pairs_hook=self._deserialize_numpy)
+            kwargs.update(deserialized)
 
         for k, v in kwargs.items():
             self[k] = v
@@ -1587,29 +1596,52 @@ class Message(object):
     def __getattr__(self, key):
         #value = self._check_dec(self.__dict__[key])
         return self.__dict__[key]
+    #
+    # def _check_enc(self, value):
+    #     if isinstance(value, np.ndarray):
+    #         value = json_tricks.dumps(value)
+    #     elif isinstance(value, dict):
+    #         for k, v in value.items():
+    #             value[k] = self._check_enc(v)
+    #     elif isinstance(value, list):
+    #         value = [self._check_enc(v) for v in value]
+    #     return value
+    #
+    # def _check_dec(self, value):
+    #
+    #     # if numpy array, reconstitute
+    #     if isinstance(value, basestring):
+    #         if value.startswith('{"__ndarray__'):
+    #             value = json_tricks.loads(value)
+    #     elif isinstance(value, dict):
+    #         for k, v in value.items():
+    #             value[k] = self._check_dec(v)
+    #     elif isinstance(value, list):
+    #         value = [self._check_dec(v) for v in value]
+    #     return value
 
-    def _check_enc(self, value):
-        if isinstance(value, np.ndarray):
-            value = json_tricks.dumps(value)
-        elif isinstance(value, dict):
-            for k, v in value.items():
-                value[k] = self._check_enc(v)
-        elif isinstance(value, list):
-            value = [self._check_enc(v) for v in value]
-        return value
+    def _serialize_numpy(self, array):
+        """
+        Serialize a numpy array for sending over the wire
 
-    def _check_dec(self, value):
+        Args:
+            array:
 
-        # if numpy array, reconstitute
-        if isinstance(value, basestring):
-            if value.startswith('{"__ndarray__'):
-                value = json_tricks.loads(value)
-        elif isinstance(value, dict):
-            for k, v in value.items():
-                value[k] = self._check_dec(v)
-        elif isinstance(value, list):
-            value = [self._check_dec(v) for v in value]
-        return value
+        Returns:
+
+        """
+
+        compressed = base64.b64encode(blosc.pack_array(array))
+        return {'NUMPY_ARRAY': compressed}
+
+    def _deserialize_numpy(self, obj_pairs):
+        # print(len(obj_pairs), obj_pairs)
+        if (len(obj_pairs) == 1) and obj_pairs[0][0] == "NUMPY_ARRAY":
+            return blosc.unpack_array(base64.b64decode(obj_pairs[0][1]))
+        else:
+            return dict(obj_pairs)
+
+
 
 
     def __delitem__(self, key):
@@ -1670,7 +1702,7 @@ class Message(object):
         msg = self.__dict__
 
         try:
-            msg_enc = json.dumps(msg)
+            msg_enc = json.dumps(msg, default=self._serialize_numpy)
             return msg_enc
         except:
             return False
