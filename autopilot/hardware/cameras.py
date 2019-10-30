@@ -109,6 +109,8 @@ class Camera_OpenCV(mp.Process):
         while not self.stopped.is_set():
             _, self._frame = self.vid.read()
             timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
+            print(timestamp)
+            sys.stdout.flush()
             if self.stream:
                 self.node.send(key='CONTINUOUS',
                                value={self.name:json_tricks.dumps(self._frame),
