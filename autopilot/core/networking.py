@@ -447,6 +447,8 @@ class Station(multiprocessing.Process):
         # TODO: This check is v. fragile, pyzmq has a way of sending the stream along with the message
         #####################33
         # Parse the message
+        print(msg[:-1])
+        sys.stdout.flush()
 
         if len(msg)==1:
             # from our dealer
@@ -474,6 +476,8 @@ class Station(multiprocessing.Process):
             if msg[-1] == b'':
                 self.listener.send_multipart(msg)
                 return
+
+            # if this message wasn't to us,
 
             #msg = json.loads(msg[-1])
             #msg = Message(**msg)

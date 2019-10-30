@@ -2321,7 +2321,7 @@ class Reassign(QtGui.QDialog):
         """
         super(Reassign, self).__init__()
 
-        self.mice = mice
+        self.subjects = subjects
         self.protocols = protocols
         self.protocol_dir = prefs.PROTOCOLDIR
         self.init_ui()
@@ -2336,7 +2336,7 @@ class Reassign(QtGui.QDialog):
 
         self.subject_objects = {}
 
-        for i, (subject, protocol) in zip(xrange(len(self.mice)), self.mice.items()):
+        for i, (subject, protocol) in zip(xrange(len(self.subjects)), self.subjects.items()):
             subject_name = copy.deepcopy(subject)
             step = protocol[1]
             protocol = protocol[0]
@@ -2414,8 +2414,8 @@ class Reassign(QtGui.QDialog):
         protocol_box = self.subject_objects[subject][0]
         step_box = self.subject_objects[subject][1]
 
-        self.mice[subject][0] = protocol_box.currentText()
-        self.mice[subject][1] = 0
+        self.subjects[subject][0] = protocol_box.currentText()
+        self.subjects[subject][1] = 0
 
         self.populate_steps(subject)
 
@@ -2428,7 +2428,7 @@ class Reassign(QtGui.QDialog):
         protocol_box = self.subject_objects[subject][0]
         step_box = self.subject_objects[subject][1]
 
-        self.mice[subject][1] = step_box.currentIndex()
+        self.subjects[subject][1] = step_box.currentIndex()
 
 
 
@@ -2438,17 +2438,17 @@ class Weights(QtGui.QTableWidget):
     """
     A table for viewing and editing the most recent subject weights.
     """
-    def __init__(self, mice_weights, mice):
+    def __init__(self, subject_weights, subjects):
         """
         Args:
-            mice_weights (list): a list of weights of the format returned by
+            subject_weights (list): a list of weights of the format returned by
                 :py:meth:`.Subject.get_weight(baseline=True)`.
-            mice (dict): the Terminal's :py:attr:`.Terminal.subjects` dictionary of :class:`.Subject` objects.
+            subjects (dict): the Terminal's :py:attr:`.Terminal.subjects` dictionary of :class:`.Subject` objects.
         """
         super(Weights, self).__init__()
 
-        self.mice_weights = mice_weights
-        self.mice = mice # subject objects from terminal
+        self.subject_weights = subject_weights
+        self.subjects = subjects # subject objects from terminal
 
         self.colnames = odict()
         self.colnames['subject'] = "Subject"
@@ -2471,7 +2471,7 @@ class Weights(QtGui.QTableWidget):
         Initialized graphical elements. Literally just filling a table.
         """
         # set shape (rows by cols
-        self.shape = (len(self.mice_weights), len(self.colnames.keys()))
+        self.shape = (len(self.subject_weights), len(self.colnames.keys()))
         self.setRowCount(self.shape[0])
         self.setColumnCount(self.shape[1])
 
@@ -2480,20 +2480,20 @@ class Weights(QtGui.QTableWidget):
             for j, col in enumerate(self.colnames.keys()):
                 try:
                     if col == "date":
-                        format_date = datetime.datetime.strptime(self.mice_weights[row][col], '%y%m%d-%H%M%S')
+                        format_date = datetime.datetime.strptime(self.subject_weights[row][col], '%y%m%d-%H%M%S')
                         format_date = format_date.strftime('%b %d')
                         item = QtGui.QTableWidgetItem(format_date)
                     elif col == "stop":
-                        stop_wt = str(self.mice_weights[row][col])
-                        minimum = float(self.mice_weights[row]['minimum_mass'])
+                        stop_wt = str(self.subject_weights[row][col])
+                        minimum = float(self.subject_weights[row]['minimum_mass'])
                         item = QtGui.QTableWidgetItem(stop_wt)
                         if float(stop_wt) < minimum:
                             item.setBackground(QtGui.QColor(255,0,0))
 
                     else:
-                        item = QtGui.QTableWidgetItem(str(self.mice_weights[row][col]))
+                        item = QtGui.QTableWidgetItem(str(self.subject_weights[row][col]))
                 except:
-                    item = QtGui.QTableWidgetItem(str(self.mice_weights[row][col]))
+                    item = QtGui.QTableWidgetItem(str(self.subject_weights[row][col]))
                 self.setItem(row, j, item)
 
         # make headers
@@ -2526,9 +2526,9 @@ class Weights(QtGui.QTableWidget):
 
             # get subject, date and column name
             subject_name = self.item(row, 0).text()
-            date = self.mice_weights[row]['date']
+            date = self.subject_weights[row]['date']
             column_name = self.colnames.keys()[column] # recall colnames is an ordered dictionary
-            self.mice[subject_name].set_weight(date, column_name, new_val)
+            self.subjects[subject_name].set_weight(date, column_name, new_val)
 
 
 #####################################################
