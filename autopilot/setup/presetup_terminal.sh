@@ -32,6 +32,9 @@ cd pyside-setup
 python setup.py bdist_wheel --standalone --qmake=$(which qmake)
 sudo -H pip install dist/$(ls PySide*.whl)
 
+# install blosc
+sudo -H pip install blosc
+
 # TODO: Add option to delete download filed
 
 
