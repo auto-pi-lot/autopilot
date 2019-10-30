@@ -447,15 +447,16 @@ class Station(multiprocessing.Process):
         # TODO: This check is v. fragile, pyzmq has a way of sending the stream along with the message
         #####################33
         # Parse the message
-        print(msg[:-1])
-        sys.stdout.flush()
+
 
         if len(msg)==1:
             # from our dealer
             send_type = 'dealer'
             #msg = json.loads(msg[0])
             #msg = Message(**msg)
-            msg = Message(msg[0])
+            print('DEALER', msg[0][0])
+            sys.stdout.flush()
+            msg = Message(msg[0][1])
 
         elif len(msg)>=2:
             # from the router
@@ -481,6 +482,7 @@ class Station(multiprocessing.Process):
 
             #msg = json.loads(msg[-1])
             #msg = Message(**msg)
+            print('ROUTER', msg[-1][0])
             msg = Message(msg[-1])
 
             # if this is a new sender, add them to the list
@@ -1707,7 +1709,7 @@ class Message(object):
         msg = self.__dict__
 
         try:
-            msg_enc = json.dumps(msg, default=self._serialize_numpy)
+            msg_enc = [self.to, json.dumps(msg, default=self._serialize_numpy)]
             return msg_enc
         except:
             return False
