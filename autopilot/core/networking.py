@@ -1545,12 +1545,19 @@ class Message(object):
         if 'timestamp' not in kwargs.keys():
             self.get_timestamp()
 
+        self.DETECTED_MINPRINT = False
+
     def __str__(self):
         # type: () -> str
-        if self.key == 'FILE' or ('MINPRINT' in self.flags.keys()):
+        if len(str(self.value))>100:
+            self.DETECTED_MINPRINT = True
+
+        if self.key == 'FILE' or ('MINPRINT' in self.flags.keys()) or self.DETECTED_MINPRINT:
             me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}".format(self.id, self.to, self.sender, self.key)
         else:
             me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}; VALUE: {}".format(self.id, self.to, self.sender, self.key, self.value)
+
+
         return me_string
 
     # enable dictionary-like behavior

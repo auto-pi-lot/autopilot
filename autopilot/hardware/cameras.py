@@ -21,11 +21,14 @@ else:
 import multiprocessing as mp
 from autopilot.core.networking import Net_Node
 
+
 try:
     import PySpin
     PYSPIN = True
 except:
     PYSPIN = False
+
+from autopilot import prefs
 
 
 
@@ -33,6 +36,8 @@ class Camera_OpenCV(mp.Process):
     """
     https://www.pyimagesearch.com/2017/02/06/faster-video-file-fps-with-cv2-videocapture-and-opencv/
     """
+
+    trigger = False
 
     def __init__(self, camera_idx = 0, stream=False, queue=False, queue_size = 128, name = None, *args, **kwargs):
         super(Camera_OpenCV, self).__init__()
@@ -163,6 +168,8 @@ class Camera_Spin(object):
 
 
     """
+
+    trigger = False
 
     def __init__(self, serial=None, bin=(4, 4), fps=None, exposure=None):
         """

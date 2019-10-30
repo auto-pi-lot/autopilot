@@ -66,7 +66,7 @@ class Video_Child(object):
 
         if cams is None:
             Exception('Need to give us a cams dictionary!')
-            
+
         self.cams = {}
 
 
@@ -86,10 +86,17 @@ class Video_Child(object):
                     cam_class = getattr(cameras, cam['type'])
                     self.cams[cam['name']] = cam_class(**cam)
                     if start:
-                        self.cams[cams['name']].start()
+                        self.cams[cam['name']].start()
                 except AttributeError:
                     AttributeError("Camera type {} not found!".format(cam['type']))
 
+        self.stages = cycle([self.noop])
+        self.stage_block = stage_block
+
+    def noop(self):
+        # just fitting in with the task structure.
+        self.stage_block.clear()
+        return {}
 
     def start(self):
         for cam in self.cams.values():
