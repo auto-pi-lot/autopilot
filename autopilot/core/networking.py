@@ -1580,6 +1580,14 @@ class Message(object):
         value = self._check_enc(value)
         self.__dict__[key] = value
 
+    def __setattr__(self, key, value):
+        value = self._check_enc(value)
+        self.__dict__[key] = value
+
+    def __getattr__(self, key):
+        value = self._check_dec(self.__dict__[key])
+        return value
+
     def _check_enc(self, value):
         if isinstance(value, np.ndarray):
             value = json_tricks.dumps(value)

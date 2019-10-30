@@ -100,7 +100,7 @@ class Camera_OpenCV(mp.Process):
 
     def release(self):
         self.stopped.set()
-        self.stream.release()
+        self.vid.release()
 
     @property
     def frame(self):
