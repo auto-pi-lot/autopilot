@@ -50,7 +50,8 @@ class Camera_OpenCV(mp.Process):
 
         self._v4l_info = None
 
-        self.vid = cv2.VideoCapture(camera_idx)
+        self.camera_idx = camera_idx
+        self.vid = None
 
         self.stopped = mp.Event()
         self.stopped.clear()
@@ -86,6 +87,10 @@ class Camera_OpenCV(mp.Process):
         # t.start()
 
     def _update(self):
+
+        self.vid = cv2.VideoCapture(self.camera_idx)
+
+
         if self.stream:
             self.node = Net_Node(
                 self.name,
