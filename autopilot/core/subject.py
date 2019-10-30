@@ -618,7 +618,10 @@ class Subject:
         if hasattr(task_class, 'ContinuousData'):
 
             cont_group = h5f.get_node(group_name, 'continuous_data')
-            session_group = h5f.create_group(cont_group, "session_{}".format(self.session))
+            try:
+                session_group = h5f.create_group(cont_group, "session_{}".format(self.session))
+            except tables.NodeError:
+                session_group = h5f.get_node(cont_group, "session_{}".format(self.session))
 
             # don't create arrays for each dtype here, we will create them as we receive data
 
