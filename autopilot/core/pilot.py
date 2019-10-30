@@ -54,9 +54,9 @@ if __name__ == '__main__':
         elif prefs.AUDIOSERVER == 'jack':
             from autopilot.stim.sound import jackclient
 
-from .networking import Pilot_Station, Net_Node, Message
+from autopilot.core.networking import Pilot_Station, Net_Node, Message
 from autopilot import tasks
-from . import hardware
+from autopilot.core import hardware
 
 
 ########################################
