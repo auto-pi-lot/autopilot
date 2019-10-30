@@ -1,5 +1,5 @@
 import cv2
-from threading import Thread, Event
+import threading
 from subprocess import Popen, PIPE
 import sys
 import time
