@@ -95,7 +95,7 @@ class Parallax(Task):
         self.subject = kwargs['subject']
         value = {
             'child': {'parent': prefs.NAME, 'subject': kwargs['subject']},
-            'task_type': 'Camera Child',
+            'task_type': 'Video Child',
             'subject' : self.subject
         }
 
