@@ -4,6 +4,7 @@ from subprocess import Popen, PIPE
 import sys
 import time
 from itertools import count
+import json_tricks
 import os
 from skvideo import io
 import numpy as np
@@ -110,7 +111,7 @@ class Camera_OpenCV(object):
             timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
             if self.stream:
                 self.node.send(key='CONTINUOUS',
-                               value={self.name:self._frame,
+                               value={self.name:json_tricks.dumps(self._frame),
                                       'timestamp':timestamp},
                                repeat=False)
 
