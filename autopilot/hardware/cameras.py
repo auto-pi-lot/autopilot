@@ -21,11 +21,14 @@ else:
 import multiprocessing as mp
 from autopilot.core.networking import Net_Node
 
+
 try:
     import PySpin
     PYSPIN = True
 except:
     PYSPIN = False
+
+from autopilot import prefs
 
 
 
