@@ -8,6 +8,7 @@ import json_tricks
 import os
 from skvideo import io
 import numpy as np
+import base64
 #from tqdm import tqdm, trange
 from datetime import datetime
 
@@ -113,7 +114,7 @@ class Camera_OpenCV(mp.Process):
             sys.stdout.flush()
             if self.stream:
                 self.node.send(key='CONTINUOUS',
-                               value={self.name:json_tricks.dumps(self._frame),
+                               value={self.name:(self._frame.dtype, self._frame.shape, base64.b64encode(self._frame)),
                                       'timestamp':timestamp},
                                repeat=False)
 
