@@ -96,6 +96,16 @@ if __name__ == "__main__":
     # we are known as a terminal
     params['AGENT'] = 'terminal'
 
+    # try making basedir, if we can't do it, modify and alert
+    try:
+        make_dir(params['BASEDIR'])
+    except OSError:
+        params['BASEDIR'] = os.path.join(os.path.expanduser('~'), 'autopilot')
+        make_dir(params['BASEDIR'])
+        print('Permissions error making base directory, instead using {}'.format(params['BASEDIR']))
+
+
+
     # define and make directory structure
     params['DATADIR'] = os.path.join(params['BASEDIR'], 'data')
     params['SOUNDDIR'] = os.path.join(params['BASEDIR'], 'sounds')
