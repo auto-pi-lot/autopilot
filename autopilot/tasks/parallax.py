@@ -62,7 +62,7 @@ class Parallax(Task):
 
     CHILDREN = {
         'HEADCAM': {
-            'task_type': "Camera Child",
+            'task_type': "Video Child",
             'cams': [
                 {'type': 'Camera_OpenCV',
                  'name': 'head_1',
@@ -95,9 +95,10 @@ class Parallax(Task):
         self.subject = kwargs['subject']
         value = {
             'child': {'parent': prefs.NAME, 'subject': kwargs['subject']},
-            'task_type': 'Video Child',
-            'subject' : self.subject
+            'subject' : self.subject,
+
         }
+        value.update(self.CHILDREN['HEADCAM'])
 
         self.node.send(to=prefs.NAME, key='CHILD', value=value)
 
