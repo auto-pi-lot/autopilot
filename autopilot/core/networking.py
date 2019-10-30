@@ -99,7 +99,8 @@ class Station(multiprocessing.Process):
     listener     = None    # Listener socket - a router socket to send/recv messages
     logger       = None    # Logger....
     do_logging   = multiprocessing.Event()
-    do_logging.set()
+    #do_logging.set()
+    do_logging.clear()
     log_handler  = None
     log_formatter = None
     id           = None    # What are we known as?
@@ -1562,12 +1563,12 @@ class Message(object):
         # type: () -> str
         # if len(str(self.value))>100:
         #     self.DETECTED_MINPRINT = True
-
-        if self.key == 'FILE' or ('MINPRINT' in self.flags.keys()):
-            me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}".format(self.id, self.to, self.sender, self.key)
-        else:
-            me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}; VALUE: {}".format(self.id, self.to, self.sender, self.key, self.value)
-
+        # TODO: Make verbose/debugging mode, print value in that case.
+        #if self.key == 'FILE' or ('MINPRINT' in self.flags.keys()):
+        #    me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}".format(self.id, self.to, self.sender, self.key)
+        #else:
+        #    me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}; VALUE: {}".format(self.id, self.to, self.sender, self.key, self.value)
+        me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}".format(self.id, self.to, self.sender, self.key)
 
         return me_string
 
