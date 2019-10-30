@@ -73,7 +73,8 @@ class Camera_OpenCV(mp.Process):
                 self.name,
                 upstream=prefs.NAME,
                 port=prefs.MSGPORT,
-                listens=self.listens
+                listens=self.listens,
+                instance = False
             )
 
 
