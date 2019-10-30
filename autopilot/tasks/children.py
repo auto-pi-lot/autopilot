@@ -6,6 +6,7 @@ from collections import OrderedDict as odict
 from autopilot import prefs
 from autopilot.core.hardware import Wheel, Digital_Out
 from autopilot.hardware import cameras
+from autopilot.core.networking import Net_Node
 from itertools import cycle
 from Queue import Empty
 import json_tricks
