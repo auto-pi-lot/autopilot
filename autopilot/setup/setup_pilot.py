@@ -273,6 +273,16 @@ if __name__ == "__main__":
             launch_string = "xinit /usr/bin/python " + os.path.join(params['REPODIR'], "core", "pilot.py") + " -f " + prefs_file
             launch_file_open.write(launch_string)
 
+    else:
+        with open(launch_file, 'w') as launch_file_open:
+            launch_file_open.write('#!/bin/sh\n')
+            launch_file_open.write('sudo killall python\n')  # Try to kill any existing jackd processes
+            launch_file_open.write('sudo killall pigpiod\n')
+            launch_file_open.write('sudo mount -o remount,size=128M /dev/shm\n')  # refresh shared memory
+            launch_file_open.write('sudo ' + pigpio_string + '\n')
+            launch_string = "python " + os.path.join(params['REPODIR'], "core", "pilot.py") + " -f " + prefs_file
+            launch_file_open.write(launch_string)
+
 
     os.chmod(launch_file, 0775)
 
