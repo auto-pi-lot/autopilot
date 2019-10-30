@@ -517,7 +517,7 @@ class Subject:
                     # save data names as attributes
                     data_names = tuple(task_class.ContinuousData.keys())
 
-                    cont_group['data'] = data_names
+                    cont_group._v_attrs['data'] = data_names
                     #cont_descriptor = task_class.ContinuousData
                     #cont_descriptor.columns.update({'session': tables.Int32Col()})
                     #h5f.create_table(step_group, "continuous_data", cont_descriptor)
@@ -718,7 +718,7 @@ class Subject:
         try:
             continuous_group = h5f.get_node(group_name, 'continuous_data')
             session_group = h5f.get_node(continuous_group, 'session_{}'.format(self.session))
-            cont_data = continuous_group['data']
+            cont_data = continuous_group._v_attrs['data']
 
 
             cont_tables = {}

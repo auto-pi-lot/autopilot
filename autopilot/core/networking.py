@@ -99,8 +99,8 @@ class Station(multiprocessing.Process):
     listener     = None    # Listener socket - a router socket to send/recv messages
     logger       = None    # Logger....
     do_logging   = multiprocessing.Event()
-    #do_logging.set()
-    do_logging.clear()
+    do_logging.set()
+    #do_logging.clear()
     log_handler  = None
     log_formatter = None
     id           = None    # What are we known as?
