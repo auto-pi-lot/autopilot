@@ -61,6 +61,7 @@
 - for transforms: http://www.dabeaz.com/coroutines/ http://www.dabeaz.com/finalgenerator/
 - change the relevant methods in the jack sound class to be @parameters
 
+- move core.hardware to autopilot.hardware
 
 .. automodsumm:: rpilot.core.gui
     :toctree:
