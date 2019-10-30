@@ -13,6 +13,7 @@ There are two general types of network objects -
 
 
 import json
+import json_tricks
 import logging
 import threading
 import zmq
@@ -27,6 +28,7 @@ from copy import copy
 from tornado.ioloop import IOLoop
 from zmq.eventloop.zmqstream import ZMQStream
 from itertools import count
+import numpy as np
 if sys.version_info >= (3,0):
     import queue
 else:
@@ -1539,6 +1541,8 @@ class Message(object):
             Exception("Messages cannot be constructed with positional arguments")
 
         for k, v in kwargs.items():
+            if isinstance(v, np.ndarray):
+                v = json_tricks.dumps(v)
             setattr(self, k, v)
 
         # if we're not a previous message being recreated, get a timestamp for our creation
@@ -1566,7 +1570,14 @@ class Message(object):
         Args:
             key:
         """
-        return self.__dict__[key]
+        value = self.__dict__[key]
+
+        # if numpy array, reconstitute
+        if isinstance(value, basestring):
+            if value.startswith('{"__ndarray__'):
+                value = json_tricks.loads(value)
+
+        return value
 
     def __setitem__(self, key, value):
         """
@@ -1574,6 +1585,8 @@ class Message(object):
             key:
             value:
         """
+        if isinstance(value, np.ndarray):
+            value = json_tricks.dumps(value)
         self.__dict__[key] = value
 
     def __delitem__(self, key):
