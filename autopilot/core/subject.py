@@ -29,6 +29,7 @@ else:
     import Queue as queue
 
 import pdb
+import numpy as np
 
 
 class Subject:
@@ -507,10 +508,19 @@ class Subject:
                 # we already have made this table, that's fine
                 pass
             try:
+                # if we have continuous data, make a folder for each data stream.
+                # each session will make its own subfolder,
+                # which contains tables for each of the streams for that session
                 if hasattr(task_class, "ContinuousData"):
-                    cont_descriptor = task_class.ContinuousData
-                    cont_descriptor.columns.update({'session': tables.Int32Col()})
-                    h5f.create_table(step_group, "continuous_data", cont_descriptor)
+                    cont_group = h5f.create_group(step_group, "continuous_data")
+
+                    # save data names as attributes
+                    data_names = tuple(task_class.ContinuousData.keys())
+
+                    cont_group['data'] = data_names
+                    #cont_descriptor = task_class.ContinuousData
+                    #cont_descriptor.columns.update({'session': tables.Int32Col()})
+                    #h5f.create_table(step_group, "continuous_data", cont_descriptor)
             except tables.NodeError:
                 # already made it
                 pass
@@ -602,6 +612,16 @@ class Subject:
         except IndexError:
             self.session = 0
 
+        # prepare continuous data group and tables
+        task_class = TASK_LIST[task_params['task_type']]
+        cont_group = None
+        if hasattr(task_class, 'ContinuousData'):
+
+            cont_group = h5f.get_node(group_name, 'continuous_data')
+            session_group = h5f.create_group(cont_group, "session_{}".format(self.session))
+
+            # don't create arrays for each dtype here, we will create them as we receive data
+
         # try:
         #     #cont_table = h5f.get_node(group_name, 'continuous_data')
         #     #self.cont_row   = self.cont_table.row
@@ -609,7 +629,7 @@ class Subject:
         # except:
         #     pass
 
-        if not any([cont_table, trial_table]):
+        if not any([cont_group, trial_table]):
             Exception("No data tables exist for step {}! Is there a Trial or Continuous data descriptor in the task class?".format(self.step))
         # TODO: Spawn graduation checking object!
         if 'graduation' in task_params.keys():
@@ -689,10 +709,19 @@ class Subject:
         trial_row = trial_table.row
 
         # try to get continuous data table if any
+        cont_data = tuple()
+        cont_tables = {}
+        cont_rows = {}
         try:
-            continuous_table = h5f.get_node(group_name, 'continuous_data')
-            continuous_keys  = continuous_table.colnames
-            continous_row    = continuous_table.row
+            continuous_group = h5f.get_node(group_name, 'continuous_data')
+            session_group = h5f.get_node(continuous_group, 'session_{}'.format(self.session))
+            cont_data = continuous_group['data']
+
+
+            cont_tables = {}
+            cont_rows = {}
+            #continuous_keys  = continuous_table.colnames
+            #continous_row    = continuous_table.row
         except AttributeError:
             continuous_table = False
 
@@ -706,18 +735,44 @@ class Subject:
                 # there must be a more elegant way to check if something is a key and it is true...
                 # yet here we are
                 if 'continuous' in data.keys():
-                    if not continuous_table:
-                        # TODO log this
-                        Exception('Received continuous data, but no continuous data descriptor was specified in task.\nreceived data: {}'.format(data))
-                    else:
-                        for k, v in data:
-                            if k in continuous_keys:
-                                continuous_row[k] = v
-                        # also store session
-                        continuous_row['session'] = self.session
-                        continuous_row.append()
+                    for k, v in data:
+                        # if this isn't data that we're expecting, ignore it
+                        if k not in cont_data:
+                            continue
 
-                    # continue with data processing loop
+                        # if we haven't made a table yet, do it
+                        if k not in cont_tables.keys():
+                            # make atom for this data
+                            try:
+                                # if it's a numpy array...
+                                col_atom = tables.Atom.from_type(v.dtype.name, v.shape)
+                            except AttributeError:
+                                temp_array = np.array(v)
+                                col_atom = tables.Atom.from_type(temp_array.dtype.name, temp_array.shape)
+                            # should have come in with a timestamp
+                            # TODO: Log if no timestamp is received
+                            try:
+                                temp_timestamp_arr = np.array(data['timestamp'])
+                                timestamp_atom = tables.Atom.from_type(temp_timestamp_arr.dtype.name,
+                                                                       temp_timestamp_arr.shape)
+
+                            except KeyError:
+                                Warning('no timestamp sent with continuous data')
+                                continue
+
+
+                            cont_tables[k] = h5f.create_table(session_group, k, description={
+                                k: tables.Col.from_atom(col_atom),
+                                'timestamp': tables.Col.from_atom(timestamp_atom)
+                            })
+
+                            cont_rows[k] = cont_tables[k].row
+
+                        cont_rows[k][k] = v
+                        cont_rows[k]['timestamp'] = data['timestamp']
+                        cont_rows[k].append()
+
+                    # continue, the rest is for handling trial data
                     continue
 
 

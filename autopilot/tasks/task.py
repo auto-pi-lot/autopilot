@@ -138,7 +138,11 @@ class Task(object):
             # then iterate through each pin and handler of this type
             for pin, handler in values.items():
                 try:
-                    hw = handler(pin_numbers[type][pin])
+                    hw_args = pin_numbers[type][pin]
+                    if isinstance(hw_args, dict):
+                        hw = handler(**hw_args)
+                    else:
+                        hw = handler(hw_args)
 
                     # if a pin is a trigger pin (event-based input), give it the trigger handler
                     if hw.trigger:
@@ -146,11 +150,10 @@ class Task(object):
 
                     # add to forward and backwards pin dicts
                     self.hardware[type][pin] = hw
-                    back_pins = pin_numbers[type][pin]
-                    if isinstance(back_pins, int) or isinstance(back_pins, basestring):
-                        self.pin_id[back_pins] = pin
-                    elif isinstance(back_pins, list):
-                        for p in back_pins:
+                    if isinstance(hw_args, int) or isinstance(hw_args, basestring):
+                        self.pin_id[hw_args] = pin
+                    elif isinstance(hw_args, list):
+                        for p in hw_args:
                             self.pin_id[p] = pin
 
                 except:
