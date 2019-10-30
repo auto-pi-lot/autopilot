@@ -343,7 +343,7 @@ class Station(multiprocessing.Process):
 
         # Even if the message is not to our upstream node, we still send it
         # upstream because presumably our target is upstream.
-        self.pusher.send_multipart([bytes(self.push_id), msg_enc])
+        self.pusher.send_multipart([bytes(self.push_id), bytes(msg.to), msg_enc])
 
         if not (msg.key == "CONFIRM") and self.do_logging.is_set() and log_this:
             self.logger.info('MESSAGE PUSHED - {}'.format(str(msg)))
@@ -447,6 +447,8 @@ class Station(multiprocessing.Process):
         # TODO: This check is v. fragile, pyzmq has a way of sending the stream along with the message
         #####################33
         # Parse the message
+        print(msg[:-1])
+        sys.stdout.flush()
 
         if len(msg)==1:
             # from our dealer
@@ -474,6 +476,8 @@ class Station(multiprocessing.Process):
             if msg[-1] == b'':
                 self.listener.send_multipart(msg)
                 return
+
+            # if this message wasn't to us,
 
             #msg = json.loads(msg[-1])
             #msg = Message(**msg)
@@ -1368,7 +1372,7 @@ class Net_Node(object):
             return
 
    
-        self.sock.send_multipart([bytes(self.upstream), msg_enc])
+        self.sock.send_multipart([bytes(self.upstream), bytes(msg.to), msg_enc])
         if self.logger and self.do_logging.is_set() and log_this:
             self.logger.info("MESSAGE SENT - {}".format(str(msg)))
 
