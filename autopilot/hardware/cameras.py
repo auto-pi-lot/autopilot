@@ -32,7 +32,7 @@ from autopilot import prefs
 
 
 
-class Camera_OpenCV(mp.Process):
+class Camera_OpenCV(object):
     """
     https://www.pyimagesearch.com/2017/02/06/faster-video-file-fps-with-cv2-videocapture-and-opencv/
     """
@@ -80,11 +80,16 @@ class Camera_OpenCV(mp.Process):
 
 
 
-    def run(self):
-        self._update()
-        # t = Thread(target=self._update)
-        # t.daemon = True
-        # t.start()
+    # def run(self):
+    #     self._update()
+    #     # t = Thread(target=self._update)
+    #     # t.daemon = True
+    #     # t.start()
+
+    def start(self):
+        self.thread = threading.Thread(target=self._update)
+        self.thread.daemon = True
+        self.thread.start()
 
     def _update(self):
 
@@ -97,7 +102,7 @@ class Camera_OpenCV(mp.Process):
                 upstream=prefs.NAME,
                 port=prefs.MSGPORT,
                 listens=self.listens,
-                instance = False
+                instance = True
             )
 
         while not self.stopped.is_set():
