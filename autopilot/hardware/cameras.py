@@ -32,7 +32,7 @@ from autopilot import prefs
 
 
 
-class Camera_OpenCV(mp.Process):
+class Camera_OpenCV(object):
     """
     https://www.pyimagesearch.com/2017/02/06/faster-video-file-fps-with-cv2-videocapture-and-opencv/
     """
@@ -50,7 +50,8 @@ class Camera_OpenCV(mp.Process):
 
         self._v4l_info = None
 
-        self.vid = cv2.VideoCapture(camera_idx)
+        self.camera_idx = camera_idx
+        self.vid = None
 
         self.stopped = mp.Event()
         self.stopped.clear()
@@ -69,22 +70,41 @@ class Camera_OpenCV(mp.Process):
             self.listens = {
                 'STOP': self.release
             }
+            # self.node = Net_Node(
+            #     self.name,
+            #     upstream=prefs.NAME,
+            #     port=prefs.MSGPORT,
+            #     listens=self.listens,
+            #     instance = False
+            # )
+
+
+
+    # def run(self):
+    #     self._update()
+    #     # t = Thread(target=self._update)
+    #     # t.daemon = True
+    #     # t.start()
+
+    def start(self):
+        self.thread = threading.Thread(target=self._update)
+        self.thread.daemon = True
+        self.thread.start()
+
+    def _update(self):
+
+        self.vid = cv2.VideoCapture(self.camera_idx)
+
+
+        if self.stream:
             self.node = Net_Node(
                 self.name,
                 upstream=prefs.NAME,
                 port=prefs.MSGPORT,
-                listens=self.listens
+                listens=self.listens,
+                instance = True
             )
 
-
-
-    def run(self):
-        self._update()
-        # t = Thread(target=self._update)
-        # t.daemon = True
-        # t.start()
-
-    def _update(self):
         while not self.stopped.is_set():
             _, self._frame = self.vid.read()
             timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
@@ -100,7 +120,7 @@ class Camera_OpenCV(mp.Process):
 
     def release(self):
         self.stopped.set()
-        self.stream.release()
+        self.vid.release()
 
     @property
     def frame(self):
