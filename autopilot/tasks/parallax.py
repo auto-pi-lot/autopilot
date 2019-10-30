@@ -80,9 +80,9 @@ class Parallax(Task):
 
     def __init__(self, stage_block = None, **kwargs):
 
-        self.stage_block = stage_block
-
         super(Parallax, self).__init__()
+
+        self.stage_block = stage_block
 
         self.init_hardware()
 
