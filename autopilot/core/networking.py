@@ -472,8 +472,7 @@ class Station(multiprocessing.Process):
         # TODO: This check is v. fragile, pyzmq has a way of sending the stream along with the message
         #####################33
         # Parse the message
-        #print(msg[:-1])
-        #sys.stdout.flush()
+
 
         if len(msg)==1:
             # from our dealer, these are always to us.
@@ -514,7 +513,7 @@ class Station(multiprocessing.Process):
                     self.listener.send_multipart([unserialized_to, unserialized_to, msg[-1]])
                 return
 
-        #msg = json.loads(msg[-1])
+            #msg = json.loads(msg[-1])
             #msg = Message(**msg)
             msg = Message(msg[-1])
 
@@ -1998,7 +1997,7 @@ class Message(object):
         msg = self.__dict__
 
         try:
-            msg_enc = json.dumps(msg, default=self._serialize_numpy)
+            msg_enc = [self.to, json.dumps(msg, default=self._serialize_numpy)]
             self.serialized = msg_enc
             self.changed=False
             return msg_enc
