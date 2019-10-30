@@ -1568,7 +1568,7 @@ class Message(object):
         Args:
             key:
         """
-        value = self._check_dec(self.__dict__[key])
+        #value = self._check_dec(self.__dict__[key])
         return value
 
     def __setitem__(self, key, value):
@@ -1577,15 +1577,15 @@ class Message(object):
             key:
             value:
         """
-        value = self._check_enc(value)
+        #value = self._check_enc(value)
         self.__dict__[key] = value
 
     def __setattr__(self, key, value):
-        value = self._check_enc(value)
+        #value = self._check_enc(value)
         self.__dict__[key] = value
 
     def __getattr__(self, key):
-        value = self._check_dec(self.__dict__[key])
+        #value = self._check_dec(self.__dict__[key])
         return value
 
     def _check_enc(self, value):
@@ -1607,7 +1607,7 @@ class Message(object):
         elif isinstance(value, dict):
             for k, v in value.items():
                 value[k] = self._check_dec(v)
-        elif isintance(value, list):
+        elif isinstance(value, list):
             value = [self._check_dec(v) for v in value]
         return value
 
