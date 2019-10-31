@@ -451,7 +451,7 @@ class Station(multiprocessing.Process):
         sys.stdout.flush()
 
         if len(msg)==1:
-            # from our dealer
+            # from our dealer, these are always to us.
             send_type = 'dealer'
             #msg = json.loads(msg[0])
             #msg = Message(**msg)
@@ -460,11 +460,11 @@ class Station(multiprocessing.Process):
         elif len(msg)>=2:
             # from the router
             send_type = 'router'
-            sender = msg[-3]
+            sender = msg[0]
 
             # if this message was a multihop message, store the route
-            if len(msg)>3:
-                self.routes[sender] = msg[0:-2]
+            if len(msg)>4:
+                self.routes[sender] = msg[0:-3]
 
             # # if this is a new sender, add them to the list
             if sender not in self.senders.keys():
@@ -477,9 +477,19 @@ class Station(multiprocessing.Process):
                 self.listener.send_multipart(msg)
                 return
 
-            # if this message wasn't to us,
+            # if this message wasn't to us, forward without deserializing
+            # the second to last should always be the intended recipient
+            unserialized_to = msg[-2]
+            if unserialized_to not in [self.id, "_{}".format(self.id)]:
+                if unserialized_to not in self.senders.keys() and self.pusher:
+                    # if we don't know who they are and we have a pusher, try to push it
+                    self.pusher.send_multipart([bytes(self.push_id), unserialized_to, msg[-1]])
+                else:
+                    #if we know who they are or not, try to send it through router anyway.
+                    self.listener.send_multipart([unserialized_to, unserialized_to, msg[-1]])
+                return
 
-            #msg = json.loads(msg[-1])
+        #msg = json.loads(msg[-1])
             #msg = Message(**msg)
             msg = Message(msg[-1])
 
