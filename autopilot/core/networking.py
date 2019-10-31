@@ -343,7 +343,7 @@ class Station(multiprocessing.Process):
 
         # Even if the message is not to our upstream node, we still send it
         # upstream because presumably our target is upstream.
-        self.pusher.send_multipart([bytes(self.push_id), msg_enc])
+        self.pusher.send_multipart([bytes(self.push_id), msg.to, msg_enc])
 
         if not (msg.key == "CONFIRM") and self.do_logging.is_set() and log_this:
             self.logger.info('MESSAGE PUSHED - {}'.format(str(msg)))
@@ -447,16 +447,15 @@ class Station(multiprocessing.Process):
         # TODO: This check is v. fragile, pyzmq has a way of sending the stream along with the message
         #####################33
         # Parse the message
-
+        print(msg[:-1])
+        sys.stdout.flush()
 
         if len(msg)==1:
             # from our dealer
             send_type = 'dealer'
             #msg = json.loads(msg[0])
             #msg = Message(**msg)
-            print('DEALER', msg[0][0])
-            sys.stdout.flush()
-            msg = Message(msg[0][1])
+            msg = Message(msg[0])
 
         elif len(msg)>=2:
             # from the router
@@ -482,7 +481,6 @@ class Station(multiprocessing.Process):
 
             #msg = json.loads(msg[-1])
             #msg = Message(**msg)
-            print('ROUTER', msg[-1][0])
             msg = Message(msg[-1])
 
             # if this is a new sender, add them to the list
@@ -1374,7 +1372,7 @@ class Net_Node(object):
             return
 
    
-        self.sock.send_multipart([bytes(self.upstream), msg_enc])
+        self.sock.send_multipart([bytes(self.upstream), bytes(self.to), msg_enc])
         if self.logger and self.do_logging.is_set() and log_this:
             self.logger.info("MESSAGE SENT - {}".format(str(msg)))
 
@@ -1709,7 +1707,7 @@ class Message(object):
         msg = self.__dict__
 
         try:
-            msg_enc = [self.to, json.dumps(msg, default=self._serialize_numpy)]
+            msg_enc = json.dumps(msg, default=self._serialize_numpy)
             return msg_enc
         except:
             return False
