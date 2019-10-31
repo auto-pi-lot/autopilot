@@ -460,7 +460,7 @@ class Station(multiprocessing.Process):
         elif len(msg)>=2:
             # from the router
             send_type = 'router'
-            sender = msg[-4]
+            sender = msg[0]
 
             # if this message was a multihop message, store the route
             if len(msg)>4:
