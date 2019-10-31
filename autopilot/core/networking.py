@@ -343,7 +343,7 @@ class Station(multiprocessing.Process):
 
         # Even if the message is not to our upstream node, we still send it
         # upstream because presumably our target is upstream.
-        self.pusher.send_multipart([bytes(self.push_id), msg.to, msg_enc])
+        self.pusher.send_multipart([bytes(self.push_id), bytes(msg.to), msg_enc])
 
         if not (msg.key == "CONFIRM") and self.do_logging.is_set() and log_this:
             self.logger.info('MESSAGE PUSHED - {}'.format(str(msg)))
@@ -1372,7 +1372,7 @@ class Net_Node(object):
             return
 
    
-        self.sock.send_multipart([bytes(self.upstream), bytes(self.to), msg_enc])
+        self.sock.send_multipart([bytes(self.upstream), bytes(msg.to), msg_enc])
         if self.logger and self.do_logging.is_set() and log_this:
             self.logger.info("MESSAGE SENT - {}".format(str(msg)))
 
