@@ -23,7 +23,7 @@ fi
 
 # add backports to /etc/apt/sources.list
 echo -e "\n${RED}Adding backports${NC}"
-sudo sh -c "echo \\n >> /etc/apt/sources.list"
+sudo sh -c "echo -e \n >> /etc/apt/sources.list"
 sudo sh -c "echo \#\#\# START BACKPORTS \#\#\# backports for pyspin >> /etc/apt/sources.list"
 sudo sh -c "echo deb http://ports.ubuntu.com/ubuntu-ports xenial-backports main restricted universe multiverse >> /etc/apt/sources.list"
 sudo sh -c "echo deb http://ports.ubuntu.com/ubuntu-ports xenial-updates main restricted universe multiverse >> /etc/apt/sources.list"
