@@ -17,13 +17,13 @@ else
         usbfs_size=1000
     fi
 
-    echo -e "${RED}    Setting usbfs to ${usbfs_size} on boot\n${NC}"
+    echo -e "${RED}    Setting usbfs to ${usbfs_size} on boot by editing /etc/rc.local\n${NC}"
     sudo sed -i "/^exit 0/i sudo sh -c 'echo ${usbfs_size} > /sys/module/usbcore/parameters/usbfs_memory_mb'" /etc/rc.local
 fi
 
 # add backports to /etc/apt/sources.list
 echo -e "\n${RED}Adding backports${NC}"
-sudo sh -c "echo \n >> /etc/apt/sources.list"
+sudo sh -c "echo -e \n >> /etc/apt/sources.list"
 sudo sh -c "echo \#\#\# START BACKPORTS \#\#\# backports for pyspin >> /etc/apt/sources.list"
 sudo sh -c "echo deb http://ports.ubuntu.com/ubuntu-ports xenial-backports main restricted universe multiverse >> /etc/apt/sources.list"
 sudo sh -c "echo deb http://ports.ubuntu.com/ubuntu-ports xenial-updates main restricted universe multiverse >> /etc/apt/sources.list"
