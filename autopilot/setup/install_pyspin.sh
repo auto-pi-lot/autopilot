@@ -7,6 +7,20 @@
 RED='\033[0;31m'
 NC='\033[0m'
 
+read -p "Permanently increase usbfs size?  (y/n/size in mb, default=1000MB): " usbfs_size
+if [ "$usbfs_size" == "n" ]; then
+    echo -e "${RED}    WARNING: You will need to manually increase usbfs in order to take large pictures or use multiple cameras\n${NC}"
+    echo -e "${RED}    To do so, use a command like:\n${NC}"
+    echo -e "${RED}    sudo sh -c 'echo 1000 > /sys/module/usbcore/parameters/usbfs_memory_mb'"
+else
+    if [ "$usbfs_size" == "y" ]; then
+        usbfs_size=1000
+    fi
+
+    echo -e "${RED}    Setting usbfs to ${usbfs_size} on boot\n${NC}"
+    sudo sed -i "/^exit 0/i sudo sh -c 'echo ${usbfs_size} > /sys/module/usbcore/parameters/usbfs_memory_mb'" /etc/rc.local
+fi
+
 # add backports to /etc/apt/sources.list
 echo -e "\n${RED}Adding backports${NC}"
 sudo sh -c "echo \n >> /etc/apt/sources.list"
@@ -25,9 +39,11 @@ sudo apt install -y \
   libavutil-ffmpeg54 \
   libavcodec-ffmpeg56 \
   libswscale-ffmpeg \
-  libavformat-ffmpeg56
+  libavformat-ffmpeg56 \
+  python-numpy \
+  python-matplotlib
 
-python -m pip install --upgrade numpy matplotlib
+#python -m pip install --upgrade numpy matplotlib
 
 
 echo -e "\n${RED}Attempting to download Spinnaker SDK files from static link${NC}"
