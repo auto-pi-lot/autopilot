@@ -1,4 +1,5 @@
 import requests
+import sys
 import re
 import json
 import os
@@ -102,12 +103,12 @@ def download_box(file_url, filename = None, save_path = None):
 
     total_size = int(dl_file.headers.get('content-length', 0))
     block_size = 1024  # 1 Kibibyte
-    print('Downloading {}'.format(os.path.basename(filename)))
+    print('Downloading {}\n'.format(os.path.basename(filename)))
     t = tqdm(total=total_size, unit='iB', unit_scale=True)
-    with open('filename', 'wb') as output_file:
+    with open(filename, 'wb') as output_file:
         for data in dl_file.iter_content(block_size):
             t.update(len(data))
             output_file.write(data)
     t.close()
 
-    return filename
+    sys.stdout.write(filename)
