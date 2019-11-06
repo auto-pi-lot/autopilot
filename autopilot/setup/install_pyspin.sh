@@ -114,6 +114,17 @@ tar -xvf ${PYSPINFILES[0]} -C pyspin
 cd pyspin
 python -m pip install spinnaker_*.whl
 
+cd ../
+
+# remove entries from sources.list
+sed -i '/\#\#\# START BACKPORTS \#\#\#/,/\#\#\# END BACKPORTS \#\#\#/d' /etc/apt/sources.list
+
+read -p "Clean up downloaded files? (y/n): " cleanup
+if [ "$cleanup" == "y" ]; then
+    rm -r ./spinnaker*
+    rm -r ./pyspin*
+fi
+
 
 
 
