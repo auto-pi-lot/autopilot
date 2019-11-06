@@ -103,14 +103,14 @@ fi
 # make a directory b/c we don't know what the subdir will be called,
 # want to only have one subdir
 mkdir spinnaker
-tar -xvf ${SPINNAME} -C spinnaker
+tar -xvf ${SPINFILES[0]} -C spinnaker
 cd spinnaker
 cd *
 sudo sh install_spinnaker_arm.sh
 
 cd ../../
 mkdir pyspin
-tar -xvf ${PYSPINNAME} -C pyspin
+tar -xvf ${PYSPINFILES[0]} -C pyspin
 cd pyspin
 python -m pip install spinnaker_*.whl
 
