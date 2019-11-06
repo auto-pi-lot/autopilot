@@ -35,7 +35,7 @@ echo -e "\n${RED}Updating Repositories${NC}"
 sudo apt-get update --allow-insecure-repositories
 
 echo -e "\n${RED}Installing Dependencies${NC}"
-sudo apt install -y \
+sudo apt install -y --allow-unauthenticated \
   libavutil-ffmpeg54 \
   libavcodec-ffmpeg56 \
   libavformat-ffmpeg56 \
@@ -50,10 +50,10 @@ sudo apt install -y \
 echo -e "\n${RED}Attempting to download Spinnaker SDK files from static link${NC}"
 
 #cd ~/
-if [ ! -d "spinnaker" ]; then
-    echo -e "\n${RED}Making spinnaker directory in user directory${NC}"
-    mkdir spinnaker
-fi
+#if [ ! -d "spinnaker" ]; then
+#    echo -e "\n${RED}Making spinnaker directory in user directory${NC}"
+#    mkdir spinnaker
+#fi
 #cd spinnaker
 
 #SPINNAME="spinnaker-1.27.0.48-Ubuntu16.04-armhf-pkg.tar.gz"
@@ -61,8 +61,8 @@ fi
 SPINURL="https://flir.app.boxcn.net/v/SpinnakerSDK/file/545650882106"
 PYSPINURL="https://flir.app.boxcn.net/v/SpinnakerSDK/file/545648953427"
 
-SPINNAME=$(python -c "from request_helpers import download_box; download_box('${SPINURL}', save_path='spinnaker')")
-PYSPINNAME=$(python -c "from request_helpers import download_box; download_box('${PYSPINURL}', save_path='spinnaker')")
+SPINNAME=$(python -c "from request_helpers import download_box; download_box('${SPINURL}')")
+PYSPINNAME=$(python -c "from request_helpers import download_box; download_box('${PYSPINURL}')")
 
 # check if we were able to get it
 got_spin=true
