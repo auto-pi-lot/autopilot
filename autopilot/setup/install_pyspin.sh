@@ -38,10 +38,11 @@ echo -e "\n${RED}Installing Dependencies${NC}"
 sudo apt install -y \
   libavutil-ffmpeg54 \
   libavcodec-ffmpeg56 \
-  libswscale-ffmpeg \
   libavformat-ffmpeg56 \
   python-numpy \
   python-matplotlib
+
+  #libswscale-ffmpeg \
 
 #python -m pip install --upgrade numpy matplotlib
 
@@ -49,7 +50,10 @@ sudo apt install -y \
 echo -e "\n${RED}Attempting to download Spinnaker SDK files from static link${NC}"
 
 cd ~/
-mkdir spinnaker
+if [ ! -d "spinnaker" ]; then
+    echo -e "\n${RED}Making spinnaker directory in user directory${NC}"
+    mkdir spinnaker
+fi
 cd spinnaker
 
 #SPINNAME="spinnaker-1.27.0.48-Ubuntu16.04-armhf-pkg.tar.gz"
@@ -57,8 +61,8 @@ cd spinnaker
 SPINURL="https://flir.app.boxcn.net/v/SpinnakerSDK/file/545650882106"
 PYSPINURL="https://flir.app.boxcn.net/v/SpinnakerSDK/file/545648953427"
 
-SPINNAME=$(python -c "from request_helpers import download_box; download_box(${SPINURL})")
-PYSPINNAME=$(python -c "from request_helpers import download_box; download_box(${PYSPINURL})")
+SPINNAME=$(python -c "from request_helpers import download_box; download_box('${SPINURL}')")
+PYSPINNAME=$(python -c "from request_helpers import download_box; download_box('${PYSPINURL}')")
 
 # check if we were able to get it
 got_spin=true
