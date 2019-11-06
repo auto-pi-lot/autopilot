@@ -10,13 +10,9 @@ NC='\033[0m'
 
 
 read -p "Upgrade installed packages? (y/n): " doupgrade
-if [ "$doupgrade" == "y" ]; then
-    passwd
-else
+if [ "$doupgrade" == "n" ]; then
     echo -e "${RED}    not upgrading existing packages\n${NC}"
 fi
-
-
 
 # update and install packages
 sudo apt-get update
