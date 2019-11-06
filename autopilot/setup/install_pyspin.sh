@@ -64,6 +64,9 @@ PYSPINURL="https://flir.app.boxcn.net/v/SpinnakerSDK/file/545648953427"
 SPINNAME=$(python -c "from request_helpers import download_box; download_box('${SPINURL}')")
 PYSPINNAME=$(python -c "from request_helpers import download_box; download_box('${PYSPINURL}')")
 
+echo "$SPINNAME"
+echo "$PYSPINNAME"
+
 # check if we were able to get it
 got_spin=true
 if [ ! -f ${SPINNAME} ]; then
