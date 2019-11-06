@@ -95,7 +95,7 @@ def download_box(file_url, filename = None, save_path = None):
 
     dl_file = sess.get(dl_url, stream=True)
 
-    if file_name is None:
+    if filename is None:
         filename = re.search("filename=\"(.+?)\";", dl_file.headers.get('Content-Disposition')).groups(0)[0]
     if save_path:
         filename = os.path.join(save_path, filename)
