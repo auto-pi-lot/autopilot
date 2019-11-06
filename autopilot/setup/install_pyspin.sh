@@ -61,32 +61,32 @@ echo -e "\n${RED}Attempting to download Spinnaker SDK files from static link${NC
 SPINURL="https://flir.app.boxcn.net/v/SpinnakerSDK/file/545650882106"
 PYSPINURL="https://flir.app.boxcn.net/v/SpinnakerSDK/file/545648953427"
 
-SPINNAME=$(python -c "from request_helpers import download_box; download_box('${SPINURL}')")
-PYSPINNAME=$(python -c "from request_helpers import download_box; download_box('${PYSPINURL}')")
+python -c "from request_helpers import download_box; download_box('${SPINURL}')"
+python -c "from request_helpers import download_box; download_box('${PYSPINURL}')"
 
-echo "$SPINNAME"
-echo "$PYSPINNAME"
+SPINFILES=( spinnaker-*.tar.gz )
+PYSPINFILES=( spinnaker_python*.tar.gz )
 
 # check if we were able to get it
 got_spin=true
-if [ ! -f ${SPINNAME} ]; then
+if ! (( ${#SPINFILES[@]} )); then
     got_spin=false
 fi
-if [ ! -f ${PYSPINNAME} ]; then
+if ! (( ${#PYSPINFILES[@]} )); then
     got_spin=false
 fi
-
-# and it's also not just a stub/error page
-min_size=1000
-spin_size="$(wc -c < ${SPINNAME})"
-pyspin_size="$(wc -c < ${PYSPINNAME})"
-
-if [ $spin_size -le $min_size ]; then
-    got_spin=false
-fi
-if [ $pyspin_size -le $min_size ]; then
-    got_spin=false
-fi
+#
+## and it's also not just a stub/error page
+#min_size=1000
+#spin_size="$(wc -c < ${SPINNAME})"
+#pyspin_size="$(wc -c < ${PYSPINNAME})"
+#
+#if [ $spin_size -le $min_size ]; then
+#    got_spin=false
+#fi
+#if [ $pyspin_size -le $min_size ]; then
+#    got_spin=false
+#fi
 
 # if couldn't get it, prompt user to get it
 if [ "$got_spin" = false ]; then
