@@ -49,20 +49,20 @@ sudo apt install -y \
 
 echo -e "\n${RED}Attempting to download Spinnaker SDK files from static link${NC}"
 
-cd ~/
+#cd ~/
 if [ ! -d "spinnaker" ]; then
     echo -e "\n${RED}Making spinnaker directory in user directory${NC}"
     mkdir spinnaker
 fi
-cd spinnaker
+#cd spinnaker
 
 #SPINNAME="spinnaker-1.27.0.48-Ubuntu16.04-armhf-pkg.tar.gz"
 #PYSPINNAME="spinnaker_python-1.27.0.48-Ubuntu16.04-cp27-cp27mu-linux_armv7l.tar.gz"
 SPINURL="https://flir.app.boxcn.net/v/SpinnakerSDK/file/545650882106"
 PYSPINURL="https://flir.app.boxcn.net/v/SpinnakerSDK/file/545648953427"
 
-SPINNAME=$(python -c "from request_helpers import download_box; download_box('${SPINURL}')")
-PYSPINNAME=$(python -c "from request_helpers import download_box; download_box('${PYSPINURL}')")
+SPINNAME=$(python -c "from request_helpers import download_box; download_box('${SPINURL}', save_path='spinnaker')")
+PYSPINNAME=$(python -c "from request_helpers import download_box; download_box('${PYSPINURL}', save_path='spinnaker')")
 
 # check if we were able to get it
 got_spin=true
