@@ -118,7 +118,12 @@ class Station(multiprocessing.Process):
         super(Station, self).__init__()
         # Prefs should be passed by the terminal, if not, try to load from default locatio
 
-        self.ip = self.get_ip()
+        try:
+            self.ip = self.get_ip()
+        except Exception as e:
+            Warning("Couldn't get IP!: {}".format(e))
+            self.ip = ""
+
 
         # Setup logging
         self.init_logging()
@@ -864,13 +869,13 @@ class Pilot_Station(Station):
     +-------------+-------------------------------------+-----------------------------------------------+
     | Key         | Method                              | Description                                   |
     +=============+=====================================+===============================================+
-    | 'STATE'     | :meth:`~.Pilot_Station.l_state`  | Pilot has changed state                       |
-    | 'COHERE'    | :meth:`~.Pilot_Station.l_cohere` | Make sure our data and the Terminal's match.  |
-    | 'PING'      | :meth:`~.Pilot_Station.l_ping`   | The Terminal wants to know if we're listening |
-    | 'START'     | :meth:`~.Pilot_Station.l_start`  | We are being sent a task to start             |
-    | 'STOP'      | :meth:`~.Pilot_Station.l_stop`   | We are being told to stop the current task    |
-    | 'PARAM'     | :meth:`~.Pilot_Station.l_change` | The Terminal is changing some task parameter  |
-    | 'FILE'      | :meth:`~.Pilot_Station.l_file`   | We are receiving a file                       |
+    | 'STATE'     | :meth:`~.Pilot_Station.l_state`     | Pilot has changed state                       |
+    | 'COHERE'    | :meth:`~.Pilot_Station.l_cohere`    | Make sure our data and the Terminal's match.  |
+    | 'PING'      | :meth:`~.Pilot_Station.l_ping`      | The Terminal wants to know if we're listening |
+    | 'START'     | :meth:`~.Pilot_Station.l_start`     | We are being sent a task to start             |
+    | 'STOP'      | :meth:`~.Pilot_Station.l_stop`      | We are being told to stop the current task    |
+    | 'PARAM'     | :meth:`~.Pilot_Station.l_change`    | The Terminal is changing some task parameter  |
+    | 'FILE'      | :meth:`~.Pilot_Station.l_file`      | We are receiving a file                       |
     +-------------+-------------------------------------+-----------------------------------------------+
 
     """
@@ -1172,7 +1177,7 @@ class Net_Node(object):
     loop_thread = None
     repeat_interval = 5 # how many seconds to wait before trying to repeat a message
 
-    def __init__(self, id, upstream, port, listens, instance=True, do_logging=False):
+    def __init__(self, id, upstream, port, listens, instance=True, do_logging=False, upstream_ip='localhost', route_port = None):
         """
         Args:
             id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
@@ -1181,6 +1186,10 @@ class Net_Node(object):
             listens (dict): Dictionary of functions to call for different types of messages.
                 keys match the :attr:`.Message.key`.
             instance (bool): Should the node try and use the existing zmq context and tornado loop?
+            do_logging (bool): Logging takes time, we can disable it for greater efficiency
+            upstream_ip (str): If this Net_Node is being used on its own (ie. not behind a :class:`.Station`), it can directly connect to another node at this IP. Otherwise use 'localhost' to connect to a station.
+            route_port (int): Typically, Net_Nodes only have a single Dealer socket and receive messages from their encapsulating :class:`.Station`, but 
+                if you want to take this node offroad and use it independently, an int here binds a Router to the port.
         """
         if instance:
             self.context = zmq.Context.instance()
@@ -1211,6 +1220,13 @@ class Net_Node(object):
             self.do_logging.clear()
         self.init_logging()
 
+        # If we were given an explicit IP to connect to, stash it
+        self.upstream_ip = upstream_ip
+
+        # # If we want to be able to have messages sent to us directly, make a router at this port
+        # self.route_port = route_port
+
+
         self.init_networking()
 
     def __del__(self):
@@ -1225,12 +1241,21 @@ class Net_Node(object):
         self.sock.identity = self.id
         #self.sock.probe_router = 1
 
-        # net nodes are local only
-        self.sock.connect('tcp://localhost:{}'.format(self.port))
+        # if used locally (typical case), connect to localhost
+        self.sock.connect('tcp://{}:{}'.format(self.upstream_ip, self.port))
 
         # wrap in zmqstreams and start loop thread
         self.sock = ZMQStream(self.sock, self.loop)
         self.sock.on_recv(self.handle_listen)
+
+        # if self.route_port:
+        #     # if want to directly receive messages, bind a router port
+        #     self.router = self.context.socket(zmq.ROUTER)
+        #     self.router.identity = self.id
+        #     self.router.bind('tcp://*:{}'.format(self.route_port))
+        #     self.router = ZMQStream(self.router, self.loop)
+        #     self.router.on_recv(self.handle_listen)
+            
 
         self.loop_thread = threading.Thread(target=self.threaded_loop)
         self.loop_thread.daemon = True
@@ -1323,7 +1348,7 @@ class Net_Node(object):
             # send confirmation
             self.send(msg.sender, 'CONFIRM', msg.id)
 
-    def send(self, to=None, key=None, value=None, msg=None, repeat=True, flags = None):
+    def send(self, to=None, key=None, value=None, msg=None, repeat=True, flags = None, force_to = False):
         """
         Send a message via our :attr:`~.Net_Node.sock` , DEALER socket.
 
@@ -1348,6 +1373,9 @@ class Net_Node(object):
                 must be JSON serializable.
             msg (`.Message`): An already created message.
             repeat (bool): Should this message be resent if confirmation is not received?
+            flags (dict):
+            force_to (bool): If we really really want to use the 'to' field to address messages 
+                (eg. node being used for direct communication), overrides default behavior of sending to upstream.
         """
         # send message via the dealer
         # even though we only have one connection over our dealer,
@@ -1381,8 +1409,10 @@ class Net_Node(object):
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
-   
-        self.sock.send_multipart([bytes(self.upstream), bytes(msg.to), msg_enc])
+        if force_to:
+            self.sock.send_multipart([bytes(msg.to), bytes(msg.to), msg_enc])
+        else:
+            self.sock.send_multipart([bytes(self.upstream), bytes(msg.to), msg_enc])
         if self.logger and self.do_logging.is_set() and log_this:
             self.logger.info("MESSAGE SENT - {}".format(str(msg)))
 
