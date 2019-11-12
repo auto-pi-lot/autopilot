@@ -1217,7 +1217,9 @@ class Net_Node(object):
         # try to get a logger
         if not do_logging:
             self.do_logging.clear()
-        self.init_logging()
+            self.logger = None
+        if do_logging:
+            self.init_logging()
 
         # If we were given an explicit IP to connect to, stash it
         self.upstream_ip = upstream_ip
@@ -1341,7 +1343,8 @@ class Net_Node(object):
             listen_thread = threading.Thread(target=listen_funk, args=(msg.value,))
             listen_thread.start()
         except KeyError:
-            self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
+            if self.do_logging.is_set():
+                self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
 
         if (msg.key != "CONFIRM") and ('NOREPEAT' not in msg.flags.keys()) :
             # send confirmation
@@ -1384,7 +1387,7 @@ class Net_Node(object):
             to = self.upstream
 
         if (key is None) and (msg is None):
-            if self.logger:
+            if self.logger and self.do_logging.is_set():
                 self.logger.error('Push sent without Key')
             return
 
@@ -1405,7 +1408,8 @@ class Net_Node(object):
         msg_enc = msg.serialize()
 
         if not msg_enc:
-            self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
+            if self.do_logging.is_set():
+                self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
         if force_to:
@@ -1436,7 +1440,8 @@ class Net_Node(object):
             if len(outbox) > 0:
                 for id in outbox.keys():
                     if outbox[id][1].ttl <= 0:
-                        self.logger.warning('PUBLISH FAILED {} - {}'.format(id, str(outbox[id][1])))
+                        if self.do_logging.is_set():
+                            self.logger.warning('PUBLISH FAILED {} - {}'.format(id, str(outbox[id][1])))
                         try:
                             del self.outbox[id]
                         except KeyError:
