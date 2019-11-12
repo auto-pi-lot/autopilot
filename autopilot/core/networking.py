@@ -1278,7 +1278,7 @@ class Net_Node(object):
         breaks.
         """
 
-        while True:
+        while not self.closing.is_set():
             try:
                 self.loop.start()
             except RuntimeError:
@@ -1541,6 +1541,10 @@ class Net_Node(object):
         self.logger.addHandler(self.log_handler)
         self.logger.setLevel(logging.INFO)
         self.logger.info('{} Logging Initiated'.format(self.id))
+
+    def release(self):
+        self.closing.set()
+        self.loop.stop()
 
 
 
