@@ -13,7 +13,6 @@ There are two general types of network objects -
 
 
 import json
-import json_tricks
 import logging
 import threading
 import zmq
@@ -452,8 +451,8 @@ class Station(multiprocessing.Process):
         # TODO: This check is v. fragile, pyzmq has a way of sending the stream along with the message
         #####################33
         # Parse the message
-        print(msg[:-1])
-        sys.stdout.flush()
+        #print(msg[:-1])
+        #sys.stdout.flush()
 
         if len(msg)==1:
             # from our dealer, these are always to us.
@@ -1300,7 +1299,7 @@ class Net_Node(object):
         #msg = json.loads(msg[0])
 
         #msg = Message(**msg)
-        msg = Message(msg[0])
+        msg = Message(msg[-1])
 
         # Check if our listen was sent properly
         if not msg.validate():
