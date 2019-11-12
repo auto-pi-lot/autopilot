@@ -1176,7 +1176,7 @@ class Net_Node(object):
     loop_thread = None
     repeat_interval = 5 # how many seconds to wait before trying to repeat a message
 
-    def __init__(self, id, upstream, port, listens, instance=True, do_logging=False, upstream_ip='localhost', route_port = None):
+    def __init__(self, id, upstream, port, listens, instance=True, do_logging=False, upstream_ip='localhost', route_port = None, daemon=True):
         """
         Args:
             id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
@@ -1227,6 +1227,7 @@ class Net_Node(object):
         # # If we want to be able to have messages sent to us directly, make a router at this port
         # self.route_port = route_port
 
+        self.daemon = daemon
 
         self.init_networking()
 
@@ -1259,11 +1260,13 @@ class Net_Node(object):
             
 
         self.loop_thread = threading.Thread(target=self.threaded_loop)
-        self.loop_thread.daemon = True
+        if self.daemon:
+            self.loop_thread.daemon = True
         self.loop_thread.start()
 
         self.repeat_thread = threading.Thread(target=self.repeat)
-        self.repeat_thread.daemon = True
+        if self.daemon:
+            self.repeat_thread.daemon = True
         self.repeat_thread.start()
 
         #self.connected = True
