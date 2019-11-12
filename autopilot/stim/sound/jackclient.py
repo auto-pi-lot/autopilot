@@ -12,6 +12,7 @@ import numpy as np
 from copy import copy
 from threading import Thread
 from itertools import cycle
+from Queue import Empty
 
 from autopilot import prefs
 
@@ -54,6 +55,23 @@ Q_LOCK = None
 :class:`multiprocessing.Lock`: Lock that enforces a single writer to the `QUEUE` at a time.
 """
 
+CONTINUOUS = None
+"""
+:class:`multiprocessing.Event`: Event that (when set) signals the sound server should play some sound continuously rather than remain silent by default (eg. play a background sound).
+
+"""
+
+CONTINUOUS_QUEUE = None
+"""
+:class:`multiprocessing.Queue`: Queue that 
+"""
+
+CONTINUOUS_LOOP = None
+"""
+:class:`multiprocessing.Event`: Event flag that is set when frames dropped into the CONTINUOUS_QUEUE should be looped (eg. in the case of stationary background noise),
+otherwise they are played and then discarded (ie. the sound is continuously generating and submitting samples)
+"""
+
 class JackClient(mp.Process):
     """
     Client that dumps frames of audio directly into a running jackd client.
@@ -72,6 +90,7 @@ class JackClient(mp.Process):
         blocksize (int): The blocksize - ie. samples processed per :meth:`.JackClient.process` call.
         fs (int): Sampling rate of client
         zero_arr (:class:`numpy.ndarray`): cached array of zeroes used to fill jackd pipe when not processing audio.
+        continuous_cycle (:class:`itertools.cycle`): cycle of frames used for continuous sounds
     """
     def __init__(self, name='jack_client'):
         """
@@ -97,6 +116,19 @@ class JackClient(mp.Process):
         self.fs = self.client.samplerate
         self.zero_arr = np.zeros((self.blocksize,1),dtype='float32')
 
+        # a few objects that control continuous/background sound.
+        # see descriptions in module variables
+        self.continuous = mp.Event()
+        self.continuous_q = mp.Queue()
+        self.continuous_loop = mp.Event()
+        self.continuous.clear()
+        self.continuous_loop.clear()
+        self.continuous_started = False
+
+        # store the frames of the continuous sound and cycle through them if set in continous mode
+        self.continuous_cycle = None
+
+
         # store a reference to us and our values in the module
         globals()['SERVER'] = self
         globals()['FS'] = copy(self.fs)
@@ -105,6 +137,9 @@ class JackClient(mp.Process):
         globals()['Q_LOCK'] = self.q_lock
         globals()['PLAY'] = self.play_evt
         globals()['STOP'] = self.stop_evt
+        globals()['CONTINUOUS'] = self.continuous
+        globals()['CONTINOUS_QUEUE'] = self.continuous_q
+        globals()['CONTINUOUS_LOOP'] = self.continuous_loop
 
     def boot_server(self):
         """
@@ -191,8 +226,25 @@ class JackClient(mp.Process):
             frames: Unused - frames of input audio, but there shouldn't be any.
         """
         if not self.play_evt.is_set():
-            for channel, port in zip(self.zero_arr.T, self.client.outports):
-                port.get_array()[:] = channel
+            # if we are in continuous mode...
+            if self.continuous.is_set():
+                if not self.continuous_started:
+                    # if we are just entering continuous mode, get the continuous sound and prepare to play it
+                    continuous_frames = []
+                    while not self.continuous_q.empty():
+                        try:
+                            continuous_frames.append(self.continuous_q.get_nowait())
+                        except Empty:
+                            break
+                    self.continuous_cycle = cycle(continuous_frames)
+                    self.continuous_started = True
+
+                # FIXME: Multichannel sound....
+                self.client.outports[0].get_array()[:] = self.continuous_cycle.next()
+
+            else:
+                for channel, port in zip(self.zero_arr.T, self.client.outports):
+                    port.get_array()[:] = channel
         else:
 
             try:
@@ -201,15 +253,28 @@ class JackClient(mp.Process):
                 data = None
                 Warning('Queue Empty')
             if data is None:
-                # fill with silence
-                for channel, port in zip(self.zero_arr.T, self.client.outports):
-                    port.get_array()[:] = channel
+                # fill with continuous noise
+                if self.continuous.is_set():
+                    self.client.outports[0].get_array()[:] = self.continuous_cycle.next()
+                else:
+                    for channel, port in zip(self.zero_arr.T, self.client.outports):
+                        port.get_array()[:] = channel
                 # sound is over
                 self.play_evt.clear()
                 self.stop_evt.set()
             else:
+                if data.shape[0] < self.blocksize:
+                    # if sound was not padded, fill remaining with continuous sound or silence
+                    n_from_end = self.blocksize - data.shape[0]
+                    if self.continuous.is_set():
+                        data = np.concatenate((data, self.continuous_cycle.next()[-n_from_end:]),
+                                              axis=0)
+                    else:
+                        data = np.pad(data, (0, n_from_end), 'constant')
+
                 #TODO: Fix the multi-output situation so it doesn't get all grumbly.
                 # use cycle so if sound is single channel it gets copied to all outports
+
                 self.client.outports[0].get_array()[:] = data.T
                 #for channel, port in zip(cycle(data.T), self.client.outports):
                 #    port.get_array()[:] = channel
