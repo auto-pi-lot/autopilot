@@ -719,19 +719,19 @@ class Camera_Spin(object):
         if timed is not None:
             self.timed = timed
 
-        self.capture_thread = threading.Thread(target=self._capture, args=(write,))
+        self.capture_thread = threading.Thread(target=self._capture)
         #self.capture_thread.setDaemon(True)
         self.capture_thread.start()
         self.capturing = True
 
-    def _capture(self, write):
+    def _capture(self):
         self.quitting.clear()
 
         if self.networked:
             self.node.send(key='STATE', value='CAPTURING')
 
 
-        if write:
+        if self.write:
             write_queue = mp.Queue()
             writer = Video_Writer(write_queue, self.output_filename, timestamps=True)
             writer.start()
@@ -752,7 +752,7 @@ class Camera_Spin(object):
             self._timestamp = timestamp
 
             img.Release()
-            if write:
+            if self.write:
                 write_queue.put_nowait((timestamp, self._frame))
 
             if self.stream:
@@ -774,7 +774,7 @@ class Camera_Spin(object):
         self.cam.EndAcquisition()
 
 
-        if write:
+        if self.write:
             write_queue.put_nowait('END')
             checked_empty = False
             while not write_queue.empty():
