@@ -99,6 +99,7 @@ class Camera_OpenCV(mp.Process):
         # only rly relevant to multiprocessing so taking out for now
         self.queue = queue
         self.queue_single = queue_single
+        self.queue_size = queue_size
         self.q = None
         if self.queue:
             self.q = mp.Queue(maxsize=queue_size)
@@ -176,8 +177,8 @@ class Camera_OpenCV(mp.Process):
             writer = Video_Writer(write_queue, self.output_filename, self.fps, timestamps=True)
             writer.start()
 
-        if self.queue:
-            Warning('Queue Not implemented yet')
+        #if self.queue:
+        #    Warning('Queue Not implemented yet')
 
         opencv_timestamps = True
         _, _ = self.vid.read()
@@ -263,15 +264,38 @@ class Camera_OpenCV(mp.Process):
 
 
 
-    def capture(self, write=False):
-        if self.capturing == True:
+    def capture(self, write=None, stream=None, queue=None, queue_size=None, timed=None):
+        #if self.capturing == True:
+        if self.capturing.is_set():
             Warning("Camera is already capturing!")
             return
+
+        # change values if they've been given to us, otherwise keep init values
+        if write is not None:
+            self.write = write
+
+        if stream is not None:
+            self.stream = stream
+
+        if queue_size is not None:
+            self.queue_size = queue_size
+
+        if queue is not None:
+            self.queue = queue
+            if self.queue and not self.q:
+                self.q = mp.Queue(maxsize=self.queue_size)
+
+        if timed is not None:
+            self.timed = timed
+
+        self.start()
+
+
         # self.vid.release()
 
-        self.capture_thread = threading.Thread(target=self._capture, args=(write,))
-        self.capture_thread.start()
-        self.capturing = True
+        # self.capture_thread = threading.Thread(target=self._capture, args=(write,))
+        # self.capture_thread.start()
+        # self.capturing = True
 
     def _capture(self, write=False):
         # reopen video in this thread
@@ -419,8 +443,12 @@ class Camera_Spin(object):
     """
 
     trigger = False
+    pin = None
+    type = "CAMERA_SPIN" # what are we known as in prefs?
+    input = True
+    output = False
 
-    def __init__(self, serial=None, name=None, bin=(4, 4), fps=None, exposure=None, cam_trigger=None, networked=False):
+    def __init__(self, serial=None, name=None, write=False, stream = False, timed=False, bin=(4, 4), fps=None, exposure=None, cam_trigger=None, networked=False):
         """
 
 
@@ -434,6 +462,10 @@ class Camera_Spin(object):
         # FIXME: Hardcoding just for testing
         #serial = '19269891'
         self.serial = serial
+
+        self.write = write
+        self.stream = stream
+        self.timed = timed
 
         # find our camera!
         # get the spinnaker system handle
@@ -673,10 +705,19 @@ class Camera_Spin(object):
 
 
 
-    def capture(self, write=False):
+    def capture(self, write=None, stream=None, timed=None):
         if self.capturing == True:
             Warning("Camera is already capturing!")
             return
+
+        if write is not None:
+            self.write = write
+
+        if stream is not None:
+            self.stream = stream
+
+        if timed is not None:
+            self.timed = timed
 
         self.capture_thread = threading.Thread(target=self._capture, args=(write,))
         #self.capture_thread.setDaemon(True)
@@ -695,7 +736,9 @@ class Camera_Spin(object):
             writer = Video_Writer(write_queue, self.output_filename, timestamps=True)
             writer.start()
 
-        pprint.pprint(locals())
+        if isinstance(self.timed, int) or isinstance(self.timed, float):
+            start_time = time.time()
+            end_time = start_time + self.timed
 
 
         # start acquisition
@@ -711,14 +754,24 @@ class Camera_Spin(object):
             img.Release()
             if write:
                 write_queue.put_nowait((timestamp, self._frame))
+
+            if self.stream:
+                self.node.send(key='DATA', value={
+                    self.name:{
+                        'timestamp': self._timestamp,
+                        'frame'    : self._frame
+                    }
+                })
+
+            if self.timed:
+                if time.time() >= end_time:
+                    self.quitting.set()
             # else:
             #     img.Release()
 
 
 
         self.cam.EndAcquisition()
-
-        self.capturing = False
 
 
         if write:
@@ -734,6 +787,8 @@ class Camera_Spin(object):
 
         if self.networked:
             self.node.send(key='STATE', value='STOPPING')
+
+        self.capturing = False
 
 
     @property
