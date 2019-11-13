@@ -168,9 +168,8 @@ class Camera_OpenCV(mp.Process):
         if time_since_last_init < 2.:
             time.sleep(2.0-time_since_last_init)
 
-
-        self.vid = cv2.VideoCapture(self.camera_idx)
         self.last_opencv_init.value = time.time()
+        self.vid = cv2.VideoCapture(self.camera_idx)
 
         if self.write:
             write_queue = mp.Queue()
