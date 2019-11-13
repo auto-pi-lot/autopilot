@@ -49,7 +49,7 @@ class Camera_OpenCV(mp.Process):
     input = True
     output = False
 
-    def __init__(self, camera_idx=0, name=None, networked=False, queue=False,
+    def __init__(self, camera_idx=0, write=False, stream=False, timed=False, name=None, networked=False, queue=False,
                  queue_size = 128, queue_single = True,
                  *args, **kwargs):
         super(Camera_OpenCV, self).__init__()
@@ -58,6 +58,10 @@ class Camera_OpenCV(mp.Process):
             self.name = name
         else:
             self.name = "camera_{}".format(camera_idx)
+
+        self.write = write
+        self.stream = stream
+        self.timed = timed
 
         self._v4l_info = None
 
@@ -140,19 +144,19 @@ class Camera_OpenCV(mp.Process):
                 daemon=daemon
             )
 
-    def run(self, write=False, stream=False, timed=False):
+    def run(self):
         if self.capturing.is_set():
             Warning("Already capturing!")
             return
 
         self.vid = cv2.VideoCapture(self.camera_idx)
 
-        if write:
+        if self.write:
             write_queue = mp.Queue()
             writer = Video_Writer(write_queue, self.output_filename, self.fps, timestamps=True)
             writer.start()
 
-        if queue:
+        if self.queue:
             Warning('Queue Not implemented yet')
 
         opencv_timestamps = True
@@ -167,15 +171,15 @@ class Camera_OpenCV(mp.Process):
         if timestamp == 0:
            opencv_timestamps = False
 
-        if self.networked or stream:
+        if self.networked or self.stream:
             self.init_networking()
             self.node.send(key='STATE', value='CAPTURING')
 
         self.capturing.set()
 
-        if isinstance(timed, int) or isinstance(timed, float):
+        if isinstance(self.timed, int) or isinstance(self.timed, float):
             start_time = time.time()
-            end_time = start_time+timed
+            end_time = start_time+self.timed
 
 
         while not self.stopping.is_set():
@@ -194,10 +198,10 @@ class Camera_OpenCV(mp.Process):
             else:
                 timestamp = datetime.now().isoformat()
 
-            if write:
+            if self.write:
                 write_queue.put_nowait((timestamp, frame))
 
-            if stream:
+            if self.stream:
                 self.node.send(key='DATA', value={
                     self.name:{
                         'timestamp': timestamp,
@@ -214,13 +218,13 @@ class Camera_OpenCV(mp.Process):
                         pass
                 self.q.put_nowait((timestamp, frame))
 
-            if timed:
+            if self.timed:
                 if time.time() >= end_time:
                     self.stopping.set()
 
         # closing routine...
 
-        if write:
+        if self.write:
             write_queue.put_nowait('END')
             checked_empty = False
             while not write_queue.empty():
