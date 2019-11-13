@@ -1,16 +1,17 @@
-import cv2
 import threading
 from subprocess import Popen, PIPE
 import sys
-import time
-from itertools import count
-import json_tricks
 import os
+import csv
 from skvideo import io
 import numpy as np
 import base64
-#from tqdm import tqdm, trange
 from datetime import datetime
+import multiprocessing as mp
+import time
+
+
+
 
 # import the Queue class from Python 3
 if sys.version_info >= (3, 0):
@@ -20,18 +21,21 @@ if sys.version_info >= (3, 0):
 else:
     from Queue import Queue, Empty
 
-import multiprocessing as mp
-from autopilot.core.networking import Net_Node
-
-
 try:
     import PySpin
     PYSPIN = True
 except:
     PYSPIN = False
 
-from autopilot import prefs
+try:
+    import cv2
+    OPENCV = True
+except:
+    OPENCV = False
 
+from autopilot import prefs
+from autopilot.core.networking import Net_Node
+from autopilot.core.hardware import Hardware
 
 
 class Camera_OpenCV(mp.Process):
@@ -40,10 +44,15 @@ class Camera_OpenCV(mp.Process):
     """
 
     trigger = False
+    pin = None
+    type = "CAMERA_OPENCV" # what are we known as in prefs?
+    input = True
+    output = False
 
-    def __init__(self, camera_idx = 0, stream=False, queue=False, queue_size = 128, name = None, *args, **kwargs):
+    def __init__(self, camera_idx=0, name=None, networked=False, queue=False,
+                 queue_size = 128, queue_single = True,
+                 *args, **kwargs):
         super(Camera_OpenCV, self).__init__()
-
 
         if name:
             self.name = name
@@ -52,83 +61,275 @@ class Camera_OpenCV(mp.Process):
 
         self._v4l_info = None
 
+        self.fps = None
+
+        # get handle to camera
         self.camera_idx = camera_idx
-        self.vid = None
+        self.vid = cv2.VideoCapture(self.camera_idx)
+        self.init_opencv_info()
 
-        self.stopped = mp.Event()
-        self.stopped.clear()
+        # event to end acquisition
+        # self.stopped = mp.Event()
+        # self.stopped.clear()
+        #self.stopping = threading.Event()
+        self.stopping = mp.Event()
+        self.stopping.clear()
 
+        # keep the most recent frame so others can access with the frame attribute
         self._frame = False
 
+        self._output_filename = None
+
+        # if we want to make a queue of frames available, do so
+        # only rly relevant to multiprocessing so taking out for now
         self.queue = queue
+        self.queue_single = queue_single
         self.q = None
         if self.queue:
             self.q = mp.Queue(maxsize=queue_size)
 
-        self.stream = stream
+        #self.capturing = False
+        self.capturing = mp.Event()
+        self.capturing.clear()
+
+        self.networked = networked
         self.node = None
         self.listens = None
-        if self.stream:
+
+
+        # deinit the camera so the other thread can start it
+        self.vid.release()
+
+    def l_start(self, val):
+        # if 'write' in val.keys():
+        #     write = val['write']
+        # else:
+        #     write = True
+
+        self.capture(write=True)
+
+    def l_stop(self, val):
+        self.release()
+
+    def init_opencv_info(self):
+        if not self.fps:
+            self.fps = self.vid.get(cv2.CAP_PROP_FPS)
+            if self.fps == 0:
+                self.fps = 30
+                Warning('Couldnt get fps from camera, using {} as default'.format(self.fps))
+
+        self.shape = (self.vid.get(cv2.CAP_PROP_FRAME_WIDTH),
+                      self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+        # TODO: Make sure this works more generally since CAP_PROP_BACKEND is returnign -1 now
+        # backends = [cv2.videoio_registry.getBackendName(i) for i in cv2.videoio_registry.getCameraBackends()]
+        # self.backend = backends[int(self.vid.get(cv2.CAP_PROP_BACKEND))]
+
+    def init_networking(self, daemon=False, instance=False):
+        if self.networked:
             self.listens = {
-                'STOP': self.release
+                'START': self.l_start,
+                'STOP': self.l_stop
             }
-            # self.node = Net_Node(
-            #     self.name,
-            #     upstream=prefs.NAME,
-            #     port=prefs.MSGPORT,
-            #     listens=self.listens,
-            #     instance = False
-            # )
-
-
-
-    def run(self):
-        self._update()
-        # t = Thread(target=self._update)
-        # t.daemon = True
-        # t.start()
-
-    # def start(self):
-    #     self.thread = threading.Thread(target=self._update)
-    #     self.thread.daemon = True
-    #     self.thread.start()
-
-    def _update(self):
-
-        self.vid = cv2.VideoCapture(self.camera_idx)
-
-
-        if self.stream:
             self.node = Net_Node(
                 self.name,
                 upstream=prefs.NAME,
                 port=prefs.MSGPORT,
                 listens=self.listens,
-                instance = True
+                instance=instance,
+                daemon=daemon
             )
 
-        while not self.stopped.is_set():
-            _, self._frame = self.vid.read()
+    def run(self, write=False, stream=False, timed=False):
+        if self.capturing.is_set():
+            Warning("Already capturing!")
+            return
+
+        self.vid = cv2.VideoCapture(self.camera_idx)
+
+        if write:
+            write_queue = mp.Queue()
+            writer = Video_Writer(write_queue, self.output_filename, self.fps, timestamps=True)
+            writer.start()
+
+        if queue:
+            Warning('Queue Not implemented yet')
+
+        opencv_timestamps = True
+        _, _ = self.vid.read()
+        _, _ = self.vid.read()
+        timestamp = 0
+        try:
             timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
-            print(timestamp)
-            sys.stdout.flush()
-            if self.stream:
-                self.node.send(key='CONTINUOUS',
-                               value={self.name:(self._frame.dtype, self._frame.shape, base64.b64encode(self._frame)),
-                                      'timestamp':timestamp},
-                               repeat=False)
+        except Exception as e:
+            Warning("Couldn't use opencv timestamps, using system timestamps")
+            opencv_timestamps = False
+        if timestamp == 0:
+           opencv_timestamps = False
+
+        if self.networked or stream:
+            self.init_networking()
+            self.node.send(key='STATE', value='CAPTURING')
+
+        self.capturing.set()
+
+        if isinstance(timed, int) or isinstance(timed, float):
+            start_time = time.time()
+            end_time = start_time+timed
+
+
+        while not self.stopping.is_set():
+            try:
+                ret, frame = self.vid.read()
+            except Exception as e:
+                print(e)
+                continue
+
+            if not ret:
+                Warning("No frame grabbed :(")
+                continue
+
+            if opencv_timestamps:
+                timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
+            else:
+                timestamp = datetime.now().isoformat()
+
+            if write:
+                write_queue.put_nowait((timestamp, frame))
+
+            if stream:
+                self.node.send(key='DATA', value={
+                    self.name:{
+                        'timestamp': timestamp,
+                        'frame'    : frame
+                    }})
 
             if self.queue:
-                if not self.q.full():
-                    self.q.put_nowait((self._frame, timestamp))
+                if self.queue_single:
+                    # if just making the most recent frame available in queue,
+                    # pull previous frame if still there
+                    try:
+                        _ = self.q.get_nowait()
+                    except Empty:
+                        pass
+                self.q.put_nowait((timestamp, frame))
+
+            if timed:
+                if time.time() >= end_time:
+                    self.stopping.set()
+
+        # closing routine...
+
+        if write:
+            write_queue.put_nowait('END')
+            checked_empty = False
+            while not write_queue.empty():
+                if not checked_empty:
+                    Warning('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
+                    checked_empty = True
+                time.sleep(0.1)
+            Warning('Writer finished, closing')
+
+        if self.networked:
+            self.node.send(key='STATE', value='STOPPING')
+
+        self.capturing.clear()
+
+
+
+
+
+    def capture(self, write=False):
+        if self.capturing == True:
+            Warning("Camera is already capturing!")
+            return
+        # self.vid.release()
+
+        self.capture_thread = threading.Thread(target=self._capture, args=(write,))
+        self.capture_thread.start()
+        self.capturing = True
+
+    def _capture(self, write=False):
+        # reopen video in this thread
+        self.vid = cv2.VideoCapture(self.camera_idx)
+        time.sleep(1)
+        # tell the upstream that we're starting
+        if self.networked:
+            self.init_networking()
+            self.node.send(key='STATE', value='CAPTURING')
+
+        # get a test frame to see if we can get timestamps
+        opencv_timestamps = False
+        # _, _ = self.vid.read()
+        # _, _ = self.vid.read()
+        # timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
+        # if timestamp == 0:
+        #    opencv_timestamps = False
+
+        # write to a video file
+        if write:
+            print("Camera: {}, path: {}, fps: {}".format(self.name, self.output_filename, self.fps))
+            sys.stdout.flush()
+            write_queue = mp.Queue()
+            writer = Video_Writer(write_queue, self.output_filename, self.fps, timestamps=True)
+            writer.start()
+
+        while not self.stopping.is_set():
+            try:
+                _, self._frame = self.vid.read()
+            except Exception as e:
+                print(e)
+                continue
+
+            if opencv_timestamps:
+                timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
+            else:
+                timestamp = datetime.now().isoformat()
+
+            if write:
+                write_queue.put_nowait((timestamp, self._frame))
+
+        if write:
+            write_queue.put_nowait('END')
+            checked_empty = False
+            while not write_queue.empty():
+                if not checked_empty:
+                    Warning('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
+                    checked_empty = True
+                time.sleep(0.1)
+            Warning('Writer finished, closing')
+
+        if self.networked:
+            self.node.send(key='STATE', value='STOPPING')
+
+        self.capturing = False
+
+    @property
+    def output_filename(self, new=False):
+        # TODO: choose output directory
+
+        if self._output_filename is None:
+            new = True
+        elif os.path.exists(self._output_filename):
+            new = True
+
+        if new:
+            user_dir = os.path.expanduser('~')
+            self._output_filename = os.path.join(user_dir, "capture_camidx{}_{}.mp4".format(self.camera_idx,
+                                                                                            datetime.now().strftime(
+                                                                                                "%y%m%d-%H%M%S")))
+
+        return self._output_filename
 
     def release(self):
-        self.stopped.set()
+        self.stopping.set()
+        if self.networked:
+            self.node.release()
         self.vid.release()
 
     @property
     def frame(self):
-        #_, frame = self.stream.read()
+        # _, frame = self.stream.read()
         if self.queue:
             return self.q.get()
         else:
@@ -195,7 +396,7 @@ class Camera_Spin(object):
 
     trigger = False
 
-    def __init__(self, serial=None, bin=(4, 4), fps=None, exposure=None):
+    def __init__(self, serial=None, name=None, bin=(4, 4), fps=None, exposure=None, cam_trigger=None, networked=False):
         """
 
 
@@ -269,9 +470,16 @@ class Camera_Spin(object):
             self.cam.AcquisitionFrameRate.SetValue(fps)
         self.fps = fps
 
+        # if we want to use hardware triggers, handle that now
+        self.cam_trigger = cam_trigger
+        if self.cam_trigger:
+            self.init_trigger(self.cam_trigger)
+
         # used to quit the stream thread
         self.quitting = threading.Event()
         self.quitting.clear()
+
+        # event to signal when _capture
 
         # if created, thread that streams frames
         self.stream_thread = None
@@ -280,7 +488,40 @@ class Camera_Spin(object):
         self.capturing = False
         self._frame = None
 
+        self.name = name
+        if self.name is None:
+            self.name = "camera_{}".format(self.serial)
 
+        self.networked = networked
+        self.node = None
+        self.listens = None
+
+        self._output_filename = None
+
+        if networked:
+            self.init_networking()
+
+
+    def init_networking(self):
+        self.listens = {
+            'START': self.l_start,
+            'STOP': self.l_stop
+        }
+        self.node = Net_Node(
+            self.name,
+            upstream=prefs.NAME,
+            port=prefs.MSGPORT,
+            listens=self.listens,
+            instance=True,
+            upstream_ip=prefs.TERMINALIP,
+            daemon=False
+        )
+
+    def l_start(self, val):
+        self.capture(write=True)
+
+    def l_stop(self, val):
+        self.release()
 
     @property
     def bin(self):
@@ -320,12 +561,33 @@ class Camera_Spin(object):
             return (False, False)
 
         try:
-            img = self._frame.GetNDArray()
-            ts = self._frame.GetTimeStamp()
+            return (self._frame, self._timestamp)
         except AttributeError:
             return (False, False)
 
-        return (img, ts)
+        #return (img, ts)
+
+    def init_trigger(self, cam_trigger=None):
+        """
+        Set the camera to either generate or follow hardware triggers
+
+        :return:
+        """
+
+        # if we're generating the triggers...
+        if cam_trigger == "lead":
+            self.cam.LineSelector.SetValue(PySpin.LineSelector_Line2)
+            self.cam.V3_3Enable.SetValue(True)
+        elif cam_trigger == "follow":
+            self.cam.TriggerMode.SetValue(PySpin.TriggerMode_Off)
+            self.cam.TriggerSource.SetValue(PySpin.TriggerSource_Line3)
+            # this article says that setting triggeroverlap is necessary, but not sure what it does
+            # http://justinblaber.org/acquiring-stereo-images-with-spinnaker-api-hardware-trigger/
+            self.cam.TriggerOverlap.SetValue(PySpin.TriggerOverlap_ReadOut)
+            # In continuous mode, each trigger captures one frame8
+            self.cam.TriggerSelector.SetValue(PySpin.TriggerSelector_FrameStart)
+
+            self.cam.TriggerMode.SetValue(PySpin.TriggerMode_On)
 
 
     def fps_test(self, n_frames=1000, writer=True):
@@ -385,33 +647,83 @@ class Camera_Spin(object):
 
         return mean_fps, sd_fps, ifi
 
-    def tmp_dir(self, new=False):
-        if new or not hasattr(self, '_tmp_dir'):
-            self._tmp_dir = os.path.join(os.path.expanduser('~'),
-                                    '.tmp_capture_{}_{}'.format(self.serial, datetime.now().strftime("%y%m%d-%H%M%S")))
-            os.mkdir(self._tmp_dir)
 
-        return self._tmp_dir
 
-    def capture(self):
-        self.capture_thread = threading.Thread(target=self._capture)
-        self.capture_thread.setDaemon(True)
+    def capture(self, write=False):
+        if self.capturing == True:
+            Warning("Camera is already capturing!")
+            return
+
+        self.capture_thread = threading.Thread(target=self._capture, args=(write,))
+        #self.capture_thread.setDaemon(True)
         self.capture_thread.start()
         self.capturing = True
 
-    def _capture(self):
+    def _capture(self, write):
         self.quitting.clear()
 
+        if self.networked:
+            self.node.send(key='STATE', value='CAPTURING')
 
-        # start acquitision
+
+        if write:
+            write_queue = mp.Queue()
+            writer = Video_Writer(write_queue, self.output_filename, timestamps=True)
+            writer.start()
+
+        pprint.pprint(locals())
+
+
+        # start acquisition
+        #timestamps = []
         self.cam.BeginAcquisition()
         while not self.quitting.is_set():
-            self._frame = self.cam.GetNextImage()
+            img = self.cam.GetNextImage()
+            timestamp = img.GetTimeStamp() / float(1e9)
+            #timestamps.append(this_timestamp)
+            self._frame = img.GetNDArray()
+            self._timestamp = timestamp
+
+            img.Release()
+            if write:
+                write_queue.put_nowait((timestamp, self._frame))
+            # else:
+            #     img.Release()
+
+
 
         self.cam.EndAcquisition()
 
         self.capturing = False
 
+
+        if write:
+            write_queue.put_nowait('END')
+            checked_empty = False
+            while not write_queue.empty():
+                if not checked_empty:
+                    Warning('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
+                    checked_empty = True
+                time.sleep(0.1)
+            Warning('Writer finished, closing')
+
+
+        if self.networked:
+            self.node.send(key='STATE', value='STOPPING')
+
+
+    @property
+    def output_filename(self, new=False):
+        if self._output_filename is None:
+            new = True
+        elif os.path.exists(self._output_filename):
+            new = True
+
+        if new:
+            dir = os.path.expanduser('~')
+            self._output_filename = os.path.join(dir, "capture_SN{}_{}.mp4".format(self.serial, datetime.now().strftime("%y%m%d-%H%M%S")))
+
+        return self._output_filename
 
 
 
@@ -467,11 +779,9 @@ class Camera_Spin(object):
         Returns:
 
         """
-        out_dir = self.tmp_dir(new=True)
         frame_n = 0
         # TODO: Get this from prefs, just testing this
-        out_vid_fn = os.path.join(os.path.expanduser('~'), "{}_{}.mp4".format(self.serial, datetime.now().strftime("%y%m%d-%H%M%S")))
-
+        out_vid_fn = self.output_filename
         vid_out = io.FFmpegWriter(out_vid_fn,
             inputdict={
                 '-r': str(self.fps),
@@ -482,7 +792,7 @@ class Camera_Spin(object):
                 '-r': str(self.fps),
                 '-preset': 'fast'
             },
-            verbosity=1
+            verbosity=0
         )
 
 
@@ -490,10 +800,10 @@ class Camera_Spin(object):
             try:
                 #fname = os.path.join(out_dir, "{}_{:06d}.tif".format(self.serial, frame_n))
                 #img.Save(fname)
-                img_arr = img.GetNDArray()
+                #img_arr = img.GetNDArray()
                 #print(img_arr.shape)
-                vid_out.writeFrame(img_arr)
-                img.Release()
+                vid_out.writeFrame(img)
+                #img.Release()
             except:
                 # TODO: do this better
                 pass
@@ -525,16 +835,133 @@ class Camera_Spin(object):
         # set quit flag to end stream thread if any.
         self.quitting.set()
 
+        if self.capture_thread.is_alive():
+            Warning("Capture thread has not exited yet, waiting for that to happen")
+            self.capture_thread.join()
+            Warning("Capture thread exited successfully!")
+
+        # release the net_node
+        if self.networked:
+            self.node.release()
+
         try:
             self.cam.DeInit()
             del self.cam
-        except AttributeError:
-            pass
+        except Exception as e:
+            print(e)
+            traceback.print_exc(file=sys.stdout)
+
+        try:
+            del self.cam
+        except AttributeError as e:
+            print(e)
 
         try:
             self.cam_list.Clear()
             del self.cam_list
-        except AttributeError:
-            pass
+        except Exception as e:
+            print(e)
+            traceback.print_exc(file=sys.stdout)
 
-        self.system.ReleaseInstance()
+        try:
+            del self.nmap
+        except Exception as e:
+            print(e)
+            traceback.print_exc(file=sys.stdout)
+
+        try:
+            self.system.ReleaseInstance()
+        except Exception as e:
+            print(e)
+            traceback.print_exc(file=sys.stdout)
+
+
+class Video_Writer(mp.Process):
+    def __init__(self, q, path, fps=None, timestamps=True):
+        """
+
+        :param q:
+        :param path:
+        :param fps:
+        :param timestamps: whether we'll be given timestamps in our queue, so inputs are (timestamp, image) tuples
+        """
+        super(Video_Writer, self).__init__()
+
+        self.q = q
+        self.path = path
+        self.fps = fps
+        self.given_timestamps = timestamps
+        self.timestamps = []
+
+
+        if fps is None:
+            Warning('No FPS given, using 30fps by default')
+            self.fps = 30
+
+    def run(self):
+
+        self.timestamps = []
+
+
+        out_vid_fn = self.path
+        vid_out = io.FFmpegWriter(out_vid_fn,
+            inputdict={
+                '-r': str(self.fps),
+        },
+            outputdict={
+                '-vcodec': 'libx264',
+                '-pix_fmt': 'yuv420p',
+                '-r': str(self.fps),
+                '-preset': 'veryfast'
+            },
+            verbosity=0
+        )
+
+        for input in iter(self.q.get, 'END'):
+            try:
+
+                if self.given_timestamps:
+                    self.timestamps.append(input[0])
+                    vid_out.writeFrame(input[1])
+                else:
+                    self.timestamps.append(datetime.now().isoformat())
+                    vid_out.writeFrame(input)
+
+            except:
+                # TODO: Too general
+                break
+
+        vid_out.close()
+        # save timestamps as .csv
+        ts_path = os.path.splitext(self.path)[0] + '.csv'
+        with open(ts_path, 'w') as ts_file:
+            csv_writer = csv.writer(ts_file)
+            for ts in self.timestamps:
+                csv_writer.writerow([ts])
+
+
+def list_spinnaker_cameras():
+    system = PySpin.System.GetInstance()
+    cam_list = system.GetCameras()
+
+    cam_info = []
+    for cam in cam_list:
+        nmap = cam.GetTLDeviceNodeMap()
+
+        device_info = PySpin.CCategoryPtr(nmap.GetNode('DeviceInformation'))
+
+        features = device_info.GetFeatures()
+
+        # save information to a dictionary
+        info_dict = {}
+        for feature in features:
+            node_feature = PySpin.CValuePtr(feature)
+            info_dict[node_feature.GetName()] = node_feature.ToString()
+
+        cam_info.append(info_dict)
+
+    del cam
+    cam_list.Clear()
+    system.ReleaseInstance()
+
+    return cam_info
