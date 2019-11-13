@@ -78,6 +78,9 @@
     echo 3 > /sys/class/video4linux/videox/dev_debug
     dmesg
 - general debugging mode that enables logging, normally disable logging.
+- integrate https://github.com/jeffbass/imagezmq
+- https://www.pyimagesearch.com/2017/10/09/optimizing-opencv-on-the-raspberry-pi/
+- https://www.theimpossiblecode.com/blog/build-faster-opencv-raspberry-pi3/
 
 .. automodsumm:: rpilot.core.gui
     :toctree:
