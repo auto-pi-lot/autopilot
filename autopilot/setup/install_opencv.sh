@@ -25,7 +25,7 @@ echo -e "${RED}    Installing prereqs\n${NC}"
 sudo apt-get install -y build-essential cmake ccache unzip pkg-config \
     libjpeg-dev libpng-dev libtiff-dev \
     libavcodec-dev libavformat-dev libswscale-dev libv4l-dev \
-    libxvidcore-dev libx264-dev \
+    libxvidcore-dev libx264-dev ffmpeg \
     libgtk-3-dev libcanberra-gtk* \
     libatlas-base-dev gfortran \
     python2-dev python-numpy

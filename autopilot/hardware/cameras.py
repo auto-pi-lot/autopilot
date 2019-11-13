@@ -37,6 +37,17 @@ from autopilot import prefs
 from autopilot.core.networking import Net_Node
 from autopilot.core.hardware import Hardware
 
+OPENCV_LAST_INIT_TIME = mp.Value('d', 0.0)
+"""
+Time the last OpenCV camera was initialized (seconds, from time.time()).
+
+v4l2 has an extraordinarily obnoxious ...feature -- 
+if you try to initialize two cameras at ~the same time,
+you will get a neverending stream of informative error message: 'VIDIOC_QBUF: Invalid argument'
+
+The workaround is relatively simple, we just wait ~2 seconds if another camera was just initialized.
+"""
+
 
 class Camera_OpenCV(mp.Process):
     """
@@ -100,6 +111,8 @@ class Camera_OpenCV(mp.Process):
         self.node = None
         self.listens = None
 
+        self.last_opencv_init = globals()['OPENCV_LAST_INIT_TIME']
+
 
         # deinit the camera so the other thread can start it
         self.vid.release()
@@ -149,7 +162,15 @@ class Camera_OpenCV(mp.Process):
             Warning("Already capturing!")
             return
 
+        # check if another cameras has been initialized recently.
+        # if so, wait for a second or two
+        time_since_last_init = time.time() - self.last_opencv_init.value
+        if time_since_last_init < 2.:
+            time.sleep(2.0-time_since_last_init)
+
+
         self.vid = cv2.VideoCapture(self.camera_idx)
+        self.last_opencv_init.value = time.time()
 
         if self.write:
             write_queue = mp.Queue()
