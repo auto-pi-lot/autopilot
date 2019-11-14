@@ -791,7 +791,7 @@ class Camera_Spin(object):
 
             if self.stream:
                 stream_q.put_nowait({'timestamp':self._timestamp,
-                                     'self.name':self._frame})
+                                     self.name:self._frame})
 
             if self.timed:
                 if time.time() >= end_time:
