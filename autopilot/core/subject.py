@@ -920,8 +920,6 @@ class Subject:
         group = h5f.get_node(group_name)
         step_groups = sorted(group._v_children.keys())
 
-        print(step_groups)
-
         if step == -1:
             # find the last trial step with data
             for step_name in reversed(step_groups):
