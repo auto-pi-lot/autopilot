@@ -1592,8 +1592,6 @@ class Net_Node(object):
         if subject is None:
             subject = ""
 
-        last_msg = Dummy_Msg()
-
         msg_counter = count()
 
         pending_data = []
@@ -1616,9 +1614,7 @@ class Net_Node(object):
 
             pending_data.append(data)
 
-            pprint(data)
-
-            if not last_msg.pending and len(pending_data)>=min_size:
+            if not socket.sending() and len(pending_data)>=min_size:
                 msg = Message(to=upstream, key="STREAM",
                               value={'subject'   : subject,
                                      'inner_key' : msg_key,
