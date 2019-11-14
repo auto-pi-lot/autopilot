@@ -7,9 +7,9 @@ NC='\033[0m'
 echo -e "${RED}Qt4 and PySide will be Compiled and installed...\n${NC}"
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
-  echo -e "${RED}Installing XLib...\n${NC}"
+  echo -e "${RED}Detected Linux, Installing XLib and g++...\n${NC}"
   sudo apt-get update
-  sudo apt-get install -y libxext-dev
+  sudo apt-get install -y libxext-dev g++
 fi
 
 echo -e "${RED}Downloading & Compiling Qt4\n${NC}"
