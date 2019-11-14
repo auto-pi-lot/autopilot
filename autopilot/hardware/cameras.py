@@ -144,19 +144,18 @@ class Camera_OpenCV(mp.Process):
         # self.backend = backends[int(self.vid.get(cv2.CAP_PROP_BACKEND))]
 
     def init_networking(self, daemon=False, instance=False):
-        if self.networked:
-            self.listens = {
-                'START': self.l_start,
-                'STOP': self.l_stop
-            }
-            self.node = Net_Node(
-                self.name,
-                upstream=prefs.NAME,
-                port=prefs.MSGPORT,
-                listens=self.listens,
-                instance=instance,
-                daemon=daemon
-            )
+        self.listens = {
+            'START': self.l_start,
+            'STOP': self.l_stop
+        }
+        self.node = Net_Node(
+            self.name,
+            upstream=prefs.NAME,
+            port=prefs.MSGPORT,
+            listens=self.listens,
+            instance=instance,
+            daemon=daemon
+        )
 
     def run(self):
         if self.capturing.is_set():
