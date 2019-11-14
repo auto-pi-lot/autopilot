@@ -914,13 +914,14 @@ class Camera_Spin(object):
         # set quit flag to end stream thread if any.
         self.quitting.set()
 
-        if self.capture_thread.is_alive():
-            Warning("Capture thread has not exited yet, waiting for that to happen")
-            self.capture_thread.join()
-            Warning("Capture thread exited successfully!")
+        if hasattr(self, 'capture_thread'):
+            if self.capture_thread.is_alive():
+                Warning("Capture thread has not exited yet, waiting for that to happen")
+                self.capture_thread.join()
+                Warning("Capture thread exited successfully!")
 
         # release the net_node
-        if self.networked:
+        if self.networked or self.node:
             self.node.release()
 
         try:
