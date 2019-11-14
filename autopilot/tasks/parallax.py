@@ -107,6 +107,8 @@ class Parallax(Task):
 
         self.n_trials = itertools.count()
 
+        print(self.hardware)
+
         self.hardware['CAMS']['SIDE'].capture()
 
     def test(self):
