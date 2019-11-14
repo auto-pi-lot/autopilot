@@ -47,7 +47,7 @@ class Parallax(Task):
         'accel_z': tables.Float64Col(),
         'head_1': 'infer',
         'head_2': 'infer',
-        'flir_1': 'infer'
+        'SIDE': 'infer'
     }
 
     HARDWARE = {
