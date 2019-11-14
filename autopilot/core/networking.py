@@ -37,6 +37,8 @@ else:
 
 from autopilot import prefs
 
+from pprint import pprint
+
 # TODO: Periodically ping pis to check that they are still responsive
 
 class Station(multiprocessing.Process):
@@ -1573,8 +1575,7 @@ class Net_Node(object):
 
     def _stream(self, id, msg_key, min_size, upstream, port, ip, subject, q):
 
-        class Dummy_Msg:
-            pending=False
+
 
         # create a new context and socket
         #context = zmq.Context()
@@ -1590,7 +1591,7 @@ class Net_Node(object):
         if subject is None:
             subject = ""
 
-        last_msg = Dummy_Msg
+        last_msg = Dummy_Msg()
 
         msg_counter = count()
 
@@ -1613,6 +1614,8 @@ class Net_Node(object):
                 data = serialize_array(data)
 
             pending_data.append(data)
+
+            pprint(data)
 
             if not last_msg.pending and len(pending_data)>=min_size:
                 msg = Message(to=upstream, key="STREAM",
@@ -1652,6 +1655,8 @@ class Net_Node(object):
         self.closing.set()
         self.loop.stop()
 
+class Dummy_Msg:
+    pending=False
 
 
 
