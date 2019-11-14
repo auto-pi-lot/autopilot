@@ -107,7 +107,7 @@ class Parallax(Task):
 
         self.n_trials = itertools.count()
 
-        self.HARDWARE['CAMS']['SIDE'].capture()
+        self.hardware['CAMS']['SIDE'].capture()
 
     def test(self):
         self.stage_block.clear()
