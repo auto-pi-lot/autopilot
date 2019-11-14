@@ -701,7 +701,7 @@ class Terminal_Station(Station):
             'STOPALL':   self.l_stopall, # Stop all pilots and plots
             'KILL':      self.l_kill,  # Terminal wants us to die :(
             'DATA':      self.l_data,  # Stash incoming data from an autopilot
-            'CONTINUOUS': self.l_data, # handle incoming continuous data
+            'CONTINUOUS': self.l_continuous, # handle incoming continuous data
             'STATE':     self.l_state,  # The Pi is confirming/notifying us that it has changed state
             'HANDSHAKE': self.l_handshake, # initial connection with some initial info
             'FILE':      self.l_file,  # The pi needs some file from us
@@ -802,6 +802,16 @@ class Terminal_Station(Station):
 
         # Send to plot widget, which should be listening to "P_{pilot_name}"
         self.send('P_{}'.format(msg.value['pilot']), 'DATA', msg.value)
+
+    def l_continuous(self, msg):
+
+        # Send through to terminal
+        msg.value.update({'continuous':True})
+        self.send('_T', 'DATA', msg.value)
+
+        # Send to plot widget, which should be listening to "P_{pilot_name}"
+        self.send('P_{}'.format(msg.value['pilot']), 'DATA', msg.value)
+
 
 
     def l_state(self, msg):
