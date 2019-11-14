@@ -67,14 +67,14 @@ class Parallax(Task):
                 {'type': 'Camera_OpenCV',
                  'name': 'head_1',
                  'camera_idx': 0,
-                 'stream': False,
-                 'queue': True
+                 'stream': True,
+                 'queue': False
                  },
-                # {'type': 'Camera_OpenCV',
-                #  'name': 'head_2',
-                #  'camera_idx': 2,
-                #  'stream': True,
-                #  }
+                {'type': 'Camera_OpenCV',
+                 'name': 'head_2',
+                 'camera_idx': 2,
+                 'stream': True,
+                 }
             ]
         }
     }
@@ -106,6 +106,8 @@ class Parallax(Task):
         self.stages = itertools.cycle([self.test])
 
         self.n_trials = itertools.count()
+
+        self.hardware['CAMS']['SIDE'].capture()
 
     def test(self):
         self.stage_block.clear()

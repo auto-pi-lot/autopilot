@@ -134,7 +134,8 @@ class Station(multiprocessing.Process):
 
         # we have a few builtin listens
         self.listens = {
-            'CONFIRM': self.l_confirm
+            'CONFIRM': self.l_confirm,
+            'STREAM' : self.l_stream
         }
 
         # even tthat signals when we are closing
@@ -435,6 +436,11 @@ class Station(multiprocessing.Process):
 
 
         #self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
+
+    def l_stream(self, msg):
+        listen_fn = self.listens[msg.value['inner_key']]
+        for v in msg.value['payload']:
+            listen_fn(v)
 
     def handle_listen(self, msg):
         """
@@ -1202,7 +1208,8 @@ class Net_Node(object):
 
         # we have a few builtin listens
         self.listens = {
-            'CONFIRM': self.l_confirm
+            'CONFIRM': self.l_confirm,
+            'STREAM' : self.l_stream
         }
         # then add the rest
         self.listens.update(listens)
@@ -1228,6 +1235,8 @@ class Net_Node(object):
         # self.route_port = route_port
 
         self.daemon = daemon
+
+        self.streams = {}
 
         self.init_networking()
 
@@ -1486,6 +1495,12 @@ class Net_Node(object):
         if self.do_logging.is_set():
             self.logger.info('CONFIRMED MESSAGE {}'.format(value))
 
+    def l_stream(self, value):
+        listen_fn = self.listens[value['inner_key']]
+        for v in value['payload']:
+            listen_fn(v)
+
+
     def prepare_message(self, to, key, value, repeat, flags=None):
         """
         Instantiate a :class:`.Message` class, give it an ID and
@@ -1524,6 +1539,97 @@ class Net_Node(object):
 
 
         return msg
+
+    def get_stream(self, id, key, min_size=5, upstream=None, port = None, ip=None, subject=None):
+        """
+
+        Make a queue that another object can dump data into that sends on its own socket.
+        Smarter handling of continuous data than just hitting 'send' a shitload of times.
+        Returns:
+            Queue: Place to dump ur data
+
+        """
+        if upstream is None:
+            upstream = self.upstream
+
+        if port is None:
+            port = self.port
+
+        if ip is None:
+            ip = self.upstream_ip
+
+        # make a queue
+        q = queue.Queue()
+
+        stream_thread = threading.Thread(target=self._stream,
+                                         args=(id, key, min_size, upstream, port, ip, subject, q))
+        stream_thread.setDaemon(True)
+        stream_thread.start()
+
+        self.streams[id] = stream_thread
+
+        return q
+
+
+    def _stream(self, id, msg_key, min_size, upstream, port, ip, subject, q):
+
+        class Dummy_Msg:
+            pending=False
+
+        # create a new context and socket
+        #context = zmq.Context()
+        #loop = IOLoop()
+        socket = self.context.socket(zmq.DEALER)
+        socket.identity = "{}_{}".format(self.id, id)
+        socket.connect('tcp://{}:{}'.format(ip, port))
+
+        socket = ZMQStream(socket, self.loop)
+
+        upstream = bytes(upstream)
+
+        if subject is None:
+            subject = ""
+
+        last_msg = Dummy_Msg
+
+        msg_counter = count()
+
+        pending_data = []
+
+        for data in iter(q.get, 'END'):
+            if isinstance(data, tuple):
+                # tuples are immutable, so can't serialize numpy arrays they contain
+                data = list(data)
+
+            if isinstance(data, list):
+                for i, item in enumerate(data):
+                    if isinstance(item, np.ndarray):
+                        data[i] = serialize_array(item)
+            elif isinstance(data, dict):
+                for key, value in data.items():
+                    if isinstance(value, np.ndarray):
+                        data[key] = serialize_array(value)
+            elif isinstance(data, np.ndarray):
+                data = serialize_array(data)
+
+            pending_data.append(data)
+
+            if not last_msg.pending and len(pending_data)>=min_size:
+                msg = Message(to=upstream, key="STREAM",
+                              value={'subject'   : subject,
+                                     'inner_key' : msg_key,
+                                     'payload'   : pending_data},
+                              id="{}_{}".format(id, msg_counter.next()),
+                              flags={'NOREPEAT':True, 'MINPRINT':True}).serialize()
+                last_msg = socket.send_multipart((upstream, upstream, msg),
+                                                 track=True, copy=True)
+                pending_data = []
+
+
+
+
+
+
 
     def init_logging(self):
         """
@@ -1763,6 +1869,9 @@ class Message(object):
         except:
             return False
 
+def serialize_array(array):
+    compressed = base64.b64encode(blosc.pack_array(array))
+    return {'NUMPY_ARRAY': compressed}
 
 
 

@@ -298,6 +298,9 @@ class Pilot:
 
             # Make a group for this subject if we don't already have one
             self.subject = value['subject']
+            prefs.add('subject', self.subject)
+
+
 
             # Run the task and tell the terminal we have
             self.running.set()

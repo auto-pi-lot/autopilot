@@ -9,6 +9,7 @@ import base64
 from datetime import datetime
 import multiprocessing as mp
 import time
+import traceback
 
 
 
@@ -144,19 +145,18 @@ class Camera_OpenCV(mp.Process):
         # self.backend = backends[int(self.vid.get(cv2.CAP_PROP_BACKEND))]
 
     def init_networking(self, daemon=False, instance=False):
-        if self.networked:
-            self.listens = {
-                'START': self.l_start,
-                'STOP': self.l_stop
-            }
-            self.node = Net_Node(
-                self.name,
-                upstream=prefs.NAME,
-                port=prefs.MSGPORT,
-                listens=self.listens,
-                instance=instance,
-                daemon=daemon
-            )
+        self.listens = {
+            'START': self.l_start,
+            'STOP': self.l_stop
+        }
+        self.node = Net_Node(
+            self.name,
+            upstream=prefs.NAME,
+            port=prefs.MSGPORT,
+            listens=self.listens,
+            instance=instance,
+            daemon=daemon
+        )
 
     def run(self):
         if self.capturing.is_set():
@@ -196,6 +196,23 @@ class Camera_OpenCV(mp.Process):
             self.init_networking()
             self.node.send(key='STATE', value='CAPTURING')
 
+        if self.stream:
+            if hasattr(prefs, 'TERMINALIP') and hasattr(prefs, 'TERMINALPORT'):
+                stream_ip   = prefs.TERMINALIP
+                stream_port = prefs.TERMINALPORT
+            else:
+                stream_ip   = None
+                stream_port = None
+
+            if hasattr(prefs, 'SUBJECT'):
+                subject = prefs.SUBJECT
+            else:
+                subject = None
+
+            stream_q = self.node.get_stream(
+                'stream', 'CONTINUOUS', upstream="T",
+                ip=stream_ip, port=stream_port, subject=subject)
+
         self.capturing.set()
 
         if isinstance(self.timed, int) or isinstance(self.timed, float):
@@ -223,11 +240,8 @@ class Camera_OpenCV(mp.Process):
                 write_queue.put_nowait((timestamp, frame))
 
             if self.stream:
-                self.node.send(key='DATA', value={
-                    self.name:{
-                        'timestamp': timestamp,
-                        'frame'    : frame
-                    }})
+                stream_q.put_nowait({'timestamp':timestamp,
+                                     self.name:frame})
 
             if self.queue:
                 if self.queue_single:
@@ -254,6 +268,9 @@ class Camera_OpenCV(mp.Process):
                     checked_empty = True
                 time.sleep(0.1)
             Warning('Writer finished, closing')
+
+        if self.stream:
+            stream_q.put('END')
 
         if self.networked:
             self.node.send(key='STATE', value='STOPPING')
@@ -554,7 +571,7 @@ class Camera_Spin(object):
 
         self._output_filename = None
 
-        if networked:
+        if self.networked or self.stream:
             self.init_networking()
 
 
@@ -568,9 +585,9 @@ class Camera_Spin(object):
             upstream=prefs.NAME,
             port=prefs.MSGPORT,
             listens=self.listens,
-            instance=True,
-            upstream_ip=prefs.TERMINALIP,
-            daemon=False
+            instance=False
+            #upstream_ip=prefs.TERMINALIP,
+            #daemon=False
         )
 
     def l_start(self, val):
@@ -727,8 +744,25 @@ class Camera_Spin(object):
     def _capture(self):
         self.quitting.clear()
 
-        if self.networked:
+        if self.networked or self.stream:
             self.node.send(key='STATE', value='CAPTURING')
+
+        if self.stream:
+            if hasattr(prefs, 'TERMINALIP') and hasattr(prefs, 'TERMINALPORT'):
+                stream_ip   = prefs.TERMINALIP
+                stream_port = prefs.TERMINALPORT
+            else:
+                stream_ip   = None
+                stream_port = None
+
+            if hasattr(prefs, 'SUBJECT'):
+                subject = prefs.SUBJECT
+            else:
+                subject = None
+
+            stream_q = self.node.get_stream(
+                'stream', 'CONTINUOUS', upstream="T",
+                ip=stream_ip, port=stream_port, subject=subject)
 
 
         if self.write:
@@ -756,12 +790,8 @@ class Camera_Spin(object):
                 write_queue.put_nowait((timestamp, self._frame))
 
             if self.stream:
-                self.node.send(key='DATA', value={
-                    self.name:{
-                        'timestamp': self._timestamp,
-                        'frame'    : self._frame
-                    }
-                })
+                stream_q.put_nowait({'timestamp':self._timestamp,
+                                     'self.name':self._frame})
 
             if self.timed:
                 if time.time() >= end_time:
@@ -783,6 +813,9 @@ class Camera_Spin(object):
                     checked_empty = True
                 time.sleep(0.1)
             Warning('Writer finished, closing')
+
+        if self.stream:
+            stream_q.put('END')
 
 
         if self.networked:
@@ -914,13 +947,14 @@ class Camera_Spin(object):
         # set quit flag to end stream thread if any.
         self.quitting.set()
 
-        if self.capture_thread.is_alive():
-            Warning("Capture thread has not exited yet, waiting for that to happen")
-            self.capture_thread.join()
-            Warning("Capture thread exited successfully!")
+        if hasattr(self, 'capture_thread'):
+            if self.capture_thread.is_alive():
+                Warning("Capture thread has not exited yet, waiting for that to happen")
+                self.capture_thread.join()
+                Warning("Capture thread exited successfully!")
 
         # release the net_node
-        if self.networked:
+        if self.networked or self.node:
             self.node.release()
 
         try:
