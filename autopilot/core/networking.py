@@ -37,6 +37,8 @@ else:
 
 from autopilot import prefs
 
+from pprint import pprint
+
 # TODO: Periodically ping pis to check that they are still responsive
 
 class Station(multiprocessing.Process):
@@ -439,7 +441,10 @@ class Station(multiprocessing.Process):
 
     def l_stream(self, msg):
         listen_fn = self.listens[msg.value['inner_key']]
+
         for v in msg.value['payload']:
+            if isinstance(v, dict) and ('headers' in msg.value.keys()):
+                v.update(msg.value['headers'])
             listen_fn(v)
 
     def handle_listen(self, msg):
@@ -694,6 +699,7 @@ class Terminal_Station(Station):
             'STOPALL':   self.l_stopall, # Stop all pilots and plots
             'KILL':      self.l_kill,  # Terminal wants us to die :(
             'DATA':      self.l_data,  # Stash incoming data from an autopilot
+            'CONTINUOUS': self.l_data, # handle incoming continuous data
             'STATE':     self.l_state,  # The Pi is confirming/notifying us that it has changed state
             'HANDSHAKE': self.l_handshake, # initial connection with some initial info
             'FILE':      self.l_file,  # The pi needs some file from us
@@ -1573,14 +1579,14 @@ class Net_Node(object):
 
     def _stream(self, id, msg_key, min_size, upstream, port, ip, subject, q):
 
-        class Dummy_Msg:
-            pending=False
+
 
         # create a new context and socket
         #context = zmq.Context()
         #loop = IOLoop()
         socket = self.context.socket(zmq.DEALER)
-        socket.identity = "{}_{}".format(self.id, id)
+        socket_id = bytes("{}_{}".format(self.id, id))
+        socket.identity = socket_id
         socket.connect('tcp://{}:{}'.format(ip, port))
 
         socket = ZMQStream(socket, self.loop)
@@ -1588,9 +1594,12 @@ class Net_Node(object):
         upstream = bytes(upstream)
 
         if subject is None:
-            subject = ""
+            if hasattr(prefs, 'SUBJECT'):
+                subject = bytes(prefs.SUBJECT)
+            else:
+                subject = bytes("")
 
-        last_msg = Dummy_Msg
+        pilot = bytes(prefs.NAME)
 
         msg_counter = count()
 
@@ -1614,13 +1623,15 @@ class Net_Node(object):
 
             pending_data.append(data)
 
-            if not last_msg.pending and len(pending_data)>=min_size:
+            if not socket.sending() and len(pending_data)>=min_size:
                 msg = Message(to=upstream, key="STREAM",
-                              value={'subject'   : subject,
-                                     'inner_key' : msg_key,
+                              value={'inner_key' : msg_key,
+                                     'headers'   : {'subject': subject,
+                                                    'pilot'  : pilot},
                                      'payload'   : pending_data},
                               id="{}_{}".format(id, msg_counter.next()),
-                              flags={'NOREPEAT':True, 'MINPRINT':True}).serialize()
+                              flags={'NOREPEAT':True, 'MINPRINT':True},
+                              sender=socket_id).serialize()
                 last_msg = socket.send_multipart((upstream, upstream, msg),
                                                  track=True, copy=True)
                 pending_data = []
@@ -1652,6 +1663,8 @@ class Net_Node(object):
         self.closing.set()
         self.loop.stop()
 
+class Dummy_Msg:
+    pending=False
 
 
 
@@ -1712,7 +1725,8 @@ class Message(object):
             kwargs.update(deserialized)
 
         for k, v in kwargs.items():
-            self[k] = v
+            setattr(self, k, v)
+            #self[k] = v
 
         # if we're not a previous message being recreated, get a timestamp for our creation
         if 'timestamp' not in kwargs.keys():
