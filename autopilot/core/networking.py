@@ -1581,7 +1581,8 @@ class Net_Node(object):
         #context = zmq.Context()
         #loop = IOLoop()
         socket = self.context.socket(zmq.DEALER)
-        socket.identity = "{}_{}".format(self.id, id)
+        socket_id = bytes("{}_{}".format(self.id, id))
+        socket.identity = socket_id
         socket.connect('tcp://{}:{}'.format(ip, port))
 
         socket = ZMQStream(socket, self.loop)
@@ -1623,7 +1624,8 @@ class Net_Node(object):
                                      'inner_key' : msg_key,
                                      'payload'   : pending_data},
                               id="{}_{}".format(id, msg_counter.next()),
-                              flags={'NOREPEAT':True, 'MINPRINT':True}).serialize()
+                              flags={'NOREPEAT':True, 'MINPRINT':True},
+                              sender=socket_id).serialize()
                 last_msg = socket.send_multipart((upstream, upstream, msg),
                                                  track=True, copy=True)
                 pending_data = []
@@ -1717,7 +1719,8 @@ class Message(object):
             kwargs.update(deserialized)
 
         for k, v in kwargs.items():
-            self[k] = v
+            setattr(self, k, v)
+            #self[k] = v
 
         # if we're not a previous message being recreated, get a timestamp for our creation
         if 'timestamp' not in kwargs.keys():
