@@ -223,11 +223,11 @@ class Camera_OpenCV(mp.Process):
                 write_queue.put_nowait((timestamp, frame))
 
             if self.stream:
-                self.node.send(key='DATA', value={
-                    self.name:{
-                        'timestamp': timestamp,
-                        'frame'    : frame
-                    }})
+                self.node.send(key='CONTINUOUS', value={
+                    self.name: frame,
+                    'timestamp': timestamp},
+                    repeat=False,
+                    flags={'MINPRINT': True})
 
             if self.queue:
                 if self.queue_single:
@@ -756,12 +756,13 @@ class Camera_Spin(object):
                 write_queue.put_nowait((timestamp, self._frame))
 
             if self.stream:
-                self.node.send(key='DATA', value={
-                    self.name:{
-                        'timestamp': self._timestamp,
-                        'frame'    : self._frame
-                    }
-                })
+                self.node.send(key='CONTINUOUS', value={
+                    self.name: self._frame,
+                    'timestamp': self._timestamp
+                },
+                repeat=False,
+                flags={'MINPRINT': True}
+                )
 
             if self.timed:
                 if time.time() >= end_time:

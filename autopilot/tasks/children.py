@@ -56,7 +56,7 @@ class Video_Child(object):
     PARAMS['cams'] = {'tag': 'Dictionary of camera params, or list of dicts',
                       'type': ('dict', 'list')}
 
-    def __init__(self, cams=None, stage_block = None, start=True, **kwargs):
+    def __init__(self, cams=None, stage_block = None, start_now=True, **kwargs):
         """
         Args:
             cams (dict, list): Should be a dictionary of camera parameters or a list of dicts. Dicts should have, at least::
@@ -73,14 +73,16 @@ class Video_Child(object):
 
         self.cams = {}
 
+        self.start_now = start_now
+
 
         if isinstance(cams, dict):
 
             try:
                 cam_class = getattr(cameras, cams['type'])
                 self.cams[cams['name']] = cam_class(**cams)
-                if start:
-                    self.cams[cams['name']].start()
+                # if start:
+                #     self.cams[cams['name']].capture()
             except AttributeError:
                 AttributeError("Camera type {} not found!".format(cams['type']))
 
@@ -89,17 +91,32 @@ class Video_Child(object):
                 try:
                     cam_class = getattr(cameras, cam['type'])
                     self.cams[cam['name']] = cam_class(**cam)
-                    if start:
-                        self.cams[cam['name']].start()
+                    # if start:
+                    #     self.cams[cam['name']].capture()
                 except AttributeError:
                     AttributeError("Camera type {} not found!".format(cam['type']))
 
         self.stages = cycle([self.noop])
         self.stage_block = stage_block
 
-        self.thread = threading.Thread(target=self._stream)
-        self.thread.daemon = True
-        self.thread.start()
+
+        if self.start_now:
+            self.start()
+        # self.thread = threading.Thread(target=self._stream)
+        # self.thread.daemon = True
+        # self.thread.start()
+
+    def start(self):
+        for cam in self.cams.values():
+            cam.capture()
+
+    def stop(self):
+        for cam_name, cam in self.cams.items():
+            try:
+                cam.release()
+            except Exception as e:
+                Warning('Couldnt release camera {},\n{}'.format(cam_name, e))
+
 
 
     def _stream(self):
@@ -130,13 +147,13 @@ class Video_Child(object):
         self.stage_block.clear()
         return {}
 
-    def start(self):
-        for cam in self.cams.values():
-            cam.start()
-
-    def stop(self):
-        for cam in self.cams.values():
-            cam.release()
+    # def start(self):
+    #     for cam in self.cams.values():
+    #         cam.capture()
+    #
+    # def stop(self):
+    #     for cam in self.cams.values():
+    #         cam.release()
 
 
 
