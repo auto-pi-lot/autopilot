@@ -150,6 +150,9 @@ class Subject:
             self.step = int(current_node.attrs['step'])
             self.protocol_name = current_node.attrs['protocol_name']
 
+        # get last session number
+        self.session = int(h5f.root.info._v_attrs['session'])
+
         # We will get handles to trial and continuous data when we start running
         self.current_trial  = None
 
@@ -260,6 +263,7 @@ class Subject:
                 h5f.root.info._v_attrs[k] = v
 
         h5f.root.info._v_attrs['name'] = self.name
+        h5f.root.info._v_attrs['session'] = 0
 
         self.close_hdf(h5f)
 
@@ -441,11 +445,16 @@ class Subject:
         current_node.attrs['step'] = step_n
         self.step = int(step_n)
 
+        # always start out on session 0 on a new task
+        h5f.root.info._v_attrs['session'] = 0
+        self.session = 0
+
         # Make file group for protocol
         if "/data/{}".format(protocol_name) not in h5f:
             current_group = h5f.create_group('/data', protocol_name)
         else:
             current_group = h5f.get_node('/data', protocol_name)
+
 
         # Create groups for each step
         # There are two types of data - continuous and trialwise.
@@ -607,10 +616,17 @@ class Subject:
         except IndexError:
             self.current_trial = 0
 
-        try:
-            self.session = trial_table.cols.session[-1]+1
-        except IndexError:
-            self.session = 0
+        # should have gotten session from current node when we started
+
+
+        self.session += 1
+        h5f.root.info._v_attrs['session'] = self.session
+        h5f.flush()
+
+        # try:
+        #     self.session = trial_table.cols.session[-1]+1
+        # except IndexError:
+        #     self.session = 0
 
         # prepare continuous data group and tables
         task_class = TASK_LIST[task_params['task_type']]
@@ -731,14 +747,13 @@ class Subject:
         # start getting data
         # stop when 'END' gets put in the queue
         for data in iter(queue.get, 'END'):
-
             # wrap everything in try because this thread shouldn't crash
             try:
                 # if we get continuous data, this should be simple because we always get a whole row
                 # there must be a more elegant way to check if something is a key and it is true...
                 # yet here we are
                 if 'continuous' in data.keys():
-                    for k, v in data:
+                    for k, v in data.items():
                         # if this isn't data that we're expecting, ignore it
                         if k not in cont_data:
                             continue
