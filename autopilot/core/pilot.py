@@ -283,7 +283,7 @@ class Pilot:
 
         # Make a group for this subject if we don't already have one
         self.subject = value['subject']
-        prefs.add('subject', self.subject)
+        prefs.add('SUBJECT', self.subject)
 
         # Get the task object by its type
         if 'child' in value.keys():

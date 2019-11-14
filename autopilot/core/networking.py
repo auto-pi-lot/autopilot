@@ -441,11 +441,13 @@ class Station(multiprocessing.Process):
 
     def l_stream(self, msg):
         listen_fn = self.listens[msg.value['inner_key']]
-
-        for v in msg.value['payload']:
-            if isinstance(v, dict) and ('headers' in msg.value.keys()):
-                v.update(msg.value['headers'])
-            listen_fn(v)
+        old_value = copy(msg.value)
+        delattr(msg, 'value')
+        for v in old_value['payload']:
+            if isinstance(v, dict) and ('headers' in old_value.keys()):
+                v.update(old_value['headers'])
+            msg.value = v
+            listen_fn(msg)
 
     def handle_listen(self, msg):
         """
@@ -1244,6 +1246,11 @@ class Net_Node(object):
 
         self.streams = {}
 
+        if hasattr(prefs, 'SUBJECT'):
+            self.subject = prefs.SUBJECT
+        else:
+            self.subject = None
+
         self.init_networking()
 
     def __del__(self):
@@ -1563,6 +1570,12 @@ class Net_Node(object):
 
         if ip is None:
             ip = self.upstream_ip
+
+        if subject is None:
+            if self.subject:
+                subject = self.subject
+            elif hasattr(prefs, 'SUBJECT'):
+                subject = prefs.SUBJECT
 
         # make a queue
         q = queue.Queue()
