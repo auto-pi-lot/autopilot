@@ -281,6 +281,10 @@ class Pilot:
         # Value should be a dict of protocol params
         # The networking object should have already checked that we have all the files we need
 
+        # Make a group for this subject if we don't already have one
+        self.subject = value['subject']
+        prefs.add('subject', self.subject)
+
         # Get the task object by its type
         if 'child' in value.keys():
             task_class = tasks.CHILDREN_LIST[value['task_type']]
@@ -290,8 +294,6 @@ class Pilot:
         self.stage_block.clear()
         self.task = task_class(stage_block=self.stage_block, **value)
 
-        # Make a group for this subject if we don't already have one
-        self.subject = value['subject']
 
         # Run the task and tell the terminal we have
         self.running.set()
