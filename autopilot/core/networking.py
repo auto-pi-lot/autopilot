@@ -441,7 +441,10 @@ class Station(multiprocessing.Process):
 
     def l_stream(self, msg):
         listen_fn = self.listens[msg.value['inner_key']]
+
         for v in msg.value['payload']:
+            if isinstance(v, dict) and ('headers' in msg.value.keys()):
+                v.update(msg.value['headers'])
             listen_fn(v)
 
     def handle_listen(self, msg):
@@ -696,6 +699,7 @@ class Terminal_Station(Station):
             'STOPALL':   self.l_stopall, # Stop all pilots and plots
             'KILL':      self.l_kill,  # Terminal wants us to die :(
             'DATA':      self.l_data,  # Stash incoming data from an autopilot
+            'CONTINUOUS': self.l_data, # handle incoming continuous data
             'STATE':     self.l_state,  # The Pi is confirming/notifying us that it has changed state
             'HANDSHAKE': self.l_handshake, # initial connection with some initial info
             'FILE':      self.l_file,  # The pi needs some file from us
@@ -1590,7 +1594,12 @@ class Net_Node(object):
         upstream = bytes(upstream)
 
         if subject is None:
-            subject = ""
+            if hasattr(prefs, 'SUBJECT'):
+                subject = bytes(prefs.SUBJECT)
+            else:
+                subject = bytes("")
+
+        pilot = bytes(prefs.NAME)
 
         msg_counter = count()
 
@@ -1616,8 +1625,9 @@ class Net_Node(object):
 
             if not socket.sending() and len(pending_data)>=min_size:
                 msg = Message(to=upstream, key="STREAM",
-                              value={'subject'   : subject,
-                                     'inner_key' : msg_key,
+                              value={'inner_key' : msg_key,
+                                     'headers'   : {'subject': subject,
+                                                    'pilot'  : pilot},
                                      'payload'   : pending_data},
                               id="{}_{}".format(id, msg_counter.next()),
                               flags={'NOREPEAT':True, 'MINPRINT':True},
