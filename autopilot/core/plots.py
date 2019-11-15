@@ -199,6 +199,7 @@ class Plot(QtGui.QWidget):
         self.continuous = False
         self.last_time = 0
         self.video = None
+        self.videos = []
 
         self.invoker = prefs.INVOKER
 
