@@ -160,8 +160,10 @@ class Pilot:
         self.file_block = threading.Event() # Are we waiting on file transfer?
 
         # Init audio server
+
         if hasattr(prefs, 'AUDIOSERVER') and 'AUDIO' in prefs.CONFIG:
             self.init_audio()
+
 
         # Init Station
         # Listen dictionary - what do we do when we receive different messages?

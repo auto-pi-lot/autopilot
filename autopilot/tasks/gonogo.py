@@ -59,10 +59,10 @@ class GoNoGo(Task):
         angle = tables.Float32Col()
         delay = tables.Float32Col()
 
-    class ContinuousData(tables.IsDescription):
-        x = tables.Float64Col()
-        y = tables.Float64Col()
-        t = tables.Float64Col()
+    # class ContinuousData(tables.IsDescription):
+    #     x = tables.Float64Col()
+    #     y = tables.Float64Col()
+    #     t = tables.Float64Col()
 
     HARDWARE = {
         'POKES': {
