@@ -150,8 +150,11 @@ class Subject:
             self.step = int(current_node.attrs['step'])
             self.protocol_name = current_node.attrs['protocol_name']
 
-        # get last session number
-        self.session = int(h5f.root.info._v_attrs['session'])
+        # get last session number if we have it
+        try:
+            self.session = int(h5f.root.info._v_attrs['session'])
+        except KeyError:
+            self.session = None
 
         # We will get handles to trial and continuous data when we start running
         self.current_trial  = None
@@ -264,6 +267,7 @@ class Subject:
 
         h5f.root.info._v_attrs['name'] = self.name
         h5f.root.info._v_attrs['session'] = 0
+
 
         self.close_hdf(h5f)
 
@@ -619,6 +623,11 @@ class Subject:
 
         # should have gotten session from current node when we started
 
+        if not self.session:
+            try:
+                self.session = trial_table.cols.session[-1]
+            except IndexError:
+                self.session = 0
 
         self.session += 1
         h5f.root.info._v_attrs['session'] = self.session
@@ -964,6 +973,36 @@ class Subject:
         self.close_hdf(h5f)
 
         return return_data
+
+
+
+    def apply_along(self, along='session', step=-1):
+        h5f = self.open_hdf()
+        group_name = "/data/{}".format(self.protocol_name)
+        group = h5f.get_node(group_name)
+        step_groups = sorted(group._v_children.keys())
+
+        if along == "session":
+            if step == -1:
+                # find the last trial step with data
+                for step_name in reversed(step_groups):
+                    if group._v_children[step_name].trial_data.attrs['NROWS'] > 0:
+                        step_groups = [step_name]
+                        break
+            elif isinstance(step, int):
+                if step > len(step_groups):
+                    ValueError(
+                        'You provided a step number ({}) greater than the number of steps in the subjects assigned protocol: ()'.format(
+                            step, len(step_groups)))
+                step_groups = [step_groups[step]]
+
+            for step_key in step_groups:
+                step_n = int(step_key[1:3])  # beginning of keys will be 'S##'
+                step_tab = group._v_children[step_key]._v_children['trial_data']
+                step_df = pd.DataFrame(step_tab.read())
+                step_df['step'] = step_n
+                yield step_df
+
 
 
 
