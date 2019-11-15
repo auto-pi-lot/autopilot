@@ -735,7 +735,7 @@ class Wheel(Hardware):
         # TODO: Implement this
 
         if self.mode == "steady":
-            self.thresh_val = np.array([(0, "REL_X", 0)], dtype=self.MOVE_DTYPE)
+            self.thresh_val = np.array([(0, "REL_Y", 0)], dtype=self.MOVE_DTYPE)
         else:
             self.thresh_val = 0.0
 
@@ -798,7 +798,7 @@ class Wheel(Hardware):
                 events = None
 
             if events is None:
-                move = np.array([(0, "REL_X", 0)], dtype=self.MOVE_DTYPE)
+                move = np.array([(0, "REL_Y", 0)], dtype=self.MOVE_DTYPE)
             else:
                 # make a numpy record array of events with 3 fields:
                 # velocity, dir(ection), timestamp (system seconds)
@@ -943,7 +943,7 @@ class Wheel(Hardware):
             self.thresh = float(value['thresh'])
 
         if self.mode == "steady":
-            self.thresh_val = np.array([(0, "REL_X", 0)], dtype=self.MOVE_DTYPE)
+            self.thresh_val = np.array([(0, "REL_Y", 0)], dtype=self.MOVE_DTYPE)
         else:
             self.thresh_val = 0.0
         self.measure_time = time.time()

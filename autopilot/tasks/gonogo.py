@@ -38,7 +38,7 @@ class GoNoGo(Task):
     # Set plot params, which data should be plotted, its default shape, etc.
     PLOT = {
         'data': {
-            'x': 'shaded',
+            'y': 'shaded',
             'target': 'point',
             'response': 'segment'
         },
