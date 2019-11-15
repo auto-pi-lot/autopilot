@@ -9,6 +9,7 @@ scipy
 tornado
 inputs
 blosc
+scikit-video
 # jack
 
 

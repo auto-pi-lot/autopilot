@@ -9,7 +9,6 @@ from autopilot.hardware import cameras
 from autopilot.core.networking import Net_Node
 from itertools import cycle
 from Queue import Empty
-import json_tricks
 import threading
 
 class Wheel_Child(object):
