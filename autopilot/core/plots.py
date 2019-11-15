@@ -368,7 +368,7 @@ class Plot(QtGui.QWidget):
         Args:
             value (dict): Value field of a data message sent during a task.
         """
-        pdb.set_trace()
+        #pdb.set_trace()
         if 'trial_num' in value.keys():
             v = value.pop('trial_num')
             if v != self.last_trial:
