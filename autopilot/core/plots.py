@@ -370,7 +370,7 @@ class Plot(QtGui.QWidget):
         Args:
             value (dict): Value field of a data message sent during a task.
         """
-        pdb.set_trace()
+        #pdb.set_trace()
         if 'trial_num' in value.keys():
             v = value.pop('trial_num')
             if v != self.last_trial:
@@ -669,6 +669,9 @@ class Video(QtGui.QWidget):
         self.fps = fps
         self.ifps = 1.0/fps
 
+        # get app instance
+        self.app = QtGui.QApplication.instance()
+
 
         self.init_gui()
 
@@ -690,10 +693,11 @@ class Video(QtGui.QWidget):
         if (time()-self.last_update)>self.ifps:
             try:
                 self.vid_widgets[video].setImage(data)
-                self.vid_widgets[video].update()
+                #self.vid_widgets[video].update()
             except KeyError:
                 return
             self.last_update = time()
+            self.app.processEvents()
 
 
 
