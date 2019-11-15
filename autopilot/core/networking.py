@@ -616,7 +616,7 @@ class Station(multiprocessing.Process):
         self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
         self.log_handler.setFormatter(self.log_formatter)
         self.logger.addHandler(self.log_handler)
-        self.logger.setLevel(logging.INFO)
+        self.logger.setLevel(logging.WARNING)
         self.logger.info('Station Logging Initiated')
 
     def get_ip(self):
