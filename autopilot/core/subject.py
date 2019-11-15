@@ -100,6 +100,9 @@ class Subject:
             ('/info', '/', 'info', 'group')
         ]
 
+        # use a filter to compress continuous data
+        self.continuous_filter = tables.Filters(complib='blosc', complevel=6)
+
         self.lock = threading.Lock()
 
         if not dir:
@@ -792,7 +795,7 @@ class Subject:
                             cont_tables[k] = h5f.create_table(session_group, k, description={
                                 k: tables.Col.from_atom(col_atom),
                                 'timestamp': tables.Col.from_atom(timestamp_atom)
-                            })
+                            }, filters=self.continuous_filter)
 
                             cont_rows[k] = cont_tables[k].row
 
