@@ -27,6 +27,7 @@ from functools import wraps
 import pdb
 from Queue import Queue, Empty
 pg.setConfigOptions(antialias=True)
+from pyqtgraph.widgets.RawImageWidget import RawImageWidget
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from autopilot import tasks, prefs
@@ -402,11 +403,6 @@ class Plot(QtGui.QWidget):
 
 
 
-
-
-
-        sys.stdout.flush()
-
     @gui_event
     def l_stop(self, value):
         """
@@ -680,7 +676,13 @@ class Video(QtGui.QWidget):
             # single row
             for i, vid in enumerate(self.videos):
                 vid_label = QtGui.QLabel(vid)
-                self.vid_widgets[vid] = pg.ImageView()
+                rawImg = RawImageWidget()
+                sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
+                sizePolicy.setHorizontalStretch(0)
+                sizePolicy.setVerticalStretch(0)
+                sizePolicy.setHeightForWidth(self.rawImg.sizePolicy().hasHeightForWidth())
+                rawImg.setSizePolicy(sizePolicy)
+                self.vid_widgets[vid] = rawImg
                 self.layout.addWidget(vid_label, 0,i)
                 self.layout.addWidget(vid_label,1,i)
 
@@ -688,6 +690,7 @@ class Video(QtGui.QWidget):
         self.show()
 
     def update(self, video, data):
+        pdb.set_trace()
         if (time()-self.last_update)>self.ifps:
             try:
                 self.vid_widgets[video].setImage(data)
