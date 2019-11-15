@@ -307,6 +307,8 @@ class Plot(QtGui.QWidget):
         else:
             self.continuous = False
 
+
+
         # set infobox stuff
         self.n_trials = count()
         self.session_trials = 0
@@ -346,6 +348,9 @@ class Plot(QtGui.QWidget):
                 self.plots[data] = PLOT_LIST[plot](continuous=self.continuous)
                 self.plot.addItem(self.plots[data])
                 self.data[data] = np.zeros((0,2), dtype=np.float)
+
+        if 'video' in self.plot_params.keys():
+            self.video = Video()
 
         self.state = 'RUNNING'
 
@@ -645,6 +650,10 @@ class Timer(QtGui.QLabel):
         secs_elapsed = int(np.floor(time()-self.start_time))
         self.setText("{:02d}:{:02d}:{:02d}".format(secs_elapsed/3600, (secs_elapsed/60)%60, secs_elapsed%60))
 
+class Video(QtGui.QWidget):
+    def __init__(self):
+        super(Video, self).__init__()
+        self.show()
 
 # class Highlight():
 #     # TODO Implement me
