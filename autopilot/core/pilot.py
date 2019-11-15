@@ -48,11 +48,11 @@ if __name__ == '__main__':
     prefs.init(prefs_file)
     sys.path.append(os.path.dirname(prefs.REPODIR))
 
-    if hasattr(prefs, 'AUDIOSERVER') and prefs.CONFIG == 'AUDIO':
-        if prefs.AUDIOSERVER == 'pyo':
-            from autopilot.stim.sound import pyoserver
-        elif prefs.AUDIOSERVER == 'jack':
-            from autopilot.stim.sound import jackclient
+    #if hasattr(prefs, 'AUDIOSERVER') and prefs.CONFIG == 'AUDIO':
+    if prefs.AUDIOSERVER == 'pyo':
+        from autopilot.stim.sound import pyoserver
+    elif prefs.AUDIOSERVER == 'jack':
+        from autopilot.stim.sound import jackclient
 
 from autopilot.core.networking import Pilot_Station, Net_Node, Message
 from autopilot import tasks
