@@ -690,9 +690,11 @@ class Video(QtGui.QWidget):
         if (time()-self.last_update)>self.ifps:
             try:
                 self.vid_widgets[video].setImage(data)
+                self.vid_widgets[video].update()
             except KeyError:
                 return
             self.last_update = time()
+
 
 
 
