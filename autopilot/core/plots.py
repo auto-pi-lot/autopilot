@@ -682,6 +682,8 @@ class Video(QtGui.QWidget):
                 self.vid_widgets[vid] = pg.ImageView()
                 self.layout.addWidget(vid_label, 0,i)
                 self.layout.addWidget(vid_label,1,i)
+
+        self.setLayout(self.layout)
         self.show()
 
     def update(self, video, data):
