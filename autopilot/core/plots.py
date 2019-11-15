@@ -399,7 +399,7 @@ class Plot(QtGui.QWidget):
                 # gui_event_fn(self.plots[k].update, *(self.data[k],))
                 self.plots[k].update(self.data[k])
             elif k in self.videos:
-                self.video.update(k, v)
+                self.video.update_frame(k, v)
 
 
 
@@ -689,7 +689,7 @@ class Video(QtGui.QWidget):
         self.setLayout(self.layout)
         self.show()
 
-    def update(self, video, data):
+    def update_frame(self, video, data):
         #pdb.set_trace()
         if (time()-self.last_update)>self.ifps:
             try:
@@ -698,7 +698,9 @@ class Video(QtGui.QWidget):
             except KeyError:
                 return
             self.last_update = time()
+            self.update()
             self.app.processEvents()
+
 
 
 
