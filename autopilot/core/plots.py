@@ -24,6 +24,7 @@ import pyqtgraph as pg
 from time import time
 from itertools import count
 from functools import wraps
+from Queue import Queue, Empty
 pg.setConfigOptions(antialias=True)
 #from pyqtgraph.widgets.RawImageWidget import RawImageWidget, RawImageGLWidget
 
@@ -352,7 +353,8 @@ class Plot(QtGui.QWidget):
                 self.data[data] = np.zeros((0,2), dtype=np.float)
 
         if 'video' in self.plot_params.keys():
-            self.video = Video()
+            self.video = Video(self.plot_params['video'])
+            self.videos = self.plot_params['video']
 
         self.state = 'RUNNING'
 
@@ -395,6 +397,9 @@ class Plot(QtGui.QWidget):
                 self.data[k] = np.vstack((self.data[k], (x_val, v)))
                 # gui_event_fn(self.plots[k].update, *(self.data[k],))
                 self.plots[k].update(self.data[k])
+            elif k in self.videos:
+                self.video.update(k, v)
+
 
 
 
@@ -653,9 +658,40 @@ class Timer(QtGui.QLabel):
         self.setText("{:02d}:{:02d}:{:02d}".format(secs_elapsed/3600, (secs_elapsed/60)%60, secs_elapsed%60))
 
 class Video(QtGui.QWidget):
-    def __init__(self):
+    def __init__(self, videos, fps=30):
         super(Video, self).__init__()
+
+        self.videos = videos
+        self._newframe = None
+        self.last_update = 0
+        self.fps = fps
+        self.ifps = 1.0/fps
+
+
+        self.init_gui()
+
+    def init_gui(self):
+        self.layout = QtGui.QGridLayout()
+        self.vid_widgets = {}
+        if len(self.videos)<2:
+            # single row
+            for i, vid in enumerate(self.videos):
+                vid_label = QtGui.QLabel(vid)
+                self.vid_widgets[vid] = pg.ImageView()
+                self.layout.addWidget(vid_label, 0,i)
+                self.layout.addWidget(vid_label,1,i)
         self.show()
+
+    def update(self, video, data):
+        if (time()-self.last_update)>self.ifps:
+            try:
+                self.vid_widgets[video].setImage(data)
+            except KeyError:
+                return
+            self.last_update = time()
+
+
+
 
 # class Highlight():
 #     # TODO Implement me
