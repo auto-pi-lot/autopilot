@@ -353,7 +353,7 @@ class Plot(QtGui.QWidget):
                 self.data[data] = np.zeros((0,2), dtype=np.float)
 
         if 'video' in self.plot_params.keys():
-            self.video = Video(self.plot_params['video'])
+            self.video = Video(self.plot_params['video'], parent=self)
             self.videos = self.plot_params['video']
 
         self.state = 'RUNNING'
@@ -654,7 +654,7 @@ class Timer(QtGui.QLabel):
         self.setText("{:02d}:{:02d}:{:02d}".format(secs_elapsed/3600, (secs_elapsed/60)%60, secs_elapsed%60))
 
 class Video(QtGui.QWidget):
-    def __init__(self, videos, fps=30):
+    def __init__(self, videos, fps=30, parent=None):
         super(Video, self).__init__()
 
         self.videos = videos
@@ -676,7 +676,7 @@ class Video(QtGui.QWidget):
             # single row
             for i, vid in enumerate(self.videos):
                 vid_label = QtGui.QLabel(vid)
-                rawImg = RawImageWidget()
+                rawImg = RawImageWidget(self)
                 sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
                 sizePolicy.setHorizontalStretch(0)
                 sizePolicy.setVerticalStretch(0)
@@ -684,7 +684,7 @@ class Video(QtGui.QWidget):
                 rawImg.setSizePolicy(sizePolicy)
                 self.vid_widgets[vid] = rawImg
                 self.layout.addWidget(vid_label, 0,i)
-                self.layout.addWidget(vid_label,1,i)
+                self.layout.addWidget(self.vid_widgets[vid],1,i)
 
         self.setLayout(self.layout)
         self.show()
