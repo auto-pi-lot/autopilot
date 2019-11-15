@@ -654,7 +654,7 @@ class Timer(QtGui.QLabel):
         self.setText("{:02d}:{:02d}:{:02d}".format(secs_elapsed/3600, (secs_elapsed/60)%60, secs_elapsed%60))
 
 class Video(QtGui.QWidget):
-    def __init__(self, videos, fps=30, parent=None):
+    def __init__(self, videos, fps=10, parent=None):
         super(Video, self).__init__()
 
         self.videos = videos
@@ -677,7 +677,7 @@ class Video(QtGui.QWidget):
             for i, vid in enumerate(self.videos):
                 vid_label = QtGui.QLabel(vid)
                 rawImg = RawImageWidget(self)
-                sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
+                sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
                 sizePolicy.setHorizontalStretch(0)
                 sizePolicy.setVerticalStretch(0)
                 sizePolicy.setHeightForWidth(rawImg.sizePolicy().hasHeightForWidth())
@@ -692,15 +692,16 @@ class Video(QtGui.QWidget):
 
     def update_frame(self, video, data):
         #pdb.set_trace()
-        if (time()-self.last_update)>self.ifps:
+        cur_time = time()
+        if (cur_time-self.last_update)>self.ifps:
             try:
                 self.vid_widgets[video].setImage(data)
                 #self.vid_widgets[video].update()
             except KeyError:
                 return
-            self.last_update = time()
+            self.last_update = cur_time
             #self.update()
-            #self.app.processEvents()
+            self.app.processEvents()
 
 
 
