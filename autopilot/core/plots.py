@@ -683,10 +683,11 @@ class Video(QtGui.QWidget):
                 sizePolicy.setHeightForWidth(rawImg.sizePolicy().hasHeightForWidth())
                 rawImg.setSizePolicy(sizePolicy)
                 self.vid_widgets[vid] = rawImg
-                self.layout.addWidget(vid_label, 0,i)
-                self.layout.addWidget(self.vid_widgets[vid],1,i)
+                self.layout.addWidget(vid_label, 0,i, 1,1)
+                self.layout.addWidget(self.vid_widgets[vid],1,i,5,1)
 
         self.setLayout(self.layout)
+        self.resize(600,700)
         self.show()
 
     def update_frame(self, video, data):
@@ -698,8 +699,8 @@ class Video(QtGui.QWidget):
             except KeyError:
                 return
             self.last_update = time()
-            self.update()
-            self.app.processEvents()
+            #self.update()
+            #self.app.processEvents()
 
 
 
