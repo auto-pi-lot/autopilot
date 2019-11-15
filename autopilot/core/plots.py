@@ -680,7 +680,7 @@ class Video(QtGui.QWidget):
                 sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
                 sizePolicy.setHorizontalStretch(0)
                 sizePolicy.setVerticalStretch(0)
-                sizePolicy.setHeightForWidth(self.rawImg.sizePolicy().hasHeightForWidth())
+                sizePolicy.setHeightForWidth(rawImg.sizePolicy().hasHeightForWidth())
                 rawImg.setSizePolicy(sizePolicy)
                 self.vid_widgets[vid] = rawImg
                 self.layout.addWidget(vid_label, 0,i)
