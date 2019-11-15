@@ -12,7 +12,7 @@ from collections import deque
 import numpy as np
 from autopilot import prefs
 if prefs.AGENT == 'pilot':
-    if prefs.CONFIG == 'AUDIO':
+    if 'AUDIO' in prefs.CONFIG:
         from autopilot.stim.sound import sounds
 
 def init_manager(stim):

@@ -48,7 +48,7 @@ if __name__ == '__main__':
     prefs.init(prefs_file)
     sys.path.append(os.path.dirname(prefs.REPODIR))
 
-    if hasattr(prefs, 'AUDIOSERVER') and prefs.CONFIG == 'AUDIO':
+    if hasattr(prefs, 'AUDIOSERVER') and 'AUDIO' in prefs.CONFIG:
         if prefs.AUDIOSERVER == 'pyo':
             from autopilot.stim.sound import pyoserver
         elif prefs.AUDIOSERVER == 'jack':
@@ -160,7 +160,7 @@ class autopilot:
         self.file_block = threading.Event() # Are we waiting on file transfer?
 
         # Init audio server
-        if hasattr(prefs, 'AUDIOSERVER') and prefs.CONFIG == 'AUDIO':
+        if hasattr(prefs, 'AUDIOSERVER') and 'AUDIO' in prefs.CONFIG:
             self.init_audio()
 
         # Init Station
