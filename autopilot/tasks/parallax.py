@@ -33,6 +33,7 @@ class Parallax(Task):
         'data': {
             'accel_x': 'shaded'
         },
+        'video' : ['SIDE'],
         'continuous': True
     }
 
