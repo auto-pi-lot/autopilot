@@ -281,6 +281,10 @@ class Pilot:
         # Value should be a dict of protocol params
         # The networking object should have already checked that we have all the files we need
 
+        # if already running, just return.
+        if self.state == "RUNNING":
+            return
+
         # Make a group for this subject if we don't already have one
         self.subject = value['subject']
         prefs.add('SUBJECT', self.subject)
