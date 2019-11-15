@@ -353,7 +353,7 @@ class Plot(QtGui.QWidget):
                 self.data[data] = np.zeros((0,2), dtype=np.float)
 
         if 'video' in self.plot_params.keys():
-            self.video = Video(self.plot_params['video'])
+            self.video = Video(self.plot_params['video'], parent=self)
             self.videos = self.plot_params['video']
 
         self.state = 'RUNNING'
@@ -654,7 +654,7 @@ class Timer(QtGui.QLabel):
         self.setText("{:02d}:{:02d}:{:02d}".format(secs_elapsed/3600, (secs_elapsed/60)%60, secs_elapsed%60))
 
 class Video(QtGui.QWidget):
-    def __init__(self, videos, fps=30):
+    def __init__(self, videos, fps=10, parent=None):
         super(Video, self).__init__()
 
         self.videos = videos
@@ -676,29 +676,31 @@ class Video(QtGui.QWidget):
             # single row
             for i, vid in enumerate(self.videos):
                 vid_label = QtGui.QLabel(vid)
-                rawImg = RawImageWidget()
-                sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
+                rawImg = RawImageWidget(self)
+                sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
                 sizePolicy.setHorizontalStretch(0)
                 sizePolicy.setVerticalStretch(0)
                 sizePolicy.setHeightForWidth(rawImg.sizePolicy().hasHeightForWidth())
                 rawImg.setSizePolicy(sizePolicy)
                 self.vid_widgets[vid] = rawImg
-                self.layout.addWidget(vid_label, 0,i)
-                self.layout.addWidget(vid_label,1,i)
+                self.layout.addWidget(vid_label, 0,i, 1,1)
+                self.layout.addWidget(self.vid_widgets[vid],1,i,5,1)
 
         self.setLayout(self.layout)
+        self.resize(600,700)
         self.show()
 
     def update_frame(self, video, data):
         #pdb.set_trace()
-        if (time()-self.last_update)>self.ifps:
+        cur_time = time()
+        if (cur_time-self.last_update)>self.ifps:
             try:
                 self.vid_widgets[video].setImage(data)
                 #self.vid_widgets[video].update()
             except KeyError:
                 return
-            self.last_update = time()
-            self.update()
+            self.last_update = cur_time
+            #self.update()
             self.app.processEvents()
 
 
