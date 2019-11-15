@@ -21,11 +21,12 @@ import pandas as pd
 from PySide import QtGui
 from PySide import QtCore
 import pyqtgraph as pg
-from time import time
+from time import time, sleep
 from itertools import count
 from functools import wraps
+from threading import Event, Thread
 import pdb
-from Queue import Queue, Empty
+from Queue import Queue, Empty, Full
 pg.setConfigOptions(antialias=True)
 from pyqtgraph.widgets.RawImageWidget import RawImageWidget
 
@@ -197,6 +198,7 @@ class Plot(QtGui.QWidget):
         self.state = "IDLE"
         self.continuous = False
         self.last_time = 0
+        self.video = None
 
         self.invoker = prefs.INVOKER
 
@@ -420,10 +422,18 @@ class Plot(QtGui.QWidget):
         except:
             self.info['Runtime'].stop_timer()
 
+
+
         self.info['N Trials'].setText('')
         self.info['Step'].setText('')
         self.info['Session'].setText('')
         self.info['Protocol'].setText('')
+
+        if self.video:
+            self.video.release()
+            self.video.close()
+            del self.video
+            del self.videos
 
         self.state = 'IDLE'
 
@@ -666,8 +676,17 @@ class Video(QtGui.QWidget):
         # get app instance
         self.app = QtGui.QApplication.instance()
 
+        #self.q = Queue(maxsize=1)
+        self.qs = {}
+        self.quitting = Event()
+        self.quitting.clear()
+
 
         self.init_gui()
+
+        self.update_thread = Thread(target=self._update_frame)
+        self.update_thread.setDaemon(True)
+        self.update_thread.start()
 
     def init_gui(self):
         self.layout = QtGui.QGridLayout()
@@ -686,22 +705,51 @@ class Video(QtGui.QWidget):
                 self.layout.addWidget(vid_label, 0,i, 1,1)
                 self.layout.addWidget(self.vid_widgets[vid],1,i,5,1)
 
+                # make queue for vid
+                self.qs[vid] = Queue(maxsize=1)
+
         self.setLayout(self.layout)
         self.resize(600,700)
         self.show()
 
+    def _update_frame(self):
+        while not self.quitting.is_set():
+            for vid, q in self.qs.items():
+                try:
+                    data = q.get_nowait()
+                    self.vid_widgets[vid].setImage(data)
+
+                except Empty:
+                    pass
+                except KeyError:
+                    pass
+
+            sleep(self.ifps)
+
+
+
     def update_frame(self, video, data):
         #pdb.set_trace()
-        cur_time = time()
-        if (cur_time-self.last_update)>self.ifps:
-            try:
-                self.vid_widgets[video].setImage(data)
-                #self.vid_widgets[video].update()
-            except KeyError:
-                return
-            self.last_update = cur_time
+        # cur_time = time()
+
+        try:
+            self.qs[video].put_nowait(data)
+        except Full:
+            return
+        except KeyError:
+            return
+        # if (cur_time-self.last_update)>self.ifps:
+        #     try:
+        #         self.vid_widgets[video].setImage(data)
+        #         #self.vid_widgets[video].update()
+        #     except KeyError:
+        #         return
+        #     self.last_update = cur_time
             #self.update()
-            self.app.processEvents()
+            #self.app.processEvents()
+
+    def release(self):
+        self.quitting.set()
 
 
 
