@@ -682,8 +682,6 @@ class Video(QtGui.QWidget):
                 self.layout.addWidget(vid_label,1,i)
 
         self.setLayout(self.layout)
-        for vid_widget in self.vid_widgets.values():
-            vid_widget.show()
         self.show()
 
     def update(self, video, data):
