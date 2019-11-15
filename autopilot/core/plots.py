@@ -676,8 +676,8 @@ class Video(QtGui.QWidget):
             for i, vid in enumerate(self.videos):
                 vid_label = QtGui.QLabel(vid)
                 self.vid_widgets[vid] = pg.ImageView()
-                self.layout.addWidget(0,i,vid_label)
-                self.layout.addWidget(1,i,vid_label)
+                self.layout.addWidget(vid_label, 0,i)
+                self.layout.addWidget(vid_label,1,i)
         self.show()
 
     def update(self, video, data):
