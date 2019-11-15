@@ -122,8 +122,6 @@ class Station(multiprocessing.Process):
             Warning("Couldn't get IP!: {}".format(e))
             self.ip = ""
 
-        print(self.ip)
-
 
         # Setup logging
         self.init_logging()
