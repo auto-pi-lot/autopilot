@@ -415,6 +415,7 @@ class Subject:
             fullpath = os.path.join(prefs.PROTOCOLDIR, protocol)
             if not os.path.exists(fullpath):
                 Exception('Could not find either {} or {}'.format(protocol, fullpath))
+            protocol = fullpath
 
         # Set name and step
         # Strip off path and extension to get the protocol name
