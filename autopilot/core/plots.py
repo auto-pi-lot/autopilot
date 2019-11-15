@@ -690,7 +690,7 @@ class Video(QtGui.QWidget):
         self.show()
 
     def update(self, video, data):
-        pdb.set_trace()
+        #pdb.set_trace()
         if (time()-self.last_update)>self.ifps:
             try:
                 self.vid_widgets[video].setImage(data)
