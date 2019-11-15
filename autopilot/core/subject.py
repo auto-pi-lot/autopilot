@@ -1007,6 +1007,36 @@ class Subject:
 
 
 
+    def apply_along(self, along='session', step=-1):
+        h5f = self.open_hdf()
+        group_name = "/data/{}".format(self.protocol_name)
+        group = h5f.get_node(group_name)
+        step_groups = sorted(group._v_children.keys())
+
+        if along == "session":
+            if step == -1:
+                # find the last trial step with data
+                for step_name in reversed(step_groups):
+                    if group._v_children[step_name].trial_data.attrs['NROWS'] > 0:
+                        step_groups = [step_name]
+                        break
+            elif isinstance(step, int):
+                if step > len(step_groups):
+                    ValueError(
+                        'You provided a step number ({}) greater than the number of steps in the subjects assigned protocol: ()'.format(
+                            step, len(step_groups)))
+                step_groups = [step_groups[step]]
+
+            for step_key in step_groups:
+                step_n = int(step_key[1:3])  # beginning of keys will be 'S##'
+                step_tab = group._v_children[step_key]._v_children['trial_data']
+                step_df = pd.DataFrame(step_tab.read())
+                step_df['step'] = step_n
+                yield step_df
+
+
+
+
 
     def get_step_history(self, use_history=True):
         """
