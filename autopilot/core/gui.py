@@ -27,6 +27,7 @@ import pyqtgraph as pg
 import pandas as pd
 import itertools
 import threading
+import logging
 
 # adding autopilot parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -1619,7 +1620,7 @@ class Bandwidth_Test(QtGui.QDialog):
                              upstream='T',
                              port = prefs.MSGPORT,
                              listens=self.listens,
-                             do_logging = False)
+                             log_level= logging.ERROR)
 
         self.init_ui()
 

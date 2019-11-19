@@ -99,9 +99,6 @@ class Station(multiprocessing.Process):
     pusher       = None    # pusher socket - a dealer socket that connects to other routers
     listener     = None    # Listener socket - a router socket to send/recv messages
     logger       = None    # Logger....
-    do_logging   = multiprocessing.Event()
-    do_logging.set()
-    #do_logging.clear()
     log_handler  = None
     log_formatter = None
     id           = None    # What are we known as?
@@ -280,7 +277,7 @@ class Station(multiprocessing.Process):
             log_this = False
 
 
-        if (msg.key != "CONFIRM") and self.do_logging.is_set() and log_this:
+        if (msg.key != "CONFIRM") and log_this:
             self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
 
         if repeat and not msg.key == "CONFIRM":
@@ -352,7 +349,7 @@ class Station(multiprocessing.Process):
         # upstream because presumably our target is upstream.
         self.pusher.send_multipart([bytes(self.push_id), bytes(msg.to), msg_enc])
 
-        if not (msg.key == "CONFIRM") and self.do_logging.is_set() and log_this:
+        if not (msg.key == "CONFIRM") and log_this:
             self.logger.info('MESSAGE PUSHED - {}'.format(str(msg)))
 
         if repeat and not msg.key == 'CONFIRM':
@@ -386,8 +383,8 @@ class Station(multiprocessing.Process):
                     else:
                         # if we didn't just put this message in our outbox
                         if (time.time() - push_outbox[id][0]) > self.repeat_interval:
-                            if self.do_logging.is_set():
-                                self.logger.info('REPUBLISH {} - {}'.format(id, str(push_outbox[id][1])))
+
+                            self.logger.info('REPUBLISH {} - {}'.format(id, str(push_outbox[id][1])))
                             self.pusher.send_multipart([bytes(self.push_id), push_outbox[id][1].serialize()])
                             self.push_outbox[id][1].ttl -= 1
 
@@ -406,8 +403,8 @@ class Station(multiprocessing.Process):
                     else:
                         # if we didn't just put this message in our outbox
                         if (time.time() - send_outbox[id][0]) > self.repeat_interval:
-                            if self.do_logging.is_set():
-                                self.logger.info('REPUBLISH {} - {}'.format(id, str(send_outbox[id][1])))
+
+                            self.logger.info('REPUBLISH {} - {}'.format(id, str(send_outbox[id][1])))
                             self.listener.send_multipart([bytes(send_outbox[id][1].to), send_outbox[id][1].serialize()])
                             self.send_outbox[id][1].ttl -= 1
                     
@@ -551,7 +548,7 @@ class Station(multiprocessing.Process):
                 self.send(msg=msg)
         # if this message is to us, just handle it and return
         elif msg.to in [self.id, "_{}".format(self.id)]:
-            if (msg.key != "CONFIRM") and self.do_logging.is_set() and log_this:
+            if (msg.key != "CONFIRM") and log_this:
                 self.logger.info('RECEIVED: {}'.format(str(msg)))
             # Log and spawn thread to respond to listen
             try:
@@ -582,8 +579,8 @@ class Station(multiprocessing.Process):
         elif self.pusher:
             self.push(msg=msg)
         else:
-            if self.do_logging.is_set():
-                self.logger.warning('Message to unconfirmed recipient, attempting to send: {}'.format(str(msg)))
+
+            self.logger.warning('Message to unconfirmed recipient, attempting to send: {}'.format(str(msg)))
             self.send(msg=msg)
 
         # finally, if there's something we're supposed to do, do it
@@ -616,7 +613,11 @@ class Station(multiprocessing.Process):
         self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
         self.log_handler.setFormatter(self.log_formatter)
         self.logger.addHandler(self.log_handler)
-        self.logger.setLevel(logging.WARNING)
+        if hasattr(prefs, 'LOGLEVEL'):
+            loglevel = getattr(logging, prefs.LOGLEVEL)
+        else:
+            loglevel = logging.WARNING
+        self.logger.setLevel(loglevel)
         self.logger.info('Station Logging Initiated')
 
     def get_ip(self):
@@ -640,11 +641,6 @@ class Station(multiprocessing.Process):
 
         return unwrap2
 
-    def set_logging(self, do_logging):
-        if do_logging:
-            self.do_logging.set()
-        else:
-            self.do_logging.clear()
 
 class Terminal_Station(Station):
     """
@@ -1192,15 +1188,13 @@ class Net_Node(object):
     timers = {}
     #connected = False
     logger = None
-    do_logging = threading.Event()
-    do_logging.set()
     log_handler = None
     log_formatter = None
     sock = None
     loop_thread = None
     repeat_interval = 5 # how many seconds to wait before trying to repeat a message
 
-    def __init__(self, id, upstream, port, listens, instance=True, do_logging=False, upstream_ip='localhost', route_port = None, daemon=True):
+    def __init__(self, id, upstream, port, listens, instance=True, upstream_ip='localhost', route_port = None, daemon=True):
         """
         Args:
             id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
@@ -1209,7 +1203,6 @@ class Net_Node(object):
             listens (dict): Dictionary of functions to call for different types of messages.
                 keys match the :attr:`.Message.key`.
             instance (bool): Should the node try and use the existing zmq context and tornado loop?
-            do_logging (bool): Logging takes time, we can disable it for greater efficiency
             upstream_ip (str): If this Net_Node is being used on its own (ie. not behind a :class:`.Station`), it can directly connect to another node at this IP. Otherwise use 'localhost' to connect to a station.
             route_port (int): Typically, Net_Nodes only have a single Dealer socket and receive messages from their encapsulating :class:`.Station`, but 
                 if you want to take this node offroad and use it independently, an int here binds a Router to the port.
@@ -1240,11 +1233,8 @@ class Net_Node(object):
         self.msg_counter = count()
 
         # try to get a logger
-        if not do_logging:
-            self.do_logging.clear()
-            self.logger = None
-        if do_logging:
-            self.init_logging()
+
+        self.init_logging()
 
         # If we were given an explicit IP to connect to, stash it
         self.upstream_ip = upstream_ip
@@ -1348,7 +1338,7 @@ class Net_Node(object):
         if 'NOLOG' in msg.flags.keys():
             log_this = False
 
-        if self.logger and self.do_logging.is_set() and log_this:
+        if self.logger and log_this:
             self.logger.info('{} - RECEIVED: {}'.format(self.id, str(msg)))
 
         # if msg.key == 'CONFIRM':
@@ -1378,8 +1368,8 @@ class Net_Node(object):
             listen_thread = threading.Thread(target=listen_funk, args=(msg.value,))
             listen_thread.start()
         except KeyError:
-            if self.do_logging.is_set():
-                self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
+
+            self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
 
         if (msg.key != "CONFIRM") and ('NOREPEAT' not in msg.flags.keys()) :
             # send confirmation
@@ -1422,7 +1412,7 @@ class Net_Node(object):
             to = self.upstream
 
         if (key is None) and (msg is None):
-            if self.logger and self.do_logging.is_set():
+            if self.logger:
                 self.logger.error('Push sent without Key')
             return
 
@@ -1443,15 +1433,15 @@ class Net_Node(object):
         msg_enc = msg.serialize()
 
         if not msg_enc:
-            if self.do_logging.is_set():
-                self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
+
+            self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
         if force_to:
             self.sock.send_multipart([bytes(msg.to), bytes(msg.to), msg_enc])
         else:
             self.sock.send_multipart([bytes(self.upstream), bytes(msg.to), msg_enc])
-        if self.logger and self.do_logging.is_set() and log_this:
+        if self.logger and log_this:
             self.logger.info("MESSAGE SENT - {}".format(str(msg)))
 
         if repeat and not msg.key == "CONFIRM":
@@ -1475,8 +1465,7 @@ class Net_Node(object):
             if len(outbox) > 0:
                 for id in outbox.keys():
                     if outbox[id][1].ttl <= 0:
-                        if self.do_logging.is_set():
-                            self.logger.warning('PUBLISH FAILED {} - {}'.format(id, str(outbox[id][1])))
+                        self.logger.warning('PUBLISH FAILED {} - {}'.format(id, str(outbox[id][1])))
                         try:
                             del self.outbox[id]
                         except KeyError:
@@ -1485,8 +1474,7 @@ class Net_Node(object):
                     else:
                         # if we didn't just put this message in the outbox...
                         if (time.time() - outbox[id][0]) > self.repeat_interval:
-                            if self.do_logging.is_set():
-                                self.logger.info('REPUBLISH {} - {}'.format(id, str(outbox[id][1])))
+                            self.logger.info('REPUBLISH {} - {}'.format(id, str(outbox[id][1])))
                             self.sock.send_multipart([bytes(self.upstream), outbox[id][1].serialize()])
                             self.outbox[id][1].ttl -= 1
 
@@ -1515,8 +1503,8 @@ class Net_Node(object):
         #     self.timers[value].cancel()
         #     del self.timers[value]
 
-        if self.do_logging.is_set():
-            self.logger.info('CONFIRMED MESSAGE {}'.format(value))
+
+        self.logger.info('CONFIRMED MESSAGE {}'.format(value))
 
     def l_stream(self, value):
         listen_fn = self.listens[value['inner_key']]
@@ -1679,7 +1667,11 @@ class Net_Node(object):
         self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
         self.log_handler.setFormatter(self.log_formatter)
         self.logger.addHandler(self.log_handler)
-        self.logger.setLevel(logging.INFO)
+        if hasattr(prefs, 'LOGLEVEL'):
+            loglevel = getattr(logging, prefs.LOGLEVEL)
+        else:
+            loglevel = logging.WARNING
+        self.logger.setLevel(loglevel)
         self.logger.info('{} Logging Initiated'.format(self.id))
 
     def release(self):

@@ -752,14 +752,16 @@ class Terminal(QtGui.QMainWindow):
 
     def test_bandwidth(self):
         # turn off logging while we run
-        self.networking.set_logging(False)
-        self.node.do_logging.clear()
+        prev_networking_loglevel = self.networking.logger.level
+        prev_node_loglevel = self.node.logger.level
+        self.networking.logger.setLevel(logging.ERROR)
+        self.node.logger.setLevel(logging.ERROR)
 
         bandwidth_test = Bandwidth_Test(self.pilots)
         bandwidth_test.exec_()
 
-        self.networking.set_logging(True)
-        self.node.do_logging.set()
+        self.networking.logger.setLevel(prev_networking_loglevel)
+        self.node.logger.setLevel(prev_node_loglevel)
 
 
 
