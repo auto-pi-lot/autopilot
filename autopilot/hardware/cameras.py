@@ -48,6 +48,7 @@ you will get a neverending stream of informative error message: 'VIDIOC_QBUF: In
 
 The workaround is relatively simple, we just wait ~2 seconds if another camera was just initialized.
 """
+LAST_INIT_LOCK = mp.Lock()
 
 
 class Camera_OpenCV(mp.Process):
@@ -66,6 +67,9 @@ class Camera_OpenCV(mp.Process):
                  *args, **kwargs):
         super(Camera_OpenCV, self).__init__()
 
+        self.last_opencv_init = globals()['OPENCV_LAST_INIT_TIME']
+        self.last_init_lock = globals()['LAST_INIT_LOCK']
+
         if name:
             self.name = name
         else:
@@ -81,8 +85,9 @@ class Camera_OpenCV(mp.Process):
 
         # get handle to camera
         self.camera_idx = camera_idx
-        self.vid = cv2.VideoCapture(self.camera_idx)
+        self.vid = self.init_cam()
         self.init_opencv_info()
+        self.vid.release()
 
         # event to end acquisition
         # self.stopped = mp.Event()
@@ -113,11 +118,24 @@ class Camera_OpenCV(mp.Process):
         self.node = None
         self.listens = None
 
-        self.last_opencv_init = globals()['OPENCV_LAST_INIT_TIME']
+
 
 
         # deinit the camera so the other thread can start it
         self.vid.release()
+
+    def init_cam(self, camera_idx = None):
+        if camera_idx is None:
+            camera_idx = self.camera_idx
+
+        with self.last_init_lock:
+            time_since_last_init = time.time() - self.last_opencv_init.value
+            if time_since_last_init < 2.:
+                time.sleep(2.0 - time_since_last_init)
+            self.last_opencv_init.value = time.time()
+            vid = cv2.VideoCapture(camera_idx)
+
+        return vid
 
     def l_start(self, val):
         # if 'write' in val.keys():
@@ -163,22 +181,8 @@ class Camera_OpenCV(mp.Process):
             Warning("Already capturing!")
             return
 
-        # check if another cameras has been initialized recently.
-        # if so, wait for a second or two
-        time_since_last_init = time.time() - self.last_opencv_init.value
-        if time_since_last_init < 2.:
-            time.sleep(2.0-time_since_last_init)
-
-        self.last_opencv_init.value = time.time()
-        self.vid = cv2.VideoCapture(self.camera_idx)
-
-        if self.write:
-            write_queue = mp.Queue()
-            writer = Video_Writer(write_queue, self.output_filename, self.fps, timestamps=True)
-            writer.start()
-
-        #if self.queue:
-        #    Warning('Queue Not implemented yet')
+        self.capturing.set()
+        self.vid = self.init_cam()
 
         opencv_timestamps = True
         _, _ = self.vid.read()
@@ -191,6 +195,12 @@ class Camera_OpenCV(mp.Process):
             opencv_timestamps = False
         if timestamp == 0:
            opencv_timestamps = False
+
+
+        if self.write:
+            write_queue = mp.Queue()
+            writer = Video_Writer(write_queue, self.output_filename, self.fps, timestamps=True)
+            writer.start()
 
         if self.networked or self.stream:
             self.init_networking()
@@ -213,7 +223,6 @@ class Camera_OpenCV(mp.Process):
                 'stream', 'CONTINUOUS', upstream="T",
                 ip=stream_ip, port=stream_port, subject=subject)
 
-        self.capturing.set()
 
         if isinstance(self.timed, int) or isinstance(self.timed, float):
             start_time = time.time()
