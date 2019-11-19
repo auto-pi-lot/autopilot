@@ -68,7 +68,9 @@ class PilotSetupForm(nps.Form):
             'JACKDSTRING': self.add(nps.TitleText, name="Command used to launch jackd - note that \'fs\' will be replaced with above FS",
                                     value="jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -n3 -s &"),
             'PIGPIOMASK': self.add(nps.TitleText, name="Binary mask to enable pigpio to access pins according to the BCM numbering",
-                                    value="1111110000111111111111110000")
+                                    value="1111110000111111111111110000"),
+            'LOGLEVEL': self.add(nps.TitleSelectOne, max_height=5, value=[0, ], name="Log Level:",
+                               values=["DEBUG", "INFO", "WARNING", "ERROR"], scroll_exit=True),
 
 
         })
