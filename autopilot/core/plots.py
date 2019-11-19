@@ -430,7 +430,7 @@ class Plot(QtGui.QWidget):
         self.info['Session'].setText('')
         self.info['Protocol'].setText('')
 
-        if self.video:
+        if self.video is not None:
             self.video.release()
             self.video.close()
             del self.video
