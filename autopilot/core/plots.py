@@ -714,6 +714,8 @@ class Video(QtGui.QWidget):
         self.show()
 
     def _update_frame(self):
+        last_time = 0
+        this_time = 0
         while not self.quitting.is_set():
             for vid, q in self.qs.items():
                 try:
@@ -725,7 +727,9 @@ class Video(QtGui.QWidget):
                 except KeyError:
                     pass
 
-            sleep(self.ifps)
+            this_time = time()
+            sleep(min(self.ifps-(this_time-last_time), 0))
+            last_time = this_time
 
 
 
@@ -734,8 +738,16 @@ class Video(QtGui.QWidget):
         # cur_time = time()
 
         try:
+            # if there's a waiting frame, it's old now so pull it.
+            _ = self.qs[video].get_nowait()
+        except Empty:
+            pass
+
+        try:
+            # put the new frame in there.
             self.qs[video].put_nowait(data)
         except Full:
+
             return
         except KeyError:
             return
