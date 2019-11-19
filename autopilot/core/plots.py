@@ -728,7 +728,7 @@ class Video(QtGui.QWidget):
                     pass
 
             this_time = time()
-            sleep(min(self.ifps-(this_time-last_time), 0))
+            sleep(max(self.ifps-(this_time-last_time), 0))
             last_time = this_time
 
 
