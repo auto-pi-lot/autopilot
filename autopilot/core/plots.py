@@ -729,7 +729,7 @@ class Video(QtGui.QWidget):
                 else:
                     base_row = 2
 
-                
+
                 self.layout.addWidget(vid_label, base_row, i%n_col, 1,1)
                 self.layout.addWidget(self.vid_widgets[vid],base_row+1, i%n_col,5,1)
 
