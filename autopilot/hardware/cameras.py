@@ -132,8 +132,8 @@ class Camera_OpenCV(mp.Process):
             time_since_last_init = time.time() - self.last_opencv_init.value
             if time_since_last_init < 2.:
                 time.sleep(2.0 - time_since_last_init)
-            self.last_opencv_init.value = time.time()
             vid = cv2.VideoCapture(camera_idx)
+            self.last_opencv_init.value = time.time()
 
         return vid
 
@@ -323,60 +323,6 @@ class Camera_OpenCV(mp.Process):
         # self.capture_thread.start()
         # self.capturing = True
 
-    def _capture(self, write=False):
-        # reopen video in this thread
-        self.vid = cv2.VideoCapture(self.camera_idx)
-        time.sleep(1)
-        # tell the upstream that we're starting
-        if self.networked:
-            self.init_networking()
-            self.node.send(key='STATE', value='CAPTURING')
-
-        # get a test frame to see if we can get timestamps
-        opencv_timestamps = False
-        # _, _ = self.vid.read()
-        # _, _ = self.vid.read()
-        # timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
-        # if timestamp == 0:
-        #    opencv_timestamps = False
-
-        # write to a video file
-        if write:
-            print("Camera: {}, path: {}, fps: {}".format(self.name, self.output_filename, self.fps))
-            sys.stdout.flush()
-            write_queue = mp.Queue()
-            writer = Video_Writer(write_queue, self.output_filename, self.fps, timestamps=True)
-            writer.start()
-
-        while not self.stopping.is_set():
-            try:
-                _, self._frame = self.vid.read()
-            except Exception as e:
-                print(e)
-                continue
-
-            if opencv_timestamps:
-                timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
-            else:
-                timestamp = datetime.now().isoformat()
-
-            if write:
-                write_queue.put_nowait((timestamp, self._frame))
-
-        if write:
-            write_queue.put_nowait('END')
-            checked_empty = False
-            while not write_queue.empty():
-                if not checked_empty:
-                    Warning('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
-                    checked_empty = True
-                time.sleep(0.1)
-            Warning('Writer finished, closing')
-
-        if self.networked:
-            self.node.send(key='STATE', value='STOPPING')
-
-        self.capturing = False
 
     @property
     def output_filename(self, new=False):

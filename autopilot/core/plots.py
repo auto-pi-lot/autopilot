@@ -302,6 +302,10 @@ class Plot(QtGui.QWidget):
                 * step_name
                 * task_type
         """
+
+        if self.state == "RUNNING":
+            return
+
         # We're sent a task dict, we extract the plot params and send them to the plot object
         self.plot_params = tasks.TASK_LIST[value['task_type']].PLOT
 
