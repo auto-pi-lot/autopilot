@@ -412,7 +412,6 @@ class Plot(QtGui.QWidget):
                 # gui_event_fn(self.plots[k].update, *(self.data[k],))
                 self.plots[k].update(self.data[k])
             elif k in self.videos:
-                pdb.set_trace()
                 self.video.update_frame(k, v)
 
 
@@ -759,7 +758,9 @@ class Video(QtGui.QWidget):
         this_time = 0
         while not self.quitting.is_set():
             for vid, q in self.qs.items():
+                data = None
                 try:
+                    #pdb.set_trace()
                     data = q.get_nowait()
                     self.vid_widgets[vid].setImage(data)
 
@@ -778,17 +779,16 @@ class Video(QtGui.QWidget):
         #pdb.set_trace()
         # cur_time = time()
 
-        try:
-            # if there's a waiting frame, it's old now so pull it.
-            _ = self.qs[video].get_nowait()
-        except Empty:
-            pass
+        # try:
+        #     # if there's a waiting frame, it's old now so pull it.
+        #     _ = self.qs[video].get_nowait()
+        # except Empty:
+        #     pass
 
         try:
             # put the new frame in there.
             self.qs[video].put_nowait(data)
         except Full:
-
             return
         except KeyError:
             return
