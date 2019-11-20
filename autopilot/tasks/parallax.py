@@ -54,6 +54,7 @@ class Parallax(Task):
     HARDWARE = {
         'CAMS': {
             'SIDE': cameras.Camera_Spin,
+            'EYE': cameras.Camera_OpenCV
             # top...
         },
         'DOF': {
@@ -66,15 +67,15 @@ class Parallax(Task):
             'task_type': "Video Child",
             'cams': [
                 {'type': 'Camera_OpenCV',
-                 'name': 'head_1',
+                 'name': 'POV',
                  'camera_idx': 0,
                  'stream': True
                  },
-                {'type': 'Camera_OpenCV',
-                 'name': 'head_2',
-                 'camera_idx': 2,
-                 'stream': True,
-                 }
+                # {'type': 'Camera_OpenCV',
+                #  'name': 'head_2',
+                #  'camera_idx': 2,
+                #  'stream': True,
+                #  }
             ]
         }
     }
@@ -117,6 +118,8 @@ class Parallax(Task):
         n_trial = self.n_trials.next()
 
         return {'trial_num':n_trial}
+
+
 
 
 

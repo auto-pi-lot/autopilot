@@ -331,6 +331,7 @@ class Pilot:
         self.stage_block.set()
 
 
+
         # TODO: Cohere here before closing file
         if hasattr(self, 'h5f'):
             self.h5f.close()
