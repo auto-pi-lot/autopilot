@@ -67,6 +67,11 @@
 - https://www.pyimagesearch.com/2017/10/09/optimizing-opencv-on-the-raspberry-pi/
 - https://www.theimpossiblecode.com/blog/build-faster-opencv-raspberry-pi3/
 - add enlarged usbfs to setup for all cameras
+- alt to opencv https://gist.github.com/royshil/0f674c96281b686a9a62
+
+- debugging v4l2 cameras
+    echo 3 > /sys/class/video4linux/videox/dev_debug
+    dmesg
 
 .. automodsumm:: rpilot.core.gui
     :toctree:
