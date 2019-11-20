@@ -803,10 +803,10 @@ class Terminal_Station(Station):
 
         # Send through to terminal
         msg.value.update({'continuous':True})
-        self.send('_T', 'DATA', msg.value)
+        self.send('_T', 'DATA', msg.value, flags=msg.flags)
 
         # Send to plot widget, which should be listening to "P_{pilot_name}"
-        self.send('P_{}'.format(msg.value['pilot']), 'DATA', msg.value)
+        self.send('P_{}'.format(msg.value['pilot']), 'DATA', msg.value, flags=msg.flags)
 
 
 
