@@ -33,7 +33,8 @@ class Parallax(Task):
         'data': {
             'accel_x': 'shaded'
         },
-        'video' : ['SIDE', 'EYE', 'POV'],
+        #'video' : ['SIDE', 'EYE', 'POV'],
+        'video': ['EYE', 'POV'],
         'continuous': True
     }
 
@@ -46,14 +47,14 @@ class Parallax(Task):
         'accel_x': tables.Float64Col(),
         'accel_y': tables.Float64Col(),
         'accel_z': tables.Float64Col(),
-        'SIDE': 'infer',
+        #'SIDE': 'infer',
         'EYE': 'infer',
         'POV': 'infer'
     }
 
     HARDWARE = {
         'CAMS': {
-            'SIDE': cameras.Camera_Spin,
+            #'SIDE': cameras.Camera_Spin,
             'EYE': cameras.Camera_OpenCV
             # top...
         },
@@ -110,7 +111,8 @@ class Parallax(Task):
 
         print(self.hardware)
 
-        self.hardware['CAMS']['SIDE'].capture()
+        self.hardware['CAMS']['EYE'].capture()
+        #self.hardware['CAMS']['SIDE'].capture()
 
     def test(self):
         self.stage_block.clear()
