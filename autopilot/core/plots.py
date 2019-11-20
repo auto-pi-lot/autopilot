@@ -760,7 +760,7 @@ class Video(QtGui.QWidget):
             for vid, q in self.qs.items():
                 data = None
                 try:
-                    pdb.set_trace()
+                    #pdb.set_trace()
                     data = q.get_nowait()
                     self.vid_widgets[vid].setImage(data)
 
