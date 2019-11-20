@@ -419,7 +419,6 @@ class Plot(QtGui.QWidget):
                 # gui_event_fn(self.plots[k].update, *(self.data[k],))
                 self.plots[k].update(self.data[k])
             elif k in self.videos:
-                pdb.set_trace()
                 self.video.update_frame(k, v)
 
 
@@ -769,7 +768,6 @@ class Video(QtGui.QWidget):
             for vid, q in self.qs.items():
                 data = None
                 try:
-                    #pdb.set_trace()
                     data = q.get_nowait()
                     self.vid_widgets[vid][2].setImage(data)
 
