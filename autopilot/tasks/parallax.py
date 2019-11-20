@@ -33,7 +33,7 @@ class Parallax(Task):
         'data': {
             'accel_x': 'shaded'
         },
-        'video' : ['SIDE', 'head_1', 'head_2'],
+        'video' : ['SIDE', 'EYE', 'POV'],
         'continuous': True
     }
 
@@ -46,9 +46,9 @@ class Parallax(Task):
         'accel_x': tables.Float64Col(),
         'accel_y': tables.Float64Col(),
         'accel_z': tables.Float64Col(),
-        'head_1': 'infer',
-        'head_2': 'infer',
-        'SIDE': 'infer'
+        'SIDE': 'infer',
+        'EYE': 'infer',
+        'POV': 'infer'
     }
 
     HARDWARE = {
