@@ -419,6 +419,7 @@ class Plot(QtGui.QWidget):
                 # gui_event_fn(self.plots[k].update, *(self.data[k],))
                 self.plots[k].update(self.data[k])
             elif k in self.videos:
+                pdb.set_trace()
                 self.video.update_frame(k, v)
 
 
