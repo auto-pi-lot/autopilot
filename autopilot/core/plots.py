@@ -28,7 +28,7 @@ from threading import Event, Thread
 import pdb
 from Queue import Queue, Empty, Full
 pg.setConfigOptions(antialias=True)
-from pyqtgraph.widgets.RawImageWidget import RawImageWidget
+#from pyqtgraph.widgets.RawImageWidget import RawImageWidget
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from autopilot import tasks, prefs
@@ -735,6 +735,7 @@ class Video(QtGui.QWidget):
         last_time = 0
         this_time = 0
         while not self.quitting.is_set():
+
             for vid, q in self.qs.items():
                 data = None
                 try:
@@ -747,9 +748,12 @@ class Video(QtGui.QWidget):
                 except KeyError:
                     pass
 
+            self.app.processEvents()
             this_time = time()
             sleep(max(self.ifps-(this_time-last_time), 0))
             last_time = this_time
+
+
 
 
 
@@ -784,6 +788,87 @@ class Video(QtGui.QWidget):
         self.quitting.set()
 
 
+class RawImageWidget(QtGui.QWidget):
+    """
+    Widget optimized for very fast video display.
+    Generally using an ImageItem inside GraphicsView is fast enough.
+    On some systems this may provide faster video. See the VideoSpeedTest example for benchmarking.
+    """
+
+    def __init__(self, parent=None, scaled=False):
+        """
+        Setting scaled=True will cause the entire image to be displayed within the boundaries of the widget. This also greatly reduces the speed at which it will draw frames.
+        """
+        QtGui.QWidget.__init__(self, parent=None)
+        self.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding))
+        self.scaled = scaled
+        self.opts = None
+        self.image = None
+        self.in_q = Queue(maxsize=1)
+        self.out_q = Queue(maxsize=1)
+        self.quitting = Event()
+        self.quitting.clear()
+        self.render_thread = Thread(target=self._render)
+        self.render_thread.setDaemon(True)
+        self.render_thread.start()
+
+    def setImage(self, img, *args, **kargs):
+        """
+        img must be ndarray of shape (x,y), (x,y,3), or (x,y,4).
+        Extra arguments are sent to functions.makeARGB
+        """
+        self.opts = (img, args, kargs)
+        self.image = None
+        try:
+            _ = self.in_q.get_nowait()
+        except Empty:
+            pass
+
+        self.in_q.put_nowait((img, args, kargs))
+        self.update()
+
+    def _render(self):
+        while not self.quitting.is_set():
+            try:
+                opts = self.in_q.get(timeout=0.1)
+                argb, alpha = fn.makeARGB(opts[0], *opts[1], **opts[2])
+                image = fn.makeQImage(argb, alpha)
+                p = QtGui.QPainter(self)
+                if self.scaled:
+                    rect = self.rect()
+                    ar = rect.width() / float(rect.height())
+                    imar = image.width() / float(image.height())
+                    if ar > imar:
+                        rect.setWidth(int(rect.width() * imar / ar))
+                    else:
+                        rect.setHeight(int(rect.height() * ar / imar))
+
+                else:
+                    rect = QtCore.QPointF()
+                # p.drawPixmap(self.rect(), self.pixmap)
+
+                try:
+                    _ = self.out_q.get_nowait()
+                except Empty:
+                    pass
+
+                self.out_q.put_nowait((p, rect, image))
+
+            except Empty:
+                pass
+
+
+
+    def paintEvent(self, ev):
+        try:
+            p, rect, image = self.out_q.get_nowait()
+            p.drawImage(rect, image)
+            p.end()
+        except Empty:
+            pass
+
+    def __del__(self):
+        self.quitting.set()
 
 
 
