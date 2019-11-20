@@ -74,7 +74,7 @@ sudo apt-get install -y \
 echo -e "\n\n${RED}Installing necessary Python packages...\n\n ${NC}"
 
 
-sudo -H pip install -U pyzmq npyscreen tornado inputs
+sudo -H pip install -U pyzmq npyscreen tornado inputs requests
 
 # install pigpio
 cd $GITDIR

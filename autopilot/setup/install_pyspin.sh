@@ -44,7 +44,7 @@ sudo apt install -y --allow-unauthenticated \
 
   #libswscale-ffmpeg \
 
-#python -m pip install --upgrade numpy matplotlib
+python -m pip install numpy matplotlib requests
 
 
 echo -e "\n${RED}Attempting to download Spinnaker SDK files from static link${NC}"
