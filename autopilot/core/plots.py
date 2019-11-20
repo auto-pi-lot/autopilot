@@ -303,8 +303,10 @@ class Plot(QtGui.QWidget):
                 * task_type
         """
 
-        if self.state == "RUNNING":
+        if self.state in ("RUNNING", "INITIALIZING"):
             return
+
+        self.state = "INITIALIZING"
 
         # We're sent a task dict, we extract the plot params and send them to the plot object
         self.plot_params = tasks.TASK_LIST[value['task_type']].PLOT
@@ -360,8 +362,9 @@ class Plot(QtGui.QWidget):
                 self.data[data] = np.zeros((0,2), dtype=np.float)
 
         if 'video' in self.plot_params.keys():
-            self.video = Video(self.plot_params['video'], parent=self)
             self.videos = self.plot_params['video']
+            self.video = Video(self.plot_params['video'], parent=self)
+
 
         self.state = 'RUNNING'
 
@@ -376,6 +379,9 @@ class Plot(QtGui.QWidget):
         Args:
             value (dict): Value field of a data message sent during a task.
         """
+        if self.state == "INITIALIZING":
+            return
+
         #pdb.set_trace()
         if 'trial_num' in value.keys():
             v = value.pop('trial_num')
@@ -439,6 +445,8 @@ class Plot(QtGui.QWidget):
             self.video.close()
             del self.video
             del self.videos
+            self.video = None
+            self.videos = []
 
         self.state = 'IDLE'
 
