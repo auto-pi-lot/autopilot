@@ -855,6 +855,7 @@ class VideoCV(mp.Process):
                 img_array[top:top+data.shape[0], left:left+data.shape[1]] = data
 
             cv2.imshow('vid', img_array)
+            cv2.waitKey(0)
 
 
 
