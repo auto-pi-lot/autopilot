@@ -93,6 +93,26 @@ sudo /etc/init.d/dphys-swapfile start
 # increase uvcvideo timeout
 # https://stackoverflow.com/a/12715374
 
+echo -e "${RED}    Increasing timeout on uvcvideo -- necessary for multiple cameras\n${NC}"
+sudo sh -c 'echo options uvcvideo nodrop=1 timeout=10000 quirks=0x80 > /etc/modprobe.d/uvcvideo.conf'
+sudo rmmod uvcvideo
+sudo modprobe uvcvideo
+
+
+read -p "Permanently increase usbfs size?  (y/n/size in mb, default=1000MB): " usbfs_size
+if [ "$usbfs_size" == "n" ]; then
+    echo -e "${RED}    WARNING: You will need to manually increase usbfs in order to take large pictures or use multiple cameras\n${NC}"
+    echo -e "${RED}    To do so, use a command like:\n${NC}"
+    echo -e "${RED}    sudo sh -c 'echo 1000 > /sys/module/usbcore/parameters/usbfs_memory_mb'"
+else
+    if [ "$usbfs_size" == "y" ]; then
+        usbfs_size=1000
+    fi
+
+    echo -e "${RED}    Setting usbfs to ${usbfs_size} on boot by editing /etc/rc.local\n${NC}"
+    sudo sed -i "/^exit 0/i sudo sh -c 'echo ${usbfs_size} > /sys/module/usbcore/parameters/usbfs_memory_mb'" /etc/rc.local
+fi
+
 #sudo rmmod uvcvideo
 #sudo modprobe uvcvideo nodrop=1 timeout=10000
 # https://www.raspberrypi.org/forums/viewtopic.php?f=37&t=11745

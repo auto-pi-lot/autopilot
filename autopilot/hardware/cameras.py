@@ -159,6 +159,7 @@ class Camera_OpenCV(mp.Process):
                       self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
         # TODO: Make sure this works more generally since CAP_PROP_BACKEND is returnign -1 now
+        self.backend = self.vid.getBackendName()
         # backends = [cv2.videoio_registry.getBackendName(i) for i in cv2.videoio_registry.getCameraBackends()]
         # self.backend = backends[int(self.vid.get(cv2.CAP_PROP_BACKEND))]
 
@@ -399,6 +400,7 @@ class Camera_OpenCV(mp.Process):
             self._v4l_info = out_dict
 
         return self._v4l_info
+
 
 
 class Camera_Spin(object):
