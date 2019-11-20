@@ -4,13 +4,18 @@
 RED='\033[0;31m'
 NC='\033[0m'
 
-echo -e "${RED}Qt4 and PySide will be Compiled and installed...\n${NC}"
-
+echo -e "${RED}Installing dependencies\n${NC}"
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
   echo -e "${RED}Installing XLib...\n${NC}"
   sudo apt-get update
-  sudo apt-get install -y libxext-dev
+  sudo apt-get install -y libxext-dev python-opencv
 fi
+
+
+
+echo -e "${RED}Qt4 and PySide will be Compiled and installed...\n${NC}"
+
+
 
 echo -e "${RED}Downloading & Compiling Qt4\n${NC}"
 
