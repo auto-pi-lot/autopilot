@@ -64,6 +64,7 @@
 - integrate https://github.com/jeffbass/imagezmq
 - https://www.pyimagesearch.com/2017/10/09/optimizing-opencv-on-the-raspberry-pi/
 - https://www.theimpossiblecode.com/blog/build-faster-opencv-raspberry-pi3/
+- add enlarged usbfs to setup for all cameras
 
 .. automodsumm:: rpilot.core.gui
     :toctree:
