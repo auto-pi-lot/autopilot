@@ -668,7 +668,7 @@ class Timer(QtGui.QLabel):
         self.timer.stop()
         self.setText("")
 
-   def update_time(self):
+    def update_time(self):
         """
         Called every (update_interval) milliseconds to set the text of the timer.
 
