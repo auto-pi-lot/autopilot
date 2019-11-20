@@ -704,49 +704,27 @@ class Video(QtGui.QWidget):
     def init_gui(self):
         self.layout = QtGui.QGridLayout()
         self.vid_widgets = {}
-        if len(self.videos)<2:
-            # single row
-            for i, vid in enumerate(self.videos):
-                vid_label = QtGui.QLabel(vid)
-                rawImg = RawImageWidget(self)
-                sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-                sizePolicy.setHorizontalStretch(0)
-                sizePolicy.setVerticalStretch(0)
-                sizePolicy.setHeightForWidth(rawImg.sizePolicy().hasHeightForWidth())
-                rawImg.setSizePolicy(sizePolicy)
-                self.vid_widgets[vid] = rawImg
-                self.layout.addWidget(vid_label, 0,i, 1,1)
-                self.layout.addWidget(self.vid_widgets[vid],1,i,5,1)
-
-                # make queue for vid
-                self.qs[vid] = Queue(maxsize=1)
-        else:
-            # two rows
-            # making a quick version of this, but
-            # FIXME: Make arrangement more robust
-            n_videos = len(self.videos)
-            n_col = np.ceil(n_videos/2.)
-
-            for i, vid in enumerate(self.videos):
-                vid_label = QtGui.QLabel(vid)
-                rawImg = RawImageWidget(self)
-                sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-                sizePolicy.setHorizontalStretch(0)
-                sizePolicy.setVerticalStretch(0)
-                sizePolicy.setHeightForWidth(rawImg.sizePolicy().hasHeightForWidth())
-                rawImg.setSizePolicy(sizePolicy)
-                self.vid_widgets[vid] = rawImg
-                if i < (n_videos/2.):
-                    base_row = 0
-                else:
-                    base_row = 2
 
 
-                self.layout.addWidget(vid_label, base_row, i%n_col, 1,1)
-                self.layout.addWidget(self.vid_widgets[vid],base_row+1, i%n_col,5,1)
+        for i, vid in enumerate(self.videos):
+            vid_label = QtGui.QLabel(vid)
+            rawImg = RawImageWidget(self)
+            sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+            sizePolicy.setHorizontalStretch(0)
+            sizePolicy.setVerticalStretch(0)
+            sizePolicy.setHeightForWidth(rawImg.sizePolicy().hasHeightForWidth())
+            rawImg.setSizePolicy(sizePolicy)
+            self.vid_widgets[vid] = rawImg
+            # 3 videos in a row
+            row = np.floor(i/3.)*2
+            col = i%3
 
-                # make queue for vid
-                self.qs[vid] = Queue(maxsize=1)
+            self.layout.addWidget(vid_label, row,col, 1,1)
+            self.layout.addWidget(self.vid_widgets[vid],row+1,col,5,1)
+
+            # make queue for vid
+            self.qs[vid] = Queue(maxsize=1)
+
 
 
         self.setLayout(self.layout)
