@@ -25,8 +25,10 @@ from time import time, sleep
 from itertools import count
 from functools import wraps
 from threading import Event, Thread
+import multiprocessing as mp
 import pdb
 from Queue import Queue, Empty, Full
+import cv2
 pg.setConfigOptions(antialias=True)
 from pyqtgraph.widgets.RawImageWidget import RawImageWidget
 
@@ -363,7 +365,7 @@ class Plot(QtGui.QWidget):
 
         if 'video' in self.plot_params.keys():
             self.videos = self.plot_params['video']
-            self.video = Video(self.plot_params['video'], parent=self)
+            self.video = VideoCV(self.plot_params['video'], parent=self)
 
 
         self.state = 'RUNNING'
@@ -786,6 +788,126 @@ class Video(QtGui.QWidget):
 
     def release(self):
         self.quitting.set()
+
+
+class VideoCV(mp.Process):
+    def __init__(self, videos, fps=30, parent=None):
+        super(VideoCV, self).__init__()
+        self.videos = videos
+
+        self.last_update = 0
+        self.fps = fps
+        self.ifps = 1.0/fps
+
+
+        #self.q = Queue(maxsize=1)
+        self.qs = {}
+        for vid in self.videos:
+            self.qs[vid] = mp.Queue(maxsize=1)
+
+        self.positions = {}
+        n_rows = 0
+        n_cols = 0
+        for i, vid in enumerate(sorted(self.videos)):
+            # 3 videos to a row
+            row = np.floor(i/3.)*2
+            col = i%3
+            if row>n_rows:
+                n_rows = row
+            if col>n_cols:
+                n_cols = col
+            self.positions[vid] = (row, col)
+
+        self.n_rows = n_rows+1
+        self.n_cols = n_cols+1
+
+
+
+        # computed as we receive images
+        self.sizes = {}
+        self.resize_factors = {}
+
+        self.quitting = mp.Event()
+        self.quitting.clear()
+
+    def run(self):
+
+        win = cv2.namedWindow('vid', cv2.WINDOW_NORMAL)
+        max_width = 0
+        max_height = 0
+
+        img_array = None
+        while not self.quitting.is_set():
+            for vid, q in self.qs.items():
+                try:
+                    data = q.get_nowait()
+                except Empty:
+                    continue
+
+                if vid not in self.sizes.keys():
+                    self.sizes[vid] = (data.shape[0], data.shape[1])
+                    max_width, max_height = self.calc_resize()
+                    img_array = np.zeros((max_height*self.n_rows, max_width*self.n_cols))
+
+                data = cv2.resize(data, self.resize_factors[vid])
+                top = self.positions[vid][0] * max_height
+                left = self.positions[vid][1] * max_width
+                img_array[top:top+data.shape[0], left:left+data.shape[1]] = data
+
+            cv2.imshow('vid', img_array)
+
+
+
+    def calc_resize(self):
+        max_width = 0
+        max_height = 0
+        for vid, size in self.sizes:
+            if size[1]>max_width:
+                # set both so we don't split
+                max_width = size[1]
+                max_height = size[0]
+            elif size[0]>max_height:
+                max_width = size[1]
+                max_height=size[0]
+
+        for vid, size in self.sizes:
+            self.resize_factors[vid] = (float(max_width)/size[0], float(max_height)/size[1])
+
+        return max_width, max_height
+
+
+    def update_frame(self, video, data):
+        #pdb.set_trace()
+        # cur_time = time()
+
+        try:
+            # if there's a waiting frame, it's old now so pull it.
+            _ = self.qs[video].get_nowait()
+        except Empty:
+            pass
+
+        try:
+            # put the new frame in there.
+            self.qs[video].put_nowait(data)
+        except Full:
+            return
+        except KeyError:
+            return
+        # if (cur_time-self.last_update)>self.ifps:
+        #     try:
+        #         self.vid_widgets[video].setImage(data)
+        #         #self.vid_widgets[video].update()
+        #     except KeyError:
+        #         return
+        #     self.last_update = cur_time
+            #self.update()
+            #self.app.processEvents()
+
+    def release(self):
+        self.quitting.set()
+
+
+
 
 
 
