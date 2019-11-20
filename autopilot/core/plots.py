@@ -764,7 +764,6 @@ class Video(QtGui.QWidget):
         last_time = 0
         this_time = 0
         while not self.quitting.is_set():
-            #pdb.set_trace()
             for vid, q in self.qs.items():
                 data = None
                 try:
@@ -776,7 +775,6 @@ class Video(QtGui.QWidget):
                 except KeyError:
                     pass
 
-            #self.app.processEvents()
             this_time = time()
             sleep(max(self.ifps-(this_time-last_time), 0))
             last_time = this_time
