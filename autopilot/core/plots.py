@@ -366,6 +366,7 @@ class Plot(QtGui.QWidget):
         if 'video' in self.plot_params.keys():
             self.videos = self.plot_params['video']
             self.video = VideoCV(self.plot_params['video'], parent=self)
+            self.video.start()
 
 
         self.state = 'RUNNING'
@@ -838,6 +839,7 @@ class VideoCV(mp.Process):
 
         img_array = None
         while not self.quitting.is_set():
+            pdb.set_trace()
             for vid, q in self.qs.items():
                 try:
                     data = q.get_nowait()
@@ -904,7 +906,7 @@ class VideoCV(mp.Process):
             #self.update()
             #self.app.processEvents()
 
-    def release(self):
+    def close(self):
         self.quitting.set()
 
 
