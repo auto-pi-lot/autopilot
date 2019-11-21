@@ -474,7 +474,8 @@ class Plot(QtGui.QWidget):
         """
 
         if (value in ('STOPPING', 'IDLE')) and self.state == 'RUNNING':
-            self.l_stop({})
+            #self.l_stop({})
+            pass
 
 
 
