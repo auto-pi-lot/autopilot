@@ -517,9 +517,9 @@ class Terminal(QtGui.QMainWindow):
         if value['pilot'] in self.pilots.keys():
             if 'state' not in self.pilots[value['pilot']].keys():
                 self.pilots[value['pilot']]['state'] = value['state']
-                self.control_panel.panels[value['pilot']].button.set_state(value['state'])
+                #self.control_panel.panels[value['pilot']].button.set_state(value['state'])
             elif value['state'] != self.pilots[value['pilot']]['state']:
-                self.control_panel.panels[value['pilot']].button.set_state(value['state'])
+                #self.control_panel.panels[value['pilot']].button.set_state(value['state'])
                 self.pilots[value['pilot']]['state'] = value['state']
 
             
