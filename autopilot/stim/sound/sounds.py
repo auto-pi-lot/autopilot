@@ -499,7 +499,9 @@ class Noise(BASE_CLASS):
             self.table = self.table_wrap(noiser)
         elif self.server_type == 'jack':
             self.get_nsamples()
-            self.table = self.amplitude * np.random.rand(self.nsamples)
+            # rand generates from 0 to 1, so subtract 0.5, double to get -1 to 1,
+            # then multiply by amplitude.
+            self.table = self.amplitude * ((np.random.rand(self.nsamples)-0.5)*2.0).astype(np.float32)
             self.chunk()
 
         self.initialized = True
