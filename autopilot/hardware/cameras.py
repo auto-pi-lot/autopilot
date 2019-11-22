@@ -511,8 +511,8 @@ class Camera_Spin(mp.Process):
             except PySpin.SpinnakerException:
                 warnings.warn('Average binning not supported, using sum')
 
-            self.cam.BinningHorizontal.SetValue(int(bin[0]))
-            self.cam.BinningVertical.SetValue(int(bin[1]))
+            self.cam.BinningHorizontal.SetValue(int(self.bin[0]))
+            self.cam.BinningVertical.SetValue(int(self.bin[1]))
 
         # exposure time is in microseconds, can be not given (90% fps interval used)
         # given as a proportion (0-1) or given as an absolute value
