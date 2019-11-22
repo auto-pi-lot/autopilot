@@ -353,7 +353,7 @@ class autopilot:
         threading.Thread(target=self.calibrate_port,args=(port, n_clicks, open_dur, iti)).start()
 
     def calibrate_port(self, port_name, n_clicks, open_dur, iti):
-        pin_num = prefs.PINS['PORTS'][port_name]
+        pin_num = prefs.HARDWARE['PORTS'][port_name]
         port = hardware.Solenoid(pin_num, duration=int(open_dur))
         msg = {'click_num': 0,
                'pilot': self.name,
@@ -536,14 +536,14 @@ class autopilot:
 
     def blank_LEDs(self):
         """
-        If any 'LEDS' are defined in `prefs.PINS` ,
+        If any 'LEDS' are defined in `prefs.HARDWARE` ,
         instantiate them, set their color to [0,0,0],
         and then release them.
         """
-        if 'LEDS' not in prefs.PINS.keys():
+        if 'LEDS' not in prefs.HARDWARE.keys():
             return
 
-        for position, pins in prefs.PINS['LEDS'].items():
+        for position, pins in prefs.HARDWARE['LEDS'].items():
             led = hardware.LED_RGB(pins=pins)
             time.sleep(1.)
             led.set_color(col=[0,0,0])

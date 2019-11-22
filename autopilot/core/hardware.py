@@ -166,7 +166,7 @@ class Hardware(object):
         but we can get its name from prefs
         """
 
-        our_type = prefs.PINS[self.type]
+        our_type = prefs.HARDWARE[self.type]
         for name, pin in our_type.items():
             if pin == BCM_TO_BOARD[self.pin]:
                 return name

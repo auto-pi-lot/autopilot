@@ -115,7 +115,7 @@ class Free_Water(Task):
         self.stages = itertools.cycle(stage_list)
 
         # Init hardware
-        self.pins = {}
+        self.hardware = {}
         self.pin_id = {} # Inverse pin dictionary
         self.init_hardware()
 
@@ -149,7 +149,7 @@ class Free_Water(Task):
             self.target = random.choice(other_ports)
 
         # Set triggers and set the target LED to green.
-        self.triggers[self.target] = self.pins['PORTS'][self.target].open
+        self.triggers[self.target] = self.hardware['PORTS'][self.target].open
         self.set_leds({self.target: [0, 255, 0]})
 
         # Return data
@@ -179,7 +179,7 @@ class Free_Water(Task):
         """
         When shutting down, release all hardware objects and turn LEDs off.
         """
-        for k, v in self.pins.items():
+        for k, v in self.hardware.items():
             for pin, obj in v.items():
                 if k == "LEDS":
                     obj.set_color([0,0,0])
