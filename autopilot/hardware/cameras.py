@@ -288,6 +288,7 @@ class Camera_OpenCV(mp.Process):
                 while not write_queue.empty():
                     if not checked_empty:
                         Warning('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
+                        sys.stderr.flush()
                         checked_empty = True
                     time.sleep(0.1)
                 Warning('Writer finished, closing')
@@ -788,6 +789,7 @@ class Camera_Spin(object):
                 while not write_queue.empty():
                     if not checked_empty:
                         Warning('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
+                        sys.stderr.flush()
                         checked_empty = True
                     time.sleep(0.1)
                 Warning('Writer finished, closing')
@@ -839,8 +841,10 @@ class Camera_Spin(object):
         if hasattr(self, 'capture_thread'):
             if self.capture_thread.is_alive():
                 Warning("Capture thread has not exited yet, waiting for that to happen")
+                sys.stderr.flush()
                 self.capture_thread.join()
                 Warning("Capture thread exited successfully!")
+                sts.stderr.flush()
 
         # release the net_node
         if self.networked or self.node:
