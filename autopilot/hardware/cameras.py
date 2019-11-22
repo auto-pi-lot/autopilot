@@ -920,7 +920,8 @@ class Video_Writer(mp.Process):
                 '-vcodec': 'libx264',
                 '-pix_fmt': 'yuv420p',
                 '-r': str(self.fps),
-                '-preset': 'veryfast'
+                '-preset': 'ultrafast',
+                '-crf': '20'
             },
             verbosity=0
         )
