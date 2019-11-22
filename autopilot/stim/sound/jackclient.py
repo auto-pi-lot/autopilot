@@ -138,7 +138,7 @@ class JackClient(mp.Process):
         globals()['PLAY'] = self.play_evt
         globals()['STOP'] = self.stop_evt
         globals()['CONTINUOUS'] = self.continuous
-        globals()['CONTINOUS_QUEUE'] = self.continuous_q
+        globals()['CONTINUOUS_QUEUE'] = self.continuous_q
         globals()['CONTINUOUS_LOOP'] = self.continuous_loop
 
     def boot_server(self):
