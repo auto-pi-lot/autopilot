@@ -208,7 +208,7 @@ class Camera_OpenCV(mp.Process):
             writer.start()
 
         if self.networked or self.stream:
-            #self.init_networking()
+            self.init_networking()
             self.node.send(key='STATE', value='CAPTURING')
 
         if self.stream:
@@ -305,6 +305,11 @@ class Camera_OpenCV(mp.Process):
         if self.capturing.is_set():
             Warning("Camera is already capturing!")
             return
+
+        # release net node so it can be recreated in process
+        if self.networked:
+            if isinstance(self.node, Net_Node):
+                self.node.release()
 
         # change values if they've been given to us, otherwise keep init values
         if write is not None:
