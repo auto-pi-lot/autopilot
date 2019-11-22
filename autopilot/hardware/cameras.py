@@ -252,9 +252,9 @@ class Camera_OpenCV(mp.Process):
 
                 if self.write:
                     if self.blosc:
-                        write_queue.put_nowait((timestamp, blosc.pack_array(self._frame, clevel=5)))
+                        write_queue.put_nowait((timestamp, blosc.pack_array(frame, clevel=5)))
                     else:
-                        write_queue.put_nowait((timestamp, self._frame))
+                        write_queue.put_nowait((timestamp, frame))
 
                 if self.stream:
                     stream_q.put_nowait({'timestamp':timestamp,
