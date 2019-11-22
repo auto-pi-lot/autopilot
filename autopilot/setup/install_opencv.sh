@@ -30,7 +30,7 @@ sudo apt-get install -y build-essential cmake ccache unzip pkg-config \
     libatlas-base-dev gfortran \
     python2-dev python-numpy
 
-python -m pip install numpy
+#python -m pip install numpy
 
 echo -e "${RED}    Cloning OpenCV\n${NC}"
 

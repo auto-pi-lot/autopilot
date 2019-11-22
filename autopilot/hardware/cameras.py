@@ -143,7 +143,7 @@ class Camera_OpenCV(mp.Process):
         # else:
         #     write = True
 
-        self.capture(write=True)
+        self.capture()
 
     def l_stop(self, val):
         self.release()
@@ -229,63 +229,65 @@ class Camera_OpenCV(mp.Process):
             start_time = time.time()
             end_time = start_time+self.timed
 
+        try:
+            while not self.stopping.is_set():
+                try:
+                    ret, frame = self.vid.read()
+                except Exception as e:
+                    print(e)
+                    continue
 
-        while not self.stopping.is_set():
-            try:
-                ret, frame = self.vid.read()
-            except Exception as e:
-                print(e)
-                continue
+                if not ret:
+                    Warning("No frame grabbed :(")
+                    continue
 
-            if not ret:
-                Warning("No frame grabbed :(")
-                continue
+                if opencv_timestamps:
+                    timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
+                else:
+                    timestamp = datetime.now().isoformat()
 
-            if opencv_timestamps:
-                timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
-            else:
-                timestamp = datetime.now().isoformat()
+                if self.write:
+                    write_queue.put_nowait((timestamp, frame))
+
+                if self.stream:
+                    stream_q.put_nowait({'timestamp':timestamp,
+                                         self.name:frame})
+
+                if self.queue:
+                    if self.queue_single:
+                        # if just making the most recent frame available in queue,
+                        # pull previous frame if still there
+                        try:
+                            _ = self.q.get_nowait()
+                        except Empty:
+                            pass
+                    self.q.put_nowait((timestamp, frame))
+
+                if self.timed:
+                    if time.time() >= end_time:
+                        self.stopping.set()
+
+        finally:
+            # closing routine...
+            if self.stream:
+                stream_q.put('END')
+
+            if self.networked:
+                self.node.send(key='STATE', value='STOPPING')
 
             if self.write:
-                write_queue.put_nowait((timestamp, frame))
+                write_queue.put_nowait('END')
+                checked_empty = False
+                while not write_queue.empty():
+                    if not checked_empty:
+                        Warning('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
+                        checked_empty = True
+                    time.sleep(0.1)
+                Warning('Writer finished, closing')
 
-            if self.stream:
-                stream_q.put_nowait({'timestamp':timestamp,
-                                     self.name:frame})
+            self.capturing.clear()
 
-            if self.queue:
-                if self.queue_single:
-                    # if just making the most recent frame available in queue,
-                    # pull previous frame if still there
-                    try:
-                        _ = self.q.get_nowait()
-                    except Empty:
-                        pass
-                self.q.put_nowait((timestamp, frame))
-
-            if self.timed:
-                if time.time() >= end_time:
-                    self.stopping.set()
-
-        # closing routine...
-
-        if self.write:
-            write_queue.put_nowait('END')
-            checked_empty = False
-            while not write_queue.empty():
-                if not checked_empty:
-                    Warning('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
-                    checked_empty = True
-                time.sleep(0.1)
-            Warning('Writer finished, closing')
-
-        if self.stream:
-            stream_q.put('END')
-
-        if self.networked:
-            self.node.send(key='STATE', value='STOPPING')
-
-        self.capturing.clear()
+            self.vid.release()
 
 
 
@@ -548,7 +550,7 @@ class Camera_Spin(object):
         )
 
     def l_start(self, val):
-        self.capture(write=True)
+        self.capture()
 
     def l_stop(self, val):
         self.release()
@@ -734,51 +736,49 @@ class Camera_Spin(object):
 
         # start acquisition
         #timestamps = []
-        self.cam.BeginAcquisition()
-        while not self.quitting.is_set():
-            img = self.cam.GetNextImage()
-            timestamp = img.GetTimeStamp() / float(1e9)
-            #timestamps.append(this_timestamp)
-            self._frame = img.GetNDArray()
-            self._timestamp = timestamp
+        try:
+            self.cam.BeginAcquisition()
+            while not self.quitting.is_set():
+                img = self.cam.GetNextImage()
+                timestamp = img.GetTimeStamp() / float(1e9)
+                #timestamps.append(this_timestamp)
+                self._frame = img.GetNDArray()
+                self._timestamp = timestamp
 
-            img.Release()
-            if self.write:
-                write_queue.put_nowait((timestamp, self._frame))
+                img.Release()
+                if self.write:
+                    write_queue.put_nowait((timestamp, self._frame))
 
+                if self.stream:
+                    stream_q.put_nowait({'timestamp':self._timestamp,
+                                         self.name:self._frame})
+
+                if self.timed:
+                    if time.time() >= end_time:
+                        self.quitting.set()
+                # else:
+                #     img.Release()
+
+        finally:
             if self.stream:
-                stream_q.put_nowait({'timestamp':self._timestamp,
-                                     self.name:self._frame})
+                stream_q.put('END')
 
-            if self.timed:
-                if time.time() >= end_time:
-                    self.quitting.set()
-            # else:
-            #     img.Release()
+            if self.networked:
+                self.node.send(key='STATE', value='STOPPING')
 
+            if self.write:
+                write_queue.put_nowait('END')
+                checked_empty = False
+                while not write_queue.empty():
+                    if not checked_empty:
+                        Warning('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
+                        checked_empty = True
+                    time.sleep(0.1)
+                Warning('Writer finished, closing')
 
+            self.cam.EndAcquisition()
 
-        self.cam.EndAcquisition()
-
-
-        if self.write:
-            write_queue.put_nowait('END')
-            checked_empty = False
-            while not write_queue.empty():
-                if not checked_empty:
-                    Warning('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
-                    checked_empty = True
-                time.sleep(0.1)
-            Warning('Writer finished, closing')
-
-        if self.stream:
-            stream_q.put('END')
-
-
-        if self.networked:
-            self.node.send(key='STATE', value='STOPPING')
-
-        self.capturing = False
+            self.capturing = False
 
 
     @property
@@ -814,7 +814,11 @@ class Camera_Spin(object):
         # FIXME: Should check if finished writing to video before deleting tmp dir
         #os.rmdir(self.tmp_dir)
         # set quit flag to end stream thread if any.
-        self.quitting.set()
+        try:
+            self.quitting.set()
+        except AttributeError:
+            # if we're deleting, we will probs not have some of our objects anymore
+            Warning('Release called, but self.quitting no longer exists')
 
         if hasattr(self, 'capture_thread'):
             if self.capture_thread.is_alive():
@@ -899,27 +903,31 @@ class Video_Writer(mp.Process):
             verbosity=0
         )
 
-        for input in iter(self.q.get, 'END'):
-            try:
+        try:
+            for input in iter(self.q.get, 'END'):
+                try:
 
-                if self.given_timestamps:
-                    self.timestamps.append(input[0])
-                    vid_out.writeFrame(input[1])
-                else:
-                    self.timestamps.append(datetime.now().isoformat())
-                    vid_out.writeFrame(input)
+                    if self.given_timestamps:
+                        self.timestamps.append(input[0])
+                        vid_out.writeFrame(input[1])
+                    else:
+                        self.timestamps.append(datetime.now().isoformat())
+                        vid_out.writeFrame(input)
 
-            except:
-                # TODO: Too general
-                break
+                except:
+                    # TODO: Too general
+                    break
 
-        vid_out.close()
-        # save timestamps as .csv
-        ts_path = os.path.splitext(self.path)[0] + '.csv'
-        with open(ts_path, 'w') as ts_file:
-            csv_writer = csv.writer(ts_file)
-            for ts in self.timestamps:
-                csv_writer.writerow([ts])
+        finally:
+
+            # save timestamps as .csv
+            ts_path = os.path.splitext(self.path)[0] + '.csv'
+            with open(ts_path, 'w') as ts_file:
+                csv_writer = csv.writer(ts_file)
+                for ts in self.timestamps:
+                    csv_writer.writerow([ts])
+
+            vid_out.close()
 
 
 def list_spinnaker_cameras():
