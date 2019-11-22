@@ -419,7 +419,7 @@ class Camera_OpenCV(mp.Process):
 
 
 
-class Camera_Spin(object):
+class Camera_Spin(mp.Process):
     """
     A camera that uses the Spinnaker SDK + PySpin (eg. FLIR cameras)
 
@@ -448,15 +448,30 @@ class Camera_Spin(object):
             fps (int): frames per second. If None, automatic exposure and continuous acquisition are used.
             exposure (int, float): Either a float from 0-1 to set the proportion of the frame interval (0.9 is default) or absolute time in us
         """
+        super(Camera_Spin, self).__init__()
 
         # FIXME: Hardcoding just for testing
         #serial = '19269891'
+        self.name = name
         self.serial = serial
 
         self.write = write
         self.stream = stream
         self.timed = timed
         self.blosc = blosc
+
+        self.bin = bin
+        self.exposure = exposure
+        self.fps = fps
+        self.cam_trigger = cam_trigger
+        self.networked = networked
+
+        # used to quit the stream thread
+        self.quitting =  mp.Event()
+        self.quitting.clear()
+
+
+    def init_camera(self):
 
         # find our camera!
         # get the spinnaker system handle
@@ -486,7 +501,7 @@ class Camera_Spin(object):
         self.cam.AcquisitionMode.SetValue(PySpin.AcquisitionMode_Continuous)
 
         # configure binning - should come before fps because fps is dependent on binning
-        if bin:
+        if self.bin:
             self.cam.BinningSelector.SetValue(PySpin.BinningSelector_All)
             try:
                 self.cam.BinningHorizontalMode.SetValue(PySpin.BinningHorizontalMode_Average)
@@ -499,32 +514,28 @@ class Camera_Spin(object):
 
         # exposure time is in microseconds, can be not given (90% fps interval used)
         # given as a proportion (0-1) or given as an absolute value
-        if not exposure:
+        if not self.exposure:
             # exposure = (1.0/fps)*.9*1e6
             self.cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Continuous)
         else:
-            if exposure < 1:
+            if self.exposure < 1:
                 # proportional
-                exposure = (1.0 / fps) * exposure * 1e6
+                self.exposure = (1.0 / self.fps) * self.exposure * 1e6
 
             self.cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Off)
             self.cam.ExposureMode.SetValue(PySpin.ExposureMode_Timed)
-            self.cam.ExposureTime.SetValue(exposure)
+            self.cam.ExposureTime.SetValue(self.exposure)
 
         # if fps is set, change to fixed fps mode
-        if fps:
+        if self.fps:
             self.cam.AcquisitionFrameRateEnable.SetValue(True)
-            self.cam.AcquisitionFrameRate.SetValue(fps)
-        self.fps = fps
+            self.cam.AcquisitionFrameRate.SetValue(self.fps)
+
 
         # if we want to use hardware triggers, handle that now
-        self.cam_trigger = cam_trigger
         if self.cam_trigger:
             self.init_trigger(self.cam_trigger)
 
-        # used to quit the stream thread
-        self.quitting = threading.Event()
-        self.quitting.clear()
 
         # event to signal when _capture
 
@@ -535,11 +546,9 @@ class Camera_Spin(object):
         self.capturing = False
         self._frame = None
 
-        self.name = name
         if self.name is None:
             self.name = "camera_{}".format(self.serial)
 
-        self.networked = networked
         self.node = None
         self.listens = None
 
@@ -547,6 +556,10 @@ class Camera_Spin(object):
 
         if self.networked or self.stream:
             self.init_networking()
+
+        #########
+        # process management stuff
+
 
 
     def init_networking(self):
@@ -569,16 +582,6 @@ class Camera_Spin(object):
 
     def l_stop(self, val):
         self.release()
-
-    @property
-    def bin(self):
-        return (self.cam.BinningHorizontal.GetValue(), self.cam.BinningHorizontal.GetValue())
-
-    @bin.setter
-    def bin(self, new_bin):
-        # TODO: Check if acquiring yno
-        self.cam.BinningHorizontal.SetValue(int(new_bin[0]))
-        self.cam.BinningVertical.SetValue(int(new_bin[1]))
 
 
     @property
@@ -710,13 +713,16 @@ class Camera_Spin(object):
         if timed is not None:
             self.timed = timed
 
-        self.capture_thread = threading.Thread(target=self._capture)
+        #self.capture_thread = threading.Thread(target=self._capture)
         #self.capture_thread.setDaemon(True)
-        self.capture_thread.start()
         self.capturing = True
+        self.start()
 
-    def _capture(self):
+
+    def run(self):
+
         self.quitting.clear()
+        self.init_camera()
 
         if self.networked or self.stream:
             self.node.send(key='STATE', value='CAPTURING')
@@ -840,7 +846,7 @@ class Camera_Spin(object):
             warnings.warn('Release called, but self.quitting no longer exists')
 
         if hasattr(self, 'capture_thread'):
-            if self.capture_thread.is_alive():
+            if self.is_alive():
                 warnings.warn("Capture thread has not exited yet, waiting for that to happen")
                 sys.stderr.flush()
                 self.capture_thread.join()
