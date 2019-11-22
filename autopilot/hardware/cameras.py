@@ -954,11 +954,12 @@ class Video_Writer(mp.Process):
                 '-r': str(self.fps),
         },
             outputdict={
-                '-vcodec': 'libx264',
+                '-vcodec': 'rawvideo',
+                #'-vcodec': 'libx264',
                 #'-vcodec': 'h264_omx',
                 '-pix_fmt': 'yuv420p',
                 '-r': str(self.fps),
-                '-preset': 'ultrafast',
+                #'-preset': 'ultrafast',
             },
             verbosity=1
         )
