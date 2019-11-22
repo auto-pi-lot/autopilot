@@ -4,6 +4,7 @@ import sys
 import os
 import csv
 from skvideo import io
+from skvideo.utils import vshape
 import numpy as np
 import base64
 from datetime import datetime
@@ -465,6 +466,7 @@ class Camera_Spin(mp.Process):
         self.fps = fps
         self.cam_trigger = cam_trigger
         self.networked = networked
+        self.node = None
 
         # used to quit the stream thread
         self.quitting =  mp.Event()
@@ -891,6 +893,32 @@ class Camera_Spin(mp.Process):
             traceback.print_exc(file=sys.stdout)
 
 
+class FastWriter(io.FFmpegWriter):
+    def __init__(self, *args, **kwargs):
+        super(FastWriter, self).__init__(*args, **kwargs)
+
+
+    def writeFrame(self, im):
+        """Sends ndarray frames to FFmpeg
+        """
+        vid = vshape(im)
+
+        if not self.warmStarted:
+            T, M, N, C = vid.shape
+            self._warmStart(M, N, C, im.dtype)
+
+        #vid = vid.clip(0, (1 << (self.dtype.itemsize << 3)) - 1).astype(self.dtype)
+
+        try:
+            self._proc.stdin.write(vid.tostring())
+        except IOError as e:
+            # Show the command and stderr from pipe
+            msg = '{0:}\n\nFFMPEG COMMAND:\n{1:}\n\nFFMPEG STDERR ' \
+                  'OUTPUT:\n'.format(e, self._cmd)
+            raise IOError(msg)
+
+
+
 class Video_Writer(mp.Process):
     def __init__(self, q, path, fps=None, timestamps=True, blosc=True):
         """
@@ -920,7 +948,8 @@ class Video_Writer(mp.Process):
 
 
         out_vid_fn = self.path
-        vid_out = io.FFmpegWriter(out_vid_fn,
+        #vid_out = io.FFmpegWriter(out_vid_fn,
+        vid_out = FastWriter(out_vid_fn,
             inputdict={
                 '-r': str(self.fps),
         },
@@ -929,7 +958,6 @@ class Video_Writer(mp.Process):
                 '-pix_fmt': 'yuv420p',
                 '-r': str(self.fps),
                 '-preset': 'ultrafast',
-                '-crf': '20'
             },
             verbosity=0
         )
