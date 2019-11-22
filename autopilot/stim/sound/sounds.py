@@ -613,7 +613,7 @@ class Gap(BASE_CLASS):
     type = "Gap"
     PARAMS = ['duration']
 
-    def __init__(self, duration):
+    def __init__(self, duration, **kwargs):
         """
 
         Args:
