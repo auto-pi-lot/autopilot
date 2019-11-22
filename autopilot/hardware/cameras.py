@@ -10,6 +10,7 @@ from datetime import datetime
 import multiprocessing as mp
 import time
 import traceback
+import blosc
 
 
 
@@ -63,7 +64,7 @@ class Camera_OpenCV(mp.Process):
     output = False
 
     def __init__(self, camera_idx=0, write=False, stream=False, timed=False, name=None, networked=False, queue=False,
-                 queue_size = 128, queue_single = True,
+                 queue_size = 128, queue_single = True, blosc=True,
                  *args, **kwargs):
         super(Camera_OpenCV, self).__init__()
 
@@ -78,6 +79,7 @@ class Camera_OpenCV(mp.Process):
         self.write = write
         self.stream = stream
         self.timed = timed
+        self.blosc = blosc
 
         self._v4l_info = None
 
@@ -202,7 +204,7 @@ class Camera_OpenCV(mp.Process):
 
         if self.write:
             write_queue = mp.Queue()
-            writer = Video_Writer(write_queue, self.output_filename, self.fps, timestamps=True)
+            writer = Video_Writer(write_queue, self.output_filename, self.fps, timestamps=True, blosc=self.blosc)
             writer.start()
 
         if self.networked or self.stream:
@@ -249,7 +251,10 @@ class Camera_OpenCV(mp.Process):
                     timestamp = datetime.now().isoformat()
 
                 if self.write:
-                    write_queue.put_nowait((timestamp, frame))
+                    if self.blosc:
+                        write_queue.put_nowait((timestamp, blosc.pack_array(self._frame, clevel=5)))
+                    else:
+                        write_queue.put_nowait((timestamp, self._frame))
 
                 if self.stream:
                     stream_q.put_nowait({'timestamp':timestamp,
@@ -426,7 +431,7 @@ class Camera_Spin(object):
     input = True
     output = False
 
-    def __init__(self, serial=None, name=None, write=False, stream = False, timed=False, bin=(4, 4), fps=None, exposure=None, cam_trigger=None, networked=False):
+    def __init__(self, serial=None, name=None, write=False, stream = False, timed=False, bin=(4, 4), fps=None, exposure=None, cam_trigger=None, networked=False, blosc=True):
         """
 
 
@@ -444,6 +449,7 @@ class Camera_Spin(object):
         self.write = write
         self.stream = stream
         self.timed = timed
+        self.blosc = blosc
 
         # find our camera!
         # get the spinnaker system handle
@@ -728,7 +734,7 @@ class Camera_Spin(object):
 
         if self.write:
             write_queue = mp.Queue()
-            writer = Video_Writer(write_queue, self.output_filename, timestamps=True)
+            writer = Video_Writer(write_queue, self.output_filename, timestamps=True, blosc=self.blosc)
             writer.start()
 
         if isinstance(self.timed, int) or isinstance(self.timed, float):
@@ -749,7 +755,10 @@ class Camera_Spin(object):
 
                 img.Release()
                 if self.write:
-                    write_queue.put_nowait((timestamp, self._frame))
+                    if self.blosc:
+                        write_queue.put_nowait((timestamp, blosc.pack_array(self._frame, clevel=5)))
+                    else:
+                        write_queue.put_nowait((timestamp, self._frame))
 
                 if self.stream:
                     stream_q.put_nowait({'timestamp':self._timestamp,
@@ -865,7 +874,7 @@ class Camera_Spin(object):
 
 
 class Video_Writer(mp.Process):
-    def __init__(self, q, path, fps=None, timestamps=True):
+    def __init__(self, q, path, fps=None, timestamps=True, blosc=True):
         """
 
         :param q:
@@ -880,6 +889,7 @@ class Video_Writer(mp.Process):
         self.fps = fps
         self.given_timestamps = timestamps
         self.timestamps = []
+        self.blosc = blosc
 
 
         if fps is None:
@@ -911,12 +921,20 @@ class Video_Writer(mp.Process):
 
                     if self.given_timestamps:
                         self.timestamps.append(input[0])
-                        vid_out.writeFrame(input[1])
+                        if self.blosc:
+                            vid_out.writeFrame(blosc.unpack_array(input[1]))
+                        else:
+                            vid_out.writeFrame(input[1])
                     else:
                         self.timestamps.append(datetime.now().isoformat())
-                        vid_out.writeFrame(input)
+                        if self.blosc:
+                            vid_out.writeFrame(blosc.unpack_array(input))
+                        else:
+                            vid_out.writeFrame(input)
 
-                except:
+                except Exception as e:
+                    print(e)
+                    traceback.print_tb()
                     # TODO: Too general
                     break
 
