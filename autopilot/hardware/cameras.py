@@ -470,6 +470,8 @@ class Camera_Spin(mp.Process):
         self.quitting =  mp.Event()
         self.quitting.clear()
 
+        self.capturing = False
+
 
     def init_camera(self):
 
