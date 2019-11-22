@@ -740,7 +740,7 @@ class Camera_Spin(object):
 
         if self.write:
             write_queue = mp.Queue()
-            writer = Video_Writer(write_queue, self.output_filename, timestamps=True, blosc=self.blosc)
+            writer = Video_Writer(write_queue, self.output_filename, fps=self.fps, timestamps=True, blosc=self.blosc)
             writer.start()
 
         if isinstance(self.timed, int) or isinstance(self.timed, float):
