@@ -7,7 +7,7 @@ import threading
 from autopilot.core import hardware
 from autopilot.tasks import Task
 from autopilot.stim import init_manager
-from autopilot.stim import sounds
+from autopilot.stim.sound import sounds
 from collections import OrderedDict as odict
 from autopilot.core.networking import Net_Node
 
