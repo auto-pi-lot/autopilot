@@ -166,6 +166,7 @@ if server_type in ("jack", "docs"):
             self.trigger = None
             self.nsamples = None
             self.padded = False # whether or not the sound was padded with zeros when chunked
+            self.continuous = False
 
 
             self.fs = jackclient.FS
@@ -175,7 +176,7 @@ if server_type in ("jack", "docs"):
             self.q_lock = jackclient.Q_LOCK
             self.play_evt = jackclient.PLAY
             self.stop_evt = jackclient.STOP
-            self.continuous = jackclient.CONTINUOUS
+            self.continuous_flag = jackclient.CONTINUOUS
             self.continuous_q = jackclient.CONTINUOUS_QUEUE
             self.continuous_loop = jackclient.CONTINUOUS_LOOP
 
@@ -378,7 +379,8 @@ if server_type in ("jack", "docs"):
                 self.continuous_loop.clear()
 
             # tell the sound server that it has a continuous sound now
-            self.continuous.set()
+            self.continuous_flag.set()
+            self.continuous = True
 
 
 
@@ -395,7 +397,18 @@ if server_type in ("jack", "docs"):
             if not self.stop_evt.is_set():
                 self.stop_evt.set()
 
+            if self.continuous:
+                while not self.continuous_q.empty():
+                    try:
+                        _ = self.continuous_q.get_nowait()
+                    except Empty:
+                        # normal, get until it's empty
+                        break
+                self.buffered_continuous = False
+                self.continuous_flag.clear()
+
             self.table = None
+            self.initialized = False
 
 
 

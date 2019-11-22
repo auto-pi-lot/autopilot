@@ -7,6 +7,7 @@ import threading
 from autopilot.core import hardware
 from autopilot.tasks import Task
 from autopilot.stim import init_manager
+from autopilot.stim import sounds
 from collections import OrderedDict as odict
 from autopilot.core.networking import Net_Node
 
@@ -120,7 +121,7 @@ class Nafc(Task):
 
     def __init__(self, stage_block=None, stim=None, reward=50, req_reward=False,
                  punish_stim=False, punish_dur=100, correction=False, correction_pct=50.,
-                 bias_mode=False, bias_threshold=20, current_trial=0, **kwargs):
+                 bias_mode=False, bias_threshold=20, current_trial=0, stim_light=True, **kwargs):
         """
         Args:
             stage_block (:class:`threading.Event`): Signal when task stages complete.
@@ -141,6 +142,7 @@ class Nafc(Task):
             bias_mode (False, "thresholded_linear"): False, or some bias correction type (see :class:`.managers.Bias_Correction` )
             bias_threshold (float): If using a bias correction mode, what threshold should bias be corrected for?
             current_trial (int): If starting at nonzero trial number, which?
+            stim_light (bool): Should the LED be turned blue while the stimulus is playing?
             **kwargs:
         """
         super(Nafc, self).__init__()
@@ -160,6 +162,7 @@ class Nafc(Task):
         self.correction_pct = float(correction_pct)/100
         self.bias_mode      = bias_mode
         self.bias_threshold = float(bias_threshold)/100
+        self.stim_light      = bool(stim_light)
         #self.timeout        = int(timeout)
 
         # Variable Parameters
@@ -269,13 +272,14 @@ class Nafc(Task):
 
         # Set sound trigger and LEDs
         # We make two triggers to play the sound and change the light color
-        change_to_blue = lambda: self.pins['LEDS']['C'].set_color([0,0,255])
-
         # set triggers
-        if self.req_reward is True:
-            self.triggers['C'] = [self.stim.play, self.stim_start, change_to_blue, self.pins['PORTS']['C'].open]
-        else:
-            self.triggers['C'] = [self.stim.play, self.stim_start, change_to_blue]
+        self.triggers['C'] = [self.stim.play, self.stim_start]
+        if self.stim_light:
+            change_to_blue = lambda: self.pins['LEDS']['C'].set_color([0, 0, 255])
+            self.triggers['C'].append(change_to_blue)
+        if self.req_reward:
+            self.triggers['C'].append(self.pins['PORTS']['C'].open)
+
 
         self.current_trial = self.trial_counter.next()
         data = {
@@ -417,7 +421,8 @@ class Nafc(Task):
         # Used in punishing leaving early
         self.discrim_playing = False
         #if not self.bailed and self.current_stage == 1:
-        self.set_leds({'L':[0,255,0], 'R':[0,255,0]})
+        if self.stim_light:
+            self.set_leds({'L':[0,255,0], 'R':[0,255,0]})
 
     # def bail_trial(self):
     #     # If a timer ends or the subject pulls out too soon, we punish and bail
@@ -436,6 +441,30 @@ class Nafc(Task):
         """
         for k, v in self.pins['LEDS'].items():
             v.flash(self.punish_dur)
+
+class Nafc_Gap(Nafc):
+    PARAMS = Nafc.PARAMS
+    del PARAMS['punish_stim']
+    PARAMS['noise_amplitude'] = {'tag':'Amplitude of continuous white noise',
+                                 'type': 'float'}
+
+    def __init__(self, noise_amplitude = 0.01, **kwargs):
+
+        # Can't really have a white noise punishment when there is continuous noise
+        kwargs['punish_stim'] = False
+        kwargs['stim_light'] = False
+        super(Nafc_Gap, self).__init__(**kwargs)
+
+        self.noise_amplutude = noise_amplitude
+        self.noise_duration = 10*1000 # 10 seconds
+        self.noise = sounds.Noise(duration=self.noise_duration,
+                                  amplitude=self.noise_amplitude)
+
+        self.noise.play_continuous()
+
+
+
+
 
 #
 # class Nafc_Wheel(Nafc):
