@@ -622,8 +622,17 @@ class Gap(BASE_CLASS):
         super(Gap, self).__init__()
 
         self.duration = float(duration)
+        self.gap_zero = False
 
-        self.init_sound()
+        if self.duration == 0:
+            self.gap_zero = True
+            self.get_nsamples()
+            self.chunks = []
+            self.table = np.ndarray((0,),dtype=np.float32)
+            self.initialized = True
+        else:
+
+            self.init_sound()
 
     def init_sound(self):
         if self.server_type == "pyo":
@@ -637,6 +646,27 @@ class Gap(BASE_CLASS):
         self.chunk(pad=False)
 
         self.initialized = True
+
+    def chunk(self, pad=False):
+        if not self.gap_zero:
+            super(Gap, self).chunk(pad)
+        else:
+            self.padded=False
+
+
+    def buffer(self):
+        if not self.gap_zero:
+            super(Gap, self).buffer()
+        else:
+            self.buffered = True
+
+    def play(self):
+        if not self.gap_zero:
+            super(Gap, self).play()
+        else:
+            if callable(self.trigger):
+                threading.Thread(target=self.wait_trigger).start()
+
 
 
 
