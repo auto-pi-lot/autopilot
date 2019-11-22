@@ -819,7 +819,7 @@ class Camera_Spin(mp.Process):
 
         if new:
             dir = os.path.expanduser('~')
-            self._output_filename = os.path.join(dir, "capture_SN{}_{}.mp4".format(self.serial, datetime.now().strftime("%y%m%d-%H%M%S")))
+            self._output_filename = os.path.join(dir, "capture_SN{}_{}.avi".format(self.serial, datetime.now().strftime("%y%m%d-%H%M%S")))
 
         return self._output_filename
 
@@ -948,17 +948,18 @@ class Video_Writer(mp.Process):
 
 
         out_vid_fn = self.path
-        #vid_out = io.FFmpegWriter(out_vid_fn,
-        vid_out = FastWriter(out_vid_fn,
+        vid_out = io.FFmpegWriter(out_vid_fn,
+        #vid_out = FastWriter(out_vid_fn,
             inputdict={
                 '-r': str(self.fps),
         },
             outputdict={
-                '-vcodec': 'libx264',
+                '-vcodec': 'rawvideo',
+                #'-vcodec': 'libx264',
                 #'-vcodec': 'h264_omx',
                 '-pix_fmt': 'yuv420p',
                 '-r': str(self.fps),
-                '-preset': 'ultrafast',
+                #'-preset': 'ultrafast',
             },
             verbosity=1
         )
