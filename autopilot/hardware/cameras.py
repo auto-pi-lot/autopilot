@@ -844,7 +844,7 @@ class Camera_Spin(object):
                 sys.stderr.flush()
                 self.capture_thread.join()
                 Warning("Capture thread exited successfully!")
-                sts.stderr.flush()
+                sys.stderr.flush()
 
         # release the net_node
         if self.networked or self.node:
