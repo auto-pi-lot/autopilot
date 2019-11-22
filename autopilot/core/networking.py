@@ -643,9 +643,10 @@ class Station(multiprocessing.Process):
 
     def release(self):
         self.closing.set()
+        self.terminate()
 
         # Stopping the loop should kill the process, as it's what's holding us in run()
-        self.loop.stop()
+        #self.loop.stop()
 
 
 class Terminal_Station(Station):
