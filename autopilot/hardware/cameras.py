@@ -808,6 +808,7 @@ class Camera_Spin(mp.Process):
             self.cam.EndAcquisition()
 
             self.capturing = False
+            self._release()
 
 
     @property
@@ -838,24 +839,30 @@ class Camera_Spin(mp.Process):
     def __del__(self):
         self.release()
 
-
     def release(self):
-        # FIXME: Should check if finished writing to video before deleting tmp dir
-        #os.rmdir(self.tmp_dir)
-        # set quit flag to end stream thread if any.
         try:
             self.quitting.set()
         except AttributeError:
             # if we're deleting, we will probs not have some of our objects anymore
             warnings.warn('Release called, but self.quitting no longer exists')
 
-        if hasattr(self, 'capture_thread'):
-            if self.is_alive():
-                warnings.warn("Capture thread has not exited yet, waiting for that to happen")
-                sys.stderr.flush()
-                self.capture_thread.join()
-                warnings.warn("Capture thread exited successfully!")
-                sys.stderr.flush()
+    def _release(self):
+        # FIXME: Should check if finished writing to video before deleting tmp dir
+        #os.rmdir(self.tmp_dir)
+        # set quit flag to end stream thread if any.
+        # try:
+        #     self.quitting.set()
+        # except AttributeError:
+        #     # if we're deleting, we will probs not have some of our objects anymore
+        #     warnings.warn('Release called, but self.quitting no longer exists')
+
+        # if hasattr(self, 'capture_thread'):
+        #     if self.is_alive():
+        #         warnings.warn("Capture thread has not exited yet, waiting for that to happen")
+        #         sys.stderr.flush()
+        #         self.capture_thread.join()
+        #         warnings.warn("Capture thread exited successfully!")
+        #         sys.stderr.flush()
 
         # release the net_node
         if self.networked or self.node:
