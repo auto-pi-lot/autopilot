@@ -826,6 +826,7 @@ class Protocol_Wizard(QtGui.QDialog):
     The available types include:
 
     * **int** - integer
+    * **float** - floating point number
     * **bool** - boolean boolbox
     * **list** - a list of `values` to choose from
     * **sounds** - a :class:`.Sound_Widget` that allows sounds to be defined.
@@ -967,12 +968,14 @@ class Protocol_Wizard(QtGui.QDialog):
             # Make Input Widget depending on type
             # Each Input type needs a different widget type,
             # and each widget type has different methods to get/change values, so we have to do this ugly
-            if v['type'] == 'int' or v['type'] == 'str':
+            if v['type'] == 'int' or v['type'] == 'str' or v['type'] == 'float':
                 rowtag = QtGui.QLabel(v['tag'])
                 input_widget = QtGui.QLineEdit()
                 input_widget.setObjectName(k)
                 if v['type'] == 'int':
                     input_widget.setValidator(QtGui.QIntValidator())
+                elif v['type'] == 'float':
+                    input_widget.setValidator(QtGui.QDoubleValidator())
                 input_widget.editingFinished.connect(self.set_param)
                 if 'value' in v.keys():
                     input_widget.setText(v['value'])
@@ -1174,7 +1177,7 @@ class Graduation_Widget(QtGui.QWidget):
         TODO:
             For now we assume all parameters are defined with a text edit box, so it's not
             clear how we'd do boolean parameters for example. This will be fixed with refactoring
-            the parameter scheme, the first order of business for v0.3.
+            the parameter scheme.
 
         Args:
             params (dict): In the case that :class:`.Protocol_Wizard` switches us back to
