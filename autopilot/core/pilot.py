@@ -533,6 +533,8 @@ class autopilot:
         elif prefs.AUDIOSERVER == 'jack':
             self.server = jackclient.JackClient()
             self.server.start()
+            self.logger.info('Started jack audio server')
+
 
     def blank_LEDs(self):
         """
