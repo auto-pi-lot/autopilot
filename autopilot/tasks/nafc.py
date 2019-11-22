@@ -3,6 +3,7 @@ import datetime
 import itertools
 import tables
 import threading
+from copy import copy
 
 from autopilot.core import hardware
 from autopilot.tasks import Task
@@ -443,7 +444,7 @@ class Nafc(Task):
             v.flash(self.punish_dur)
 
 class Nafc_Gap(Nafc):
-    PARAMS = Nafc.PARAMS
+    PARAMS = copy(Nafc.PARAMS)
     del PARAMS['punish_stim']
     PARAMS['noise_amplitude'] = {'tag':'Amplitude of continuous white noise',
                                  'type': 'float'}
