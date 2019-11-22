@@ -641,6 +641,12 @@ class Station(multiprocessing.Process):
 
         return unwrap2
 
+    def release(self):
+        self.closing.set()
+    
+        # Stopping the loop should kill the process, as it's what's holding us in run()
+        self.loop.stop()
+
 
 class Terminal_Station(Station):
     """
