@@ -220,7 +220,7 @@ class Camera_OpenCV(mp.Process):
             writer.start()
 
         if self.networked or self.stream:
-            self.init_networking()
+            #self.init_networking()
             self.node.send(key='STATE', value='CAPTURING')
 
         if self.stream:
