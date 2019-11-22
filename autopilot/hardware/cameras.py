@@ -11,6 +11,7 @@ import multiprocessing as mp
 import time
 import traceback
 import blosc
+import warnings
 
 
 
@@ -157,7 +158,7 @@ class Camera_OpenCV(mp.Process):
             self.fps = self.vid.get(cv2.CAP_PROP_FPS)
             if self.fps == 0:
                 self.fps = 30
-                Warning('Couldnt get fps from camera, using {} as default'.format(self.fps))
+                warnings.warn('Couldnt get fps from camera, using {} as default'.format(self.fps))
 
         self.shape = (self.vid.get(cv2.CAP_PROP_FRAME_WIDTH),
                       self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -183,7 +184,7 @@ class Camera_OpenCV(mp.Process):
 
     def run(self):
         if self.capturing.is_set():
-            Warning("Already capturing!")
+            warnings.warn("Already capturing!")
             return
 
         self.capturing.set()
@@ -196,7 +197,7 @@ class Camera_OpenCV(mp.Process):
         try:
             timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
         except Exception as e:
-            Warning("Couldn't use opencv timestamps, using system timestamps")
+            warnings.warn("Couldn't use opencv timestamps, using system timestamps")
             opencv_timestamps = False
         if timestamp == 0:
            opencv_timestamps = False
@@ -242,7 +243,7 @@ class Camera_OpenCV(mp.Process):
                     continue
 
                 if not ret:
-                    Warning("No frame grabbed :(")
+                    warnings.warn("No frame grabbed :(")
                     continue
 
                 if opencv_timestamps:
@@ -287,11 +288,11 @@ class Camera_OpenCV(mp.Process):
                 checked_empty = False
                 while not write_queue.empty():
                     if not checked_empty:
-                        Warning('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
+                        warnings.warn('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
                         sys.stderr.flush()
                         checked_empty = True
                     time.sleep(0.1)
-                Warning('Writer finished, closing')
+                warnings.warn('Writer finished, closing')
 
             self.capturing.clear()
 
@@ -304,7 +305,7 @@ class Camera_OpenCV(mp.Process):
     def capture(self, write=None, stream=None, queue=None, queue_size=None, timed=None):
         #if self.capturing == True:
         if self.capturing.is_set():
-            Warning("Camera is already capturing!")
+            warnings.warn("Camera is already capturing!")
             return
 
         # release net node so it can be recreated in process
@@ -466,7 +467,7 @@ class Camera_Spin(object):
         if self.serial:
             self.cam = self.cam_list.GetBySerial(self.serial)
         else:
-            Warning(
+            warnings.warn(
                 'No camera serial number provided, trying to get the first camera.\nAddressing cameras by serial number is STRONGLY recommended to avoid randomly using the wrong one')
             self.serial = 'noserial'
             self.cam = self.cam_list.GetByIndex(0)
@@ -491,7 +492,7 @@ class Camera_Spin(object):
                 self.cam.BinningHorizontalMode.SetValue(PySpin.BinningHorizontalMode_Average)
                 self.cam.BinningVerticalMode.SetValue(PySpin.BinningVerticalMode_Average)
             except PySpin.SpinnakerException:
-                Warning('Average binning not supported, using sum')
+                warnings.warn('Average binning not supported, using sum')
 
             self.cam.BinningHorizontal.SetValue(int(bin[0]))
             self.cam.BinningVertical.SetValue(int(bin[1]))
@@ -697,7 +698,7 @@ class Camera_Spin(object):
 
     def capture(self, write=None, stream=None, timed=None):
         if self.capturing == True:
-            Warning("Camera is already capturing!")
+            warnings.warn("Camera is already capturing!")
             return
 
         if write is not None:
@@ -788,11 +789,11 @@ class Camera_Spin(object):
                 checked_empty = False
                 while not write_queue.empty():
                     if not checked_empty:
-                        Warning('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
+                        warnings.warn('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
                         sys.stderr.flush()
                         checked_empty = True
                     time.sleep(0.1)
-                Warning('Writer finished, closing')
+                warnings.warn('Writer finished, closing')
 
             self.cam.EndAcquisition()
 
@@ -836,14 +837,14 @@ class Camera_Spin(object):
             self.quitting.set()
         except AttributeError:
             # if we're deleting, we will probs not have some of our objects anymore
-            Warning('Release called, but self.quitting no longer exists')
+            warnings.warn('Release called, but self.quitting no longer exists')
 
         if hasattr(self, 'capture_thread'):
             if self.capture_thread.is_alive():
-                Warning("Capture thread has not exited yet, waiting for that to happen")
+                warnings.warn("Capture thread has not exited yet, waiting for that to happen")
                 sys.stderr.flush()
                 self.capture_thread.join()
-                Warning("Capture thread exited successfully!")
+                warnings.warn("Capture thread exited successfully!")
                 sys.stderr.flush()
 
         # release the net_node
@@ -902,7 +903,7 @@ class Video_Writer(mp.Process):
 
 
         if fps is None:
-            Warning('No FPS given, using 30fps by default')
+            warnings.warn('No FPS given, using 30fps by default')
             self.fps = 30
 
     def run(self):
