@@ -13,6 +13,7 @@ import time
 import traceback
 import blosc
 import warnings
+import subprocess
 
 
 
@@ -758,13 +759,13 @@ class Camera_Spin(mp.Process):
             os.makedirs(output_dir)
 
             # create base_path for output images
-            base_path = os.path.join(output_dir, "capture_SN{}_".format(self.serial))
+            base_path = os.path.join(output_dir, "capture_SN{}__".format(self.serial))
+            timestamps = []
 
-
-            write_queue = mp.Queue()
-            writer = Video_Writer(write_queue, base_path+'.mp4', fps=self.fps,
-                                  timestamps=True, directory=True)
-            writer.start()
+            # write_queue = mp.Queue()
+            # writer = Video_Writer(write_queue, base_path+'.mp4', fps=self.fps,
+            #                       timestamps=True, directory=True)
+            # writer.start()
 
         if isinstance(self.timed, int) or isinstance(self.timed, float):
             start_time = time.time()
@@ -779,16 +780,18 @@ class Camera_Spin(mp.Process):
             self.cam.BeginAcquisition()
             while not self.quitting.is_set():
                 img = self.cam.GetNextImage()
-                timestamp = img.GetTimeStamp() / float(1e9)
+                #timestamp = img.GetTimeStamp() / float(1e9)
+                timestamp = img.GetTimeStamp()
                 #timestamps.append(this_timestamp)
                 #self._frame = img.GetNDArray()
                 #self._timestamp = timestamp
 
 
                 if self.write:
-                    outpath = base_path + str(timestamp) + '.png'
+                    outpath = base_path +str(timestamp) + '.png'
                     img.Save(outpath, img_opts)
-                    write_queue.put_nowait((timestamp, outpath))
+                    timestamps.append(timestamp)
+                    #write_queue.put_nowait((timestamp, outpath))
 
                 img.Release()
 
@@ -810,21 +813,19 @@ class Camera_Spin(mp.Process):
             if self.networked:
                 self.node.send(key='STATE', value='STOPPING')
 
+
+
             if self.write:
-                write_queue.put_nowait('END')
-                checked_empty = False
-                while not write_queue.empty():
-                    if not checked_empty:
-                        warnings.warn('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
-                        sys.stderr.flush()
-                        checked_empty = True
-                    time.sleep(0.1)
-                warnings.warn('Writer finished, closing')
+                print('Writing images in {} to {}'.format(output_dir, output_dir+'.mp4'))
+                writer = Directory_Writer(output_dir, fps=self.fps)
+                writer.encode()
+
 
             self.cam.EndAcquisition()
-
             self.capturing = False
             self._release()
+
+
 
 
     @property
@@ -939,6 +940,39 @@ class FastWriter(io.FFmpegWriter):
             msg = '{0:}\n\nFFMPEG COMMAND:\n{1:}\n\nFFMPEG STDERR ' \
                   'OUTPUT:\n'.format(e, self._cmd)
             raise IOError(msg)
+
+
+class Directory_Writer(object):
+    IMG_EXTS = ('.png', '.jpg')
+    def __init__(self, dir, fps, ext='.png'):
+        #self.images = sorted([os.path.join(dir, f) for f in os.listdir(dir) if \
+        #    os.path.splitext(f)[1] in self.IMG_EXTS])
+        self.dir = dir
+        self.fps = fps
+        self.ext = ext
+
+        self.encode_thread = None
+
+    def encode(self):
+        self.encode_thread = threading.Thread(target=self._encode)
+        self.encode_thread.start()
+
+    def _encode(self):
+
+        glob_str = os.path.join(self.dir, '*'+self.ext)
+
+        ffmpeg_cmd = ['ffmpeg', "-y", '-r', str(self.fps),
+                      '-pattern_type', 'glob', '-i', glob_str,
+                      '-pix_fmt', 'yuv_420p', '-r', str(self.fps),
+                      '-vcodec', 'libx264', '-preset', 'veryfast',
+                      self.dir.rstrip(os.sep)+'.mp4']
+
+        result = subprocess.call(ffmpeg_cmd)
+        return result
+
+    def wait(self):
+        if self.encode_thread:
+            self.encode_thread.join()
 
 
 
