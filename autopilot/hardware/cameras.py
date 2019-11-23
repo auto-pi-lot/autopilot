@@ -701,8 +701,6 @@ class Camera_Spin(mp.Process):
 
         return mean_fps, sd_fps, ifi
 
-
-
     def capture(self, write=None, stream=None, timed=None):
         if self.capturing == True:
             warnings.warn("Camera is already capturing!")
@@ -749,9 +747,23 @@ class Camera_Spin(mp.Process):
                 ip=stream_ip, port=stream_port, subject=subject)
 
 
+
         if self.write:
+            # PNG images are losslessly compressed
+            img_opts = PySpin.PNGOption()
+            img_opts.compressionLevel = 5
+
+            # make directory
+            output_dir = self.output_filename
+            os.makedirs(output_dir)
+
+            # create base_path for output images
+            base_path = os.path.join(output_dir, "capture_SN{}_".format(self.serial))
+
+
             write_queue = mp.Queue()
-            writer = Video_Writer(write_queue, self.output_filename, fps=self.fps, timestamps=True, blosc=self.blosc)
+            writer = Video_Writer(write_queue, self.output_filename, fps=self.fps,
+                                  timestamps=True, directory=True)
             writer.start()
 
         if isinstance(self.timed, int) or isinstance(self.timed, float):
@@ -760,6 +772,8 @@ class Camera_Spin(mp.Process):
 
 
         # start acquisition
+        # begin acquisition here so we can get height, width, etc.
+
         #timestamps = []
         try:
             self.cam.BeginAcquisition()
@@ -767,19 +781,21 @@ class Camera_Spin(mp.Process):
                 img = self.cam.GetNextImage()
                 timestamp = img.GetTimeStamp() / float(1e9)
                 #timestamps.append(this_timestamp)
-                self._frame = img.GetNDArray()
-                self._timestamp = timestamp
+                #self._frame = img.GetNDArray()
+                #self._timestamp = timestamp
+
+
+                if self.write:
+                    outpath = base_path + str(timestamp) + '.png'
+                    img.Save(outpath, img_opts)
+                    write_queue.put_nowait((timestamp, outpath))
 
                 img.Release()
-                if self.write:
-                    if self.blosc:
-                        write_queue.put_nowait((timestamp, blosc.pack_array(self._frame, clevel=5)))
-                    else:
-                        write_queue.put_nowait((timestamp, self._frame))
 
                 if self.stream:
-                    stream_q.put_nowait({'timestamp':self._timestamp,
-                                         self.name:self._frame})
+                    frame = img.GetNDArray()
+                    stream_q.put_nowait({'timestamp':timestamp,
+                                         self.name:frame})
 
                 if self.timed:
                     if time.time() >= end_time:
@@ -820,7 +836,7 @@ class Camera_Spin(mp.Process):
 
         if new:
             dir = os.path.expanduser('~')
-            self._output_filename = os.path.join(dir, "capture_SN{}_{}.avi".format(self.serial, datetime.now().strftime("%y%m%d-%H%M%S")))
+            self._output_filename = os.path.join(dir, "capture_SN{}_{}".format(self.serial, datetime.now().strftime("%y%m%d-%H%M%S")))
 
         return self._output_filename
 
@@ -927,7 +943,7 @@ class FastWriter(io.FFmpegWriter):
 
 
 class Video_Writer(mp.Process):
-    def __init__(self, q, path, fps=None, timestamps=True, blosc=True):
+    def __init__(self, q, path, fps=None, timestamps=True, blosc=True, directory=False):
         """
 
         :param q:
@@ -943,6 +959,7 @@ class Video_Writer(mp.Process):
         self.given_timestamps = timestamps
         self.timestamps = []
         self.blosc = blosc
+        self.directory = directory
 
 
         if fps is None:
@@ -961,38 +978,49 @@ class Video_Writer(mp.Process):
                 '-r': str(self.fps),
         },
             outputdict={
-                '-vcodec': 'rawvideo',
-                #'-vcodec': 'libx264',
+                #'-vcodec': 'rawvideo',
+                '-vcodec': 'libx264',
                 #'-vcodec': 'h264_omx',
                 '-pix_fmt': 'yuv420p',
                 '-r': str(self.fps),
-                #'-preset': 'ultrafast',
+                '-preset': 'ultrafast',
             },
             verbosity=1
         )
 
         try:
-            for input in iter(self.q.get, 'END'):
-                try:
-
+            if self.directory:
+                for input in iter(self.q.get, 'END'):
                     if self.given_timestamps:
+                        img = io.vread(input[1])
                         self.timestamps.append(input[0])
-                        if self.blosc:
-                            vid_out.writeFrame(blosc.unpack_array(input[1]))
-                        else:
-                            vid_out.writeFrame(input[1])
                     else:
+                        img = io.vread(input)
                         self.timestamps.append(datetime.now().isoformat())
-                        if self.blosc:
-                            vid_out.writeFrame(blosc.unpack_array(input))
-                        else:
-                            vid_out.writeFrame(input)
+                    vid_out.writeFrame(img)
 
-                except Exception as e:
-                    print(e)
-                    traceback.print_tb()
-                    # TODO: Too general
-                    break
+            else:
+                for input in iter(self.q.get, 'END'):
+                    try:
+
+                        if self.given_timestamps:
+                            self.timestamps.append(input[0])
+                            if self.blosc:
+                                vid_out.writeFrame(blosc.unpack_array(input[1]))
+                            else:
+                                vid_out.writeFrame(input[1])
+                        else:
+                            self.timestamps.append(datetime.now().isoformat())
+                            if self.blosc:
+                                vid_out.writeFrame(blosc.unpack_array(input))
+                            else:
+                                vid_out.writeFrame(input)
+
+                    except Exception as e:
+                        print(e)
+                        traceback.print_tb()
+                        # TODO: Too general
+                        break
 
         finally:
 
