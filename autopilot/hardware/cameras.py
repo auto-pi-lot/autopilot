@@ -818,7 +818,7 @@ class Camera_Spin(mp.Process):
             if self.write:
                 print('Writing images in {} to {}'.format(output_dir, output_dir+'.mp4'))
                 writer = Directory_Writer(output_dir, fps=self.fps)
-                writer.start()
+                writer.encode()
 
 
             self.cam.EndAcquisition()
