@@ -762,7 +762,7 @@ class Camera_Spin(mp.Process):
 
 
             write_queue = mp.Queue()
-            writer = Video_Writer(write_queue, self.output_filename, fps=self.fps,
+            writer = Video_Writer(write_queue, base_path+'.mp4', fps=self.fps,
                                   timestamps=True, directory=True)
             writer.start()
 
