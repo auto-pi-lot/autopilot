@@ -58,9 +58,9 @@ class Parallax(Task):
             #'EYE': cameras.Camera_OpenCV
             # top...
         },
-        'DOF': {
-            'HEAD': i2c.I2C_9DOF
-        }
+        # 'DOF': {
+        #     'HEAD': i2c.I2C_9DOF
+        # }
     }
 
     CHILDREN = {
