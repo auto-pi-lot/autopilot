@@ -20,6 +20,7 @@ import PySide # have to import to tell pyqtgraph to use it
 import pandas as pd
 from PySide import QtGui
 from PySide import QtCore
+from PySide import QtOpenGL
 import pyqtgraph as pg
 from time import time, sleep
 from itertools import count
@@ -30,7 +31,7 @@ import pdb
 from Queue import Queue, Empty, Full
 import cv2
 pg.setConfigOptions(antialias=True)
-from pyqtgraph.widgets.RawImageWidget import RawImageWidget
+from pyqtgraph.widgets.RawImageWidget import RawImageWidget, RawImageGLWidget
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from autopilot import tasks, prefs
@@ -120,13 +121,13 @@ class Plot_Widget(QtGui.QWidget):
 
         # Make a plot for each pilot.
         for p in self.pilots:
-            plot = Plot(pilot=p)
+            plot = Plot(pilot=p, parent=self)
             self.plot_layout.addWidget(plot)
             self.plot_layout.addWidget(HLine())
             self.plots[p] = plot
 
 
-class Plot(QtGui.QWidget):
+class Plot(QtOpenGL.QGLWidget):
     """
     Widget that hosts a :class:`pyqtgraph.PlotWidget` and manages
     graphical objects for one pilot depending on the task.
@@ -177,16 +178,17 @@ class Plot(QtGui.QWidget):
         state (str): state of the pilot, used to keep plot synchronized.
     """
 
-    def __init__(self, pilot, x_width=50):
+    def __init__(self, pilot, x_width=50, parent=None):
         """
         Args:
             pilot (str): The name of our pilot
             x_width (int): How many trials in the past should we plot?
         """
-        super(Plot, self).__init__()
+        super(Plot, self).__init__(self, QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers), parent)
 
         self.logger = logging.getLogger('main')
 
+        self.parent = parent
         self.layout = None
         self.infobox = None
         self.n_trials = None
@@ -712,7 +714,7 @@ class Video(QtGui.QWidget):
 
         for i, vid in enumerate(self.videos):
             vid_label = QtGui.QLabel(vid)
-            rawImg = RawImageWidget(self)
+            rawImg = RawImageGLWidget(self)
             sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
             sizePolicy.setHorizontalStretch(0)
             sizePolicy.setVerticalStretch(0)
