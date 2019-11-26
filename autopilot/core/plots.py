@@ -184,7 +184,7 @@ class Plot(QtOpenGL.QGLWidget):
             pilot (str): The name of our pilot
             x_width (int): How many trials in the past should we plot?
         """
-        super(Plot, self).__init__(self, QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers), parent)
+        super(Plot, self).__init__(QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers), parent)
 
         self.logger = logging.getLogger('main')
 
