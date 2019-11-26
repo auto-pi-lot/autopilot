@@ -369,7 +369,7 @@ class Plot(QtGui.QWidget):
         if 'video' in self.plot_params.keys():
             self.videos = self.plot_params['video']
             self.video = Video(self.plot_params['video'], parent=self)
-            self.video.start()
+            #self.video.start()
 
 
         self.state = 'RUNNING'
