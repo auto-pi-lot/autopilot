@@ -367,7 +367,7 @@ class Plot(QtOpenGL.QGLWidget):
 
         if 'video' in self.plot_params.keys():
             self.videos = self.plot_params['video']
-            self.video = VideoCV(self.plot_params['video'], parent=self)
+            self.video = Video(self.plot_params['video'], parent=self)
             self.video.start()
 
 
@@ -755,9 +755,9 @@ class Video(QtGui.QWidget):
                     pass
 
             self.app.processEvents()
-            this_time = time()
-            sleep(max(self.ifps-(this_time-last_time), 0))
-            last_time = this_time
+            #this_time = time()
+            #sleep(max(self.ifps-(this_time-last_time), 0))
+            #last_time = this_time
 
 
 
