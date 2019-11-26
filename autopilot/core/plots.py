@@ -1081,7 +1081,11 @@ class ImageItem_TimedUpdate(pg.ImageItem):
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update_img)
-        self.timer.start(1./24.)
+        if hasattr(prefs, 'DRAWFPS'):
+            self.fps = prefs.DRAWFPS
+        else:
+            self.fps = 10.
+        self.timer.start(1./self.fps)
 
 
 
