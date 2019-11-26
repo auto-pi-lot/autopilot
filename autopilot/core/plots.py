@@ -683,6 +683,7 @@ class Timer(QtGui.QLabel):
         secs_elapsed = int(np.floor(time()-self.start_time))
         self.setText("{:02d}:{:02d}:{:02d}".format(secs_elapsed/3600, (secs_elapsed/60)%60, secs_elapsed%60))
 
+
 class Video(QtGui.QWidget):
     def __init__(self, videos, fps=10, parent=None):
         super(Video, self).__init__()
@@ -769,9 +770,9 @@ class Video(QtGui.QWidget):
                     pass
 
             #self.app.processEvents()
-            #this_time = time()
-            #sleep(max(self.ifps-(this_time-last_time), 0))
-            #last_time = this_time
+            this_time = time()
+            sleep(max(self.ifps-(this_time-last_time), 0))
+            last_time = this_time
 
 
 
@@ -950,13 +951,19 @@ class HLine(QtGui.QFrame):
         self.setFrameShape(QtGui.QFrame.HLine)
         self.setFrameShadow(QtGui.QFrame.Sunken)
 
+VIDEO_TIMER = None
 
 class ImageItem_TimedUpdate(pg.ImageItem):
 
     def __init__(self, *args, **kwargs):
         super(ImageItem_TimedUpdate, self).__init__(*args, **kwargs)
 
-        self.timer = QtCore.QTimer()
+        if globals()['VIDEO_TIMER'] is None:
+            globals()['VIDEO_TIMER'] = QtCore.QTimer()
+
+
+        self.timer = globals()['VIDEO_TIMER']
+        self.timer.stop()
         self.timer.timeout.connect(self.update_img)
         self.timer.start(1./24.)
 
