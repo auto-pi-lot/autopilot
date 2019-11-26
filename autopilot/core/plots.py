@@ -685,14 +685,21 @@ class Timer(QtGui.QLabel):
 
 
 class Video(QtGui.QWidget):
-    def __init__(self, videos, fps=10, parent=None):
+    def __init__(self, videos, fps=None, parent=None):
         super(Video, self).__init__()
 
         self.videos = videos
         self._newframe = None
         self.last_update = 0
-        self.fps = fps
-        self.ifps = 1.0/fps
+
+        if fps is None:
+            if hasattr(prefs, 'DRAWFPS'):
+                self.fps = prefs.DRAWFPS
+            else:
+                self.fps = 10
+        else:
+            self.fps = fps
+        self.ifps = 1.0/self.fps
 
         # get app instance
         self.app = QtGui.QApplication.instance()
@@ -965,7 +972,11 @@ class ImageItem_TimedUpdate(pg.ImageItem):
         self.timer = globals()['VIDEO_TIMER']
         self.timer.stop()
         self.timer.timeout.connect(self.update_img)
-        self.timer.start(1./24.)
+        if hasattr(prefs, 'DRAWFPS'):
+            self.fps = prefs.DRAWFPS
+        else:
+            self.fps = 10.
+        self.timer.start(1./self.fps)
 
 
 
