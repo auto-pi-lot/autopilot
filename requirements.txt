@@ -10,6 +10,7 @@ tornado
 inputs
 blosc
 scikit-video
+PyOpenGL
 # jack
 
 
