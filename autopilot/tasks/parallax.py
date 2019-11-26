@@ -33,8 +33,8 @@ class Parallax(Task):
         'data': {
             'accel_x': 'shaded'
         },
-        #'video' : ['SIDE', 'EYE', 'POV'],
-        'video': ['SIDE'],
+        'video' : ['SIDE', 'EYE', 'POV'],
+        #'video': ['SIDE'],
         'continuous': True
     }
 
@@ -55,7 +55,7 @@ class Parallax(Task):
     HARDWARE = {
         'CAMS': {
             'SIDE': cameras.Camera_Spin,
-            #'EYE': cameras.Camera_OpenCV
+            'EYE': cameras.Camera_OpenCV
             # top...
         },
         # 'DOF': {
@@ -103,7 +103,7 @@ class Parallax(Task):
         }
         value.update(self.CHILDREN['HEADCAM'])
 
-        #self.node.send(to=prefs.NAME, key='CHILD', value=value)
+        self.node.send(to=prefs.NAME, key='CHILD', value=value)
 
         self.stages = itertools.cycle([self.test])
 
@@ -111,7 +111,7 @@ class Parallax(Task):
 
         print(self.hardware)
 
-        #self.hardware['CAMS']['EYE'].capture()
+        self.hardware['CAMS']['EYE'].capture()
         self.hardware['CAMS']['SIDE'].capture()
 
     def test(self):
