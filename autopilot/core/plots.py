@@ -727,10 +727,10 @@ class Video(QtGui.QWidget):
             # https://github.com/pyqtgraph/pyqtgraph/blob/3d3d0a24590a59097b6906d34b7a43d54305368d/examples/VideoSpeedTest.py#L51
             graphicsView= pg.GraphicsView(self)
             vb = pg.ViewBox()
-            graphicsView.setCentralItem(self.vb)
+            graphicsView.setCentralItem(vb)
             vb.setAspectLocked()
             img = pg.ImageItem()
-            vb.additem(self.img)
+            vb.additem(img)
 
             self.vid_widgets[vid] = (graphicsView, vb, img)
 
