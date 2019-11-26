@@ -796,7 +796,7 @@ if __name__ == "__main__":
     #    prefs = json.load(prefs_file_open)
 
     app = QtGui.QApplication(sys.argv)
-    app.setGraphicsSystem("opengl")
+    #app.setGraphicsSystem("opengl")
     app.setStyle('GTK+') # Keeps some GTK errors at bay
     ex = Terminal()
     sys.exit(app.exec_())
