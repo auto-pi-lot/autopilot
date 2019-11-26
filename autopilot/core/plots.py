@@ -699,7 +699,7 @@ class Video(QtGui.QWidget):
                 self.fps = 10
         else:
             self.fps = fps
-        self.ifps = 1.0/fps
+        self.ifps = 1.0/self.fps
 
         # get app instance
         self.app = QtGui.QApplication.instance()
