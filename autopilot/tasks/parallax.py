@@ -34,7 +34,7 @@ class Parallax(Task):
             'accel_x': 'shaded'
         },
         #'video' : ['SIDE', 'EYE', 'POV'],
-        'video': ['EYE', 'POV'],
+        'video': ['SIDE'],
         'continuous': True
     }
 
