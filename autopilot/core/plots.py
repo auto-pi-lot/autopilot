@@ -715,19 +715,31 @@ class Video(QtGui.QWidget):
 
         for i, vid in enumerate(self.videos):
             vid_label = QtGui.QLabel(vid)
-            rawImg = RawImageGLWidget(self)
-            sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-            sizePolicy.setHorizontalStretch(0)
-            sizePolicy.setVerticalStretch(0)
-            sizePolicy.setHeightForWidth(rawImg.sizePolicy().hasHeightForWidth())
-            rawImg.setSizePolicy(sizePolicy)
-            self.vid_widgets[vid] = rawImg
+            #rawImg = RawImageGLWidget(self)
+
+            #sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+            #sizePolicy.setHorizontalStretch(0)
+            #sizePolicy.setVerticalStretch(0)
+            #sizePolicy.setHeightForWidth(rawImg.sizePolicy().hasHeightForWidth())
+            #rawImg.setSizePolicy(sizePolicy)
+            #self.vid_widgets[vid] = rawImg
+
+            # https://github.com/pyqtgraph/pyqtgraph/blob/3d3d0a24590a59097b6906d34b7a43d54305368d/examples/VideoSpeedTest.py#L51
+            graphicsView= pg.GraphicsView(self)
+            vb = pg.ViewBox()
+            graphicsView.setCentralItem(self.vb)
+            vb.setAspectLocked()
+            img = pg.ImageItem()
+            vb.additem(self.img)
+
+            self.vid_widgets[vid] = (graphicsView, vb, img)
+
             # 3 videos in a row
             row = np.floor(i/3.)*2
             col = i%3
 
             self.layout.addWidget(vid_label, row,col, 1,1)
-            self.layout.addWidget(self.vid_widgets[vid],row+1,col,5,1)
+            self.layout.addWidget(self.vid_widgets[vid][0],row+1,col,5,1)
 
             # make queue for vid
             self.qs[vid] = Queue(maxsize=1)
@@ -748,14 +760,14 @@ class Video(QtGui.QWidget):
                 try:
                     #pdb.set_trace()
                     data = q.get_nowait()
-                    self.vid_widgets[vid].setImage(data)
+                    self.vid_widgets[vid][2].setImage(data)
 
                 except Empty:
                     pass
                 except KeyError:
                     pass
 
-            self.app.processEvents()
+            #self.app.processEvents()
             #this_time = time()
             #sleep(max(self.ifps-(this_time-last_time), 0))
             #last_time = this_time
