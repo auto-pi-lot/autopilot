@@ -730,7 +730,7 @@ class Video(QtGui.QWidget):
             graphicsView.setCentralItem(vb)
             vb.setAspectLocked()
             img = pg.ImageItem()
-            vb.additem(img)
+            vb.addItem(img)
 
             self.vid_widgets[vid] = (graphicsView, vb, img)
 
