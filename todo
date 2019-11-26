@@ -77,3 +77,6 @@
 .. automodsumm:: rpilot.core.gui
     :toctree:
 
+
+- openssl compilation probs with qt https://bugreports.qt.io/browse/QTBUG-68156?focusedCommentId=413606&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-413606
+    or just -no-openssl

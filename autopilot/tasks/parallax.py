@@ -33,8 +33,8 @@ class Parallax(Task):
         'data': {
             'accel_x': 'shaded'
         },
-        #'video' : ['SIDE', 'EYE', 'POV'],
-        'video': ['EYE', 'POV'],
+        'video' : ['SIDE', 'EYE', 'POV'],
+        #'video': ['SIDE'],
         'continuous': True
     }
 
@@ -54,13 +54,13 @@ class Parallax(Task):
 
     HARDWARE = {
         'CAMS': {
-            #'SIDE': cameras.Camera_Spin,
+            'SIDE': cameras.Camera_Spin,
             'EYE': cameras.Camera_OpenCV
             # top...
         },
-        'DOF': {
-            'HEAD': i2c.I2C_9DOF
-        }
+        # 'DOF': {
+        #     'HEAD': i2c.I2C_9DOF
+        # }
     }
 
     CHILDREN = {
@@ -112,7 +112,7 @@ class Parallax(Task):
         print(self.hardware)
 
         self.hardware['CAMS']['EYE'].capture()
-        #self.hardware['CAMS']['SIDE'].capture()
+        self.hardware['CAMS']['SIDE'].capture()
 
     def test(self):
         self.stage_block.clear()

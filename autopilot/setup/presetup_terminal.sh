@@ -26,7 +26,7 @@ unzip -a ./qt-everywhere-opensource-src-4.8.7.zip
 cd qt-everywhere-opensource-src-4.8.7
 
 # make and install Qt4
-./configure -debug -opensource -optimized-qmake -separate-debug-info -no-webkit -opengl
+./configure -confirm-license -debug -opensource -optimized-qmake -separate-debug-info -no-webkit -opengl
 make -j10
 sudo -H make install
 

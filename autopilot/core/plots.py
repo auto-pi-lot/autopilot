@@ -127,7 +127,7 @@ class Plot_Widget(QtGui.QWidget):
             self.plots[p] = plot
 
 
-class Plot(QtOpenGL.QGLWidget):
+class Plot(QtGui.QWidget):
     """
     Widget that hosts a :class:`pyqtgraph.PlotWidget` and manages
     graphical objects for one pilot depending on the task.
@@ -184,7 +184,8 @@ class Plot(QtOpenGL.QGLWidget):
             pilot (str): The name of our pilot
             x_width (int): How many trials in the past should we plot?
         """
-        super(Plot, self).__init__(self, QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers), parent)
+        #super(Plot, self).__init__(QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers), parent)
+        super(Plot, self).__init__()
 
         self.logger = logging.getLogger('main')
 
@@ -368,7 +369,7 @@ class Plot(QtOpenGL.QGLWidget):
         if 'video' in self.plot_params.keys():
             self.videos = self.plot_params['video']
             self.video = Video(self.plot_params['video'], parent=self)
-            self.video.start()
+            #self.video.start()
 
 
         self.state = 'RUNNING'
@@ -682,6 +683,7 @@ class Timer(QtGui.QLabel):
         secs_elapsed = int(np.floor(time()-self.start_time))
         self.setText("{:02d}:{:02d}:{:02d}".format(secs_elapsed/3600, (secs_elapsed/60)%60, secs_elapsed%60))
 
+
 class Video(QtGui.QWidget):
     def __init__(self, videos, fps=10, parent=None):
         super(Video, self).__init__()
@@ -714,19 +716,32 @@ class Video(QtGui.QWidget):
 
         for i, vid in enumerate(self.videos):
             vid_label = QtGui.QLabel(vid)
-            rawImg = RawImageGLWidget(self)
-            sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-            sizePolicy.setHorizontalStretch(0)
-            sizePolicy.setVerticalStretch(0)
-            sizePolicy.setHeightForWidth(rawImg.sizePolicy().hasHeightForWidth())
-            rawImg.setSizePolicy(sizePolicy)
-            self.vid_widgets[vid] = rawImg
+            #rawImg = RawImageGLWidget(self)
+
+            #sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+            #sizePolicy.setHorizontalStretch(0)
+            #sizePolicy.setVerticalStretch(0)
+            #sizePolicy.setHeightForWidth(rawImg.sizePolicy().hasHeightForWidth())
+            #rawImg.setSizePolicy(sizePolicy)
+            #self.vid_widgets[vid] = rawImg
+
+            # https://github.com/pyqtgraph/pyqtgraph/blob/3d3d0a24590a59097b6906d34b7a43d54305368d/examples/VideoSpeedTest.py#L51
+            graphicsView= pg.GraphicsView(self)
+            vb = pg.ViewBox()
+            graphicsView.setCentralItem(vb)
+            vb.setAspectLocked()
+            #img = pg.ImageItem()
+            img = ImageItem_TimedUpdate()
+            vb.addItem(img)
+
+            self.vid_widgets[vid] = (graphicsView, vb, img)
+
             # 3 videos in a row
             row = np.floor(i/3.)*2
             col = i%3
 
             self.layout.addWidget(vid_label, row,col, 1,1)
-            self.layout.addWidget(self.vid_widgets[vid],row+1,col,5,1)
+            self.layout.addWidget(self.vid_widgets[vid][0],row+1,col,5,1)
 
             # make queue for vid
             self.qs[vid] = Queue(maxsize=1)
@@ -747,17 +762,17 @@ class Video(QtGui.QWidget):
                 try:
                     #pdb.set_trace()
                     data = q.get_nowait()
-                    self.vid_widgets[vid].setImage(data)
+                    self.vid_widgets[vid][2].setImage(data)
 
                 except Empty:
                     pass
                 except KeyError:
                     pass
 
-            self.app.processEvents()
-            #this_time = time()
-            #sleep(max(self.ifps-(this_time-last_time), 0))
-            #last_time = this_time
+            #self.app.processEvents()
+            this_time = time()
+            sleep(max(self.ifps-(this_time-last_time), 0))
+            last_time = this_time
 
 
 
@@ -935,6 +950,119 @@ class HLine(QtGui.QFrame):
         super(HLine, self).__init__()
         self.setFrameShape(QtGui.QFrame.HLine)
         self.setFrameShadow(QtGui.QFrame.Sunken)
+
+VIDEO_TIMER = None
+
+class ImageItem_TimedUpdate(pg.ImageItem):
+
+    def __init__(self, *args, **kwargs):
+        super(ImageItem_TimedUpdate, self).__init__(*args, **kwargs)
+
+        if globals()['VIDEO_TIMER'] is None:
+            globals()['VIDEO_TIMER'] = QtCore.QTimer()
+
+
+        self.timer = globals()['VIDEO_TIMER']
+        self.timer.stop()
+        self.timer.timeout.connect(self.update_img)
+        self.timer.start(1./24.)
+
+
+
+
+    def setImage(self, image=None, autoLevels=None, **kargs):
+        """
+        Update the image displayed by this item. For more information on how the image
+        is processed before displaying, see :func:`makeARGB <pyqtgraph.makeARGB>`
+        =================  =========================================================================
+        **Arguments:**
+        image              (numpy array) Specifies the image data. May be 2D (width, height) or
+                           3D (width, height, RGBa). The array dtype must be integer or floating
+                           point of any bit depth. For 3D arrays, the third dimension must
+                           be of length 3 (RGB) or 4 (RGBA). See *notes* below.
+        autoLevels         (bool) If True, this forces the image to automatically select
+                           levels based on the maximum and minimum values in the data.
+                           By default, this argument is true unless the levels argument is
+                           given.
+        lut                (numpy array) The color lookup table to use when displaying the image.
+                           See :func:`setLookupTable <pyqtgraph.ImageItem.setLookupTable>`.
+        levels             (min, max) The minimum and maximum values to use when rescaling the image
+                           data. By default, this will be set to the minimum and maximum values
+                           in the image. If the image array has dtype uint8, no rescaling is necessary.
+        opacity            (float 0.0-1.0)
+        compositionMode    See :func:`setCompositionMode <pyqtgraph.ImageItem.setCompositionMode>`
+        border             Sets the pen used when drawing the image border. Default is None.
+        autoDownsample     (bool) If True, the image is automatically downsampled to match the
+                           screen resolution. This improves performance for large images and
+                           reduces aliasing. If autoDownsample is not specified, then ImageItem will
+                           choose whether to downsample the image based on its size.
+        =================  =========================================================================
+        **Notes:**
+        For backward compatibility, image data is assumed to be in column-major order (column, row).
+        However, most image data is stored in row-major order (row, column) and will need to be
+        transposed before calling setImage()::
+            imageitem.setImage(imagedata.T)
+        This requirement can be changed by calling ``image.setOpts(axisOrder='row-major')`` or
+        by changing the ``imageAxisOrder`` :ref:`global configuration option <apiref_config>`.
+        """
+        #profile = debug.Profiler()
+
+        gotNewData = False
+        if image is None:
+            if self.image is None:
+                return
+        else:
+            gotNewData = True
+            shapeChanged = (self.image is None or image.shape != self.image.shape)
+            image = image.view(np.ndarray)
+            if self.image is None or image.dtype != self.image.dtype:
+                self._effectiveLut = None
+            self.image = image
+            if self.image.shape[0] > 2 ** 15 - 1 or self.image.shape[1] > 2 ** 15 - 1:
+                if 'autoDownsample' not in kargs:
+                    kargs['autoDownsample'] = True
+            if shapeChanged:
+                self.prepareGeometryChange()
+                self.informViewBoundsChanged()
+
+        #profile()
+
+        if autoLevels is None:
+            if 'levels' in kargs:
+                autoLevels = False
+            else:
+                autoLevels = True
+        if autoLevels:
+            img = self.image
+            while img.size > 2 ** 16:
+                img = img[::2, ::2]
+            mn, mx = np.nanmin(img), np.nanmax(img)
+            # mn and mx can still be NaN if the data is all-NaN
+            if mn == mx or np.isnan(mn) or np.isnan(mx):
+                mn = 0
+                mx = 255
+            kargs['levels'] = [mn, mx]
+
+        #profile()
+
+        self.setOpts(update=False, **kargs)
+
+        #profile()
+
+        self.qimage = None
+        #self.update()
+
+        #profile()
+
+        if gotNewData:
+            self.sigImageChanged.emit()
+
+    def update_img(self):
+        self.update()
+
+    def __del__(self):
+        super(ImageItem_TimedUpdate,self).__del__()
+        self.timer.stop()
 
 
 PLOT_LIST = {
