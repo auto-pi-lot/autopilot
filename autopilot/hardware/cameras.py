@@ -14,6 +14,7 @@ import traceback
 import blosc
 import warnings
 import subprocess
+import logging
 
 
 
@@ -131,6 +132,8 @@ class Camera_OpenCV(mp.Process):
         # deinit the camera so the other thread can start it
         self.vid.release()
 
+        self.init_logging()
+
     def init_cam(self, camera_idx = None):
         if camera_idx is None:
             camera_idx = self.camera_idx
@@ -141,6 +144,8 @@ class Camera_OpenCV(mp.Process):
                 time.sleep(2.0 - time_since_last_init)
             vid = cv2.VideoCapture(camera_idx)
             self.last_opencv_init.value = time.time()
+
+        self.logger.info("Camera Initialized")
 
         return vid
 
@@ -185,6 +190,7 @@ class Camera_OpenCV(mp.Process):
         )
 
     def run(self):
+
         if self.capturing.is_set():
             warnings.warn("Already capturing!")
             return
@@ -236,6 +242,11 @@ class Camera_OpenCV(mp.Process):
             start_time = time.time()
             end_time = start_time+self.timed
 
+        self.logger.info(("Starting capture with configuration:\n"+
+                          "Write: {}\n".format(self.write)+
+                          "Stream: {}\n".format(self.stream)+
+                          "Timed: {}".format(self.timed)))
+
         try:
             while not self.stopping.is_set():
                 try:
@@ -278,6 +289,7 @@ class Camera_OpenCV(mp.Process):
                         self.stopping.set()
 
         finally:
+            self.logger.info("Capture Ending")
             # closing routine...
             if self.stream:
                 stream_q.put('END')
@@ -290,8 +302,7 @@ class Camera_OpenCV(mp.Process):
                 checked_empty = False
                 while not write_queue.empty():
                     if not checked_empty:
-                        warnings.warn('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
-                        sys.stderr.flush()
+                        self.logger.warning('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
                         checked_empty = True
                     time.sleep(0.1)
                 warnings.warn('Writer finished, closing')
@@ -299,6 +310,7 @@ class Camera_OpenCV(mp.Process):
             self.capturing.clear()
 
             self.vid.release()
+            self.logger.info("Camera Released")
 
 
 
@@ -418,6 +430,28 @@ class Camera_OpenCV(mp.Process):
             self._v4l_info = out_dict
 
         return self._v4l_info
+
+    def init_logging(self):
+        """
+        Initialize logging to a timestamped file in `prefs.LOGDIR` .
+
+        The logger name will be `'node.{id}'` .
+        """
+        #FIXME: Just copying and pasting from net node, should implement logging uniformly across hw objects
+        timestr = datetime.now().strftime('%y%m%d_%H%M%S')
+        log_file = os.path.join(prefs.LOGDIR, 'NetNode_{}_{}.log'.format("CAM_"+self.name, timestr))
+
+        self.logger = logging.getLogger('node.{}'.format("CAM_"+self.name))
+        self.log_handler = logging.FileHandler(log_file)
+        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
+        self.log_handler.setFormatter(self.log_formatter)
+        self.logger.addHandler(self.log_handler)
+        if hasattr(prefs, 'LOGLEVEL'):
+            loglevel = getattr(logging, prefs.LOGLEVEL)
+        else:
+            loglevel = logging.WARNING
+        self.logger.setLevel(loglevel)
+        self.logger.info('{} Logging Initiated'.format(self.name))
 
 
 

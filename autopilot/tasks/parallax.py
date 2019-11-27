@@ -47,7 +47,7 @@ class Parallax(Task):
         'accel_x': tables.Float64Col(),
         'accel_y': tables.Float64Col(),
         'accel_z': tables.Float64Col(),
-        #'SIDE': 'infer',
+        'SIDE': 'infer',
         'EYE': 'infer',
         'POV': 'infer'
     }
@@ -97,7 +97,7 @@ class Parallax(Task):
 
         self.subject = kwargs['subject']
         value = {
-            'child': {'parent': prefs.NAME, 'subject': kwargs['subject']},
+            'child': {'parent': prefs.NAME, 'subject': self.subject},
             'subject' : self.subject,
 
         }

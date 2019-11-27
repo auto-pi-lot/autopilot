@@ -29,13 +29,14 @@ import os
 from sys import platform
 import subprocess
 
+LOG_LEVELS= ("DEBUG", "INFO", "WARNING", "ERROR")
 class TerminalSetupForm(nps.SplitForm):
     def create(self):
         self.input = odict({
             'BASEDIR': self.add(nps.TitleText, name="Base Directory:", value="/usr/autopilot"),
             'MSGPORT': self.add(nps.TitleText, name="Message Port - Our router port:", value="5560"),
             'LOGLEVEL': self.add(nps.TitleSelectOne, max_height=5, value=[0, ], name="Log Level:",
-                                 values=["DEBUG", "INFO", "WARNING", "ERROR"], scroll_exit=True)
+                                 values=LOG_LEVELS, scroll_exit=True)
         })
         #self.inName = self.add(nps.)
 
@@ -94,6 +95,9 @@ if __name__ == "__main__":
 
     ##############################
     # Compute derived values
+
+    params['LOGLEVEL'] = LOG_LEVELS[params['LOGLEVEL'][0]]
+
 
     # we are known as a terminal
     params['AGENT'] = 'terminal'
