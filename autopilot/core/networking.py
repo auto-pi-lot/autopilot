@@ -246,6 +246,12 @@ class Station(multiprocessing.Process):
         if not msg:
             # we're sending this ourselves, new message.
             msg = self.prepare_message(to, key, value, repeat, flags)
+        elif to:
+            # if given both message and to, send it to our 'to'
+            # don't want to force a reserialization of the message
+            manual_to = True
+        else:
+            manual_to = False
 
         if 'NOREPEAT' in msg.flags.keys():
             repeat = False
@@ -261,23 +267,28 @@ class Station(multiprocessing.Process):
         # encode message
         msg_enc = msg.serialize()
 
+        # TODO: try/except here
         if not msg_enc:
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
-        if isinstance(msg.to, list):
-
-            self.listener.send_multipart([bytes(msg.to[0]), msg_enc])
+        if manual_to:
+            self.listener.send_multipart([bytes(to), msg_enc])
         else:
-            self.listener.send_multipart([bytes(msg.to), msg_enc])
+
+            if isinstance(msg.to, list):
+
+                self.listener.send_multipart([bytes(msg.to[0]), msg_enc])
+            else:
+                self.listener.send_multipart([bytes(msg.to), msg_enc])
 
         # messages can have a flag that says not to log
-        log_this = True
-        if 'NOLOG' in msg.flags.keys():
-            log_this = False
+        # log_this = True
+        # if 'NOLOG' in msg.flags.keys():
+        #     log_this = False
 
 
-        if (msg.key != "CONFIRM") and log_this:
+        if msg.key != "CONFIRM":
             self.logger.debug('MESSAGE SENT - {}'.format(str(msg)))
 
         if repeat and not msg.key == "CONFIRM":
@@ -517,9 +528,9 @@ class Station(multiprocessing.Process):
             return
 
         # Check if our listen was sent properly
-        if not msg.validate():
-            self.logger.error('Message failed to validate:\n{}'.format(str(msg)))
-            return
+        # if not msg.validate():
+        #     self.logger.error('Message failed to validate:\n{}'.format(str(msg)))
+        #     return
 
 
 
@@ -529,9 +540,9 @@ class Station(multiprocessing.Process):
         # if this message has a multihop 'to' field, forward it along
 
         # some messages have a flag not to log them
-        log_this = True
-        if 'NOLOG' in msg.flags.keys():
-            log_this = False
+        # log_this = True
+        # if 'NOLOG' in msg.flags.keys():
+        #     log_this = False
         
         if isinstance(msg.to, list):
             if len(msg.to) == 1:
@@ -548,7 +559,7 @@ class Station(multiprocessing.Process):
                 self.send(msg=msg)
         # if this message is to us, just handle it and return
         elif msg.to in [self.id, "_{}".format(self.id)]:
-            if (msg.key != "CONFIRM") and log_this:
+            if (msg.key != "CONFIRM"):
                 self.logger.debug('RECEIVED: {}'.format(str(msg)))
             # Log and spawn thread to respond to listen
             try:
@@ -682,6 +693,12 @@ class Terminal_Station(Station):
 
     """
 
+    plot_timer = None
+    #send_plot = threading.Event()
+    #send_plot.clear()
+    # dict of threading events that determine how frequently we send plot updates
+    sent_plot = {}
+
     def __init__(self, pilots):
         """
         Args:
@@ -713,6 +730,32 @@ class Terminal_Station(Station):
         # dictionary that keeps track of our pilots
         self.pilots = pilots
 
+        # start a timer at the draw FPS of the terminal -- only send
+        if hasattr(prefs, 'DRAWFPS'):
+            self.data_fps = float(prefs.DRAWFPS)
+        else:
+            self.data_fps = 20
+        self.data_ifps = 1.0/self.data_fps
+
+
+
+    def start_plot_timer(self):
+        self.plot_timer = threading.Thread(target=self._fps_clock)
+        self.plot_timer.setDaemon(True)
+        self.plot_timer.start()
+
+
+    def _fps_clock(self):
+        while not self.closing.is_set():
+            for k, v in self.sent_plot.items():
+                try:
+                    v.set()
+                except:
+                    pass
+                    # TODO: Too General
+
+            #self.send_plot.set()
+            time.sleep(self.data_ifps)
 
 
     ##########################
@@ -801,19 +844,28 @@ class Terminal_Station(Station):
             msg (:class:`.Message`):
         """
         # Send through to terminal
-        self.send('_T', 'DATA', msg.value, flags=msg.flags)
+        #self.send('_T', 'DATA', msg.value, flags=msg.flags)
+        self.send(to='_T', msg=msg)
 
         # Send to plot widget, which should be listening to "P_{pilot_name}"
-        self.send('P_{}'.format(msg.value['pilot']), 'DATA', msg.value, flags=msg.flags)
+        #self.send('P_{}'.format(msg.value['pilot']), 'DATA', msg.value, flags=msg.flags)
+        self.send(to='P_{}'.format(msg.value['pilot']), msg=msg)
 
     def l_continuous(self, msg):
 
+        if not self.plot_timer:
+            self.start_plot_timer()
+            
         # Send through to terminal
-        msg.value.update({'continuous':True})
-        self.send('_T', 'DATA', msg.value, flags=msg.flags)
+        #msg.value.update({'continuous':True})
+        self.send(to='_T', msg=msg)
 
         # Send to plot widget, which should be listening to "P_{pilot_name}"
-        self.send('P_{}'.format(msg.value['pilot']), 'DATA', msg.value, flags=msg.flags)
+        if msg.sender not in self.sent_plot.keys():
+            self.sent_plot[msg.sender] = threading.Event()
+        if self.sent_plot[msg.sender].is_set():
+            self.send(to='P_{}'.format(msg.value['pilot']), msg=msg)
+            self.sent_plot[msg.sender].clear()
 
 
 
@@ -1201,7 +1253,8 @@ class Net_Node(object):
     loop_thread = None
     repeat_interval = 5 # how many seconds to wait before trying to repeat a message
 
-    def __init__(self, id, upstream, port, listens, instance=True, upstream_ip='localhost', route_port = None, daemon=True):
+    def __init__(self, id, upstream, port, listens, instance=True, upstream_ip='localhost',
+                 route_port = None, daemon=True, expand_on_receive=True):
         """
         Args:
             id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
@@ -1252,6 +1305,8 @@ class Net_Node(object):
         self.daemon = daemon
 
         self.streams = {}
+
+        self.expand = expand_on_receive
 
         if hasattr(prefs, 'SUBJECT'):
             self.subject = prefs.SUBJECT
@@ -1333,7 +1388,8 @@ class Net_Node(object):
         #msg = json.loads(msg[0])
 
         #msg = Message(**msg)
-        msg = Message(msg[-1])
+        # Nodes expand arrays by default as they're expected to
+        msg = Message(msg[-1], expand_arrays=self.expand)
 
         # Check if our listen was sent properly
         if not msg.validate():
@@ -1658,7 +1714,8 @@ class Net_Node(object):
                 msg = Message(to=upstream, key="STREAM",
                               value={'inner_key' : msg_key,
                                      'headers'   : {'subject': subject,
-                                                    'pilot'  : pilot},
+                                                    'pilot'  : pilot,
+                                                    'continuous': True},
                                      'payload'   : pending_data},
                               id="{}_{}".format(id, msg_counter.next()),
                               flags={'NOREPEAT':True, 'MINPRINT':True},
@@ -1737,8 +1794,10 @@ class Message(object):
     timestamp = None
     flags = {}
     ttl = 2 # every message starts with 2 retries. only relevant to the sender so not serialized.
+    changed = False
+    serialized = None
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, expand_arrays = False, *args, **kwargs):
         # type: (object, object) -> None
         # Messages don't need to have all attributes on creation,
         # but do need them to serialize
@@ -1757,7 +1816,11 @@ class Message(object):
         if len(args)>1:
             Exception("Messages can only be constructed with a single positional argument, which is assumed to be a serialized message")
         elif len(args)>0:
-            deserialized = json.loads(args[0], object_pairs_hook=self._deserialize_numpy)
+            self.serialized = args[0]
+            if expand_arrays:
+                deserialized = json.loads(args[0], object_pairs_hook=self._deserialize_numpy)
+            else:
+                deserialized = json.loads(args[0])
             kwargs.update(deserialized)
 
         for k, v in kwargs.items():
@@ -1790,6 +1853,7 @@ class Message(object):
             key:
         """
         #value = self._check_dec(self.__dict__[key])
+        # TODO: Recursively walk looking for 'NUMPY ARRAY' and expand before giving
         return self.__dict__[key]
 
     def __setitem__(self, key, value):
@@ -1798,10 +1862,12 @@ class Message(object):
             key:
             value:
         """
+        self.changed=True
         #value = self._check_enc(value)
         self.__dict__[key] = value
 
     def __setattr__(self, key, value):
+        self.changed=True
         #value = self._check_enc(value)
         self.__dict__[key] = value
 
@@ -1846,12 +1912,23 @@ class Message(object):
         compressed = base64.b64encode(blosc.pack_array(array))
         return {'NUMPY_ARRAY': compressed}
 
+
     def _deserialize_numpy(self, obj_pairs):
         # print(len(obj_pairs), obj_pairs)
         if (len(obj_pairs) == 1) and obj_pairs[0][0] == "NUMPY_ARRAY":
             return blosc.unpack_array(base64.b64decode(obj_pairs[0][1]))
         else:
             return dict(obj_pairs)
+
+    def expand(self):
+        """
+        Don't decompress numpy arrays by default for faster IO, explicitly expand them when needed
+
+        :return:
+        """
+        pass
+
+
 
 
 
@@ -1861,6 +1938,7 @@ class Message(object):
         Args:
             key:
         """
+        self.changed=True
         del self.__dict__[key]
 
     def __contains__(self, key):
@@ -1899,6 +1977,10 @@ class Message(object):
         Returns:
             str: JSON serialized message.
         """
+
+        if not self.changed and self.serialized:
+            return self.serialized
+
         valid = self.validate()
         if not valid:
             Exception("""Message invalid at the time of serialization!\n {}""".format(str(self)))
@@ -1915,6 +1997,8 @@ class Message(object):
 
         try:
             msg_enc = json.dumps(msg, default=self._serialize_numpy)
+            self.serialized = msg_enc
+            self.changed=False
             return msg_enc
         except:
             return False

@@ -223,6 +223,7 @@ class Plot(QtGui.QWidget):
         self.listens = {
             'START' : self.l_start, # Receiving a new task
             'DATA' : self.l_data, # Receiving a new datapoint
+            'CONTINUOUS': self.l_data,
             'STOP' : self.l_stop,
             'PARAM': self.l_param, # changing some param
             'STATE': self.l_state
