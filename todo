@@ -71,6 +71,8 @@
 - alt to opencv https://gist.github.com/royshil/0f674c96281b686a9a62
 - opencl for accelerating video encoding? https://abhitronix.github.io/2019/01/15/VC4CL-1/ https://trac.ffmpeg.org/wiki/HWAccelIntro
 - use a thread pool for handling messages, spawning threads could be costly
+
+- use a thread pool for handling messages, spawning threads could be costly
 - make arrayqueue to efficiently stream frames https://stackoverflow.com/a/38775513
 - for transforms: http://www.dabeaz.com/coroutines/ http://www.dabeaz.com/finalgenerator/
 
