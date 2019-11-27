@@ -418,6 +418,8 @@ class Plot(QtGui.QWidget):
                 # gui_event_fn(self.plots[k].update, *(self.data[k],))
                 self.plots[k].update(self.data[k])
             elif k in self.videos:
+                if k == "POV":
+                    pdb.set_trace()
                 self.video.update_frame(k, v)
 
 
@@ -763,7 +765,7 @@ class Video(QtGui.QWidget):
         last_time = 0
         this_time = 0
         while not self.quitting.is_set():
-            pdb.set_trace()
+            #pdb.set_trace()
             for vid, q in self.qs.items():
                 data = None
                 try:

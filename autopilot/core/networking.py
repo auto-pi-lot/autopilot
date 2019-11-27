@@ -1589,9 +1589,10 @@ class Net_Node(object):
                                          args=(id, key, min_size, upstream, port, ip, subject, q))
         stream_thread.setDaemon(True)
         stream_thread.start()
+        self.streams[id] = stream_thread
 
         self.logger.info(("Stream started with configuration:\n"+
-                          "ID: {}\n".format(id)+
+                          "ID: {}\n".format(self.id+"_"+id)+
                           "Key: {}\n".format(key)+
                           "Min Chunk Size: {}\n".format(min_size)+
                           "Upstream ID: {}\n".format(upstream) +
@@ -1599,7 +1600,7 @@ class Net_Node(object):
                           "IP: {}\n".format(ip) +
                           "Subject: {}\n".format(subject)))
 
-        self.streams[id] = stream_thread
+
 
         return q
 
