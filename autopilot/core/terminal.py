@@ -153,6 +153,7 @@ class Terminal(QtGui.QMainWindow):
             'STATE': self.l_state, # A Pi has changed state
             'PING' : self.l_ping,  # Someone wants to know if we're alive
             'DATA' : self.l_data,
+            'CONTINUOUS': self.l_data, # handle continuous data same way as other data
             'HANDSHAKE': self.l_handshake # a pi is making first contact, telling us its IP
         }
 

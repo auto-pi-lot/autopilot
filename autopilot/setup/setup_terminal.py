@@ -36,7 +36,8 @@ class TerminalSetupForm(nps.SplitForm):
             'BASEDIR': self.add(nps.TitleText, name="Base Directory:", value="/usr/autopilot"),
             'MSGPORT': self.add(nps.TitleText, name="Message Port - Our router port:", value="5560"),
             'LOGLEVEL': self.add(nps.TitleSelectOne, max_height=5, value=[0, ], name="Log Level:",
-                                 values=LOG_LEVELS, scroll_exit=True)
+                                 values=LOG_LEVELS, scroll_exit=True),
+            'DRAWFPS': self.add(nps.TitleText, name="FPS to draw continuous data, video at", value="20")
         })
         #self.inName = self.add(nps.)
 
