@@ -80,3 +80,14 @@
 
 - openssl compilation probs with qt https://bugreports.qt.io/browse/QTBUG-68156?focusedCommentId=413606&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-413606
     or just -no-openssl
+- programming python extensions in c: https://pythonextensionpatterns.readthedocs.io/en/latest/index.html
+
+-python compilation flags LTO_CFLAGS=" -g -flto -fuse-linker-plugin" ./configure \
+--enable-shared \
+--enable-unicode=ucs4 \
+--enable-optimizations \
+--enable-ipv6 \
+--with-dbmliborder=bdb:gdbm \
+--with-system-expat \
+--with-computed-gotos \
+--with-lto

@@ -29,7 +29,7 @@ from threading import Event, Thread
 import multiprocessing as mp
 import pdb
 from Queue import Queue, Empty, Full
-import cv2
+#import cv2
 pg.setConfigOptions(antialias=True)
 from pyqtgraph.widgets.RawImageWidget import RawImageWidget, RawImageGLWidget
 
@@ -763,7 +763,7 @@ class Video(QtGui.QWidget):
         last_time = 0
         this_time = 0
         while not self.quitting.is_set():
-
+            pdb.set_trace()
             for vid, q in self.qs.items():
                 data = None
                 try:
