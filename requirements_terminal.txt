@@ -2,7 +2,6 @@
 tables>=3.4.2
 numpy>=1.12.1
 pyzmq>=17.1.2
-# pyo>=0.7.8
 pandas>=0.19.2
 npyscreen
 scipy
@@ -11,13 +10,7 @@ inputs
 blosc
 scikit-video
 PyOpenGL
-# jack
-
-
-# terminal specific requirements
-# PySide>=1.2.4
-# pyqtgraph>=0.10.0
-# pssh
+pyqtgraph>=0.10.0
 
 # rpi specific requirements
 # pigpio

@@ -44,7 +44,7 @@ import pprint
 import json
 import os
 import subprocess
-
+LOG_LEVELS= ("DEBUG", "INFO", "WARNING", "ERROR")
 class PilotSetupForm(nps.Form):
     def create(self):
         self.input = odict({
@@ -70,7 +70,7 @@ class PilotSetupForm(nps.Form):
             'PIGPIOMASK': self.add(nps.TitleText, name="Binary mask to enable pigpio to access pins according to the BCM numbering",
                                     value="1111110000111111111111110000"),
             'LOGLEVEL': self.add(nps.TitleSelectOne, max_height=5, value=[0, ], name="Log Level:",
-                               values=["DEBUG", "INFO", "WARNING", "ERROR"], scroll_exit=True),
+                               values=LOG_LEVELS, scroll_exit=True),
 
 
         })
@@ -198,10 +198,10 @@ if __name__ == "__main__":
     params['AGENT'] = "pilot"
 
     # convert numerical audio server index to string
-    print(params['CONFIG'])
     params['AUDIOSERVER'] = ['jack', 'pyo', 'none'][params['AUDIOSERVER'][0]]
     params['CONFIG'] = ['AUDIO', 'VISUAL', 'NONE'][params['CONFIG'][0]]
-    print(params['CONFIG'])
+    params['LOGLEVEL'] = LOG_LEVELS[params['LOGLEVEL'][0]]
+
 
 
     # convert string LED pin specifier to list
