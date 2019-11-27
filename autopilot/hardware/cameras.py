@@ -71,6 +71,7 @@ class Camera_OpenCV(mp.Process):
                  queue_size = 128, queue_single = True, blosc=True,
                  *args, **kwargs):
         super(Camera_OpenCV, self).__init__()
+        self.init_logging()
 
         self.last_opencv_init = globals()['OPENCV_LAST_INIT_TIME']
         self.last_init_lock = globals()['LAST_INIT_LOCK']
@@ -132,7 +133,7 @@ class Camera_OpenCV(mp.Process):
         # deinit the camera so the other thread can start it
         self.vid.release()
 
-        self.init_logging()
+
 
     def init_cam(self, camera_idx = None):
         if camera_idx is None:
