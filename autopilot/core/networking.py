@@ -278,7 +278,7 @@ class Station(multiprocessing.Process):
 
 
         if (msg.key != "CONFIRM") and log_this:
-            self.logger.info('MESSAGE SENT - {}'.format(str(msg)))
+            self.logger.debug('MESSAGE SENT - {}'.format(str(msg)))
 
         if repeat and not msg.key == "CONFIRM":
             # add to outbox and spawn timer to resend
@@ -350,7 +350,7 @@ class Station(multiprocessing.Process):
         self.pusher.send_multipart([bytes(self.push_id), bytes(msg.to), msg_enc])
 
         if not (msg.key == "CONFIRM") and log_this:
-            self.logger.info('MESSAGE PUSHED - {}'.format(str(msg)))
+            self.logger.debug('MESSAGE PUSHED - {}'.format(str(msg)))
 
         if repeat and not msg.key == 'CONFIRM':
             # add to outbox and spawn timer to resend
@@ -384,7 +384,7 @@ class Station(multiprocessing.Process):
                         # if we didn't just put this message in our outbox
                         if (time.time() - push_outbox[id][0]) > self.repeat_interval:
 
-                            self.logger.info('REPUBLISH {} - {}'.format(id, str(push_outbox[id][1])))
+                            self.logger.debug('REPUBLISH {} - {}'.format(id, str(push_outbox[id][1])))
                             self.pusher.send_multipart([bytes(self.push_id), push_outbox[id][1].serialize()])
                             self.push_outbox[id][1].ttl -= 1
 
@@ -404,7 +404,7 @@ class Station(multiprocessing.Process):
                         # if we didn't just put this message in our outbox
                         if (time.time() - send_outbox[id][0]) > self.repeat_interval:
 
-                            self.logger.info('REPUBLISH {} - {}'.format(id, str(send_outbox[id][1])))
+                            self.logger.debug('REPUBLISH {} - {}'.format(id, str(send_outbox[id][1])))
                             self.listener.send_multipart([bytes(send_outbox[id][1].to), send_outbox[id][1].serialize()])
                             self.send_outbox[id][1].ttl -= 1
                     
@@ -549,7 +549,7 @@ class Station(multiprocessing.Process):
         # if this message is to us, just handle it and return
         elif msg.to in [self.id, "_{}".format(self.id)]:
             if (msg.key != "CONFIRM") and log_this:
-                self.logger.info('RECEIVED: {}'.format(str(msg)))
+                self.logger.debug('RECEIVED: {}'.format(str(msg)))
             # Log and spawn thread to respond to listen
             try:
                 listen_funk = self.listens[msg.key]
@@ -1346,7 +1346,7 @@ class Net_Node(object):
             log_this = False
 
         if self.logger and log_this:
-            self.logger.info('{} - RECEIVED: {}'.format(self.id, str(msg)))
+            self.logger.debug('{} - RECEIVED: {}'.format(self.id, str(msg)))
 
         # if msg.key == 'CONFIRM':
         #     if msg.value in self.outbox.keys():
@@ -1449,7 +1449,7 @@ class Net_Node(object):
         else:
             self.sock.send_multipart([bytes(self.upstream), bytes(msg.to), msg_enc])
         if self.logger and log_this:
-            self.logger.info("MESSAGE SENT - {}".format(str(msg)))
+            self.logger.debug("MESSAGE SENT - {}".format(str(msg)))
 
         if repeat and not msg.key == "CONFIRM":
             # add to outbox and spawn timer to resend
@@ -1481,7 +1481,7 @@ class Net_Node(object):
                     else:
                         # if we didn't just put this message in the outbox...
                         if (time.time() - outbox[id][0]) > self.repeat_interval:
-                            self.logger.info('REPUBLISH {} - {}'.format(id, str(outbox[id][1])))
+                            self.logger.debug('REPUBLISH {} - {}'.format(id, str(outbox[id][1])))
                             self.sock.send_multipart([bytes(self.upstream), outbox[id][1].serialize()])
                             self.outbox[id][1].ttl -= 1
 
@@ -1511,7 +1511,7 @@ class Net_Node(object):
         #     del self.timers[value]
 
 
-        self.logger.info('CONFIRMED MESSAGE {}'.format(value))
+        self.logger.debug('CONFIRMED MESSAGE {}'.format(value))
 
     def l_stream(self, value):
         listen_fn = self.listens[value['inner_key']]
@@ -1666,7 +1666,7 @@ class Net_Node(object):
                 last_msg = socket.send_multipart((upstream, upstream, msg),
                                                  track=True, copy=True)
 
-                self.logger.info("STREAM {}: Sent {} items".format(self.id+'_'+id, len(pending_data)))
+                self.logger.debug("STREAM {}: Sent {} items".format(self.id+'_'+id, len(pending_data)))
                 pending_data = []
 
 
