@@ -1661,8 +1661,9 @@ class Net_Node(object):
                               sender=socket_id).serialize()
                 last_msg = socket.send_multipart((upstream, upstream, msg),
                                                  track=True, copy=True)
-                pending_data = []
 
+                self.logger.info("STREAM {}: Sent {} items".format(self.id+'_'+id, len(pending_data)))
+                pending_data = []
 
 
 
@@ -1770,11 +1771,11 @@ class Message(object):
         # if len(str(self.value))>100:
         #     self.DETECTED_MINPRINT = True
         # TODO: Make verbose/debugging mode, print value in that case.
-        #if self.key == 'FILE' or ('MINPRINT' in self.flags.keys()):
-        #    me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}".format(self.id, self.to, self.sender, self.key)
-        #else:
-        #    me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}; VALUE: {}".format(self.id, self.to, self.sender, self.key, self.value)
-        me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}".format(self.id, self.to, self.sender, self.key)
+        if self.key == 'FILE' or ('MINPRINT' in self.flags.keys()):
+            me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}".format(self.id, self.to, self.sender, self.key)
+        else:
+            me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}; VALUE: {}".format(self.id, self.to, self.sender, self.key, self.value)
+        #me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}".format(self.id, self.to, self.sender, self.key)
 
         return me_string
 
