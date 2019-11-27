@@ -764,6 +764,7 @@ class Video(QtGui.QWidget):
         last_time = 0
         this_time = 0
         while not self.quitting.is_set():
+
             for vid, q in self.qs.items():
                 data = None
                 try:

@@ -135,8 +135,6 @@ class Camera_OpenCV(mp.Process):
         # deinit the camera so the other thread can start it
         self.vid.release()
 
-
-
     def init_cam(self, camera_idx = None):
         if camera_idx is None:
             camera_idx = self.camera_idx
