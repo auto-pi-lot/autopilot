@@ -1627,7 +1627,10 @@ class Net_Node(object):
             else:
                 subject = bytes("")
 
-        pilot = bytes(prefs.NAME)
+        if prefs.LINEAGE == "CHILD":
+            pilot = bytes(prefs.PARENTID)
+        else:
+            pilot = bytes(prefs.NAME)
 
         msg_counter = count()
 
