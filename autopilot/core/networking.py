@@ -1654,6 +1654,7 @@ class Net_Node(object):
                                          args=(id, key, min_size, upstream, port, ip, subject, q))
         stream_thread.setDaemon(True)
         stream_thread.start()
+        self.streams[id] = stream_thread
 
         self.streams[id] = stream_thread
 
