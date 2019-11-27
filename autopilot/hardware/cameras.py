@@ -71,7 +71,6 @@ class Camera_OpenCV(mp.Process):
                  queue_size = 128, queue_single = True, blosc=True,
                  *args, **kwargs):
         super(Camera_OpenCV, self).__init__()
-        self.init_logging()
 
         self.last_opencv_init = globals()['OPENCV_LAST_INIT_TIME']
         self.last_init_lock = globals()['LAST_INIT_LOCK']
@@ -85,6 +84,8 @@ class Camera_OpenCV(mp.Process):
         self.stream = stream
         self.timed = timed
         self.blosc = blosc
+
+        self.init_logging()
 
         self._v4l_info = None
 
@@ -193,7 +194,7 @@ class Camera_OpenCV(mp.Process):
     def run(self):
 
         if self.capturing.is_set():
-            warnings.warn("Already capturing!")
+            self.logger.warning("Already capturing!")
             return
 
         self.capturing.set()
@@ -206,7 +207,7 @@ class Camera_OpenCV(mp.Process):
         try:
             timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
         except Exception as e:
-            warnings.warn("Couldn't use opencv timestamps, using system timestamps")
+            self.logger.warning("Couldn't use opencv timestamps, using system timestamps")
             opencv_timestamps = False
         if timestamp == 0:
            opencv_timestamps = False
@@ -257,7 +258,7 @@ class Camera_OpenCV(mp.Process):
                     continue
 
                 if not ret:
-                    warnings.warn("No frame grabbed :(")
+                    self.logger.warning("No frame grabbed :(")
                     continue
 
                 if opencv_timestamps:
@@ -440,9 +441,9 @@ class Camera_OpenCV(mp.Process):
         """
         #FIXME: Just copying and pasting from net node, should implement logging uniformly across hw objects
         timestr = datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(prefs.LOGDIR, 'NetNode_{}_{}.log'.format("CAM_"+self.name, timestr))
+        log_file = os.path.join(prefs.LOGDIR, 'CAM_{}_{}.log'.format("CAM_"+self.name, timestr))
 
-        self.logger = logging.getLogger('node.{}'.format("CAM_"+self.name))
+        self.logger = logging.getLogger('cam.{}'.format("CAM_"+self.name))
         self.log_handler = logging.FileHandler(log_file)
         self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
         self.log_handler.setFormatter(self.log_formatter)
