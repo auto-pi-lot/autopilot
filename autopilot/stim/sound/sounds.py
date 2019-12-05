@@ -333,6 +333,12 @@ if server_type in ("jack", "docs"):
 
             """
 
+            # FIXME: Initialized should be more flexible, 
+            # for now just deleting whatever init happened because
+            # continuous sounds are in development
+            self.table = None
+            self.initialized = False
+
             if not self.initialized and not self.table:
                 # try:
                 self.quantize_duration()
