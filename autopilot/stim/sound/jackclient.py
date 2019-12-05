@@ -119,7 +119,7 @@ class JackClient(mp.Process):
         # a few objects that control continuous/background sound.
         # see descriptions in module variables
         self.continuous = mp.Event()
-        self.continuous_q = mp.Queue()
+        self.continuous_q = mp.Queue(maxsize=512)
         self.continuous_loop = mp.Event()
         self.continuous.clear()
         self.continuous_loop.clear()
@@ -223,24 +223,31 @@ class JackClient(mp.Process):
             Handling multiple outputs is a little screwy right now. v0.2 effectively only supports one channel output.
 
         Args:
-            frames: Unused - frames of input audio, but there shouldn't be any.
+            frames: number of frames (samples) to be processed. unused. passed by jack client
         """
         if not self.play_evt.is_set():
             # if we are in continuous mode...
             if self.continuous.is_set():
-                if not self.continuous_started:
-                    # if we are just entering continuous mode, get the continuous sound and prepare to play it
-                    continuous_frames = []
-                    while not self.continuous_q.empty():
-                        try:
-                            continuous_frames.append(self.continuous_q.get_nowait())
-                        except Empty:
-                            break
-                    self.continuous_cycle = cycle(continuous_frames)
-                    self.continuous_started = True
+                try:
+                    data = self.continuous_q.get_nowait()
+                except Empty:
+                    self.continuous.clear()
 
-                # FIXME: Multichannel sound....
-                self.client.outports[0].get_array()[:] = self.continuous_cycle.next().T
+                self.client.outports[0].get_array()[:] = data.T
+
+                # if not self.continuous_started:
+                #     # if we are just entering continuous mode, get the continuous sound and prepare to play it
+                #     continuous_frames = []
+                #     while not self.continuous_q.empty():
+                #         try:
+                #             continuous_frames.append(self.continuous_q.get_nowait())
+                #         except Empty:
+                #             break
+                #     self.continuous_cycle = cycle(continuous_frames)
+                #     self.continuous_started = True
+
+                # # FIXME: Multichannel sound....
+                # self.client.outports[0].get_array()[:] = self.continuous_cycle.next().T
 
             else:
                 for channel, port in zip(self.zero_arr.T, self.client.outports):
@@ -255,7 +262,14 @@ class JackClient(mp.Process):
             if data is None:
                 # fill with continuous noise
                 if self.continuous.is_set():
-                    self.client.outports[0].get_array()[:] = self.continuous_cycle.next().T
+                    #self.client.outports[0].get_array()[:] = self.continuous_cycle.next().T
+                    try:
+                        data = self.continuous_q.get_nowait()
+                        self.client.outports[0].get_array()[:] = data.T
+                    except Empty:
+                        self.continuous.clear()
+
+                
                 else:
                     for channel, port in zip(self.zero_arr.T, self.client.outports):
                         port.get_array()[:] = channel
@@ -267,8 +281,12 @@ class JackClient(mp.Process):
                     # if sound was not padded, fill remaining with continuous sound or silence
                     n_from_end = self.blocksize - data.shape[0]
                     if self.continuous.is_set():
-                        data = np.concatenate((data, self.continuous_cycle.next()[-n_from_end:]),
+                        # data = np.concatenate((data, self.continuous_cycle.next()[-n_from_end:]),
+                        #                       axis=0)
+                        cont_data = self.continuous_q.get_nowait()
+                        data = np.concatenate((data, cont_data[-n_from_end:]),
                                               axis=0)
+
                     else:
                         data = np.pad(data, (0, n_from_end), 'constant')
 
