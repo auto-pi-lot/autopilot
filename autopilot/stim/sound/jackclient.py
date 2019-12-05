@@ -240,7 +240,7 @@ class JackClient(mp.Process):
                     self.continuous_started = True
 
                 # FIXME: Multichannel sound....
-                self.client.outports[0].get_array()[:] = self.continuous_cycle.next()
+                self.client.outports[0].get_array()[:] = self.continuous_cycle.next().T
 
             else:
                 for channel, port in zip(self.zero_arr.T, self.client.outports):
@@ -255,7 +255,7 @@ class JackClient(mp.Process):
             if data is None:
                 # fill with continuous noise
                 if self.continuous.is_set():
-                    self.client.outports[0].get_array()[:] = self.continuous_cycle.next()
+                    self.client.outports[0].get_array()[:] = self.continuous_cycle.next().T
                 else:
                     for channel, port in zip(self.zero_arr.T, self.client.outports):
                         port.get_array()[:] = channel

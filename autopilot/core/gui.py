@@ -2324,7 +2324,7 @@ class Reassign(QtGui.QDialog):
         """
         super(Reassign, self).__init__()
 
-        self.mice = mice
+        self.subjects = subjects
         self.protocols = protocols
         self.protocol_dir = prefs.PROTOCOLDIR
         self.init_ui()
@@ -2339,7 +2339,7 @@ class Reassign(QtGui.QDialog):
 
         self.subject_objects = {}
 
-        for i, (subject, protocol) in zip(xrange(len(self.mice)), self.mice.items()):
+        for i, (subject, protocol) in zip(xrange(len(self.subjects)), self.subjects.items()):
             subject_name = copy.deepcopy(subject)
             step = protocol[1]
             protocol = protocol[0]
@@ -2417,8 +2417,8 @@ class Reassign(QtGui.QDialog):
         protocol_box = self.subject_objects[subject][0]
         step_box = self.subject_objects[subject][1]
 
-        self.mice[subject][0] = protocol_box.currentText()
-        self.mice[subject][1] = 0
+        self.subjects[subject][0] = protocol_box.currentText()
+        self.subjects[subject][1] = 0
 
         self.populate_steps(subject)
 
@@ -2431,7 +2431,7 @@ class Reassign(QtGui.QDialog):
         protocol_box = self.subject_objects[subject][0]
         step_box = self.subject_objects[subject][1]
 
-        self.mice[subject][1] = step_box.currentIndex()
+        self.subjects[subject][1] = step_box.currentIndex()
 
 
 

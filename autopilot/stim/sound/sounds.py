@@ -246,6 +246,38 @@ if server_type in ("jack", "docs"):
             """
             self.nsamples = np.ceil((self.duration/1000.)*self.fs).astype(np.int)
 
+        def quantize_duration(self, ceiling=True):
+            """
+            Extend or shorten a sound so that it is a multiple of :data:`.jackclient.BLOCKSIZE`
+
+            Args:
+                ceiling (bool): If true, extend duration, otherwise decrease duration.
+            """
+
+            # get remainder of samples
+            self.get_nsamples()
+            remainder = self.nsamples % self.blocksize
+
+            if remainder == 0:
+                return
+            
+            # get target number of samples
+            # get target n blocks and multiply by blocksize
+            if ceiling:
+                target_samples = np.ceil(float(self.nsamples)/self.blocksize)*self.blocksize
+            else:
+                target_samples = np.floor(float(self.nsamples)/self.blocksize)*self.blocksize
+
+            # get new duration
+            self.duration = (target_samples/self.fs)*1000.
+
+            # refresh nsamples
+            self.get_nsamples()
+
+            
+
+
+
         def buffer(self):
             """
             Dump chunks into the sound queue.
@@ -290,18 +322,24 @@ if server_type in ("jack", "docs"):
 
             Continuous shoulds should always have full frames -
             ie. the number of samples in a sound should be a multiple of :data:`.jackclient.BLOCKSIZE`.
+
+            This method will call :meth:`.quantize_duration` to force duration such that the sound has full frames.
+
             An exception will be raised if the sound has been padded.
+
+
 
             Returns:
 
             """
 
             if not self.initialized and not self.table:
-                try:
-                    self.init_sound()
-                    self.initialized = True
-                except:
-                    pass
+                # try:
+                self.quantize_duration()
+                self.init_sound()
+                self.initialized = True
+                # except:
+                #     pass
                     #TODO: Log this, better error handling here
 
             if not self.chunks:
@@ -365,6 +403,10 @@ if server_type in ("jack", "docs"):
 
             Returns:
 
+            todo::
+
+                merge into single play method that changes behavior if continuous or not
+
             """
 
             if not loop:
@@ -381,6 +423,21 @@ if server_type in ("jack", "docs"):
             # tell the sound server that it has a continuous sound now
             self.continuous_flag.set()
             self.continuous = True
+
+        def stop_continuous(self):
+            """
+            Stop playing a continuous sound
+
+            Should be merged into a general stop method
+            """
+            if not self.continuous:
+                Warning("Not a continous sound!")
+                return
+
+            self.continuous_flag.clear()
+            self.continuous_loop.clear()
+
+
 
 
 
@@ -409,6 +466,9 @@ if server_type in ("jack", "docs"):
 
             self.table = None
             self.initialized = False
+
+        def __del__(self):
+            self.end()
 
 
 

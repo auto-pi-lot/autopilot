@@ -464,6 +464,11 @@ class Nafc_Gap(Nafc):
         self.noise.play_continuous()
 
 
+    def end(self):
+        super(Nafc_Gap, self).end()
+        self.noise.stop_continuous()
+
+
 
 
 
