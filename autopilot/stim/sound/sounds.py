@@ -38,6 +38,7 @@ from scipy.signal import resample
 import numpy as np
 import threading
 import logging
+from itertools import cycle
 if sys.version_info >= (3,0):
     from queue import Empty
 else:
@@ -179,6 +180,7 @@ if server_type in ("jack", "docs"):
             self.continuous_flag = jackclient.CONTINUOUS
             self.continuous_q = jackclient.CONTINUOUS_QUEUE
             self.continuous_loop = jackclient.CONTINUOUS_LOOP
+            self.quitting = threading.Event()
 
             self.initialized = False
             self.buffered = False
@@ -418,17 +420,56 @@ if server_type in ("jack", "docs"):
             if not loop:
                 raise NotImplementedError('Continuous, unlooped streaming has not been implemented yet!')
 
-            if not self.buffered_continuous:
-                self.buffer_continuous()
+            # FIXME: Initialized should be more flexible, 
+            # for now just deleting whatever init happened because
+            # continuous sounds are in development
+            self.table = None
+            self.initialized = False
+
+            self.quantize_duration()
+            self.init_sound()
+            self.initialized = True
+            self.chunk()
+
+            # if not self.buffered_continuous:
+            #     self.buffer_continuous()
+            self.continuous_cycle = cycle(self.chunks)
 
             if loop:
                 self.continuous_loop.set()
             else:
                 self.continuous_loop.clear()
 
+            # empty queue
+            while not self.continuous_q.empty():
+                try:
+                    _ = self.continuous_q.get_nowait()
+                except Empty:
+                    # normal, get until it's empty
+                    break
+
+            # start the buffering thread
+            self.cont_thread = threading.Thread(target=self._buffer_continuous)
+            self.cont_thread.setDaemon(True)
+            self.cont_thread.start()
+
+
             # tell the sound server that it has a continuous sound now
             self.continuous_flag.set()
             self.continuous = True
+
+        def _buffer_continuous(self):
+
+            # want to be able to quit if queue remains full for, say, 20 periods
+            wait_time = (self.blocksize/float(self.fs))*20
+
+            while not self.quitting.is_set():
+                self.continuous_q.put(self.continuous_cycle.next(), timeout=wait_time)
+
+
+
+
+
 
         def stop_continuous(self):
             """
@@ -440,6 +481,7 @@ if server_type in ("jack", "docs"):
                 Warning("Not a continous sound!")
                 return
 
+            self.quitting.set()
             self.continuous_flag.clear()
             self.continuous_loop.clear()
 
