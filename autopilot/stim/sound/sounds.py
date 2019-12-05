@@ -40,9 +40,9 @@ import threading
 import logging
 from itertools import cycle
 if sys.version_info >= (3,0):
-    from queue import Empty
+    from queue import Empty, Full
 else:
-    from Queue import Empty
+    from Queue import Empty, Full
 
 
 from autopilot import prefs
@@ -464,7 +464,10 @@ if server_type in ("jack", "docs"):
             wait_time = (self.blocksize/float(self.fs))*20
 
             while not self.quitting.is_set():
-                self.continuous_q.put(self.continuous_cycle.next(), timeout=wait_time)
+                try:
+                    self.continuous_q.put(self.continuous_cycle.next(), timeout=wait_time)
+                except Full:
+                    pass
 
 
 
