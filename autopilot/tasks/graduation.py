@@ -131,7 +131,7 @@ class NTrials(Graduation):
                 # TODO: Logging here
                 pass
         else:
-            trials = self.counter.next()
+            trials = next(self.counter)
 
         if trials >= self.n_trials:
             return True

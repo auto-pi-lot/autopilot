@@ -30,10 +30,11 @@ from tornado.ioloop import IOLoop
 from zmq.eventloop.zmqstream import ZMQStream
 from itertools import count
 import numpy as np
+import pdb
 if sys.version_info >= (3,0):
     import queue
 else:
-    import Queue as queue
+    import queue as queue
 
 from autopilot import prefs
 
@@ -170,14 +171,18 @@ class Station(multiprocessing.Process):
         # each Station object may have one Dealer that
         # connects it with its antecedents.
         self.listener  = self.context.socket(zmq.ROUTER)
-        self.listener.identity = self.id.encode('utf-8')
+        #self.listener.identity = self.id.encode('utf-8')
+        #self.listener.identity = self.id
+        self.listener.setsockopt_string(zmq.IDENTITY, self.id)
         self.listener.bind('tcp://*:{}'.format(self.listen_port))
         self.listener = ZMQStream(self.listener, self.loop)
         self.listener.on_recv(self.handle_listen)
 
         if self.pusher is True:
             self.pusher = self.context.socket(zmq.DEALER)
-            self.pusher.identity = self.id.encode('utf-8')
+            #self.pusher.identity = self.id.encode('utf-8')
+            #self.pusher.identity = self.id
+            self.pusher.setsockopt_string(zmq.IDENTITY, self.id)
             self.pusher.connect('tcp://{}:{}'.format(self.push_ip, self.push_port))
             self.pusher = ZMQStream(self.pusher, self.loop)
             self.pusher.on_recv(self.handle_listen)
@@ -204,7 +209,7 @@ class Station(multiprocessing.Process):
         msg.key = key
         msg.value = value
 
-        msg_num = self.msg_counter.next()
+        msg_num = next(self.msg_counter)
         msg.id = "{}_{}".format(self.id, msg_num)
 
         if not repeat:
@@ -711,7 +716,7 @@ class Terminal_Station(Station):
 
         # Store some prefs values
         self.listen_port = prefs.MSGPORT
-        self.id = b'T'
+        self.id = 'T'
 
         # Message dictionary - What method to call for each type of message received by the terminal class
         self.listens.update({
@@ -975,7 +980,8 @@ class Pilot_Station(Station):
         # Store some prefs values
         self.listen_port = prefs.MSGPORT
 
-        self.id = prefs.NAME.encode('utf-8')
+        #self.id = prefs.NAME.encode('utf-8')
+        self.id = prefs.NAME
         self.pi_id = "_{}".format(self.id)
         self.subject = None # Store current subject ID
         self.state = None # store current pi state
@@ -1285,8 +1291,10 @@ class Net_Node(object):
         # then add the rest
         self.listens.update(listens)
 
-        self.id = id.encode('utf-8')
-        self.upstream = upstream.encode('utf-8')
+        #self.id = id.encode('utf-8')
+        self.id = id
+        #self.upstream = upstream.encode('utf-8')
+        self.upstream = upstream
         self.port = int(port)
 
         # self.connected = False
@@ -1324,7 +1332,8 @@ class Net_Node(object):
         and starts the :meth:`~Net_Node.threaded_loop` as a daemon thread.
         """
         self.sock = self.context.socket(zmq.DEALER)
-        self.sock.identity = self.id
+        #self.sock.identity = self.id
+        self.sock.setsockopt_string(zmq.IDENTITY, self.id)
         #self.sock.probe_router = 1
 
         # if used locally (typical case), connect to localhost
@@ -1494,16 +1503,16 @@ class Net_Node(object):
 
         # encode message
         msg_enc = msg.serialize()
-
+        pdb.set_trace()
         if not msg_enc:
 
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
         if force_to:
-            self.sock.send_multipart([bytes(msg.to), bytes(msg.to), msg_enc])
+            self.sock.send_multipart([bytes(msg.to, encoding="utf-8"), bytes(msg.to, encoding="utf-8"), msg_enc])
         else:
-            self.sock.send_multipart([bytes(self.upstream), bytes(msg.to), msg_enc])
+            self.sock.send_multipart([bytes(self.upstream, encoding="utf-8"), bytes(msg.to, encoding="utf-8"), msg_enc])
         if self.logger and log_this:
             self.logger.debug("MESSAGE SENT - {}".format(str(msg)))
 
@@ -1600,7 +1609,7 @@ class Net_Node(object):
         msg.key = key
         msg.value = value
 
-        msg_num = self.msg_counter.next()
+        msg_num = next(self.msg_counter)
         msg.id = "{}_{}".format(self.id, msg_num)
 
         if not repeat:
@@ -1669,8 +1678,9 @@ class Net_Node(object):
         #context = zmq.Context()
         #loop = IOLoop()
         socket = self.context.socket(zmq.DEALER)
-        socket_id = bytes("{}_{}".format(self.id, id))
-        socket.identity = socket_id
+        socket_id = "{}_{}".format(self.id, id)
+        #socket.identity = socket_id
+        socket.setsockopt_string(zmq.IDENTITY, socket_id)
         socket.connect('tcp://{}:{}'.format(ip, port))
 
         socket = ZMQStream(socket, self.loop)
@@ -1717,7 +1727,7 @@ class Net_Node(object):
                                                     'pilot'  : pilot,
                                                     'continuous': True},
                                      'payload'   : pending_data},
-                              id="{}_{}".format(id, msg_counter.next()),
+                              id="{}_{}".format(id, next(msg_counter)),
                               flags={'NOREPEAT':True, 'MINPRINT':True},
                               sender=socket_id).serialize()
                 last_msg = socket.send_multipart((upstream, upstream, msg),
@@ -1862,18 +1872,19 @@ class Message(object):
             key:
             value:
         """
-        self.changed=True
+        # self.changed=True
         #value = self._check_enc(value)
         self.__dict__[key] = value
 
-    def __setattr__(self, key, value):
-        self.changed=True
-        #value = self._check_enc(value)
-        self.__dict__[key] = value
+    # def __setattr__(self, key, value):
+    #     self.changed=True
+    #     #value = self._check_enc(value)
+    #     super(Message, self).__setattr__(self, key, value)
+    #     self.__dict__[key] = value
 
-    def __getattr__(self, key):
-        #value = self._check_dec(self.__dict__[key])
-        return self.__dict__[key]
+    # def __getattr__(self, key):
+    #     #value = self._check_dec(self.__dict__[key])
+    #     return self.__dict__[key]
     #
     # def _check_enc(self, value):
     #     if isinstance(value, np.ndarray):
@@ -1994,6 +2005,11 @@ class Message(object):
         #     'value': self.value
         # }
         msg = self.__dict__
+        # exclude 'serialized' so it's not in there twice
+        try:
+            del msg['serialized']
+        except KeyError:
+            pass
 
         try:
             msg_enc = json.dumps(msg, default=self._serialize_numpy)

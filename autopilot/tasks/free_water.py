@@ -156,7 +156,7 @@ class Free_Water(Task):
         data = {
             'target': self.target,
             'timestamp': datetime.datetime.now().isoformat(),
-            'trial_num' : self.trial_counter.next()
+            'trial_num' : next(self.trial_counter)
         }
         return data
 

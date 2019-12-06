@@ -150,7 +150,7 @@ class Task(object):
 
                     # add to forward and backwards pin dicts
                     self.hardware[type][pin] = hw
-                    if isinstance(hw_args, int) or isinstance(hw_args, basestring):
+                    if isinstance(hw_args, int) or isinstance(hw_args, str):
                         self.pin_id[hw_args] = pin
                     elif isinstance(hw_args, list):
                         for p in hw_args:

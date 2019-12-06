@@ -13,7 +13,7 @@ import numpy as np
 if sys.version_info >= (3,0):
     from queue import Queue, Empty
 else:
-    from Queue import Queue, Empty
+    from queue import Queue, Empty
 
 if prefs.AGENT in ['pilot']:
     import pigpio
@@ -203,7 +203,7 @@ class I2C_9DOF(Hardware):
 
         """
         raw = self.read_accel()
-        return map(lambda x: x*self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD, raw)
+        return [x*self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD for x in raw]
 
 
 

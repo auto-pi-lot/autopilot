@@ -41,7 +41,7 @@ import logging
 if sys.version_info >= (3,0):
     from queue import Empty
 else:
-    from Queue import Empty
+    from queue import Empty
 
 
 from autopilot import prefs

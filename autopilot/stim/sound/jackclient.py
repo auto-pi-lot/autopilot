@@ -2,17 +2,17 @@
 Client that dumps samples directly to the jack client with the :mod:`jack` package.
 """
 
-from __future__ import division
-from __future__ import print_function
+
+
 
 import multiprocessing as mp
-import Queue as queue
+import queue as queue
 import jack
 import numpy as np
 from copy import copy
 from threading import Thread
 from itertools import cycle
-from Queue import Empty
+from queue import Empty
 
 from autopilot import prefs
 
@@ -171,7 +171,7 @@ class JackClient(mp.Process):
                     self.client.outports[0].connect(target_ports[int(outchan)])
             elif isinstance(prefs.OUTCHANNELS, int):
                 self.client.outports[0].connect(target_ports[prefs.OUTCHANNELS])
-            elif isinstance(prefs.OUTCHANNELS, basestring):
+            elif isinstance(prefs.OUTCHANNELS, str):
                 try:
                     self.client.outports[0].connect(target_ports[int(prefs.OUTCHANNELS)])
                 except TypeError:
@@ -240,7 +240,7 @@ class JackClient(mp.Process):
                     self.continuous_started = True
 
                 # FIXME: Multichannel sound....
-                self.client.outports[0].get_array()[:] = self.continuous_cycle.next()
+                self.client.outports[0].get_array()[:] = next(self.continuous_cycle)
 
             else:
                 for channel, port in zip(self.zero_arr.T, self.client.outports):
@@ -255,7 +255,7 @@ class JackClient(mp.Process):
             if data is None:
                 # fill with continuous noise
                 if self.continuous.is_set():
-                    self.client.outports[0].get_array()[:] = self.continuous_cycle.next()
+                    self.client.outports[0].get_array()[:] = next(self.continuous_cycle)
                 else:
                     for channel, port in zip(self.zero_arr.T, self.client.outports):
                         port.get_array()[:] = channel

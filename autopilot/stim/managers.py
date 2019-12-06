@@ -517,13 +517,13 @@ class Bias_Correction(object):
             response ('R', 'L'): Which side the subject responded to
             target ('R', 'L'): The correct side.
         """
-        if isinstance(response, basestring):
+        if isinstance(response, str):
             if response == "R":
                 response = 1.0
             elif response == "L":
                 response = 0.0
 
-        if isinstance(target, basestring):
+        if isinstance(target, str):
             if target == "R":
                 target = 1.0
             elif target == "L":

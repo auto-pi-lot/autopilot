@@ -25,7 +25,7 @@ if sys.version_info >= (3, 0):
 
 # otherwise, import the Queue class for Python 2.7
 else:
-    from Queue import Queue, Empty
+    from queue import Queue, Empty
 
 try:
     import PySpin

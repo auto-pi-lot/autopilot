@@ -45,7 +45,7 @@ def init(fn):
     Args:
         fn (str, dict): a path to `prefs.json` or a dictionary of preferences
     """
-    if isinstance(fn, basestring):
+    if isinstance(fn, str):
         with open(fn, 'r') as pfile:
             prefs = json.load(pfile)
     elif isinstance(fn, dict):

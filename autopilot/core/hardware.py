@@ -83,7 +83,7 @@ import numpy as np
 if sys.version_info >= (3,0):
     from queue import Queue, Empty
 else:
-    from Queue import Queue, Empty
+    from queue import Queue, Empty
 
 
 # pigpio only uses BCM numbers, we need to translate them

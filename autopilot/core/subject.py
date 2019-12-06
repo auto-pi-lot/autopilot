@@ -26,7 +26,7 @@ from autopilot.stim.sound.sounds import STRING_PARAMS
 if sys.version_info >= (3,0):
     import queue
 else:
-    import Queue as queue
+    import queue as queue
 
 import pdb
 import numpy as np
@@ -298,7 +298,7 @@ class Subject:
 
                 # python 2
                 else:
-                    if isinstance(node[3], basestring):
+                    if isinstance(node[3], str):
                         if node[3] == 'group':
                             h5f.create_group(node[1], node[2])
                     elif issubclass(node[3], tables.IsDescription):
@@ -358,11 +358,11 @@ class Subject:
 
 
         # Check that we're all strings in here
-        if not isinstance(type, basestring):
+        if not isinstance(type, str):
             type = str(type)
-        if not isinstance(name, basestring):
+        if not isinstance(name, str):
             name = str(name)
-        if not isinstance(value, basestring):
+        if not isinstance(value, str):
             value = str(value)
 
         # log the change

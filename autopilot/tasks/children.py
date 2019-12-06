@@ -8,7 +8,7 @@ from autopilot.core.hardware import Wheel, Digital_Out
 from autopilot.hardware import cameras
 from autopilot.core.networking import Net_Node
 from itertools import cycle
-from Queue import Empty
+from queue import Empty
 import threading
 
 class Wheel_Child(object):

@@ -283,7 +283,7 @@ class Nafc(Task):
             self.triggers['C'].append(self.hardware['PORTS']['C'].open)
 
 
-        self.current_trial = self.trial_counter.next()
+        self.current_trial = next(self.trial_counter)
         data = {
             'target':self.target,
             'trial_num' : self.current_trial,
