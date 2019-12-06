@@ -262,7 +262,7 @@ if server_type in ("jack", "docs"):
 
             if remainder == 0:
                 return
-            
+
             # get target number of samples
             # get target n blocks and multiply by blocksize
             if ceiling:
@@ -276,7 +276,7 @@ if server_type in ("jack", "docs"):
             # refresh nsamples
             self.get_nsamples()
 
-            
+
 
 
 
@@ -335,7 +335,7 @@ if server_type in ("jack", "docs"):
 
             """
 
-            # FIXME: Initialized should be more flexible, 
+            # FIXME: Initialized should be more flexible,
             # for now just deleting whatever init happened because
             # continuous sounds are in development
             self.table = None
@@ -420,7 +420,7 @@ if server_type in ("jack", "docs"):
             if not loop:
                 raise NotImplementedError('Continuous, unlooped streaming has not been implemented yet!')
 
-            # FIXME: Initialized should be more flexible, 
+            # FIXME: Initialized should be more flexible,
             # for now just deleting whatever init happened because
             # continuous sounds are in development
             self.table = None

@@ -162,7 +162,7 @@ class GoNoGo(Task):
                        value={'mode':'steady',
                               'thresh':100})
 
-        self.current_trial = self.trial_counter.next()
+        self.current_trial = next(self.trial_counter)
         data = {
             'target': self.target,
             'shift': self.shift,

@@ -1,7 +1,7 @@
 # import numpy as np
 from autopilot import prefs
 if prefs.AGENT in ("terminal", "docs"):
-    from PySide import QtCore
+    from PySide2 import QtCore
 import json
 import pandas as pd
 from scipy.stats import linregress

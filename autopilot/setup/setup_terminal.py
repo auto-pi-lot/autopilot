@@ -78,7 +78,7 @@ def make_dir(adir):
     """
     if not os.path.exists(adir):
         os.makedirs(adir)
-        os.chmod(adir, 0777)
+        os.chmod(adir, 0o777)
 
 
 if __name__ == "__main__":
@@ -135,13 +135,13 @@ if __name__ == "__main__":
         with open(pilot_db, 'w') as pilot_db_file:
             json.dump({}, pilot_db_file)
 
-    os.chmod(pilot_db, 0777)
+    os.chmod(pilot_db, 0o777)
 
     # save prefs
     prefs_file = os.path.join(params['BASEDIR'], 'prefs.json')
     with open(prefs_file, 'w') as prefs_file_open:
         json.dump(params, prefs_file_open, indent=4, separators=(',', ': '), sort_keys=True)
-    os.chmod(prefs_file, 0775)
+    os.chmod(prefs_file, 0o775)
 
     print('params saved to {}\n'.format(prefs_file))
 
@@ -151,7 +151,7 @@ if __name__ == "__main__":
     launch_file = os.path.join(params['BASEDIR'], 'launch_terminal.sh')
     with open(launch_file, 'w') as launch_file_open:
         launch_file_open.write(launch_string)
-    os.chmod(launch_file, 0775)
+    os.chmod(launch_file, 0o775)
 
     pp = pprint.PrettyPrinter(indent=4)
     print('Terminal set up with prefs written to:\n{}\n'.format(launch_file))

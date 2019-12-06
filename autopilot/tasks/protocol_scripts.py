@@ -157,7 +157,7 @@ def manystep_speech(token_dir, out_fn):
         step_dict['stim']['groups'][1]['sounds']['L'] = g_gens
 
         # change step name
-        step_dict['step_name'] = 'speech_' + str(step_num.next())
+        step_dict['step_name'] = 'speech_' + str(next(step_num))
 
 
         steps.append(step_dict)

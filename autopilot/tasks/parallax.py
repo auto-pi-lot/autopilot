@@ -117,7 +117,7 @@ class Parallax(Task):
     def test(self):
         self.stage_block.clear()
 
-        n_trial = self.n_trials.next()
+        n_trial = next(self.n_trials)
 
         return {'trial_num':n_trial}
 

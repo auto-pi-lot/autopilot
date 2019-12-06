@@ -16,11 +16,13 @@ import sys
 import logging
 import os
 import numpy as np
-import PySide # have to import to tell pyqtgraph to use it
+import PySide2 # have to import to tell pyqtgraph to use it
+#import PySide
 import pandas as pd
-from PySide import QtGui
-from PySide import QtCore
-from PySide import QtOpenGL
+from PySide2 import QtGui
+from PySide2 import QtCore
+from PySide2 import QtOpenGL
+from PySide2 import QtWidgets
 import pyqtgraph as pg
 from time import time, sleep
 from itertools import count
@@ -28,7 +30,7 @@ from functools import wraps
 from threading import Event, Thread
 import multiprocessing as mp
 import pdb
-from Queue import Queue, Empty, Full
+from queue import Queue, Empty, Full
 #import cv2
 pg.setConfigOptions(antialias=True)
 from pyqtgraph.widgets.RawImageWidget import RawImageWidget, RawImageGLWidget
@@ -36,7 +38,7 @@ from pyqtgraph.widgets.RawImageWidget import RawImageWidget, RawImageGLWidget
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from autopilot import tasks, prefs
 from autopilot.core import styles
-from utils import InvokeEvent, Invoker
+from .utils import InvokeEvent, Invoker
 from autopilot.core.networking import Net_Node
 
 
@@ -65,7 +67,7 @@ def gui_event(fn):
     return wrapper_gui_event
 
 
-class Plot_Widget(QtGui.QWidget):
+class Plot_Widget(QtWidgets.QWidget):
     """
     Main plot widget that holds plots for all pilots
 
@@ -79,7 +81,7 @@ class Plot_Widget(QtGui.QWidget):
     # Widget that frames multiple plots
     def __init__(self):
         # type: () -> None
-        QtGui.QWidget.__init__(self)
+        QtWidgets.QWidget.__init__(self)
 
         self.logger = logging.getLogger('main')
 
@@ -91,7 +93,7 @@ class Plot_Widget(QtGui.QWidget):
         self.plots = {}
 
         # Main Layout
-        self.layout = QtGui.QVBoxLayout(self)
+        self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.setContentsMargins(0,0,0,0)
         self.layout.setSpacing(0)
 
@@ -100,7 +102,7 @@ class Plot_Widget(QtGui.QWidget):
         #self.plot_select = self.create_plot_buttons()
 
         # Create empty plot container
-        self.plot_layout = QtGui.QVBoxLayout()
+        self.plot_layout = QtWidgets.QVBoxLayout()
 
         # Assemble buttons and plots
         #self.layout.addWidget(self.plot_select)
@@ -127,7 +129,7 @@ class Plot_Widget(QtGui.QWidget):
             self.plots[p] = plot
 
 
-class Plot(QtGui.QWidget):
+class Plot(QtWidgets.QWidget):
     """
     Widget that hosts a :class:`pyqtgraph.PlotWidget` and manages
     graphical objects for one pilot depending on the task.
@@ -161,14 +163,14 @@ class Plot(QtGui.QWidget):
 
             'P_{pilot}'
 
-        infobox (:class:`QtGui.QFormLayout`): Box to plot basic task information like trial number, etc.
+        infobox (:class:`QtWidgets.QFormLayout`): Box to plot basic task information like trial number, etc.
         info (dict): Widgets in infobox:
 
-            * 'N Trials': :class:`QtGui.QLabel`,
+            * 'N Trials': :class:`QtWidgets.QLabel`,
             * 'Runtime' : :class:`.Timer`,
-            * 'Session' : :class:`QtGui.QLabel`,
-            * 'Protocol': :class:`QtGui.QLabel`,
-            * 'Step'    : :class:`QtGui.QLabel`
+            * 'Session' : :class:`QtWidgets.QLabel`,
+            * 'Protocol': :class:`QtWidgets.QLabel`,
+            * 'Step'    : :class:`QtWidgets.QLabel`
 
         plot (:class:`pyqtgraph.PlotWidget`): The widget where we draw our plots
         plot_params (dict): A dictionary of plot parameters we receive from the Task class
@@ -246,20 +248,20 @@ class Plot(QtGui.QWidget):
         # each task started should then send us params to populate afterwards
         #self.getPlotItem().hideAxis('bottom')
 
-        self.layout = QtGui.QHBoxLayout()
+        self.layout = QtWidgets.QHBoxLayout()
         self.layout.setContentsMargins(2,2,2,2)
         self.setLayout(self.layout)
 
         # A little infobox to keep track of running time, trials, etc.
-        self.infobox = QtGui.QFormLayout()
+        self.infobox = QtWidgets.QFormLayout()
         self.n_trials = count()
         self.session_trials = 0
         self.info = {
-            'N Trials': QtGui.QLabel(),
+            'N Trials': QtWidgets.QLabel(),
             'Runtime' : Timer(),
-            'Session' : QtGui.QLabel(),
-            'Protocol': QtGui.QLabel(),
-            'Step'    : QtGui.QLabel()
+            'Session' : QtWidgets.QLabel(),
+            'Protocol': QtWidgets.QLabel(),
+            'Step'    : QtWidgets.QLabel()
         }
         for k, v in self.info.items():
 
@@ -276,7 +278,7 @@ class Plot(QtGui.QWidget):
 
         self.layout.addWidget(self.plot, 8)
 
-        self.xrange = xrange(self.last_trial - self.x_width + 1, self.last_trial + 1)
+        self.xrange = range(self.last_trial - self.x_width + 1, self.last_trial + 1)
         self.plot.setXRange(self.xrange[0], self.xrange[-1])
 
         self.plot.getPlotItem().hideAxis('left')
@@ -393,12 +395,12 @@ class Plot(QtGui.QWidget):
         if 'trial_num' in value.keys():
             v = value.pop('trial_num')
             if v != self.last_trial:
-                self.session_trials = self.n_trials.next()
+                self.session_trials = next(self.n_trials)
             self.last_trial = v
             # self.last_trial = v
             self.info['N Trials'].setText("{}/{}".format(self.session_trials, v))
             if not self.continuous:
-                self.xrange = xrange(v - self.x_width + 1, v + 1)
+                self.xrange = range(v - self.x_width + 1, v + 1)
                 self.plot.setXRange(self.xrange[0], self.xrange[-1])
 
 
@@ -492,8 +494,8 @@ class Point(pg.PlotDataItem):
     A simple point.
 
     Attributes:
-        brush (:class:`QtGui.QBrush`)
-        pen (:class:`QtGui.QPen`)
+        brush (:class:`QtWidgets.QBrush`)
+        pen (:class:`QtWidgets.QPen`)
     """
 
     def __init__(self, color=(0,0,0), size=5, **kwargs):
@@ -646,7 +648,7 @@ class Shaded(pg.PlotDataItem):
 
 
 
-class Timer(QtGui.QLabel):
+class Timer(QtWidgets.QLabel):
     """
     A simple timer that counts... time...
 
@@ -685,7 +687,7 @@ class Timer(QtGui.QLabel):
         self.setText("{:02d}:{:02d}:{:02d}".format(secs_elapsed/3600, (secs_elapsed/60)%60, secs_elapsed%60))
 
 
-class Video(QtGui.QWidget):
+class Video(QtWidgets.QWidget):
     def __init__(self, videos, fps=None, parent=None):
         super(Video, self).__init__()
 
@@ -703,7 +705,7 @@ class Video(QtGui.QWidget):
         self.ifps = 1.0/self.fps
 
         # get app instance
-        self.app = QtGui.QApplication.instance()
+        self.app = QtWidgets.QApplication.instance()
 
         #self.q = Queue(maxsize=1)
         self.qs = {}
@@ -718,15 +720,15 @@ class Video(QtGui.QWidget):
         self.update_thread.start()
 
     def init_gui(self):
-        self.layout = QtGui.QGridLayout()
+        self.layout = QtWidgets.QGridLayout()
         self.vid_widgets = {}
 
 
         for i, vid in enumerate(self.videos):
-            vid_label = QtGui.QLabel(vid)
+            vid_label = QtWidgets.QLabel(vid)
             #rawImg = RawImageGLWidget(self)
 
-            #sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+            #sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
             #sizePolicy.setHorizontalStretch(0)
             #sizePolicy.setVerticalStretch(0)
             #sizePolicy.setHeightForWidth(rawImg.sizePolicy().hasHeightForWidth())
@@ -947,15 +949,15 @@ class VideoCV(mp.Process):
 #     pass
 
 
-class HLine(QtGui.QFrame):
+class HLine(QtWidgets.QFrame):
     """
     A Horizontal line.
     """
     def __init__(self):
         # type: () -> None
         super(HLine, self).__init__()
-        self.setFrameShape(QtGui.QFrame.HLine)
-        self.setFrameShadow(QtGui.QFrame.Sunken)
+        self.setFrameShape(QtWidgets.QFrame.HLine)
+        self.setFrameShadow(QtWidgets.QFrame.Sunken)
 
 VIDEO_TIMER = None
 

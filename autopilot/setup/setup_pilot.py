@@ -149,7 +149,7 @@ def make_dir(adir):
     """
     if not os.path.exists(adir):
         os.makedirs(adir)
-        os.chmod(adir, 0777)
+        os.chmod(adir, 0o777)
 
 if __name__ == "__main__":
     # Check for sudo
@@ -244,7 +244,7 @@ if __name__ == "__main__":
     prefs_file = os.path.join(params['BASEDIR'], 'prefs.json')
     with open(prefs_file, 'w') as prefs_file_open:
         json.dump(params, prefs_file_open, indent=4, separators=(',', ': '), sort_keys=True)
-    os.chmod(prefs_file, 0775)
+    os.chmod(prefs_file, 0o775)
 
     print('params saved to {}\n'.format(prefs_file))
 
@@ -286,11 +286,11 @@ if __name__ == "__main__":
             launch_file_open.write(launch_string)
 
 
-    os.chmod(launch_file, 0775)
+    os.chmod(launch_file, 0o775)
 
     print('executable file created:\n     {}\n'.format(launch_file))
 
-    answer = str(raw_input('Install as Systemd service? (y/n)> '))
+    answer = str(input('Install as Systemd service? (y/n)> '))
 
     if answer == 'y':
         # open pilot on startup using systemd

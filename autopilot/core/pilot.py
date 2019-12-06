@@ -586,7 +586,7 @@ class Pilot:
             self.logger.warning(e)
             os.remove(local_file)
             h5f = tables.open_file(local_file, mode='w')
-            os.chmod(local_file, 0777)
+            os.chmod(local_file, 0o777)
 
 
         try:

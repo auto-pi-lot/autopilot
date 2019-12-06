@@ -6,14 +6,14 @@ from __future__ import division
 from __future__ import print_function
 
 import multiprocessing as mp
-import Queue as queue
+import queue as queue
 import jack
 import numpy as np
 from copy import copy
 from threading import Thread
 from itertools import cycle
-from Queue import Empty
 import sys
+from queue import Empty
 
 from autopilot import prefs
 
@@ -129,9 +129,6 @@ class JackClient(mp.Process):
         # store the frames of the continuous sound and cycle through them if set in continous mode
         self.continuous_cycle = None
 
-        # TODO: For debugging, delete me
-        self.data = None
-
 
         # store a reference to us and our values in the module
         globals()['SERVER'] = self
@@ -175,7 +172,7 @@ class JackClient(mp.Process):
                     self.client.outports[0].connect(target_ports[int(outchan)])
             elif isinstance(prefs.OUTCHANNELS, int):
                 self.client.outports[0].connect(target_ports[prefs.OUTCHANNELS])
-            elif isinstance(prefs.OUTCHANNELS, basestring):
+            elif isinstance(prefs.OUTCHANNELS, str):
                 try:
                     self.client.outports[0].connect(target_ports[int(prefs.OUTCHANNELS)])
                 except TypeError:
@@ -283,7 +280,7 @@ class JackClient(mp.Process):
 
                     self.client.outports[0].get_array()[:] = data.T
 
-                
+
                 else:
                     for channel, port in zip(self.zero_arr.T, self.client.outports):
                         port.get_array()[:] = channel

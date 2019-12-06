@@ -39,12 +39,13 @@ import threading
 from collections import OrderedDict as odict
 import numpy as np
 
-from PySide import QtCore, QtGui, QtSvg
-from subject import Subject
-from plots import Plot_Widget
-from networking import Terminal_Station, Net_Node
-from utils import InvokeEvent, Invoker
-from gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test, pop_dialog, Psychometric
+
+from PySide2 import QtCore, QtGui, QtSvg, QtWidgets
+from autopilot.core.subject import Subject
+from autopilot.core.plots import Plot_Widget
+from autopilot.core.networking import Terminal_Station, Net_Node
+from autopilot.core.utils import InvokeEvent, Invoker
+from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test
 
 IMPORTED_VIZ = False
 VIZ_ERROR = None
@@ -53,7 +54,6 @@ try:
     IMPORTED_VIZ = True
 except ImportError as e:
     VIZ_ERROR = str(e)
-
 import pdb
 
 
@@ -66,7 +66,7 @@ import pdb
 # https://wiki.qt.io/PySide_Tutorials
 
 
-class Terminal(QtGui.QMainWindow):
+class Terminal(QtWidgets.QMainWindow):
     """
     Central host to a fleet of :class:`.Pilot` s and user-facing
     :mod:`~.core.gui` objects.
@@ -109,10 +109,10 @@ class Terminal(QtGui.QMainWindow):
         networking (:class:`~.networking.Terminal_Station`): Our networking object to communicate with the outside world
         subjects (dict): A dictionary mapping subject ID to :class:`~.subject.Subject` object.
         pilots (dict): A dictionary mapping pilot ID to a list of its subjects, its IP, and any other pilot attributes.
-        layout (:class:`QtGui.QGridLayout`): Layout used to organize widgets
+        layout (:class:`QtWidgets.QGridLayout`): Layout used to organize widgets
         control_panel (:class:`~.gui.Control_Panel`): Control Panel to manage pilots and subjects
         data_panel (:class:`~.plots.Plot_Widget`): Plots for each pilot and subject.
-        logo (:class:`QtGui.QLabel`): Label holding our beautiful logo ;X
+        logo (:class:`QtWidgets.QLabel`): Label holding our beautiful logo ;X
         logger (:class:`logging.Logger`): Used to log messages and network events.
         log_handler (:class:`logging.FileHandler`): Handler for logging
         log_formatter (:class:`logging.Formatter`): Formats log entries as::
@@ -227,13 +227,13 @@ class Terminal(QtGui.QMainWindow):
 
 
         # set central widget
-        self.widget = QtGui.QWidget()
+        self.widget = QtWidgets.QWidget()
         self.setCentralWidget(self.widget)
 
 
 
         # Start GUI
-        self.layout = QtGui.QGridLayout()
+        self.layout = QtWidgets.QGridLayout()
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0,0,0,0)
         self.widget.setLayout(self.layout)
@@ -256,9 +256,9 @@ class Terminal(QtGui.QMainWindow):
 
         self.file_menu = self.menuBar().addMenu("&File")
         self.file_menu.setObjectName("file")
-        new_pilot_act = QtGui.QAction("New &Pilot", self, triggered=self.new_pilot)
-        new_prot_act  = QtGui.QAction("New Pro&tocol", self, triggered=self.new_protocol)
-        #batch_create_subjects = QtGui.QAction("Batch &Create subjects", self, triggered=self.batch_subjects)
+        new_pilot_act = QtWidgets.QAction("New &Pilot", self, triggered=self.new_pilot)
+        new_prot_act  = QtWidgets.QAction("New Pro&tocol", self, triggered=self.new_protocol)
+        #batch_create_subjects = QtWidgets.QAction("Batch &Create subjects", self, triggered=self.batch_subjects)
         # TODO: Update pis
         self.file_menu.addAction(new_pilot_act)
         self.file_menu.addAction(new_prot_act)
@@ -266,10 +266,10 @@ class Terminal(QtGui.QMainWindow):
 
         # Tools menu
         self.tool_menu = self.menuBar().addMenu("&Tools")
-        subject_weights_act = QtGui.QAction("View Subject &Weights", self, triggered=self.subject_weights)
-        update_protocol_act = QtGui.QAction("Update Protocols", self, triggered=self.update_protocols)
-        reassign_act = QtGui.QAction("Batch Reassign Protocols", self, triggered=self.reassign_protocols)
-        calibrate_act = QtGui.QAction("Calibrate &Water Ports", self, triggered=self.calibrate_ports)
+        subject_weights_act = QtWidgets.QAction("View Subject &Weights", self, triggered=self.subject_weights)
+        update_protocol_act = QtWidgets.QAction("Update Protocols", self, triggered=self.update_protocols)
+        reassign_act = QtWidgets.QAction("Batch Reassign Protocols", self, triggered=self.reassign_protocols)
+        calibrate_act = QtWidgets.QAction("Calibrate &Water Ports", self, triggered=self.calibrate_ports)
         self.tool_menu.addAction(subject_weights_act)
         self.tool_menu.addAction(update_protocol_act)
         self.tool_menu.addAction(reassign_act)
@@ -282,7 +282,7 @@ class Terminal(QtGui.QMainWindow):
 
         # Tests menu
         self.tests_menu = self.menuBar().addMenu("Test&s")
-        bandwidth_test_act = QtGui.QAction("Test Bandwidth", self, triggered=self.test_bandwidth)
+        bandwidth_test_act = QtWidgets.QAction("Test Bandwidth", self, triggered=self.test_bandwidth)
         self.tests_menu.addAction(bandwidth_test_act)
 
 
@@ -304,7 +304,7 @@ class Terminal(QtGui.QMainWindow):
 
         pixmap_path = os.path.join(os.path.dirname(prefs.REPODIR), 'graphics', 'autopilot_logo_small.svg')
         #svg_renderer = QtSvg.QSvgRenderer(pixmap_path)
-        #image = QtGui.QImage()
+        #image = QtWidgets.QImage()
         #self.logo = QtSvg.QSvgWidget()
 
 
@@ -318,7 +318,7 @@ class Terminal(QtGui.QMainWindow):
         image.fill(0x00000000)
         svg_renderer.render(QtGui.QPainter(image))
         pixmap = QtGui.QPixmap.fromImage(image)
-        self.logo = QtGui.QLabel()
+        self.logo = QtWidgets.QLabel()
         self.logo.setPixmap(pixmap)
 
 
@@ -346,8 +346,8 @@ class Terminal(QtGui.QMainWindow):
         # Then our tilebar
         # multiply by three to get the inner (file, etc.) bar, the top bar (min, maximize, etc)
         # and then the very top system tray bar in ubuntu
-        #titleBarHeight = self.style().pixelMetric(QtGui.QStyle.PM_TitleBarHeight,
-        #                                          QtGui.QStyleOptionTitleBar(), self) * 3
+        #titleBarHeight = self.style().pixelMetric(QtWidgets.QStyle.PM_TitleBarHeight,
+        #                                          QtWidgets.QStyleOptionTitleBar(), self) * 3
         title_bar_height = screensize.height()-winsize.height()
 
         #titleBarHeight = bar_height*2
@@ -360,7 +360,7 @@ class Terminal(QtGui.QMainWindow):
         winsize.setHeight(winheight)
         self.max_height = winheight
         self.setGeometry(winsize)
-        self.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
 
         # Set heights on control panel and data panel
 
@@ -388,7 +388,7 @@ class Terminal(QtGui.QMainWindow):
         """
 
         # type: () -> None
-        self.layout = QtGui.QGridLayout()
+        self.layout = QtWidgets.QGridLayout()
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0,0,0,0)
         self.widget.setLayout(self.layout)
@@ -425,7 +425,7 @@ class Terminal(QtGui.QMainWindow):
         # stopping is the enemy of starting so we put them in the same function to learn about each other
         if starting is True:
             # Get Weights
-            start_weight, ok = QtGui.QInputDialog.getDouble(self, "Set Starting Weight",
+            start_weight, ok = QtWidgets.QInputDialog.getDouble(self, "Set Starting Weight",
                                                             "Starting Weight:")
             if ok:
                 # Ope'nr up if she aint
@@ -446,7 +446,7 @@ class Terminal(QtGui.QMainWindow):
 
         else:
             # Get Weights
-            stop_weight, ok = QtGui.QInputDialog.getDouble(self, "Set Stopping Weight",
+            stop_weight, ok = QtWidgets.QInputDialog.getDouble(self, "Set Stopping Weight",
                                                            "Stopping Weight:")
             
             if ok:
@@ -581,7 +581,7 @@ class Terminal(QtGui.QMainWindow):
             name (str): If None, prompted for a name, otherwise used for entry in pilot DB.
         """
         if name is None:
-            name, ok = QtGui.QInputDialog.getText(self, "Pilot ID", "Pilot ID:")
+            name, ok = QtWidgets.QInputDialog.getText(self, "Pilot ID", "Pilot ID:")
 
         # make sure we won't overwrite ourself
         if name in self.pilots.keys():
@@ -623,7 +623,7 @@ class Terminal(QtGui.QMainWindow):
                 save_steps.append(param_values)
 
             # Name the protocol
-            name, ok = QtGui.QInputDialog.getText(self, "Name Protocol", "Protocol Name:")
+            name, ok = QtWidgets.QInputDialog.getText(self, "Name Protocol", "Protocol Name:")
             if ok and name != '':
                 protocol_file = os.path.join(prefs.PROTOCOLDIR, name + '.json')
                 with open(protocol_file, 'w') as pfile_open:
@@ -695,7 +695,7 @@ class Terminal(QtGui.QMainWindow):
                 self.subjects[subject].assign_protocol(os.path.join(prefs.PROTOCOLDIR, protocol), step_n=self.subjects[subject].step)
                 updated_subjects.append(subject)
 
-        msgbox = QtGui.QMessageBox()
+        msgbox = QtWidgets.QMessageBox()
         msgbox.setText("Subject Protocols Updated for:")
         msgbox.setDetailedText("\n".join(sorted(updated_subjects)))
         msgbox.exec_()
@@ -783,7 +783,7 @@ class Terminal(QtGui.QMainWindow):
                 self.node.send(to=pilot, key="CALIBRATE_RESULT",
                                value = unnested_results)
 
-            msgbox = QtGui.QMessageBox()
+            msgbox = QtWidgets.QMessageBox()
             msgbox.setText("Calibration results sent!")
             msgbox.exec_()
 
@@ -876,7 +876,7 @@ if __name__ == "__main__":
     #with open(prefs_file) as prefs_file_open:
     #    prefs = json.load(prefs_file_open)
 
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     #app.setGraphicsSystem("opengl")
     app.setStyle('GTK+') # Keeps some GTK errors at bay
     ex = Terminal()
