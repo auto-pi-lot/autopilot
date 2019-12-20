@@ -981,7 +981,7 @@ class Pilot_Station(Station):
         self.listen_port = prefs.MSGPORT
 
         #self.id = prefs.NAME.encode('utf-8')
-        self.id = prefs.NAME.encode('utf-8')
+        self.id = prefs.NAME
         self.pi_id = "_{}".format(self.id)
         self.subject = None # Store current subject ID
         self.state = None # store current pi state
