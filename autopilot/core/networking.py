@@ -973,7 +973,7 @@ class Pilot_Station(Station):
 
         else:
             self.push_id = b'T'
-            self.push_port = prefs.PUSHPORT.encode('utf-8')
+            self.push_port = prefs.PUSHPORT
             self.push_ip = prefs.TERMINALIP.encode('utf-8')
             self.child - False
 
