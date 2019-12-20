@@ -684,7 +684,7 @@ class Timer(QtWidgets.QLabel):
 
         """
         secs_elapsed = int(np.floor(time()-self.start_time))
-        self.setText("{:02d}:{:02d}:{:02d}".format(secs_elapsed/3600, (secs_elapsed/60)%60, secs_elapsed%60))
+        self.setText("{:02d}:{:02d}:{:02d}".format(int(secs_elapsed/3600), int((secs_elapsed/60))%60, secs_elapsed%60))
 
 
 class Video(QtWidgets.QWidget):
