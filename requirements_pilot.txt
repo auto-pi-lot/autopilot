@@ -1,0 +1,10 @@
+# to be installed by apt b/c takes forever w pip on the pi
+# python3-numpy
+# python3-pandas
+# python3-tables
+
+pyzmq
+npyscreen
+tornado
+inputs
+requests
