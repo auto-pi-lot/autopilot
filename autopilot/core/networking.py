@@ -509,8 +509,8 @@ class Station(multiprocessing.Process):
 
             # if this message wasn't to us, forward without deserializing
             # the second to last should always be the intended recipient
-            unserialized_to = msg[-2].decode('utf-8')
-            if unserialized_to not in [self.id, "_{}".format(self.id)]:
+            unserialized_to = msg[-2]
+            if unserialized_to.decode('utf-8') not in [self.id, "_{}".format(self.id)]:
                 if unserialized_to not in self.senders.keys() and self.pusher:
                     # if we don't know who they are and we have a pusher, try to push it
                     self.pusher.send_multipart([self.push_id, unserialized_to, msg[-1]])
