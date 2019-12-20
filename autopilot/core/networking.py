@@ -206,8 +206,16 @@ class Station(multiprocessing.Process):
         """
         msg = Message()
         msg.sender = self.id
-        msg.to = str(to)
-        msg.key = str(key)
+        try:
+            msg.to = to.decode('utf-8')
+        except AttributeError:
+            msg.to = to
+
+        try:
+            msg.key = key.decode('utf-8')
+        except AttributeError:
+            msg.key = key
+
         msg.value = value
 
         msg_num = next(self.msg_counter)
@@ -560,7 +568,7 @@ class Station(multiprocessing.Process):
             _ = msg.to.pop(0)
 
             # if the next recipient in the list is our push-parent, push it
-            if msg.to[0] == str(self.push_id):
+            if msg.to[0] == self.push_id:
                 self.push(msg=msg)
             else:
                 self.send(msg=msg)
@@ -1617,8 +1625,16 @@ class Net_Node(object):
         #else:
         msg.sender = self.id
 
-        msg.to = str(to)
-        msg.key = str(key)
+        try:
+            msg.to = to.decode('utf-8')
+        except AttributeError:
+            msg.to = to
+
+        try:
+            msg.key = key.decode('utf-8')
+        except AttributeError:
+            msg.key = key
+
         msg.value = value
 
         msg_num = next(self.msg_counter)
