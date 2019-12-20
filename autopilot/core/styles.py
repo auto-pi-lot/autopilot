@@ -28,6 +28,7 @@ QPushButton {
 	border-radius: 5px;
 	border: 3px solid rgba(0,0,0,1);
 	border-bottom-width: 3px;
+	font-size: 14pt;
 }
 
 QPushButton:hover {
@@ -52,8 +53,8 @@ AxisItem
 
 CONTROL_PANEL = """
 font-family: "FreeSans";
-border-bottom: 1px solid #000;
-border-right: 1px solid #000;
+border-top: 1px solid #000;
+border-left: 1px solid #000;
 
 
 """

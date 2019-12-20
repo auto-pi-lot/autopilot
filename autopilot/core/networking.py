@@ -31,6 +31,7 @@ from zmq.eventloop.zmqstream import ZMQStream
 from itertools import count
 import numpy as np
 import pdb
+from pudb.remote import set_trace
 if sys.version_info >= (3,0):
     import queue
 else:
@@ -205,8 +206,8 @@ class Station(multiprocessing.Process):
         """
         msg = Message()
         msg.sender = self.id
-        msg.to = to
-        msg.key = key
+        msg.to = str(to)
+        msg.key = str(key)
         msg.value = value
 
         msg_num = next(self.msg_counter)
@@ -248,6 +249,7 @@ class Station(multiprocessing.Process):
                 Got\nto: {}\nkey: {}\nvalue: {}\nmsg: {}'.format(to, key, value, msg))
             return
 
+        manual_to = False
         if not msg:
             # we're sending this ourselves, new message.
             msg = self.prepare_message(to, key, value, repeat, flags)
@@ -255,8 +257,6 @@ class Station(multiprocessing.Process):
             # if given both message and to, send it to our 'to'
             # don't want to force a reserialization of the message
             manual_to = True
-        else:
-            manual_to = False
 
         if 'NOREPEAT' in msg.flags.keys():
             repeat = False
@@ -274,18 +274,19 @@ class Station(multiprocessing.Process):
 
         # TODO: try/except here
         if not msg_enc:
+            #set_trace(term_size=(80,40))
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
         if manual_to:
-            self.listener.send_multipart([bytes(to), msg_enc])
+            self.listener.send_multipart([to.encode('utf-8'), msg_enc])
         else:
 
             if isinstance(msg.to, list):
 
-                self.listener.send_multipart([bytes(msg.to[0]), msg_enc])
+                self.listener.send_multipart([msg.to[0].encode('utf-8'), msg_enc])
             else:
-                self.listener.send_multipart([bytes(msg.to), msg_enc])
+                self.listener.send_multipart([msg.to.encode('utf-8'), msg_enc])
 
         # messages can have a flag that says not to log
         # log_this = True
@@ -363,7 +364,7 @@ class Station(multiprocessing.Process):
 
         # Even if the message is not to our upstream node, we still send it
         # upstream because presumably our target is upstream.
-        self.pusher.send_multipart([bytes(self.push_id), bytes(msg.to), msg_enc])
+        self.pusher.send_multipart([self.push_id, bytes(msg.to, encoding="utf-8"), msg_enc])
 
         if not (msg.key == "CONFIRM") and log_this:
             self.logger.debug('MESSAGE PUSHED - {}'.format(str(msg)))
@@ -401,7 +402,7 @@ class Station(multiprocessing.Process):
                         if (time.time() - push_outbox[id][0]) > self.repeat_interval:
 
                             self.logger.debug('REPUBLISH {} - {}'.format(id, str(push_outbox[id][1])))
-                            self.pusher.send_multipart([bytes(self.push_id), push_outbox[id][1].serialize()])
+                            self.pusher.send_multipart([self.push_id, push_outbox[id][1].serialize()])
                             self.push_outbox[id][1].ttl -= 1
 
 
@@ -421,7 +422,7 @@ class Station(multiprocessing.Process):
                         if (time.time() - send_outbox[id][0]) > self.repeat_interval:
 
                             self.logger.debug('REPUBLISH {} - {}'.format(id, str(send_outbox[id][1])))
-                            self.listener.send_multipart([bytes(send_outbox[id][1].to), send_outbox[id][1].serialize()])
+                            self.listener.send_multipart([bytes(send_outbox[id][1].to, encoding="utf-8"), send_outbox[id][1].serialize()])
                             self.send_outbox[id][1].ttl -= 1
                     
             # wait to do it again
@@ -498,7 +499,7 @@ class Station(multiprocessing.Process):
             # # if this is a new sender, add them to the list
             if sender not in self.senders.keys():
                 self.senders[sender] = ""
-                self.senders['_' + sender] = ''
+                self.senders[b'_' + sender] = ''
 
             # connection pings are blank frames,
             # respond to let them know we're alive
@@ -509,10 +510,10 @@ class Station(multiprocessing.Process):
             # if this message wasn't to us, forward without deserializing
             # the second to last should always be the intended recipient
             unserialized_to = msg[-2]
-            if unserialized_to not in [self.id, "_{}".format(self.id)]:
+            if unserialized_to.decode('utf-8') not in [self.id, "_{}".format(self.id)]:
                 if unserialized_to not in self.senders.keys() and self.pusher:
                     # if we don't know who they are and we have a pusher, try to push it
-                    self.pusher.send_multipart([bytes(self.push_id), unserialized_to, msg[-1]])
+                    self.pusher.send_multipart([self.push_id, unserialized_to, msg[-1]])
                 else:
                     #if we know who they are or not, try to send it through router anyway.
                     self.listener.send_multipart([unserialized_to, unserialized_to, msg[-1]])
@@ -520,7 +521,9 @@ class Station(multiprocessing.Process):
 
             #msg = json.loads(msg[-1])
             #msg = Message(**msg)
+            #set_trace(term_size=(80, 24))
             msg = Message(msg[-1])
+
 
             # if this is a new sender, add them to the list
             if msg['sender'] not in self.senders.keys():
@@ -557,7 +560,7 @@ class Station(multiprocessing.Process):
             _ = msg.to.pop(0)
 
             # if the next recipient in the list is our push-parent, push it
-            if msg.to[0] == self.push_id:
+            if msg.to[0] == str(self.push_id):
                 self.push(msg=msg)
             else:
                 self.send(msg=msg)
@@ -975,13 +978,13 @@ class Pilot_Station(Station):
         # Pilot has a pusher - connects back to terminal
         self.pusher = True
         if prefs.LINEAGE == 'CHILD':
-            self.push_id = prefs.PARENTID
+            self.push_id = prefs.PARENTID.encode('utf-8')
             self.push_port = prefs.PARENTPORT
             self.push_ip = prefs.PARENTIP
             self.child = True
 
         else:
-            self.push_id = 'T'
+            self.push_id = b'T'
             self.push_port = prefs.PUSHPORT
             self.push_ip = prefs.TERMINALIP
             self.child - False
@@ -1326,7 +1329,7 @@ class Net_Node(object):
         self.expand = expand_on_receive
 
         if hasattr(prefs, 'SUBJECT'):
-            self.subject = prefs.SUBJECT
+            self.subject = prefs.SUBJECT.encode('utf-8')
         else:
             self.subject = None
 
@@ -1514,14 +1517,14 @@ class Net_Node(object):
         msg_enc = msg.serialize()
         #pdb.set_trace()
         if not msg_enc:
-
+            #pdb.set_trace()
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
         if force_to:
             self.sock.send_multipart([bytes(msg.to, encoding="utf-8"), bytes(msg.to, encoding="utf-8"), msg_enc])
         else:
-            self.sock.send_multipart([bytes(self.upstream, encoding="utf-8"), bytes(msg.to, encoding="utf-8"), msg_enc])
+            self.sock.send_multipart([self.upstream.encode('utf-8'), bytes(msg.to, encoding="utf-8"), msg_enc])
         if self.logger and log_this:
             self.logger.debug("MESSAGE SENT - {}".format(str(msg)))
 
@@ -1556,7 +1559,7 @@ class Net_Node(object):
                         # if we didn't just put this message in the outbox...
                         if (time.time() - outbox[id][0]) > self.repeat_interval:
                             self.logger.debug('REPUBLISH {} - {}'.format(id, str(outbox[id][1])))
-                            self.sock.send_multipart([bytes(self.upstream), outbox[id][1].serialize()])
+                            self.sock.send_multipart([self.upstream.encode('utf-8'), outbox[id][1].serialize()])
                             self.outbox[id][1].ttl -= 1
 
 
@@ -1614,8 +1617,8 @@ class Net_Node(object):
         #else:
         msg.sender = self.id
 
-        msg.to = to
-        msg.key = key
+        msg.to = str(to)
+        msg.key = str(key)
         msg.value = value
 
         msg_num = next(self.msg_counter)
@@ -1696,18 +1699,18 @@ class Net_Node(object):
 
         socket = ZMQStream(socket, self.loop)
 
-        upstream = bytes(upstream)
+        upstream = bytes(upstream, encoding="utf-8")
 
         if subject is None:
             if hasattr(prefs, 'SUBJECT'):
-                subject = bytes(prefs.SUBJECT)
+                subject = bytes(prefs.SUBJECT, encoding="utf-8")
             else:
-                subject = bytes("")
+                subject = b""
 
         if prefs.LINEAGE == "CHILD":
-            pilot = bytes(prefs.PARENTID)
+            pilot = bytes(prefs.PARENTID, encoding="utf-8")
         else:
-            pilot = bytes(prefs.NAME)
+            pilot = bytes(prefs.NAME, encoding="utf-8")
 
         msg_counter = count()
 
@@ -1818,7 +1821,7 @@ class Message(object):
     changed = False
     serialized = None
 
-    def __init__(self, expand_arrays = False, *args, **kwargs):
+    def __init__(self, msg=None, expand_arrays = False,  **kwargs):
         # type: (object, object) -> None
         # Messages don't need to have all attributes on creation,
         # but do need them to serialize
@@ -1833,15 +1836,16 @@ class Message(object):
         self.timestamp = None
         self.ttl = 5
 
-
-        if len(args)>1:
-            Exception("Messages can only be constructed with a single positional argument, which is assumed to be a serialized message")
-        elif len(args)>0:
-            self.serialized = args[0]
+        #set_trace(term_size=(120,40))
+        #if len(args)>1:
+        #    Exception("Messages can only be constructed with a single positional argument, which is assumed to be a serialized message")
+        #elif len(args)>0:
+        if msg:
+            self.serialized = msg
             if expand_arrays:
-                deserialized = json.loads(args[0], object_pairs_hook=self._deserialize_numpy)
+                deserialized = json.loads(msg, object_pairs_hook=self._deserialize_numpy)
             else:
-                deserialized = json.loads(args[0])
+                deserialized = json.loads(msg)
             kwargs.update(deserialized)
 
         for k, v in kwargs.items():
@@ -2025,7 +2029,7 @@ class Message(object):
             pass
 
         try:
-            msg_enc = bytes(json.dumps(msg, default=self._serialize_numpy))
+            msg_enc = json.dumps(msg, default=self._serialize_numpy).encode('utf-8')
             self.serialized = msg_enc
             self.changed=False
             return msg_enc
@@ -2035,7 +2039,6 @@ class Message(object):
 def serialize_array(array):
     compressed = base64.b64encode(blosc.pack_array(array))
     return {'NUMPY_ARRAY': compressed}
-
 
 
 

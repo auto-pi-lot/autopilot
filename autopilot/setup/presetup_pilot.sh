@@ -51,9 +51,10 @@ sudo apt-get install -y \
     build-essential \
     cmake \
     git \
-    python-pip \
-    python2.7-dev \
+    python3-pip \
+    python3-dev \
     python3-distutils \
+    python3-setuptools
     libsamplerate0-dev \
     libsndfile1-dev \
     libreadline-dev \
@@ -62,9 +63,9 @@ sudo apt-get install -y \
     libportmidi-dev \
     liblo-dev \
     libhdf5-dev \
-    python-numpy \
-    python-pandas \
-    python-tables \
+    python3-numpy \
+    python3-pandas \
+    python3-tables \
     libzmq-dev \
     libffi-dev \
     blosc
@@ -74,7 +75,7 @@ sudo apt-get install -y \
 echo -e "\n\n${RED}Installing necessary Python packages...\n\n ${NC}"
 
 
-sudo -H pip install -U pyzmq npyscreen tornado inputs requests
+sudo -H pip3 install -U pyzmq npyscreen tornado inputs requests blosc
 
 # install pigpio
 cd $GITDIR
