@@ -24,7 +24,7 @@ def capture_images(i=0):
 	
 	try:
 		while True:
-			frame = np.array(cam.get_frame()).reshape((24,32))
+			frame = np.array(cam.get_frame()).reshape((32,24), order="F")
 			yield frame
 			
 	except KeyboardInterrupt:
@@ -70,7 +70,7 @@ if __name__ == "__main__":
 	iterator = capture_images()
 		
 	first_frame = next(iterator)
-	img = ax.imshow(first_frame)
+	img = ax.imshow(first_frame, origin='upper')
 	cb = fig.colorbar(img, cax=cax)
 	
 	AVG_FRAMES = 5
