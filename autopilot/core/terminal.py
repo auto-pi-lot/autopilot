@@ -240,7 +240,7 @@ class Terminal(QtWidgets.QMainWindow):
         # File menu
         # make menu take up 1/10 of the screen
         winsize = app.desktop().availableGeometry()
-        bar_height = (winsize.height()/25)+5
+        bar_height = (winsize.height()/30)+5
 
         self.menuBar().setFixedHeight(bar_height)
         #self.menuBar().setStyleSheet('QMenuBar:item {  }')

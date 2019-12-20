@@ -8,3 +8,6 @@ npyscreen
 tornado
 inputs
 requests
+blosc
+JACK-Client
+scikit-video
