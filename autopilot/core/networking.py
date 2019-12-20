@@ -1512,7 +1512,7 @@ class Net_Node(object):
 
         # encode message
         msg_enc = msg.serialize()
-        pdb.set_trace()
+        #pdb.set_trace()
         if not msg_enc:
 
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
@@ -2025,7 +2025,7 @@ class Message(object):
             pass
 
         try:
-            msg_enc = [self.to, json.dumps(msg, default=self._serialize_numpy)]
+            msg_enc = bytes(json.dumps(msg, default=self._serialize_numpy))
             self.serialized = msg_enc
             self.changed=False
             return msg_enc
