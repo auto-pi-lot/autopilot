@@ -967,14 +967,14 @@ class Pilot_Station(Station):
         self.pusher = True
         if prefs.LINEAGE == 'CHILD':
             self.push_id = prefs.PARENTID.encode('utf-8')
-            self.push_port = prefs.PARENTPORT.encode('utf-8')
-            self.push_ip = prefs.PARENTIP.encode('utf-8')
+            self.push_port = prefs.PARENTPORT
+            self.push_ip = prefs.PARENTIP
             self.child = True
 
         else:
             self.push_id = b'T'
             self.push_port = prefs.PUSHPORT
-            self.push_ip = prefs.TERMINALIP.encode('utf-8')
+            self.push_ip = prefs.TERMINALIP
             self.child - False
 
         # Store some prefs values
