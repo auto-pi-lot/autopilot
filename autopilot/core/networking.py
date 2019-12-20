@@ -560,7 +560,7 @@ class Station(multiprocessing.Process):
             _ = msg.to.pop(0)
 
             # if the next recipient in the list is our push-parent, push it
-            if msg.to[0] == self.push_id:
+            if msg.to[0] == str(self.push_id):
                 self.push(msg=msg)
             else:
                 self.send(msg=msg)
