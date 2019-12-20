@@ -423,9 +423,9 @@ class Terminal(QtWidgets.QMainWindow):
                 task['pilot'] = pilot
                 self.subjects[subject].update_weights(start=float(start_weight))
 
-                self.node.send(to=bytes(pilot), key="START", value=task)
+                self.node.send(to=pilot, key="START", value=task)
                 # also let the plot know to start
-                self.node.send(to=bytes("P_{}".format(pilot)), key="START", value=task)
+                self.node.send(to="P_{}".format(pilot), key="START", value=task)
 
             else:
                 # pressed cancel, don't start
@@ -441,9 +441,9 @@ class Terminal(QtWidgets.QMainWindow):
                 # it should initiate a coherence checking routine to make sure
                 # its data matches what the Terminal got,
                 # so the terminal will handle closing the subject object
-                self.node.send(to=bytes(pilot), key="STOP")
+                self.node.send(to=pilot, key="STOP")
                 # also let the plot know to start
-                self.node.send(to=bytes("P_{}".format(pilot)), key="STOP")
+                self.node.send(to="P_{}".format(pilot), key="STOP")
                 # TODO: Start coherence checking ritual
                 # TODO: Auto-select the next subject in the list.
 

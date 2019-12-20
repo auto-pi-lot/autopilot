@@ -31,6 +31,7 @@ from zmq.eventloop.zmqstream import ZMQStream
 from itertools import count
 import numpy as np
 import pdb
+from pudb.remote import set_trace
 if sys.version_info >= (3,0):
     import queue
 else:
@@ -205,8 +206,8 @@ class Station(multiprocessing.Process):
         """
         msg = Message()
         msg.sender = self.id
-        msg.to = to
-        msg.key = key
+        msg.to = str(to)
+        msg.key = str(key)
         msg.value = value
 
         msg_num = next(self.msg_counter)
@@ -248,6 +249,7 @@ class Station(multiprocessing.Process):
                 Got\nto: {}\nkey: {}\nvalue: {}\nmsg: {}'.format(to, key, value, msg))
             return
 
+        manual_to = False
         if not msg:
             # we're sending this ourselves, new message.
             msg = self.prepare_message(to, key, value, repeat, flags)
@@ -255,8 +257,6 @@ class Station(multiprocessing.Process):
             # if given both message and to, send it to our 'to'
             # don't want to force a reserialization of the message
             manual_to = True
-        else:
-            manual_to = False
 
         if 'NOREPEAT' in msg.flags.keys():
             repeat = False
@@ -274,6 +274,7 @@ class Station(multiprocessing.Process):
 
         # TODO: try/except here
         if not msg_enc:
+            #set_trace(term_size=(80,40))
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
@@ -477,8 +478,7 @@ class Station(multiprocessing.Process):
         # TODO: This check is v. fragile, pyzmq has a way of sending the stream along with the message
         #####################33
         # Parse the message
-        #print(msg[:-1])
-        #sys.stdout.flush()
+
 
         if len(msg)==1:
             # from our dealer, these are always to us.
@@ -509,7 +509,7 @@ class Station(multiprocessing.Process):
 
             # if this message wasn't to us, forward without deserializing
             # the second to last should always be the intended recipient
-            unserialized_to = msg[-2]
+            unserialized_to = msg[-2].decode('utf-8')
             if unserialized_to not in [self.id, "_{}".format(self.id)]:
                 if unserialized_to not in self.senders.keys() and self.pusher:
                     # if we don't know who they are and we have a pusher, try to push it
@@ -521,7 +521,9 @@ class Station(multiprocessing.Process):
 
         #msg = json.loads(msg[-1])
             #msg = Message(**msg)
+            #set_trace(term_size=(80, 24))
             msg = Message(msg[-1])
+
 
             # if this is a new sender, add them to the list
             if msg['sender'] not in self.senders.keys():
@@ -1505,7 +1507,7 @@ class Net_Node(object):
         msg_enc = msg.serialize()
         #pdb.set_trace()
         if not msg_enc:
-            pdb.set_trace()
+            #pdb.set_trace()
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
@@ -1605,8 +1607,8 @@ class Net_Node(object):
         #else:
         msg.sender = self.id
 
-        msg.to = to
-        msg.key = key
+        msg.to = str(to)
+        msg.key = str(key)
         msg.value = value
 
         msg_num = next(self.msg_counter)
@@ -1807,7 +1809,7 @@ class Message(object):
     changed = False
     serialized = None
 
-    def __init__(self, expand_arrays = False, *args, **kwargs):
+    def __init__(self, msg=None, expand_arrays = False,  **kwargs):
         # type: (object, object) -> None
         # Messages don't need to have all attributes on creation,
         # but do need them to serialize
@@ -1822,15 +1824,16 @@ class Message(object):
         self.timestamp = None
         self.ttl = 5
 
-
-        if len(args)>1:
-            Exception("Messages can only be constructed with a single positional argument, which is assumed to be a serialized message")
-        elif len(args)>0:
-            self.serialized = args[0]
+        #set_trace(term_size=(120,40))
+        #if len(args)>1:
+        #    Exception("Messages can only be constructed with a single positional argument, which is assumed to be a serialized message")
+        #elif len(args)>0:
+        if msg:
+            self.serialized = msg
             if expand_arrays:
-                deserialized = json.loads(args[0], object_pairs_hook=self._deserialize_numpy)
+                deserialized = json.loads(msg, object_pairs_hook=self._deserialize_numpy)
             else:
-                deserialized = json.loads(args[0])
+                deserialized = json.loads(msg)
             kwargs.update(deserialized)
 
         for k, v in kwargs.items():
@@ -2022,7 +2025,6 @@ class Message(object):
 def serialize_array(array):
     compressed = base64.b64encode(blosc.pack_array(array))
     return {'NUMPY_ARRAY': compressed}
-
 
 
 
