@@ -14,6 +14,7 @@ from autopilot.core.networking import Net_Node
 
 from autopilot import prefs
 import pdb
+import pickle
 
 # This declaration allows Subject to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
 # TODO: Move this to __init__
@@ -462,11 +463,13 @@ class Nafc_Gap(Nafc):
         super(Nafc_Gap, self).__init__(**kwargs)
 
         self.noise_amplitude = noise_amplitude
-        self.noise_duration = 10*1000 # 10 seconds
+        self.noise_duration = 1*1000 # 10 seconds
         self.noise = sounds.Noise(duration=self.noise_duration,
                                   amplitude=self.noise_amplitude)
-        pdb.set_trace()
+        #pdb.set_trace()
         self.noise.play_continuous()
+        with open('cont_noise.pck', 'wb') as f:
+            pickle.dump(self.noise.chunks, f)
 
 
     def end(self):
