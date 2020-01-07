@@ -13,6 +13,7 @@ from collections import OrderedDict as odict
 from autopilot.core.networking import Net_Node
 
 from autopilot import prefs
+import pdb
 
 # This declaration allows Subject to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
 # TODO: Move this to __init__
@@ -464,7 +465,7 @@ class Nafc_Gap(Nafc):
         self.noise_duration = 10*1000 # 10 seconds
         self.noise = sounds.Noise(duration=self.noise_duration,
                                   amplitude=self.noise_amplitude)
-
+        pdb.set_trace()
         self.noise.play_continuous()
 
 
