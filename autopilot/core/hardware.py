@@ -1038,11 +1038,12 @@ class Pull(Hardware):
 
         self.pin = BOARD_TO_BCM[int(pin)]
 
-        if pud == 1:
+        if pud in ('U', 1):
             self.pig.set_pull_up_down(self.pin, pigpio.PUD_UP)
-        elif pud == 0:
+        elif pud in ('D', 0):
             self.pig.set_pull_up_down(self.pin, pigpio.PUD_DOWN)
-
+        else:
+            raise Exception("Don't know what to do with this pull!")
 
 
     def __del__(self):
