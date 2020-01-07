@@ -466,7 +466,7 @@ class Nafc_Gap(Nafc):
         self.noise_duration = 1*1000 # 10 seconds
         self.noise = sounds.Noise(duration=self.noise_duration,
                                   amplitude=self.noise_amplitude)
-        #pdb.set_trace()
+
         self.noise.play_continuous()
         # with open('cont_noise.pck', 'wb') as f:
         #     pickle.dump(self.noise.chunks, f)
