@@ -278,6 +278,10 @@ class Nafc(Task):
         if self.stim_light:
             change_to_blue = lambda: self.hardware['LEDS']['C'].set_color([0, 0, 255])
             self.triggers['C'].append(change_to_blue)
+        else:
+            turn_off = lambda: self.hardware['LEDS']['C'].set_color([0,0,0])
+            self.triggers['C'].append(turn_off)
+
         if self.req_reward:
             self.triggers['C'].append(self.hardware['PORTS']['C'].open)
 
