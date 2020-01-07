@@ -13,6 +13,7 @@ from copy import copy
 from threading import Thread
 from itertools import cycle
 from Queue import Empty
+import sys
 
 from autopilot import prefs
 
@@ -232,6 +233,8 @@ class JackClient(mp.Process):
                     data = self.continuous_q.get_nowait()
                 except Empty:
                     # TODO: Logging for sound client
+                    print('continuous q empty')
+                    sys.stdout.flush()
                     Warning('Continuous queue was empty!')
                     #self.continuous.clear()
                     data = self.zero_arr
