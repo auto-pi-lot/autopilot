@@ -433,13 +433,12 @@ if server_type in ("jack", "docs"):
 
             # if not self.buffered_continuous:
             #     self.buffer_continuous()
-            #self.continuous_cycle = cycle(self.chunks)
+            self.continuous_cycle = cycle(self.chunks)
 
             # start the buffering thread
-            #self.cont_thread = threading.Thread(target=self._buffer_continuous)
-            #self.cont_thread.setDaemon(True)
-            #self.cont_thread.start()
-            self._buffer_continuous()
+            self.cont_thread = threading.Thread(target=self._buffer_continuous)
+            self.cont_thread.setDaemon(True)
+            self.cont_thread.start()
 
             if loop:
                 self.continuous_loop.set()
@@ -464,14 +463,14 @@ if server_type in ("jack", "docs"):
             # want to be able to quit if queue remains full for, say, 20 periods
             #wait_time = (self.blocksize/float(self.fs))*20
 
-            # while not self.quitting.is_set():
-            #     try:
-            #         #self.continuous_q.put(self.continuous_cycle.next(), timeout=wait_time)
-            #         self.continuous_q.put_nowait(self.continuous_cycle.next())
-            #     except Full:
-            #         pass
-            for chunk in self.chunks:
-                self.continuous_q.put_nowait(chunk)
+            while not self.quitting.is_set():
+                try:
+                    #self.continuous_q.put(self.continuous_cycle.next(), timeout=wait_time)
+                    self.continuous_q.put_nowait(self.continuous_cycle.next())
+                except Full:
+                    pass
+            # for chunk in self.chunks:
+            #     self.continuous_q.put_nowait(chunk)
 
 
 

@@ -468,8 +468,8 @@ class Nafc_Gap(Nafc):
                                   amplitude=self.noise_amplitude)
         #pdb.set_trace()
         self.noise.play_continuous()
-        with open('cont_noise.pck', 'wb') as f:
-            pickle.dump(self.noise.chunks, f)
+        # with open('cont_noise.pck', 'wb') as f:
+        #     pickle.dump(self.noise.chunks, f)
 
 
     def end(self):

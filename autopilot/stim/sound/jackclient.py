@@ -120,7 +120,7 @@ class JackClient(mp.Process):
         # a few objects that control continuous/background sound.
         # see descriptions in module variables
         self.continuous = mp.Event()
-        self.continuous_q = mp.Queue()
+        self.continuous_q = mp.Queue(maxsize=1024)
         self.continuous_loop = mp.Event()
         self.continuous.clear()
         self.continuous_loop.clear()
@@ -229,31 +229,31 @@ class JackClient(mp.Process):
         if not self.play_evt.is_set():
             # if we are in continuous mode...
             if self.continuous.is_set():
-                # try:
-                #     data = self.continuous_q.get_nowait()
-                # except Empty:
-                #     # TODO: Logging for sound client
-                #     print('continuous q empty')
-                #     sys.stdout.flush()
-                #     Warning('Continuous queue was empty!')
-                #     #self.continuous.clear()
-                #     data = self.zero_arr
+                try:
+                    data = self.continuous_q.get_nowait()
+                except Empty:
+                    # TODO: Logging for sound client
+                    print('continuous q empty')
+                    sys.stdout.flush()
+                    Warning('Continuous queue was empty!')
+                    #self.continuous.clear()
+                    data = self.zero_arr
+
+                self.client.outports[0].get_array()[:] = data.T
+
+                # if not self.continuous_started:
+                #     # if we are just entering continuous mode, get the continuous sound and prepare to play it
+                #     continuous_frames = []
+                #     while not self.continuous_q.empty():
+                #         try:
+                #             continuous_frames.append(self.continuous_q.get_nowait())
+                #         except Empty:
+                #             break
+                #     self.continuous_cycle = cycle(continuous_frames)
+                #     self.continuous_started = True
                 #
-                # self.client.outports[0].get_array()[:] = data.T
-
-                if not self.continuous_started:
-                    # if we are just entering continuous mode, get the continuous sound and prepare to play it
-                    continuous_frames = []
-                    while not self.continuous_q.empty():
-                        try:
-                            continuous_frames.append(self.continuous_q.get_nowait())
-                        except Empty:
-                            break
-                    self.continuous_cycle = cycle(continuous_frames)
-                    self.continuous_started = True
-
-                # FIXME: Multichannel sound....
-                self.client.outports[0].get_array()[:] = self.continuous_cycle.next().T
+                # # FIXME: Multichannel sound....
+                # self.client.outports[0].get_array()[:] = self.continuous_cycle.next().T
 
             else:
                 for channel, port in zip(self.zero_arr.T, self.client.outports):
@@ -271,9 +271,17 @@ class JackClient(mp.Process):
                     #self.client.outports[0].get_array()[:] = self.continuous_cycle.next().T
                     try:
                         data = self.continuous_q.get_nowait()
-                        self.client.outports[0].get_array()[:] = data.T
+                        
                     except Empty:
-                        self.continuous.clear()
+                        # TODO: Logging for sound client
+                        print('continuous q empty 2')
+                        sys.stdout.flush()
+                        Warning('Continuous queue was empty!')
+                        # self.continuous.clear()
+                        data = self.zero_arr
+                        #self.continuous.clear()
+
+                    self.client.outports[0].get_array()[:] = data.T
 
                 
                 else:
