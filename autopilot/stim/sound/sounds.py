@@ -464,11 +464,12 @@ if server_type in ("jack", "docs"):
         def _buffer_continuous(self):
 
             # want to be able to quit if queue remains full for, say, 20 periods
-            wait_time = (self.blocksize/float(self.fs))*20
+            #wait_time = (self.blocksize/float(self.fs))*20
 
             while not self.quitting.is_set():
                 try:
-                    self.continuous_q.put(self.continuous_cycle.next(), timeout=wait_time)
+                    #self.continuous_q.put(self.continuous_cycle.next(), timeout=wait_time)
+                    self.continuous_q.put_nowait(self.continuous_cycle.next())
                 except Full:
                     pass
 
