@@ -435,10 +435,7 @@ if server_type in ("jack", "docs"):
             #     self.buffer_continuous()
             self.continuous_cycle = cycle(self.chunks)
 
-            if loop:
-                self.continuous_loop.set()
-            else:
-                self.continuous_loop.clear()
+
 
             # empty queue
             while not self.continuous_q.empty():
@@ -448,10 +445,16 @@ if server_type in ("jack", "docs"):
                     # normal, get until it's empty
                     break
 
+
             # start the buffering thread
             self.cont_thread = threading.Thread(target=self._buffer_continuous)
             self.cont_thread.setDaemon(True)
             self.cont_thread.start()
+
+            if loop:
+                self.continuous_loop.set()
+            else:
+                self.continuous_loop.clear()
 
 
             # tell the sound server that it has a continuous sound now

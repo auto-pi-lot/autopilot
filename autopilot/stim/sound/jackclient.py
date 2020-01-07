@@ -231,7 +231,10 @@ class JackClient(mp.Process):
                 try:
                     data = self.continuous_q.get_nowait()
                 except Empty:
-                    self.continuous.clear()
+                    # TODO: Logging for sound client
+                    Warning('Continuous queue was empty!')
+                    #self.continuous.clear()
+                    data = self.zero_arr
 
                 self.client.outports[0].get_array()[:] = data.T
 
