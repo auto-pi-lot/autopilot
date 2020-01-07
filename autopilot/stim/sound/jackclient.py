@@ -129,6 +129,9 @@ class JackClient(mp.Process):
         # store the frames of the continuous sound and cycle through them if set in continous mode
         self.continuous_cycle = None
 
+        # TODO: For debugging, delete me
+        self.data = None
+
 
         # store a reference to us and our values in the module
         globals()['SERVER'] = self
@@ -229,17 +232,20 @@ class JackClient(mp.Process):
         if not self.play_evt.is_set():
             # if we are in continuous mode...
             if self.continuous.is_set():
-                try:
-                    data = self.continuous_q.get_nowait()
-                except Empty:
-                    # TODO: Logging for sound client
-                    print('continuous q empty')
-                    sys.stdout.flush()
-                    Warning('Continuous queue was empty!')
-                    #self.continuous.clear()
-                    data = self.zero_arr
+                if self.data:
+                    self.client.outports[0].get_array()[:] = self.data.T
+                else:
+                    try:
+                        self.data = self.continuous_q.get_nowait()
+                    except Empty:
+                        # TODO: Logging for sound client
+                        print('continuous q empty')
+                        sys.stdout.flush()
+                        Warning('Continuous queue was empty!')
+                        #self.continuous.clear()
+                        data = self.zero_arr
 
-                self.client.outports[0].get_array()[:] = data.T
+                    self.client.outports[0].get_array()[:] = self.data.T
 
                 # if not self.continuous_started:
                 #     # if we are just entering continuous mode, get the continuous sound and prepare to play it
@@ -271,7 +277,7 @@ class JackClient(mp.Process):
                     #self.client.outports[0].get_array()[:] = self.continuous_cycle.next().T
                     try:
                         data = self.continuous_q.get_nowait()
-                        
+
                     except Empty:
                         # TODO: Logging for sound client
                         print('continuous q empty 2')
