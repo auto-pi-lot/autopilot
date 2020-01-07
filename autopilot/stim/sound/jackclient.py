@@ -232,7 +232,7 @@ class JackClient(mp.Process):
         if not self.play_evt.is_set():
             # if we are in continuous mode...
             if self.continuous.is_set():
-                if self.data:
+                if self.data is not None:
                     self.client.outports[0].get_array()[:] = self.data.T
                 else:
                     try:
