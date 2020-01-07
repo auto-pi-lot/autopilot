@@ -119,7 +119,7 @@ class JackClient(mp.Process):
         # a few objects that control continuous/background sound.
         # see descriptions in module variables
         self.continuous = mp.Event()
-        self.continuous_q = mp.Queue(maxsize=512)
+        self.continuous_q = mp.Queue(maxsize=1024)
         self.continuous_loop = mp.Event()
         self.continuous.clear()
         self.continuous_loop.clear()
