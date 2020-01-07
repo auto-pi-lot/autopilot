@@ -232,20 +232,19 @@ class JackClient(mp.Process):
         if not self.play_evt.is_set():
             # if we are in continuous mode...
             if self.continuous.is_set():
-                if self.data is not None:
-                    self.client.outports[0].get_array()[:] = self.data.T
-                else:
-                    try:
-                        self.data = self.continuous_q.get_nowait()
-                    except Empty:
-                        # TODO: Logging for sound client
-                        print('continuous q empty')
-                        sys.stdout.flush()
-                        Warning('Continuous queue was empty!')
-                        #self.continuous.clear()
-                        data = self.zero_arr
 
-                    self.client.outports[0].get_array()[:] = self.data.T
+                try:
+                    data = self.continuous_q.get_nowait()
+                    print('GOT CONTINUOUS DATA')
+                except Empty:
+                    # TODO: Logging for sound client
+                    print('continuous q empty')
+                    sys.stdout.flush()
+                    Warning('Continuous queue was empty!')
+                    #self.continuous.clear()
+                    data = self.zero_arr
+
+                self.client.outports[0].get_array()[:] = data.T
 
                 # if not self.continuous_started:
                 #     # if we are just entering continuous mode, get the continuous sound and prepare to play it
@@ -262,14 +261,17 @@ class JackClient(mp.Process):
                 # self.client.outports[0].get_array()[:] = self.continuous_cycle.next().T
 
             else:
+                print('CONTINUOUS FLAG OFF')
                 for channel, port in zip(self.zero_arr.T, self.client.outports):
                     port.get_array()[:] = channel
         else:
 
             try:
                 data = self.q.get_nowait()
+                print('GOT SOUND DATA')
             except queue.Empty:
                 data = None
+                print('SOUND DATA EMPTY')
                 Warning('Queue Empty')
             if data is None:
                 # fill with continuous noise
@@ -277,7 +279,7 @@ class JackClient(mp.Process):
                     #self.client.outports[0].get_array()[:] = self.continuous_cycle.next().T
                     try:
                         data = self.continuous_q.get_nowait()
-
+                        print('SOUND EMPTY, GOT CONTINUOUS NOISE')
                     except Empty:
                         # TODO: Logging for sound client
                         print('continuous q empty 2')
@@ -293,6 +295,7 @@ class JackClient(mp.Process):
                 else:
                     for channel, port in zip(self.zero_arr.T, self.client.outports):
                         port.get_array()[:] = channel
+                    print('SOUND EMPTY, SILENT SOUND')
                 # sound is over
                 self.play_evt.clear()
                 self.stop_evt.set()
@@ -306,10 +309,10 @@ class JackClient(mp.Process):
                         cont_data = self.continuous_q.get_nowait()
                         data = np.concatenate((data, cont_data[-n_from_end:]),
                                               axis=0)
-
+                        print('SOUND GOT, PADDED WITH NOISE')
                     else:
                         data = np.pad(data, (0, n_from_end), 'constant')
-
+                        print('SOUND GOT, SILENCE')
                 #TODO: Fix the multi-output situation so it doesn't get all grumbly.
                 # use cycle so if sound is single channel it gets copied to all outports
 
@@ -317,8 +320,8 @@ class JackClient(mp.Process):
                 #for channel, port in zip(cycle(data.T), self.client.outports):
                 #    port.get_array()[:] = channel
 
+                print("PLAY SOUND")
 
 
-
-
+        sys.stdout.flush()
 
