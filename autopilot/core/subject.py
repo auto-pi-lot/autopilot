@@ -804,7 +804,8 @@ class Subject:
         if self.thread.is_alive():
             Warning('Data thread did not exit')
 
-    def get_trial_data(self, step=-1):
+
+    def get_trial_data(self, step=-1, what="data"):
         """
         Get trial data from the current task.
 
@@ -815,6 +816,11 @@ class Subject:
                 * int: a single step
                 * list of two integers eg. [0, 5], an inclusive range of steps.
                 * anything else, eg. 'all': all steps.
+
+            what (str): What should be returned?
+
+                * 'data' : Dataframe of requested steps' trial data
+                * 'variables': dict of variables *without* loading data into memory
 
         Returns:
             :class:`pandas.DataFrame`: DataFrame of requested steps' trial data.
@@ -828,6 +834,8 @@ class Subject:
         group = h5f.get_node(group_name)
         step_groups = sorted(group._v_children.keys())
 
+        print(step_groups)
+
         if step == -1:
             # find the last trial step with data
             for step_name in reversed(step_groups):
@@ -838,22 +846,52 @@ class Subject:
             if step > len(step_groups):
                 ValueError('You provided a step number ({}) greater than the number of steps in the subjects assigned protocol: ()'.format(step, len(step_groups)))
             step_groups = [step_groups[step]]
+
+        elif isinstance(step, basestring):
+            # since step names have S##_ prepended in the hdf5 file,
+            # but we want to be able to call them by their human readable name,
+            # have to make sure we have the right form
+            _step_groups = [s for s in step_groups if s == step]
+            if len(_step_groups) == 0:
+                _step_groups = [s for s in step_groups if step in s]
+            step_groups = _step_groups
+
         elif isinstance(step, list):
-            step_groups = step_groups[int(step[0]):int(step[1])]
+            if isinstance(step[0], int):
+                step_groups = step_groups[int(step[0]):int(step[1])]
+            elif isinstance(step[0], basestring):
+                _step_groups = []
+                for a_step in step:
+                    step_name = [s for s in step_groups if s==a_step]
+                    if len(step_name) == 0:
+                        step_name = [s for s in step_groups if a_step in s]
+                    _step_groups.extend(step_name)
+
+                step_groups = _step_groups
+        print('step groups:')
+        print(step_groups)
 
         for step_key in step_groups:
             step_n = int(step_key[1:3]) # beginning of keys will be 'S##'
             step_tab = group._v_children[step_key]._v_children['trial_data']
-            step_df = pd.DataFrame(step_tab.read())
-            step_df['step'] = step_n
-            try:
-                return_df = return_df.append(step_df, ignore_index=True)
-            except NameError:
-                return_df = step_df
+            if what == "data":
+                step_df = pd.DataFrame(step_tab.read())
+                step_df['step'] = step_n
+                try:
+                    return_data = return_data.append(step_df, ignore_index=True)
+                except NameError:
+                    return_data = step_df
+
+            elif what == "variables":
+                return_data = {}
+                return_data[step_key] = step_tab.coldescrs
+
 
         self.close_hdf(h5f)
 
-        return return_df
+        return return_data
+
+
 
 
     def get_step_history(self, use_history=True):

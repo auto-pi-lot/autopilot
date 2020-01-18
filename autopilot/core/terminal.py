@@ -44,7 +44,16 @@ from subject import Subject
 from plots import Plot_Widget
 from networking import Terminal_Station, Net_Node
 from utils import InvokeEvent, Invoker
-from gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test
+from gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test, pop_dialog, Psychometric
+
+IMPORTED_VIZ = False
+VIZ_ERROR = None
+try:
+    from autopilot import viz
+    IMPORTED_VIZ = True
+except ImportError as e:
+    VIZ_ERROR = e
+
 import pdb
 
 
@@ -264,6 +273,11 @@ class Terminal(QtGui.QMainWindow):
         self.tool_menu.addAction(update_protocol_act)
         self.tool_menu.addAction(reassign_act)
         self.tool_menu.addAction(calibrate_act)
+
+        # Plots menu
+        self.plots_menu = self.menuBar().addMenu("&Plots")
+        psychometric = QtGui.QAction("Psychometric Curve", self, triggered=self.plot_psychometric)
+        self.plots_menu.addAction(psychometric)
 
         # Tests menu
         self.tests_menu = self.menuBar().addMenu("Test&s")
@@ -619,7 +633,8 @@ class Terminal(QtGui.QMainWindow):
                 with open(protocol_file, 'w') as pfile_open:
                     json.dump(save_steps, pfile_open, indent=4, separators=(',', ': '), sort_keys=True)
 
-    def list_subjects(self):
+    @property
+    def subject_list(self):
         """
         Get a list of all subject IDs
 
@@ -636,7 +651,7 @@ class Terminal(QtGui.QMainWindow):
         Gets recent weights from all :attr:`~.Terminal.subjects` and
         open a :class:`.gui.Weights` window to view or set weights.
         """
-        subjects = self.list_subjects()
+        subjects = self.subject_list
 
         # open objects if not already
         for subject in subjects:
@@ -663,7 +678,7 @@ class Terminal(QtGui.QMainWindow):
         protocols = [p for p in protocols if p.endswith('.json')]
 
 
-        subjects = self.list_subjects()
+        subjects = self.subject_list
         for subject in subjects:
             if subject not in self.subjects.keys():
                 self.subjects[subject] = Subject(subject)
@@ -678,19 +693,22 @@ class Terminal(QtGui.QMainWindow):
         msgbox.setText("Subject Protocols Updated")
         msgbox.exec_()
 
-    def reassign_protocols(self):
-        """
-        Batch reassign protocols and steps.
-
-        Opens a :class:`.gui.Reassign` window after getting protocol data,
-        and applies any changes made in the window.
-        """
+    @property
+    def protocols(self):
         # get list of protocol files
         protocols = os.listdir(prefs.PROTOCOLDIR)
         protocols = [os.path.splitext(p)[0] for p in protocols if p.endswith('.json')]
+        return protocols
 
+    @property
+    def subject_protocols(self):
+        """
+
+        Returns:
+            subject_protocols (dict): a dictionary of subjects: [protocol, step]
+        """
         # get subjects and current protocols
-        subjects = self.list_subjects()
+        subjects = self.subject_list
         subjects_protocols = {}
         for subject in subjects:
             if subject not in self.subjects.keys():
@@ -698,7 +716,19 @@ class Terminal(QtGui.QMainWindow):
 
             subjects_protocols[subject] = [self.subjects[subject].protocol_name, self.subjects[subject].step]
 
-        reassign_window = Reassign(subjects_protocols, protocols)
+        return subjects_protocols
+
+
+    def reassign_protocols(self):
+        """
+        Batch reassign protocols and steps.
+
+        Opens a :class:`.gui.Reassign` window after getting protocol data,
+        and applies any changes made in the window.
+        """
+
+
+        reassign_window = Reassign(self.subject_protocols, self.protocols)
         reassign_window.exec_()
 
         if reassign_window.result() == 1:
@@ -760,6 +790,43 @@ class Terminal(QtGui.QMainWindow):
 
         self.networking.set_logging(True)
         self.node.do_logging.set()
+
+    def plot_psychometric(self):
+        """
+        Select subject, step, and variables to plot a psychometric curve
+
+        """
+
+        if not IMPORTED_VIZ:
+            _ = pop_dialog("Vizualisation function couldn't be imported!", "error", VIZ_ERROR)
+            return
+
+        psychometric_dialog = Psychometric(self.subjects_protocols)
+        psychometric_dialog.exec_()
+
+        # if user cancels, return
+        if psychometric_dialog.result() != 1:
+            return
+
+        viz.plot_psychometric(psychometric_dialog.plot_params)
+
+
+
+
+
+
+
+            #viz.plot_psychometric(self.subjects_protocols)
+        #result = psychometric_dialog.exec_()
+
+
+
+
+
+
+
+
+
 
 
 

@@ -25,6 +25,8 @@ from time import time
 from itertools import count
 from functools import wraps
 pg.setConfigOptions(antialias=True)
+#from pyqtgraph.widgets.RawImageWidget import RawImageWidget, RawImageGLWidget
+
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from autopilot import tasks, prefs

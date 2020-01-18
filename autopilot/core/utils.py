@@ -8,6 +8,7 @@ from scipy.stats import linregress
 # from subprocess import call
 from threading import Thread
 import os
+import numpy as np
 
 class Param(object):
     """
@@ -176,6 +177,34 @@ def load_pilotdb(file_name=None, reverse=False):
         pilot_db = pilot_dict
 
     return pilot_db
+
+def coerce_discrete(df, col, mapping={'L':0, 'R':1}):
+    """
+    Coerce a discrete/string column of a pandas dataframe into numeric values
+
+    Default is to map 'L' to 0 and 'R' to 1 as in the case of Left/Right 2AFC tasks
+
+    Args:
+        df (:class:`pandas.DataFrame`) : dataframe with the column to transform
+        col (str):  name of column
+        mapping (dict): mapping of strings to numbers
+
+    Returns:
+        df (:class:`pandas.DataFrame`) : transformed dataframe
+
+    """
+
+    for key, val in mapping.items():
+        df.loc[df[col]==key,col] = val
+
+    # if blanks, warn and remove
+    if '' in df[col].unique():
+        n_blanks = sum(df[col]=='')
+        Warning('{} blank rows detected, removing.'.format(n_blanks))
+        df.drop(np.where(df[col]=='')[0], axis=0, inplace=True)
+
+    df = df.astype({col:float})
+    return df
 
 
 
