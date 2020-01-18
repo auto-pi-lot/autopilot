@@ -101,6 +101,7 @@ if __name__ == "__main__":
     params['SOUNDDIR'] = os.path.join(params['BASEDIR'], 'sounds')
     params['PROTOCOLDIR'] = os.path.join(params['BASEDIR'], 'protocols')
     params['LOGDIR'] = os.path.join(params['BASEDIR'], 'logs')
+    params['VIZDIR'] = os.path.join(params['BASEDIR'], 'viz')
 
     for adir in [params['BASEDIR'], params['DATADIR'], params['SOUNDDIR'], params['LOGDIR'], params['PROTOCOLDIR']]:
         make_dir(adir)

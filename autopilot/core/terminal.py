@@ -52,7 +52,7 @@ try:
     from autopilot import viz
     IMPORTED_VIZ = True
 except ImportError as e:
-    VIZ_ERROR = e
+    VIZ_ERROR = str(e)
 
 import pdb
 
@@ -801,16 +801,23 @@ class Terminal(QtGui.QMainWindow):
             _ = pop_dialog("Vizualisation function couldn't be imported!", "error", VIZ_ERROR)
             return
 
-        psychometric_dialog = Psychometric(self.subjects_protocols)
+        psychometric_dialog = Psychometric(self.subject_protocols)
         psychometric_dialog.exec_()
 
         # if user cancels, return
         if psychometric_dialog.result() != 1:
             return
 
-        viz.plot_psychometric(psychometric_dialog.plot_params)
 
 
+        chart = viz.plot_psychometric(psychometric_dialog.plot_params)
+
+        text, ok = QtGui.QInputDialog.getText(self, 'save plot?', 'what to call this thing')
+        if ok:
+            chart.save(text)
+
+
+        #chart.serve()
 
 
 

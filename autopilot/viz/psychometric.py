@@ -89,23 +89,25 @@ def plot_psychometric(subject_protocols):
     # combine dataframes
     combo_df = pd.concat([sum_df, logit_df])
 
-    acc_points = alt.Chart(sum_df).encode(
-        alt.X('x:Q',scale=alt.Scale(type='sqrt')),
-        y='y:Q'
+    acc_points = alt.Chart().encode(
+        alt.X('x:Q',scale=alt.Scale(type='sqrt'), title=var),
+        y=alt.Y('y:Q',title="mean response")
     ).transform_filter(
         alt.FieldEqualPredicate('responses', 'type')
     ).mark_point()
 
-    log_curves = alt.Chart(logit_df).encode(
-        alt.X('x:Q',scale=alt.Scale(type='sqrt')),
-        y='y:Q'
+    log_curves = alt.Chart().encode(
+        alt.X('x:Q',scale=alt.Scale(type='sqrt'), title=var),
+        y=alt.Y('y:Q',title="mean response")
     ).transform_filter(
         alt.FieldEqualPredicate('log_regression', 'type')
     ).mark_line()
 
     combo = alt.layer(acc_points + log_curves, data=combo_df).facet(row='subject:N')
+    #combo.sav
+    return combo
 
-    combo.serve()
+    #combo.serve()
 
     # acc_points.serve()
 
