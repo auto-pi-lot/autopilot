@@ -644,6 +644,10 @@ class Terminal(QtGui.QMainWindow):
         subjects = []
         for pilot, vals in self.pilots.items():
             subjects.extend(vals['subjects'])
+
+        # use sets to get a unique list
+        subjects = list(set(subjects))
+
         return subjects
 
     def subject_weights(self):
@@ -677,20 +681,22 @@ class Terminal(QtGui.QMainWindow):
         protocols = os.listdir(prefs.PROTOCOLDIR)
         protocols = [p for p in protocols if p.endswith('.json')]
 
-
+        updated_subjects = []
         subjects = self.subject_list
         for subject in subjects:
             if subject not in self.subjects.keys():
                 self.subjects[subject] = Subject(subject)
 
-            protocol_bool = [self.subjects[subject].protocol_name == p.rstrip('.json') for p in protocols]
+            protocol_bool = [self.subjects[subject].protocol_name == os.path.splitext(p)[0] for p in protocols]
             if any(protocol_bool):
                 which_prot = np.where(protocol_bool)[0][0]
                 protocol = protocols[which_prot]
                 self.subjects[subject].assign_protocol(os.path.join(prefs.PROTOCOLDIR, protocol), step_n=self.subjects[subject].step)
+                updated_subjects.append(subject)
 
         msgbox = QtGui.QMessageBox()
-        msgbox.setText("Subject Protocols Updated")
+        msgbox.setText("Subject Protocols Updated for:")
+        msgbox.setDetailedText("\n".join(sorted(updated_subjects)))
         msgbox.exec_()
 
     @property
