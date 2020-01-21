@@ -10,11 +10,45 @@ import sys
 import threading
 import time
 import numpy as np
+from datetime import datetime
 
-import pigpio
 
 from autopilot import prefs
 from autopilot.hardware import Hardware, BOARD_TO_BCM, TRIGGER_MAP, PULL_MAP
+
+ENABLED = False
+try:
+    import pigpio
+
+    TRIGGER_MAP = {
+        'U': pigpio.RISING_EDGE,
+        1: pigpio.RISING_EDGE,
+        True: pigpio.RISING_EDGE,
+        'D': pigpio.FALLING_EDGE,
+        0: pigpio.FALLING_EDGE,
+        False: pigpio.FALLING_EDGE,
+        'B': pigpio.EITHER_EDGE,
+        (0,1): pigpio.EITHER_EDGE,
+        [0,1]: pigpio.EITHER_EDGE
+    }
+
+    INVERSE_TRIGGER_MAP = {
+        pigpio.RISING_EDGE: 'U',
+        pigpio.FALLING_EDGE: 'D',
+        pigpio.EITHER_EDGE: 'B'
+    }
+    """
+    Inverse of TRIGGER_MAP. Used to assign canonical references to triggers -- 
+    ie. it is possible to take multiple params -> pigpio objects, but one preferred
+    way to refer to a pigpio object.
+    """
+
+
+
+    ENABLED = True
+except ImportError:
+    # TODO: log
+    ImportWarning("pigpio could not be imported, gpio not enabled")
 
 
 class GPIO(Hardware):
@@ -25,28 +59,38 @@ class GPIO(Hardware):
 
     Args:
         pin (int): The Board-numbered GPIO pin of this object.
+        trigger_edge: The pigpio object representing RISING_EDGE, FALLING_EDGE, BOTH_EDGES. Set by :attr`.trigger`
 
     Attributes:
         pig (:class:`pigpio.pi`): An object that manages connection to the pigpio daemon. See docs at http://abyz.me.uk/rpi/pigpio/python.html
         CONNECTED (bool): Whether the connection to pigpio was successful
         pin_bcm (int): The BCM number of the connected pin -- used by pigpio. Converted from pin passed as argument on initialization, which is assumed to be the board number.
         pull (str, int): state of pullup/down resistor. Can be set as 'U'/'D' or 1/0 to pull up/down
+        polarity (int): Logic direction. if 1: on=High=1, off=Low=0; if 0: off=Low=0, on=High=1
+        on (int): if polarity == 1, high/1. if polarity == 0, low/0
+        off (int): if polarity == 1, low/0. if polarity == 0, high/1
+        trigger (str, 1): which
     """
 
-    def __init__(self, pin, pull_ud = None):
+    def __init__(self, pin, polarity=1, pull = None, trigger = None):
         super(GPIO, self).__init__()
 
+        # initialize attributes
+        self._polarity = None
         self._pull = None
         self._pin = None
+        self._trigger = None
+        self.trigger_edge = None
         self.pin_bcm = None
         self.pig = None
         self.CONNECTED = False
 
+        # set default attributes
         self.pin = pin
+        self.polarity = polarity
+        self.pull = pull
+        self.trigger = trigger
         self.CONNECTED = self.init_pigpio()
-
-        if pull_ud:
-            self.pull = pull_ud
 
 
     def init_pigpio(self):
@@ -84,10 +128,11 @@ class GPIO(Hardware):
 
     @pull.setter
     def pull(self, direction):
-        if direction in (1, 'U'):
+
+        if direction in (1, 'U', True):
             pull = pigpio.PUD_UP
             self._pull = 1
-        elif direction in (0, 'D'):
+        elif direction in (0, 'D', False):
             pull = pigpio.PUD_DOWN
             self._pull = 0
         elif direction is None:
@@ -97,8 +142,62 @@ class GPIO(Hardware):
             ValueError("pull must be one of 0/'D' for pulldown, 1/'U' for pullup, or None to clear")
             return
 
+        self._pull = direction
         self.pig.set_pull_up_down(self.pin_bcm, pull)
 
+    @property
+    def polarity(self):
+        """
+        Logic direction. if 1: on=High=1, off=Low=0; if 0: off=Low=0, on=High=1.
+
+        Only a property so on/off are set if changed
+        """
+        return self._polarity
+
+    @polarity.setter
+    def polarity(self, polarity):
+        if polarity == 1:
+            self.on = 1
+            self.off = 0
+        elif polarity == 0:
+            self.on = 0
+            self.off = 1
+        else:
+            ValueError('polarity must be 0 or 1')
+            return
+
+        self._polarity = polarity
+
+    @property
+    def trigger(self):
+        """
+        dict: Maps strings (('U',1,True), ('D',0,False), ('B',[0,1])) to pigpio edge types
+        (RISING_EDGE, FALLING_EDGE, EITHER_EDGE), respectively.
+        """
+        return self._trigger
+
+
+    @trigger.setter
+    def trigger(self, trigger):
+        # if trigger in ('U', 1, True):
+        #     self._trigger = 'U'
+        #     self.trigger_edge = pigpio.RISING_EDGE
+        # elif trigger in ('D', 0, False):
+        #     self._trigger = "D"
+        #     self.trigger_edge = pigpio.FALLING_EDGE
+        # elif trigger in ('B', [0,1], (0,1)):
+        #     self._trigger = "D"
+        #     self.trigger_edge = pigpio.EITHER_EDGE
+        # else:
+        #     ValueError('trigger must be one of U, D, B. instead got {}'.format(trigger))
+
+        # TODO: test if this is equivalent to above (ie. does this work when key is (0,1)?)
+        if trigger in TRIGGER_MAP.keys():
+            self.trigger_edge = TRIGGER_MAP[trigger]
+            self._trigger = INVERSE_TRIGGER_MAP[self.trigger_edge]
+        else:
+            ValueError('trigger must be one of {}. instead got {}'.format(INVERSE_TRIGGER_MAP.values(),
+                                                                          trigger))
 
     def release(self):
         """
@@ -107,9 +206,8 @@ class GPIO(Hardware):
         Note:
             the Hardware metaclass will call this method on object deletion.
         """
+        self.pull = None
         self.pig.stop()
-
-# TODO: Jonny stopping here after making metaclass, before fixing derivative classes 1/20/20
 
 
 class Digital_Out(GPIO):
@@ -121,25 +219,19 @@ class Digital_Out(GPIO):
     output = True
     type="DIGITAL_OUT"
 
-    def __init__(self, pin, pulse_width=100, polarity=False):
+    def __init__(self, pin, pulse_width=100, polarity=1):
         """
         Args:
             pin (int):
             pulse_width (int): Width of digital output pulse (us). range: 1-100
-            polarity (bool): Whether 'off' is Low (False, default) and pulses bring the voltage High, or vice versa (True)
+            polarity (bool): Whether 'on' is High (1, default) and pulses bring the voltage High, or vice versa (0)
         """
-        super(Digital_Out, self).__init__(pin)
+        super(Digital_Out, self).__init__(pin, polarity=polarity)
 
 
         self.pulse_width = np.clip(pulse_width, 0, 100).astype(np.int)
-
-        # get logic direction
-        self.on = 1
-        self.off = 0
-        self.polarity = polarity
-        if not self.polarity:
-            self.on = 0
-            self.off = 1
+        if pulse_width > 100 or pulse_width < 0:
+            Warning('pulse_width must be <100(ms) & >0 and has been clipped to {}'.format(self.pulse_width))
 
         # setup pin
         self.pig.set_mode(self.pin, pigpio.OUTPUT)
@@ -148,35 +240,39 @@ class Digital_Out(GPIO):
     def pulse(self, duration=None):
 
         if not duration:
-            self.pig.gpio_trigger(self.pin, self.pulse_width, self.on)
+            self.pig.gpio_trigger(self.pin_bcm, self.pulse_width, self.on)
 
         elif duration:
             duration = np.clip(duration, 0, 100).astype(np.int)
-            self.pig.gpio_trigger(self.pin,
+            self.pig.gpio_trigger(self.pin_bcm,
                                   duration,
                                   self.on)
 
     def release(self):
-        self.pig.write(self.pin, 0)
+        self.pig.write(self.pin_bcm, self.off)
         self.pig.stop()
 
-class Beambreak(Hardware):
-    """
-    An IR Beambreak sensor.
 
-    A phototransistor that changes voltage from 'high' to 'low' or vice versa
-    when light is blocked.
+class Digital_In(GPIO):
+    """
+    Record digital input and call one or more callbacks on logic transition.
 
     Attributes:
         pig (:meth:`pigpio.pi`): The pigpio connection.
         pin (int): Broadcom-numbered pin, converted from the argument given on instantiation
         callbacks (list): A list of :meth:`pigpio.callback`s kept to clear them on exit
+        polarity (int): Logic direction, if 1: off=0, on=1, pull=low, trigger=high and vice versa for 0
+        events (list): if :attr:`.record` is True, a list of tuple
+
+            Note:
+                pull and trigger are set by polarity on initialization in digital inputs, unlike other GPIO classes.
+                They are not mutually synchronized however, ie. after initialization if any one of these attributes are changed, the other two will remain the same.
     """
-    trigger=True
-    type = 'POKES'
+    is_trigger=True
+    type = 'DIGI_IN'
     input = True
 
-    def __init__(self, pin, pull_ud='U', trigger_ud='D', event=None):
+    def __init__(self, pin, polarity=1, event=None, record=True):
         """
         Args:
             pin (int): Board-numbered pin, converted to BCM numbering during instantiation.
@@ -184,49 +280,32 @@ class Beambreak(Hardware):
             trigger_ud ('U', 'D', 'B'): Is the trigger event up (low to high) or down (high to low)?
             event (:class:`threading.Event`): We can be passed an Event object if we want to handle
                 stage transition logic here instead of the :class:`.Task` object, as is typical.
+            record (bool): Whether logic transitions should be recorded as a list of ('EVENT', 'Timestamp') tuples.
         """
+        super(Digital_In, self).__init__(pin, polarity=polarity)
 
-        self.trigger = True
-        self.type = 'POKES'
-        self.input = True
-
-        # Make pigpio instance
-        self.pig = pigpio.pi()
-
-        # Convert pin from board to bcm numbering
-        self.pin = BOARD_TO_BCM[int(pin)]
-
-        try:
-            self.pull_ud = PULL_MAP[pull_ud]
-        except KeyError:
-            Exception('pull_ud must be one of {}, was given {}'.format(PULL_MAP.keys(), pull_ud))
-
-        try:
-            self.trigger_ud = TRIGGER_MAP[trigger_ud]
-        except KeyError:
-            Exception('trigger_ud must be one of {}, was given {}'.format(TRIGGER_MAP.keys(), trigger_ud))
+        # pull the resistor in the off direction and set the trigger to be the on direction
+        self.pull = self.off
+        self.trigger = self.on
 
         # We can be passed a threading.Event object if we want to handle stage logic here
         # rather than in the parent as is typical.
         self.event = event
 
-        # List to store callback handles
+        # List to store callback handles assigned with assign_cb
         self.callbacks = []
 
+        # List to store logic transition events
+        self.events = []
+
+        self.record = record
+        if self.record:
+            self.assign_cb(self.record_event, add=True, evented=False, manual_trigger='B')
+
         # Setup pin
-        self.pig.set_mode(self.pin, pigpio.INPUT)
-        self.pig.set_pull_up_down(self.pin, self.pull_ud)
+        self.pig.set_mode(self.pin_bcm, pigpio.INPUT)
 
-    def __del__(self):
-        self.pig.stop()
-
-    def release(self):
-        """
-        Simply calls `self.pig.stop()` to release pigpio resources.
-        """
-        self.pig.stop()
-
-    def assign_cb(self, callback_fn, add=False, evented=False, manual_trigger=None):
+    def assign_cb(self, callback_fn, add=True, evented=False, manual_trigger=None):
         """
         Sets `callback_fn` to be called when triggered.
 
@@ -245,19 +324,19 @@ class Beambreak(Hardware):
         # We can set the direction of the trigger manually,
         # for example if we want to set 'BOTH' only sometimes
         if not manual_trigger:
-            trigger_ud = self.trigger_ud
+            trigger_ud = self.trigger_edge
         else:
             trigger_ud = TRIGGER_MAP[manual_trigger]
 
         # We can handle eventing (blocking) here if we want (usually this is handled in the parent)
         # This won't work if we weren't init'd with an event.
         if evented and self.event:
-            cb = self.pig.callback(self.pin, trigger_ud, self.event.set)
+            cb = self.pig.callback(self.pin_bcm, trigger_ud, self.event.set)
             self.callbacks.append(cb)
         elif evented and not self.event:
             Exception('We have no internal event to set!')
 
-        cb = self.pig.callback(self.pin, trigger_ud, callback_fn)
+        cb = self.pig.callback(self.pin_bcm, trigger_ud, callback_fn)
         self.callbacks.append(cb)
 
     def clear_cb(self):
@@ -271,23 +350,40 @@ class Beambreak(Hardware):
                 pass
         self.callbacks = []
 
+    def record_event(self, pin, level, tick):
+        """
+        On either direction of logic transition, record the time
 
-class Flag(Beambreak):
-    """
-    Trivial Reclass of the Beambreak class with the default directions reversed.
+        Todo:
+            Currently both the pigpio tick and a datetime.now() timestamp are stored.
+            When a method to convert ticks to timestamps is written and timestamps are unified,
+            there shall be the one true timestamp.
 
-    TODO:
-        Need to add argument passing into hardware spec so we don't need stuff like this
+        Args:
+            pin (int): BCM numbered pin passed from pigpio
+            level (bool): High/Low status of current pin
+            tick (int): 32-bit integer, ticks since system start
+        """
+
+        # use self.pin rather than incoming pin b/c method is bound
+        # (ie. only will be called by pin assigned to)
+        # and self.pin is board rather than bcm numbered
+        # TODO: translate ticks to timestamps already
+        # FIXME: For now storing both timestamps and ticks which seems bad
+        self.events.append((self.pin, level, tick, datetime.now().isoformat()))
 
 
-    """
-    trigger = True
+    def release(self):
+        self.clear_cb()
+        super(Digital_In, self).release()
 
-    def __init__(self, pin):
-        super(Flag, self).__init__(pin, pull_ud="D", trigger_ud="U")
+class PWM(GPIO):
+    # TODO: Jonny start here, stopped 1/21/2020
+
 
 
 class LED_RGB(Hardware):
+    # TODO: Refactor to use three PWM objects
     """
     An RGB LED.
 
@@ -651,9 +747,9 @@ class Solenoid(Hardware):
             duration = self.duration
 
         #self.pig.wave_send_once(self.wave_id)
-        self.pig.write(self.pin, 1)
+        self.pig.write(self.pin_bcm, 1)
         time.sleep(duration)
-        self.pig.write(self.pin, 0)
+        self.pig.write(self.pin_bcm, 0)
 
 
 class Pull(Hardware):

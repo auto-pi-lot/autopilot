@@ -65,7 +65,7 @@ class GoNoGo(Task):
 
     HARDWARE = {
         'POKES': {
-            'C': autopilot.hardware.gpio.Beambreak,
+            'C': autopilot.hardware.gpio.Digital_In,
         },
         'LEDS': {
             'C': autopilot.hardware.gpio.LED_RGB,
@@ -74,7 +74,7 @@ class GoNoGo(Task):
             'C': autopilot.hardware.gpio.Solenoid,
         },
         'FLAGS': {
-            'F': autopilot.hardware.gpio.Flag
+            'F': autopilot.hardware.gpio.Digital_Out
         }
     }
 

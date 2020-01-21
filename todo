@@ -68,6 +68,7 @@
 - alt to opencv https://gist.github.com/royshil/0f674c96281b686a9a62
 - opencl for accelerating video encoding? https://abhitronix.github.io/2019/01/15/VC4CL-1/ https://trac.ffmpeg.org/wiki/HWAccelIntro
 - use a thread pool for handling messages, spawning threads could be costly
+- make generalized callback api for harware objects that is copacetc with gpio.Digital_In
 
 
 - debugging v4l2 cameras
