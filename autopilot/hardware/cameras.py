@@ -42,7 +42,7 @@ except:
 
 from autopilot import prefs
 from autopilot.core.networking import Net_Node
-from autopilot.core.hardware import Hardware
+from autopilot.hardware import Hardware
 
 OPENCV_LAST_INIT_TIME = mp.Value('d', 0.0)
 """

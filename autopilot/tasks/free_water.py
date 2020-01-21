@@ -1,13 +1,11 @@
 from collections import OrderedDict as odict
 import tables
-import os
-import json
 import itertools
 import random
 import datetime
-from autopilot import prefs
 
-from autopilot.core import hardware
+import autopilot.hardware.gpio
+
 from autopilot.tasks.task import Task
 
 TASK = 'Free_water'
@@ -53,20 +51,20 @@ class Free_Water(Task):
 
     HARDWARE = {
         'POKES':{
-            'L': hardware.Beambreak,
-            'C': hardware.Beambreak,
-            'R': hardware.Beambreak
+            'L': autopilot.hardware.gpio.Beambreak,
+            'C': autopilot.hardware.gpio.Beambreak,
+            'R': autopilot.hardware.gpio.Beambreak
         },
         'LEDS':{
             # TODO: use LEDs, RGB vs. white LED option in init
-            'L': hardware.LED_RGB,
-            'C': hardware.LED_RGB,
-            'R': hardware.LED_RGB
+            'L': autopilot.hardware.gpio.LED_RGB,
+            'C': autopilot.hardware.gpio.LED_RGB,
+            'R': autopilot.hardware.gpio.LED_RGB
         },
         'PORTS':{
-            'L': hardware.Solenoid,
-            'C': hardware.Solenoid,
-            'R': hardware.Solenoid
+            'L': autopilot.hardware.gpio.Solenoid,
+            'C': autopilot.hardware.gpio.Solenoid,
+            'R': autopilot.hardware.gpio.Solenoid
         }
     }
 
