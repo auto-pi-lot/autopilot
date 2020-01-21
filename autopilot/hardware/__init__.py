@@ -37,27 +37,6 @@ Warning:
 
 from autopilot import prefs
 
-if prefs.AGENT in ['pilot']:
-    import pigpio
-
-    TRIGGER_MAP = {
-        'U': pigpio.RISING_EDGE,
-        1: pigpio.RISING_EDGE,
-        'D': pigpio.FALLING_EDGE,
-        0: pigpio.FALLIG_EDGE,
-        'B': pigpio.EITHER_EDGE
-    }
-    """
-    dict: Maps strings ('U', 'D', 'B') to pigpio edge types
-    (RISING_EDGE, FALLING_EDGE, EITHER_EDGE), respectively.
-    """
-
-    PULL_MAP = {
-        'U': pigpio.PUD_UP,
-        1: pigpio.PUD_UP,
-        'D': pigpio.PUD_DOWN,
-        0: pigpio.PUD_DOWN
-    }
 
 # pigpio only uses BCM numbers, we need to translate them
 # See https://www.element14.com/community/servlet/JiveServlet/previewBody/73950-102-11-339300/pi3_gpio.png
@@ -105,7 +84,7 @@ class Hardware(object):
         output (bool): Is this an output device?
     """
     # metaclass for hardware objects
-    trigger = False
+    is_trigger = False
     pin = None
     type = "" # what are we known as in prefs?
     input = False
@@ -130,7 +109,7 @@ class Hardware(object):
 
         When not redefined, a warning is given.
         """
-        if self.trigger:
+        if self.is_trigger:
             Warning("The assign_cb method was not overridden by the subclass!")
 
     def get_name(self):

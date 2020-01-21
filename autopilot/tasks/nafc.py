@@ -105,9 +105,9 @@ class Nafc(Task):
 
     HARDWARE = {
         'POKES':{
-            'L': autopilot.hardware.gpio.Beambreak,
-            'C': autopilot.hardware.gpio.Beambreak,
-            'R': autopilot.hardware.gpio.Beambreak
+            'L': autopilot.hardware.gpio.Digital_In,
+            'C': autopilot.hardware.gpio.Digital_In,
+            'R': autopilot.hardware.gpio.Digital_In
         },
         'LEDS':{
             # TODO: use LEDs, RGB vs. white LED option in init
