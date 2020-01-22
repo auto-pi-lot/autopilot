@@ -75,6 +75,10 @@ class GPIO(Hardware):
     def __init__(self, pin, polarity=1, pull = None, trigger = None):
         super(GPIO, self).__init__()
 
+        if not ENABLED:
+            RuntimeError('Couldnt import pigpio, so GPIO objects cant be used')
+            return
+
         # initialize attributes
         self._polarity = None
         self._pull = None
@@ -91,6 +95,8 @@ class GPIO(Hardware):
         self.pull = pull
         self.trigger = trigger
         self.CONNECTED = self.init_pigpio()
+        if not self.CONNECTED:
+            RuntimeError('No connection could be made to the pigpio daemon')
 
 
     def init_pigpio(self):
@@ -234,8 +240,41 @@ class Digital_Out(GPIO):
             Warning('pulse_width must be <100(ms) & >0 and has been clipped to {}'.format(self.pulse_width))
 
         # setup pin
-        self.pig.set_mode(self.pin, pigpio.OUTPUT)
-        self.pig.write(self.pin, self.off)
+        self.pig.set_mode(self.pin_bcm, pigpio.OUTPUT)
+        self.pig.write(self.pin_bcm, self.off)
+
+    def turn(self, direction='on'):
+        """
+        Change output state using on/off parlance. logic direction varies based on :attr:`.polarity`
+
+        Args:
+            direction (str, bool): 'on', 1, or True to turn to :attr:`self.on` and vice versa for :attr:`self.off
+        """
+        if direction in ('on', True, 1):
+            self.pig.write(self.pin_bcm, self.on)
+        elif direction in ('off', False, 0):
+            self.pig.write(self.pin_bcm, self.off)
+
+    def write(self, state=True):
+        """
+        Change output state using high/low parlance.
+
+        The thinnest wrapper around :meth:`pigpio.pi.write` that just eliminates needing to pass the pin explicitly.
+
+        Args:
+            state (int, bool): 1, True for high, 0, False for low
+        """
+        if state == True:
+            self.pig.write(self.pin_bcm, 1)
+        else:
+            self.pig.write(self.pin_bcm, 0)
+
+    def toggle(self):
+        if self.pig.read(self.pin_bcm):
+            self.write(0)
+        else:
+            self.write(1)
+
 
     def pulse(self, duration=None):
 
@@ -320,6 +359,10 @@ class Digital_In(GPIO):
         # If we aren't adding, we clear any existing callbacks
         if not add:
             self.clear_cb()
+            if self.record:
+                # if we're clearing all callbacks (maybe by accident)
+                # but we're configured to record events, re-add the record cb.
+                self.assign_cb(self.record_event, add=True, evented=False, manual_trigger="B")
 
         # We can set the direction of the trigger manually,
         # for example if we want to set 'BOTH' only sometimes
@@ -354,11 +397,6 @@ class Digital_In(GPIO):
         """
         On either direction of logic transition, record the time
 
-        Todo:
-            Currently both the pigpio tick and a datetime.now() timestamp are stored.
-            When a method to convert ticks to timestamps is written and timestamps are unified,
-            there shall be the one true timestamp.
-
         Args:
             pin (int): BCM numbered pin passed from pigpio
             level (bool): High/Low status of current pin
@@ -368,9 +406,7 @@ class Digital_In(GPIO):
         # use self.pin rather than incoming pin b/c method is bound
         # (ie. only will be called by pin assigned to)
         # and self.pin is board rather than bcm numbered
-        # TODO: translate ticks to timestamps already
-        # FIXME: For now storing both timestamps and ticks which seems bad
-        self.events.append((self.pin, level, tick, datetime.now().isoformat()))
+        self.events.append((self.pin, level, tick))
 
 
     def release(self):
@@ -378,7 +414,46 @@ class Digital_In(GPIO):
         super(Digital_In, self).release()
 
 class PWM(GPIO):
-    # TODO: Jonny start here, stopped 1/21/2020
+    """
+    PWM output from GPIO.
+    """
+
+    def __init__(self, pin, polarity=1):
+        """
+
+        :param pin:
+        :param polarity:
+        """
+
+        super(PWM, self).__init__(pin)
+        self.polarity = polarity
+
+
+
+    @property
+    def polarity(self):
+        """
+        Logic direction. if 1: on=High=255, off=Low=0; if 0: off=Low=0, on=High=255.
+
+        Only a property so on/off are set if changed
+        """
+        return self._polarity
+
+    @polarity.setter
+    def polarity(self, polarity):
+        if polarity == 1:
+            self.on = 255
+            self.off = 0
+        elif polarity == 0:
+            self.on = 0
+            self.off = 255
+        else:
+            ValueError('polarity must be 0 or 1')
+            return
+
+        self._polarity = polarity
+
+
 
 
 
