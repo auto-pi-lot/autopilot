@@ -78,7 +78,7 @@ sudo -H pip install -U pyzmq npyscreen tornado inputs requests
 
 # install pigpio
 cd $GITDIR
-git clone https://github.com/joan2937/pigpio.git
+git clone https://github.com/sneakers-the-rat/pigpio.git
 cd pigpio
 make -j6
 sudo -H make install
