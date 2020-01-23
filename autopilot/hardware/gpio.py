@@ -11,6 +11,7 @@ import threading
 import time
 import numpy as np
 from datetime import datetime
+import itertools
 
 
 from autopilot import prefs
@@ -220,6 +221,8 @@ class Digital_Out(GPIO):
     """
     Send digital output pulses over a GPIO pin.
 
+    Attributes:
+        scripts (list): list of stored script handles
     """
 
     output = True
@@ -233,6 +236,8 @@ class Digital_Out(GPIO):
             polarity (bool): Whether 'on' is High (1, default) and pulses bring the voltage High, or vice versa (0)
         """
         super(Digital_Out, self).__init__(pin, polarity=polarity)
+
+        self.scripts = {}
 
 
         self.pulse_width = np.clip(pulse_width, 0, 100).astype(np.int)
@@ -286,6 +291,136 @@ class Digital_Out(GPIO):
             self.pig.gpio_trigger(self.pin_bcm,
                                   duration,
                                   self.on)
+
+    def _series_script(self, values, durations = None, unit="ms", repeat=None, finish_off = True):
+        """
+        Create a pigpio script to set a pin to a series of values for a series of durations.
+
+        Args:
+            values (list): A list of tuples of (value, duration) or a list of values in (1,0) to set self.pin_bcm to.
+            durations (list): If values is not a list of tuples, a list of durations. len(durations) must be either == len(values) or else len(durations) == 1, in which case the duration is repeated.
+            unit ("ms", "us"): units of durations in milliseconds or microseconds
+            repeat (int): If the script should be repeated, how many times?
+            finish_off (bool): If true, the script ends by turning the pin to self.off
+
+        Returns:
+            (str): constructed the function string
+        """
+
+
+        if durations:
+            if len(values) == len(durations):
+                iter_series = itertools.izip(values, durations)
+            if len(durations) == 1:
+                iter_series = itertools.product(values, durations)
+            else:
+                ValueError("length of  values and durations must be equal, or length of durations must be 1. got len(values)={}, len(durations)={}".format(len(values), len(durations)))
+        else:
+            iter_series = values.__iter__()
+
+
+        if unit == "ms":
+            wait_fn = "mils"
+        elif unit == "us":
+            wait_fn = "mics"
+        else:
+            ValueError("Unit for durations must be ms (milliseconds) or us (microseconds)")
+
+
+
+
+        string_pieces = [b" ".join(("w", bytes(self.pin_bcm), str(val), wait_fn, str(dur))) for val, dur in iter_series]
+        script_str = b" ".join(string_pieces)
+
+        if repeat:
+            try:
+                repeat = int(repeat)
+            except:
+                ValueError('Repeat must be coerceable to an integer, got {}'.format(repeat))
+
+            script_str = b" ".join(("LD v0", str(repeat-1), # "LD (load) variable 0 with number of repeats"
+                                    "tag 999",            # create a tag that can be returned to
+                                    script_str,           # do the script one time
+                                    "dcr v0"              # decrement v0. 
+                                    "jp 999")             # jump to the tag at the beginning if v0 is still positive
+                                   )
+
+        # turn off when finished
+        if finish_off:
+            script_str += b" ".join(("w", bytes(self.pin_bcm), bytes(self.off)))
+
+
+        return script_str
+
+    def store_series(self, values, durations=None, repeat=None, finish_off = True, id=None):
+        """
+
+        Args:
+            id (str): shorthand key used to call this series with :meth:`.series`
+            values:
+            durations:
+            repeat:
+            finish_off:
+
+        Returns:
+
+        """
+
+        if id in self.scripts.keys():
+            Exception("Script with id {} already created!".format(id))
+
+        series_script = self._series_script(values, durations, repeat, finish_off)
+
+        script_id = self.pig.store_script(series_script)
+
+        if id:
+            self.scripts[id] = script_id
+        else:
+            self.scripts[script_id] = script_id
+            return script_id
+
+
+
+    def series(self, id=None, values=None, durations=None, repeat=None, finish_off = True, store=False):
+        """
+        Shorthand way to set GPIO state for a series of durations.
+
+        Ideally one would use :meth:`.store_script` and use the returned id to call this function.
+
+        Otherwise, this method calls :meth:`.store_script` and runs it.
+
+        Todo:
+            Test whether there can be... too many scripts in pigpiod
+
+        Todo:
+            make abstract "set" method for state so PWM can also inherit this.
+
+        Args:
+            id (str, int): ID of the script, can be either the shorthand string id supplied to :meth:`.store_script` or the int returned by pigpio if you have it for some reason.
+            values (list): Either a list of (value, duration_)
+            durations:
+            store (bool):
+
+        Returns:
+
+        """
+
+        if id:
+            if id in self.scripts.keys():
+                self.pig.run_script(self.scripts[id])
+            elif id in self.scripts.values():
+                self.pig.run_script(id)
+            else:
+                KeyError('Could not find script with id {}'.format(id))
+            return
+
+        # if we weren't called with an ID, have to have a list of values/etc to create a script
+        if not values:
+            RuntimeError('Must be called with either values or id!')
+
+        # store and run script
+        script = self.store_series(values, durations, repeat, finish_off)
+        self.pig.run_script(script)
 
     def release(self):
         self.pig.write(self.pin_bcm, self.off)
@@ -428,6 +563,11 @@ class PWM(GPIO):
         super(PWM, self).__init__(pin)
         self.polarity = polarity
 
+        self.pig.set_mode(self.pin_bcm, pigpio.OUTPUT)
+        # set to off in case of common anode/inverted polarity
+        self.pig.set_PWM_dutycycle(self.pin_bcm, self.off)
+
+
 
 
     @property
@@ -452,6 +592,11 @@ class PWM(GPIO):
             return
 
         self._polarity = polarity
+
+    def release(self):
+        self.end
+
+        super(PWM, self).release()
 
 
 
