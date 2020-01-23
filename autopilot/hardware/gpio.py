@@ -73,7 +73,7 @@ class GPIO(Hardware):
         trigger (str, 1): which
     """
 
-    def __init__(self, pin, polarity=1, pull = None, trigger = None):
+    def __init__(self, pin=None, polarity=1, pull = None, trigger = None):
         super(GPIO, self).__init__()
 
         if not ENABLED:
@@ -223,10 +223,13 @@ class Digital_Out(GPIO):
 
     Attributes:
         scripts (list): list of stored script handles
+        pigs_function (bytes): when using pigpio scripts, what function is used to set the value of the output?
+            (eg. 'w' for digital out, 'gdc' for pwm, more info here: http://abyz.me.uk/rpi/pigpio/pigs.html)
     """
 
     output = True
     type="DIGITAL_OUT"
+    pigs_function = b"w"
 
     def __init__(self, pin, pulse_width=100, polarity=1):
         """
@@ -237,6 +240,7 @@ class Digital_Out(GPIO):
         """
         super(Digital_Out, self).__init__(pin, polarity=polarity)
 
+        self._last_script = None
         self.scripts = {}
 
 
@@ -246,7 +250,21 @@ class Digital_Out(GPIO):
 
         # setup pin
         self.pig.set_mode(self.pin_bcm, pigpio.OUTPUT)
-        self.pig.write(self.pin_bcm, self.off)
+        self.set(self.off)
+
+    def set(self, value):
+        """
+        Thin wrapper around pig method used to set value. Default uses :meth:`pigpio.pi.write`, but can be overwritten by inheriting classes
+
+        :param value:
+        :return:
+        """
+        if self._last_script:
+            status, _ = self.pig.script_status(self._last_script)
+            if status == pigpio.PI_SCRIPT_RUNNING:
+                self.pig.stop_script()
+
+        self.pig.write(self.pin_bcm, value)
 
     def turn(self, direction='on'):
         """
@@ -256,29 +274,15 @@ class Digital_Out(GPIO):
             direction (str, bool): 'on', 1, or True to turn to :attr:`self.on` and vice versa for :attr:`self.off
         """
         if direction in ('on', True, 1):
-            self.pig.write(self.pin_bcm, self.on)
+            self.set(self.on)
         elif direction in ('off', False, 0):
-            self.pig.write(self.pin_bcm, self.off)
-
-    def write(self, state=True):
-        """
-        Change output state using high/low parlance.
-
-        The thinnest wrapper around :meth:`pigpio.pi.write` that just eliminates needing to pass the pin explicitly.
-
-        Args:
-            state (int, bool): 1, True for high, 0, False for low
-        """
-        if state == True:
-            self.pig.write(self.pin_bcm, 1)
-        else:
-            self.pig.write(self.pin_bcm, 0)
+            self.set(self.off)
 
     def toggle(self):
         if self.pig.read(self.pin_bcm):
-            self.write(0)
+            self.set(0)
         else:
-            self.write(1)
+            self.set(1)
 
 
     def pulse(self, duration=None):
@@ -291,6 +295,7 @@ class Digital_Out(GPIO):
             self.pig.gpio_trigger(self.pin_bcm,
                                   duration,
                                   self.on)
+
 
     def _series_script(self, values, durations = None, unit="ms", repeat=None, finish_off = True):
         """
@@ -326,10 +331,7 @@ class Digital_Out(GPIO):
         else:
             ValueError("Unit for durations must be ms (milliseconds) or us (microseconds)")
 
-
-
-
-        string_pieces = [b" ".join(("w", bytes(self.pin_bcm), str(val), wait_fn, str(dur))) for val, dur in iter_series]
+        string_pieces = [b" ".join((self.pigs_function, bytes(self.pin_bcm), bytes(val), wait_fn, bytes(dur))) for val, dur in iter_series]
         script_str = b" ".join(string_pieces)
 
         if repeat:
@@ -347,7 +349,7 @@ class Digital_Out(GPIO):
 
         # turn off when finished
         if finish_off:
-            script_str += b" ".join(("w", bytes(self.pin_bcm), bytes(self.off)))
+            script_str += b" ".join((self.pigs_function, bytes(self.pin_bcm), bytes(self.off)))
 
 
         return script_str
@@ -381,19 +383,13 @@ class Digital_Out(GPIO):
 
 
 
-    def series(self, id=None, values=None, durations=None, repeat=None, finish_off = True, store=False):
+    def series(self, values=None, durations=None, repeat=None, finish_off = True, store=False, id=None):
         """
         Shorthand way to set GPIO state for a series of durations.
 
         Ideally one would use :meth:`.store_script` and use the returned id to call this function.
 
         Otherwise, this method calls :meth:`.store_script` and runs it.
-
-        Todo:
-            Test whether there can be... too many scripts in pigpiod
-
-        Todo:
-            make abstract "set" method for state so PWM can also inherit this.
 
         Args:
             id (str, int): ID of the script, can be either the shorthand string id supplied to :meth:`.store_script` or the int returned by pigpio if you have it for some reason.
@@ -408,10 +404,14 @@ class Digital_Out(GPIO):
         if id:
             if id in self.scripts.keys():
                 self.pig.run_script(self.scripts[id])
+                self._last_script = self.scripts[id]
             elif id in self.scripts.values():
                 self.pig.run_script(id)
+                self._last_script = id
             else:
                 KeyError('Could not find script with id {}'.format(id))
+
+
             return
 
         # if we weren't called with an ID, have to have a list of values/etc to create a script
@@ -422,9 +422,39 @@ class Digital_Out(GPIO):
         script = self.store_series(values, durations, repeat, finish_off)
         self.pig.run_script(script)
 
+        self._last_script = script
+
+        if store:
+            return script
+        else:
+            # TODO: Check if we need to spawn a timer to delete the script
+            pass
+
+    def stop_script(self, id=None):
+        """
+        Stops a running pigpio script
+        Args:
+            id (int, str, none): If None, stops the last run script. Otherwise tries to find a script with either key or pigpio id and stop that
+
+        """
+
+        if not id:
+            id = self._last_script
+
+        # if we were passed a keyed, named script id, convert it to the pigio integer script id
+        if id in self.scripts.keys():
+            id = self.scripts[id]
+
+        self.pig.stop_script(id)
+
+        self.set(self.off)
+
+
+
     def release(self):
-        self.pig.write(self.pin_bcm, self.off)
-        self.pig.stop()
+        self.stop_script()
+        self.set(self.off)
+        super(Digital_Out, self).release()
 
 
 class Digital_In(GPIO):
@@ -548,12 +578,15 @@ class Digital_In(GPIO):
         self.clear_cb()
         super(Digital_In, self).release()
 
-class PWM(GPIO):
+class PWM(Digital_Out):
     """
     PWM output from GPIO.
     """
+    output = True
+    type="PWM"
+    pigs_function = b'pwm'
 
-    def __init__(self, pin, polarity=1):
+    def __init__(self, pin, polarity=1, range=255):
         """
 
         :param pin:
@@ -561,13 +594,70 @@ class PWM(GPIO):
         """
 
         super(PWM, self).__init__(pin)
+        self._range = None
         self.polarity = polarity
+        self.range = range
 
-        self.pig.set_mode(self.pin_bcm, pigpio.OUTPUT)
+        #self.pig.set_mode(self.pin_bcm, pigpio.OUTPUT)
         # set to off in case of common anode/inverted polarity
-        self.pig.set_PWM_dutycycle(self.pin_bcm, self.off)
+        self.set(self.off)
+
+    def set(self, value):
+        """
+        Sets PWM duty cycle normalized to :attr:`.polarity`
+
+        Args:
+            value (int, float):
+                - if int > 1, sets value (or :attr:`.range`-value if :attr:`.polarity` is inverted).
+                - if float > 0, < 1, transforms to a proportion of :attr:`.range` (inverted  if needed as well).
+
+        """
+        if value > 1:
+            if value > self.range:
+                Warning('clipping {} to range {}'.format(value, self.range))
+                value = np.clip(value, 0, self.range).astype(np.int)
+
+        elif 0 <= value <= 1:
+            value = np.round(value * self.range).astype(np.int)
+
+        else:
+            ValueError('PWM value must be an integer between 0 and range: {}, or a float between 0 and 1. got {}'.format(self.range, value))
+
+        if self.polarity == 0:
+            value = self.range - value
+
+        if self._last_script:
+            status, _ = self.pig.script_status(self._last_script)
+            if status in (pigpio.PI_SCRIPT_RUNNING):
+                self.pig.stop_script(self._last_script)
+
+        self.pig.set_PWM_dutycycle(self.pin_bcm, value)
 
 
+
+    @property
+    def range(self):
+        if not self._range:
+            self._range = self.pig.get_pwm_range(self.pin_bcm)
+
+        return self._range
+
+    @range.setter
+    def range(self, value):
+        try:
+            value = int(value)
+        except ValueError:
+            ValueError('PWM Range must be coerceable to an integer, got {}'.format(value))
+
+        if (value < 25) or (value > 40000):
+            Warning('PWM Range must be between 25 and 40000, got {}, clipping to range'.format(value))
+            value = np.clip(value, 25, 40000).astype(np.int)
+
+        self.pig.set_PWM_range(self.pin_bcm, value)
+        self._range = value
+
+        # set polarity again so off/on update
+        self.polarity = self._polarity
 
 
     @property
@@ -582,27 +672,144 @@ class PWM(GPIO):
     @polarity.setter
     def polarity(self, polarity):
         if polarity == 1:
-            self.on = 255
+            self.on = self.range
             self.off = 0
         elif polarity == 0:
             self.on = 0
-            self.off = 255
+            self.off = self.range
         else:
             ValueError('polarity must be 0 or 1')
             return
 
         self._polarity = polarity
 
-    def release(self):
-        self.end
 
+
+    def release(self):
         super(PWM, self).release()
 
 
+class LED_RGB(GPIO):
+
+    output = True
+    type = "LEDS"
+
+    def __init__(self, pins = None, r = None, g = None, b = None, polarity = 1, blink = True):
+        """
+        Args:
+            pins (list): A list of (board) pin numbers.
+                Either `pins` OR all `r`, `g`, `b` must be passed.
+            r (int): Board number of Red pin - must be passed with `g` and `b`
+            g (int): Board number of Green pin - must be passed with `r` and `b`
+            b (int): Board number of Blue pin - must be passed with `r` and `g`:
+            polarity (0, 1):
+                0: common anode (low turns LED on)
+                1: common cathode (low turns LED off)
+            blink (bool): Flash RGB at the end of init to show we're alive and bc it's real cute.
+        """
+
+
+        super(LED_RGB, self).__init__()
+
+        # self._pin = {}
+        self.channels = {}
+
+        if pins and len(pins) == 3:
+            for color, pin in zip(('r', 'g', 'b'), pins):
+                self.channels[color] = PWM(pin, polarity=polarity)
+
+        elif r and g and b:
+            self.channels = {'r':PWM(r, polarity=polarity),
+                             'g':PWM(g, polarity=polarity),
+                             'b':PWM(b, polarity=polarity)}
+        else:
+            ValueError('Must either set with pins= list/tuple of r,g,b pins, or pass all three as separate params')
+
+        if blink:
+            self.series(((1,0,0),(0,1,0),(0,0,1),(0,0,0)),250)
+
+    def flash(self, duration, frequency=10, colors=((1,1,1),(0,0,0))):
+        """
+        Specify a color series by total duration and flash frequency.
+
+        Largely a convenience function for on/off flashes.
+
+        Args:
+            duration (int, float): Duration of flash in ms.
+            frequency (int, float): Frequency of flashes in Hz
+            colors (list): A list of RGB values 0-255 like::
+
+                [[255,255,255],[0,0,0]]
+
+        """
+        # Duration is total in ms, frequency in Hz
+        # Get number of flashes in duration rounded down
+
+        n_rep = int(float(duration) / 1000. * float(frequency))
+        flashes = colors * n_rep
+
+        # Invert frequency to duration for single flash
+        # divide by 2 b/c each 'color' is half the duration
+        single_dur = ((1. / frequency) * 1000) / 2.
+        self.color_series(flashes, single_dur)
+
+    def __getattr__(self, name):
+        """if a method is called that we don't explicitly redefine, try to apply it to each of our channels"""
+
+        attrs = {color: object.__getattribute__(chan, name) for color, chan in self.channels.items()}
+        if hasattr(list(attrs.values())[0], '__call__'):
+            def newfunc(*args, **kwargs):
+                result = {}
+                # if called with a dictionary of {'r':params, 'g':params, ...}, call that explicitly
+                if isinstance(args[0], dict):
+                    if any([k in args[0].keys() for k in self.channels.keys()]):
+                        for color, method in attrs.items():
+                            if color in args[0].keys():
+                                result[color] = method(**args[0][color])
+                        return result
+
+                # otherwise, call all channels with the same argument
+                for color, method in attrs.items():
+                    result[color] = method(*args, **kwargs)
+                return result
+
+            return newfunc
+        else:
+            return attrs
+
+    def release(self):
+        for chan in self.channels.values():
+            chan.release()
+        self.pig.stop()
 
 
 
-class LED_RGB(Hardware):
+
+
+
+    # @property
+    # def pin(self):
+    #     return {'r':self.channels['r'].pin,
+    #             'g':self.channels['g'].pin,
+    #             'b':self.channels['b'].pin}
+    #
+    # @property
+    # def pin_bcm(self):
+    #     return {'r':self.channels['r'].pin_bcm,
+    #             'g':self.channels['g'].pin_bcm,
+    #             'b':self.channels['b'].pin_bcm}
+
+
+
+
+
+
+
+
+
+
+
+class old_LED_RGB(Hardware):
     # TODO: Refactor to use three PWM objects
     """
     An RGB LED.
