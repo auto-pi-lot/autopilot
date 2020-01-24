@@ -90,6 +90,16 @@ class Hardware(object):
     input = False
     output = False
 
+    def __init__(self, name=None):
+        if name:
+            self.name = name
+        else:
+            try:
+                self.name = self.get_name()
+            except:
+                Warning('wasnt passed name and couldnt find from prefs for object: {}'.format(self.__str__))
+                self.name = None
+
     def release(self):
         """
         Every hardware device needs to redefine `release()`, and must
@@ -118,10 +128,20 @@ class Hardware(object):
         but we can get its name from prefs
         """
 
-        our_type = prefs.HARDWARE[self.type]
+        # TODO: Unify identification of hardware types across prefs and hardware objects
+        try:
+            our_type = prefs.HARDWARE[self.type]
+        except KeyError:
+            our_type = prefs.HARDWARE[self.__class__.__name__]
+
         for name, pin in our_type.items():
-            if pin == BCM_TO_BOARD[self.pin]:
+            if self.pin == pin:
                 return name
+            elif isinstance(pin, dict):
+                if self.pin == pin['pin']:
+                    return name
+
+
 
 
 

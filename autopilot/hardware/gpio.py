@@ -73,8 +73,8 @@ class GPIO(Hardware):
         trigger (str, 1): which
     """
 
-    def __init__(self, pin=None, polarity=1, pull = None, trigger = None):
-        super(GPIO, self).__init__()
+    def __init__(self, pin=None, polarity=1, pull = None, trigger = None, **kwargs):
+        super(GPIO, self).__init__(**kwargs)
 
         if not ENABLED:
             RuntimeError('Couldnt import pigpio, so GPIO objects cant be used')
@@ -231,14 +231,14 @@ class Digital_Out(GPIO):
     type="DIGITAL_OUT"
     pigs_function = b"w"
 
-    def __init__(self, pin, pulse_width=100, polarity=1):
+    def __init__(self, pin=None, pulse_width=100, polarity=1, **kwargs):
         """
         Args:
             pin (int):
             pulse_width (int): Width of digital output pulse (us). range: 1-100
             polarity (bool): Whether 'on' is High (1, default) and pulses bring the voltage High, or vice versa (0)
         """
-        super(Digital_Out, self).__init__(pin, polarity=polarity)
+        super(Digital_Out, self).__init__(pin, polarity=polarity, **kwargs)
 
         self._last_script = None
         self.scripts = {}
@@ -249,8 +249,9 @@ class Digital_Out(GPIO):
             Warning('pulse_width must be <100(ms) & >0 and has been clipped to {}'.format(self.pulse_width))
 
         # setup pin
-        self.pig.set_mode(self.pin_bcm, pigpio.OUTPUT)
-        self.set(self.off)
+        if self.pin_bcm:
+            self.pig.set_mode(self.pin_bcm, pigpio.OUTPUT)
+            self.set(self.off)
 
     def set(self, value):
         """
@@ -312,8 +313,15 @@ class Digital_Out(GPIO):
             (str): constructed the function string
         """
 
+        # if single value as an int/float/etc, wrap in list.
+        if not isinstance(values, list) or isinstance(values, tuple):
+            values = [values]
+
 
         if durations:
+            if isinstance(durations, float) or isinstance(durations, int):
+                durations = [round(durations)]
+
             if len(values) == len(durations):
                 iter_series = itertools.izip(values, durations)
             if len(durations) == 1:
@@ -325,9 +333,9 @@ class Digital_Out(GPIO):
 
 
         if unit == "ms":
-            wait_fn = "mils"
+            wait_fn = b"mils"
         elif unit == "us":
-            wait_fn = "mics"
+            wait_fn = b"mics"
         else:
             ValueError("Unit for durations must be ms (milliseconds) or us (microseconds)")
 
@@ -354,7 +362,7 @@ class Digital_Out(GPIO):
 
         return script_str
 
-    def store_series(self, values, durations=None, repeat=None, finish_off = True, id=None):
+    def store_series(self, values, durations=None, unit="ms", repeat=None, finish_off = True, id=None):
         """
 
         Args:
@@ -368,10 +376,11 @@ class Digital_Out(GPIO):
 
         """
 
-        if id in self.scripts.keys():
-            Exception("Script with id {} already created!".format(id))
+        # actually might want to overwrite scripts w/ same ids, like a solenoid that changes its 'open' duration
+        # if id in self.scripts.keys():
+        #     Exception("Script with id {} already created!".format(id))
 
-        series_script = self._series_script(values, durations, repeat, finish_off)
+        series_script = self._series_script(values, durations, unit, repeat, finish_off)
 
         script_id = self.pig.store_script(series_script)
 
@@ -383,7 +392,7 @@ class Digital_Out(GPIO):
 
 
 
-    def series(self, values=None, durations=None, repeat=None, finish_off = True, store=False, id=None):
+    def series(self, values=None, durations=None, unit="ms", repeat=None, finish_off = True, store=False, id=None):
         """
         Shorthand way to set GPIO state for a series of durations.
 
@@ -393,7 +402,7 @@ class Digital_Out(GPIO):
 
         Args:
             id (str, int): ID of the script, can be either the shorthand string id supplied to :meth:`.store_script` or the int returned by pigpio if you have it for some reason.
-            values (list): Either a list of (value, duration_)
+            values (list, tuple): Either a list of (value, duration_)
             durations:
             store (bool):
 
@@ -419,7 +428,7 @@ class Digital_Out(GPIO):
             RuntimeError('Must be called with either values or id!')
 
         # store and run script
-        script = self.store_series(values, durations, repeat, finish_off)
+        script = self.store_series(values, durations, unit, repeat, finish_off)
         self.pig.run_script(script)
 
         self._last_script = script
@@ -476,7 +485,7 @@ class Digital_In(GPIO):
     type = 'DIGI_IN'
     input = True
 
-    def __init__(self, pin, polarity=1, event=None, record=True):
+    def __init__(self, pin, polarity=1, event=None, record=True, **kwargs):
         """
         Args:
             pin (int): Board-numbered pin, converted to BCM numbering during instantiation.
@@ -486,7 +495,7 @@ class Digital_In(GPIO):
                 stage transition logic here instead of the :class:`.Task` object, as is typical.
             record (bool): Whether logic transitions should be recorded as a list of ('EVENT', 'Timestamp') tuples.
         """
-        super(Digital_In, self).__init__(pin, polarity=polarity)
+        super(Digital_In, self).__init__(pin, polarity=polarity, **kwargs)
 
         # pull the resistor in the off direction and set the trigger to be the on direction
         self.pull = self.off
@@ -586,14 +595,14 @@ class PWM(Digital_Out):
     type="PWM"
     pigs_function = b'pwm'
 
-    def __init__(self, pin, polarity=1, range=255):
+    def __init__(self, pin, polarity=1, range=255, **kwargs):
         """
 
         :param pin:
         :param polarity:
         """
 
-        super(PWM, self).__init__(pin)
+        super(PWM, self).__init__(pin, **kwargs)
         self._range = None
         self.polarity = polarity
         self.range = range
@@ -612,6 +621,16 @@ class PWM(Digital_Out):
                 - if float > 0, < 1, transforms to a proportion of :attr:`.range` (inverted  if needed as well).
 
         """
+        value = self._clean_value(value)
+
+        if self._last_script:
+            status, _ = self.pig.script_status(self._last_script)
+            if status in (pigpio.PI_SCRIPT_RUNNING):
+                self.pig.stop_script(self._last_script)
+
+        self.pig.set_PWM_dutycycle(self.pin_bcm, value)
+
+    def _clean_value(self, value):
         if value > 1:
             if value > self.range:
                 Warning('clipping {} to range {}'.format(value, self.range))
@@ -626,12 +645,8 @@ class PWM(Digital_Out):
         if self.polarity == 0:
             value = self.range - value
 
-        if self._last_script:
-            status, _ = self.pig.script_status(self._last_script)
-            if status in (pigpio.PI_SCRIPT_RUNNING):
-                self.pig.stop_script(self._last_script)
+        return value
 
-        self.pig.set_PWM_dutycycle(self.pin_bcm, value)
 
 
 
@@ -689,12 +704,12 @@ class PWM(Digital_Out):
         super(PWM, self).release()
 
 
-class LED_RGB(GPIO):
+class LED_RGB(Digital_Out):
 
     output = True
     type = "LEDS"
 
-    def __init__(self, pins = None, r = None, g = None, b = None, polarity = 1, blink = True):
+    def __init__(self, pins = None, r = None, g = None, b = None, polarity = 1, blink = True, **kwargs):
         """
         Args:
             pins (list): A list of (board) pin numbers.
@@ -709,10 +724,11 @@ class LED_RGB(GPIO):
         """
 
 
-        super(LED_RGB, self).__init__()
+        super(LED_RGB, self).__init__(**kwargs)
 
         # self._pin = {}
         self.channels = {}
+        self.scripts = {}
 
         if pins and len(pins) == 3:
             for color, pin in zip(('r', 'g', 'b'), pins):
@@ -727,6 +743,95 @@ class LED_RGB(GPIO):
 
         if blink:
             self.series(((1,0,0),(0,1,0),(0,0,1),(0,0,0)),250)
+
+    def set(self, value=None, r=None, g=None, b=None):
+        if self._last_script:
+            status, _ = self.pig.script_status(self._last_script)
+            if status == pigpio.PI_SCRIPT_RUNNING:
+                self.pig.stop_script()
+
+        # if we were given a value, ignore other arguments
+        if value:
+            if isinstance(value, int) or isinstance(value, float):
+                for channel in self.channels.values():
+                    channel.set(value)
+            elif len(value) == 3:
+                for channel_key, color_val in zip(('r','g','b'), value):
+                    self.channels[channel_key].set(value)
+            else:
+                ValueError('Value must either be a single value or a tuple of (r,g,b)')
+        else:
+            if r:
+                self.channels['r'].set(r)
+            if g:
+                self.channels['g'].set(g)
+            if b:
+                self.channels['b'].set(b)
+
+    def toggle(self):
+        Warning('toggle not well defined for PWM')
+
+    def pulse(self, duration=None):
+        Warning('Use flash for LEDs instead')
+
+
+
+
+    def _series_script(self, colors, durations = None, unit="ms", repeat=None, finish_off = True):
+
+        if durations:
+            if isinstance(durations, int) or isinstance(durations, float):
+                iter_series = itertools.product(colors, [round(durations)])
+            elif len(colors) == len(durations):
+                iter_series = itertools.izip(colors, durations)
+            elif len(durations) == 1:
+                iter_series = itertools.product(colors, durations)
+            else:
+                ValueError("length of  colors and durations must be equal, or length of durations must be 1. got len(colors)={}, len(durations)={}".format(len(colors), len(durations)))
+        else:
+            iter_series = colors.__iter__()
+
+        if unit == "ms":
+            wait_fn = b"mils"
+        elif unit == "us":
+            wait_fn = b"mics"
+        else:
+            ValueError("Unit for durations must be ms (milliseconds) or us (microseconds)")
+
+
+        string_pieces = []
+        for color, duration in iter_series:
+            # iter over keys rather than values of channels dict b/c dicts are unordered and colors are an ordered tuple
+            for channel_key, color_value in zip(('r', 'g', 'b'), color):
+                string_pieces.append(b" ".join((self.channels[channel_key].pigs_function,
+                                               bytes(self.channels[channel_key].pin_bcm),
+                                               bytes(self.channels[channel_key]._clean_value(color_value)))))
+            string_pieces.append(bytes("{} {}".format(wait_fn, bytes(duration))))
+
+        script_str = b" ".join(string_pieces)
+
+        if repeat:
+            try:
+                repeat = int(repeat)
+            except:
+                ValueError('Repeat must be coerceable to an integer, got {}'.format(repeat))
+
+            script_str = b" ".join(("LD v0", str(repeat-1), # "LD (load) variable 0 with number of repeats"
+                                    "tag 999",            # create a tag that can be returned to
+                                    script_str,           # do the script one time
+                                    "dcr v0"              # decrement v0. 
+                                    "jp 999")             # jump to the tag at the beginning if v0 is still positive
+                                   )
+
+        # turn off when finished
+        if finish_off:
+            #script_str += b" "
+            finish_pieces = [script_str]
+            for channel in self.channels.values():
+                finish_pieces.append(b" ".join((channel.pigs_function, bytes(channel.pin_bcm), bytes(channel.off))))
+            script_str = b" ".join(finish_pieces)
+
+        return script_str
 
     def flash(self, duration, frequency=10, colors=((1,1,1),(0,0,0))):
         """
@@ -751,31 +856,31 @@ class LED_RGB(GPIO):
         # Invert frequency to duration for single flash
         # divide by 2 b/c each 'color' is half the duration
         single_dur = ((1. / frequency) * 1000) / 2.
-        self.color_series(flashes, single_dur)
-
-    def __getattr__(self, name):
-        """if a method is called that we don't explicitly redefine, try to apply it to each of our channels"""
-
-        attrs = {color: object.__getattribute__(chan, name) for color, chan in self.channels.items()}
-        if hasattr(list(attrs.values())[0], '__call__'):
-            def newfunc(*args, **kwargs):
-                result = {}
-                # if called with a dictionary of {'r':params, 'g':params, ...}, call that explicitly
-                if isinstance(args[0], dict):
-                    if any([k in args[0].keys() for k in self.channels.keys()]):
-                        for color, method in attrs.items():
-                            if color in args[0].keys():
-                                result[color] = method(**args[0][color])
-                        return result
-
-                # otherwise, call all channels with the same argument
-                for color, method in attrs.items():
-                    result[color] = method(*args, **kwargs)
-                return result
-
-            return newfunc
-        else:
-            return attrs
+        self.series(flashes, single_dur)
+    #
+    # def __getattr__(self, name):
+    #     """if a method is called that we don't explicitly redefine, try to apply it to each of our channels"""
+    #
+    #     attrs = {color: object.__getattribute__(chan, name) for color, chan in self.channels.items()}
+    #     if hasattr(list(attrs.values())[0], '__call__'):
+    #         def newfunc(*args, **kwargs):
+    #             result = {}
+    #             # if called with a dictionary of {'r':params, 'g':params, ...}, call that explicitly
+    #             if isinstance(args[0], dict):
+    #                 if any([k in args[0].keys() for k in self.channels.keys()]):
+    #                     for color, method in attrs.items():
+    #                         if color in args[0].keys():
+    #                             result[color] = method(**args[0][color])
+    #                     return result
+    #
+    #             # otherwise, call all channels with the same argument
+    #             for color, method in attrs.items():
+    #                 result[color] = method(*args, **kwargs)
+    #             return result
+    #
+    #         return newfunc
+    #     else:
+    #         return attrs
 
     def release(self):
         for chan in self.channels.values():
@@ -783,322 +888,70 @@ class LED_RGB(GPIO):
         self.pig.stop()
 
 
+    @property
+    def pin(self):
+        return {'r':self.channels['r'].pin,
+                'g':self.channels['g'].pin,
+                'b':self.channels['b'].pin}
 
+    @property
+    def pin_bcm(self):
+        return {'r':self.channels['r'].pin_bcm,
+                'g':self.channels['g'].pin_bcm,
+                'b':self.channels['b'].pin_bcm}
 
-
-
-    # @property
-    # def pin(self):
-    #     return {'r':self.channels['r'].pin,
-    #             'g':self.channels['g'].pin,
-    #             'b':self.channels['b'].pin}
-    #
-    # @property
-    # def pin_bcm(self):
-    #     return {'r':self.channels['r'].pin_bcm,
-    #             'g':self.channels['g'].pin_bcm,
-    #             'b':self.channels['b'].pin_bcm}
-
-
-
-
-
-
-
-
-
-
-
-class old_LED_RGB(Hardware):
-    # TODO: Refactor to use three PWM objects
-    """
-    An RGB LED.
-
-    Attributes:
-        pig (:meth:`pigpio.pi`): The pigpio connection.
-        flash_block (:class:`threading.Event`): An Event to wait on setting further colors
-            if we are currently in a threaded flash train
-        end_thread (:class:`threading.Event`): Set this event to stop a flash train - usually called during object cleanup
-        pins (dict): After init, pin numbers are kept in a dict like::
-
-            {'r':bcm_number, 'g':...}
-
-        stored_color (dict): A color we store to restore after we do a flash train.
-
-    """
-
-    output = True
-    type="LEDS"
-
-    def __init__(self, pins = None, r = None, g=None, b=None, common = 'anode', blink=True):
-        """
-        Args:
-            pins (list): A list of (board) pin numbers.
-                Either `pins` OR all `r`, `g`, `b` must be passed.
-            r (int): Board number of Red pin - must be passed with `g` and `b`
-            g (int): Board number of Green pin - must be passed with `r` and `b`
-            b (int): Board number of Blue pin - must be passed with `r` and `g`:
-            common ('anode', 'cathode'): Is this LED common anode (low turns LED on)
-                or cathode (low turns LED off)
-            blink (bool): Flash RGB at the end of init to show we're alive.
-        """
-        self.common = common
-
-        # Dict to store color for after flash trains
-        self.stored_color = {}
-
-        # Event to wait on setting colors if we're flashing
-        self.flash_block = threading.Event()
-        self.flash_block.set()
-
-        # Event to kill the flash thread if the object is deleted
-        self.end_thread = threading.Event()
-        self.end_thread.clear()
-
-        # Initialize connection to pigpio daemon
-        self.pig = pigpio.pi()
-        if not self.pig.connected:
-            Exception('No connection to pigpio daemon could be made')
-
-        # Unpack input
-        self.pins = {}
-        if r and g and b:
-            self.pins['r'] = int(r)
-            self.pins['g'] = int(g)
-            self.pins['b'] = int(b)
-        elif isinstance(pins, list):
-            self.pins['r'] = int(pins[0])
-            self.pins['g'] = int(pins[1])
-            self.pins['b'] = int(pins[2])
-        else:
-            Exception('Dont know how to handle input to LED_RGB')
-
-        # Convert to BCM numbers
-        self.pins = {k: BOARD_TO_BCM[v] for k, v in self.pins.items()}
-
-        # set pin mode to output and make sure they're turned off
-        for pin in self.pins.values():
-            self.pig.set_mode(pin, pigpio.OUTPUT)
-            if self.common == 'anode':
-                self.pig.set_PWM_dutycycle(pin, 255)
-            elif self.common == 'cathode':
-                self.pig.set_PWM_dutycycle(pin, 0)
-            else:
-                Exception('Common passed to LED_RGB not anode or cathode')
-
-        # Blink to show we're alive
-        if blink:
-            self.color_series([[255,0,0],[0,255,0],[0,0,255],[0,0,0]], 250)
-
-    def __del__(self):
-        self.release()
-
-
-    def release(self):
-        """
-        Turns LED off and releases pigpio.
-        """
-        self.end_thread.set()
-        self.set_color(col=[0,0,0])
-        self.pig.stop()
-
-    def set_color(self, col=None, r=None, g=None, b=None, timed=None, stored=False, internal=False):
-        """
-        Set the color of the LED.
-
-        Note:
-            if called during a :meth:`LED_RGB.color_series`, the color will be stashed and set when the train is over.
-
-        Args:
-            col (list, tuple): an RGB color trio ranging from 0-255. Either `col` or all of `r`, `g`, `b` must be provided
-            r (int): Red intensity 0-255. Must be passed with `g` and `b`
-            g (int): Green intensity 0-255. Must be passed with `r` and `b`
-            b (int): Blue intensity 0-255. Must be passed with `r` and `g`
-            timed (float): Duration to change to this color before turning off in ms.
-            stored (bool): Called internally to change back to the color that preceded a flash train. Restores :attr:`LED_RGB.stored_color`.
-            internal (bool): True if being called inside a flash train.
-        """
-        if stored:
-            # being called after a flash train
-            # Since this is always called after a flash train, check that we were actually assigned a color
-            if self.stored_color:
-                color = self.stored_color
-                self.stored_color = {}
-            else:
-                # It's fine not to have a color, just return quietly.
-                return
-        else:
-            # Unpack input
-            if r and g and b:
-                color = {'r':int(r), 'g':int(g), 'b':int(b)}
-            elif isinstance(col, list) or isinstance(col, tuple):
-                color = {'r':int(col[0]), 'g':int(col[1]), 'b':int(col[2])}
-            else:
-                Warning('Color improperly formatted')
-                return
-
-        # If we're flashing or doing a color series, stash the color and we'll set it after the flash is done
-        # the 'internal' flag checks if this is being called within a flash train
-        if not internal and not self.flash_block.is_set():
-            self.stored_color = color
-            return
-
-        # Set PWM dutycycle
-        try:
-            if self.common == 'anode':
-                for k, v in color.items():
-                    self.pig.set_PWM_dutycycle(self.pins[k], 255-v)
-            elif self.common == 'cathode':
-                for k, v in color.items():
-                    self.pig.set_PWM_dutycycle(self.pins[k], v)
-        except AttributeError:
-            # if object has been cleaned up and a lingering set_color command remains,
-            # pigpio will throw an attribute error because its interface has been deleted
-            # we can return peacefully
-            # TODO: Log this
-            return
-
-        # If this is is a timed blink, start thread to turn led off
-        if timed:
-            # timed should be a float or int specifying the delay in ms
-            offtimer = threading.Timer(float(timed)/1000, self.set_color, kwargs={'col':[0,0,0]})
-            offtimer.start()
-
-    def flash(self, duration, frequency=10, colors=[[255,255,255],[0,0,0]]):
-        """
-        Specify a color series by total duration and flash frequency.
-
-        Largely a convenience function for on/off flashes.
-
-        Args:
-            duration (int, float): Duration of flash in ms.
-            frequency (int, float): Frequency of flashes in Hz
-            colors (list): A list of RGB values 0-255 like::
-
-                [[255,255,255],[0,0,0]]
-
-        """
-        # Duration is total in ms, frequency in Hz
-        # Get number of flashes in duration rounded down
-
-        n_rep = int(float(duration)/1000.*float(frequency))
-        flashes = colors*n_rep
-
-        # Invert frequency to duration for single flash
-        # divide by 2 b/c each 'color' is half the duration
-        single_dur = ((1./frequency)*1000)/2.
-        self.color_series(flashes, single_dur)
-
-    def color_series(self, colors, duration):
-        """
-        Change color through a series for a fixed duration.
-
-        Wrapper around :meth:`LED_RGB.threaded_color_series`
-
-        Args:
-            colors (list): A list of RGB values 0-255 like::
-
-                [[255,255,255],[0,0,0]]
-
-            duration (int, list): Either a single duration (int, ms)
-                or list of ints of equal length to `colors` to define
-                duration for each.
-        """
-        # Just a wrapper to make threaded
-        series_thread = threading.Thread(target=self.threaded_color_series, kwargs={'colors':colors, 'duration':duration})
-        series_thread.start()
-
-    def threaded_color_series(self, colors, duration):
-        """
-        Should only be called by :meth:`.LED_RGB.color_series` because it blocks.
-
-        Clears :attr:`.LED_RGB.flash_block` , sets colors, sleeps, sets the block, and
-        then sets any color that was passed during the train.
-
-        Args:
-            colors (list): A list of RGB values 0-255 like::
-
-                [[255,255,255],[0,0,0]]
-
-            duration (int, list): Either a single duration (int, ms)
-                or list of ints of equal length to `colors` to define
-                duration for each.
-        """
-        self.flash_block.clear()
-        if isinstance(duration, int) or isinstance(duration, float):
-            for c in colors:
-                if self.end_thread.is_set():
-                    return
-                self.set_color(c, internal=True)
-                time.sleep(float(duration)/1000)
-        elif isinstance(duration, list) and (len(colors) == len(duration)):
-            for i, c in enumerate(colors):
-                if self.end_thread.is_set():
-                    return
-                self.set_color(c, internal=True)
-                time.sleep(float(duration[i])/1000)
-        else:
-            Exception("Dont know how to handle your color series")
-            return
-        self.flash_block.set()
-        # If we received a color command while we were doing the series, set it now.
-        # We call the function regardless, it will switch to a color if it has one
-        self.set_color(stored=True)
-
-
-class Solenoid(Hardware):
+class Solenoid(Digital_Out):
     """
     Solenoid valves for water delivery.
 
     Only NC solenoids should be used, as there is no way to guarantee
     that a pin will maintain its voltage when it is released, and you will
     spill water all over the place.
-
-    Note:
-        pigpio has a function to send waveforms, which would make solenoid
-        opening far more accurate. If you are using an audio device, however,
-        creating and sending waveforms disables it. Waveforms are thus not
-        implemented here, but their implementation is left, skeleton-like,
-        in the source should you do an experiment without audio that
-        needs more precision.
-
-        It's hard to see why submillisecond precision
-        would matter all that much for reward delivery, but such is the
-        obsessiveness of scientists.
     """
 
     output = True
     type = "PORTS"
-    mode = "DURATION" # whether we dispense a fixed duration or fixed volume
+    DURATION_MIN = 2 #ms
 
-    def __init__(self, pin, duration=20, vol=None):
+
+    def __init__(self, pin, polarity=1, duration=20, vol=None):
         """
         Args:
             pin (int): Board pin number, converted to BCM on init.
             duration (int, float): duration of open, ms.
             vol (int, float): desired volume of reward in uL, must have computed calibration results, see :method:`~autopilot.core.terminal.Terminal.calibrate_ports`
         """
-
-        # Initialize connection to pigpio daemon
-        self.pig = pigpio.pi()
-        if not self.pig.connected:
-            Exception('No connection to pigpio daemon could be made')
-
-        # Setup port
-        self.pin = BOARD_TO_BCM[int(pin)]
-        self.pig.set_mode(self.pin, pigpio.OUTPUT)
+        super(Solenoid, self).__init__(pin, polarity=polarity)
+        self.calibration = None
+        self._duration = None
 
         # Pigpio has us create waves to deliver timed output
         # Since we typically only use one duration,
         # we make the wave once and only make it again when asked to
         # We start with passed or default duration (ms)
         if vol:
-            self.dur_from_vol(vol)
+            self.duration = self.dur_from_vol(vol)
+            self.mode = 'VOLUME'
 
         else:
-            self.duration = float(duration)/1000
-            #self.wave_id = None
-            #self.make_wave()
+            self.duration = duration
+            self.mode='DURATION'
+
+    @property
+    def duration(self):
+        return self._duration
+
+    @duration.setter
+    def duration(self, duration):
+        duration = round(duration)
+        if duration < self.DURATION_MIN:
+            Warning('Duration cannot be less than {}, so value was clipped. given {}'.format(self.DURATION_MIN, duration))
+            duration = self.DURATION_MIN
+
+        self._duration = duration
+        self.store_series(self.on, self._duration, id="open", unit="ms", finish_off=True, repeat=None)
+
+
 
     def dur_from_vol(self, vol):
         """
@@ -1111,50 +964,17 @@ class Solenoid(Hardware):
 
         """
         # find our pin name
-        self.name = self.get_name()
+        if not self.name:
+            self.name = self.get_name()
+
         # prefs should have loaded any calibration
         self.calibration = prefs.PORT_CALIBRATION[self.name]
+
         # compute duration from slope and intercept
-        self.duration = (float(self.calibration['intercept']) + (float(self.calibration['slope']) * float(vol))) / 1000.0
-        # some limits to this stuff
-        if self.duration < .002:
-            self.duration = 0.002
+        duration = round(float(self.calibration['intercept']) + (float(self.calibration['slope']) * float(vol)))
 
+        return duration
 
-        print('USING OPEN TIME {} FOR PORT {}'.format(self.duration, self.name))
-        sys.stdout.flush()
-
-        self.mode = "VOLUME"
-
-    def __del__(self):
-        self.pig.stop()
-
-    def release(self):
-        """
-        Simply releases the pigpio resources
-        """
-        self.pig.stop()
-    #
-    # def make_wave(self, duration=None):
-    #     """
-    #     Args:
-    #         duration:
-    #     """
-    #
-    #     # Typically duration is stored as an attribute, but if we are passed one...
-    #     if duration:
-    #         self.duration = int(duration)
-    #
-    #     # Make a pulse (duration is in microseconds for pigpio, ours is in milliseconds
-    #     # Pulses are (pin to turn on, pin to turn off, delay)
-    #     # So we add two pulses, one to turn the pin on with a delay,
-    #     # then a second to turn the pin off with no delay.
-    #     reward_pulse = []
-    #     reward_pulse.append(pigpio.pulse(1<<self.pin, 0, self.duration*1000))
-    #     reward_pulse.append(pigpio.pulse(0, 1<<self.pin, 0))
-    #
-    #     self.pig.wave_add_generic(reward_pulse)
-    #     self.wave_id = self.pig.wave_create()
 
     def open(self, duration=None):
         """
@@ -1165,68 +985,246 @@ class Solenoid(Hardware):
                 the duration stored on instantiation.
         """
         if duration:
-            try:
-                duration = float(duration)
-            except:
-                Warning('Need to pass a float for duration, using default dur')
-                duration = self.duration
-        else:
-            duration = self.duration
+            self.duration = duration
 
-        #self.pig.wave_send_once(self.wave_id)
-        self.pig.write(self.pin_bcm, 1)
-        time.sleep(duration)
-        self.pig.write(self.pin_bcm, 0)
-
-
-class Pull(Hardware):
-    """
-    Pull a pin up or down. Called by the :class:`~.pilot.Pilot` instead of by
-    a :class:`~.task.Task` as is usual.
-
-    If a pin should be pulled up or down always, regardless of task,
-    use this. For example, the `otherwise wonderful HiFiBerry Amp 2 <https://www.hifiberry.com/shop/boards/hifiberry-amp2/>`_
-    has an undocumented ... feature ... : the (board) pin 8 mutes output when low.
-    """
-
-    def __init__(self, pin, pud):
-        """
-        Args:
-            pin (int): (Board) pin number
-            pud ('U', 'D'): Pull the pin 'U'p or 'D'own.
-        """
-        self.pig = pigpio.pi()
-        if not self.pig.connected:
-            Exception('No connection to pigpio daemon could be made')
-
-        self.pin = BOARD_TO_BCM[int(pin)]
-
-        if pud in ('U', 1):
-            self.pig.set_pull_up_down(self.pin, pigpio.PUD_UP)
-        elif pud in ('D', 0):
-            self.pig.set_pull_up_down(self.pin, pigpio.PUD_DOWN)
-        else:
-            raise Exception("Don't know what to do with this pull!")
-
-
-    def __del__(self):
-        self.pig.stop()
-
-    def release(self):
-        """
-        Simply releases the pigpio client.
-        """
-        self.pig.stop()
+        self.series(id="open")
 
 
 
-
-
-
-
-
-
-
-
-
-
+#
+#
+# class old_LED_RGB(Hardware):
+#     # TODO: Refactor to use three PWM objects
+#     """
+#     An RGB LED.
+#
+#     Attributes:
+#         pig (:meth:`pigpio.pi`): The pigpio connection.
+#         flash_block (:class:`threading.Event`): An Event to wait on setting further colors
+#             if we are currently in a threaded flash train
+#         end_thread (:class:`threading.Event`): Set this event to stop a flash train - usually called during object cleanup
+#         pins (dict): After init, pin numbers are kept in a dict like::
+#
+#             {'r':bcm_number, 'g':...}
+#
+#         stored_color (dict): A color we store to restore after we do a flash train.
+#
+#     """
+#
+#     output = True
+#     type="LEDS"
+#
+#     def __init__(self, pins = None, r = None, g=None, b=None, common = 'anode', blink=True):
+#         """
+#         Args:
+#             pins (list): A list of (board) pin numbers.
+#                 Either `pins` OR all `r`, `g`, `b` must be passed.
+#             r (int): Board number of Red pin - must be passed with `g` and `b`
+#             g (int): Board number of Green pin - must be passed with `r` and `b`
+#             b (int): Board number of Blue pin - must be passed with `r` and `g`:
+#             common ('anode', 'cathode'): Is this LED common anode (low turns LED on)
+#                 or cathode (low turns LED off)
+#             blink (bool): Flash RGB at the end of init to show we're alive.
+#         """
+#         self.common = common
+#
+#         # Dict to store color for after flash trains
+#         self.stored_color = {}
+#
+#         # Event to wait on setting colors if we're flashing
+#         self.flash_block = threading.Event()
+#         self.flash_block.set()
+#
+#         # Event to kill the flash thread if the object is deleted
+#         self.end_thread = threading.Event()
+#         self.end_thread.clear()
+#
+#         # Initialize connection to pigpio daemon
+#         self.pig = pigpio.pi()
+#         if not self.pig.connected:
+#             Exception('No connection to pigpio daemon could be made')
+#
+#         # Unpack input
+#         self.pins = {}
+#         if r and g and b:
+#             self.pins['r'] = int(r)
+#             self.pins['g'] = int(g)
+#             self.pins['b'] = int(b)
+#         elif isinstance(pins, list):
+#             self.pins['r'] = int(pins[0])
+#             self.pins['g'] = int(pins[1])
+#             self.pins['b'] = int(pins[2])
+#         else:
+#             Exception('Dont know how to handle input to LED_RGB')
+#
+#         # Convert to BCM numbers
+#         self.pins = {k: BOARD_TO_BCM[v] for k, v in self.pins.items()}
+#
+#         # set pin mode to output and make sure they're turned off
+#         for pin in self.pins.values():
+#             self.pig.set_mode(pin, pigpio.OUTPUT)
+#             if self.common == 'anode':
+#                 self.pig.set_PWM_dutycycle(pin, 255)
+#             elif self.common == 'cathode':
+#                 self.pig.set_PWM_dutycycle(pin, 0)
+#             else:
+#                 Exception('Common passed to LED_RGB not anode or cathode')
+#
+#         # Blink to show we're alive
+#         if blink:
+#             self.color_series([[255,0,0],[0,255,0],[0,0,255],[0,0,0]], 250)
+#
+#     def __del__(self):
+#         self.release()
+#
+#
+#     def release(self):
+#         """
+#         Turns LED off and releases pigpio.
+#         """
+#         self.end_thread.set()
+#         self.set_color(col=[0,0,0])
+#         self.pig.stop()
+#
+#     def set_color(self, col=None, r=None, g=None, b=None, timed=None, stored=False, internal=False):
+#         """
+#         Set the color of the LED.
+#
+#         Note:
+#             if called during a :meth:`LED_RGB.color_series`, the color will be stashed and set when the train is over.
+#
+#         Args:
+#             col (list, tuple): an RGB color trio ranging from 0-255. Either `col` or all of `r`, `g`, `b` must be provided
+#             r (int): Red intensity 0-255. Must be passed with `g` and `b`
+#             g (int): Green intensity 0-255. Must be passed with `r` and `b`
+#             b (int): Blue intensity 0-255. Must be passed with `r` and `g`
+#             timed (float): Duration to change to this color before turning off in ms.
+#             stored (bool): Called internally to change back to the color that preceded a flash train. Restores :attr:`LED_RGB.stored_color`.
+#             internal (bool): True if being called inside a flash train.
+#         """
+#         if stored:
+#             # being called after a flash train
+#             # Since this is always called after a flash train, check that we were actually assigned a color
+#             if self.stored_color:
+#                 color = self.stored_color
+#                 self.stored_color = {}
+#             else:
+#                 # It's fine not to have a color, just return quietly.
+#                 return
+#         else:
+#             # Unpack input
+#             if r and g and b:
+#                 color = {'r':int(r), 'g':int(g), 'b':int(b)}
+#             elif isinstance(col, list) or isinstance(col, tuple):
+#                 color = {'r':int(col[0]), 'g':int(col[1]), 'b':int(col[2])}
+#             else:
+#                 Warning('Color improperly formatted')
+#                 return
+#
+#         # If we're flashing or doing a color series, stash the color and we'll set it after the flash is done
+#         # the 'internal' flag checks if this is being called within a flash train
+#         if not internal and not self.flash_block.is_set():
+#             self.stored_color = color
+#             return
+#
+#         # Set PWM dutycycle
+#         try:
+#             if self.common == 'anode':
+#                 for k, v in color.items():
+#                     self.pig.set_PWM_dutycycle(self.pins[k], 255-v)
+#             elif self.common == 'cathode':
+#                 for k, v in color.items():
+#                     self.pig.set_PWM_dutycycle(self.pins[k], v)
+#         except AttributeError:
+#             # if object has been cleaned up and a lingering set_color command remains,
+#             # pigpio will throw an attribute error because its interface has been deleted
+#             # we can return peacefully
+#             # TODO: Log this
+#             return
+#
+#         # If this is is a timed blink, start thread to turn led off
+#         if timed:
+#             # timed should be a float or int specifying the delay in ms
+#             offtimer = threading.Timer(float(timed)/1000, self.set_color, kwargs={'col':[0,0,0]})
+#             offtimer.start()
+#
+#     def flash(self, duration, frequency=10, colors=[[255,255,255],[0,0,0]]):
+#         """
+#         Specify a color series by total duration and flash frequency.
+#
+#         Largely a convenience function for on/off flashes.
+#
+#         Args:
+#             duration (int, float): Duration of flash in ms.
+#             frequency (int, float): Frequency of flashes in Hz
+#             colors (list): A list of RGB values 0-255 like::
+#
+#                 [[255,255,255],[0,0,0]]
+#
+#         """
+#         # Duration is total in ms, frequency in Hz
+#         # Get number of flashes in duration rounded down
+#
+#         n_rep = int(float(duration)/1000.*float(frequency))
+#         flashes = colors*n_rep
+#
+#         # Invert frequency to duration for single flash
+#         # divide by 2 b/c each 'color' is half the duration
+#         single_dur = ((1./frequency)*1000)/2.
+#         self.color_series(flashes, single_dur)
+#
+#     def color_series(self, colors, duration):
+#         """
+#         Change color through a series for a fixed duration.
+#
+#         Wrapper around :meth:`LED_RGB.threaded_color_series`
+#
+#         Args:
+#             colors (list): A list of RGB values 0-255 like::
+#
+#                 [[255,255,255],[0,0,0]]
+#
+#             duration (int, list): Either a single duration (int, ms)
+#                 or list of ints of equal length to `colors` to define
+#                 duration for each.
+#         """
+#         # Just a wrapper to make threaded
+#         series_thread = threading.Thread(target=self.threaded_color_series, kwargs={'colors':colors, 'duration':duration})
+#         series_thread.start()
+#
+#     def threaded_color_series(self, colors, duration):
+#         """
+#         Should only be called by :meth:`.LED_RGB.color_series` because it blocks.
+#
+#         Clears :attr:`.LED_RGB.flash_block` , sets colors, sleeps, sets the block, and
+#         then sets any color that was passed during the train.
+#
+#         Args:
+#             colors (list): A list of RGB values 0-255 like::
+#
+#                 [[255,255,255],[0,0,0]]
+#
+#             duration (int, list): Either a single duration (int, ms)
+#                 or list of ints of equal length to `colors` to define
+#                 duration for each.
+#         """
+#         self.flash_block.clear()
+#         if isinstance(duration, int) or isinstance(duration, float):
+#             for c in colors:
+#                 if self.end_thread.is_set():
+#                     return
+#                 self.set_color(c, internal=True)
+#                 time.sleep(float(duration)/1000)
+#         elif isinstance(duration, list) and (len(colors) == len(duration)):
+#             for i, c in enumerate(colors):
+#                 if self.end_thread.is_set():
+#                     return
+#                 self.set_color(c, internal=True)
+#                 time.sleep(float(duration[i])/1000)
+#         else:
+#             Exception("Dont know how to handle your color series")
+#             return
+#         self.flash_block.set()
+#         # If we received a color command while we were doing the series, set it now.
+#         # We call the function regardless, it will switch to a color if it has one
+#         self.set_color(stored=True)
