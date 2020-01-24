@@ -373,7 +373,8 @@ class Proportional(Stim_Manager):
                     else:
                         self.stimuli[group_name][k] = [sounds.SOUND_LIST[v['type']](**v)]
 
-    def init_sounds_inidividual(self, sound_stim):
+
+    def init_sounds_individual(self, sound_stim):
         self.stim_freqs = {}
         for side, sound_params in sound_stim.items():
             self.stimuli[side] = []
