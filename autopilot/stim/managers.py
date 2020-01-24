@@ -75,6 +75,7 @@ class Stim_Manager(object):
         self.last_stim = None  # What was the last stim?
 
         # Correction trials
+
         self.correction = False  # Are we doing correction trials
         self.correction_trial = False  # Is this a correction trial?
         self.last_was_correction = False  # Was the last trial a correction trial?
@@ -238,14 +239,16 @@ class Stim_Manager(object):
 
         # if the last trial was a correction trial and we didn't get it correct,
         # then this is a correction trial too
-        if self.correction_trial and not self.correct:
+        if (self.correction_trial or self.last_was_correction) and not self.correct:
             return True
         # if the last trial was a correction trial and we just corrected, no correction trial this time
-        elif self.correction_trial and self.correct:
+        elif (self.correction_trial or self.last_was_correction) and self.correct:
+            self.last_was_correction = False
             return False
-        # if last trial was not a correction trial we spin for one
+        # if last trial was not a correction trial we spin  *to test* for one
         elif np.random.rand() < self.correction_pct:
-            return True
+            self.last_was_correction = True
+            return False
         else:
             return False
 
@@ -492,6 +495,8 @@ class Proportional(Stim_Manager):
         elif self.frequency_type == "within_side":
             self.last_stim = np.random.choice(self.stimuli[self.target],
                                               p=self.stim_freqs[self.target])
+        else:
+            ValueError('Dont know what freq type we are')
 
         return self.target, self.distractor, self.last_stim
 
