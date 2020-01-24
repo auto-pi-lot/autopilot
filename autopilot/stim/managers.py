@@ -392,7 +392,6 @@ class Proportional(Stim_Manager):
                 self.stim_freqs[side].append(float(sound_params['management']['frequency']))
 
         # normalize frequencies within sides to sum to 1
-        pdb.set_trace()
         for side, freqs in self.stim_freqs.items():
             side_sum = np.sum(freqs)
             self.stim_freqs[side] = tuple([float(f)/side_sum for f in freqs])
