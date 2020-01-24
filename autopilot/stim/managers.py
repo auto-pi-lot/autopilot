@@ -313,12 +313,25 @@ class Proportional(Stim_Manager):
     def __init__(self, stim):
         super(Proportional, self).__init__()
 
+        self.stimuli = {}
+
+        self.frequency_type = None
+
         if stim['type'] == 'sounds':
-            self.init_sounds(stim['groups'])
+            if 'groups' in stim.keys():
+                self.frequency_type = "within_groups"
+                # top-level groups, choose group then choose side
+                self.init_sounds_grouped(stim['groups'])
+                self.store_groups(stim)
+            else:
+                self.frequency_type = "within_side"
+                # second-level frequencies, side is chosen and then
+                # probability from within a side
+                self.init_sounds_individual(stim['sounds'])
 
-        self.store_groups(stim)
 
-    def init_sounds(self, sound_stim):
+
+    def init_sounds_grouped(self, sound_stim):
         """
         Instantiate sound objects similarly to :class:`.Stim_Manager`, just organizes them into groups.
 
@@ -359,6 +372,24 @@ class Proportional(Stim_Manager):
                     # If not a list, a single sound
                     else:
                         self.stimuli[group_name][k] = [sounds.SOUND_LIST[v['type']](**v)]
+
+    def init_sounds_inidividual(self, sound_stim):
+        self.stim_freqs = {}
+        for side, sound_params in sound_stim.items():
+            self.stimuli[side] = []
+            self.stim_freqs[side] = []
+            if isinstance(sound_params, list):
+                for sound in sound_params:
+                    self.stimuli[side].append(sounds.SOUND_LIST[sound['type']](**sound))
+                    self.stim_freqs[side].append(float(sound['management']['frequency']))
+            else:
+                self.stimuli[side].append(sounds.SOUND_LIST[sound_params['type']](**sound_params))
+                self.stim_freqs[side].append(float(sound_params['management']['frequency']))
+
+        # normalize frequencies within sides to sum to 1
+        for side, freqs in self.stim_freqs.items():
+            side_sum = np.sum(freqs)
+            self.stim_freqs[side] = tuple([float(f)/side_sum for f in freqs])
 
     def store_groups(self, stim):
         """
@@ -439,10 +470,16 @@ class Proportional(Stim_Manager):
         elif self.target == 'R':
             self.distractor = 'L'
 
-        # pick a stimulus based on group frequency
-        group = np.random.choice(self.group_names, p=self.group_freqs)
-        # within that group pick a random stimulus
-        self.last_stim = np.random.choice(self.stimuli[group][self.target])
+        if self.frequency_type == "within_group":
+
+            # pick a stimulus based on group frequency
+            group = np.random.choice(self.group_names, p=self.group_freqs)
+            # within that group pick a random stimulus
+            self.last_stim = np.random.choice(self.stimuli[group][self.target])
+
+        elif self.frequency_type == "within_side":
+            self.last_stim = np.random.choice(self.stimuli[self.target],
+                                              p=self.stim_freqs[self.target])
 
         return self.target, self.distractor, self.last_stim
 

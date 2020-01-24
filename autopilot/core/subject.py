@@ -476,7 +476,7 @@ class Subject:
                     # if this task has sounds, make columns for them
                     # TODO: Make stim managers return a list of properties for their sounds
                     if 'stim' in step.keys():
-                        if 'manager' in step['stim'].keys():
+                        if 'groups' in step['stim'].keys():
                             # managers have stim nested within groups, but this is still really ugly
                             sound_params = {}
                             for g in step['stim']['groups']:
