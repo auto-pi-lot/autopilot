@@ -427,8 +427,12 @@ class Proportional(Stim_Manager):
         """
         # set a callback function for when the stimulus ends
         for _, group in self.stimuli.items():
-            for _, v in group.items():
-                for astim in v:
+            if self.frequency_type == "within_group":
+                for _, v in group.items():
+                    for astim in v:
+                        astim.set_trigger(trig_fn)
+            elif self.frequency_type == "within_side":
+                for astim in group:
                     astim.set_trigger(trig_fn)
 
 
