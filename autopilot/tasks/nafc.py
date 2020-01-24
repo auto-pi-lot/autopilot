@@ -473,8 +473,9 @@ class Nafc_Gap(Nafc):
 
 
     def end(self):
-        super(Nafc_Gap, self).end()
         self.noise.stop_continuous()
+        super(Nafc_Gap, self).end()
+
 
 
 

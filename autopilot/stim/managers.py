@@ -426,14 +426,19 @@ class Proportional(Stim_Manager):
             trig_fn (callable): A function to be given to stimuli via `set_trigger`
         """
         # set a callback function for when the stimulus ends
-        for _, group in self.stimuli.items():
-            if self.frequency_type == "within_group":
-                for _, v in group.items():
-                    for astim in v:
-                        astim.set_trigger(trig_fn)
-            elif self.frequency_type == "within_side":
-                for astim in group:
+
+        if self.frequency_type == "within_group":
+            for _, group in self.stimuli.items():
+                    for _, v in group.items():
+                        for astim in v:
+                            astim.set_trigger(trig_fn)
+        elif self.frequency_type == "within_side":
+            for side, sound_group in self.stimuli.items():
+                for astim in sound_group:
                     astim.set_trigger(trig_fn)
+
+        else:
+            ValueError('Dont know how to set triggers')
 
 
     def next_stim(self):

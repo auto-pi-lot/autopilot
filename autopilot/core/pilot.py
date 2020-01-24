@@ -281,24 +281,33 @@ class autopilot:
         # Value should be a dict of protocol params
         # The networking object should have already checked that we have all the files we need
 
-        # Get the task object by its type
-        if 'child' in value.keys():
-            task_class = tasks.CHILDREN_LIST[value['task_type']]
-        else:
-            task_class = tasks.TASK_LIST[value['task_type']]
-        # Instantiate the task
-        self.stage_block.clear()
-        self.task = task_class(stage_block=self.stage_block, **value)
-
-        # Make a group for this subject if we don't already have one
-        self.subject = value['subject']
-
-        # Run the task and tell the terminal we have
-        self.running.set()
-        threading.Thread(target=self.run_task).start()
+        if self.state == "RUNNING":
+            self.logger.warning("Asked to a run a task when already running")
+            return
 
         self.state = 'RUNNING'
-        self.update_state()
+        try:
+            # Get the task object by its type
+            if 'child' in value.keys():
+                task_class = tasks.CHILDREN_LIST[value['task_type']]
+            else:
+                task_class = tasks.TASK_LIST[value['task_type']]
+            # Instantiate the task
+            self.stage_block.clear()
+            self.task = task_class(stage_block=self.stage_block, **value)
+
+            # Make a group for this subject if we don't already have one
+            self.subject = value['subject']
+
+            # Run the task and tell the terminal we have
+            self.running.set()
+            threading.Thread(target=self.run_task).start()
+
+
+            self.update_state()
+        except Exception as e:
+            self.state = "IDLE"
+            self.logger.exception("couldn't start task: {}".format(e))
 
         # TODO: Send a message back to the terminal with the runtime if there is one so it can handle timed stops
 
