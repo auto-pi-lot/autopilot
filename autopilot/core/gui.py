@@ -2585,7 +2585,7 @@ class Psychometric(QtGui.QDialog):
 
             # container for each subject's GUI object
             # checkbox, step, variable
-            self.subject_objects[subject] = [QtGui.QCheckBox(),  QtGui.QComboBox(), QtGui.QComboBox()]
+            self.subject_objects[subject] = [QtGui.QCheckBox(),  QtGui.QComboBox(), QtGui.QComboBox(), QtGui.QLineEdit()]
 
             # include checkbox
             checkbox = self.subject_objects[subject][0]
@@ -2616,6 +2616,12 @@ class Psychometric(QtGui.QDialog):
             var_box = self.subject_objects[subject][2]
             var_box.setObjectName(subject_name)
 
+            # n most recent trials
+            n_trials_box = self.subject_objects[subject][3]
+            # verify that an int is given
+            n_trials_box.setValidator(QtGui.QIntValidator())
+            n_trials_box.setText("-1")
+
             # set index of current step to populate variables
             step_box.setCurrentIndex(step)
 
@@ -2624,6 +2630,7 @@ class Psychometric(QtGui.QDialog):
             self.grid.addWidget(subject_lab, i+1, 1)
             self.grid.addWidget(step_box, i+1, 2)
             self.grid.addWidget(var_box, i+1, 3)
+            self.grid.addWidget(n_trials_box, i+1, 4)
 
         # finish layout
         buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
@@ -2713,7 +2720,8 @@ class Psychometric(QtGui.QDialog):
                 _plot_params.append((
                     sub_name,
                     objs[1].currentText(),
-                    objs[2].currentText()
+                    objs[2].currentText(),
+                    int(objs[3].text())
                 ))
         return _plot_params
 

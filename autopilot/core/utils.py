@@ -201,7 +201,7 @@ def coerce_discrete(df, col, mapping={'L':0, 'R':1}):
     if '' in df[col].unique():
         n_blanks = sum(df[col]=='')
         Warning('{} blank rows detected, removing.'.format(n_blanks))
-        df.drop(np.where(df[col]=='')[0], axis=0, inplace=True)
+        df.drop(df.index[df[col]==''], axis=0, inplace=True)
 
     df = df.astype({col:float})
     return df

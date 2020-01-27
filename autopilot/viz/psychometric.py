@@ -54,10 +54,16 @@ def plot_psychometric(subject_protocols):
 
     """
 
-    for subject, step, var in subject_protocols:
+    for subject, step, var, n_trials in subject_protocols:
         # load subject dataframe and subset
         asub = Subject(subject)
         sub_df = asub.get_trial_data(step)
+
+        if n_trials>0:
+            sub_df = sub_df[-n_trials:]
+
+        # pdb.set_trace()
+
         sub_df = coerce_discrete(sub_df, 'response')
         logit = calc_psychometric(sub_df, var)
 
