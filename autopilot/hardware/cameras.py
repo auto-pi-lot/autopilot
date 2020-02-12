@@ -342,12 +342,120 @@ class Camera_CV(Camera):
 
 
 class Camera_Spinnaker(Camera):
+    """
+    Use: https://github.com/klecknerlab/simple_pyspin/blob/master/simple_pyspin/__init__.py
+    """
+    type="CAMERA_SPIN"
 
-    def __init__(self, **kwargs):
+
+    def __init__(self, serial=None, camera_idx=None, **kwargs):
         super(Camera_Spinnaker, self).__init__(**kwargs)
 
+        if serial and camera_idx:
+            self.logger.warning("serial and camera_idx were both passed, defaulting to serial")
+            camera_idx = None
+
+        self.system = None #spinnaker system
+        self.cam_list = None
+        self.nmap = None
+
+        # internal variables
+        self._bin = None
+        self._exposure = None
+        self._fps = None
+        self._frame_trigger = None
+        self._pixel_format = None
+        self._acquisition_mode = None
 
 
+        self.serial = serial
+        self.camera_idx = camera_idx
+
+
+
+    def init_cam(self):
+        pass
+
+    @property
+    def bin(self):
+        pass
+
+    @bin.setter
+    def bin(self, bin):
+        pass
+
+    @property
+    def exposure(self):
+        pass
+
+    @exposure.setter
+    def exposure(self, exposure):
+        pass
+
+    @property
+    def fps(self):
+        pass
+
+    @fps.setter
+    def fps(self, fps):
+        pass
+
+    @property
+    def frame_trigger(self):
+        pass
+
+    @frame_trigger.setter
+    def frame_trigger(self, frame_trigger):
+        pass
+
+    @property
+    def pixel_format(self):
+        pass
+
+    @pixel_format.setter
+    def pixel_format(self, pixel_format):
+        pass
+
+    @property
+    def acquisition_mode(self):
+        pass
+
+    @acquisition_mode.setter
+    def acquisition_mode(self, acquisition_mode):
+        pass
+
+    @property
+    def device_info(self):
+        """
+        Device information like ID, serial number, version. etc.
+
+        Returns:
+
+        """
+
+        device_info = PySpin.CCategoryPtr(self.nmap.GetNode('DeviceInformation'))
+
+        features = device_info.GetFeatures()
+
+        # save information to a dictionary
+        info_dict = {}
+        for feature in features:
+            node_feature = PySpin.CValuePtr(feature)
+            info_dict[node_feature.GetName()] = node_feature.ToString()
+
+        return info_dict
+
+
+
+
+
+
+
+class Camera_Picam(Camera):
+    """
+    also can be used w/ picapture
+    https://lintestsystems.com/wp-content/uploads/2016/09/PiCapture-SD1-Documentation.pdf
+    """
 
 
 class Camera_Spin_Old(mp.Process):
