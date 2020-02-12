@@ -1,0 +1,7 @@
+docs https://lintestsystems.com/wp-content/uploads/2016/09/PiCapture-SD1-Documentation.pdf
+have to also install smbus
+
+might need to disable vc4-fkms-v3d in /boot/config.txt
+or i2c_arm
+
+start_x needs to be 1
