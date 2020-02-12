@@ -9,12 +9,14 @@ import numpy as np
 import base64
 from datetime import datetime
 import multiprocessing as mp
+from multiprocessing import shared_memory
 import time
 import traceback
 import blosc
 import warnings
 import subprocess
 import logging
+from ctypes import c_char_p
 
 
 
@@ -55,86 +57,221 @@ The workaround is relatively simple, we just wait ~2 seconds if another camera w
 """
 LAST_INIT_LOCK = mp.Lock()
 
-
-class Camera_OpenCV(mp.Process):
-    """
-    https://www.pyimagesearch.com/2017/02/06/faster-video-file-fps-with-cv2-videocapture-and-opencv/
-    """
-
-    trigger = False
-    pin = None
-    type = "CAMERA_OPENCV" # what are we known as in prefs?
+class Camera(Hardware, mp.Process):
     input = True
-    output = False
+    type = "CAMERA"
 
-    def __init__(self, camera_idx=0, write=False, stream=False, timed=False, name=None, networked=False, queue=False,
-                 queue_size = 128, queue_single = True, blosc=True,
-                 *args, **kwargs):
-        super(Camera_OpenCV, self).__init__()
+    def __init__(self, fps=None, queue=False, queue_size = 256, write=False, timed=False, **kwargs):
+        super(Camera, self).__init__(**kwargs)
+        self._vid = None
+        self._frame = None
+        self._shm = None
+        self._output_filename = None
+        self.q = None
+        self.queue_size = None
+
+        self.queue = queue
+        self.fps = fps
+        self.write = write
+        self.timed = timed
+
+        if self.queue:
+            self.queue_size = queue_size
+            self.q = mp.Queue(maxsize=self.queue_size)
+
+        # event to end acquisition
+        self.stopping = mp.Event()
+        self.stopping.clear()
+
+        self.capturing = mp.Event()
+        self.capturing.clear()
+
+    def run(self):
+        if self.capturing.is_set():
+            self.logger.warning("Already Capturing!")
+            return
+
+        # prepare stuff we need
+        if self.write:
+            write_queue = mp.Queue()
+            writer = Video_Writer(write_queue, self.output_filename, self.fps, timestamps=True, blosc=self.blosc)
+            writer.start()
+
+        if isinstance(self.timed, int) or isinstance(self.timed, float):
+            if self.timed > 0:
+                start_time = time.time()
+                end_time = start_time + self.timed
+
+        try:
+            while not self.stopping.is_set():
+                try:
+                    self.timestamp, self.frame = self._grab()
+                except Exception as e:
+                    self.logger.exception(e)
+
+                if self.write:
+                    write_queue.put_nowait((self.timestamp, blosc.pack_array(self.frame.copy())))
+
+                if self.queue:
+                    self.q.put_nowait((self.timestamp, self.frame.copy()))
+
+                if self.timed:
+                    if time.time() >= end_time:
+                        self.stopping.set()
+
+        finally:
+            self.logger.info('Capture Ending')
+
+
+            if self.write:
+                write_queue.put_nowait('END')
+                checked_empty = False
+                while not write_queue.empty():
+                    if not checked_empty:
+                        self.logger.warning('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
+                        checked_empty = True
+                    time.sleep(0.1)
+                self.logger.warning('Writer finished, closing')
+
+            self.capturing.clear()
+            self.release()
+            self.logger.info('Camera Released')
+
+
+
+
+
+
+
+    @property
+    def fps(self):
+        return self._fps
+
+    @fps.setter
+    def fps(self, fps):
+        self._fps = fps
+
+    @property
+    def shape(self):
+        Warning('Should be overridden by camera subclass!')
+        return None
+
+    @property
+    def vid(self):
+        if not self._vid:
+            self._vid = self.init_cam()
+        return self._vid
+
+    @property
+    def frame(self):
+        if self._frame:
+            return self._frame
+        else:
+            return False
+
+    @frame.setter
+    def frame(self, frame):
+        if not self._frame:
+            self._shm = shared_memory.SharedMemory(create=True, size=frame.nbytes)
+            self._frame = np.ndarray(frame.shape, dtype=frame.dtype, buffer=self._shm.buf)
+            self._frame[:] = frame[:]
+        else:
+            self._frame[:] = frame[:]
+
+    @property
+    def timestamp(self):
+        if self._timestamp:
+            return self._timestamp.value
+        else:
+            return False
+
+    @timestamp.setter
+    def timestamp(self, timestamp):
+        if not self._timestamp:
+            self._timestamp = mp.Value(c_char_p, timestamp)
+        else:
+            self._timestamp.value = timestamp
+
+    @property
+    def output_filename(self, new=False):
+        # TODO: choose output directory
+
+        if self._output_filename is None:
+            new = True
+        elif os.path.exists(self._output_filename):
+            new = True
+
+        if new:
+            user_dir = os.path.expanduser('~')
+            self._output_filename = os.path.join(user_dir, "capture_{}_{}.mp4".format(self.name,
+                                                                                            datetime.now().strftime(
+                                                                                                "%y%m%d-%H%M%S")))
+
+        return self._output_filename
+
+    def _grab(self):
+        raise Exception("internal _grab method must be overwritten by camera subclass!!")
+
+    def _timestamp(self):
+        raise Exception("internal _timestamp method must be overwritten by camera subclass!!")
+
+
+    def init_cam(self):
+        raise Exception('init_camera must be overwritten by camera subclass!!')
+
+    def stop(self):
+        self.stopping.set()
+
+    def release(self):
+        if self._shm:
+            try:
+                self._shm.close()
+                self._shm.unlink()
+            except Exception as e:
+                self.logger.exception(e)
+
+
+
+
+
+
+class Camera_CV(Camera):
+    def __init__(self, camera_idx = 0, **kwargs):
+        super(Camera_CV, self).__init__(**kwargs)
+
+        self._v4l_info = None
 
         self.last_opencv_init = globals()['OPENCV_LAST_INIT_TIME']
         self.last_init_lock = globals()['LAST_INIT_LOCK']
 
-        if name:
-            self.name = name
-        else:
-            self.name = "camera_{}".format(camera_idx)
-
-        self.write = write
-        self.stream = stream
-        self.timed = timed
-        self.blosc = blosc
-
-        self.init_logging()
-
-        self._v4l_info = None
-
-        self.fps = None
-
-        # get handle to camera
         self.camera_idx = camera_idx
-        self.vid = self.init_cam()
-        self.init_opencv_info()
-        self.vid.release()
 
-        # event to end acquisition
-        # self.stopped = mp.Event()
-        # self.stopped.clear()
-        #self.stopping = threading.Event()
-        self.stopping = mp.Event()
-        self.stopping.clear()
+    @property
+    def fps(self):
+        fps = self.vid.get(cv2.CAP_PROP_FPS)
+        if fps == 0:
+            fps = 30
+            warnings.warn('Couldnt get fps from camera, using {} as default'.format(fps))
+        return fps
 
-        # keep the most recent frame so others can access with the frame attribute
-        self._frame = False
+    @property
+    def shape(self):
+        return (self.vid.get(cv2.CAP_PROP_FRAME_WIDTH),
+                self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-        self._output_filename = None
+    def _grab(self):
+        ret, frame = self.vid.read()
+        if not ret:
+            return False, False
+        ts = self._timestamp()
+        return (ts, frame)
 
-        # if we want to make a queue of frames available, do so
-        # only rly relevant to multiprocessing so taking out for now
-        self.queue = queue
-        self.queue_single = queue_single
-        self.queue_size = queue_size
-        self.q = None
-        if self.queue:
-            self.q = mp.Queue(maxsize=queue_size)
+    def _timestamp(self):
+        return self.vid.get(cv2.CAP_PROP_POS_MSEC)
 
-        #self.capturing = False
-        self.capturing = mp.Event()
-        self.capturing.clear()
-
-        self.networked = networked
-        self.node = None
-        self.listens = None
-        if networked:
-            self.init_networking()
-
-
-
-
-        # deinit the camera so the other thread can start it
-        self.vid.release()
-
-
+    @property
+    def backend(self):
+        return self.vid.getBackendName()
 
     def init_cam(self, camera_idx = None):
         if camera_idx is None:
@@ -151,242 +288,12 @@ class Camera_OpenCV(mp.Process):
 
         return vid
 
-    def l_start(self, val):
-        # if 'write' in val.keys():
-        #     write = val['write']
-        # else:
-        #     write = True
-
-        self.capture()
-
-    def l_stop(self, val):
-        self.release()
-
-    def init_opencv_info(self):
-        if not self.fps:
-            self.fps = self.vid.get(cv2.CAP_PROP_FPS)
-            if self.fps == 0:
-                self.fps = 30
-                warnings.warn('Couldnt get fps from camera, using {} as default'.format(self.fps))
-
-        self.shape = (self.vid.get(cv2.CAP_PROP_FRAME_WIDTH),
-                      self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
-        # TODO: Make sure this works more generally since CAP_PROP_BACKEND is returnign -1 now
-        self.backend = self.vid.getBackendName()
-        # backends = [cv2.videoio_registry.getBackendName(i) for i in cv2.videoio_registry.getCameraBackends()]
-        # self.backend = backends[int(self.vid.get(cv2.CAP_PROP_BACKEND))]
-
-    def init_networking(self, daemon=False, instance=False):
-        self.listens = {
-            'START': self.l_start,
-            'STOP': self.l_stop
-        }
-        self.node = Net_Node(
-            self.name,
-            upstream=prefs.NAME,
-            port=prefs.MSGPORT,
-            listens=self.listens,
-            instance=instance,
-            daemon=daemon
-        )
-
-    def run(self):
-
-        if self.capturing.is_set():
-            self.logger.warning("Already capturing!")
-            return
-
-        self.capturing.set()
-        self.vid = self.init_cam()
-
-        opencv_timestamps = True
-        _, _ = self.vid.read()
-        _, _ = self.vid.read()
-        timestamp = 0
-        try:
-            timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
-        except Exception as e:
-            self.logger.warning("Couldn't use opencv timestamps, using system timestamps")
-            opencv_timestamps = False
-        if timestamp == 0:
-           opencv_timestamps = False
-
-
-        if self.write:
-            write_queue = mp.Queue()
-            writer = Video_Writer(write_queue, self.output_filename, self.fps, timestamps=True, blosc=self.blosc)
-            writer.start()
-
-        if self.networked or self.stream:
-            self.init_networking()
-            self.node.send(key='STATE', value='CAPTURING')
-
-        if self.stream:
-            if hasattr(prefs, 'TERMINALIP') and hasattr(prefs, 'TERMINALPORT'):
-                stream_ip   = prefs.TERMINALIP
-                stream_port = prefs.TERMINALPORT
-            else:
-                stream_ip   = None
-                stream_port = None
-
-            if hasattr(prefs, 'SUBJECT'):
-                subject = prefs.SUBJECT
-            else:
-                subject = None
-
-            stream_q = self.node.get_stream(
-                'stream', 'CONTINUOUS', upstream="T",
-                ip=stream_ip, port=stream_port, subject=subject)
-
-
-        if isinstance(self.timed, int) or isinstance(self.timed, float):
-            start_time = time.time()
-            end_time = start_time+self.timed
-
-        self.logger.info(("Starting capture with configuration:\n"+
-                          "Write: {}\n".format(self.write)+
-                          "Stream: {}\n".format(self.stream)+
-                          "Timed: {}".format(self.timed)))
-
-        try:
-            while not self.stopping.is_set():
-                try:
-                    ret, frame = self.vid.read()
-                except Exception as e:
-                    print(e)
-                    continue
-
-                if not ret:
-                    self.logger.warning("No frame grabbed :(")
-                    continue
-
-                if opencv_timestamps:
-                    timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
-                else:
-                    timestamp = datetime.now().isoformat()
-
-                if self.write:
-                    if self.blosc:
-                        write_queue.put_nowait((timestamp, blosc.pack_array(frame, clevel=5)))
-                    else:
-                        write_queue.put_nowait((timestamp, frame))
-
-                if self.stream:
-                    stream_q.put_nowait({'timestamp':timestamp,
-                                         self.name:frame})
-
-                if self.queue:
-                    if self.queue_single:
-                        # if just making the most recent frame available in queue,
-                        # pull previous frame if still there
-                        try:
-                            _ = self.q.get_nowait()
-                        except Empty:
-                            pass
-                    self.q.put_nowait((timestamp, frame))
-
-                if self.timed:
-                    if time.time() >= end_time:
-                        self.stopping.set()
-
-        finally:
-            self.logger.info("Capture Ending")
-            # closing routine...
-            if self.stream:
-                stream_q.put('END')
-
-            if self.networked:
-                self.node.send(key='STATE', value='STOPPING')
-
-            if self.write:
-                write_queue.put_nowait('END')
-                checked_empty = False
-                while not write_queue.empty():
-                    if not checked_empty:
-                        self.logger.warning('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
-                        checked_empty = True
-                    time.sleep(0.1)
-                warnings.warn('Writer finished, closing')
-
-            self.capturing.clear()
-
-            self.vid.release()
-            self.logger.info("Camera Released")
-
-
-
-
-
-    def capture(self, write=None, stream=None, queue=None, queue_size=None, timed=None):
-        #if self.capturing == True:
-        if self.capturing.is_set():
-            warnings.warn("Camera is already capturing!")
-            return
-
-        # release net node so it can be recreated in process
-        if self.networked:
-            if isinstance(self.node, Net_Node):
-                self.node.release()
-
-        # change values if they've been given to us, otherwise keep init values
-        if write is not None:
-            self.write = write
-
-        if stream is not None:
-            self.stream = stream
-
-        if queue_size is not None:
-            self.queue_size = queue_size
-
-        if queue is not None:
-            self.queue = queue
-            if self.queue and not self.q:
-                self.q = mp.Queue(maxsize=self.queue_size)
-
-        if timed is not None:
-            self.timed = timed
-
-        self.start()
-
-
-        # self.vid.release()
-
-        # self.capture_thread = threading.Thread(target=self._capture, args=(write,))
-        # self.capture_thread.start()
-        # self.capturing = True
-
-
-    @property
-    def output_filename(self, new=False):
-        # TODO: choose output directory
-
-        if self._output_filename is None:
-            new = True
-        elif os.path.exists(self._output_filename):
-            new = True
-
-        if new:
-            user_dir = os.path.expanduser('~')
-            self._output_filename = os.path.join(user_dir, "capture_camidx{}_{}.mp4".format(self.camera_idx,
-                                                                                            datetime.now().strftime(
-                                                                                                "%y%m%d-%H%M%S")))
-
-        return self._output_filename
-
     def release(self):
-        self.stopping.set()
-        if self.networked:
-            self.node.release()
+        self.stop()
         self.vid.release()
+        self._vid = None
+        super(Camera_CV, self).release()
 
-    @property
-    def frame(self):
-        # _, frame = self.stream.read()
-        if self.queue:
-            return self.q.get()
-        else:
-            return self._frame
 
     @property
     def v4l_info(self):
@@ -433,31 +340,17 @@ class Camera_OpenCV(mp.Process):
 
         return self._v4l_info
 
-    def init_logging(self):
-        """
-        Initialize logging to a timestamped file in `prefs.LOGDIR` .
 
-        The logger name will be `'node.{id}'` .
-        """
-        #FIXME: Just copying and pasting from net node, should implement logging uniformly across hw objects
-        timestr = datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(prefs.LOGDIR, 'CAM_{}_{}.log'.format("CAM_"+self.name, timestr))
+class Camera_Spinnaker(Camera):
 
-        self.logger = logging.getLogger('cam.{}'.format("CAM_"+self.name))
-        self.log_handler = logging.FileHandler(log_file)
-        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
-        self.log_handler.setFormatter(self.log_formatter)
-        self.logger.addHandler(self.log_handler)
-        if hasattr(prefs, 'LOGLEVEL'):
-            loglevel = getattr(logging, prefs.LOGLEVEL)
-        else:
-            loglevel = logging.WARNING
-        self.logger.setLevel(loglevel)
-        self.logger.info('{} Logging Initiated'.format(self.name))
+    def __init__(self, **kwargs):
+        super(Camera_Spinnaker, self).__init__(**kwargs)
 
 
 
-class Camera_Spin(mp.Process):
+
+
+class Camera_Spin_Old(mp.Process):
     """
     A camera that uses the Spinnaker SDK + PySpin (eg. FLIR cameras)
 
@@ -1129,3 +1022,404 @@ def list_spinnaker_cameras():
     system.ReleaseInstance()
 
     return cam_info
+
+#
+# class Camera_OpenCV_Old(mp.Process):
+#     """
+#     https://www.pyimagesearch.com/2017/02/06/faster-video-file-fps-with-cv2-videocapture-and-opencv/
+#     """
+#
+#     trigger = False
+#     pin = None
+#     type = "CAMERA_OPENCV" # what are we known as in prefs?
+#     input = True
+#     output = False
+#
+#     def __init__(self, camera_idx=0, write=False, stream=False, timed=False, name=None, networked=False, queue=False,
+#                  queue_size = 128, queue_single = True, blosc=True,
+#                  *args, **kwargs):
+#         super(Camera_OpenCV, self).__init__()
+#
+#         self.last_opencv_init = globals()['OPENCV_LAST_INIT_TIME']
+#         self.last_init_lock = globals()['LAST_INIT_LOCK']
+#
+#         if name:
+#             self.name = name
+#         else:
+#             self.name = "camera_{}".format(camera_idx)
+#
+#         self.write = write
+#         self.stream = stream
+#         self.timed = timed
+#         self.blosc = blosc
+#
+#         self.init_logging()
+#
+#         self._v4l_info = None
+#
+#         self.fps = None
+#
+#         # get handle to camera
+#         self.camera_idx = camera_idx
+#         self.vid = self.init_cam()
+#         self.init_opencv_info()
+#         self.vid.release()
+#
+#         # event to end acquisition
+#         # self.stopped = mp.Event()
+#         # self.stopped.clear()
+#         #self.stopping = threading.Event()
+#         self.stopping = mp.Event()
+#         self.stopping.clear()
+#
+#         # keep the most recent frame so others can access with the frame attribute
+#         self._frame = False
+#
+#         self._output_filename = None
+#
+#         # if we want to make a queue of frames available, do so
+#         # only rly relevant to multiprocessing so taking out for now
+#         self.queue = queue
+#         self.queue_single = queue_single
+#         self.queue_size = queue_size
+#         self.q = None
+#         if self.queue:
+#             self.q = mp.Queue(maxsize=queue_size)
+#
+#         #self.capturing = False
+#         self.capturing = mp.Event()
+#         self.capturing.clear()
+#
+#         self.networked = networked
+#         self.node = None
+#         self.listens = None
+#         if networked:
+#             self.init_networking()
+#
+#
+#
+#
+#         # deinit the camera so the other thread can start it
+#         self.vid.release()
+#
+#
+#
+#     def init_cam(self, camera_idx = None):
+#         if camera_idx is None:
+#             camera_idx = self.camera_idx
+#
+#         with self.last_init_lock:
+#             time_since_last_init = time.time() - self.last_opencv_init.value
+#             if time_since_last_init < 2.:
+#                 time.sleep(2.0 - time_since_last_init)
+#             vid = cv2.VideoCapture(camera_idx)
+#             self.last_opencv_init.value = time.time()
+#
+#         self.logger.info("Camera Initialized")
+#
+#         return vid
+#
+#     def l_start(self, val):
+#         # if 'write' in val.keys():
+#         #     write = val['write']
+#         # else:
+#         #     write = True
+#
+#         self.capture()
+#
+#     def l_stop(self, val):
+#         self.release()
+#
+#     def init_opencv_info(self):
+#         if not self.fps:
+#             self.fps = self.vid.get(cv2.CAP_PROP_FPS)
+#             if self.fps == 0:
+#                 self.fps = 30
+#                 warnings.warn('Couldnt get fps from camera, using {} as default'.format(self.fps))
+#
+#         self.shape = (self.vid.get(cv2.CAP_PROP_FRAME_WIDTH),
+#                       self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
+#
+#         # TODO: Make sure this works more generally since CAP_PROP_BACKEND is returnign -1 now
+#         self.backend = self.vid.getBackendName()
+#         # backends = [cv2.videoio_registry.getBackendName(i) for i in cv2.videoio_registry.getCameraBackends()]
+#         # self.backend = backends[int(self.vid.get(cv2.CAP_PROP_BACKEND))]
+#
+#     def init_networking(self, daemon=False, instance=False):
+#         self.listens = {
+#             'START': self.l_start,
+#             'STOP': self.l_stop
+#         }
+#         self.node = Net_Node(
+#             self.name,
+#             upstream=prefs.NAME,
+#             port=prefs.MSGPORT,
+#             listens=self.listens,
+#             instance=instance,
+#             daemon=daemon
+#         )
+#
+#     def run(self):
+#
+#         if self.capturing.is_set():
+#             self.logger.warning("Already capturing!")
+#             return
+#
+#         self.capturing.set()
+#         self.vid = self.init_cam()
+#
+#         opencv_timestamps = True
+#         _, _ = self.vid.read()
+#         _, _ = self.vid.read()
+#         timestamp = 0
+#         try:
+#             timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
+#         except Exception as e:
+#             self.logger.warning("Couldn't use opencv timestamps, using system timestamps")
+#             opencv_timestamps = False
+#         if timestamp == 0:
+#            opencv_timestamps = False
+#
+#
+#         if self.write:
+#             write_queue = mp.Queue()
+#             writer = Video_Writer(write_queue, self.output_filename, self.fps, timestamps=True, blosc=self.blosc)
+#             writer.start()
+#
+#         if self.networked or self.stream:
+#             self.init_networking()
+#             self.node.send(key='STATE', value='CAPTURING')
+#
+#         if self.stream:
+#             if hasattr(prefs, 'TERMINALIP') and hasattr(prefs, 'TERMINALPORT'):
+#                 stream_ip   = prefs.TERMINALIP
+#                 stream_port = prefs.TERMINALPORT
+#             else:
+#                 stream_ip   = None
+#                 stream_port = None
+#
+#             if hasattr(prefs, 'SUBJECT'):
+#                 subject = prefs.SUBJECT
+#             else:
+#                 subject = None
+#
+#             stream_q = self.node.get_stream(
+#                 'stream', 'CONTINUOUS', upstream="T",
+#                 ip=stream_ip, port=stream_port, subject=subject)
+#
+#
+#         if isinstance(self.timed, int) or isinstance(self.timed, float):
+#             start_time = time.time()
+#             end_time = start_time+self.timed
+#
+#         self.logger.info(("Starting capture with configuration:\n"+
+#                           "Write: {}\n".format(self.write)+
+#                           "Stream: {}\n".format(self.stream)+
+#                           "Timed: {}".format(self.timed)))
+#
+#         try:
+#             while not self.stopping.is_set():
+#                 try:
+#                     ret, frame = self.vid.read()
+#                 except Exception as e:
+#                     print(e)
+#                     continue
+#
+#                 if not ret:
+#                     self.logger.warning("No frame grabbed :(")
+#                     continue
+#
+#                 if opencv_timestamps:
+#                     timestamp = self.vid.get(cv2.CAP_PROP_POS_MSEC)
+#                 else:
+#                     timestamp = datetime.now().isoformat()
+#
+#                 if self.write:
+#                     if self.blosc:
+#                         write_queue.put_nowait((timestamp, blosc.pack_array(frame, clevel=5)))
+#                     else:
+#                         write_queue.put_nowait((timestamp, frame))
+#
+#                 if self.stream:
+#                     stream_q.put_nowait({'timestamp':timestamp,
+#                                          self.name:frame})
+#
+#                 if self.queue:
+#                     if self.queue_single:
+#                         # if just making the most recent frame available in queue,
+#                         # pull previous frame if still there
+#                         try:
+#                             _ = self.q.get_nowait()
+#                         except Empty:
+#                             pass
+#                     self.q.put_nowait((timestamp, frame))
+#
+#                 if self.timed:
+#                     if time.time() >= end_time:
+#                         self.stopping.set()
+#
+#         finally:
+#             self.logger.info("Capture Ending")
+#             # closing routine...
+#             if self.stream:
+#                 stream_q.put('END')
+#
+#             if self.networked:
+#                 self.node.send(key='STATE', value='STOPPING')
+#
+#             if self.write:
+#                 write_queue.put_nowait('END')
+#                 checked_empty = False
+#                 while not write_queue.empty():
+#                     if not checked_empty:
+#                         self.logger.warning('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
+#                         checked_empty = True
+#                     time.sleep(0.1)
+#                 warnings.warn('Writer finished, closing')
+#
+#             self.capturing.clear()
+#
+#             self.vid.release()
+#             self.logger.info("Camera Released")
+#
+#
+#
+#
+#
+#     def capture(self, write=None, stream=None, queue=None, queue_size=None, timed=None):
+#         #if self.capturing == True:
+#         if self.capturing.is_set():
+#             warnings.warn("Camera is already capturing!")
+#             return
+#
+#         # release net node so it can be recreated in process
+#         if self.networked:
+#             if isinstance(self.node, Net_Node):
+#                 self.node.release()
+#
+#         # change values if they've been given to us, otherwise keep init values
+#         if write is not None:
+#             self.write = write
+#
+#         if stream is not None:
+#             self.stream = stream
+#
+#         if queue_size is not None:
+#             self.queue_size = queue_size
+#
+#         if queue is not None:
+#             self.queue = queue
+#             if self.queue and not self.q:
+#                 self.q = mp.Queue(maxsize=self.queue_size)
+#
+#         if timed is not None:
+#             self.timed = timed
+#
+#         self.start()
+#
+#
+#         # self.vid.release()
+#
+#         # self.capture_thread = threading.Thread(target=self._capture, args=(write,))
+#         # self.capture_thread.start()
+#         # self.capturing = True
+#
+#
+#     @property
+#     def output_filename(self, new=False):
+#         # TODO: choose output directory
+#
+#         if self._output_filename is None:
+#             new = True
+#         elif os.path.exists(self._output_filename):
+#             new = True
+#
+#         if new:
+#             user_dir = os.path.expanduser('~')
+#             self._output_filename = os.path.join(user_dir, "capture_camidx{}_{}.mp4".format(self.camera_idx,
+#                                                                                             datetime.now().strftime(
+#                                                                                                 "%y%m%d-%H%M%S")))
+#
+#         return self._output_filename
+#
+#     def release(self):
+#         self.stopping.set()
+#         if self.networked:
+#             self.node.release()
+#         self.vid.release()
+#
+#     @property
+#     def frame(self):
+#         # _, frame = self.stream.read()
+#         if self.queue:
+#             return self.q.get()
+#         else:
+#             return self._frame
+#
+#     @property
+#     def v4l_info(self):
+#         # TODO: get camera by other properties than index
+#         if not self._v4l_info:
+#             # query v4l device info
+#             cmd = ["/usr/bin/v4l2-ctl", '-D']
+#             out, err = Popen(cmd, stdout=PIPE, stderr=PIPE).communicate()
+#             out, err = out.strip(), err.strip()
+#
+#             # split by \n to get lines, then group by \t
+#             out = out.split('\n')
+#             out_dict = {}
+#             vals = {}
+#             key = ''
+#             n_indents = 0
+#             for l in out:
+#
+#                 # if we're a sublist, but not a subsublist, split and strip, make a subdictionary
+#                 if l.startswith('\t') and not l.startswith('\t\t'):
+#                     this_list = [k.strip() for k in l.strip('\t').split(':')]
+#                     subkey, subval = this_list[0], this_list[1]
+#                     vals[subkey] = subval
+#
+#                 # but if we're a subsublist... shouldn't have a dictionary
+#                 elif l.startswith('\t\t'):
+#                     if not isinstance(vals[subkey], list):
+#                         # catch the previously assined value from the top level of the subdictionary
+#                         vals[subkey] = [vals[subkey]]
+#
+#                     vals[subkey].append(l.strip('\t'))
+#
+#                 else:
+#                     # otherwise if we're at the bottom level, stash the key and any value dictioanry we've gathered before
+#                     key = l.strip(':')
+#                     if vals:
+#                         out_dict[key] = vals
+#                         vals = {}
+#
+#             # get the last one
+#             out_dict[key] = vals
+#
+#             self._v4l_info = out_dict
+#
+#         return self._v4l_info
+#
+#     def init_logging(self):
+#         """
+#         Initialize logging to a timestamped file in `prefs.LOGDIR` .
+#
+#         The logger name will be `'node.{id}'` .
+#         """
+#         #FIXME: Just copying and pasting from net node, should implement logging uniformly across hw objects
+#         timestr = datetime.now().strftime('%y%m%d_%H%M%S')
+#         log_file = os.path.join(prefs.LOGDIR, 'CAM_{}_{}.log'.format("CAM_"+self.name, timestr))
+#
+#         self.logger = logging.getLogger('cam.{}'.format("CAM_"+self.name))
+#         self.log_handler = logging.FileHandler(log_file)
+#         self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
+#         self.log_handler.setFormatter(self.log_formatter)
+#         self.logger.addHandler(self.log_handler)
+#         if hasattr(prefs, 'LOGLEVEL'):
+#             loglevel = getattr(logging, prefs.LOGLEVEL)
+#         else:
+#             loglevel = logging.WARNING
+#         self.logger.setLevel(loglevel)
+#         self.logger.info('{} Logging Initiated'.format(self.name))
+#

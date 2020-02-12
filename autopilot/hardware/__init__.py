@@ -36,6 +36,9 @@ Warning:
 
 
 from autopilot import prefs
+from datetime import datetime
+import os
+import logging
 
 
 # pigpio only uses BCM numbers, we need to translate them
@@ -100,6 +103,11 @@ class Hardware(object):
                 Warning('wasnt passed name and couldnt find from prefs for object: {}'.format(self.__str__))
                 self.name = None
 
+        self.logger = None
+        self.log_handler = None
+        self.log_formatter = None
+        self.init_logging()
+
     def release(self):
         """
         Every hardware device needs to redefine `release()`, and must
@@ -140,6 +148,28 @@ class Hardware(object):
             elif isinstance(pin, dict):
                 if self.pin == pin['pin']:
                     return name
+
+    def init_logging(self):
+        """
+        Initialize logging to a timestamped file in `prefs.LOGDIR` .
+
+        The logger name will be `'node.{id}'` .
+        """
+        #FIXME: Just copying and pasting from net node, should implement logging uniformly across hw objects
+        timestr = datetime.now().strftime('%y%m%d_%H%M%S')
+        log_file = os.path.join(prefs.LOGDIR, '{}_{}.log'.format(self.name, timestr))
+
+        self.logger = logging.getLogger('hardware.{}'.format(self.name))
+        self.log_handler = logging.FileHandler(log_file)
+        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
+        self.log_handler.setFormatter(self.log_formatter)
+        self.logger.addHandler(self.log_handler)
+        if hasattr(prefs, 'LOGLEVEL'):
+            loglevel = getattr(logging, prefs.LOGLEVEL)
+        else:
+            loglevel = logging.WARNING
+        self.logger.setLevel(loglevel)
+        self.logger.info('{} Logging Initiated'.format(self.name))
 
 
 
