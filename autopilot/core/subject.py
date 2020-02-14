@@ -26,7 +26,7 @@ from autopilot.stim.sound.sounds import STRING_PARAMS
 if sys.version_info >= (3,0):
     import queue
 else:
-    import queue as queue
+    import Queue as queue
 
 import pdb
 import numpy as np
@@ -494,7 +494,7 @@ class Subject:
                     # if this task has sounds, make columns for them
                     # TODO: Make stim managers return a list of properties for their sounds
                     if 'stim' in step.keys():
-                        if 'groups' in step['stim'].keys():
+                        if 'manager' in step['stim'].keys():
                             # managers have stim nested within groups, but this is still really ugly
                             sound_params = {}
                             for g in step['stim']['groups']:
@@ -890,6 +890,18 @@ class Subject:
         if self.thread.is_alive():
             Warning('Data thread did not exit')
 
+    def to_csv(self, path, task='current', step='all'):
+        # TODO: Jonny just scratching out temporarily, doesn't have all features implemented
+        df = self.get_trial_data(step=step)
+        df['subject'] = self.name
+        df.to_csv(path)
+        print("""Subject {}
+dataframe saved to:\n {}
+========================
+N Trials:   {}
+N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique())))
+
+
 
     def get_trial_data(self, step=-1, what="data"):
         """
@@ -931,7 +943,7 @@ class Subject:
                 ValueError('You provided a step number ({}) greater than the number of steps in the subjects assigned protocol: ()'.format(step, len(step_groups)))
             step_groups = [step_groups[step]]
 
-        elif isinstance(step, basestring):
+        elif isinstance(step, str):
             # since step names have S##_ prepended in the hdf5 file,
             # but we want to be able to call them by their human readable name,
             # have to make sure we have the right form
@@ -943,7 +955,7 @@ class Subject:
         elif isinstance(step, list):
             if isinstance(step[0], int):
                 step_groups = step_groups[int(step[0]):int(step[1])]
-            elif isinstance(step[0], basestring):
+            elif isinstance(step[0], str):
                 _step_groups = []
                 for a_step in step:
                     step_name = [s for s in step_groups if s==a_step]
@@ -974,38 +986,6 @@ class Subject:
         self.close_hdf(h5f)
 
         return return_data
-
-
-
-    def apply_along(self, along='session', step=-1):
-        h5f = self.open_hdf()
-        group_name = "/data/{}".format(self.protocol_name)
-        group = h5f.get_node(group_name)
-        step_groups = sorted(group._v_children.keys())
-
-        if along == "session":
-            if step == -1:
-                # find the last trial step with data
-                for step_name in reversed(step_groups):
-                    if group._v_children[step_name].trial_data.attrs['NROWS'] > 0:
-                        step_groups = [step_name]
-                        break
-            elif isinstance(step, int):
-                if step > len(step_groups):
-                    ValueError(
-                        'You provided a step number ({}) greater than the number of steps in the subjects assigned protocol: ()'.format(
-                            step, len(step_groups)))
-                step_groups = [step_groups[step]]
-
-            for step_key in step_groups:
-                step_n = int(step_key[1:3])  # beginning of keys will be 'S##'
-                step_tab = group._v_children[step_key]._v_children['trial_data']
-                step_df = pd.DataFrame(step_tab.read())
-                step_df['step'] = step_n
-                yield step_df
-
-
-
 
     def apply_along(self, along='session', step=-1):
         h5f = self.open_hdf()

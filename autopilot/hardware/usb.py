@@ -4,7 +4,10 @@ Hardware that uses USB
 import sys
 import threading
 import time
-from queue import Queue, Empty
+if sys.version_info >= (3, 0):
+    from queue import Queue, Empty
+else:
+    from Queue import Queue, Empty
 
 import numpy as np
 from inputs import devices

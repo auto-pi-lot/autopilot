@@ -9,7 +9,8 @@ import numpy as np
 import base64
 from datetime import datetime
 import multiprocessing as mp
-from multiprocessing import shared_memory
+
+
 import time
 import traceback
 import blosc
@@ -28,6 +29,9 @@ if sys.version_info >= (3, 0):
 # otherwise, import the Queue class for Python 2.7
 else:
     from Queue import Queue, Empty
+
+if sys.version_info >= (3,8):
+    from multiprocessing import shared_memory
 
 try:
     import PySpin
