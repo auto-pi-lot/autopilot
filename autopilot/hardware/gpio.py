@@ -15,7 +15,7 @@ import itertools
 
 
 from autopilot import prefs
-from autopilot.hardware import Hardware, BOARD_TO_BCM, TRIGGER_MAP, PULL_MAP
+from autopilot.hardware import Hardware, BOARD_TO_BCM
 
 ENABLED = False
 try:

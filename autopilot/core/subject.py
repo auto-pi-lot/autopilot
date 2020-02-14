@@ -890,6 +890,19 @@ class Subject:
         if self.thread.is_alive():
             Warning('Data thread did not exit')
 
+    def to_csv(self, path, task='current', step='all'):
+        # TODO: Jonny just scratching out temporarily, doesn't have all features implemented
+        df = self.get_trial_data(step=step)
+        df['subject'] = self.name
+        df.to_csv(path)
+        print("""Subject {}
+dataframe saved to:\n {}
+========================
+N Trials:   {}
+N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique())))
+
+
+
     def get_trial_data(self, step=-1):
         """
         Get trial data from the current task.

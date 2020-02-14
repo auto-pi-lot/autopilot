@@ -47,8 +47,8 @@ class Parallax(Task):
 
     HARDWARE = {
         'CAMS': {
-            'SIDE': cameras.Camera_Spin,
-            'EYE': cameras.Camera_OpenCV
+            'SIDE': cameras.Camera_Spinnaker,
+            'EYE': cameras.Camera_CV
             # top...
         },
         # 'DOF': {
