@@ -692,7 +692,7 @@ class Camera_Spinnaker(Camera):
         # self.writing.set()
 
     def _write_frame(self):
-        self.frame[1].Save(self.base_path, str(self.frame[0])+'.png'), self.img_opts)
+        self.frame[1].Save(self.base_path+str(self.frame[0])+'.png', self.img_opts)
 
     def _write_deinit(self):
         print('Writing images in {} to {}'.format(self.base_path, self.base_path + '.mp4'))
