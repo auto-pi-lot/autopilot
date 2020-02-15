@@ -560,11 +560,14 @@ class Camera_Spinnaker(Camera):
 
 
     def __init__(self, serial=None, camera_idx=None, **kwargs):
-        super(Camera_Spinnaker, self).__init__(**kwargs)
-
         if serial and camera_idx:
             self.logger.warning("serial and camera_idx were both passed, defaulting to serial")
             camera_idx = None
+
+        self.serial = serial
+        self.camera_idx = camera_idx
+
+
 
         self.system = None #spinnaker system
         self.cam_list = None
@@ -583,11 +586,7 @@ class Camera_Spinnaker(Camera):
         self._readable_attributes = {}
         self._writable_attributes = {}
 
-
-        self.serial = serial
-        self.camera_idx = camera_idx
-
-
+        super(Camera_Spinnaker, self).__init__(**kwargs)
 
     def init_cam(self):
 
@@ -683,21 +682,21 @@ class Camera_Spinnaker(Camera):
         os.makedirs(output_dir)
 
         # create base_path for output images
-        self.base_path = os.path.join(output_dir, "capture_SN{}__".format(self.serial))
+        self.base_path = os.path.join(output_dir, "capture_{}__".format(self.name))
 
         # self.blosc = blosc
         # self.write_q = mp.Queue()
         # self.writer = Video_Writer(self.write_queue, output_filename, self.fps, timestamps=timestamps, blosc=blosc)
         # self.writer.start()
-        # self.writing.set()
+        self.writing.set()
 
     def _write_frame(self):
         self.frame[1].Save(self.base_path+str(self.frame[0])+'.png', self.img_opts)
 
     def _write_deinit(self):
-        print('Writing images in {} to {}'.format(self.base_path, self.base_path + '.mp4'))
-        writer = Directory_Writer(self.base_path, fps=self.fps)
-        writer.encode()
+        self.logger.info('Writing images in {} to {}'.format(self.base_path, self.base_path + '.mp4'))
+        self.writer = Directory_Writer(self.base_path, fps=self.fps)
+        self.writer.encode()
 
     @property
     def bin(self):
@@ -953,6 +952,9 @@ class Camera_Spinnaker(Camera):
         except Exception as e:
             print(e)
             traceback.print_exc(file=sys.stdout)
+
+        if self.writing.is_set():
+            self.writer.wait()
 
 
 
