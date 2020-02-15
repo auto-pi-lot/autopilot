@@ -559,13 +559,14 @@ class Camera_Spinnaker(Camera):
     }
 
 
-    def __init__(self, serial=None, camera_idx=None, **kwargs):
+    def __init__(self, serial=None, camera_idx=None, save_timestamps=False, **kwargs):
         if serial and camera_idx:
             self.logger.warning("serial and camera_idx were both passed, defaulting to serial")
             camera_idx = None
 
         self.serial = serial
         self.camera_idx = camera_idx
+        self.save_timestamps = save_timestamps
 
 
 
@@ -585,6 +586,7 @@ class Camera_Spinnaker(Camera):
         self._camera_node_types = {}
         self._readable_attributes = {}
         self._writable_attributes = {}
+        self._timestamps = []
 
         super(Camera_Spinnaker, self).__init__(**kwargs)
 
@@ -631,6 +633,9 @@ class Camera_Spinnaker(Camera):
 
 
         self.cam.BeginAcquisition()
+        self.frame = self._grab()
+        # FIXME: I think this will break single-shot or multishot modes.
+        self.shape = self.frame[1].GetNDArray().shape
 
 
     def capture_deinit(self):
@@ -692,6 +697,8 @@ class Camera_Spinnaker(Camera):
 
     def _write_frame(self):
         self.frame[1].Save(self.base_path+str(self.frame[0])+'.png', self.img_opts)
+        if self.save_timestamps:
+            self._timestamps.append(self.frame[0])
 
     def _write_deinit(self):
         self.logger.info('Writing images in {} to {}'.format(self.base_path, self.base_path + '.mp4'))
