@@ -655,14 +655,19 @@ class Camera_Spinnaker(Camera):
         except Exception as e:
             self.logger.exception(e)
 
+        if self.writing.is_set():
+            self._write_frame()
+
         if self.streaming.is_set():
             if not frame_array:
                 frame_array = self.frame[1].GetNDArray()
             self._stream_q.put_nowait({'timestamp': self.frame[0],
                                        self.name  : frame_array})
 
-        if self.writing.is_set():
-            self._write_frame()
+        if self.indicating.is_set():
+            if not self._indicator:
+                self._indicator = tqdm()
+            self._indicator.update()
 
         if self.queue:
             if not frame_array:
@@ -943,6 +948,8 @@ class Camera_Spinnaker(Camera):
 
         try:
             self.cam.DeInit()
+        except AttributeError:
+            pass
         except Exception as e:
             print(e)
             traceback.print_exc(file=sys.stdout)
