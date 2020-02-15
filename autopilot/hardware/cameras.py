@@ -726,9 +726,14 @@ class Camera_Spinnaker(Camera):
 
     @fps.setter
     def fps(self, fps):
-        assert(int(fps))
-        self.cam.AcquisitionFrameRateEnable.setValue(True)
-        self.cam.AcquisitionFrameRate.setValue(fps)
+        if isinstance(fps, int):
+            self.cam.AcquisitionFrameRateEnable.setValue(True)
+            self.cam.AcquisitionFrameRate.setValue(fps)
+        elif fps is None:
+            # initially set to None on superclass init
+            pass
+        else:
+            self.logger.exception('Need to set FPS with an integer')
 
     @property
     def frame_trigger(self):
