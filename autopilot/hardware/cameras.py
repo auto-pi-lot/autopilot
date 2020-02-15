@@ -134,15 +134,19 @@ class Camera(Hardware):
 
         self.capture_init()
 
-        if isinstance(self.timed, int) or isinstance(self.timed, float):
-            if self.timed > 0:
-                start_time = time.time()
-                end_time = start_time + self.timed
+
+
 
         if self.streaming.is_set():
             self.node.send(key='STATE', value='CAPTURING')
 
         try:
+            self._process()
+            if isinstance(self.timed, int) or isinstance(self.timed, float):
+                if self.timed > 0:
+                    start_time = time.time()
+                    end_time = start_time + self.timed
+
             while not self.stopping.is_set():
                 self._process()
 
