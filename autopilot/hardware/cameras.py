@@ -36,6 +36,7 @@ if sys.version_info >= (3,8):
 try:
     import PySpin
     PYSPIN = True
+    PYSPIN_SYSTEM = None
 except:
     PYSPIN = False
 
@@ -61,18 +62,27 @@ The workaround is relatively simple, we just wait ~2 seconds if another camera w
 """
 LAST_INIT_LOCK = mp.Lock()
 
-class Camera(Hardware, mp.Process):
+class Camera(Hardware):
     input = True
     type = "CAMERA"
 
     def __init__(self, fps=None, queue=False, queue_size = 256, write=False, timed=False, **kwargs):
         super(Camera, self).__init__(**kwargs)
-        self._vid = None
-        self._frame = None
-        self._shm = None
+        self._cam = None
+        # self._frame = None
+        # self._shm = None
         self._output_filename = None
+        self._capture_thread = None
+        self.capturing = False
         self.q = None
         self.queue_size = None
+        self.listens = None
+        self.node = None
+        self._writer = None
+        self._write_q = None
+        self._stream_q = None
+        self.blosc = True
+        self.shape = None
 
         self.queue = queue
         self.fps = fps
@@ -81,67 +91,184 @@ class Camera(Hardware, mp.Process):
 
         if self.queue:
             self.queue_size = queue_size
-            self.q = mp.Queue(maxsize=self.queue_size)
+            self.q =Queue(maxsize=self.queue_size)
 
         # event to end acquisition
-        self.stopping = mp.Event()
+        self.stopping = threading.Event()
         self.stopping.clear()
 
-        self.capturing = mp.Event()
+        self.capturing = threading.Event()
         self.capturing.clear()
 
-    def run(self):
+        self.streaming = threading.Event()
+        self.streaming.clear()
+
+        self.writing = threading.Event()
+        self.writing.clear()
+
+    def capture(self, timed = None):
+
+
         if self.capturing.is_set():
             self.logger.warning("Already Capturing!")
             return
 
-        # prepare stuff we need
-        if self.write:
-            write_queue = mp.Queue()
-            writer = Video_Writer(write_queue, self.output_filename, self.fps, timestamps=True, blosc=self.blosc)
-            writer.start()
+        if timed:
+            self.timed = timed
+
+        self._capture_thread = threading.Thread(target=self._capture)
+        self._capture_thread.setDaemon(True)
+        self._capture_thread.start()
+
+    def _capture(self):
+
+        self.capturing.set()
+
+        self.capture_init()
 
         if isinstance(self.timed, int) or isinstance(self.timed, float):
             if self.timed > 0:
                 start_time = time.time()
                 end_time = start_time + self.timed
 
+        if self.streaming:
+            self.node.send(key='STATE', value='CAPTURING')
+
         try:
             while not self.stopping.is_set():
-                try:
-                    self.timestamp, self.frame = self._grab()
-                except Exception as e:
-                    self.logger.exception(e)
-
-                if self.write:
-                    write_queue.put_nowait((self.timestamp, blosc.pack_array(self.frame.copy())))
-
-                if self.queue:
-                    self.q.put_nowait((self.timestamp, self.frame.copy()))
+                self._process()
 
                 if self.timed:
                     if time.time() >= end_time:
                         self.stopping.set()
 
+
         finally:
             self.logger.info('Capture Ending')
 
+            try:
+                if self.streaming:
+                    self.node.send(key='STATE', value='STOPPING')
+                    self._stream_q.put('END')
+            except Exception as e:
+                self.logger.exception('Failed to end stream, error message: {}'.format(e))
 
-            if self.write:
-                write_queue.put_nowait('END')
-                checked_empty = False
-                while not write_queue.empty():
-                    if not checked_empty:
-                        self.logger.warning('Writer still has ~{} frames, waiting on it to finish'.format(write_queue.qsize()))
-                        checked_empty = True
-                    time.sleep(0.1)
-                self.logger.warning('Writer finished, closing')
+            try:
+                if self.writing:
+                    self._write_deinit()
+
+            except Exception as e:
+                self.logger.exception('Failed to end writer, error message: {}'.format(e))
 
             self.capturing.clear()
-            self.release()
-            self.logger.info('Camera Released')
+            self.capture_deinit()
+            #self.release()
+            #self.logger.info('Camera Released')
+
+    def _process(self):
+
+        try:
+            self.frame = self._grab()
+        except Exception as e:
+            self.logger.exception(e)
+
+        if self.streaming:
+            self._stream_q.put_nowait({'timestamp': self.frame[0],
+                                       self.name  : self.frame[1]})
+
+        if self.writing:
+            self._write_frame()
+
+        if self.queue:
+            self.q.put_nowait(self.frame)
 
 
+        if self.writing:
+            self._write_frame()
+
+
+
+    def stream(self, to='T', ip=None, port=None, **kwargs):
+        if to=='T':
+            if not ip:
+                ip = prefs.TERMINALIP
+            if not port:
+                port = prefs.TERMINALPORT
+
+        else:
+
+            if not ip:
+                self.logger.warning('ip not passed, using localhost as default')
+                ip = 'localhost'
+            if not port:
+                self.logger.warning('port not passed, using prefs.MSGPORT')
+                port = prefs.MSGPORT
+
+
+        self.listens = {
+            'START': self.l_start,
+            'STOP': self.l_stop
+        }
+        self.node = Net_Node(
+            self.name,
+            upstream=prefs.NAME,
+            port=prefs.MSGPORT,
+            listens=self.listens,
+            instance=False,
+            **kwargs
+            #upstream_ip=prefs.TERMINALIP,
+            #daemon=False
+        )
+
+        if hasattr(prefs, 'SUBJECT'):
+            subject = prefs.SUBJECT
+        else:
+            self.logger.warning('nothing found for prefs.SUBJECT, probably running outside of task context')
+            subject = None
+
+        self._stream_q = self.node.get_stream(
+            'stream', 'CONTINUOUS', upstream=to,
+            ip=ip, port=port, subject=subject
+        )
+
+        self.streaming.set()
+
+    def l_start(self, val):
+        self.capture()
+
+    def l_stop(self, val):
+        self.release()
+
+
+
+    def write(self, output_filename = None, timestamps=True, blosc=True):
+        if not output_filename:
+            output_filename = self.output_filename
+        else:
+            self._output_filename = output_filename
+
+        self.blosc = blosc
+        self.write_queue = mp.Queue()
+        self.writer = Video_Writer(self.write_queue, output_filename, self.fps, timestamps=timestamps, blosc=blosc)
+        self.writer.start()
+        self.writing.set()
+
+    def _write_frame(self):
+        if self.blosc:
+            self._write_q.put_nowait((self.frame[0], blosc.pack_array(self.frame[1])))
+        else:
+            self._write_q.put_nowait(self.frame)
+
+    def _write_deinit(self):
+        self._write_q.put_nowait('END')
+        checked_empty = False
+        while not self._write_q.empty():
+            if not checked_empty:
+                self.logger.warning(
+                    'Writer still has ~{} frames, waiting on it to finish'.format(self._write_q.qsize()))
+                checked_empty = True
+            time.sleep(0.1)
+        self.logger.warning('Writer finished, closing')
 
 
 
@@ -155,46 +282,59 @@ class Camera(Hardware, mp.Process):
     def fps(self, fps):
         self._fps = fps
 
-    @property
-    def shape(self):
-        Warning('Should be overridden by camera subclass!')
-        return None
 
     @property
-    def vid(self):
-        if not self._vid:
-            self._vid = self.init_cam()
-        return self._vid
+    def cam(self):
+        if not self._cam:
+            self._cam = self.init_cam()
+        return self._cam
 
-    @property
-    def frame(self):
-        if self._frame:
-            return self._frame
-        else:
-            return False
+    #
+    # @property
+    # def frame(self):
+    #     if self._frame:
+    #         return self._frame
+    #     else:
+    #         return False
+    #
+    # @frame.setter
+    # def frame(self, frame):
+    #     """
+    #     Frame should be set (timestamp, frame)
+    #
+    #     Just making a property so we can automatically set the shape attribute
+    #
+    #     Args:
+    #         frame:
+    #
+    #     Returns:
+    #
+    #     """
+    #     # if not self._frame:
+    #     #     # self._shm = shared_memory.SharedMemory(create=True, size=frame.nbytes)
+    #     #     # self._frame = np.ndarray(frame.shape, dtype=frame.dtype, buffer=self._shm.buf)
+    #     #     self._frame = (frame[0], np.ndarray(frame[1].shape, dtype=frame.dtype)
+    #     #     self._frame[:] = frame[:]
+    #     # else:
+    #     #     self._frame[:] = frame[:]
+    #
+    #     self._frame = frame
+    #     if not self.shape:
+    #         self.shape = self._frame[1].shape
 
-    @frame.setter
-    def frame(self, frame):
-        if not self._frame:
-            self._shm = shared_memory.SharedMemory(create=True, size=frame.nbytes)
-            self._frame = np.ndarray(frame.shape, dtype=frame.dtype, buffer=self._shm.buf)
-            self._frame[:] = frame[:]
-        else:
-            self._frame[:] = frame[:]
-
-    @property
-    def timestamp(self):
-        if self._timestamp:
-            return self._timestamp.value
-        else:
-            return False
-
-    @timestamp.setter
-    def timestamp(self, timestamp):
-        if not self._timestamp:
-            self._timestamp = mp.Value(c_char_p, timestamp)
-        else:
-            self._timestamp.value = timestamp
+    # @property
+    # def timestamp(self):
+    #     if self._timestamp:
+    #         return self._timestamp.value
+    #     else:
+    #         return False
+    #
+    # @timestamp.setter
+    # def timestamp(self, timestamp):
+    #     if not self._timestamp:
+    #         # self._timestamp = mp.Value(c_char_p, timestamp)
+    #     else:
+    #         self._timestamp.value = timestamp
 
     @property
     def output_filename(self, new=False):
@@ -202,7 +342,7 @@ class Camera(Hardware, mp.Process):
 
         if self._output_filename is None:
             new = True
-        elif os.path.exists(self._output_filename):
+        elif os.path.exists(self._output_filename) and not self.capturing:
             new = True
 
         if new:
@@ -223,16 +363,36 @@ class Camera(Hardware, mp.Process):
     def init_cam(self):
         raise Exception('init_camera must be overwritten by camera subclass!!')
 
+    def capture_init(self):
+        """
+        An extra method a subclass can use to execute something that happens after initialization of the object, but before capturing
+
+        by default dont't do anything. overriding this method is not required
+
+        Returns:
+
+        """
+        pass
+
+    def capture_deinit(self):
+        """
+        like the capture init function
+
+        Returns:
+
+        """
+
     def stop(self):
         self.stopping.set()
 
     def release(self):
-        if self._shm:
-            try:
-                self._shm.close()
-                self._shm.unlink()
-            except Exception as e:
-                self.logger.exception(e)
+        pass
+        # if self._shm:
+        #     try:
+        #         self._shm.close()
+        #         self._shm.unlink()
+        #     except Exception as e:
+        #         self.logger.exception(e)
 
 
 
@@ -252,7 +412,7 @@ class Camera_CV(Camera):
 
     @property
     def fps(self):
-        fps = self.vid.get(cv2.CAP_PROP_FPS)
+        fps = self.cam.get(cv2.CAP_PROP_FPS)
         if fps == 0:
             fps = 30
             warnings.warn('Couldnt get fps from camera, using {} as default'.format(fps))
@@ -260,22 +420,22 @@ class Camera_CV(Camera):
 
     @property
     def shape(self):
-        return (self.vid.get(cv2.CAP_PROP_FRAME_WIDTH),
-                self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        return (self.cam.get(cv2.CAP_PROP_FRAME_WIDTH),
+                self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
     def _grab(self):
-        ret, frame = self.vid.read()
+        ret, frame = self.cam.read()
         if not ret:
             return False, False
         ts = self._timestamp()
         return (ts, frame)
 
     def _timestamp(self):
-        return self.vid.get(cv2.CAP_PROP_POS_MSEC)
+        return self.cam.get(cv2.CAP_PROP_POS_MSEC)
 
     @property
     def backend(self):
-        return self.vid.getBackendName()
+        return self.cam.getBackendName()
 
     def init_cam(self, camera_idx = None):
         if camera_idx is None:
@@ -294,8 +454,8 @@ class Camera_CV(Camera):
 
     def release(self):
         self.stop()
-        self.vid.release()
-        self._vid = None
+        self.cam.release()
+        self._cam = None
         super(Camera_CV, self).release()
 
 
@@ -351,6 +511,30 @@ class Camera_Spinnaker(Camera):
     """
     type="CAMERA_SPIN"
 
+    ATTR_TYPES = {
+        PySpin.intfIFloat      : PySpin.CFloatPtr,
+        PySpin.intfIBoolean    : PySpin.CBooleanPtr,
+        PySpin.intfIInteger    : PySpin.CIntegerPtr,
+        PySpin.intfIEnumeration: PySpin.CEnumerationPtr,
+        PySpin.intfIString     : PySpin.CStringPtr,
+    }
+
+    ATTR_TYPE_NAMES = {
+        PySpin.intfIFloat      : 'float',
+        PySpin.intfIBoolean    : 'bool',
+        PySpin.intfIInteger    : 'int',
+        PySpin.intfIEnumeration: 'enum',
+        PySpin.intfIString     : 'string',
+        PySpin.intfICommand    : 'command',
+    }
+
+    RW_MODES = {
+        PySpin.RO: {'read':True, 'write': False},
+        PySpin.RW: {'read': True, 'write': False},
+        PySpin.WO: {'read': False, 'write': False},
+        PySpin.NA: {'read': False, 'write': False}
+    }
+
 
     def __init__(self, serial=None, camera_idx=None, **kwargs):
         super(Camera_Spinnaker, self).__init__(**kwargs)
@@ -370,6 +554,11 @@ class Camera_Spinnaker(Camera):
         self._frame_trigger = None
         self._pixel_format = None
         self._acquisition_mode = None
+        self._camera_attributes = {}
+        self._camera_methods = {}
+        self._camera_node_types = {}
+        self._readable_attributes = {}
+        self._writable_attributes = {}
 
 
         self.serial = serial
@@ -378,31 +567,168 @@ class Camera_Spinnaker(Camera):
 
 
     def init_cam(self):
-        pass
+
+        # find our camera!
+        # get the spinnaker system handle
+        self.system = PySpin.System.GetInstance()
+        # need to hang on to camera list for some reason, could be cargo cult code
+        self.cam_list = self.system.GetCameras()
+
+
+        if self.serial:
+            cam = self.cam_list.GetBySerial(self.serial)
+        elif self.camera_idx:
+            self.logger.warning(
+                'No camera serial number provided. \nAddressing cameras by serial number is STRONGLY recommended to avoid randomly using the wrong one')
+            self.serial = 'noserial'
+            cam = self.cam_list.GetByIndex(self.camera_idx)
+        else:
+            self.logger.warning(
+                'No camera serial number OR camera index provided. Trying to use the first camera. This is a really bad way to call this object'
+            )
+            cam = self.cam_list.GetByIndex(0)
+
+        # initialize the cam - need to do this before messing w the values
+        cam.Init()
+        # TODO: Document what a nodemap is...
+        self.nmap = cam.GetTLDeviceNodeMap()
+
+        # get list of camera methods and attributes for use with 'get' and 'set' methods
+        for node in self.cam.GetNodeMap().GetNodes():
+            pit = node.GetPrincipalInterfaceType()
+            name = node.GetName()
+            self._camera_node_types[name] = self.ATTR_TYPE_NAMES.get(pit, pit)
+            if pit == PySpin.intfICommand:
+                self._camera_methods[name] = PySpin.CCommandPtr(node)
+            if pit in self.ATTR_TYPES:
+                self._camera_attributes[name] = self.ATTR_TYPES[pit](node)
+
+        return cam
+
+    def capture_init(self):
+
+
+        self.cam.BeginAcquisition()
+
+
+    def capture_deinit(self):
+        self.cam.EndAcquisition()
+
+
+
+
+    def _process(self):
+        frame_array = None
+        try:
+            self.frame = self._grab()
+        except Exception as e:
+            self.logger.exception(e)
+
+        if self.streaming:
+            if not frame_array:
+                frame_array = self.frame[1].GetNDArray()
+            self._stream_q.put_nowait({'timestamp': self.frame[0],
+                                       self.name  : frame_array})
+
+        if self.writing:
+            self._write_frame()
+
+        if self.queue:
+            if not frame_array:
+                frame_array = self.frame[1].GetNDArray()
+            self.q.put_nowait(frame_array)
+
+        self.frame[1].Release()
+
+    def _grab(self):
+        img = self.cam.GetNextImage()
+        return (img.GetTimeStamp(), img)
+
+    def write(self, output_filename = None, timestamps=True, blosc=True):
+        # TODO: Jonny probably needs to fix this and overwrite the parent getter
+        if not output_filename:
+            output_filename = self.output_filename
+        else:
+            self._output_filename = output_filename
+
+        # PNG images are losslessly compressed
+        img_opts = PySpin.PNGOption()
+        img_opts.compressionLevel = 5
+
+        # make directory
+        output_dir = self.output_filename
+        os.makedirs(output_dir)
+
+        # create base_path for output images
+        self.base_path = os.path.join(output_dir, "capture_SN{}__".format(self.serial))
+        timestamps = []
+
+        self.blosc = blosc
+        self.write_queue = mp.Queue()
+        self.writer = Video_Writer(self.write_queue, output_filename, self.fps, timestamps=timestamps, blosc=blosc)
+        self.writer.start()
+        self.writing.set()
+
+    def _write_frame(self):
+        self.frame[1].Save(os.path.join(self.base_path, str(self.frame[0])+'.png'))
+
+    def _write_deinit(self):
+        print('Writing images in {} to {}'.format(self.base_path, self.base_path + '.mp4'))
+        writer = Directory_Writer(self.base_path, fps=self.fps)
+        writer.encode()
 
     @property
     def bin(self):
-        pass
+        return (int(self.cam.BinningHorizontal.ToString()),
+                int(self.cam.BinningVertical.ToString()))
 
     @bin.setter
     def bin(self, bin):
-        pass
+        self.cam.BinningSelector.SetValue(PySpin.BinningSelector_All)
+        try:
+            self.cam.BinningHorizontalMode.SetValue(PySpin.BinningHorizontalMode_Average)
+            self.cam.BinningVerticalMode.SetValue(PySpin.BinningVerticalMode_Average)
+        except PySpin.SpinnakerException:
+            self.logger.warning('Average binning not supported, using sum')
+
+        self.cam.BinningHorizontal.SetValue(int(bin[0]))
+        self.cam.BinningVertical.SetValue(int(bin[1]))
+
 
     @property
     def exposure(self):
-        pass
+        if not self._exposure:
+            self._exposure = self.get('ExposureTime')
+        return self._exposure
 
     @exposure.setter
     def exposure(self, exposure):
-        pass
+
+        if exposure == 'auto':
+            self.cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Continuous)
+            self._exposure = 'auto'
+        elif isinstance(exposure, int) or isinstance(exposure, float):
+            if exposure < 1:
+                # proportional to fps
+                exposure = (1.0 / self.fps) * exposure * 1e6
+
+            self.cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Off)
+            self.cam.ExposureMode.SetValue(PySpin.ExposureMode_Timed)
+            self.cam.ExposureTime.SetValue(exposure)
+            self._exposure = exposure
+        else:
+            self.logger.exception('Dont know how to set exposure {}'.format(exposure))
+
 
     @property
     def fps(self):
-        pass
+        return self.cam.AcquisitionFrameRate.GetValue()
 
     @fps.setter
     def fps(self, fps):
-        pass
+        assert(int(fps))
+        self.cam.AcquisitionFrameRateEnable.setValue(True)
+        self.cam.AcquisitionFrameRate.setValue(fps)
 
     @property
     def frame_trigger(self):
@@ -410,23 +736,134 @@ class Camera_Spinnaker(Camera):
 
     @frame_trigger.setter
     def frame_trigger(self, frame_trigger):
-        pass
+        """
+        https://www.flir.com/support-center/iis/machine-vision/application-note/configuring-synchronized-capture-with-multiple-cameras
+        https://www.flir.com/support-center/iis/machine-vision/knowledge-base/what-external-iidc-trigger-modes-are-supported-by-my-camera/
+        Args:
+            frame_trigger:
 
-    @property
-    def pixel_format(self):
-        pass
+        Returns:
 
-    @pixel_format.setter
-    def pixel_format(self, pixel_format):
-        pass
+        """
+        # if we're generating the triggers...
+        if frame_trigger == "lead":
+            self.cam.LineSelector.SetValue(PySpin.LineSelector_Line2)
+            self.cam.V3_3Enable.SetValue(True)
+        elif frame_trigger == "follow":
+            self.cam.TriggerMode.SetValue(PySpin.TriggerMode_Off)
+            self.cam.TriggerSource.SetValue(PySpin.TriggerSource_Line3)
+            # this article says that setting triggeroverlap is necessary, but not sure what it does
+            # http://justinblaber.org/acquiring-stereo-images-with-spinnaker-api-hardware-trigger/
+            self.cam.TriggerOverlap.SetValue(PySpin.TriggerOverlap_ReadOut)
+            # In continuous mode, each trigger captures one frame8
+            self.cam.TriggerSelector.SetValue(PySpin.TriggerSelector_FrameStart)
+
+            self.cam.TriggerMode.SetValue(PySpin.TriggerMode_On)
+
+
 
     @property
     def acquisition_mode(self):
-        pass
+        return self.cam.AcquisitionMode.ToString()
 
     @acquisition_mode.setter
     def acquisition_mode(self, acquisition_mode):
-        pass
+        if acquisition_mode == 'continuous':
+            self.cam.AcquisitionMode.SetValue(PySpin.AcquisitionMode_Continuous)
+        elif acquisition_mode.startwsith("single"):
+            self.cam.AcquisitionMode.SetValue(PySpin.AcquisitionMode_SingleFrame)
+        elif acquisition_mode.startswith("multi"):
+            self.cam.AcquisitionMode.SetValue(PySpin.AcquisitionMode_SingleFrame)
+        else:
+            self.logger.exception('Acquisition mode must be continuous, single, or multi')
+
+
+    @property
+    def readable_attributes(self):
+        if not self._readable_attributes:
+
+            for k, v in self._camera_attributes.items():
+                if '_' in k:
+                    continue
+                if PySpin.IsReadable(v):
+                    self._readable_attributes[k] = self.get(k)
+
+        return self._readable_attributes
+
+    @property
+    def writable_attributes(self):
+        if not self._writable_attributes:
+            for k, v in self._camera_attributes.items():
+                if '_' in k:
+                    continue
+                if PySpin.IsWritable(v):
+                    self._writable_attributes[k] = self.get(k)
+
+        return self._writable_attributes
+
+
+    def get(self, attr):
+        if attr in self._camera_attributes:
+
+            prop = self._camera_attributes[attr]
+            if not PySpin.IsReadable(prop):
+                self.logger.exception("Camera property '%s' is not readable" % attr)
+
+            if hasattr(prop, "GetValue"):
+                return prop.GetValue()
+            elif hasattr(prop, "ToString"):
+                return prop.ToString()
+            else:
+                self.logger.exception("Camera property '%s' is not readable" % attr)
+        elif attr in self._camera_methods:
+            return self._camera_methods[attr].Execute
+        else:
+            raise AttributeError(attr)
+
+    def set(self, attr, val):
+        if attr in self._camera_attributes:
+
+            prop = self._camera_attributes[attr]
+            if not PySpin.IsWritable(prop):
+                self.logger.exception("Property '%s' is not currently writable!" % attr)
+
+            if hasattr(prop, 'SetValue'):
+                prop.SetValue(val)
+            else:
+                prop.FromString(val)
+
+        elif attr in self._camera_methods:
+            self.logger.exception("Camera method '%s' is a function -- you can't assign it a value!" % attr)
+        else:
+
+            self.__setattr__(attr, val)
+
+
+    def list_options(self, name):
+        entries = {}
+
+        if name in self._camera_attributes:
+            node = self._camera_attributes[name]
+        elif name in self._camera_methods:
+            node = self._camera_methods[name]
+        else:
+            raise ValueError("'%s' is not a camera method or attribute" % name)
+
+        access = False
+        if hasattr(node, 'GetAccessMode'):
+            access = node.GetAccessMode()
+
+        # print(info)
+        if access:
+            if hasattr(node, 'GetEntries'):
+
+                for entry in node.GetEntries():
+                    entries[entry.GetName().lstrip('EnumEntry_')] = entry.GetDescription().strip()
+
+        else:
+            self.logger.exception("Couldn't access attribute {}".format(name))
+
+        return entries
 
     @property
     def device_info(self):
@@ -449,7 +886,46 @@ class Camera_Spinnaker(Camera):
 
         return info_dict
 
+    def release(self):
 
+        super(Camera_Spinnaker, self).release()
+
+        self._camera_attributes = {}
+        self._camera_methods = {}
+        self._camera_node_types = {}
+
+        if self.node:
+            self.node.release()
+
+        try:
+            self.cam.DeInit()
+        except Exception as e:
+            print(e)
+            traceback.print_exc(file=sys.stdout)
+
+        try:
+            del self._cam
+        except AttributeError as e:
+            print(e)
+
+        try:
+            self.cam_list.Clear()
+            del self.cam_list
+        except Exception as e:
+            print(e)
+            traceback.print_exc(file=sys.stdout)
+
+        try:
+            del self.nmap
+        except Exception as e:
+            print(e)
+            traceback.print_exc(file=sys.stdout)
+
+        try:
+            self.system.ReleaseInstance()
+        except Exception as e:
+            print(e)
+            traceback.print_exc(file=sys.stdout)
 
 
 
@@ -460,6 +936,7 @@ class Camera_Picam(Camera):
     also can be used w/ picapture
     https://lintestsystems.com/wp-content/uploads/2016/09/PiCapture-SD1-Documentation.pdf
     """
+    pass
 
 
 class Camera_Spin_Old(mp.Process):
