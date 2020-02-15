@@ -640,7 +640,7 @@ class Camera_Spinnaker(Camera):
         self.frame = self._grab()
         # FIXME: I think this will break single-shot or multishot modes.
         self.shape = self.frame[1].GetNDArray().shape
-        self._frame = self.frame[1].GetNDArray()
+        self._frame = np.zeros_like(self.frame[1].GetNDArray())
 
 
     def capture_deinit(self):
