@@ -134,15 +134,19 @@ class Camera(Hardware):
 
         self.capture_init()
 
-        if isinstance(self.timed, int) or isinstance(self.timed, float):
-            if self.timed > 0:
-                start_time = time.time()
-                end_time = start_time + self.timed
+
+
 
         if self.streaming.is_set():
             self.node.send(key='STATE', value='CAPTURING')
 
         try:
+            self._process()
+            if isinstance(self.timed, int) or isinstance(self.timed, float):
+                if self.timed > 0:
+                    start_time = time.time()
+                    end_time = start_time + self.timed
+
             while not self.stopping.is_set():
                 self._process()
 
@@ -651,19 +655,27 @@ class Camera_Spinnaker(Camera):
         except Exception as e:
             self.logger.exception(e)
 
+        if self.writing.is_set():
+            self._write_frame()
+
         if self.streaming.is_set():
             if not frame_array:
                 frame_array = self.frame[1].GetNDArray()
             self._stream_q.put_nowait({'timestamp': self.frame[0],
                                        self.name  : frame_array})
 
-        if self.writing.is_set():
-            self._write_frame()
+        if self.indicating.is_set():
+            if self._indicator is None:
+                self._indicator = tqdm()
+            self._indicator.update()
 
-        if self.queue:
-            if not frame_array:
-                frame_array = self.frame[1].GetNDArray()
-            self.q.put_nowait(frame_array)
+        # if self.queue:
+        #     if not frame_array:
+        #         frame_array = self.frame[1].GetNDArray()
+        #     self.q.put_nowait(frame_array)
+
+        if self.save_timestamps:
+            self._timestamps.append(self.frame[0])
 
         self.frame[1].Release()
 
@@ -680,7 +692,7 @@ class Camera_Spinnaker(Camera):
 
         # PNG images are losslessly compressed
         self.img_opts = PySpin.PNGOption()
-        self.img_opts.compressionLevel = 5
+        self.img_opts.compressionLevel = 1
 
         # make directory
         output_dir = self.output_filename
@@ -697,8 +709,7 @@ class Camera_Spinnaker(Camera):
 
     def _write_frame(self):
         self.frame[1].Save(self.base_path+str(self.frame[0])+'.png', self.img_opts)
-        if self.save_timestamps:
-            self._timestamps.append(self.frame[0])
+
 
     def _write_deinit(self):
         self.logger.info('Writing images in {} to {}'.format(self.base_path, self.base_path + '.mp4'))
@@ -939,6 +950,8 @@ class Camera_Spinnaker(Camera):
 
         try:
             self.cam.DeInit()
+        except AttributeError:
+            pass
         except Exception as e:
             print(e)
             traceback.print_exc(file=sys.stdout)
