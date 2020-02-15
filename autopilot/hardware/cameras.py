@@ -93,6 +93,9 @@ class Camera(Hardware):
             self.queue_size = queue_size
             self.q =Queue(maxsize=self.queue_size)
 
+        self.initialized = threading.Event()
+        self.initialized.clear()
+
         # event to end acquisition
         self.stopping = threading.Event()
         self.stopping.clear()
@@ -438,6 +441,9 @@ class Camera_CV(Camera):
         return self.cam.getBackendName()
 
     def init_cam(self, camera_idx = None):
+
+        self.initialized.set()
+
         if camera_idx is None:
             camera_idx = self.camera_idx
 
@@ -594,7 +600,7 @@ class Camera_Spinnaker(Camera):
         self.nmap = cam.GetTLDeviceNodeMap()
 
         # get list of camera methods and attributes for use with 'get' and 'set' methods
-        for node in self.cam.GetNodeMap().GetNodes():
+        for node in cam.GetNodeMap().GetNodes():
             pit = node.GetPrincipalInterfaceType()
             name = node.GetName()
             self._camera_node_types[name] = self.ATTR_TYPE_NAMES.get(pit, pit)
