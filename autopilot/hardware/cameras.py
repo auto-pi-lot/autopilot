@@ -1510,7 +1510,7 @@ class Directory_Writer(object):
 
         ffmpeg_cmd = ['ffmpeg', "-y", '-r', str(self.fps),
                       '-pattern_type', 'glob', '-i', glob_str,
-                      '-pix_fmt', 'yuv_420p', '-r', str(self.fps),
+                      '-pix_fmt', 'yuv420p', '-r', str(self.fps),
                       '-vcodec', 'libx264', '-preset', 'veryfast',
                       self.dir.rstrip(os.sep)+'.mp4']
 
