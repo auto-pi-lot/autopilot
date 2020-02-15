@@ -67,7 +67,7 @@ class Camera(Hardware):
     input = True
     type = "CAMERA"
 
-    def __init__(self, fps=None, queue=False, queue_size = 256, write=False, timed=False, **kwargs):
+    def __init__(self, fps=None, queue=False, queue_size = 256, timed=False, **kwargs):
         super(Camera, self).__init__(**kwargs)
         self._cam = None
         # self._frame = None
@@ -88,7 +88,7 @@ class Camera(Hardware):
 
         self.queue = queue
         self.fps = fps
-        self.write = write
+        #self.write = write
         self.timed = timed
 
         if self.queue:
