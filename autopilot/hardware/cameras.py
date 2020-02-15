@@ -749,8 +749,8 @@ class Camera_Spinnaker(Camera):
     @fps.setter
     def fps(self, fps):
         if isinstance(fps, int):
-            self.cam.AcquisitionFrameRateEnable.setValue(True)
-            self.cam.AcquisitionFrameRate.setValue(fps)
+            self.cam.AcquisitionFrameRateEnable.SetValue(True)
+            self.cam.AcquisitionFrameRate.SetValue(fps)
         elif fps is None:
             # initially set to None on superclass init
             pass
