@@ -9,6 +9,7 @@ import numpy as np
 import base64
 from datetime import datetime
 import multiprocessing as mp
+from tqdm import tqdm
 
 
 import time
@@ -83,6 +84,7 @@ class Camera(Hardware):
         self._stream_q = None
         self.blosc = True
         self.shape = None
+        self._indicator = None
 
         self.queue = queue
         self.fps = fps
@@ -108,6 +110,9 @@ class Camera(Hardware):
 
         self.writing = threading.Event()
         self.writing.clear()
+
+        self.indicating = threading.Event()
+        self.indicating.clear()
 
     def capture(self, timed = None):
 
@@ -163,6 +168,12 @@ class Camera(Hardware):
             except Exception as e:
                 self.logger.exception('Failed to end writer, error message: {}'.format(e))
 
+            if self.indicating:
+                try:
+                    self._indicator.close()
+                except:
+                    pass
+
             self.capturing.clear()
             self.capture_deinit()
             #self.release()
@@ -188,6 +199,11 @@ class Camera(Hardware):
 
         if self.writing:
             self._write_frame()
+
+        if self.indicating:
+            if not self._indicator:
+                self._indicator = tqdm()
+            self._indicator.update()
 
 
 
@@ -272,6 +288,7 @@ class Camera(Hardware):
                 checked_empty = True
             time.sleep(0.1)
         self.logger.warning('Writer finished, closing')
+
 
 
 
