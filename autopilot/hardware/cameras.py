@@ -923,12 +923,19 @@ class Camera_Spinnaker(Camera):
 
         super(Camera_Spinnaker, self).release()
 
+        self.stopping.set()
+
         self._camera_attributes = {}
         self._camera_methods = {}
         self._camera_node_types = {}
 
         if self.node:
             self.node.release()
+
+        try:
+            self.cam.EndAcquisition()
+        except Exception as e:
+            print(e)
 
         try:
             self.cam.DeInit()
