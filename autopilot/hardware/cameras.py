@@ -689,7 +689,7 @@ class Camera_Spinnaker(Camera):
 
         # PNG images are losslessly compressed
         self.img_opts = PySpin.PNGOption()
-        self.img_opts.compressionLevel = 5
+        self.img_opts.compressionLevel = 1
 
         # make directory
         output_dir = self.output_filename
