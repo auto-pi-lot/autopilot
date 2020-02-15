@@ -669,10 +669,13 @@ class Camera_Spinnaker(Camera):
                 self._indicator = tqdm()
             self._indicator.update()
 
-        if self.queue:
-            if not frame_array:
-                frame_array = self.frame[1].GetNDArray()
-            self.q.put_nowait(frame_array)
+        # if self.queue:
+        #     if not frame_array:
+        #         frame_array = self.frame[1].GetNDArray()
+        #     self.q.put_nowait(frame_array)
+
+        if self.save_timestamps:
+            self._timestamps.append(self.frame[0])
 
         self.frame[1].Release()
 
@@ -706,8 +709,7 @@ class Camera_Spinnaker(Camera):
 
     def _write_frame(self):
         self.frame[1].Save(self.base_path+str(self.frame[0])+'.png', self.img_opts)
-        if self.save_timestamps:
-            self._timestamps.append(self.frame[0])
+
 
     def _write_deinit(self):
         self.logger.info('Writing images in {} to {}'.format(self.base_path, self.base_path + '.mp4'))
