@@ -946,26 +946,29 @@ class Camera_Spinnaker(Camera):
         try:
             del self._cam
         except AttributeError as e:
-            print(e)
+            pass
+        except Exception as e:
+            self.logger.exception(e)
 
         try:
             self.cam_list.Clear()
             del self.cam_list
+        except AttributeError:
+            pass
         except Exception as e:
-            print(e)
-            traceback.print_exc(file=sys.stdout)
+            self.logger.exception(e)
 
         try:
             del self.nmap
+        except AttributeError:
+            pass
         except Exception as e:
-            print(e)
-            traceback.print_exc(file=sys.stdout)
+            self.logger.exception(e)
 
         try:
             self.system.ReleaseInstance()
         except Exception as e:
-            print(e)
-            traceback.print_exc(file=sys.stdout)
+            self.logger.exception(e)
 
         if self.writing.is_set():
             self.writer.wait()
