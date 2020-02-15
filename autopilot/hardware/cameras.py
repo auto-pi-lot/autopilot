@@ -139,7 +139,7 @@ class Camera(Hardware):
                 start_time = time.time()
                 end_time = start_time + self.timed
 
-        if self.streaming:
+        if self.streaming.is_set():
             self.node.send(key='STATE', value='CAPTURING')
 
         try:
@@ -155,20 +155,20 @@ class Camera(Hardware):
             self.logger.info('Capture Ending')
 
             try:
-                if self.streaming:
+                if self.streaming.is_set():
                     self.node.send(key='STATE', value='STOPPING')
                     self._stream_q.put('END')
             except Exception as e:
                 self.logger.exception('Failed to end stream, error message: {}'.format(e))
 
             try:
-                if self.writing:
+                if self.writing.is_set():
                     self._write_deinit()
 
             except Exception as e:
                 self.logger.exception('Failed to end writer, error message: {}'.format(e))
 
-            if self.indicating:
+            if self.indicating.is_set():
                 try:
                     self._indicator.close()
                 except:
@@ -186,21 +186,21 @@ class Camera(Hardware):
         except Exception as e:
             self.logger.exception(e)
 
-        if self.streaming:
+        if self.streaming.is_set():
             self._stream_q.put_nowait({'timestamp': self.frame[0],
                                        self.name  : self.frame[1]})
 
-        if self.writing:
+        if self.writing.is_set():
             self._write_frame()
 
         if self.queue:
             self.q.put_nowait(self.frame)
 
 
-        if self.writing:
+        if self.writing.is_set():
             self._write_frame()
 
-        if self.indicating:
+        if self.indicating.is_set():
             if not self._indicator:
                 self._indicator = tqdm()
             self._indicator.update()
@@ -362,7 +362,7 @@ class Camera(Hardware):
 
         if self._output_filename is None:
             new = True
-        elif os.path.exists(self._output_filename) and not self.capturing:
+        elif os.path.exists(self._output_filename) and not self.capturing.is_set():
             new = True
 
         if new:
@@ -647,13 +647,13 @@ class Camera_Spinnaker(Camera):
         except Exception as e:
             self.logger.exception(e)
 
-        if self.streaming:
+        if self.streaming.is_set():
             if not frame_array:
                 frame_array = self.frame[1].GetNDArray()
             self._stream_q.put_nowait({'timestamp': self.frame[0],
                                        self.name  : frame_array})
 
-        if self.writing:
+        if self.writing.is_set():
             self._write_frame()
 
         if self.queue:
