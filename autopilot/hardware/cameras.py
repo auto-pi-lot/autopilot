@@ -665,7 +665,7 @@ class Camera_Spinnaker(Camera):
                                        self.name  : frame_array})
 
         if self.indicating.is_set():
-            if not self._indicator:
+            if self._indicator is None:
                 self._indicator = tqdm()
             self._indicator.update()
 
