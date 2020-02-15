@@ -1506,7 +1506,7 @@ class Directory_Writer(object):
 
     def _encode(self):
 
-        glob_str = os.path.join(self.dir, '*'+self.ext)
+        glob_str = os.path.join(self.dir.rstrip(os.sep)+ '*'+self.ext)
 
         ffmpeg_cmd = ['ffmpeg', "-y", '-r', str(self.fps),
                       '-pattern_type', 'glob', '-i', glob_str,
