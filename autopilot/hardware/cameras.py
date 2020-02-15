@@ -9,7 +9,7 @@ import numpy as np
 import base64
 from datetime import datetime
 import multiprocessing as mp
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 
 import time
