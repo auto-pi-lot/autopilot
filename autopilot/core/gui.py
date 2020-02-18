@@ -785,7 +785,7 @@ class New_Subject_Wizard(QtWidgets.QDialog):
             """
             current_step = self.step_selection.currentText()
             # Check that we have selected a step...
-            if current_step is not '':
+            if current_step != '':
                 self.values['step'] = self.step_ind[current_step]
 
 
