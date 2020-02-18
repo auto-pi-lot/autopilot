@@ -425,6 +425,9 @@ class Camera(Hardware):
 
 class Camera_CV(Camera):
     def __init__(self, camera_idx = 0, **kwargs):
+        if not OPENCV:
+            ImportError('opencv was not imported, and is required for Camera_CV')
+
         super(Camera_CV, self).__init__(**kwargs)
 
         self._v4l_info = None
@@ -564,6 +567,9 @@ class Camera_Spinnaker(Camera):
 
 
     def __init__(self, serial=None, camera_idx=None, save_timestamps=False, **kwargs):
+        if not PYSPIN:
+            ImportError('PySpin was not imported, and is required for Camera_Spinnaker')
+
         if serial and camera_idx:
             self.logger.warning("serial and camera_idx were both passed, defaulting to serial")
             camera_idx = None
