@@ -539,30 +539,36 @@ class Camera_Spinnaker(Camera):
     """
     type="CAMERA_SPIN"
 
-    ATTR_TYPES = {
-        PySpin.intfIFloat      : PySpin.CFloatPtr,
-        PySpin.intfIBoolean    : PySpin.CBooleanPtr,
-        PySpin.intfIInteger    : PySpin.CIntegerPtr,
-        PySpin.intfIEnumeration: PySpin.CEnumerationPtr,
-        PySpin.intfIString     : PySpin.CStringPtr,
-    }
 
-    ATTR_TYPE_NAMES = {
-        PySpin.intfIFloat      : 'float',
-        PySpin.intfIBoolean    : 'bool',
-        PySpin.intfIInteger    : 'int',
-        PySpin.intfIEnumeration: 'enum',
-        PySpin.intfIString     : 'string',
-        PySpin.intfICommand    : 'command',
-    }
+    if PYSPIN:
+        ATTR_TYPES = {
+            PySpin.intfIFloat      : PySpin.CFloatPtr,
+            PySpin.intfIBoolean    : PySpin.CBooleanPtr,
+            PySpin.intfIInteger    : PySpin.CIntegerPtr,
+            PySpin.intfIEnumeration: PySpin.CEnumerationPtr,
+            PySpin.intfIString     : PySpin.CStringPtr,
+        }
 
-    RW_MODES = {
-        PySpin.RO: {'read':True, 'write': False},
-        PySpin.RW: {'read': True, 'write': False},
-        PySpin.WO: {'read': False, 'write': False},
-        PySpin.NA: {'read': False, 'write': False}
-    }
+        ATTR_TYPE_NAMES = {
+            PySpin.intfIFloat      : 'float',
+            PySpin.intfIBoolean    : 'bool',
+            PySpin.intfIInteger    : 'int',
+            PySpin.intfIEnumeration: 'enum',
+            PySpin.intfIString     : 'string',
+            PySpin.intfICommand    : 'command',
+        }
 
+        RW_MODES = {
+            PySpin.RO: {'read':True, 'write': False},
+            PySpin.RW: {'read': True, 'write': False},
+            PySpin.WO: {'read': False, 'write': False},
+            PySpin.NA: {'read': False, 'write': False}
+        }
+    else:
+
+        ATTR_TYPES = {}
+        ATTR_TYPE_NAMES = {}
+        RW_MODES = {}
 
     def __init__(self, serial=None, camera_idx=None, save_timestamps=False, **kwargs):
         if not PYSPIN:
