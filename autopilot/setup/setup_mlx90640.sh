@@ -9,13 +9,20 @@ sudo sed -i 's/^#dtparam=i2c_arm=on/dtparam=i2c_arm=on/g' /boot/config.txt
 # increase baudrate
 sudo sed -i '$s/$/\ndtparam=i2c_arm_baudrate=1000000/' /boot/config.txt
 
-cd ~/git
-git clone https://github.com/sneakers-the-rat/mlx90640-library.git
-cd mlx90640-library
+#cd ~/git
+# clone submodules if we haven't already
+git submodule init && git submodule update
+
+# assuming this is being run from either the autopilot root or the setup folder...
+# cd to the library dir.
+if [ $(basename $PWD) == "setup" ]; then
+  cd ../external/mlx90640-library
+elif [ $(basename $PWD) == "autopilot" ]; then
+  cd autopilot/external/mlx90640-library
+fi
 
 # disable building examples, extra dependencies
-sudo sed -i 's/^all: libMLX90640_API.a libMLX90640_API.so examples/all: libMLX90640_API.a libMLX90640_API.so/g' Makefile
-make all I2C_MODE=LINUX
+make all I2C_MODE=RPI
 sudo make install
 
 cd python/library

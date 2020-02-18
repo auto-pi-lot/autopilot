@@ -200,8 +200,8 @@ fi
 
 ###########
 # clone repo
-cd $GITDIR
-git clone https://github.com/wehr-lab/RPilot.git
+#cd $GITDIR
+#git clone https://github.com/wehr-lab/autopilot.git
 
 echo -e "\n\n${RED}System needs to reboot for changes to take effect, reboot now? ${NC}"
 read -p "reboot? (y/n): " DOREBOOT

@@ -44,6 +44,11 @@ try:
     way to refer to a pigpio object.
     """
 
+    PULL_MAP = {
+        'U': pigpio.PUD_UP,
+        'D': pigpio.PUD_DOWN
+    }
+
 
 
     ENABLED = True

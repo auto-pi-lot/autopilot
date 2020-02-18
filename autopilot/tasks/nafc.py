@@ -9,6 +9,7 @@ import autopilot.hardware.gpio
 from autopilot.tasks import Task
 from autopilot.stim import init_manager
 from autopilot.stim.sound import sounds
+from autopilot.hardware import gpio
 from collections import OrderedDict as odict
 
 # This declaration allows Subject to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
@@ -100,20 +101,20 @@ class Nafc(Task):
 
     HARDWARE = {
         'POKES':{
-            'L': autopilot.hardware.gpio.Digital_In,
-            'C': autopilot.hardware.gpio.Digital_In,
-            'R': autopilot.hardware.gpio.Digital_In
+            'L': gpio.Digital_In,
+            'C': gpio.Digital_In,
+            'R': gpio.Digital_In
         },
         'LEDS':{
             # TODO: use LEDs, RGB vs. white LED option in init
-            'L': autopilot.hardware.gpio.LED_RGB,
-            'C': autopilot.hardware.gpio.LED_RGB,
-            'R': autopilot.hardware.gpio.LED_RGB
+            'L': gpio.LED_RGB,
+            'C': gpio.LED_RGB,
+            'R': gpio.LED_RGB
         },
         'PORTS':{
-            'L': autopilot.hardware.gpio.Solenoid,
-            'C': autopilot.hardware.gpio.Solenoid,
-            'R': autopilot.hardware.gpio.Solenoid
+            'L': gpio.Solenoid,
+            'C': gpio.Solenoid,
+            'R': gpio.Solenoid
         }
     }
 
