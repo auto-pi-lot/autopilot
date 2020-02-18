@@ -2,36 +2,32 @@ import os
 import sys
 from autopilot import prefs
 from autopilot.core.networking import Net_Node
-from autopilot.core.hardware import Hardware
+from autopilot.hardware import Hardware
+from autopilot.hardware.cameras import Camera
 
 import threading
 import time
 import struct
 from datetime import datetime
 import numpy as np
+from itertools import product
+from scipy.interpolate import griddata
 
 if sys.version_info >= (3,0):
     from queue import Queue, Empty
 else:
-    from queue import Queue, Empty
+    from Queue import Queue, Empty
 
 if prefs.AGENT in ['pilot']:
     import pigpio
 
-    TRIGGER_MAP = {
-        'U': pigpio.RISING_EDGE,
-        'D': pigpio.FALLING_EDGE,
-        'B': pigpio.EITHER_EDGE
-    }
-    """
-    dict: Maps strings ('U', 'D', 'B') to pigpio edge types
-    (RISING_EDGE, FALLING_EDGE, EITHER_EDGE), respectively.
-    """
+try:
+    import MLX90640 as mlx_cam
+    MLX90640_LIB = True
+except ImportError:
+    MLX90640_LIB = False
 
-    PULL_MAP = {
-        'U': pigpio.PUD_UP,
-        'D': pigpio.PUD_DOWN
-    }
+
 
 class I2C_9DOF(Hardware):
     """
@@ -48,22 +44,33 @@ class I2C_9DOF(Hardware):
     modified to use pigpio
     """
 
+    # Internal constants and register values:
     _ADDRESS_ACCELGYRO = 0x6B
     _ADDRESS_MAG = 0x1E
     _XG_ID = 0b01101000
     _MAG_ID = 0b00111101
+
+    # Linear Acceleration: mg per LSB
     _ACCEL_MG_LSB_2G = 0.061
     _ACCEL_MG_LSB_4G = 0.122
     _ACCEL_MG_LSB_8G = 0.244
     _ACCEL_MG_LSB_16G = 0.732
+
+    # Magnetic Field Strength: gauss range
     _MAG_MGAUSS_4GAUSS = 0.14
     _MAG_MGAUSS_8GAUSS = 0.29
     _MAG_MGAUSS_12GAUSS = 0.43
     _MAG_MGAUSS_16GAUSS = 0.58
+
+    # Angular Rate: dps per LSB
     _GYRO_DPS_DIGIT_245DPS = 0.00875
     _GYRO_DPS_DIGIT_500DPS = 0.01750
     _GYRO_DPS_DIGIT_2000DPS = 0.07000
+
+    # Temperature: LSB per degree celsius
     _TEMP_LSB_DEGREE_CELSIUS = 8  # 1C = 8, 25 = 200, etc.
+
+    # Register mapping for accelerometer/gyroscope component
     _REGISTER_WHO_AM_I_XG = 0x0F
     _REGISTER_CTRL_REG1_G = 0x10
     _REGISTER_CTRL_REG2_G = 0x11
@@ -90,6 +97,7 @@ class I2C_9DOF(Hardware):
     _REGISTER_OUT_Y_H_XL = 0x2B
     _REGISTER_OUT_Z_L_XL = 0x2C
     _REGISTER_OUT_Z_H_XL = 0x2D
+
     _REGISTER_WHO_AM_I_M = 0x0F
     _REGISTER_CTRL_REG1_M = 0x20
     _REGISTER_CTRL_REG2_M = 0x21
@@ -103,8 +111,10 @@ class I2C_9DOF(Hardware):
     _REGISTER_OUT_Y_H_M = 0x2B
     _REGISTER_OUT_Z_L_M = 0x2C
     _REGISTER_OUT_Z_H_M = 0x2D
+
     _REGISTER_CFG_M = 0x30
     _REGISTER_INT_SRC_M = 0x31
+
     _MAGTYPE = True
     _XGTYPE = False
     _SENSORS_GRAVITY_STANDARD = 9.80665
@@ -135,7 +145,7 @@ class I2C_9DOF(Hardware):
         self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG8, 0x05)
         self.pig.i2c_write_byte_data(self.magnet, self._REGISTER_CTRL_REG2_M, 0x0C)
 
-        # enable continuous collection
+        ## enable continuous collection
         # gyro
         self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG1_G, 0xC0)
         # accelerometer
@@ -144,9 +154,12 @@ class I2C_9DOF(Hardware):
         # magnetometer
         self.pig.i2c_write_byte_data(self.magnet, self._REGISTER_CTRL_REG3_M, 0x00)
 
-
-        # set accelerometer range
+        # set default ranges for sensors
         self.accel_range = self.ACCELRANGE_2G
+
+        self._accel_mg_lsb = None
+        self._mag_mgauss_lsb = None
+        self._gyro_dps_digit = None
 
     @property
     def accel_range(self):
@@ -165,9 +178,9 @@ class I2C_9DOF(Hardware):
                        self.ACCELRANGE_8G, self.ACCELRANGE_16G)
         reg = self.pig.i2c_read_byte_data(self.accel, self._REGISTER_CTRL_REG6_XL)
 
-
         reg = (reg & ~(0b00011000)) & 0xFF
         reg |= val
+
         self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG6_XL, reg)
         if val == self.ACCELRANGE_2G:
             self._accel_mg_lsb = self._ACCEL_MG_LSB_2G
@@ -178,20 +191,62 @@ class I2C_9DOF(Hardware):
         elif val == self.ACCELRANGE_16G:
             self._accel_mg_lsb = self._ACCEL_MG_LSB_16G
 
-    def read_accel(self):
-        """
-        Read the raw (unscaled) accelerometer data
 
-        Returns:
-            accel (tuple): x, y, z acceleration
+    @property
+    def mag_gain(self):
+        """The magnetometer gain.  Must be a value of:
+          - MAGGAIN_4GAUSS
+          - MAGGAIN_8GAUSS
+          - MAGGAIN_12GAUSS
+          - MAGGAIN_16GAUSS
         """
+        reg = self.pig.i2c_read_byte_data(self.magnet, self._REGISTER_CTRL_REG2_M)
+        return (reg & 0b01100000) & 0xFF
 
-        # taking some code from the pigpio examples
-        # http://abyz.me.uk/rpi/pigpio/code/i2c_ADXL345_py.zip
-        # and adapting with the sparkfun code in main docstring
-        (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_XL, 6)
-        if s >= 0:
-            return struct.unpack('<3h', buffer(b))
+    @mag_gain.setter
+    def mag_gain(self, val):
+        assert val in (self.MAGGAIN_4GAUSS, self.MAGGAIN_8GAUSS, self.MAGGAIN_12GAUSS,
+                       self.MAGGAIN_16GAUSS)
+        reg = self.pig.i2c_read_byte_data(self.magnet, self._REGISTER_CTRL_REG2_M)
+        reg = (reg & ~(0b01100000)) & 0xFF
+        reg |= val
+        self.i2c_write_byte_data(self.magnet, self._REGISTER_CTRL_REG2_M, reg)
+        if val == self.MAGGAIN_4GAUSS:
+            self._mag_mgauss_lsb = self._MAG_MGAUSS_4GAUSS
+        elif val == self.MAGGAIN_8GAUSS:
+            self._mag_mgauss_lsb = self._MAG_MGAUSS_8GAUSS
+        elif val == self.MAGGAIN_12GAUSS:
+            self._mag_mgauss_lsb = self._MAG_MGAUSS_12GAUSS
+        elif val == self.MAGGAIN_16GAUSS:
+            self._mag_mgauss_lsb = self._MAG_MGAUSS_16GAUSS
+
+
+    @property
+    def gyro_scale(self):
+        """The gyroscope scale.  Must be a value of:
+          - GYROSCALE_245DPS
+          - GYROSCALE_500DPS
+          - GYROSCALE_2000DPS
+        """
+        reg = self.pig.i2c_read_byte_data(self.accel, self._REGISTER_CTRL_REG1_G)
+        return (reg & 0b00011000) & 0xFF
+
+    @gyro_scale.setter
+    def gyro_scale(self, val):
+        assert val in (self.GYROSCALE_245DPS, self.GYROSCALE_500DPS, self.GYROSCALE_2000DPS)
+        reg = self.pig.i2c_read_byte_data(self.accel, self._REGISTER_CTRL_REG1_G)
+
+        reg = (reg & ~(0b00011000)) & 0xFF
+        reg |= val
+
+        self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG1_G, reg)
+        if val == self.GYROSCALE_245DPS:
+            self._gyro_dps_digit = self._GYRO_DPS_DIGIT_245DPS
+        elif val == self.GYROSCALE_500DPS:
+            self._gyro_dps_digit = self._GYRO_DPS_DIGIT_500DPS
+        elif val == self.GYROSCALE_2000DPS:
+            self._gyro_dps_digit = self._GYRO_DPS_DIGIT_2000DPS
+
 
     @property
     def acceleration(self):
@@ -202,8 +257,185 @@ class I2C_9DOF(Hardware):
             accel (tuple): x, y, z acceleration
 
         """
-        raw = self.read_accel()
-        return [x*self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD for x in raw]
+        # taking some code from the pigpio examples
+        # http://abyz.me.uk/rpi/pigpio/code/i2c_ADXL345_py.zip
+        # and adapting with the sparkfun code in main docstring
+        (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_XL, 6)
+        if s >= 0:
+            raw =  struct.unpack('<3h', buffer(b))
+            return map(lambda x: x*self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD, raw)
+
+    @property
+    def magnetic(self):
+        """The magnetometer X, Y, Z axis values as a 3-tuple of
+                gauss values.
+                """
+        (s, b) = self.pig.i2c_read_i2c_block_data(self.magnet, 0x80 | self._REGISTER_OUT_X_L_M, 6)
+
+        if s >= 0:
+            raw = struct.unpack('<3h', buffer(b))
+            return map(lambda x: x * self._mag_mgauss_lsb / 1000.0, raw)
+
+    @property
+    def gyro(self):
+        (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_G, 6)
+
+        if s>=0:
+            raw = struct.unpack('<3h', buffer(b))
+            return map(lambda x: x * self._gyro_dps_digit, raw)
+
+    @property
+    def temperature(self):
+        (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_TEMP_OUT_L, 2)
+        buf = buffer(b)
+        temp = ((buf[1] << 8) | buf[0]) >> 4
+        temp = self._twos_comp(temp, 12)
+        return 27.5 + temp/16
+
+    def _twos_comp(self, val, bits):
+        # Convert an unsigned integer in 2's compliment form of the specified bit
+        # length to its signed integer value and return it.
+        if val & (1 << (bits - 1)) != 0:
+            return val - (1 << bits)
+        return val
+
+class MLX90640(Camera):
+    type='MLX90640'
+
+    ALLOWED_FPS = (1, 2, 4, 8, 16, 32, 64)
+
+    def __init__(self, fps=64, integrate_frames = 64, interpolate = 3, **kwargs):
+        if not MLX90640_LIB:
+            ImportError('the MLX90640 library was not found, please use the setup_mlx90640.sh script or install manually')
+
+        super(MLX90640, self).__init__(fps, **kwargs)
+
+        # frame shape from the sensor is always the same
+        self.shape_sensor = (32, 24)
+        # but output shape is dependent on interpolation
+        self.shape = (32*interpolate, 24*interpolate)
+
+
+        self._frame_idx = 0
+        self._frames = None
+        self._integrate_frames = None
+        self._interpolate = None
+        self._cap_thread = None
+
+        # capture thread sets every time it gets a frame,
+        # _grab waits every time.
+        # keeps us from returning same frame twice
+        self._grab_event = threading.Event()
+
+        # interpolation properties
+        self._grid_x = None
+        self._grid_y = None
+        self._points = list(product(range(self.shape_sensor[0]),
+                                    range(self.shape_sensor[1])))
+
+        # set attributes
+        self.integrate_frames = integrate_frames
+        self.interpolate = interpolate
+
+
+
+
+    @property
+    def fps(self):
+        return self._fps
+
+    @fps.setter
+    def fps(self, fps):
+        if fps not in self.ALLOWED_FPS:
+            ValueError('fps must be one of {}, got {}'.format(self.ALLOWED_FPS, fps))
+
+        self._fps = fps
+        # resets cam attribute, next time it's called for the fps will be set.
+        self.cam.cleanup()
+        self._cam = None
+
+    @property
+    def integrate_frames(self):
+        return self._integrate_frames
+
+    @integrate_frames.setter
+    def integrate_frames(self, integrate_frames):
+        self._frames = np.zeros((self.shape_sensor[0], self.shape_sensor[1], integrate_frames))
+        self._integrate_frames = integrate_frames
+
+    @property
+    def interpolate(self):
+        return self._interpolate
+
+    @interpolate.setter
+    def interpolate(self, interpolate):
+        if interpolate is not None:
+            self._grid_y, self._grid_x = np.meshgrid(np.linspace(0, 24, 24 * interpolate),
+                                                   np.linspace(0, 32, 32 * interpolate))
+        self._interpolate = interpolate
+
+
+    def init_cam(self):
+        return mlx_cam.setup(self.fps)
+
+    def capture_init(self):
+        self._cap_thread = threading.Thread(target=self._threaded_capture)
+        self._cap_thread.setDaemon(True)
+        self._cap_thread.start()
+
+
+    def _threaded_capture(self):
+        while not self.stopping.is_set():
+
+            # store the frame in the ringbuffer
+            # image comes in all wonky and this is a weird combo of instance and module methods...
+            # in order:
+            # get frame, cast as array
+            # reshape using fortran order and transpose
+            # rotate 90 degrees to get normal orientation.
+            self._frames[:, :, self._frame_idx] = np.rot90(
+                np.array(
+                    self.cam.get_frame()
+                ).reshape(
+                    (self.shape_sensor[0], self.shape_sensor[1]),
+                    order="F").T
+            )
+            self._grab_event.set()
+            self._frame_idx = (self._frame_idx + 1) % self.integrate_frames
+
+    def _grab(self):
+        ret = self._grab_event.wait(1)
+        if not ret:
+            return None
+
+        frame = np.mean(self._frames, axis=2)
+        self._grab_event.clear()
+
+        if self.interpolate is not None:
+            frame = self.interpolate_frame(frame)
+
+        return self._timestamp(), frame
+
+    def _timestamp(self):
+        return datetime.now().isoformat()
+
+    def interpolate_frame(self, frame):
+        return griddata(self._points,
+                        frame.flatten(),
+                        (self._grid_x, self._grid_y),
+                        method='cubic')
+
+    def release(self):
+        self.stopping.set()
+        self.cam.cleanup()
+        self._cam = None
+        super(MLX90640, self).release()
+
+
+
+
+
+
 
 
 

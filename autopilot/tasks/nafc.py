@@ -5,14 +5,12 @@ import tables
 import threading
 from copy import copy
 
-from autopilot.core import hardware
+import autopilot.hardware.gpio
 from autopilot.tasks import Task
 from autopilot.stim import init_manager
 from autopilot.stim.sound import sounds
+from autopilot.hardware import gpio
 from collections import OrderedDict as odict
-from autopilot.core.networking import Net_Node
-
-from autopilot import prefs
 
 # This declaration allows Subject to identify which class in this file contains the task class. Could also be done with __init__ but yno I didnt for no reason.
 # TODO: Move this to __init__
@@ -103,20 +101,20 @@ class Nafc(Task):
 
     HARDWARE = {
         'POKES':{
-            'L': hardware.Beambreak,
-            'C': hardware.Beambreak,
-            'R': hardware.Beambreak
+            'L': gpio.Digital_In,
+            'C': gpio.Digital_In,
+            'R': gpio.Digital_In
         },
         'LEDS':{
             # TODO: use LEDs, RGB vs. white LED option in init
-            'L': hardware.LED_RGB,
-            'C': hardware.LED_RGB,
-            'R': hardware.LED_RGB
+            'L': gpio.LED_RGB,
+            'C': gpio.LED_RGB,
+            'R': gpio.LED_RGB
         },
         'PORTS':{
-            'L': hardware.Solenoid,
-            'C': hardware.Solenoid,
-            'R': hardware.Solenoid
+            'L': gpio.Solenoid,
+            'C': gpio.Solenoid,
+            'R': gpio.Solenoid
         }
     }
 

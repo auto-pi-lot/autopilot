@@ -79,7 +79,7 @@ sudo -H pip3 install -U pyzmq npyscreen tornado inputs requests blosc
 
 # install pigpio
 cd $GITDIR
-git clone https://github.com/joan2937/pigpio.git
+git clone https://github.com/sneakers-the-rat/pigpio.git
 cd pigpio
 make -j6
 sudo -H make install
@@ -201,8 +201,8 @@ fi
 
 ###########
 # clone repo
-cd $GITDIR
-git clone https://github.com/wehr-lab/RPilot.git
+#cd $GITDIR
+#git clone https://github.com/wehr-lab/autopilot.git
 
 echo -e "\n\n${RED}System needs to reboot for changes to take effect, reboot now? ${NC}"
 read -p "reboot? (y/n): " DOREBOOT

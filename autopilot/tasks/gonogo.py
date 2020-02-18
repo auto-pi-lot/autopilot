@@ -10,10 +10,9 @@ import tables
 import threading
 from random import random
 
-
-from autopilot.core import hardware
+import autopilot.hardware.gpio
 from autopilot.tasks import Task
-from autopilot.stim.visual.visuals import Grating, Grating_Continuous
+from autopilot.stim.visual.visuals import Grating
 from collections import OrderedDict as odict
 from autopilot.core.networking import Net_Node
 
@@ -66,16 +65,16 @@ class GoNoGo(Task):
 
     HARDWARE = {
         'POKES': {
-            'C': hardware.Beambreak,
+            'C': autopilot.hardware.gpio.Digital_In,
         },
         'LEDS': {
-            'C': hardware.LED_RGB,
+            'C': autopilot.hardware.gpio.LED_RGB,
         },
         'PORTS': {
-            'C': hardware.Solenoid,
+            'C': autopilot.hardware.gpio.Solenoid,
         },
         'FLAGS': {
-            'F': hardware.Flag
+            'F': autopilot.hardware.gpio.Digital_Out
         }
     }
 

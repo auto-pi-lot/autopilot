@@ -5,10 +5,8 @@ from collections import OrderedDict as odict
 import threading
 import logging
 # from autopilot.core.networking import Net_Node
-from autopilot.core import hardware
+from autopilot.hardware import BCM_TO_BOARD
 from autopilot import prefs
-
-import sys
 
 if hasattr(prefs, "AUDIOSERVER"):
     if prefs.AUDIOSERVER == 'pyo':
@@ -219,7 +217,7 @@ class Task(object):
 
         # We get fed hardware as BCM numbers, convert to board number and then back to letters
         if isinstance(pin, int):
-            pin = hardware.BCM_TO_BOARD[pin]
+            pin = BCM_TO_BOARD[pin]
             pin = self.pin_id[pin]
 
         if pin not in self.triggers.keys():

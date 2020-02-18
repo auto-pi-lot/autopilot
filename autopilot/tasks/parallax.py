@@ -9,18 +9,11 @@ Child:
 
 """
 
-
-import datetime
 import itertools
 import tables
-import threading
-from random import random
 
-
-from autopilot.core import hardware
-from autopilot.hardware import cameras, i2c
+from autopilot.hardware import cameras
 from autopilot.tasks import Task
-from collections import OrderedDict as odict
 from autopilot.core.networking import Net_Node
 
 from autopilot import prefs
@@ -54,8 +47,8 @@ class Parallax(Task):
 
     HARDWARE = {
         'CAMS': {
-            'SIDE': cameras.Camera_Spin,
-            'EYE': cameras.Camera_OpenCV
+            'SIDE': cameras.Camera_Spinnaker,
+            'EYE': cameras.Camera_CV
             # top...
         },
         # 'DOF': {
