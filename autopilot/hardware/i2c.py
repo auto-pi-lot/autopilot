@@ -48,22 +48,33 @@ class I2C_9DOF(Hardware):
     modified to use pigpio
     """
 
+    # Internal constants and register values:
     _ADDRESS_ACCELGYRO = 0x6B
     _ADDRESS_MAG = 0x1E
     _XG_ID = 0b01101000
     _MAG_ID = 0b00111101
+
+    # Linear Acceleration: mg per LSB
     _ACCEL_MG_LSB_2G = 0.061
     _ACCEL_MG_LSB_4G = 0.122
     _ACCEL_MG_LSB_8G = 0.244
     _ACCEL_MG_LSB_16G = 0.732
+
+    # Magnetic Field Strength: gauss range
     _MAG_MGAUSS_4GAUSS = 0.14
     _MAG_MGAUSS_8GAUSS = 0.29
     _MAG_MGAUSS_12GAUSS = 0.43
     _MAG_MGAUSS_16GAUSS = 0.58
+
+    # Angular Rate: dps per LSB
     _GYRO_DPS_DIGIT_245DPS = 0.00875
     _GYRO_DPS_DIGIT_500DPS = 0.01750
     _GYRO_DPS_DIGIT_2000DPS = 0.07000
+
+    # Temperature: LSB per degree celsius
     _TEMP_LSB_DEGREE_CELSIUS = 8  # 1C = 8, 25 = 200, etc.
+
+    # Register mapping for accelerometer/gyroscope component
     _REGISTER_WHO_AM_I_XG = 0x0F
     _REGISTER_CTRL_REG1_G = 0x10
     _REGISTER_CTRL_REG2_G = 0x11
@@ -90,6 +101,7 @@ class I2C_9DOF(Hardware):
     _REGISTER_OUT_Y_H_XL = 0x2B
     _REGISTER_OUT_Z_L_XL = 0x2C
     _REGISTER_OUT_Z_H_XL = 0x2D
+
     _REGISTER_WHO_AM_I_M = 0x0F
     _REGISTER_CTRL_REG1_M = 0x20
     _REGISTER_CTRL_REG2_M = 0x21
@@ -103,8 +115,10 @@ class I2C_9DOF(Hardware):
     _REGISTER_OUT_Y_H_M = 0x2B
     _REGISTER_OUT_Z_L_M = 0x2C
     _REGISTER_OUT_Z_H_M = 0x2D
+
     _REGISTER_CFG_M = 0x30
     _REGISTER_INT_SRC_M = 0x31
+
     _MAGTYPE = True
     _XGTYPE = False
     _SENSORS_GRAVITY_STANDARD = 9.80665
@@ -135,7 +149,7 @@ class I2C_9DOF(Hardware):
         self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG8, 0x05)
         self.pig.i2c_write_byte_data(self.magnet, self._REGISTER_CTRL_REG2_M, 0x0C)
 
-        # enable continuous collection
+        ## enable continuous collection
         # gyro
         self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG1_G, 0xC0)
         # accelerometer
@@ -144,9 +158,12 @@ class I2C_9DOF(Hardware):
         # magnetometer
         self.pig.i2c_write_byte_data(self.magnet, self._REGISTER_CTRL_REG3_M, 0x00)
 
-
-        # set accelerometer range
+        # set default ranges for sensors
         self.accel_range = self.ACCELRANGE_2G
+
+        self._accel_mg_lsb = None
+        self._mag_mgauss_lsb = None
+        self._gyro_dps_digit = None
 
     @property
     def accel_range(self):
@@ -165,9 +182,9 @@ class I2C_9DOF(Hardware):
                        self.ACCELRANGE_8G, self.ACCELRANGE_16G)
         reg = self.pig.i2c_read_byte_data(self.accel, self._REGISTER_CTRL_REG6_XL)
 
-
         reg = (reg & ~(0b00011000)) & 0xFF
         reg |= val
+
         self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG6_XL, reg)
         if val == self.ACCELRANGE_2G:
             self._accel_mg_lsb = self._ACCEL_MG_LSB_2G
@@ -178,20 +195,62 @@ class I2C_9DOF(Hardware):
         elif val == self.ACCELRANGE_16G:
             self._accel_mg_lsb = self._ACCEL_MG_LSB_16G
 
-    def read_accel(self):
-        """
-        Read the raw (unscaled) accelerometer data
 
-        Returns:
-            accel (tuple): x, y, z acceleration
+    @property
+    def mag_gain(self):
+        """The magnetometer gain.  Must be a value of:
+          - MAGGAIN_4GAUSS
+          - MAGGAIN_8GAUSS
+          - MAGGAIN_12GAUSS
+          - MAGGAIN_16GAUSS
         """
+        reg = self.pig.i2c_read_byte_data(self.magnet, self._REGISTER_CTRL_REG2_M)
+        return (reg & 0b01100000) & 0xFF
 
-        # taking some code from the pigpio examples
-        # http://abyz.me.uk/rpi/pigpio/code/i2c_ADXL345_py.zip
-        # and adapting with the sparkfun code in main docstring
-        (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_XL, 6)
-        if s >= 0:
-            return struct.unpack('<3h', buffer(b))
+    @mag_gain.setter
+    def mag_gain(self, val):
+        assert val in (self.MAGGAIN_4GAUSS, self.MAGGAIN_8GAUSS, self.MAGGAIN_12GAUSS,
+                       self.MAGGAIN_16GAUSS)
+        reg = self.pig.i2c_read_byte_data(self.magnet, self._REGISTER_CTRL_REG2_M)
+        reg = (reg & ~(0b01100000)) & 0xFF
+        reg |= val
+        self.i2c_write_byte_data(self.magnet, self._REGISTER_CTRL_REG2_M, reg)
+        if val == self.MAGGAIN_4GAUSS:
+            self._mag_mgauss_lsb = self._MAG_MGAUSS_4GAUSS
+        elif val == self.MAGGAIN_8GAUSS:
+            self._mag_mgauss_lsb = self._MAG_MGAUSS_8GAUSS
+        elif val == self.MAGGAIN_12GAUSS:
+            self._mag_mgauss_lsb = self._MAG_MGAUSS_12GAUSS
+        elif val == self.MAGGAIN_16GAUSS:
+            self._mag_mgauss_lsb = self._MAG_MGAUSS_16GAUSS
+
+
+    @property
+    def gyro_scale(self):
+        """The gyroscope scale.  Must be a value of:
+          - GYROSCALE_245DPS
+          - GYROSCALE_500DPS
+          - GYROSCALE_2000DPS
+        """
+        reg = self.pig.i2c_read_byte_data(self.accel, self._REGISTER_CTRL_REG1_G)
+        return (reg & 0b00011000) & 0xFF
+
+    @gyro_scale.setter
+    def gyro_scale(self, val):
+        assert val in (self.GYROSCALE_245DPS, self.GYROSCALE_500DPS, self.GYROSCALE_2000DPS)
+        reg = self.pig.i2c_read_byte_data(self.accel, self._REGISTER_CTRL_REG1_G)
+
+        reg = (reg & ~(0b00011000)) & 0xFF
+        reg |= val
+
+        self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG1_G, reg)
+        if val == self.GYROSCALE_245DPS:
+            self._gyro_dps_digit = self._GYRO_DPS_DIGIT_245DPS
+        elif val == self.GYROSCALE_500DPS:
+            self._gyro_dps_digit = self._GYRO_DPS_DIGIT_500DPS
+        elif val == self.GYROSCALE_2000DPS:
+            self._gyro_dps_digit = self._GYRO_DPS_DIGIT_2000DPS
+
 
     @property
     def acceleration(self):
@@ -202,8 +261,46 @@ class I2C_9DOF(Hardware):
             accel (tuple): x, y, z acceleration
 
         """
-        raw = self.read_accel()
-        return map(lambda x: x*self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD, raw)
+        # taking some code from the pigpio examples
+        # http://abyz.me.uk/rpi/pigpio/code/i2c_ADXL345_py.zip
+        # and adapting with the sparkfun code in main docstring
+        (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_XL, 6)
+        if s >= 0:
+            raw =  struct.unpack('<3h', buffer(b))
+            return map(lambda x: x*self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD, raw)
 
+    @property
+    def magnetic(self):
+        """The magnetometer X, Y, Z axis values as a 3-tuple of
+                gauss values.
+                """
+        (s, b) = self.pig.i2c_read_i2c_block_data(self.magnet, 0x80 | self._REGISTER_OUT_X_L_M, 6)
+
+        if s >= 0:
+            raw = struct.unpack('<3h', buffer(b))
+            return map(lambda x: x * self._mag_mgauss_lsb / 1000.0, raw)
+
+    @property
+    def gyro(self):
+        (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_G, 6)
+
+        if s>=0:
+            raw = struct.unpack('<3h', buffer(b))
+            return map(lambda x: x * self._gyro_dps_digit, raw)
+
+    @property
+    def temperature(self):
+        (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_TEMP_OUT_L, 2)
+        buf = buffer(b)
+        temp = ((buf[1] << 8) | buf[0]) >> 4
+        temp = self._twos_comp(temp, 12)
+        return 27.5 + temp/16
+
+    def _twos_comp(self, val, bits):
+        # Convert an unsigned integer in 2's compliment form of the specified bit
+        # length to its signed integer value and return it.
+        if val & (1 << (bits - 1)) != 0:
+            return val - (1 << bits)
+        return val
 
 
