@@ -131,11 +131,9 @@ class Camera(Hardware):
     def _capture(self):
 
         self.capturing.set()
+        self.stopping.clear()
 
         self.capture_init()
-
-
-
 
         if self.streaming.is_set():
             self.node.send(key='STATE', value='CAPTURING')

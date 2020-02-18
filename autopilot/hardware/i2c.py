@@ -3,12 +3,15 @@ import sys
 from autopilot import prefs
 from autopilot.core.networking import Net_Node
 from autopilot.hardware import Hardware
+from autopilot.hardware.cameras import Camera
 
 import threading
 import time
 import struct
 from datetime import datetime
 import numpy as np
+from itertools import product
+from scipy.interpolate import griddata
 
 if sys.version_info >= (3,0):
     from queue import Queue, Empty
@@ -18,20 +21,13 @@ else:
 if prefs.AGENT in ['pilot']:
     import pigpio
 
-    TRIGGER_MAP = {
-        'U': pigpio.RISING_EDGE,
-        'D': pigpio.FALLING_EDGE,
-        'B': pigpio.EITHER_EDGE
-    }
-    """
-    dict: Maps strings ('U', 'D', 'B') to pigpio edge types
-    (RISING_EDGE, FALLING_EDGE, EITHER_EDGE), respectively.
-    """
+try:
+    import MLX90640 as mlx_cam
+    MLX90640_LIB = True
+except ImportError:
+    MLX90640_LIB = False
 
-    PULL_MAP = {
-        'U': pigpio.PUD_UP,
-        'D': pigpio.PUD_DOWN
-    }
+
 
 class I2C_9DOF(Hardware):
     """
@@ -302,5 +298,144 @@ class I2C_9DOF(Hardware):
         if val & (1 << (bits - 1)) != 0:
             return val - (1 << bits)
         return val
+
+class MLX90640(Camera):
+    type='MLX90640'
+
+    ALLOWED_FPS = (1, 2, 4, 8, 16, 32, 64)
+
+    def __init__(self, fps=64, integrate_frames = 64, interpolate = 3, **kwargs):
+        if not MLX90640_LIB:
+            ImportError('the MLX90640 library was not found, please use the setup_mlx90640.sh script or install manually')
+
+        super(MLX90640, self).__init__(fps, **kwargs)
+
+        # frame shape from the sensor is always the same
+        self.shape_sensor = (32, 24)
+        # but output shape is dependent on interpolation
+        self.shape = (32*interpolate, 24*interpolate)
+
+
+        self._frame_idx = 0
+        self._frames = None
+        self._integrate_frames = None
+        self._interpolate = None
+        self._cap_thread = None
+
+        # capture thread sets every time it gets a frame,
+        # _grab waits every time.
+        # keeps us from returning same frame twice
+        self._grab_event = threading.Event()
+
+        # interpolation properties
+        self._grid_x = None
+        self._grid_y = None
+        self._points = list(product(range(self.shape_sensor[0]),
+                                    range(self.shape_sensor[1])))
+
+        # set attributes
+        self.integrate_frames = integrate_frames
+        self.interpolate = interpolate
+
+
+
+
+    @property
+    def fps(self):
+        return self._fps
+
+    @fps.setter
+    def fps(self, fps):
+        if fps not in self.ALLOWED_FPS:
+            ValueError('fps must be one of {}, got {}'.format(self.ALLOWED_FPS, fps))
+
+        self._fps = fps
+        # resets cam attribute, next time it's called for the fps will be set.
+        self.cam.cleanup()
+        self._cam = None
+
+    @property
+    def integrate_frames(self):
+        return self._integrate_frames
+
+    @integrate_frames.setter
+    def integrate_frames(self, integrate_frames):
+        self._frames = np.zeros((self.shape_sensor[0], self.shape_sensor[1], integrate_frames))
+        self._integrate_frames = integrate_frames
+
+    @property
+    def interpolate(self):
+        return self._interpolate
+
+    @interpolate.setter
+    def interpolate(self, interpolate):
+        if interpolate is not None:
+            self._grid_y, self._grid_x = np.meshgrid(np.linspace(0, 24, 24 * interpolate),
+                                                   np.linspace(0, 32, 32 * interpolate))
+        self._interpolate = interpolate
+
+
+    def init_cam(self):
+        return mlx_cam.setup(self.fps)
+
+    def capture_init(self):
+        self._cap_thread = threading.Thread(target=self._threaded_capture)
+        self._cap_thread.setDaemon(True)
+        self._cap_thread.start()
+
+
+    def _threaded_capture(self):
+        while not self.stopping.is_set():
+
+            # store the frame in the ringbuffer
+            # image comes in all wonky and this is a weird combo of instance and module methods...
+            # in order:
+            # get frame, cast as array
+            # reshape using fortran order and transpose
+            # rotate 90 degrees to get normal orientation.
+            self._frames[:, :, self._frame_idx] = np.rot90(
+                np.array(
+                    self.cam.get_frame()
+                ).reshape(
+                    (self.shape_sensor[0], self.shape_sensor[1]),
+                    order="F").T
+            )
+            self._grab_event.set()
+            self._frame_idx = (self._frame_idx + 1) % self.integrate_frames
+
+    def _grab(self):
+        ret = self._grab_event.wait(1)
+        if not ret:
+            return None
+
+        frame = np.mean(self._frames, axis=2)
+        self._grab_event.clear()
+
+        if self.interpolate is not None:
+            frame = self.interpolate_frame(frame)
+
+        return self._timestamp(), frame
+
+    def _timestamp(self):
+        return datetime.now().isoformat()
+
+    def interpolate_frame(self, frame):
+        return griddata(self._points,
+                        frame.flatten(),
+                        (self._grid_x, self._grid_y),
+                        method='cubic')
+
+    def release(self):
+        self.stopping.set()
+        self.cam.cleanup()
+        self._cam = None
+        super(MLX90640, self).release()
+
+
+
+
+
+
+
 
 
