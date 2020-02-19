@@ -116,6 +116,7 @@ class Camera_Spin(object):
         self._frame = None
 
 
+
     @property
     def bin(self):
         return (self.cam.BinningHorizontal.GetValue(), self.cam.BinningHorizontal.GetValue())

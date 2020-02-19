@@ -35,7 +35,7 @@ import pdb
 if sys.version_info >= (3,0):
     import queue
 else:
-    import queue as queue
+    import Queue as queue
 
 from autopilot import prefs
 
@@ -1884,8 +1884,6 @@ class Message(object):
         else:
             me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}; VALUE: {}".format(self.id, self.to, self.sender, self.key, self.value)
         #me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}".format(self.id, self.to, self.sender, self.key)
-
-
 
         return me_string
 

@@ -462,7 +462,7 @@ class Nafc_Gap(Nafc):
         super(Nafc_Gap, self).__init__(**kwargs)
 
         self.noise_amplitude = noise_amplitude
-        self.noise_duration = 1*1000 # 10 seconds
+        self.noise_duration = 10*1000 # 10 seconds
         self.noise = sounds.Noise(duration=self.noise_duration,
                                   amplitude=self.noise_amplitude)
 

@@ -67,9 +67,6 @@ python -c "from request_helpers import download_box; download_box('${PYSPINURL}'
 SPINFILES=( spinnaker-*.tar.gz )
 PYSPINFILES=( spinnaker_python*.tar.gz )
 
-echo "$SPINNAME"
-echo "$PYSPINNAME"
-
 # check if we were able to get it
 got_spin=true
 if ! (( ${#SPINFILES[@]} )); then

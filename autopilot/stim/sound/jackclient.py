@@ -2,8 +2,8 @@
 Client that dumps samples directly to the jack client with the :mod:`jack` package.
 """
 
-from __future__ import division
-from __future__ import print_function
+
+
 
 import multiprocessing as mp
 import queue as queue
@@ -12,8 +12,8 @@ import numpy as np
 from copy import copy
 from threading import Thread
 from itertools import cycle
-import sys
 from queue import Empty
+import sys
 
 from autopilot import prefs
 
