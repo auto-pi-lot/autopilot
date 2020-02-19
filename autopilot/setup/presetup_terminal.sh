@@ -14,9 +14,9 @@ fi
 
 echo -e "${RED}Installing system dependencies\n${NC}"
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
-  echo -e "${RED}Installing XLib...\n${NC}"
+  echo -e "${RED}Installing XLib g++ and opencv...\n${NC}"
   sudo apt-get update
-  sudo apt-get install -y libxext-dev python-opencv
+  sudo apt-get install -y libxext-dev python-opencv g++
 fi
 
 echo -e "${RED}Installing Python dependencies\n${NC}"
@@ -49,8 +49,6 @@ git clone https://github.com/PySide/pyside-setup.git pyside-setup
 cd pyside-setup
 python setup.py bdist_wheel --standalone --qmake=$(which qmake)
 sudo -H pip install dist/$(ls PySide*.whl)
-
-
 
 # TODO: Add option to delete download filed
 

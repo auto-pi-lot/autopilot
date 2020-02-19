@@ -16,10 +16,10 @@ Each Agent should have its own setup routine, currently in two parts:
 We will be incorporating these into a unified agent system that makes setting up and switching between agents easier in future version (See :ref:`todo`).
 
 Note:
-    These instructions, like everything in Autopilot, is Linux and *nix only. They have only been tested on macOS and Ubuntu Linux.
+    These instructions, like everything in Autopilot, is Linux and unix only. They have only been tested on macOS and Ubuntu Linux.
 
 
 .. toctree::
 
-   Setup a Pilot <guide.installation.pilot>
-   Setup a Terminal <guide.installation.terminal>
+   Pilot Setup <guide.installation.pilot>
+   Terminal Setup <guide.installation.terminal>

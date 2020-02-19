@@ -687,23 +687,23 @@ class Terminal_Station(Station):
     +-------------+-------------------------------------------+-----------------------------------------------+
     | Key         | Method                                    | Description                                   |
     +=============+===========================================+===============================================+
-    | 'PING'      | :meth:`~.Terminal_Station.l_ping`      | We are asked to confirm that we are alive     |
+    | 'PING'      | :meth:`~.Terminal_Station.l_ping`         | We are asked to confirm that we are alive     |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'INIT'      | :meth:`~.Terminal_Station.l_init`      | Ask all pilots to confirm that they are alive |
+    | 'INIT'      | :meth:`~.Terminal_Station.l_init`         | Ask all pilots to confirm that they are alive |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'CHANGE'    | :meth:`~.Terminal_Station.l_change`    | Change a parameter on the Pi                  |
+    | 'CHANGE'    | :meth:`~.Terminal_Station.l_change`       | Change a parameter on the Pi                  |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'STOPALL'   | :meth:`~.Terminal_Station.l_stopall`   | Stop all pilots and plots                     |
+    | 'STOPALL'   | :meth:`~.Terminal_Station.l_stopall`      | Stop all pilots and plots                     |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'KILL'      | :meth:`~.Terminal_Station.l_kill`      | Terminal wants us to die :(                   |
+    | 'KILL'      | :meth:`~.Terminal_Station.l_kill`         | Terminal wants us to die :(                   |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'DATA'      | :meth:`~.Terminal_Station.l_data`      | Stash incoming data from a Pilot              |
+    | 'DATA'      | :meth:`~.Terminal_Station.l_data`         | Stash incoming data from a Pilot              |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'STATE'     | :meth:`~.Terminal_Station.l_state`     | A Pilot has changed state                     |
+    | 'STATE'     | :meth:`~.Terminal_Station.l_state`        | A Pilot has changed state                     |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'HANDSHAKE' | :meth:`~.Terminal_Station.l_handshake` | A Pi is telling us it's alive and its IP      |
+    | 'HANDSHAKE' | :meth:`~.Terminal_Station.l_handshake`    | A Pi is telling us it's alive and its IP      |
     +-------------+-------------------------------------------+-----------------------------------------------+
-    | 'FILE'      | :meth:`~.Terminal_Station.l_file`      | The pi needs some file from us                |
+    | 'FILE'      | :meth:`~.Terminal_Station.l_file`         | The pi needs some file from us                |
     +-------------+-------------------------------------------+-----------------------------------------------+
 
     """

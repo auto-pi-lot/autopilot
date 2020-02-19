@@ -22,11 +22,21 @@
   <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.2',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
         <script type="text/javascript" src="../../../_static/jquery.js"></script>
         <script type="text/javascript" src="../../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -35,7 +45,6 @@
   
   <link rel="stylesheet" href="../../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -97,9 +106,16 @@
             
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#hardware">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#agents">Agents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.pilot.html">Setup a Pilot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.pilot.html">Pilot Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
@@ -111,7 +127,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
@@ -159,7 +175,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id5">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id1">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -185,6 +201,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.styles.html">styles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.subject.html">subject</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.utils.html">utils</a></li>
@@ -222,6 +239,13 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../todo.html">To-Do</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../changelog/index.html#version-0-2">Version 0.2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../changelog/v0.2.0.html">v0.2.0 (October 26, 2019)</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             
@@ -287,17 +311,20 @@
   <h1>Source code for autopilot.core.gui</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Note:</span>
-<span class="sd">    Let&#39;s start by saying all the GUI code is a little screwy.</span>
+<span class="sd">    Currently, the GUI code is some of the oldest code in the library --</span>
+<span class="sd">    in particular much of it was developed before the network infrastructure was mature.</span>
+<span class="sd">    As a result, a lot of modules are interdependent (eg. pass objects between each other).</span>
+<span class="sd">    This will be corrected before v1.0</span>
 
-<span class="sd">    It was developed before much of the rest of the package, and</span>
-<span class="sd">    thus has some severe violations of modularity - passing</span>
-<span class="sd">    methods back and forth between objects, etc.</span>
-
-<span class="sd">    AKA it was developed much before I knew how Python worked.</span>
-
-<span class="sd">    That being said...</span>
 
 <span class="sd">These classes implement the GUI used by the Terminal.</span>
+
+<span class="sd">The GUI is built using `PySide &lt;https://pypi.org/project/PySide/&gt;`_, a Python wrapper around Qt4.</span>
+
+<span class="sd">These classes are all currently used only by the :class:`~.autopilot.core.terminal.Terminal`.</span>
+
+<span class="sd">If performing any GUI operations in another thread (eg. as a callback from a networking object),</span>
+<span class="sd">the method must be decorated with `@gui_event` which will call perform the update in the main thread as required by Qt.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">sys</span>
@@ -323,7 +350,8 @@
 <span class="kn">from</span> <span class="nn">autopilot.core.networking</span> <span class="kn">import</span> <span class="n">Net_Node</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">autopilot.core.utils</span> <span class="kn">import</span> <span class="n">InvokeEvent</span>
-<span class="kn">from</span> <span class="nn">autopilot.core.plots</span> <span class="kn">import</span> <span class="n">gui_event</span>
+<span class="c1">#from autopilot.core.plots import gui_event</span>
+<span class="kn">from</span> <span class="nn">autopilot.core</span> <span class="kn">import</span> <span class="n">styles</span>
 
 <span class="kn">import</span> <span class="nn">pdb</span>
 <span class="kn">import</span> <span class="nn">time</span>
@@ -421,6 +449,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">,</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">CONTROL_PANEL</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Control_Panel.init_ui"><a class="viewcode-back" href="../../../autopilot.core.gui.html#autopilot.core.gui.Control_Panel.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -666,7 +695,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># type: () -&gt; None</span>
         <span class="n">label</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pilot</span><span class="p">)</span>
-        <span class="n">label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;font: bold 14pt; text-align:right;&quot;</span><span class="p">)</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;font: bold 14pt; text-align:right&quot;</span><span class="p">)</span>
         <span class="n">label</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignVCenter</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">button</span> <span class="o">=</span> <span class="n">Pilot_Button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pilot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_fn</span><span class="p">)</span>
         <span class="n">add_button</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>

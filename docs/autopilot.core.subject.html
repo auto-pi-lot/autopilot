@@ -22,11 +22,21 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'0.2',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -35,11 +45,10 @@
   
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="terminal" href="autopilot.core.terminal.html" />
-    <link rel="prev" title="plots" href="autopilot.core.plots.html" />
+    <link rel="prev" title="styles" href="autopilot.core.styles.html" />
 
     <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
@@ -99,9 +108,16 @@
             
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Setup a Pilot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Pilot Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
@@ -113,7 +129,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
@@ -161,7 +177,7 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id5">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id1">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -187,6 +203,7 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.styles.html">styles</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">subject</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
@@ -224,6 +241,13 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-2">Version 0.2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.2.0.html">v0.2.0 (October 26, 2019)</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             
@@ -295,18 +319,6 @@
 <p>Classes for managing data and protocol access and storage.</p>
 <p>Currently named subject, but will likely be refactored to include other data
 models should the need arise.</p>
-<p><strong>Classes</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Subject</span></code></a>([name,&nbsp;dir,&nbsp;file,&nbsp;new,&nbsp;biography])</td>
-<td>Class for managing one subject’s data and protocol.</td>
-</tr>
-</tbody>
-</table>
 <dl class="class">
 <dt id="autopilot.core.subject.Subject">
 <em class="property">class </em><code class="descclassname">autopilot.core.subject.</code><code class="descname">Subject</code><span class="sig-paren">(</span><em>name=None</em>, <em>dir=None</em>, <em>file=None</em>, <em>new=False</em>, <em>biography=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject" title="Permalink to this definition">¶</a></dt>
@@ -330,93 +342,6 @@ models should the need arise.</p>
 <span class="o">|---</span> <span class="n">info</span> <span class="o">-</span> <span class="n">group</span> <span class="k">with</span> <span class="n">biographical</span> <span class="n">information</span> <span class="k">as</span> <span class="n">attributes</span>
 </pre></div>
 </div>
-<p><strong>Miscallaneous</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.subject.Subject.Hash_Table" title="autopilot.core.subject.Subject.Hash_Table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Hash_Table</span></code></a></td>
-<td>Class to describe table for hash history</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.subject.Subject.History_Table" title="autopilot.core.subject.Subject.History_Table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">History_Table</span></code></a></td>
-<td>Class to describe parameter and protocol change history</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.subject.Subject.Weight_Table" title="autopilot.core.subject.Subject.Weight_Table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Weight_Table</span></code></a></td>
-<td>Class to describe table for weight history</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.subject.Subject.assign_protocol" title="autopilot.core.subject.Subject.assign_protocol"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assign_protocol</span></code></a>(protocol[,&nbsp;step_n])</td>
-<td>Assign a protocol to the subject.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.subject.Subject.close_hdf" title="autopilot.core.subject.Subject.close_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close_hdf</span></code></a>(h5f)</td>
-<td>Flushes &amp; closes the open hdf file.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.subject.Subject.data_thread" title="autopilot.core.subject.Subject.data_thread"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data_thread</span></code></a>(queue)</td>
-<td>Thread that keeps hdf file open and receives data while task is running.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.subject.Subject.ensure_structure" title="autopilot.core.subject.Subject.ensure_structure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ensure_structure</span></code></a>()</td>
-<td>Ensure that our h5f has the appropriate baseline structure as defined in <cite>self.STRUCTURE</cite></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.subject.Subject.flush_current" title="autopilot.core.subject.Subject.flush_current"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flush_current</span></code></a>()</td>
-<td>Flushes the ‘current’ attribute in the subject object to the current filenode</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.subject.Subject.get_step_history" title="autopilot.core.subject.Subject.get_step_history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_step_history</span></code></a>([use_history])</td>
-<td>Gets a dataframe of step numbers, timestamps, and step names as a coarse view of training status.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.subject.Subject.get_timestamp" title="autopilot.core.subject.Subject.get_timestamp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_timestamp</span></code></a>([simple])</td>
-<td>Makes a timestamp.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.subject.Subject.get_trial_data" title="autopilot.core.subject.Subject.get_trial_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trial_data</span></code></a>([step])</td>
-<td>Get trial data from the current task.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.subject.Subject.get_weight" title="autopilot.core.subject.Subject.get_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_weight</span></code></a>([which,&nbsp;include_baseline])</td>
-<td>Gets start and stop weights.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.subject.Subject.graduate" title="autopilot.core.subject.Subject.graduate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graduate</span></code></a>()</td>
-<td>Increase the current step by one, unless it is the last step.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.subject.Subject.new_subject_file" title="autopilot.core.subject.Subject.new_subject_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">new_subject_file</span></code></a>(biography)</td>
-<td>Create a new subject file and make the general filestructure.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.subject.Subject.open_hdf" title="autopilot.core.subject.Subject.open_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open_hdf</span></code></a>([mode])</td>
-<td>Opens the hdf5 file.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.subject.Subject.prepare_run" title="autopilot.core.subject.Subject.prepare_run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_run</span></code></a>()</td>
-<td>Prepares the Subject object to receive data while running the task.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.subject.Subject.save_data" title="autopilot.core.subject.Subject.save_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_data</span></code></a>(data)</td>
-<td>Alternate and equivalent method of putting data in the queue as <cite>Subject.data_queue.put(data)</cite></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.subject.Subject.set_weight" title="autopilot.core.subject.Subject.set_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_weight</span></code></a>(date,&nbsp;col_name,&nbsp;new_value)</td>
-<td>Updates an existing weight in the weight table.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.subject.Subject.stash_current" title="autopilot.core.subject.Subject.stash_current"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stash_current</span></code></a>()</td>
-<td>Save the current protocol in the history group and delete the node</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.subject.Subject.stop_run" title="autopilot.core.subject.Subject.stop_run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop_run</span></code></a>()</td>
-<td>puts ‘END’ in the data_queue, which causes <a class="reference internal" href="#autopilot.core.subject.Subject.data_thread" title="autopilot.core.subject.Subject.data_thread"><code class="xref py py-meth docutils literal notranslate"><span class="pre">data_thread()</span></code></a> to end.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.subject.Subject.update_biography" title="autopilot.core.subject.Subject.update_biography"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_biography</span></code></a>(params)</td>
-<td>Change or make a new biographical attribute, stored as attributes of the <cite>info</cite> group.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.subject.Subject.update_history" title="autopilot.core.subject.Subject.update_history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_history</span></code></a>(type,&nbsp;name,&nbsp;value[,&nbsp;step])</td>
-<td>Update the history table when changes are made to the subject’s protocol.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.core.subject.Subject.update_weights" title="autopilot.core.subject.Subject.update_weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_weights</span></code></a>([start,&nbsp;stop])</td>
-<td>Store either a starting or stopping mass.</td>
-</tr>
-</tbody>
-</table>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -704,7 +629,7 @@ objects to pass data to be stored.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">DataFrame of requested steps’ trial data.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.25.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.25.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -722,7 +647,7 @@ as a coarse view of training status.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>use_history</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – whether to use the history table or to reconstruct steps and dates from the trial table itself.
 compatibility fix for old versions that didn’t stash step changes when the whole protocol was updated.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.25.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.25.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -915,7 +840,7 @@ call and <cite>stop</cite> in a later call, but <cite>stop</cite> should not be 
         <a href="autopilot.core.terminal.html" class="btn btn-neutral float-right" title="terminal" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="autopilot.core.plots.html" class="btn btn-neutral float-left" title="plots" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="autopilot.core.styles.html" class="btn btn-neutral float-left" title="styles" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

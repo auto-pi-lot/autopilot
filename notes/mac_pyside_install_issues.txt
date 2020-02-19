@@ -1,0 +1,7 @@
+- @rpath/libpyside-pythonx.x.x.x.dylib not found
+
+cd /usr/local/lib/python2.7/site-packages/PySide
+for filename in $(ls *.so); do install_name_tool  -add_rpath `pwd` $filename; done
+
+cd /usr/local/lib/python2.7/site-packages/PySide
+sudo install_name_tool -change libpyside-python2.7.1.2.dylib /usr/local/lib/libpyside-python2.7.1.2.dylib QtCore.so

@@ -22,11 +22,21 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'0.2',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -35,7 +45,6 @@
   
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="networking" href="autopilot.core.networking.html" />
@@ -99,9 +108,16 @@
             
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Setup a Pilot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Pilot Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
@@ -113,7 +129,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
@@ -161,7 +177,7 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id5">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id1">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -187,6 +203,7 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.styles.html">styles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">subject</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
@@ -224,6 +241,13 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-2">Version 0.2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.2.0.html">v0.2.0 (October 26, 2019)</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             
@@ -322,7 +346,7 @@ works without getting too muddy.</p>
 <p class="first admonition-title">Warning</p>
 <p class="last">In order to use pigpio, the pigpio daemon must be running. See <a class="reference external" href="http://abyz.me.uk/rpi/pigpio/python.html">the docs</a>
 Usually <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code> s should be started by the bash script or systemd service
-generated by <code class="xref py py-mod docutils literal notranslate"><span class="pre">setup.setup_pilot</span></code>, which starts pigpiod.</p>
+generated by <a class="reference internal" href="autopilot.setup.setup_pilot.html#module-autopilot.setup.setup_pilot" title="autopilot.setup.setup_pilot"><code class="xref py py-mod docutils literal notranslate"><span class="pre">setup.setup_pilot</span></code></a>, which starts pigpiod.</p>
 </div>
 <p><strong>Data</strong></p>
 <table border="1" class="longtable docutils">
@@ -332,10 +356,10 @@ generated by <code class="xref py py-mod docutils literal notranslate"><span cla
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="#autopilot.core.hardware.BCM_TO_BOARD" title="autopilot.core.hardware.BCM_TO_BOARD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BCM_TO_BOARD</span></code></a></td>
-<td>The inverse of <a class="reference internal" href="#autopilot.core.hardware.BOARD_TO_BCM" title="autopilot.core.hardware.BOARD_TO_BCM"><code class="xref py py-const docutils literal notranslate"><span class="pre">BOARD_TO_BCM</span></code></a>.</td>
+<td><em>dict</em> – The inverse of <a class="reference internal" href="#autopilot.core.hardware.BOARD_TO_BCM" title="autopilot.core.hardware.BOARD_TO_BCM"><code class="xref py py-const docutils literal notranslate"><span class="pre">BOARD_TO_BCM</span></code></a>.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#autopilot.core.hardware.BOARD_TO_BCM" title="autopilot.core.hardware.BOARD_TO_BCM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BOARD_TO_BCM</span></code></a></td>
-<td>Mapping from board (physical) numbering to BCM numbering.</td>
+<td><em>dict</em> – Mapping from board (physical) numbering to BCM numbering.</td>
 </tr>
 </tbody>
 </table>
@@ -378,32 +402,16 @@ generated by <code class="xref py py-mod docutils literal notranslate"><span cla
 <dl class="data">
 <dt id="autopilot.core.hardware.BOARD_TO_BCM">
 <code class="descclassname">autopilot.core.hardware.</code><code class="descname">BOARD_TO_BCM</code><em class="property"> = {3: 2, 5: 3, 7: 4, 8: 14, 10: 15, 11: 17, 12: 18, 13: 27, 15: 22, 16: 23, 18: 24, 19: 10, 21: 9, 22: 25, 23: 11, 24: 8, 26: 7, 29: 5, 31: 6, 32: 12, 33: 13, 35: 19, 36: 16, 37: 26, 38: 20, 40: 21}</em><a class="headerlink" href="#autopilot.core.hardware.BOARD_TO_BCM" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mapping from board (physical) numbering to BCM numbering.</p>
+<dd><p><em>dict</em> – Mapping from board (physical) numbering to BCM numbering.</p>
 <p>See <a class="reference external" href="https://pinout.xyz/#">this pinout</a>.</p>
 <p>Hardware objects take board numbered pins and convert them to BCM
 numbers for use with <cite>pigpio</cite>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="data">
 <dt id="autopilot.core.hardware.BCM_TO_BOARD">
 <code class="descclassname">autopilot.core.hardware.</code><code class="descname">BCM_TO_BOARD</code><em class="property"> = {2: 3, 3: 5, 4: 7, 5: 29, 6: 31, 7: 26, 8: 24, 9: 21, 10: 19, 11: 23, 12: 32, 13: 33, 14: 8, 15: 10, 16: 36, 17: 11, 18: 12, 19: 35, 20: 38, 21: 40, 22: 15, 23: 16, 24: 18, 25: 22, 26: 37, 27: 13}</em><a class="headerlink" href="#autopilot.core.hardware.BCM_TO_BOARD" title="Permalink to this definition">¶</a></dt>
-<dd><p>The inverse of <a class="reference internal" href="#autopilot.core.hardware.BOARD_TO_BCM" title="autopilot.core.hardware.BOARD_TO_BCM"><code class="xref py py-const docutils literal notranslate"><span class="pre">BOARD_TO_BCM</span></code></a>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></td>
-</tr>
-</tbody>
-</table>
+<dd><p><em>dict</em> – The inverse of <a class="reference internal" href="#autopilot.core.hardware.BOARD_TO_BCM" title="autopilot.core.hardware.BOARD_TO_BCM"><code class="xref py py-const docutils literal notranslate"><span class="pre">BOARD_TO_BCM</span></code></a>.</p>
 </dd></dl>
 
 <dl class="class">
@@ -1248,7 +1256,7 @@ make weighing faster.</p>
 </table>
 <dl class="attribute">
 <dt id="autopilot.core.hardware.Scale.MODEL">
-<code class="descname">MODEL</code><em class="property"> = {'stamps.com': {'product_id': 27251, 'vendor_id': 5190}}</em><a class="headerlink" href="#autopilot.core.hardware.Scale.MODEL" title="Permalink to this definition">¶</a></dt>
+<code class="descname">MODEL</code><em class="property"> = {'stamps.com': {'vendor_id': 5190, 'product_id': 27251}}</em><a class="headerlink" href="#autopilot.core.hardware.Scale.MODEL" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

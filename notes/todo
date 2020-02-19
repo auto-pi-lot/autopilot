@@ -72,6 +72,9 @@
 - opencl for accelerating video encoding? https://abhitronix.github.io/2019/01/15/VC4CL-1/ https://trac.ffmpeg.org/wiki/HWAccelIntro
 - use a thread pool for handling messages, spawning threads could be costly
 - make generalized callback api for harware objects that is copacetc with gpio.Digital_In
+- for changing setup makefiles into python setup files: https://jichu4n.com/posts/how-to-add-custom-build-steps-and-commands-to-setuppy/ https://docs.python.org/2/distutils/extending.html
+- multi version installs here: https://packaging.python.org/guides/multi-version-installs/
+- more details on packaging: https://manikos.github.io/a-tour-on-python-packaging
 
 - use a thread pool for handling messages, spawning threads could be costly
 - make arrayqueue to efficiently stream frames https://stackoverflow.com/a/38775513

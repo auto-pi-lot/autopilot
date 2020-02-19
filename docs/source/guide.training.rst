@@ -32,7 +32,7 @@ Using the Protocol Wizard
     This is related to the unification of the parameter structure in Autopilot 0.3 (see :ref:`todo`).
     Protocols can be edited after creation in the Protocol Wizard using the format examples in the manual protocol creation section below.
 
-The Protocol Wizard allows you to build protocols using all the tasks in :mod:`autopilot.tasks` (specifically that are registered in the :var:`autopilot.tasks.TASK_LIST`).
+The Protocol Wizard allows you to build protocols using all the tasks in :mod:`autopilot.tasks` (specifically that are registered in the :data:`~autopilot.tasks.TASK_LIST`).
 It extracts the `PARAMS` dictionary from each task class, adds a few general parameters, and allows the user to fill them.
 
 For this example, we will create a protocol for a freely-moving two-alternative forced choice task [#f1]_ .
@@ -189,8 +189,8 @@ Protocols can be created manually by...
 
 
 2. Adding general task parameters ``stim``, ``reward``, ``graduation``, ``step_name``, and ``task_type``.
-These are just examples, the ``stim`` and ``reward`` fields can be any parameters consumed by a :class:`autopilot.stim.managers.Reward_Manager` or :class:`autopilot.stim.managers.Stimulus_Manager`.
-The ``graduation`` field can be any parameters consumed by a :class:`autopilot.tasks.graduation.Graduation` object. The ``step_name`` and ``task_type`` need to be strings, the ``task_type`` corresponding to a key in the :var:`autopilot.tasks.TASK_LIST`.::
+These are just examples, the ``stim`` and ``reward`` fields can be any parameters consumed by a :class:`~autopilot.stim.managers.Reward_Manager` or :class:`~autopilot.stim.managers.Stimulus_Manager`.
+The ``graduation`` field can be any parameters consumed by a :class:`~autopilot.tasks.graduation.Graduation` object. The ``step_name`` and ``task_type`` need to be strings, the ``task_type`` corresponding to a key in the :data:`~autopilot.tasks.TASK_LIST`.::
 
     params.update({
         'stim': {
@@ -263,7 +263,7 @@ If a Pilot doesn't start the task appropriately, if you have installed the Pilot
 
 .. note::
 
-    Because Raspberry Pis are common prey on the internet, we strongly advise changing the default password, installing RSA keys to access the pi, and disabling password access via SSH (see :ref:`Pilot Setup <setup_pilot>`_).
+    Because Raspberry Pis are common prey on the internet, we strongly advise changing the default password, installing RSA keys to access the pi, and disabling password access via SSH (see `Pilot Setup <setup_pilot_>`_).
 
 and then printing the end of the logs with ``journalctl``::
 

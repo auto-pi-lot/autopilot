@@ -15,7 +15,6 @@ core
    autopilot.core.networking
    autopilot.core.pilot
    autopilot.core.plots
-   autopilot.core.reward
    autopilot.core.styles
    autopilot.core.subject
    autopilot.core.terminal

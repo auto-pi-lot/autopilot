@@ -22,11 +22,21 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'0.2',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -35,7 +45,6 @@
   
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="task" href="autopilot.tasks.task.html" />
@@ -99,9 +108,16 @@
             
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Setup a Pilot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Pilot Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
@@ -113,7 +129,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Setup a Terminal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
@@ -161,7 +177,7 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id5">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id1">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -187,6 +203,7 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.styles.html">styles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">subject</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.terminal.html">terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
@@ -224,6 +241,13 @@
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-2">Version 0.2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.2.0.html">v0.2.0 (October 26, 2019)</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             
@@ -292,18 +316,6 @@
             
   <div class="section" id="module-autopilot.tasks.nafc">
 <span id="nafc"></span><h1>nafc<a class="headerlink" href="#module-autopilot.tasks.nafc" title="Permalink to this headline">¶</a></h1>
-<p><strong>Classes</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc" title="autopilot.tasks.nafc.Nafc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Nafc</span></code></a>([stage_block,&nbsp;stim,&nbsp;reward,&nbsp;…])</td>
-<td>A Two-alternative forced choice task.</td>
-</tr>
-</tbody>
-</table>
 <dl class="class">
 <dt id="autopilot.tasks.nafc.Nafc">
 <em class="property">class </em><code class="descclassname">autopilot.tasks.nafc.</code><code class="descname">Nafc</code><span class="sig-paren">(</span><em>stage_block=None</em>, <em>stim=None</em>, <em>reward=50</em>, <em>req_reward=False</em>, <em>punish_stim=False</em>, <em>punish_dur=100</em>, <em>correction=False</em>, <em>correction_pct=50.0</em>, <em>bias_mode=False</em>, <em>bias_threshold=20</em>, <em>current_trial=0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/nafc.html#Nafc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.nafc.Nafc" title="Permalink to this definition">¶</a></dt>
@@ -316,72 +328,6 @@
 <li><strong>discrim</strong> - respond to input, set reward/punishment triggers on target/distractor ports</li>
 <li><strong>reinforcement</strong> - deliver reward/punishment, end trial.</li>
 </ul>
-<p><strong>Attributes</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.HARDWARE" title="autopilot.tasks.nafc.Nafc.HARDWARE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HARDWARE</span></code></a></td>
-<td>dict() -&gt; new empty dictionary</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.PARAMS" title="autopilot.tasks.nafc.Nafc.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></td>
-<td>Dictionary that remembers insertion order</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.PLOT" title="autopilot.tasks.nafc.Nafc.PLOT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLOT</span></code></a></td>
-<td>dict() -&gt; new empty dictionary</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.STAGE_NAMES" title="autopilot.tasks.nafc.Nafc.STAGE_NAMES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">STAGE_NAMES</span></code></a></td>
-<td>list() -&gt; new empty list</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Miscallaneous</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.TrialData" title="autopilot.tasks.nafc.Nafc.TrialData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrialData</span></code></a></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Methods</strong></p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.discrim" title="autopilot.tasks.nafc.Nafc.discrim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">discrim</span></code></a>(*args,&nbsp;**kwargs)</td>
-<td>Stage 1:  respond to input, set reward/punishment triggers on target/distractor ports</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.flash_leds" title="autopilot.tasks.nafc.Nafc.flash_leds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flash_leds</span></code></a>()</td>
-<td>flash lights for punish_dir</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.punish" title="autopilot.tasks.nafc.Nafc.punish"><code class="xref py py-obj docutils literal notranslate"><span class="pre">punish</span></code></a>()</td>
-<td>Flash lights, play punishment sound if set</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.reinforcement" title="autopilot.tasks.nafc.Nafc.reinforcement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reinforcement</span></code></a>(*args,&nbsp;**kwargs)</td>
-<td>Stage 2 - deliver reward/punishment, end trial.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.request" title="autopilot.tasks.nafc.Nafc.request"><code class="xref py py-obj docutils literal notranslate"><span class="pre">request</span></code></a>(*args,&nbsp;**kwargs)</td>
-<td>Stage 0: compute stimulus, set request trigger in center port.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.respond" title="autopilot.tasks.nafc.Nafc.respond"><code class="xref py py-obj docutils literal notranslate"><span class="pre">respond</span></code></a>(pin)</td>
-<td>Set self.response</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.stim_end" title="autopilot.tasks.nafc.Nafc.stim_end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stim_end</span></code></a>()</td>
-<td>called by stimulus callback</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#autopilot.tasks.nafc.Nafc.stim_start" title="autopilot.tasks.nafc.Nafc.stim_start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stim_start</span></code></a>()</td>
-<td>mark discrim_playing = true</td>
-</tr>
-</tbody>
-</table>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -389,7 +335,7 @@
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first simple">
 <li><strong>target</strong> (<em>&quot;L&quot;</em><em>, </em><em>&quot;R&quot;</em>) – Correct response</li>
 <li><strong>distractor</strong> (<em>&quot;L&quot;</em><em>, </em><em>&quot;R&quot;</em>) – Incorrect response</li>
-<li><strong>stim</strong> – Current stimulus</li>
+<li><a class="reference internal" href="autopilot.stim.html#module-autopilot.stim" title="autopilot.stim"><strong>stim</strong></a> – Current stimulus</li>
 <li><a class="reference internal" href="autopilot.tasks.free_water.html#autopilot.tasks.free_water.Free_Water.response" title="autopilot.tasks.free_water.Free_Water.response"><strong>response</strong></a> (<em>&quot;L&quot;</em><em>, </em><em>&quot;R&quot;</em>) – Response to discriminand</li>
 <li><strong>correct</strong> (<em>0</em><em>, </em><em>1</em>) – Current trial was correct/incorrect</li>
 <li><strong>correction_trial</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – If using correction trials, last trial was a correction trial</li>
@@ -432,12 +378,12 @@
 
 <dl class="attribute">
 <dt id="autopilot.tasks.nafc.Nafc.PARAMS">
-<code class="descname">PARAMS</code><em class="property"> = {'bias_mode': {'tag': 'Bias Correction Mode', 'type': 'list', 'values': {'None': 0, 'Proportional': 1, 'Thresholded Proportional': 2}}, 'bias_threshold': {'depends': {'bias_mode': 2}, 'tag': 'Bias Correction Threshold (%)', 'type': 'int'}, 'correction': {'tag': 'Correction Trials', 'type': 'bool'}, 'correction_pct': {'depends': {'correction': True}, 'tag': '% Correction Trials', 'type': 'int'}, 'punish_dur': {'tag': 'Punishment Duration (ms)', 'type': 'int'}, 'punish_stim': {'tag': 'White Noise Punishment', 'type': 'bool'}, 'req_reward': {'tag': 'Request Rewards', 'type': 'bool'}, 'reward': {'tag': 'Reward Duration (ms)', 'type': 'int'}, 'stim': {'tag': 'Sounds', 'type': 'sounds'}}</em><a class="headerlink" href="#autopilot.tasks.nafc.Nafc.PARAMS" title="Permalink to this definition">¶</a></dt>
+<code class="descname">PARAMS</code><em class="property"> = {'bias_mode': {'values': {'Proportional': 1, 'None': 0, 'Thresholded Proportional': 2}, 'tag': 'Bias Correction Mode', 'type': 'list'}, 'bias_threshold': {'depends': {'bias_mode': 2}, 'tag': 'Bias Correction Threshold (%)', 'type': 'int'}, 'correction': {'tag': 'Correction Trials', 'type': 'bool'}, 'correction_pct': {'depends': {'correction': True}, 'tag': '% Correction Trials', 'type': 'int'}, 'punish_dur': {'tag': 'Punishment Duration (ms)', 'type': 'int'}, 'punish_stim': {'tag': 'White Noise Punishment', 'type': 'bool'}, 'req_reward': {'tag': 'Request Rewards', 'type': 'bool'}, 'reward': {'tag': 'Reward Duration (ms)', 'type': 'int'}, 'stim': {'tag': 'Sounds', 'type': 'sounds'}}</em><a class="headerlink" href="#autopilot.tasks.nafc.Nafc.PARAMS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
 <dt id="autopilot.tasks.nafc.Nafc.PLOT">
-<code class="descname">PLOT</code><em class="property"> = {'chance_bar': True, 'data': {'correct': 'rollmean', 'response': 'segment', 'target': 'point'}, 'roll_window': 50}</em><a class="headerlink" href="#autopilot.tasks.nafc.Nafc.PLOT" title="Permalink to this definition">¶</a></dt>
+<code class="descname">PLOT</code><em class="property"> = {'chance_bar': True, 'data': {'correct': 'rollmean', 'target': 'point', 'response': 'segment'}, 'roll_window': 50}</em><a class="headerlink" href="#autopilot.tasks.nafc.Nafc.PLOT" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
@@ -453,7 +399,7 @@
 
 <dl class="attribute">
 <dt id="autopilot.tasks.nafc.Nafc.HARDWARE">
-<code class="descname">HARDWARE</code><em class="property"> = {'LEDS': {'C': &lt;class 'autopilot.core.hardware.LED_RGB'&gt;, 'L': &lt;class 'autopilot.core.hardware.LED_RGB'&gt;, 'R': &lt;class 'autopilot.core.hardware.LED_RGB'&gt;}, 'POKES': {'C': &lt;class 'autopilot.core.hardware.Beambreak'&gt;, 'L': &lt;class 'autopilot.core.hardware.Beambreak'&gt;, 'R': &lt;class 'autopilot.core.hardware.Beambreak'&gt;}, 'PORTS': {'C': &lt;class 'autopilot.core.hardware.Solenoid'&gt;, 'L': &lt;class 'autopilot.core.hardware.Solenoid'&gt;, 'R': &lt;class 'autopilot.core.hardware.Solenoid'&gt;}}</em><a class="headerlink" href="#autopilot.tasks.nafc.Nafc.HARDWARE" title="Permalink to this definition">¶</a></dt>
+<code class="descname">HARDWARE</code><em class="property"> = {'LEDS': {'C': &lt;class 'autopilot.core.hardware.LED_RGB'&gt;, 'R': &lt;class 'autopilot.core.hardware.LED_RGB'&gt;, 'L': &lt;class 'autopilot.core.hardware.LED_RGB'&gt;}, 'POKES': {'C': &lt;class 'autopilot.core.hardware.Beambreak'&gt;, 'R': &lt;class 'autopilot.core.hardware.Beambreak'&gt;, 'L': &lt;class 'autopilot.core.hardware.Beambreak'&gt;}, 'PORTS': {'C': &lt;class 'autopilot.core.hardware.Solenoid'&gt;, 'R': &lt;class 'autopilot.core.hardware.Solenoid'&gt;, 'L': &lt;class 'autopilot.core.hardware.Solenoid'&gt;}}</em><a class="headerlink" href="#autopilot.tasks.nafc.Nafc.HARDWARE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">

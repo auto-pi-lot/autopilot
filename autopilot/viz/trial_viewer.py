@@ -1,4 +1,6 @@
 """
+Tools to visulize data after collection.
+
 Warning:
     this module is unfinished, so it is undocumented.
 """

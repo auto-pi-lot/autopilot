@@ -60,7 +60,7 @@ The ``PINS`` that are set by default are
 * **PORTS** - :class:`~autopilot.core.hardware.Solenoid` s, which dispense water rewards, digital logic output.
 * **FLAGS** - :class:`~autopilot.core.hardware.Flag` s, which are a trivial subclass of :class:`~autopilot.core.hardware.Beambreak` with their default logic directions reversed.
 
-TODO:
+.. todo:
 
     Hardware configuration will be extended to include additional configuration options beyond pin number, obviating classes like :class:`~autopilot.core.hardware.Flag` which are identical to other classes with different settings.
 
@@ -193,7 +193,7 @@ Autopilot uses `Jack Audio <http://jackaudio.org/>`_ to play sounds.
 
     git clone git://github.com/jackaudio/jack2 --depth 1
 
-12. Configure, build, install::
+#. Configure, build, install::
 
     cd jack2
     # use ./waf --help to list compile options
@@ -202,7 +202,7 @@ Autopilot uses `Jack Audio <http://jackaudio.org/>`_ to play sounds.
     sudo ./waf install
     sudo ldconfig #reconfigure links
 
-13. Give jack some more juice::
+#. Give jack some more juice::
 
     # let jack use more memory than Raspbian wants it to
     sudo sh -c "echo @audio - memlock 256000 >> /etc/security/limits.conf"
@@ -210,17 +210,17 @@ Autopilot uses `Jack Audio <http://jackaudio.org/>`_ to play sounds.
     # let jack take a higher priority than Raspbian wants it to
     sudo sh -c "echo @audio - rtprio 75 >> /etc/security/limits.conf"
 
-14. Install the jack python wrapper::
+#. Install the jack python wrapper::
 
     sudo -H pip install JACK-Client
 
 We also use the the `Hifiberry Amp 2 <https://www.hifiberry.com/shop/boards/hifiberry-amp2/>`_ as our soundcard and amplifier.
 
-15. Add pi user (or whatever username you're using) to i2c group::
+#. Add pi user (or whatever username you're using) to i2c group::
 
     sudo adduser pi i2c
 
-16. Turn onboard audio off and enable hifiberry overlays in ``/boot/config.txt``.
+#. Turn onboard audio off and enable hifiberry overlays in ``/boot/config.txt``.
 
     Comment out::
 
@@ -238,7 +238,7 @@ We also use the the `Hifiberry Amp 2 <https://www.hifiberry.com/shop/boards/hifi
         sudo sed -i 's/^dtparam=audio=on/#dtparam=audio=on/g' /boot/config.txt
         sudo sed -i '$s/$/\ndtoverlay=hifiberry-dacplus\ndtoverlay=i2s-mmap\ndtoverlay=i2c-mmap\ndtparam=i2c1=on\ndtparam=i2c_arm=on/' /boot/config.txt
 
-17. Edit ALSA configuration (``/etc/asound.conf``) so hifiberry is default sound card. M
+#. Edit ALSA configuration (``/etc/asound.conf``) so hifiberry is default sound card.
 
     Make it look like this::
 
@@ -253,7 +253,7 @@ We also use the the `Hifiberry Amp 2 <https://www.hifiberry.com/shop/boards/hifi
 
         echo -e 'pcm.!default {\n type hw card 0\n}\nctl.!default {\n type hw card 0\n}' | sudo tee $ALSAFILE
 
-18. Reboot and test with ``aplay -l`` which shoudl look something like this::
+#. Reboot and test with ``aplay -l`` which should look something like this::
 
     pi@raspberrypi:~ $ aplay -l
     **** List of PLAYBACK Hardware Devices ****
@@ -266,7 +266,7 @@ Video Setup
 
 If you're using Autopilot to present visual stimuli, it runs in an X11 instance and uses `PsychoPy <https://www.psychopy.org/>`_
 
-19. Psychopy and X11 both have quite a few dependencies. Currently, there is no ``opencv-python`` wheel available for the raspberry pi (it can be `compiled manually <https://www.learnopencv.com/install-opencv-4-on-raspberry-pi/>`), so we have to install the psychopy dependencies piecemeal.::
+#. Psychopy and X11 both have quite a few dependencies. Currently, there is no ``opencv-python`` wheel available for the raspberry pi (it can be `compiled manually <https://www.learnopencv.com/install-opencv-4-on-raspberry-pi/>`), so we have to install the psychopy dependencies piecemeal.::
 
     # X11 dependencies
     sudo apt-get install -y \
@@ -301,23 +301,23 @@ If you're using Autopilot to present visual stimuli, it runs in an X11 instance 
         sounddevice \
         soundfile
 
-20. Enable the Raspberry pi's OpenGL driver:
+#. Enable the Raspberry pi's OpenGL driver:
     * ``sudo raspi-config`` > advanced > GL Driver > "GL (FakeKMS)"
     * then reboot
 
-22. Psychopy uses a few video backends, but in our experience `glfw <https://www.glfw.org/>`_ is the fastest. We have to `compile it manually <https://www.glfw.org/docs/latest/compile_guide.html>`_::
+#. Psychopy uses a few video backends, but in our experience `glfw <https://www.glfw.org/>`_ is the fastest. We have to `compile it manually <https://www.glfw.org/docs/latest/compile_guide.html>`_::
 
-git clone https://github.com/glfw/glfw
-cd glfw
-cmake .
-make -j7
-sudo -H make install
+    git clone https://github.com/glfw/glfw
+    cd glfw
+    cmake .
+    make -j7
+    sudo -H make install
 
-23. After all dependencies have been installed, install Psychopy.::
+#. After all dependencies have been installed, install Psychopy.::
 
     pip install psychopy --no-deps
 
-24. Set the default backend to glfw::
+#. Set the default backend to glfw::
 
     nano ~/.psychopy3/userPrefs.cfg
     # add the line
@@ -330,7 +330,9 @@ Optional Installation Steps
 sudo dpkg-reconfigure locales
 sudo dpkg-reconfigure keyboard-configuration
 
-xxx. **Optional:** Setup SSH access and install RSA key
+.. todo::
+
+    xxx. **Optional:** Setup SSH access and install RSA key
 
 
 
