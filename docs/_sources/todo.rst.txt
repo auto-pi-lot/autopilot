@@ -10,7 +10,5 @@ To-Do
     - Specifically, want dropdown to select stim manager (sided, n sides, etc.), to create subwidget, then dropdown to select type of stim "audio", "visual" to control which are populated.
 * Finalize continuous data handling in the :class:`~autopilot.core.subject.Subject` class.
 
-* Make hardware setup schema that lets hardware modules be installed as-needed, and check the status of their install on import
-
 
 

@@ -22,21 +22,11 @@
   <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../../',
-              VERSION:'0.2',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -45,6 +35,7 @@
   
   <link rel="stylesheet" href="../../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -70,9 +61,6 @@
             <a href="../../../index.html" class="icon icon-home"> Autopilot
           
 
-          
-            
-            <img src="../../../_static/autopilot_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -154,7 +142,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#params">PARAMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#data">Data</a></li>
@@ -175,7 +163,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id1">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id5">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -312,13 +300,14 @@
 <span></span><span class="c1"># import numpy as np</span>
 <span class="kn">from</span> <span class="nn">autopilot</span> <span class="kn">import</span> <span class="n">prefs</span>
 <span class="k">if</span> <span class="n">prefs</span><span class="o">.</span><span class="n">AGENT</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;terminal&quot;</span><span class="p">,</span> <span class="s2">&quot;docs&quot;</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">PySide</span> <span class="kn">import</span> <span class="n">QtCore</span>
+    <span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtCore</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">linregress</span>
 <span class="c1"># from subprocess import call</span>
 <span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <div class="viewcode-block" id="Param"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.Param">[docs]</a><span class="k">class</span> <span class="nc">Param</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -328,8 +317,8 @@
 <span class="sd">        Not Implemented.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Class to hold and verify task and gui parameters</span>
-    <span class="n">tag</span> <span class="o">=</span> <span class="bp">None</span> <span class="c1"># human-readable description of parameter</span>
-    <span class="nb">type</span> <span class="o">=</span> <span class="bp">None</span> <span class="c1"># string that describes the type of input or param</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># human-readable description of parameter</span>
+    <span class="nb">type</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># string that describes the type of input or param</span>
 
     <span class="c1"># possible types</span>
     <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;int&#39;</span><span class="p">,</span> <span class="s1">&#39;bool&#39;</span><span class="p">,</span> <span class="s1">&#39;list&#39;</span><span class="p">]</span>
@@ -417,7 +406,7 @@
 <span class="sd">                event:</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">event</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">event</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">event</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="k">return</span> <span class="bp">True</span></div></div>
+            <span class="k">return</span> <span class="kc">True</span></div></div>
 
 
 <div class="viewcode-block" id="ReturnThread"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.ReturnThread">[docs]</a><span class="k">class</span> <span class="nc">ReturnThread</span><span class="p">(</span><span class="n">Thread</span><span class="p">):</span>
@@ -425,20 +414,20 @@
 <span class="sd">    Thread whose .join() method returns the value from the function</span>
 <span class="sd">    thx to https://stackoverflow.com/a/6894023</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-                 <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{},</span> <span class="n">Verbose</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{},</span> <span class="n">Verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">Thread</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">Verbose</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_return</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_return</span> <span class="o">=</span> <span class="kc">None</span>
 <div class="viewcode-block" id="ReturnThread.run"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.ReturnThread.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Thread__target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Thread__target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_return</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Thread__target</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_Thread__args</span><span class="p">,</span>
                                                 <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_Thread__kwargs</span><span class="p">)</span></div>
-<div class="viewcode-block" id="ReturnThread.join"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.ReturnThread.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ReturnThread.join"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.ReturnThread.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">Thread</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return</span></div></div>
 
-<div class="viewcode-block" id="list_subjects"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.list_subjects">[docs]</a><span class="k">def</span> <span class="nf">list_subjects</span><span class="p">(</span><span class="n">pilot_db</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="list_subjects"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.list_subjects">[docs]</a><span class="k">def</span> <span class="nf">list_subjects</span><span class="p">(</span><span class="n">pilot_db</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a dictionary of a pilot_db, return the subjects that are in it.</span>
 
@@ -450,7 +439,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">pilot_db</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">pilot_db</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">pilot_db</span> <span class="o">=</span> <span class="n">load_pilotdb</span><span class="p">()</span>
 
     <span class="n">subjects</span> <span class="o">=</span> <span class="p">[]</span>
@@ -460,7 +449,7 @@
 
     <span class="k">return</span> <span class="n">subjects</span></div>
 
-<div class="viewcode-block" id="load_pilotdb"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.load_pilotdb">[docs]</a><span class="k">def</span> <span class="nf">load_pilotdb</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="load_pilotdb"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.load_pilotdb">[docs]</a><span class="k">def</span> <span class="nf">load_pilotdb</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Try to load the file_db</span>
 
@@ -471,7 +460,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">file_name</span> <span class="o">=</span> <span class="s1">&#39;/usr/autopilot/pilot_db.json&#39;</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">pilot_file</span><span class="p">:</span>
@@ -487,6 +476,34 @@
         <span class="n">pilot_db</span> <span class="o">=</span> <span class="n">pilot_dict</span>
 
     <span class="k">return</span> <span class="n">pilot_db</span></div>
+
+<div class="viewcode-block" id="coerce_discrete"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.coerce_discrete">[docs]</a><span class="k">def</span> <span class="nf">coerce_discrete</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;L&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">}):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Coerce a discrete/string column of a pandas dataframe into numeric values</span>
+
+<span class="sd">    Default is to map &#39;L&#39; to 0 and &#39;R&#39; to 1 as in the case of Left/Right 2AFC tasks</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (:class:`pandas.DataFrame`) : dataframe with the column to transform</span>
+<span class="sd">        col (str):  name of column</span>
+<span class="sd">        mapping (dict): mapping of strings to numbers</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        df (:class:`pandas.DataFrame`) : transformed dataframe</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">==</span><span class="n">key</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="c1"># if blanks, warn and remove</span>
+    <span class="k">if</span> <span class="s1">&#39;&#39;</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+        <span class="n">n_blanks</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> blank rows detected, removing.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_blanks</span><span class="p">))</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">astype</span><span class="p">({</span><span class="n">col</span><span class="p">:</span><span class="nb">float</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">df</span></div>
 
 
 

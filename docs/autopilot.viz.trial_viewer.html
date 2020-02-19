@@ -22,21 +22,11 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'0.2',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -45,6 +35,7 @@
   
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="setup" href="autopilot.setup.html" />
@@ -72,9 +63,6 @@
             <a href="index.html" class="icon icon-home"> Autopilot
           
 
-          
-            
-            <img src="_static/autopilot_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -156,7 +144,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
@@ -177,7 +165,7 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id1">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id5">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -318,53 +306,75 @@
 <span id="trial-viewer"></span><h1>trial_viewer<a class="headerlink" href="#module-autopilot.viz.trial_viewer" title="Permalink to this headline">¶</a></h1>
 <p>Tools to visulize data after collection.</p>
 <div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">this module is unfinished, so it is undocumented.</p>
+<p class="admonition-title">Warning</p>
+<p>this module is unfinished, so it is undocumented.</p>
 </div>
+<p><strong>Functions</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.viz.trial_viewer.load_subject_data" title="autopilot.viz.trial_viewer.load_subject_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_subject_data</span></code></a>(data_dir, subject_name[, …])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.viz.trial_viewer.load_subject_dir" title="autopilot.viz.trial_viewer.load_subject_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_subject_dir</span></code></a>(data_dir[, steps, grad, which])</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param data_dir</dt>
+<dd class="field-odd"><p>A path to a directory with <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> style hdf5 files</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.viz.trial_viewer.step_viewer" title="autopilot.viz.trial_viewer.step_viewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">step_viewer</span></code></a>(grad_data)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.viz.trial_viewer.trial_viewer" title="autopilot.viz.trial_viewer.trial_viewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trial_viewer</span></code></a>(step_data[, roll_type, …])</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param step_data</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+</tbody>
+</table>
 <dl class="function">
 <dt id="autopilot.viz.trial_viewer.load_subject_data">
-<code class="descclassname">autopilot.viz.trial_viewer.</code><code class="descname">load_subject_data</code><span class="sig-paren">(</span><em>data_dir</em>, <em>subject_name</em>, <em>steps=True</em>, <em>grad=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#load_subject_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.load_subject_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">autopilot.viz.trial_viewer.</code><code class="sig-name descname">load_subject_data</code><span class="sig-paren">(</span><em class="sig-param">data_dir</em>, <em class="sig-param">subject_name</em>, <em class="sig-param">steps=True</em>, <em class="sig-param">grad=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#load_subject_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.load_subject_data" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="autopilot.viz.trial_viewer.load_subject_dir">
-<code class="descclassname">autopilot.viz.trial_viewer.</code><code class="descname">load_subject_dir</code><span class="sig-paren">(</span><em>data_dir</em>, <em>steps=True</em>, <em>grad=True</em>, <em>which=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#load_subject_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.load_subject_dir" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data_dir</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – A path to a directory with <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> style hdf5 files</li>
-<li><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Whether to return full trial-level data for each step</li>
-<li><strong>grad</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Whether to return summarized step graduation data.</li>
-<li><strong>which</strong> (<em>list</em>) – A list of subjects to subset the loaded subjects to</li>
+<code class="sig-prename descclassname">autopilot.viz.trial_viewer.</code><code class="sig-name descname">load_subject_dir</code><span class="sig-paren">(</span><em class="sig-param">data_dir</em>, <em class="sig-param">steps=True</em>, <em class="sig-param">grad=True</em>, <em class="sig-param">which=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#load_subject_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.load_subject_dir" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_dir</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – A path to a directory with <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> style hdf5 files</p></li>
+<li><p><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Whether to return full trial-level data for each step</p></li>
+<li><p><strong>grad</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Whether to return summarized step graduation data.</p></li>
+<li><p><strong>which</strong> (<em>list</em>) – A list of subjects to subset the loaded subjects to</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="autopilot.viz.trial_viewer.step_viewer">
-<code class="descclassname">autopilot.viz.trial_viewer.</code><code class="descname">step_viewer</code><span class="sig-paren">(</span><em>grad_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#step_viewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.step_viewer" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">autopilot.viz.trial_viewer.</code><code class="sig-name descname">step_viewer</code><span class="sig-paren">(</span><em class="sig-param">grad_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#step_viewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.step_viewer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="autopilot.viz.trial_viewer.trial_viewer">
-<code class="descclassname">autopilot.viz.trial_viewer.</code><code class="descname">trial_viewer</code><span class="sig-paren">(</span><em>step_data</em>, <em>roll_type='ewm'</em>, <em>roll_span=100</em>, <em>bar=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#trial_viewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.trial_viewer" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>step_data</strong> – </li>
-<li><strong>grad_data</strong> – </li>
+<code class="sig-prename descclassname">autopilot.viz.trial_viewer.</code><code class="sig-name descname">trial_viewer</code><span class="sig-paren">(</span><em class="sig-param">step_data</em>, <em class="sig-param">roll_type='ewm'</em>, <em class="sig-param">roll_span=100</em>, <em class="sig-param">bar=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#trial_viewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.trial_viewer" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>step_data</strong> – </p></li>
+<li><p><strong>grad_data</strong> – </p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

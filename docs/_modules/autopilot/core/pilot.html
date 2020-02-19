@@ -22,21 +22,11 @@
   <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../../',
-              VERSION:'0.2',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -45,6 +35,7 @@
   
   <link rel="stylesheet" href="../../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -70,9 +61,6 @@
             <a href="../../../index.html" class="icon icon-home"> Autopilot
           
 
-          
-            
-            <img src="../../../_static/autopilot_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -154,7 +142,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#params">PARAMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#data">Data</a></li>
@@ -175,7 +163,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id1">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id5">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -328,13 +316,15 @@
 <span class="kn">import</span> <span class="nn">socket</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">base64</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">linregress</span>
 
 <span class="kn">import</span> <span class="nn">tables</span>
 
 <span class="c1"># TODO: This is lazy, make the paths work.</span>
+<span class="kn">import</span> <span class="nn">autopilot.hardware.gpio</span>
+
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))))</span>
 <span class="kn">from</span> <span class="nn">autopilot</span> <span class="kn">import</span> <span class="n">prefs</span>
 
@@ -359,20 +349,19 @@
     <span class="n">prefs</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">prefs_file</span><span class="p">)</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">REPODIR</span><span class="p">))</span>
 
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prefs</span><span class="p">,</span> <span class="s1">&#39;AUDIOSERVER&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">prefs</span><span class="o">.</span><span class="n">CONFIG</span> <span class="o">==</span> <span class="s1">&#39;AUDIO&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prefs</span><span class="p">,</span> <span class="s1">&#39;AUDIOSERVER&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;AUDIO&#39;</span> <span class="ow">in</span> <span class="n">prefs</span><span class="o">.</span><span class="n">CONFIG</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">prefs</span><span class="o">.</span><span class="n">AUDIOSERVER</span> <span class="o">==</span> <span class="s1">&#39;pyo&#39;</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">autopilot.stim.sound</span> <span class="kn">import</span> <span class="n">pyoserver</span>
         <span class="k">elif</span> <span class="n">prefs</span><span class="o">.</span><span class="n">AUDIOSERVER</span> <span class="o">==</span> <span class="s1">&#39;jack&#39;</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">autopilot.stim.sound</span> <span class="kn">import</span> <span class="n">jackclient</span>
 
-<span class="kn">from</span> <span class="nn">networking</span> <span class="kn">import</span> <span class="n">Pilot_Station</span><span class="p">,</span> <span class="n">Net_Node</span><span class="p">,</span> <span class="n">Message</span>
+<span class="kn">from</span> <span class="nn">autopilot.core.networking</span> <span class="kn">import</span> <span class="n">Pilot_Station</span><span class="p">,</span> <span class="n">Net_Node</span><span class="p">,</span> <span class="n">Message</span>
 <span class="kn">from</span> <span class="nn">autopilot</span> <span class="kn">import</span> <span class="n">tasks</span>
-<span class="kn">import</span> <span class="nn">hardware</span>
 
 
 <span class="c1">########################################</span>
 
-<div class="viewcode-block" id="autopilot"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot">[docs]</a><span class="k">class</span> <span class="nc">autopilot</span><span class="p">:</span>
+<div class="viewcode-block" id="Pilot"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot">[docs]</a><span class="k">class</span> <span class="nc">Pilot</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Drives the Raspberry Pi</span>
 
@@ -397,7 +386,7 @@
 <span class="sd">    * **PUSHPORT** - Router port used by the Terminal we connect to.</span>
 <span class="sd">    * **TERMINALIP** - IP Address of our upstream Terminal.</span>
 <span class="sd">    * **MSGPORT** - Port used by our own networking object</span>
-<span class="sd">    * **PINS** - Any hardware and its mapping to GPIO pins. No pins are required to be set, instead each</span>
+<span class="sd">    * **HARDWARE** - Any hardware and its mapping to GPIO pins. No pins are required to be set, instead each</span>
 <span class="sd">      task defines which pins it needs. Currently the default configuration asks for</span>
 
 <span class="sd">        * POKES - :class:`.hardware.Beambreak`</span>
@@ -438,29 +427,29 @@
 <span class="sd">            &quot;%(asctime)s %(levelname)s : %(message)s&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">logger</span> <span class="o">=</span> <span class="bp">None</span>
-    <span class="n">log_handler</span> <span class="o">=</span> <span class="bp">None</span>
-    <span class="n">log_formatter</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">log_handler</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">log_formatter</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># Events for thread handling</span>
-    <span class="n">running</span> <span class="o">=</span> <span class="bp">None</span>
-    <span class="n">stage_block</span> <span class="o">=</span> <span class="bp">None</span>
-    <span class="n">file_block</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">running</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">stage_block</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">file_block</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># networking - our internal and external messengers</span>
-    <span class="n">node</span> <span class="o">=</span> <span class="bp">None</span>
-    <span class="n">networking</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">networking</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># audio server</span>
-    <span class="n">server</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span>
         <span class="k">if</span> <span class="n">prefs</span><span class="o">.</span><span class="n">LINEAGE</span> <span class="o">==</span> <span class="s2">&quot;CHILD&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parentid</span> <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">PARENTID</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parentid</span> <span class="o">=</span> <span class="s1">&#39;T&#39;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">init_logging</span><span class="p">()</span>
@@ -471,7 +460,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">file_block</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span> <span class="c1"># Are we waiting on file transfer?</span>
 
         <span class="c1"># Init audio server</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prefs</span><span class="p">,</span> <span class="s1">&#39;AUDIOSERVER&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">prefs</span><span class="o">.</span><span class="n">CONFIG</span> <span class="o">==</span> <span class="s1">&#39;AUDIO&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prefs</span><span class="p">,</span> <span class="s1">&#39;AUDIOSERVER&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;AUDIO&#39;</span> <span class="ow">in</span> <span class="n">prefs</span><span class="o">.</span><span class="n">CONFIG</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">init_audio</span><span class="p">()</span>
 
         <span class="c1"># Init Station</span>
@@ -488,20 +477,20 @@
         <span class="c1"># spawn_network gives us the independent message-handling process</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">networking</span> <span class="o">=</span> <span class="n">Pilot_Station</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">networking</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="n">Net_Node</span><span class="p">(</span><span class="nb">id</span> <span class="o">=</span> <span class="s2">&quot;_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="n">Net_Node</span><span class="p">(</span><span class="nb">id</span> <span class="o">=</span> <span class="s2">&quot;_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
                              <span class="n">upstream</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                              <span class="n">port</span> <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">MSGPORT</span><span class="p">,</span>
                              <span class="n">listens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">listens</span><span class="p">,</span>
-                             <span class="n">instance</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                             <span class="n">instance</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># if we need to set pins pulled up or down, do that now</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pulls</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prefs</span><span class="p">,</span> <span class="s1">&#39;PULLUPS&#39;</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">pin</span> <span class="ow">in</span> <span class="n">prefs</span><span class="o">.</span><span class="n">PULLUPS</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pulls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hardware</span><span class="o">.</span><span class="n">Pull</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">),</span> <span class="n">pud</span><span class="o">=</span><span class="s1">&#39;U&#39;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pulls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">Digital_Out</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">),</span> <span class="n">pull</span><span class="o">=</span><span class="s1">&#39;U&#39;</span><span class="p">))</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prefs</span><span class="p">,</span> <span class="s1">&#39;PULLDOWNS&#39;</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">pin</span> <span class="ow">in</span> <span class="n">prefs</span><span class="o">.</span><span class="n">PULLDOWNS</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pulls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hardware</span><span class="o">.</span><span class="n">Pull</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">),</span> <span class="n">pud</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pulls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">Digital_Out</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">),</span> <span class="n">pull</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">))</span>
 
         <span class="c1"># check if the calibration file needs to be updated</span>
 
@@ -518,13 +507,13 @@
 
         <span class="c1"># TODO Synchronize system clock w/ time from terminal.</span>
 
-<div class="viewcode-block" id="autopilot.init_logging"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.init_logging">[docs]</a>    <span class="k">def</span> <span class="nf">init_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot.init_logging"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.init_logging">[docs]</a>    <span class="k">def</span> <span class="nf">init_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start logging to a timestamped file in `prefs.LOGDIR`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">timestr</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%y%m</span><span class="si">%d</span><span class="s1">_%H%M%S&#39;</span><span class="p">)</span>
-        <span class="n">log_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">LOGDIR</span><span class="p">,</span> <span class="s1">&#39;Pilots_Log_{}.log&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timestr</span><span class="p">))</span>
+        <span class="n">log_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">LOGDIR</span><span class="p">,</span> <span class="s1">&#39;Pilots_Log_</span><span class="si">{}</span><span class="s1">.log&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timestr</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">log_file</span><span class="p">)</span>
@@ -538,7 +527,7 @@
     <span class="c1"># Station</span>
     <span class="c1">#################################################################</span>
 
-<div class="viewcode-block" id="autopilot.get_ip"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.get_ip">[docs]</a>    <span class="k">def</span> <span class="nf">get_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot.get_ip"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.get_ip">[docs]</a>    <span class="k">def</span> <span class="nf">get_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get our IP</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -555,7 +544,7 @@
 
         <span class="k">return</span> <span class="n">unwrap2</span></div>
 
-<div class="viewcode-block" id="autopilot.handshake"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.handshake">[docs]</a>    <span class="k">def</span> <span class="nf">handshake</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot.handshake"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.handshake">[docs]</a>    <span class="k">def</span> <span class="nf">handshake</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send the terminal our name and IP to signal that we are alive</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -567,15 +556,15 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parentid</span><span class="p">,</span> <span class="s1">&#39;HANDSHAKE&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">hello</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="autopilot.update_state"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.update_state">[docs]</a>    <span class="k">def</span> <span class="nf">update_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot.update_state"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.update_state">[docs]</a>    <span class="k">def</span> <span class="nf">update_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send our current state to the Terminal,</span>
 <span class="sd">        our Station object will cache this and will handle any</span>
 <span class="sd">        future requests.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parentid</span><span class="p">,</span> <span class="s1">&#39;STATE&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;NOLOG&#39;</span><span class="p">:</span><span class="bp">True</span><span class="p">})</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parentid</span><span class="p">,</span> <span class="s1">&#39;STATE&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;NOLOG&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">})</span></div>
 
-<div class="viewcode-block" id="autopilot.l_start"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_start">[docs]</a>    <span class="k">def</span> <span class="nf">l_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot.l_start"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.l_start">[docs]</a>    <span class="k">def</span> <span class="nf">l_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start running a task.</span>
 
@@ -592,28 +581,40 @@
         <span class="c1"># Value should be a dict of protocol params</span>
         <span class="c1"># The networking object should have already checked that we have all the files we need</span>
 
-        <span class="c1"># Get the task object by its type</span>
-        <span class="k">if</span> <span class="s1">&#39;child&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">task_class</span> <span class="o">=</span> <span class="n">tasks</span><span class="o">.</span><span class="n">CHILDREN_LIST</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;task_type&#39;</span><span class="p">]]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">task_class</span> <span class="o">=</span> <span class="n">tasks</span><span class="o">.</span><span class="n">TASK_LIST</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;task_type&#39;</span><span class="p">]]</span>
-        <span class="c1"># Instantiate the task</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="n">task_class</span><span class="p">(</span><span class="n">stage_block</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span><span class="p">,</span> <span class="o">**</span><span class="n">value</span><span class="p">)</span>
-
-        <span class="c1"># Make a group for this subject if we don&#39;t already have one</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span>
-
-        <span class="c1"># Run the task and tell the terminal we have</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_task</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;RUNNING&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Asked to a run a task when already running&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;RUNNING&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_state</span><span class="p">()</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Get the task object by its type</span>
+            <span class="k">if</span> <span class="s1">&#39;child&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">task_class</span> <span class="o">=</span> <span class="n">tasks</span><span class="o">.</span><span class="n">CHILDREN_LIST</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;task_type&#39;</span><span class="p">]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">task_class</span> <span class="o">=</span> <span class="n">tasks</span><span class="o">.</span><span class="n">TASK_LIST</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;task_type&#39;</span><span class="p">]]</span>
+            <span class="c1"># Instantiate the task</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="n">task_class</span><span class="p">(</span><span class="n">stage_block</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span><span class="p">,</span> <span class="o">**</span><span class="n">value</span><span class="p">)</span>
+
+            <span class="c1"># Make a group for this subject if we don&#39;t already have one</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span>
+            <span class="n">prefs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;SUBJECT&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">)</span>
+
+
+
+            <span class="c1"># Run the task and tell the terminal we have</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_task</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_state</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;IDLE&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;couldn&#39;t start task: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
 
         <span class="c1"># TODO: Send a message back to the terminal with the runtime if there is one so it can handle timed stops</span>
 
-<div class="viewcode-block" id="autopilot.l_stop"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_stop">[docs]</a>    <span class="k">def</span> <span class="nf">l_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot.l_stop"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.l_stop">[docs]</a>    <span class="k">def</span> <span class="nf">l_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stop the task.</span>
 
@@ -636,6 +637,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
 
+
         <span class="c1"># TODO: Cohere here before closing file</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;h5f&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">h5f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -643,7 +645,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;IDLE&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_state</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="autopilot.l_param"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_param">[docs]</a>    <span class="k">def</span> <span class="nf">l_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot.l_param"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.l_param">[docs]</a>    <span class="k">def</span> <span class="nf">l_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Change a task parameter mid-run</span>
 
@@ -655,7 +657,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="autopilot.l_cal_port"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_cal_port">[docs]</a>    <span class="k">def</span> <span class="nf">l_cal_port</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot.l_cal_port"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.l_cal_port">[docs]</a>    <span class="k">def</span> <span class="nf">l_cal_port</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="n">port</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span>
         <span class="n">n_clicks</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;n_clicks&#39;</span><span class="p">]</span>
         <span class="n">open_dur</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;dur&#39;</span><span class="p">]</span>
@@ -663,9 +665,9 @@
 
         <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calibrate_port</span><span class="p">,</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">n_clicks</span><span class="p">,</span> <span class="n">open_dur</span><span class="p">,</span> <span class="n">iti</span><span class="p">))</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="autopilot.calibrate_port"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.calibrate_port">[docs]</a>    <span class="k">def</span> <span class="nf">calibrate_port</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port_name</span><span class="p">,</span> <span class="n">n_clicks</span><span class="p">,</span> <span class="n">open_dur</span><span class="p">,</span> <span class="n">iti</span><span class="p">):</span>
-        <span class="n">pin_num</span> <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">PINS</span><span class="p">[</span><span class="s1">&#39;PORTS&#39;</span><span class="p">][</span><span class="n">port_name</span><span class="p">]</span>
-        <span class="n">port</span> <span class="o">=</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Solenoid</span><span class="p">(</span><span class="n">pin_num</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">open_dur</span><span class="p">))</span>
+<div class="viewcode-block" id="Pilot.calibrate_port"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.calibrate_port">[docs]</a>    <span class="k">def</span> <span class="nf">calibrate_port</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port_name</span><span class="p">,</span> <span class="n">n_clicks</span><span class="p">,</span> <span class="n">open_dur</span><span class="p">,</span> <span class="n">iti</span><span class="p">):</span>
+        <span class="n">pin_num</span> <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">HARDWARE</span><span class="p">[</span><span class="s1">&#39;PORTS&#39;</span><span class="p">][</span><span class="n">port_name</span><span class="p">]</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">Solenoid</span><span class="p">(</span><span class="n">pin_num</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">open_dur</span><span class="p">))</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;click_num&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
                <span class="s1">&#39;pilot&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                <span class="s1">&#39;port&#39;</span><span class="p">:</span> <span class="n">port_name</span>
@@ -673,7 +675,7 @@
 
         <span class="n">iti</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">iti</span><span class="p">)</span><span class="o">/</span><span class="mf">1000.0</span>
 
-        <span class="n">cal_name</span> <span class="o">=</span> <span class="s2">&quot;Cal_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">cal_name</span> <span class="o">=</span> <span class="s2">&quot;Cal_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n_clicks</span><span class="p">)):</span>
             <span class="n">port</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
@@ -684,7 +686,7 @@
 
         <span class="n">port</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="autopilot.l_cal_result"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_cal_result">[docs]</a>    <span class="k">def</span> <span class="nf">l_cal_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot.l_cal_result"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.l_cal_result">[docs]</a>    <span class="k">def</span> <span class="nf">l_cal_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the results of a port calibration</span>
 
@@ -712,13 +714,13 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cal_fn</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cal_file</span><span class="p">:</span>
             <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">calibration</span><span class="p">,</span> <span class="n">cal_file</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="autopilot.l_bandwidth"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.l_bandwidth">[docs]</a>    <span class="k">def</span> <span class="nf">l_bandwidth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot.l_bandwidth"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.l_bandwidth">[docs]</a>    <span class="k">def</span> <span class="nf">l_bandwidth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send messages with a poissonian process according to the settings in value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#turn off logging for now</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">networking</span><span class="o">.</span><span class="n">set_logging</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">do_logging</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">networking</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 
         <span class="n">n_msg</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;n_msg&#39;</span><span class="p">])</span>
         <span class="n">rate</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">])</span>
@@ -734,7 +736,7 @@
         <span class="p">}</span>
 
         <span class="c1"># make a fake message to test how large the serialized message is</span>
-        <span class="n">test_msg</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s1">&#39;bandwith&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;BANDWIDTH_MSG&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">message</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="n">confirm</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;MINPRINT&#39;</span><span class="p">:</span><span class="bp">True</span><span class="p">},</span>
+        <span class="n">test_msg</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s1">&#39;bandwith&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;BANDWIDTH_MSG&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">message</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="n">confirm</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;MINPRINT&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">},</span>
                            <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;test_message&quot;</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="s2">&quot;test_sender&quot;</span><span class="p">)</span>
         <span class="n">msg_size</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">test_msg</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
 
@@ -754,7 +756,7 @@
                 <span class="n">message</span><span class="p">[</span><span class="s1">&#39;n_msg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
                 <span class="n">message</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s1">&#39;bandwidth&#39;</span><span class="p">,</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;BANDWIDTH_MSG&#39;</span><span class="p">,</span>
-                               <span class="n">value</span><span class="o">=</span><span class="n">message</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="n">confirm</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;MINPRINT&#39;</span><span class="p">:</span><span class="bp">True</span><span class="p">})</span>
+                               <span class="n">value</span><span class="o">=</span><span class="n">message</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="n">confirm</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;MINPRINT&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">})</span>
                 <span class="n">this_message</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">clock</span><span class="p">()</span>
                 <span class="n">waitfor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">spacing</span><span class="o">-</span><span class="p">(</span><span class="n">this_message</span><span class="o">-</span><span class="n">last_message</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">spacing</span><span class="p">)</span>
 
@@ -768,19 +770,19 @@
                 <span class="n">message</span><span class="p">[</span><span class="s1">&#39;n_msg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
                 <span class="n">message</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s1">&#39;bandwidth&#39;</span><span class="p">,</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;BANDWIDTH_MSG&#39;</span><span class="p">,</span>
-                               <span class="n">value</span><span class="o">=</span><span class="n">message</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="n">confirm</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;MINPRINT&#39;</span><span class="p">:</span><span class="bp">True</span><span class="p">})</span>
+                               <span class="n">value</span><span class="o">=</span><span class="n">message</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="n">confirm</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;MINPRINT&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">})</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s1">&#39;bandwidth&#39;</span><span class="p">,</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;BANDWIDTH_MSG&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pilot&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;test_end&#39;</span><span class="p">:</span><span class="bp">True</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s1">&#39;bandwidth&#39;</span><span class="p">,</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;BANDWIDTH_MSG&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pilot&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;test_end&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span>
                                                                   <span class="s1">&#39;rate&#39;</span><span class="p">:</span> <span class="n">rate</span><span class="p">,</span> <span class="s1">&#39;payload&#39;</span><span class="p">:</span><span class="n">payload</span><span class="p">,</span>
                                                                   <span class="s1">&#39;n_msg&#39;</span><span class="p">:</span><span class="n">n_msg</span><span class="p">,</span> <span class="s1">&#39;confirm&#39;</span><span class="p">:</span><span class="n">confirm</span><span class="p">},</span>
-                       <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;MINPRINT&#39;</span><span class="p">:</span><span class="bp">True</span><span class="p">})</span></div>
+                       <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;MINPRINT&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">})</span></div>
 
         <span class="c1">#self.networking.set_logging(True)</span>
         <span class="c1">#self.node.do_logging.set()</span>
 
 
 
-<div class="viewcode-block" id="autopilot.calibration_curve"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.calibration_curve">[docs]</a>    <span class="k">def</span> <span class="nf">calibration_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">calibration</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot.calibration_curve"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.calibration_curve">[docs]</a>    <span class="k">def</span> <span class="nf">calibration_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">calibration</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        # compute curve to compute duration from desired volume</span>
 
@@ -830,7 +832,7 @@
     <span class="c1"># Hardware Init</span>
     <span class="c1">#################################################################</span>
 
-<div class="viewcode-block" id="autopilot.init_audio"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.init_audio">[docs]</a>    <span class="k">def</span> <span class="nf">init_audio</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot.init_audio"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.init_audio">[docs]</a>    <span class="k">def</span> <span class="nf">init_audio</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize an audio server depending on the value of</span>
 <span class="sd">        `prefs.AUDIOSERVER`</span>
@@ -843,19 +845,21 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;pyo server started&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">prefs</span><span class="o">.</span><span class="n">AUDIOSERVER</span> <span class="o">==</span> <span class="s1">&#39;jack&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">jackclient</span><span class="o">.</span><span class="n">JackClient</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Started jack audio server&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="autopilot.blank_LEDs"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.blank_LEDs">[docs]</a>    <span class="k">def</span> <span class="nf">blank_LEDs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Pilot.blank_LEDs"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.blank_LEDs">[docs]</a>    <span class="k">def</span> <span class="nf">blank_LEDs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        If any &#39;LEDS&#39; are defined in `prefs.PINS` ,</span>
+<span class="sd">        If any &#39;LEDS&#39; are defined in `prefs.HARDWARE` ,</span>
 <span class="sd">        instantiate them, set their color to [0,0,0],</span>
 <span class="sd">        and then release them.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s1">&#39;LEDS&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">prefs</span><span class="o">.</span><span class="n">PINS</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">&#39;LEDS&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">prefs</span><span class="o">.</span><span class="n">HARDWARE</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">return</span>
 
-        <span class="k">for</span> <span class="n">position</span><span class="p">,</span> <span class="n">pins</span> <span class="ow">in</span> <span class="n">prefs</span><span class="o">.</span><span class="n">PINS</span><span class="p">[</span><span class="s1">&#39;LEDS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">led</span> <span class="o">=</span> <span class="n">hardware</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">(</span><span class="n">pins</span><span class="o">=</span><span class="n">pins</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">position</span><span class="p">,</span> <span class="n">pins</span> <span class="ow">in</span> <span class="n">prefs</span><span class="o">.</span><span class="n">HARDWARE</span><span class="p">[</span><span class="s1">&#39;LEDS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">led</span> <span class="o">=</span> <span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">(</span><span class="n">pins</span><span class="o">=</span><span class="n">pins</span><span class="p">)</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.</span><span class="p">)</span>
             <span class="n">led</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">led</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
@@ -863,7 +867,7 @@
     <span class="c1">#################################################################</span>
     <span class="c1"># Trial Running and Management</span>
     <span class="c1">#################################################################</span>
-<div class="viewcode-block" id="autopilot.open_file"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.open_file">[docs]</a>    <span class="k">def</span> <span class="nf">open_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot.open_file"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.open_file">[docs]</a>    <span class="k">def</span> <span class="nf">open_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setup a table to store data locally.</span>
 
@@ -882,11 +886,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">local_file</span><span class="p">)</span>
             <span class="n">h5f</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">local_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">local_file</span><span class="p">,</span> <span class="mo">0777</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">local_file</span><span class="p">,</span> <span class="mo">0o777</span><span class="p">)</span>
 
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">h5f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="s2">&quot;Local Data for {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">))</span>
+            <span class="n">h5f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="s2">&quot;Local Data for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">))</span>
         <span class="k">except</span> <span class="n">tables</span><span class="o">.</span><span class="n">NodeError</span><span class="p">:</span>
             <span class="c1"># already made it</span>
             <span class="k">pass</span>
@@ -907,16 +911,16 @@
 
 
             <span class="n">table</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="n">subject_group</span><span class="p">,</span> <span class="n">datestring</span><span class="p">,</span> <span class="n">table_descriptor</span><span class="p">,</span>
-                                               <span class="s2">&quot;Subject {} on {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">datestring</span><span class="p">))</span>
+                                               <span class="s2">&quot;Subject </span><span class="si">{}</span><span class="s2"> on </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">datestring</span><span class="p">))</span>
 
             <span class="c1"># The Row object is what we write data into as it comes in</span>
             <span class="n">row</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">row</span>
             <span class="k">return</span> <span class="n">h5f</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">row</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">h5f</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span></div>
+            <span class="k">return</span> <span class="n">h5f</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="autopilot.run_task"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.autopilot.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot.run_task"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called in a new thread, run the task.</span>
 
@@ -931,16 +935,16 @@
         <span class="c1"># Run as a separate thread, just keeps calling next() and shoveling data</span>
 
         <span class="c1"># do we expect TrialData?</span>
-        <span class="n">trial_data</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">trial_data</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="s1">&#39;TrialData&#39;</span><span class="p">):</span>
-            <span class="n">trial_data</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">trial_data</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="c1"># Open local file for saving</span>
         <span class="n">h5f</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_file</span><span class="p">()</span>
 
         <span class="c1"># TODO: Init sending continuous data here</span>
 
-        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="c1"># Calculate next stage data and prep triggers</span>
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">stages</span><span class="o">.</span><span class="n">next</span><span class="p">()()</span> <span class="c1"># Double parens because next just gives us the function, we still have to call it</span>
 
@@ -969,7 +973,7 @@
             <span class="c1"># If the running flag gets set, we&#39;re closing.</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">()</span>
                 <span class="n">table</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
                 <span class="k">break</span>
@@ -980,7 +984,7 @@
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
 
-    <span class="n">a</span> <span class="o">=</span> <span class="n">autopilot</span><span class="p">()</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">Pilot</span><span class="p">()</span>
 
 
 

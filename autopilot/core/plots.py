@@ -33,7 +33,7 @@ import pdb
 from queue import Queue, Empty, Full
 #import cv2
 pg.setConfigOptions(antialias=True)
-from pyqtgraph.widgets.RawImageWidget import RawImageWidget, RawImageGLWidget
+# from pyqtgraph.widgets.RawImageWidget import RawImageWidget, RawImageGLWidget
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from autopilot import tasks, prefs

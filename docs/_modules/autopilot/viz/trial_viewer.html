@@ -22,21 +22,11 @@
   <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../../',
-              VERSION:'0.2',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -45,6 +35,7 @@
   
   <link rel="stylesheet" href="../../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -70,9 +61,6 @@
             <a href="../../../index.html" class="icon icon-home"> Autopilot
           
 
-          
-            
-            <img src="../../../_static/autopilot_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -154,7 +142,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#params">PARAMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#data">Data</a></li>
@@ -175,7 +163,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id1">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id5">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -333,24 +321,24 @@
 <span class="kn">from</span> <span class="nn">bokeh.palettes</span> <span class="kn">import</span> <span class="n">Spectral10</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">from</span> <span class="nn">autopilot.core</span> <span class="kn">import</span> <span class="n">subject</span>
-<span class="kn">import</span> <span class="nn">colorcet</span> <span class="kn">as</span> <span class="nn">cc</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">colorcet</span> <span class="k">as</span> <span class="nn">cc</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
 
-<div class="viewcode-block" id="load_subject_data"><a class="viewcode-back" href="../../../autopilot.viz.trial_viewer.html#autopilot.viz.trial_viewer.load_subject_data">[docs]</a><span class="k">def</span> <span class="nf">load_subject_data</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">subject_name</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="load_subject_data"><a class="viewcode-back" href="../../../autopilot.viz.trial_viewer.html#autopilot.viz.trial_viewer.load_subject_data">[docs]</a><span class="k">def</span> <span class="nf">load_subject_data</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">subject_name</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 
     <span class="c1"># pilot_db_fn = [fn for fn in os.listdir(data_dir) if fn == &#39;pilot_db.json&#39;][0]</span>
     <span class="c1"># pilot_db_fn = os.path.join(data_dir, pilot_db_fn)</span>
-    <span class="n">pilot_db</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">load_pilotdb</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">pilot_db</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">load_pilotdb</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># find pilot for subject</span>
     <span class="n">pilot_name</span> <span class="o">=</span> <span class="n">pilot_db</span><span class="p">[</span><span class="n">subject_name</span><span class="p">]</span>
 
     <span class="n">amus</span> <span class="o">=</span> <span class="n">subject</span><span class="o">.</span><span class="n">Subject</span><span class="p">(</span><span class="n">subject_name</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="n">data_dir</span><span class="p">)</span>
 
-    <span class="n">step_data</span> <span class="o">=</span> <span class="bp">None</span>
-    <span class="n">grad_data</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">step_data</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">grad_data</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="n">steps</span><span class="p">:</span>
         <span class="n">step_data</span> <span class="o">=</span> <span class="n">amus</span><span class="o">.</span><span class="n">get_trial_data</span><span class="p">()</span>
@@ -362,7 +350,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">grad_data</span> <span class="o">=</span> <span class="n">amus</span><span class="o">.</span><span class="n">get_step_history</span><span class="p">()</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="n">grad_data</span> <span class="o">=</span> <span class="n">amus</span><span class="o">.</span><span class="n">get_step_history</span><span class="p">(</span><span class="n">use_history</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            <span class="n">grad_data</span> <span class="o">=</span> <span class="n">amus</span><span class="o">.</span><span class="n">get_step_history</span><span class="p">(</span><span class="n">use_history</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">grad_data</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subject_name</span>
         <span class="n">grad_data</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pilot_name</span>
@@ -375,7 +363,7 @@
 
 
 
-<div class="viewcode-block" id="load_subject_dir"><a class="viewcode-back" href="../../../autopilot.viz.trial_viewer.html#autopilot.viz.trial_viewer.load_subject_dir">[docs]</a><span class="k">def</span> <span class="nf">load_subject_dir</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">which</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="load_subject_dir"><a class="viewcode-back" href="../../../autopilot.viz.trial_viewer.html#autopilot.viz.trial_viewer.load_subject_dir">[docs]</a><span class="k">def</span> <span class="nf">load_subject_dir</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
 <span class="sd">        data_dir (str): A path to a directory with :class:`~.core.subject.Subject` style hdf5 files</span>
@@ -390,21 +378,21 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">which</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">subject_fn</span> <span class="o">=</span> <span class="p">[</span><span class="n">fn</span> <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">subject_fn</span> <span class="k">if</span> <span class="p">(</span><span class="n">fn</span> <span class="ow">in</span> <span class="n">which</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;.h5&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">which</span><span class="p">)]</span>
 
-    <span class="n">all_mice_steps</span> <span class="o">=</span> <span class="bp">None</span>
-    <span class="n">all_mice_grad</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">all_mice_steps</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">all_mice_grad</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">for</span> <span class="n">subject_name</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">subject_fn</span><span class="p">):</span>
         <span class="n">subject_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">subject_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">step_data</span><span class="p">,</span> <span class="n">grad_data</span> <span class="o">=</span> <span class="n">load_subject_data</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">subject_name</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">grad</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">step_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">all_mice_steps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">step_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">all_mice_steps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">all_mice_steps</span> <span class="o">=</span> <span class="n">all_mice_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_data</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">all_mice_steps</span> <span class="o">=</span> <span class="n">step_data</span>
 
-        <span class="k">if</span> <span class="n">grad_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">all_mice_grad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">grad_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">all_mice_grad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">all_mice_grad</span> <span class="o">=</span> <span class="n">all_mice_grad</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">grad_data</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">all_mice_grad</span> <span class="o">=</span> <span class="n">grad_data</span>
@@ -446,7 +434,7 @@
 
 
 
-<div class="viewcode-block" id="trial_viewer"><a class="viewcode-back" href="../../../autopilot.viz.trial_viewer.html#autopilot.viz.trial_viewer.trial_viewer">[docs]</a><span class="k">def</span> <span class="nf">trial_viewer</span><span class="p">(</span><span class="n">step_data</span><span class="p">,</span> <span class="n">roll_type</span> <span class="o">=</span> <span class="s2">&quot;ewm&quot;</span><span class="p">,</span> <span class="n">roll_span</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">bar</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="trial_viewer"><a class="viewcode-back" href="../../../autopilot.viz.trial_viewer.html#autopilot.viz.trial_viewer.trial_viewer">[docs]</a><span class="k">def</span> <span class="nf">trial_viewer</span><span class="p">(</span><span class="n">step_data</span><span class="p">,</span> <span class="n">roll_type</span> <span class="o">=</span> <span class="s2">&quot;ewm&quot;</span><span class="p">,</span> <span class="n">roll_span</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">bar</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
 <span class="sd">        step_data:</span>
@@ -472,11 +460,11 @@
     <span class="n">plots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">mus</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">step_data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">)):</span>
         <span class="k">if</span> <span class="n">roll_type</span> <span class="o">==</span> <span class="s2">&quot;ewm&quot;</span><span class="p">:</span>
-            <span class="n">meancx</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;correct&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">ewm</span><span class="p">(</span><span class="n">span</span><span class="o">=</span><span class="n">roll_span</span><span class="p">,</span><span class="n">ignore_na</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="n">meancx</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;correct&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">ewm</span><span class="p">(</span><span class="n">span</span><span class="o">=</span><span class="n">roll_span</span><span class="p">,</span><span class="n">ignore_na</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">meancx</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;correct&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">roll_span</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 
-        <span class="n">title_str</span> <span class="o">=</span> <span class="s2">&quot;{}, step: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mus</span><span class="p">,</span> <span class="n">group</span><span class="o">.</span><span class="n">step</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">title_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">, step: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mus</span><span class="p">,</span> <span class="n">group</span><span class="o">.</span><span class="n">step</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
         <span class="n">p</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">plot_height</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">y_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">title</span><span class="o">=</span><span class="n">title_str</span><span class="p">)</span>
 
@@ -526,20 +514,20 @@
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">bar</span><span class="p">:</span>
         <span class="n">bar_pos</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">bar</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">bar_pos</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">bar_pos</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">if</span> <span class="n">do_type</span> <span class="o">==</span> <span class="s1">&#39;g&#39;</span><span class="p">:</span>
         <span class="c1"># load subject data</span>
-        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Doing graduation plot,</span><span class="se">\n</span><span class="s1">loading subject data...&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Doing graduation plot,</span><span class="se">\n</span><span class="s1">loading subject data...&#39;</span><span class="p">)</span>
         <span class="c1"># step_data, grad_data = load_subject_data(data_dir)</span>
-        <span class="n">_</span><span class="p">,</span> <span class="n">grad_data</span> <span class="o">=</span> <span class="n">load_subject_dir</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="n">active_mice</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">grad_data</span> <span class="o">=</span> <span class="n">load_subject_dir</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="n">active_mice</span><span class="p">)</span>
 
         <span class="n">step_viewer</span><span class="p">(</span><span class="n">grad_data</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">do_type</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
         <span class="c1"># load subject data</span>
-        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Doing step plot,</span><span class="se">\n</span><span class="s1">loading subject data...&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Doing step plot,</span><span class="se">\n</span><span class="s1">loading subject data...&#39;</span><span class="p">)</span>
         <span class="c1"># step_data, grad_data = load_subject_data(data_dir)</span>
-        <span class="n">step_data</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">load_subject_dir</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="n">active_mice</span><span class="p">)</span>
+        <span class="n">step_data</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">load_subject_dir</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="n">active_mice</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">window</span><span class="p">:</span>
             <span class="n">window</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">window</span><span class="p">)</span>

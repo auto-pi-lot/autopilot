@@ -8,5 +8,12 @@ npyscreen
 scipy
 tornado
 pigpio
-pyqtgraph
+pyqtgraph>=1.11.0
 inputs
+altair
+scikit-learn
+JACK-Client
+tqdm
+inputs
+bokeh
+colorcet

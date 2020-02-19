@@ -22,21 +22,11 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'0.2',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -45,6 +35,7 @@
   
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="utils" href="autopilot.core.utils.html" />
@@ -72,9 +63,6 @@
             <a href="index.html" class="icon icon-home"> Autopilot
           
 
-          
-            
-            <img src="_static/autopilot_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -156,7 +144,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
@@ -177,7 +165,7 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id1">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id5">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -316,296 +304,385 @@
             
   <div class="section" id="module-autopilot.core.terminal">
 <span id="terminal"></span><h1>terminal<a class="headerlink" href="#module-autopilot.core.terminal" title="Permalink to this headline">¶</a></h1>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Terminal</span></code></a>()</p></td>
+<td><p>Central host to a fleet of <a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a> s and user-facing <a class="reference internal" href="autopilot.core.gui.html#module-autopilot.core.gui" title="autopilot.core.gui"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gui</span></code></a> objects.</p></td>
+</tr>
+</tbody>
+</table>
 <dl class="class">
 <dt id="autopilot.core.terminal.Terminal">
-<em class="property">class </em><code class="descclassname">autopilot.core.terminal.</code><code class="descname">Terminal</code><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="http://pyside.github.io/docs/pyside/PySide/QtGui/QMainWindow.html#PySide.QtGui.QMainWindow" title="(in PySide v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySide.QtGui.QMainWindow</span></code></a></p>
-<p>Central host to a fleet of <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code> s and user-facing
+<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.terminal.</code><code class="sig-name descname">Terminal</code><a class="headerlink" href="#autopilot.core.terminal.Terminal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QMainWindow</span></code></p>
+<p>Central host to a fleet of <a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a> s and user-facing
 <a class="reference internal" href="autopilot.core.gui.html#module-autopilot.core.gui" title="autopilot.core.gui"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gui</span></code></a> objects.</p>
 <p>Called as a module with the -f flag to give the location of a prefs file, eg:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">terminal</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">f</span> <span class="n">prefs_file</span><span class="o">.</span><span class="n">json</span>
 </pre></div>
 </div>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.calibrate_ports" title="autopilot.core.terminal.Terminal.calibrate_ports"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calibrate_ports</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.closeEvent" title="autopilot.core.terminal.Terminal.closeEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">closeEvent</span></code></a>(event)</p></td>
+<td><p>When Closing the Terminal Window, close any running subject objects, ‘KILL’ our networking object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.heartbeat" title="autopilot.core.terminal.Terminal.heartbeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">heartbeat</span></code></a>([once])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.initUI" title="autopilot.core.terminal.Terminal.initUI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initUI</span></code></a>()</p></td>
+<td><p>Initializes graphical elements of Terminal.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.init_logging" title="autopilot.core.terminal.Terminal.init_logging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_logging</span></code></a>()</p></td>
+<td><p>Start logging to a timestamped file in <cite>prefs.LOGDIR</cite></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.l_data" title="autopilot.core.terminal.Terminal.l_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_data</span></code></a>(value)</p></td>
+<td><p>A Pilot has sent us data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.l_handshake" title="autopilot.core.terminal.Terminal.l_handshake"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_handshake</span></code></a>(value)</p></td>
+<td><p>Pilot is sending its IP and state on startup.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.l_ping" title="autopilot.core.terminal.Terminal.l_ping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_ping</span></code></a>(value)</p></td>
+<td><p><div class="admonition-todo admonition" id="id4">
+<p class="admonition-title">Todo</p>
+<p>Reminder to implement heartbeating.</p>
+</div>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.l_state" title="autopilot.core.terminal.Terminal.l_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_state</span></code></a>(value)</p></td>
+<td><p>A Pilot has changed state, keep track of it.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.new_pilot" title="autopilot.core.terminal.Terminal.new_pilot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">new_pilot</span></code></a>([ip, name])</p></td>
+<td><p>Make a new entry in <code class="xref py py-attr docutils literal notranslate"><span class="pre">Terminal.pilots</span></code> and make appropriate GUI elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.new_protocol" title="autopilot.core.terminal.Terminal.new_protocol"><code class="xref py py-obj docutils literal notranslate"><span class="pre">new_protocol</span></code></a>()</p></td>
+<td><p>Open a <a class="reference internal" href="autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard" title="autopilot.core.gui.Protocol_Wizard"><code class="xref py py-class docutils literal notranslate"><span class="pre">gui.Protocol_Wizard</span></code></a> to create a new protocol.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.plot_psychometric" title="autopilot.core.terminal.Terminal.plot_psychometric"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_psychometric</span></code></a>()</p></td>
+<td><p>Select subject, step, and variables to plot a psychometric curve</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.reassign_protocols" title="autopilot.core.terminal.Terminal.reassign_protocols"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reassign_protocols</span></code></a>()</p></td>
+<td><p>Batch reassign protocols and steps.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.reset_ui" title="autopilot.core.terminal.Terminal.reset_ui"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_ui</span></code></a>()</p></td>
+<td><p>Clear Layout and call <a class="reference internal" href="#autopilot.core.terminal.Terminal.initUI" title="autopilot.core.terminal.Terminal.initUI"><code class="xref py py-meth docutils literal notranslate"><span class="pre">initUI()</span></code></a> again</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.subject_weights" title="autopilot.core.terminal.Terminal.subject_weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subject_weights</span></code></a>()</p></td>
+<td><p>Gets recent weights from all <code class="xref py py-attr docutils literal notranslate"><span class="pre">subjects</span></code> and open a <a class="reference internal" href="autopilot.core.gui.html#autopilot.core.gui.Weights" title="autopilot.core.gui.Weights"><code class="xref py py-class docutils literal notranslate"><span class="pre">gui.Weights</span></code></a> window to view or set weights.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.test_bandwidth" title="autopilot.core.terminal.Terminal.test_bandwidth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_bandwidth</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.toggle_start" title="autopilot.core.terminal.Terminal.toggle_start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">toggle_start</span></code></a>(starting, pilot[, subject])</p></td>
+<td><p>Start or Stop running the currently selected subject’s task.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.update_protocols" title="autopilot.core.terminal.Terminal.update_protocols"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_protocols</span></code></a>()</p></td>
+<td><p>If we change the protocol file, update the stored version in subject files</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.protocols" title="autopilot.core.terminal.Terminal.protocols"><code class="xref py py-obj docutils literal notranslate"><span class="pre">protocols</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.subject_list" title="autopilot.core.terminal.Terminal.subject_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subject_list</span></code></a></p></td>
+<td><p>Get a list of all subject IDs</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.subject_protocols" title="autopilot.core.terminal.Terminal.subject_protocols"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subject_protocols</span></code></a></p></td>
+<td><p>Returns:</p></td>
+</tr>
+</tbody>
+</table>
 <p>if the -f flag is not passed, looks in the default location for prefs
 (ie. <cite>/usr/autopilot/prefs.json</cite>)</p>
 <p><a href="#id1"><span class="problematic" id="id2">**</span></a>Listens used by the internal <a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net_Node</span></code></a> **</p>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="15%" />
-<col width="31%" />
-<col width="54%" />
+<col style="width: 15%" />
+<col style="width: 31%" />
+<col style="width: 54%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Key</th>
-<th class="head">Method</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Method</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td><cite>‘STATE’</cite></td>
-<td><a class="reference internal" href="#autopilot.core.terminal.Terminal.l_state" title="autopilot.core.terminal.Terminal.l_state"><code class="xref py py-meth docutils literal notranslate"><span class="pre">l_state()</span></code></a></td>
-<td>A Pi has changed state</td>
+<tbody>
+<tr class="row-even"><td><p><cite>‘STATE’</cite></p></td>
+<td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.l_state" title="autopilot.core.terminal.Terminal.l_state"><code class="xref py py-meth docutils literal notranslate"><span class="pre">l_state()</span></code></a></p></td>
+<td><p>A Pi has changed state</p></td>
 </tr>
-<tr class="row-odd"><td><cite>‘PING’</cite></td>
-<td><a class="reference internal" href="#autopilot.core.terminal.Terminal.l_ping" title="autopilot.core.terminal.Terminal.l_ping"><code class="xref py py-meth docutils literal notranslate"><span class="pre">l_ping()</span></code></a></td>
-<td>Someone wants to know if we’re alive</td>
+<tr class="row-odd"><td><p><cite>‘PING’</cite></p></td>
+<td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.l_ping" title="autopilot.core.terminal.Terminal.l_ping"><code class="xref py py-meth docutils literal notranslate"><span class="pre">l_ping()</span></code></a></p></td>
+<td><p>Someone wants to know if we’re alive</p></td>
 </tr>
-<tr class="row-even"><td><cite>‘DATA’</cite></td>
-<td><a class="reference internal" href="#autopilot.core.terminal.Terminal.l_data" title="autopilot.core.terminal.Terminal.l_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">l_data()</span></code></a></td>
-<td>Receiving data to store</td>
+<tr class="row-even"><td><p><cite>‘DATA’</cite></p></td>
+<td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.l_data" title="autopilot.core.terminal.Terminal.l_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">l_data()</span></code></a></p></td>
+<td><p>Receiving data to store</p></td>
 </tr>
-<tr class="row-odd"><td><cite>‘HANDSHAKE’</cite></td>
-<td><a class="reference internal" href="#autopilot.core.terminal.Terminal.l_handshake" title="autopilot.core.terminal.Terminal.l_handshake"><code class="xref py py-meth docutils literal notranslate"><span class="pre">l_handshake()</span></code></a></td>
-<td>Pilot first contact, telling us it’s alive and its IP</td>
+<tr class="row-odd"><td><p><cite>‘HANDSHAKE’</cite></p></td>
+<td><p><a class="reference internal" href="#autopilot.core.terminal.Terminal.l_handshake" title="autopilot.core.terminal.Terminal.l_handshake"><code class="xref py py-meth docutils literal notranslate"><span class="pre">l_handshake()</span></code></a></p></td>
+<td><p>Pilot first contact, telling us it’s alive and its IP</p></td>
 </tr>
 </tbody>
 </table>
 <p>** Prefs needed by Terminal **
 Typically set by <a class="reference internal" href="autopilot.setup.setup_terminal.html#module-autopilot.setup.setup_terminal" title="autopilot.setup.setup_terminal"><code class="xref py py-mod docutils literal notranslate"><span class="pre">setup.setup_terminal</span></code></a></p>
 <ul class="simple">
-<li><strong>BASEDIR</strong> - Base directory for all local autopilot data, typically <cite>/usr/autopilot</cite></li>
-<li><strong>MSGPORT</strong> - Port to use for our ROUTER listener, default <cite>5560</cite></li>
-<li><strong>DATADIR</strong> -  <cite>os.path.join(params[‘BASEDIR’], ‘data’)</cite></li>
-<li><strong>SOUNDDIR</strong> - <cite>os.path.join(params[‘BASEDIR’], ‘sounds’)</cite></li>
-<li><strong>PROTOCOLDIR</strong> - <cite>os.path.join(params[‘BASEDIR’], ‘protocols’)</cite></li>
-<li><strong>LOGDIR</strong> - <cite>os.path.join(params[‘BASEDIR’], ‘logs’)</cite></li>
-<li><strong>REPODIR</strong> - Path to autopilot git repo</li>
-<li><strong>PILOT_DB</strong> - Location of <cite>pilot_db.json</cite> used to populate <code class="xref py py-attr docutils literal notranslate"><span class="pre">pilots</span></code></li>
+<li><p><strong>BASEDIR</strong> - Base directory for all local autopilot data, typically <cite>/usr/autopilot</cite></p></li>
+<li><p><strong>MSGPORT</strong> - Port to use for our ROUTER listener, default <cite>5560</cite></p></li>
+<li><p><strong>DATADIR</strong> -  <cite>os.path.join(params[‘BASEDIR’], ‘data’)</cite></p></li>
+<li><p><strong>SOUNDDIR</strong> - <cite>os.path.join(params[‘BASEDIR’], ‘sounds’)</cite></p></li>
+<li><p><strong>PROTOCOLDIR</strong> - <cite>os.path.join(params[‘BASEDIR’], ‘protocols’)</cite></p></li>
+<li><p><strong>LOGDIR</strong> - <cite>os.path.join(params[‘BASEDIR’], ‘logs’)</cite></p></li>
+<li><p><strong>REPODIR</strong> - Path to autopilot git repo</p></li>
+<li><p><strong>PILOT_DB</strong> - Location of <cite>pilot_db.json</cite> used to populate <code class="xref py py-attr docutils literal notranslate"><span class="pre">pilots</span></code></p></li>
 </ul>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.node" title="autopilot.core.pilot.autopilot.node"><strong>node</strong></a> (<a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net_Node</span></code></a>) – Our Net_Node we use to communicate with our main networking object</li>
-<li><a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.autopilot.networking" title="autopilot.core.pilot.autopilot.networking"><strong>networking</strong></a> (<a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station" title="autopilot.core.networking.Terminal_Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal_Station</span></code></a>) – Our networking object to communicate with the outside world</li>
-<li><strong>subjects</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary mapping subject ID to <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> object.</li>
-<li><strong>pilots</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary mapping pilot ID to a list of its subjects, its IP, and any other pilot attributes.</li>
-<li><strong>layout</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QtGui.QGridLayout</span></code>) – Layout used to organize widgets</li>
-<li><strong>control_panel</strong> (<a class="reference internal" href="autopilot.core.gui.html#autopilot.core.gui.Control_Panel" title="autopilot.core.gui.Control_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Control_Panel</span></code></a>) – Control Panel to manage pilots and subjects</li>
-<li><strong>data_panel</strong> (<a class="reference internal" href="autopilot.core.plots.html#autopilot.core.plots.Plot_Widget" title="autopilot.core.plots.Plot_Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot_Widget</span></code></a>) – Plots for each pilot and subject.</li>
-<li><strong>logo</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QtGui.QLabel</span></code>) – Label holding our beautiful logo ;X</li>
-<li><a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.logger" title="autopilot.core.networking.Net_Node.logger"><strong>logger</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Logger" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a>) – Used to log messages and network events.</li>
-<li><a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Station.log_handler" title="autopilot.core.networking.Station.log_handler"><strong>log_handler</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.handlers.html#logging.FileHandler" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.FileHandler</span></code></a>) – Handler for logging</li>
-<li><a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Station.log_formatter" title="autopilot.core.networking.Station.log_formatter"><strong>log_formatter</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Formatter" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></a>) – <p>Formats log entries as:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net_Node</span></code></a>) – Our Net_Node we use to communicate with our main networking object</p></li>
+<li><p><strong>networking</strong> (<a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Terminal_Station" title="autopilot.core.networking.Terminal_Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal_Station</span></code></a>) – Our networking object to communicate with the outside world</p></li>
+<li><p><strong>subjects</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary mapping subject ID to <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> object.</p></li>
+<li><p><strong>pilots</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary mapping pilot ID to a list of its subjects, its IP, and any other pilot attributes.</p></li>
+<li><p><strong>layout</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QtWidgets.QGridLayout</span></code>) – Layout used to organize widgets</p></li>
+<li><p><strong>control_panel</strong> (<a class="reference internal" href="autopilot.core.gui.html#autopilot.core.gui.Control_Panel" title="autopilot.core.gui.Control_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Control_Panel</span></code></a>) – Control Panel to manage pilots and subjects</p></li>
+<li><p><strong>data_panel</strong> (<a class="reference internal" href="autopilot.core.plots.html#autopilot.core.plots.Plot_Widget" title="autopilot.core.plots.Plot_Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot_Widget</span></code></a>) – Plots for each pilot and subject.</p></li>
+<li><p><strong>logo</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QtWidgets.QLabel</span></code>) – Label holding our beautiful logo ;X</p></li>
+<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Logger" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a>) – Used to log messages and network events.</p></li>
+<li><p><strong>log_handler</strong> (<a class="reference external" href="https://docs.python.org/2/library/logging.handlers.html#logging.FileHandler" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.FileHandler</span></code></a>) – Handler for logging</p></li>
+<li><p><strong>log_formatter</strong> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Formatter" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></a>) – <p>Formats log entries as:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2"> : </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
-</li>
+</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
-<dt id="autopilot.core.terminal.Terminal.init_logging">
-<code class="descname">init_logging</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal.init_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal.init_logging" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start logging to a timestamped file in <cite>prefs.LOGDIR</cite></p>
-</dd></dl>
+<dt id="autopilot.core.terminal.Terminal.calibrate_ports">
+<code class="sig-name descname">calibrate_ports</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.terminal.Terminal.calibrate_ports" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
-<dt id="autopilot.core.terminal.Terminal.initUI">
-<code class="descname">initUI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal.initUI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal.initUI" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initializes graphical elements of Terminal.</p>
-<p>Including…</p>
-<ul class="simple">
-<li>Toolbar</li>
-<li><a class="reference internal" href="autopilot.core.gui.html#autopilot.core.gui.Control_Panel" title="autopilot.core.gui.Control_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gui.Control_Panel</span></code></a></li>
-<li><a class="reference internal" href="autopilot.core.plots.html#autopilot.core.plots.Plot_Widget" title="autopilot.core.plots.Plot_Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">plots.Plot_Widget</span></code></a></li>
-</ul>
-</dd></dl>
-
-<dl class="method">
-<dt id="autopilot.core.terminal.Terminal.reset_ui">
-<code class="descname">reset_ui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal.reset_ui"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal.reset_ui" title="Permalink to this definition">¶</a></dt>
-<dd><p>Clear Layout and call <a class="reference internal" href="#autopilot.core.terminal.Terminal.initUI" title="autopilot.core.terminal.Terminal.initUI"><code class="xref py py-meth docutils literal notranslate"><span class="pre">initUI()</span></code></a> again</p>
+<dt id="autopilot.core.terminal.Terminal.closeEvent">
+<code class="sig-name descname">closeEvent</code><span class="sig-paren">(</span><em class="sig-param">event</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.terminal.Terminal.closeEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>When Closing the Terminal Window, close any running subject objects,
+‘KILL’ our networking object.</p>
+<p>Since the <cite>:class:</cite>.Net_Node` keeping us alive is a <cite>daemon</cite>, no need
+to explicitly kill it.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="autopilot.core.terminal.Terminal.heartbeat">
-<code class="descname">heartbeat</code><span class="sig-paren">(</span><em>once=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal.heartbeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal.heartbeat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">heartbeat</code><span class="sig-paren">(</span><em class="sig-param">once=False</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.terminal.Terminal.heartbeat" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="autopilot.core.terminal.Terminal.toggle_start">
-<code class="descname">toggle_start</code><span class="sig-paren">(</span><em>starting</em>, <em>pilot</em>, <em>subject=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal.toggle_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal.toggle_start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start or Stop running the currently selected subject’s task. Sends a
-message containing the task information to the concerned pilot.</p>
-<p>Each <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Panel</span></code> is given a lambda function that calls this
-one with the arguments specified See <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Button</span></code>, as it is
-what calls this function.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>starting</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Does this button press mean we are starting (True)
-or stopping (False) the task?</li>
-<li><strong>pilot</strong> – Which Pilot is starting or stopping?</li>
-<li><strong>subject</strong> – Which Subject is currently selected?</li>
+<dt id="autopilot.core.terminal.Terminal.initUI">
+<code class="sig-name descname">initUI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.terminal.Terminal.initUI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes graphical elements of Terminal.</p>
+<p>Including…</p>
+<ul class="simple">
+<li><p>Toolbar</p></li>
+<li><p><a class="reference internal" href="autopilot.core.gui.html#autopilot.core.gui.Control_Panel" title="autopilot.core.gui.Control_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gui.Control_Panel</span></code></a></p></li>
+<li><p><a class="reference internal" href="autopilot.core.plots.html#autopilot.core.plots.Plot_Widget" title="autopilot.core.plots.Plot_Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">plots.Plot_Widget</span></code></a></p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.terminal.Terminal.init_logging">
+<code class="sig-name descname">init_logging</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.terminal.Terminal.init_logging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start logging to a timestamped file in <cite>prefs.LOGDIR</cite></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="autopilot.core.terminal.Terminal.l_data">
-<code class="descname">l_data</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal.l_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal.l_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">l_data</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.terminal.Terminal.l_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>A Pilot has sent us data.</p>
 <p><cite>value</cite> field of message should have <cite>subject</cite> and <cite>pilot</cite> added to dictionary for identification.</p>
 <p>Any key in <cite>value</cite> that matches a column in the subject’s trial data table will be saved.</p>
 <p>If the subject graduates after receiving this piece of data, stop the current
 task running on the Pilot and send the new one.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dict of field-value pairs to save</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="autopilot.core.terminal.Terminal.l_ping">
-<code class="descname">l_ping</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal.l_ping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal.l_ping" title="Permalink to this definition">¶</a></dt>
-<dd><div class="admonition-todo admonition" id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">Reminder to implement heartbeating.</p>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Currently unused, as Terminal Net_Node stability hasn’t been
-a problem and no universal system of heartbeating has been
-established (global stability has not been an issue).</p>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> – (unused)</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="autopilot.core.terminal.Terminal.l_state">
-<code class="descname">l_state</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal.l_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal.l_state" title="Permalink to this definition">¶</a></dt>
-<dd><p>A Pilot has changed state, keep track of it.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – dict containing <cite>state</cite> .</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dict of field-value pairs to save</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="autopilot.core.terminal.Terminal.l_handshake">
-<code class="descname">l_handshake</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal.l_handshake"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal.l_handshake" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">l_handshake</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.terminal.Terminal.l_handshake" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pilot is sending its IP and state on startup.</p>
 <p>If we haven’t heard of this pilot before, make a new entry in <code class="xref py py-attr docutils literal notranslate"><span class="pre">pilots</span></code>
 and <a class="reference internal" href="autopilot.core.gui.html#autopilot.core.gui.Control_Panel.update_db" title="autopilot.core.gui.Control_Panel.update_db"><code class="xref py py-meth docutils literal notranslate"><span class="pre">gui.Control_Panel.update_db()</span></code></a> .</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – dict containing <cite>ip</cite> and <cite>state</cite></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – dict containing <cite>ip</cite> and <cite>state</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.terminal.Terminal.l_ping">
+<code class="sig-name descname">l_ping</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.terminal.Terminal.l_ping" title="Permalink to this definition">¶</a></dt>
+<dd><div class="admonition-todo admonition" id="id3">
+<p class="admonition-title">Todo</p>
+<p>Reminder to implement heartbeating.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently unused, as Terminal Net_Node stability hasn’t been
+a problem and no universal system of heartbeating has been
+established (global stability has not been an issue).</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> – (unused)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.terminal.Terminal.l_state">
+<code class="sig-name descname">l_state</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.terminal.Terminal.l_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Pilot has changed state, keep track of it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – dict containing <cite>state</cite> .</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="autopilot.core.terminal.Terminal.new_pilot">
-<code class="descname">new_pilot</code><span class="sig-paren">(</span><em>ip=''</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal.new_pilot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal.new_pilot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">new_pilot</code><span class="sig-paren">(</span><em class="sig-param">ip=''</em>, <em class="sig-param">name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.terminal.Terminal.new_pilot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make a new entry in <code class="xref py py-attr docutils literal notranslate"><span class="pre">Terminal.pilots</span></code> and make appropriate
 GUI elements.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>ip</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Optional. if given, stored in db.</li>
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – If None, prompted for a name, otherwise used for entry in pilot DB.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ip</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Optional. if given, stored in db.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – If None, prompted for a name, otherwise used for entry in pilot DB.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="autopilot.core.terminal.Terminal.new_protocol">
-<code class="descname">new_protocol</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal.new_protocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal.new_protocol" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">new_protocol</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.terminal.Terminal.new_protocol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Open a <a class="reference internal" href="autopilot.core.gui.html#autopilot.core.gui.Protocol_Wizard" title="autopilot.core.gui.Protocol_Wizard"><code class="xref py py-class docutils literal notranslate"><span class="pre">gui.Protocol_Wizard</span></code></a> to create a new protocol.</p>
 <p>Prompts for name of protocol, then saves in <cite>prefs.PROTOCOLDIR</cite></p>
 </dd></dl>
 
 <dl class="method">
-<dt id="autopilot.core.terminal.Terminal.list_subjects">
-<code class="descname">list_subjects</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal.list_subjects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal.list_subjects" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a list of all subject IDs</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of all subject IDs present in <code class="xref py py-attr docutils literal notranslate"><span class="pre">Terminal.pilots</span></code></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
-</tr>
-</tbody>
-</table>
+<dt id="autopilot.core.terminal.Terminal.plot_psychometric">
+<code class="sig-name descname">plot_psychometric</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.terminal.Terminal.plot_psychometric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select subject, step, and variables to plot a psychometric curve</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="autopilot.core.terminal.Terminal.subject_weights">
-<code class="descname">subject_weights</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal.subject_weights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal.subject_weights" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets recent weights from all <code class="xref py py-attr docutils literal notranslate"><span class="pre">subjects</span></code> and
-open a <a class="reference internal" href="autopilot.core.gui.html#autopilot.core.gui.Weights" title="autopilot.core.gui.Weights"><code class="xref py py-class docutils literal notranslate"><span class="pre">gui.Weights</span></code></a> window to view or set weights.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="autopilot.core.terminal.Terminal.update_protocols">
-<code class="descname">update_protocols</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal.update_protocols"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal.update_protocols" title="Permalink to this definition">¶</a></dt>
-<dd><p>If we change the protocol file, update the stored version in subject files</p>
-</dd></dl>
+<dt id="autopilot.core.terminal.Terminal.protocols">
+<em class="property">property </em><code class="sig-name descname">protocols</code><a class="headerlink" href="#autopilot.core.terminal.Terminal.protocols" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="autopilot.core.terminal.Terminal.reassign_protocols">
-<code class="descname">reassign_protocols</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal.reassign_protocols"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal.reassign_protocols" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">reassign_protocols</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.terminal.Terminal.reassign_protocols" title="Permalink to this definition">¶</a></dt>
 <dd><p>Batch reassign protocols and steps.</p>
 <p>Opens a <a class="reference internal" href="autopilot.core.gui.html#autopilot.core.gui.Reassign" title="autopilot.core.gui.Reassign"><code class="xref py py-class docutils literal notranslate"><span class="pre">gui.Reassign</span></code></a> window after getting protocol data,
 and applies any changes made in the window.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="autopilot.core.terminal.Terminal.calibrate_ports">
-<code class="descname">calibrate_ports</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal.calibrate_ports"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal.calibrate_ports" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="autopilot.core.terminal.Terminal.reset_ui">
+<code class="sig-name descname">reset_ui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.terminal.Terminal.reset_ui" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear Layout and call <a class="reference internal" href="#autopilot.core.terminal.Terminal.initUI" title="autopilot.core.terminal.Terminal.initUI"><code class="xref py py-meth docutils literal notranslate"><span class="pre">initUI()</span></code></a> again</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="autopilot.core.terminal.Terminal.staticMetaObject">
-<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#autopilot.core.terminal.Terminal.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#autopilot.core.terminal.Terminal.staticMetaObject" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.terminal.Terminal.subject_list">
+<em class="property">property </em><code class="sig-name descname">subject_list</code><a class="headerlink" href="#autopilot.core.terminal.Terminal.subject_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of all subject IDs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of all subject IDs present in <code class="xref py py-attr docutils literal notranslate"><span class="pre">Terminal.pilots</span></code></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.terminal.Terminal.subject_protocols">
+<em class="property">property </em><code class="sig-name descname">subject_protocols</code><a class="headerlink" href="#autopilot.core.terminal.Terminal.subject_protocols" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns:
+subject_protocols (dict): a dictionary of subjects: [protocol, step]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.terminal.Terminal.subject_weights">
+<code class="sig-name descname">subject_weights</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.terminal.Terminal.subject_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets recent weights from all <code class="xref py py-attr docutils literal notranslate"><span class="pre">subjects</span></code> and
+open a <a class="reference internal" href="autopilot.core.gui.html#autopilot.core.gui.Weights" title="autopilot.core.gui.Weights"><code class="xref py py-class docutils literal notranslate"><span class="pre">gui.Weights</span></code></a> window to view or set weights.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="autopilot.core.terminal.Terminal.test_bandwidth">
-<code class="descname">test_bandwidth</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal.test_bandwidth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal.test_bandwidth" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_bandwidth</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.terminal.Terminal.test_bandwidth" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="autopilot.core.terminal.Terminal.closeEvent">
-<code class="descname">closeEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/terminal.html#Terminal.closeEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.terminal.Terminal.closeEvent" title="Permalink to this definition">¶</a></dt>
-<dd><p>When Closing the Terminal Window, close any running subject objects,
-‘KILL’ our networking object.</p>
-<p>Since the <cite>:class:</cite>.Net_Node` keeping us alive is a <cite>daemon</cite>, no need
-to explicitly kill it.</p>
+<dt id="autopilot.core.terminal.Terminal.toggle_start">
+<code class="sig-name descname">toggle_start</code><span class="sig-paren">(</span><em class="sig-param">starting</em>, <em class="sig-param">pilot</em>, <em class="sig-param">subject=None</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.terminal.Terminal.toggle_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start or Stop running the currently selected subject’s task. Sends a
+message containing the task information to the concerned pilot.</p>
+<p>Each <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Panel</span></code> is given a lambda function that calls this
+one with the arguments specified See <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Button</span></code>, as it is
+what calls this function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>starting</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Does this button press mean we are starting (True)
+or stopping (False) the task?</p></li>
+<li><p><strong>pilot</strong> – Which Pilot is starting or stopping?</p></li>
+<li><p><strong>subject</strong> – Which Subject is currently selected?</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.core.terminal.Terminal.update_protocols">
+<code class="sig-name descname">update_protocols</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.terminal.Terminal.update_protocols" title="Permalink to this definition">¶</a></dt>
+<dd><p>If we change the protocol file, update the stored version in subject files</p>
 </dd></dl>
 
 </dd></dl>

@@ -22,21 +22,11 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'0.2',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -45,6 +35,7 @@
   
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="tasks" href="autopilot.tasks.html" />
@@ -72,9 +63,6 @@
             <a href="index.html" class="icon icon-home"> Autopilot
           
 
-          
-            
-            <img src="_static/autopilot_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -156,7 +144,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
@@ -177,7 +165,7 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id1">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id5">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -316,145 +304,258 @@
             
   <div class="section" id="module-autopilot.core.utils">
 <span id="utils"></span><h1>utils<a class="headerlink" href="#module-autopilot.core.utils" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="autopilot.core.utils.Param">
-<em class="property">class </em><code class="descclassname">autopilot.core.utils.</code><code class="descname">Param</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#Param"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Param" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>In the future, we will implement a coherent Parameter management system</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Not Implemented.</p>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>**kwargs</strong> – </td>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.utils.InvokeEvent" title="autopilot.core.utils.InvokeEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a>(fn, *args, **kwargs)</p></td>
+<td><p>Sends signals to the main QT thread from spawned message threads</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.utils.Invoker" title="autopilot.core.utils.Invoker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Invoker</span></code></a></p></td>
+<td><p>Wrapper that calls an evoked event made by <a class="reference internal" href="#autopilot.core.utils.InvokeEvent" title="autopilot.core.utils.InvokeEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.utils.Param" title="autopilot.core.utils.Param"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Param</span></code></a>(**kwargs)</p></td>
+<td><p>In the future, we will implement a coherent Parameter management system</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.utils.ReturnThread" title="autopilot.core.utils.ReturnThread"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReturnThread</span></code></a>([group, target, name, args, …])</p></td>
+<td><p>Thread whose .join() method returns the value from the function</p></td>
 </tr>
 </tbody>
 </table>
+<p><strong>Functions</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.utils.coerce_discrete" title="autopilot.core.utils.coerce_discrete"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coerce_discrete</span></code></a>(df, col[, mapping])</p></td>
+<td><p>Coerce a discrete/string column of a pandas dataframe into numeric values</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.utils.list_subjects" title="autopilot.core.utils.list_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_subjects</span></code></a>([pilot_db])</p></td>
+<td><p>Given a dictionary of a pilot_db, return the subjects that are in it.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.utils.load_pilotdb" title="autopilot.core.utils.load_pilotdb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_pilotdb</span></code></a>([file_name, reverse])</p></td>
+<td><p>Try to load the file_db</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="autopilot.core.utils.Param">
+<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.utils.</code><code class="sig-name descname">Param</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#Param"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>In the future, we will implement a coherent Parameter management system</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Not Implemented.</p>
+</div>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.utils.Param.__contains__" title="autopilot.core.utils.Param.__contains__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__contains__</span></code></a>(key)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param key</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.utils.Param.__delitem__" title="autopilot.core.utils.Param.__delitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__delitem__</span></code></a>(key)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param key</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.utils.Param.__getitem__" title="autopilot.core.utils.Param.__getitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__getitem__</span></code></a>(key)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param key</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.utils.Param.__setitem__" title="autopilot.core.utils.Param.__setitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__setitem__</span></code></a>(key, value)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param key</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.utils.Param.types" title="autopilot.core.utils.Param.types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">types</span></code></a></p></td>
+<td><p>Built-in mutable sequence.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – </p>
+</dd>
+</dl>
 <dl class="attribute">
 <dt id="autopilot.core.utils.Param.tag">
-<code class="descname">tag</code><em class="property"> = None</em><a class="headerlink" href="#autopilot.core.utils.Param.tag" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">tag</code><em class="property"> = None</em><a class="headerlink" href="#autopilot.core.utils.Param.tag" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
 <dt id="autopilot.core.utils.Param.type">
-<code class="descname">type</code><em class="property"> = None</em><a class="headerlink" href="#autopilot.core.utils.Param.type" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">type</code><em class="property"> = None</em><a class="headerlink" href="#autopilot.core.utils.Param.type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
 <dt id="autopilot.core.utils.Param.types">
-<code class="descname">types</code><em class="property"> = ['int', 'bool', 'list']</em><a class="headerlink" href="#autopilot.core.utils.Param.types" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">types</code><em class="property"> = ['int', 'bool', 'list']</em><a class="headerlink" href="#autopilot.core.utils.Param.types" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="autopilot.core.utils.Param.__getitem__">
-<code class="descname">__getitem__</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#Param.__getitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Param.__getitem__" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> – </td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">__getitem__</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#Param.__getitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Param.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> – </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="autopilot.core.utils.Param.__setitem__">
-<code class="descname">__setitem__</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#Param.__setitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Param.__setitem__" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> – </li>
-<li><strong>value</strong> – </li>
+<code class="sig-name descname">__setitem__</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#Param.__setitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Param.__setitem__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – </p></li>
+<li><p><strong>value</strong> – </p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="autopilot.core.utils.Param.__delitem__">
-<code class="descname">__delitem__</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#Param.__delitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Param.__delitem__" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> – </td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">__delitem__</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#Param.__delitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Param.__delitem__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> – </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="autopilot.core.utils.Param.__contains__">
-<code class="descname">__contains__</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#Param.__contains__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Param.__contains__" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> – </td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">__contains__</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#Param.__contains__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Param.__contains__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> – </p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="autopilot.core.utils.InvokeEvent">
-<em class="property">class </em><code class="descclassname">autopilot.core.utils.</code><code class="descname">InvokeEvent</code><span class="sig-paren">(</span><em>fn</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#InvokeEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.InvokeEvent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="http://pyside.github.io/docs/pyside/PySide/QtCore/QEvent.html#PySide.QtCore.QEvent" title="(in PySide v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySide.QtCore.QEvent</span></code></a></p>
+<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.utils.</code><code class="sig-name descname">InvokeEvent</code><span class="sig-paren">(</span><em class="sig-param">fn: function</em>, <em class="sig-param">*args: object</em>, <em class="sig-param">**kwargs: object</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#InvokeEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.InvokeEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtCore.QEvent</span></code></p>
 <p>Sends signals to the main QT thread from spawned message threads</p>
 <p>See <a class="reference external" href="https://stackoverflow.com/a/12127115">stackoverflow</a></p>
 <p>Accepts a function, its args and kwargs and wraps them as a
 <code class="xref py py-class docutils literal notranslate"><span class="pre">QtCore.QEvent</span></code></p>
 <dl class="attribute">
 <dt id="autopilot.core.utils.InvokeEvent.EVENT_TYPE">
-<code class="descname">EVENT_TYPE</code><em class="property"> = PySide.QtCore.QEvent.Type.MaxUser</em><a class="headerlink" href="#autopilot.core.utils.InvokeEvent.EVENT_TYPE" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">EVENT_TYPE</code><em class="property"> = PySide2.QtCore.QEvent.Type(65533)</em><a class="headerlink" href="#autopilot.core.utils.InvokeEvent.EVENT_TYPE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="autopilot.core.utils.Invoker">
-<em class="property">class </em><code class="descclassname">autopilot.core.utils.</code><code class="descname">Invoker</code><a class="reference internal" href="_modules/autopilot/core/utils.html#Invoker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Invoker" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="http://pyside.github.io/docs/pyside/PySide/QtCore/QObject.html#PySide.QtCore.QObject" title="(in PySide v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySide.QtCore.QObject</span></code></a></p>
+<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.utils.</code><code class="sig-name descname">Invoker</code><a class="reference internal" href="_modules/autopilot/core/utils.html#Invoker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Invoker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtCore.QObject</span></code></p>
 <p>Wrapper that calls an evoked event made by <a class="reference internal" href="#autopilot.core.utils.InvokeEvent" title="autopilot.core.utils.InvokeEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a></p>
-<dl class="method">
-<dt id="autopilot.core.utils.Invoker.event">
-<code class="descname">event</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#Invoker.event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Invoker.event" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> – </td>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.utils.Invoker.event" title="autopilot.core.utils.Invoker.event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">event</span></code></a>(event)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param event</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="autopilot.core.utils.Invoker.event">
+<code class="sig-name descname">event</code><span class="sig-paren">(</span><em class="sig-param">event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#Invoker.event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Invoker.event" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>event</strong> – </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="autopilot.core.utils.Invoker.staticMetaObject">
-<code class="descname">staticMetaObject</code><em class="property"> = &lt;PySide.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#autopilot.core.utils.Invoker.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#autopilot.core.utils.Invoker.staticMetaObject" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="autopilot.core.utils.ReturnThread">
-<em class="property">class </em><code class="descclassname">autopilot.core.utils.</code><code class="descname">ReturnThread</code><span class="sig-paren">(</span><em>group=None</em>, <em>target=None</em>, <em>name=None</em>, <em>args=()</em>, <em>kwargs={}</em>, <em>Verbose=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#ReturnThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.ReturnThread" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.utils.</code><code class="sig-name descname">ReturnThread</code><span class="sig-paren">(</span><em class="sig-param">group=None</em>, <em class="sig-param">target=None</em>, <em class="sig-param">name=None</em>, <em class="sig-param">args=()</em>, <em class="sig-param">kwargs={}</em>, <em class="sig-param">Verbose=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#ReturnThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.ReturnThread" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Thread" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code></a></p>
 <p>Thread whose .join() method returns the value from the function
 thx to <a class="reference external" href="https://stackoverflow.com/a/6894023">https://stackoverflow.com/a/6894023</a></p>
+<p>This constructor should always be called with keyword arguments. Arguments are:</p>
+<p><em>group</em> should be None; reserved for future extension when a ThreadGroup
+class is implemented.</p>
+<p><em>target</em> is the callable object to be invoked by the run()
+method. Defaults to None, meaning nothing is called.</p>
+<p><em>name</em> is the thread name. By default, a unique name is constructed of
+the form “Thread-N” where N is a small decimal number.</p>
+<p><em>args</em> is the argument tuple for the target invocation. Defaults to ().</p>
+<p><em>kwargs</em> is a dictionary of keyword arguments for the target
+invocation. Defaults to {}.</p>
+<p>If a subclass overrides the constructor, it must make sure to invoke
+the base class constructor (Thread.__init__()) before doing anything
+else to the thread.</p>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.utils.ReturnThread.join" title="autopilot.core.utils.ReturnThread.join"><code class="xref py py-obj docutils literal notranslate"><span class="pre">join</span></code></a>([timeout])</p></td>
+<td><p>Wait until the thread terminates.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.utils.ReturnThread.run" title="autopilot.core.utils.ReturnThread.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>()</p></td>
+<td><p>Method representing the thread’s activity.</p></td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="autopilot.core.utils.ReturnThread.run">
-<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#ReturnThread.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.ReturnThread.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#ReturnThread.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.ReturnThread.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method representing the thread’s activity.</p>
 <p>You may override this method in a subclass. The standard run() method
 invokes the callable object passed to the object’s constructor as the
@@ -464,7 +565,7 @@ from the args and kwargs arguments, respectively.</p>
 
 <dl class="method">
 <dt id="autopilot.core.utils.ReturnThread.join">
-<code class="descname">join</code><span class="sig-paren">(</span><em>timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#ReturnThread.join"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.ReturnThread.join" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">join</code><span class="sig-paren">(</span><em class="sig-param">timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#ReturnThread.join"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.ReturnThread.join" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wait until the thread terminates.</p>
 <p>This blocks the calling thread until the thread whose join() method is
 called terminates – either normally or through an unhandled exception
@@ -472,7 +573,7 @@ or until the optional timeout occurs.</p>
 <p>When the timeout argument is present and not None, it should be a
 floating point number specifying a timeout for the operation in seconds
 (or fractions thereof). As join() always returns None, you must call
-isAlive() after join() to decide whether a timeout happened – if the
+is_alive() after join() to decide whether a timeout happened – if the
 thread is still alive, the join() call timed out.</p>
 <p>When the timeout argument is not present or None, the operation will
 block until the thread terminates.</p>
@@ -487,35 +588,53 @@ exception.</p>
 
 <dl class="function">
 <dt id="autopilot.core.utils.list_subjects">
-<code class="descclassname">autopilot.core.utils.</code><code class="descname">list_subjects</code><span class="sig-paren">(</span><em>pilot_db=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#list_subjects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.list_subjects" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">autopilot.core.utils.</code><code class="sig-name descname">list_subjects</code><span class="sig-paren">(</span><em class="sig-param">pilot_db=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#list_subjects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.list_subjects" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a dictionary of a pilot_db, return the subjects that are in it.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pilot_db</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – a pilot_db. if None tried to load pilot_db with <a href="#id1"><span class="problematic" id="id2">:method:`.load_pilotdb`</span></a></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a list of currently active subjects</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">subjects (list)</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pilot_db</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – a pilot_db. if None tried to load pilot_db with <a href="#id1"><span class="problematic" id="id2">:method:`.load_pilotdb`</span></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of currently active subjects</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>subjects (list)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="autopilot.core.utils.load_pilotdb">
-<code class="descclassname">autopilot.core.utils.</code><code class="descname">load_pilotdb</code><span class="sig-paren">(</span><em>file_name=None</em>, <em>reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#load_pilotdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.load_pilotdb" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">autopilot.core.utils.</code><code class="sig-name descname">load_pilotdb</code><span class="sig-paren">(</span><em class="sig-param">file_name=None</em>, <em class="sig-param">reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#load_pilotdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.load_pilotdb" title="Permalink to this definition">¶</a></dt>
 <dd><p>Try to load the file_db</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_name</strong> – </td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_name</strong> – </p>
+</dd>
+</dl>
 <p>Returns:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="autopilot.core.utils.coerce_discrete">
+<code class="sig-prename descclassname">autopilot.core.utils.</code><code class="sig-name descname">coerce_discrete</code><span class="sig-paren">(</span><em class="sig-param">df</em>, <em class="sig-param">col</em>, <em class="sig-param">mapping={'L': 0</em>, <em class="sig-param">'R': 1}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#coerce_discrete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.coerce_discrete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coerce a discrete/string column of a pandas dataframe into numeric values</p>
+<p>Default is to map ‘L’ to 0 and ‘R’ to 1 as in the case of Left/Right 2AFC tasks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – dataframe with the column to transform</p></li>
+<li><p><strong>col</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – name of column</p></li>
+<li><p><strong>mapping</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – mapping of strings to numbers</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>transformed dataframe</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>df (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>)</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

@@ -2541,11 +2541,11 @@ class Weights(QtWidgets.QTableWidget):
 
 #####################################################
 # Custom Autopilot Qt Style
-
-class Autopilot_Style(QtGui.QPlastiqueStyle):
-
-    def __init__(self):
-        super(Autopilot_Style, self).__init__()
+#
+# class Autopilot_Style(QtGui.QPlastiqueStyle):
+#
+#     def __init__(self):
+#         super(Autopilot_Style, self).__init__()
 
 class Psychometric(QtGui.QDialog):
     """

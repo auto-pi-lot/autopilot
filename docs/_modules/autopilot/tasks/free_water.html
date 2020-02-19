@@ -22,21 +22,11 @@
   <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../../',
-              VERSION:'0.2',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -45,6 +35,7 @@
   
   <link rel="stylesheet" href="../../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -70,9 +61,6 @@
             <a href="../../../index.html" class="icon icon-home"> Autopilot
           
 
-          
-            
-            <img src="../../../_static/autopilot_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -154,7 +142,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#params">PARAMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#data">Data</a></li>
@@ -175,7 +163,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id1">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id5">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -311,14 +299,12 @@
   <h1>Source code for autopilot.tasks.free_water</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span> <span class="k">as</span> <span class="n">odict</span>
 <span class="kn">import</span> <span class="nn">tables</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">from</span> <span class="nn">autopilot</span> <span class="kn">import</span> <span class="n">prefs</span>
 
-<span class="kn">from</span> <span class="nn">autopilot.core</span> <span class="kn">import</span> <span class="n">hardware</span>
+<span class="kn">import</span> <span class="nn">autopilot.hardware.gpio</span>
+
 <span class="kn">from</span> <span class="nn">autopilot.tasks.task</span> <span class="kn">import</span> <span class="n">Task</span>
 
 <span class="n">TASK</span> <span class="o">=</span> <span class="s1">&#39;Free_water&#39;</span>
@@ -364,20 +350,20 @@
 
     <span class="n">HARDWARE</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;POKES&#39;</span><span class="p">:{</span>
-            <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Beambreak</span><span class="p">,</span>
-            <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Beambreak</span><span class="p">,</span>
-            <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Beambreak</span>
+            <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">Digital_In</span><span class="p">,</span>
+            <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">Digital_In</span><span class="p">,</span>
+            <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">Digital_In</span>
         <span class="p">},</span>
         <span class="s1">&#39;LEDS&#39;</span><span class="p">:{</span>
             <span class="c1"># TODO: use LEDs, RGB vs. white LED option in init</span>
-            <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">,</span>
-            <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">,</span>
-            <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">LED_RGB</span>
+            <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">,</span>
+            <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">,</span>
+            <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">LED_RGB</span>
         <span class="p">},</span>
         <span class="s1">&#39;PORTS&#39;</span><span class="p">:{</span>
-            <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Solenoid</span><span class="p">,</span>
-            <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Solenoid</span><span class="p">,</span>
-            <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">Solenoid</span>
+            <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">Solenoid</span><span class="p">,</span>
+            <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">Solenoid</span><span class="p">,</span>
+            <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">Solenoid</span>
         <span class="p">}</span>
     <span class="p">}</span>
 
@@ -388,8 +374,8 @@
         <span class="p">}</span>
     <span class="p">}</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_block</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">current_trial</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                 <span class="n">reward</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">allow_repeat</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_block</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">current_trial</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">reward</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">allow_repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            stage_block (:class:`threading.Event`): used to signal to the carrying Pilot that the current trial stage is over</span>
@@ -426,7 +412,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">stages</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">cycle</span><span class="p">(</span><span class="n">stage_list</span><span class="p">)</span>
 
         <span class="c1"># Init hardware</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pins</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hardware</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pin_id</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># Inverse pin dictionary</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_hardware</span><span class="p">()</span>
 
@@ -460,14 +446,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">other_ports</span><span class="p">)</span>
 
         <span class="c1"># Set triggers and set the target LED to green.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s1">&#39;PORTS&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">open</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hardware</span><span class="p">[</span><span class="s1">&#39;PORTS&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">open</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_leds</span><span class="p">({</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">]})</span>
 
         <span class="c1"># Return data</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span>
             <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
-            <span class="s1">&#39;trial_num&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">trial_counter</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="s1">&#39;trial_num&#39;</span> <span class="p">:</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trial_counter</span><span class="p">)</span>
         <span class="p">}</span>
         <span class="k">return</span> <span class="n">data</span></div>
 
@@ -482,7 +468,7 @@
         <span class="c1"># mebs also turn the light off rl quick</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_leds</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;TRIAL_END&#39;</span><span class="p">:</span><span class="bp">True</span><span class="p">}</span></div>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;TRIAL_END&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">}</span></div>
 
 
 
@@ -490,7 +476,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When shutting down, release all hardware objects and turn LEDs off.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pins</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">pin</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;LEDS&quot;</span><span class="p">:</span>
                     <span class="n">obj</span><span class="o">.</span><span class="n">set_color</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>

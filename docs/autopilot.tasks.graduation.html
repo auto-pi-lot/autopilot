@@ -22,21 +22,11 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'0.2',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -45,6 +35,7 @@
   
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="nafc" href="autopilot.tasks.nafc.html" />
@@ -72,9 +63,6 @@
             <a href="index.html" class="icon icon-home"> Autopilot
           
 
-          
-            
-            <img src="_static/autopilot_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -156,7 +144,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
@@ -177,7 +165,7 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id1">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id5">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -318,28 +306,95 @@
 <span id="graduation"></span><h1>graduation<a class="headerlink" href="#module-autopilot.tasks.graduation" title="Permalink to this headline">¶</a></h1>
 <p>Object that implement Graduation criteria to move between
 different tasks in a protocol.</p>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.tasks.graduation.Accuracy" title="autopilot.tasks.graduation.Accuracy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Accuracy</span></code></a>([threshold, window])</p></td>
+<td><p>Graduate stage based on percent accuracy over some window of trials.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.tasks.graduation.Graduation" title="autopilot.tasks.graduation.Graduation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Graduation</span></code></a></p></td>
+<td><p>Base Graduation object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.tasks.graduation.NTrials" title="autopilot.tasks.graduation.NTrials"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NTrials</span></code></a>(n_trials[, current_trial])</p></td>
+<td><p>Graduate after doing n trials</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Data</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.tasks.graduation.GRAD_LIST" title="autopilot.tasks.graduation.GRAD_LIST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GRAD_LIST</span></code></a></p></td>
+<td><p>Mapping from string reference of graduation type to object.</p></td>
+</tr>
+</tbody>
+</table>
 <dl class="class">
 <dt id="autopilot.tasks.graduation.Graduation">
-<em class="property">class </em><code class="descclassname">autopilot.tasks.graduation.</code><code class="descname">Graduation</code><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#Graduation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.Graduation" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">autopilot.tasks.graduation.</code><code class="sig-name descname">Graduation</code><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#Graduation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.Graduation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Base Graduation object.</p>
 <p>All Graduation objects need to populate PARAMS, COLS, and define an
 <cite>update</cite> method.</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.tasks.graduation.Graduation.COLS" title="autopilot.tasks.graduation.Graduation.COLS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">COLS</span></code></a></p></td>
+<td><p>list of any data columns that this object should be given.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.tasks.graduation.Graduation.PARAMS" title="autopilot.tasks.graduation.Graduation.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></p></td>
+<td><p>list of parameters to be defined</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.tasks.graduation.Graduation.update" title="autopilot.tasks.graduation.Graduation.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(row)</p></td>
+<td><p>:param <code class="xref py py-class docutils literal notranslate"><span class="pre">Row</span></code>: Trial row</p></td>
+</tr>
+</tbody>
+</table>
 <dl class="attribute">
 <dt id="autopilot.tasks.graduation.Graduation.PARAMS">
-<code class="descname">PARAMS</code><em class="property"> = []</em><a class="headerlink" href="#autopilot.tasks.graduation.Graduation.PARAMS" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>list</em> – list of parameters to be defined</p>
+<code class="sig-name descname">PARAMS</code><em class="property"> = []</em><a class="headerlink" href="#autopilot.tasks.graduation.Graduation.PARAMS" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of parameters to be defined</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="autopilot.tasks.graduation.Graduation.COLS">
-<code class="descname">COLS</code><em class="property"> = []</em><a class="headerlink" href="#autopilot.tasks.graduation.Graduation.COLS" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>list</em> – list of any data columns that this object should be given.</p>
+<code class="sig-name descname">COLS</code><em class="property"> = []</em><a class="headerlink" href="#autopilot.tasks.graduation.Graduation.COLS" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of any data columns that this object should be given.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="autopilot.tasks.graduation.Graduation.update">
-<code class="descname">update</code><span class="sig-paren">(</span><em>row</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#Graduation.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.Graduation.update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">row</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#Graduation.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.Graduation.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>:param <code class="xref py py-class docutils literal notranslate"><span class="pre">Row</span></code>: Trial row</p>
 </dd></dl>
 
@@ -347,102 +402,143 @@ different tasks in a protocol.</p>
 
 <dl class="class">
 <dt id="autopilot.tasks.graduation.Accuracy">
-<em class="property">class </em><code class="descclassname">autopilot.tasks.graduation.</code><code class="descname">Accuracy</code><span class="sig-paren">(</span><em>threshold=0.75</em>, <em>window=500</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#Accuracy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.Accuracy" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">autopilot.tasks.graduation.</code><code class="sig-name descname">Accuracy</code><span class="sig-paren">(</span><em class="sig-param">threshold=0.75</em>, <em class="sig-param">window=500</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#Accuracy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.Accuracy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#autopilot.tasks.graduation.Graduation" title="autopilot.tasks.graduation.Graduation"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.graduation.Graduation</span></code></a></p>
 <p>Graduate stage based on percent accuracy over some window of trials.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>threshold</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Accuracy above this threshold triggers graduation</li>
-<li><strong>window</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – number of trials to consider in the past.</li>
-<li><strong>**kwargs</strong> – should have ‘correct’ corresponding to the corrects/incorrects of the past.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>threshold</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Accuracy above this threshold triggers graduation</p></li>
+<li><p><strong>window</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – number of trials to consider in the past.</p></li>
+<li><p><strong>**kwargs</strong> – should have ‘correct’ corresponding to the corrects/incorrects of the past.</p></li>
 </ul>
-</td>
+</dd>
+</dl>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.tasks.graduation.Accuracy.COLS" title="autopilot.tasks.graduation.Accuracy.COLS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">COLS</span></code></a></p></td>
+<td><p>Built-in mutable sequence.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.tasks.graduation.Accuracy.PARAMS" title="autopilot.tasks.graduation.Accuracy.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></p></td>
+<td><p>Built-in mutable sequence.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.tasks.graduation.Accuracy.update" title="autopilot.tasks.graduation.Accuracy.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(row)</p></td>
+<td><p>Get ‘correct’ from the row object.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="attribute">
 <dt id="autopilot.tasks.graduation.Accuracy.PARAMS">
-<code class="descname">PARAMS</code><em class="property"> = ['threshold', 'window']</em><a class="headerlink" href="#autopilot.tasks.graduation.Accuracy.PARAMS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">PARAMS</code><em class="property"> = ['threshold', 'window']</em><a class="headerlink" href="#autopilot.tasks.graduation.Accuracy.PARAMS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
 <dt id="autopilot.tasks.graduation.Accuracy.COLS">
-<code class="descname">COLS</code><em class="property"> = ['correct']</em><a class="headerlink" href="#autopilot.tasks.graduation.Accuracy.COLS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">COLS</code><em class="property"> = ['correct']</em><a class="headerlink" href="#autopilot.tasks.graduation.Accuracy.COLS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="autopilot.tasks.graduation.Accuracy.update">
-<code class="descname">update</code><span class="sig-paren">(</span><em>row</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#Accuracy.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.Accuracy.update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">row</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#Accuracy.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.Accuracy.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get ‘correct’ from the row object. If this trial puts us over the
 threshold, return True, else False.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>row</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Row</span></code>) – Trial row</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Did we graduate this time or not?</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)">bool</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>row</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Row</span></code>) – Trial row</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Did we graduate this time or not?</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)">bool</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="autopilot.tasks.graduation.NTrials">
-<em class="property">class </em><code class="descclassname">autopilot.tasks.graduation.</code><code class="descname">NTrials</code><span class="sig-paren">(</span><em>n_trials</em>, <em>current_trial=0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#NTrials"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.NTrials" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">autopilot.tasks.graduation.</code><code class="sig-name descname">NTrials</code><span class="sig-paren">(</span><em class="sig-param">n_trials</em>, <em class="sig-param">current_trial=0</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#NTrials"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.NTrials" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#autopilot.tasks.graduation.Graduation" title="autopilot.tasks.graduation.Graduation"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.graduation.Graduation</span></code></a></p>
 <p>Graduate after doing n trials</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><p class="first"><strong>counter</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">itertools.count</span></code>) – Counts the trials.</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>n_trials</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of trials to graduate after</li>
-<li><strong>current_trial</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – If not starting from zero, start from here</li>
-<li><strong>**kwargs</strong> – </li>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><p><strong>counter</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">itertools.count</span></code>) – Counts the trials.</p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>n_trials</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of trials to graduate after</p></li>
+<li><p><strong>current_trial</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – If not starting from zero, start from here</p></li>
+<li><p><strong>**kwargs</strong> – </p></li>
 </ul>
-</td>
+</dd>
+</dl>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.tasks.graduation.NTrials.PARAMS" title="autopilot.tasks.graduation.NTrials.PARAMS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PARAMS</span></code></a></p></td>
+<td><p>Built-in mutable sequence.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.tasks.graduation.NTrials.update" title="autopilot.tasks.graduation.NTrials.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(row)</p></td>
+<td><p>If we’re past n_trials in this trial, return True, else False.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="attribute">
 <dt id="autopilot.tasks.graduation.NTrials.PARAMS">
-<code class="descname">PARAMS</code><em class="property"> = ['n_trials', 'current_trial']</em><a class="headerlink" href="#autopilot.tasks.graduation.NTrials.PARAMS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">PARAMS</code><em class="property"> = ['n_trials', 'current_trial']</em><a class="headerlink" href="#autopilot.tasks.graduation.NTrials.PARAMS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="autopilot.tasks.graduation.NTrials.update">
-<code class="descname">update</code><span class="sig-paren">(</span><em>row</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#NTrials.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.NTrials.update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">row</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#NTrials.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.NTrials.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>If we’re past n_trials in this trial, return True, else False.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>row</strong> – ignored</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Did we graduate or not?</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)">bool</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>row</strong> – ignored</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Did we graduate or not?</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)">bool</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="data">
 <dt id="autopilot.tasks.graduation.GRAD_LIST">
-<code class="descclassname">autopilot.tasks.graduation.</code><code class="descname">GRAD_LIST</code><em class="property"> = {'accuracy': &lt;class 'autopilot.tasks.graduation.Accuracy'&gt;, 'n_trials': &lt;class 'autopilot.tasks.graduation.NTrials'&gt;}</em><a class="headerlink" href="#autopilot.tasks.graduation.GRAD_LIST" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">autopilot.tasks.graduation.</code><code class="sig-name descname">GRAD_LIST</code><em class="property"> = {'accuracy': &lt;class 'autopilot.tasks.graduation.Accuracy'&gt;, 'n_trials': &lt;class 'autopilot.tasks.graduation.NTrials'&gt;}</em><a class="headerlink" href="#autopilot.tasks.graduation.GRAD_LIST" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mapping from string reference of graduation type to object.</p>
 </dd></dl>
 

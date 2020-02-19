@@ -22,21 +22,11 @@
   <script type="text/javascript" src="../../../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../../../',
-              VERSION:'0.2',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
 
@@ -45,6 +35,7 @@
   
   <link rel="stylesheet" href="../../../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
 
@@ -70,9 +61,6 @@
             <a href="../../../../index.html" class="icon icon-home"> Autopilot
           
 
-          
-            
-            <img src="../../../../_static/autopilot_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -154,7 +142,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../guide.task.html">Writing a Task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../guide.task.html#the-task-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../guide.task.html#params">PARAMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../guide.task.html#data">Data</a></li>
@@ -175,7 +163,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../guide.task.html#id1">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../guide.task.html#id5">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -346,13 +334,14 @@
 <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
 <span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">wavfile</span>
 <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">resample</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">cycle</span>
 <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Empty</span>
+    <span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Empty</span><span class="p">,</span> <span class="n">Full</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">Queue</span> <span class="kn">import</span> <span class="n">Empty</span>
+    <span class="kn">from</span> <span class="nn">Queue</span> <span class="kn">import</span> <span class="n">Empty</span><span class="p">,</span> <span class="n">Full</span>
 
 
 <span class="kn">from</span> <span class="nn">autopilot</span> <span class="kn">import</span> <span class="n">prefs</span>
@@ -362,12 +351,15 @@
     <span class="n">server_type</span> <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">AUDIOSERVER</span>
 <span class="k">except</span><span class="p">:</span>
 <span class="c1">#    # TODO: The &#39;attribute don&#39;t exist&#39; type - i think NameError?</span>
-    <span class="n">server_type</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">server_type</span> <span class="o">=</span> <span class="kc">None</span>
 
 
 
 <span class="k">if</span> <span class="n">server_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;pyo&quot;</span><span class="p">,</span> <span class="s2">&quot;docs&quot;</span><span class="p">):</span>
-    <span class="kn">import</span> <span class="nn">pyo</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">pyo</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">pass</span>
 
 <div class="viewcode-block" id="Pyo_Sound"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Pyo_Sound">[docs]</a>    <span class="k">class</span> <span class="nc">Pyo_Sound</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -382,19 +374,19 @@
 
 
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">PARAMS</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c1"># list of strings of parameters to be defined</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c1"># string human readable name of sound</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c1"># duration in ms</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span> <span class="o">=</span> <span class="bp">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="bp">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">trigger</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PARAMS</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># list of strings of parameters to be defined</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># string human readable name of sound</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># duration in ms</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trigger</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">server_type</span> <span class="o">=</span> <span class="s1">&#39;pyo&#39;</span>
 
 
 <div class="viewcode-block" id="Pyo_Sound.play"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Pyo_Sound.play">[docs]</a>        <span class="k">def</span> <span class="nf">play</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">out</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Pyo_Sound.table_wrap"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Pyo_Sound.table_wrap">[docs]</a>        <span class="k">def</span> <span class="nf">table_wrap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">audio</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Pyo_Sound.table_wrap"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Pyo_Sound.table_wrap">[docs]</a>        <span class="k">def</span> <span class="nf">table_wrap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">audio</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Records a PyoAudio generator into a sound table, returns a</span>
 <span class="sd">            tableread object which can play the audio with .out()</span>
 
@@ -441,15 +433,16 @@
 <span class="sd">            chunks (list): :attr:`~.Jack_Sound.table` split up into chunks of :data:`~.jackclient.BLOCKSIZE`</span>
 <span class="sd">            trigger (callable): A function that is called when the sound completes</span>
 <span class="sd">            nsamples (int): Number of samples in the sound</span>
+<span class="sd">            padded (bool): Whether the sound had to be padded with zeros when split into chunks (ie. sound duration was not a multiple of BLOCKSIZE).</span>
 <span class="sd">            fs (int): sampling rate of client from :data:`.jackclient.FS`</span>
-<span class="sd">            blocksize (int): blocksize of clietn from :data:`.jackclient.BLOCKSIZE`</span>
+<span class="sd">            blocksize (int): blocksize of client from :data:`.jackclient.BLOCKSIZE`</span>
 <span class="sd">            server (:class:`~.jackclient.Jack_Client`): Current Jack Client</span>
 <span class="sd">            q (:class:`multiprocessing.Queue`): Audio Buffer queue from :data:`.jackclient.QUEUE`</span>
 <span class="sd">            q_lock (:class:`multiprocessing.Lock`): Audio Buffer lock from :data:`.jackclient.Q_LOCK`</span>
 <span class="sd">            play_evt (:class:`multiprocessing.Event`): play event from :data:`.jackclient.PLAY`</span>
 <span class="sd">            stop_evt (:class:`multiprocessing.Event`): stop event from :data:`.jackclient.STOP`</span>
 <span class="sd">            buffered (bool): has this sound been dumped into the :attr:`~.Jack_Sound.q` ?</span>
-
+<span class="sd">            buffered_continuous (bool): Has the sound been dumped into the :attr:`~.Jack_Sound.continuous_q`?</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -458,7 +451,7 @@
 <span class="sd">        list:  list of strings of parameters to be defined</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="nb">type</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="nb">type</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        str: string human readable name of sound</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -469,12 +462,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c1"># duration in ms</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span> <span class="o">=</span> <span class="bp">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c1"># numpy array of samples</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c1"># table split into a list of chunks</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">trigger</span> <span class="o">=</span> <span class="bp">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">nsamples</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># duration in ms</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># numpy array of samples</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># table split into a list of chunks</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trigger</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nsamples</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">padded</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># whether or not the sound was padded with zeros when chunked</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">continuous</span> <span class="o">=</span> <span class="kc">False</span>
 
 
             <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">jackclient</span><span class="o">.</span><span class="n">FS</span>
@@ -484,26 +479,39 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">q_lock</span> <span class="o">=</span> <span class="n">jackclient</span><span class="o">.</span><span class="n">Q_LOCK</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">play_evt</span> <span class="o">=</span> <span class="n">jackclient</span><span class="o">.</span><span class="n">PLAY</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stop_evt</span> <span class="o">=</span> <span class="n">jackclient</span><span class="o">.</span><span class="n">STOP</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">continuous_flag</span> <span class="o">=</span> <span class="n">jackclient</span><span class="o">.</span><span class="n">CONTINUOUS</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">continuous_q</span> <span class="o">=</span> <span class="n">jackclient</span><span class="o">.</span><span class="n">CONTINUOUS_QUEUE</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">continuous_loop</span> <span class="o">=</span> <span class="n">jackclient</span><span class="o">.</span><span class="n">CONTINUOUS_LOOP</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">quitting</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="bp">False</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">buffered</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffered</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffered_continuous</span> <span class="o">=</span> <span class="kc">False</span>
 
             <span class="c1"># FIXME: debugging sound file playback by logging which sounds loaded before crash</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Jack_Sound.chunk"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.chunk">[docs]</a>        <span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Jack_Sound.chunk"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.chunk">[docs]</a>        <span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Split our `table` up into a list of :attr:`.Jack_Sound.blocksize` chunks.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                pad (bool): If the sound is not evenly divisible into chunks, pad with zeros (True, default), otherwise jackclient will pad with its continuous sound</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="c1"># break sound into chunks</span>
 
             <span class="n">sound</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
             <span class="n">sound_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">sound</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">blocksize</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sound</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocksize</span><span class="p">)]</span>
-            <span class="k">if</span> <span class="n">sound_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocksize</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">sound_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocksize</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pad</span><span class="p">:</span>
                 <span class="n">sound_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">sound_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
                                         <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocksize</span><span class="o">-</span><span class="n">sound_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
                                         <span class="s1">&#39;constant&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">padded</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">padded</span> <span class="o">=</span> <span class="kc">False</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span> <span class="o">=</span> <span class="n">sound_list</span></div>
 
 <div class="viewcode-block" id="Jack_Sound.set_trigger"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.set_trigger">[docs]</a>        <span class="k">def</span> <span class="nf">set_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trig_fn</span><span class="p">):</span>
@@ -513,7 +521,7 @@
 <span class="sd">            Args:</span>
 <span class="sd">                trig_fn (callable): Some callable</span>
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">trig_fn</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">trig_fn</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">trigger</span> <span class="o">=</span> <span class="n">trig_fn</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;trigger must be callable&#39;</span><span class="p">)</span></div>
@@ -542,18 +550,50 @@
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">nsamples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="o">/</span><span class="mf">1000.</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="Jack_Sound.quantize_duration"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.quantize_duration">[docs]</a>        <span class="k">def</span> <span class="nf">quantize_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ceiling</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Extend or shorten a sound so that it is a multiple of :data:`.jackclient.BLOCKSIZE`</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                ceiling (bool): If true, extend duration, otherwise decrease duration.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="c1"># get remainder of samples</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_nsamples</span><span class="p">()</span>
+            <span class="n">remainder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsamples</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocksize</span>
+
+            <span class="k">if</span> <span class="n">remainder</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span>
+
+            <span class="c1"># get target number of samples</span>
+            <span class="c1"># get target n blocks and multiply by blocksize</span>
+            <span class="k">if</span> <span class="n">ceiling</span><span class="p">:</span>
+                <span class="n">target_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nsamples</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">blocksize</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">blocksize</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">target_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nsamples</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">blocksize</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">blocksize</span>
+
+            <span class="c1"># get new duration</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="p">(</span><span class="n">target_samples</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">)</span><span class="o">*</span><span class="mf">1000.</span>
+
+            <span class="c1"># refresh nsamples</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_nsamples</span><span class="p">()</span></div>
+
+
+
+
+
 <div class="viewcode-block" id="Jack_Sound.buffer"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.buffer">[docs]</a>        <span class="k">def</span> <span class="nf">buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Dump chunks into the sound queue.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
 
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;path&#39;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;BUFFERING SOUND {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;BUFFERING SOUND </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">init_sound</span><span class="p">()</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">except</span><span class="p">:</span>
                     <span class="k">pass</span>
                     <span class="c1">#TODO: Log this, better error handling here</span>
@@ -564,21 +604,76 @@
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_lock</span><span class="p">:</span>
                 <span class="c1"># empty queue</span>
                 <span class="c1"># FIXME: Testing whether this is where we get held up on the &#39;fail after sound play&#39; bug</span>
-                <span class="n">n_gets</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="c1"># n_gets = 0</span>
                 <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">get_nowait</span><span class="p">()</span>
                     <span class="k">except</span> <span class="n">Empty</span><span class="p">:</span>
                         <span class="c1"># normal, get until it&#39;s empty</span>
                         <span class="k">break</span>
-                    <span class="n">n_gets</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="k">if</span> <span class="n">n_gets</span> <span class="o">&gt;</span> <span class="mi">100000</span><span class="p">:</span>
-                        <span class="k">break</span>
+                    <span class="c1"># n_gets += 1</span>
+                    <span class="c1"># if n_gets &gt; 100000:</span>
+                    <span class="c1">#     break</span>
                 <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
                 <span class="c1"># The jack server looks for a None object to clear the play flag</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">buffered</span> <span class="o">=</span> <span class="bp">True</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buffered</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Jack_Sound.buffer_continuous"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.buffer_continuous">[docs]</a>        <span class="k">def</span> <span class="nf">buffer_continuous</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Dump chunks into the continuous sound queue for looping.</span>
+
+<span class="sd">            Continuous shoulds should always have full frames -</span>
+<span class="sd">            ie. the number of samples in a sound should be a multiple of :data:`.jackclient.BLOCKSIZE`.</span>
+
+<span class="sd">            This method will call :meth:`.quantize_duration` to force duration such that the sound has full frames.</span>
+
+<span class="sd">            An exception will be raised if the sound has been padded.</span>
+
+
+
+<span class="sd">            Returns:</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="c1"># FIXME: Initialized should be more flexible,</span>
+            <span class="c1"># for now just deleting whatever init happened because</span>
+            <span class="c1"># continuous sounds are in development</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="p">:</span>
+                <span class="c1"># try:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">quantize_duration</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">init_sound</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="c1"># except:</span>
+                <span class="c1">#     pass</span>
+                    <span class="c1">#TODO: Log this, better error handling here</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chunk</span><span class="p">()</span>
+
+            <span class="c1"># continous sounds should not have any padding - see docstring</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">padded</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Continuous sounds cannot have padded chunks - sounds need to have n_samples % blocksize == 0&quot;</span><span class="p">)</span>
+
+            <span class="c1"># empty queue</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_q</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_q</span><span class="o">.</span><span class="n">get_nowait</span><span class="p">()</span>
+                <span class="k">except</span> <span class="n">Empty</span><span class="p">:</span>
+                    <span class="c1"># normal, get until it&#39;s empty</span>
+                    <span class="k">break</span>
+
+            <span class="c1"># load frames into continuous queue</span>
+            <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">continuous_q</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+            <span class="c1"># The jack server looks for a None object to clear the play flag</span>
+            <span class="c1"># self.continuous_q.put_nowait(None)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffered_continuous</span> <span class="o">=</span> <span class="kc">True</span></div>
+
 
 <div class="viewcode-block" id="Jack_Sound.play"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.play">[docs]</a>        <span class="k">def</span> <span class="nf">play</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
@@ -594,14 +689,114 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;path&#39;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;PLAYING SOUND {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;PLAYING SOUND </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">play_evt</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stop_evt</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">buffered</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffered</span> <span class="o">=</span> <span class="kc">False</span>
 
-            <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trigger</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trigger</span><span class="p">):</span>
                 <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wait_trigger</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Jack_Sound.play_continuous"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.play_continuous">[docs]</a>        <span class="k">def</span> <span class="nf">play_continuous</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Play the sound continuously.</span>
+
+<span class="sd">            Sound will be paused if another sound has its &#39;play&#39; method called.</span>
+
+<span class="sd">            Currently - only looping is implemented: the full sound is loaded by the jack client and repeated indefinitely.</span>
+
+<span class="sd">            In the future, sound generation methods will be refactored as python generators so sounds can be continuously generated and played.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                loop (bool): whether the sound will be stored by the jack client and looped (True), or whether the sound will be continuously streamed (False, not implemented)</span>
+
+<span class="sd">            Returns:</span>
+
+<span class="sd">            todo::</span>
+
+<span class="sd">                merge into single play method that changes behavior if continuous or not</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">loop</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Continuous, unlooped streaming has not been implemented yet!&#39;</span><span class="p">)</span>
+
+            <span class="c1"># FIXME: Initialized should be more flexible,</span>
+            <span class="c1"># for now just deleting whatever init happened because</span>
+            <span class="c1"># continuous sounds are in development</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">quantize_duration</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_sound</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chunk</span><span class="p">()</span>
+
+            <span class="c1"># if not self.buffered_continuous:</span>
+            <span class="c1">#     self.buffer_continuous()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">continuous_cycle</span> <span class="o">=</span> <span class="n">cycle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">)</span>
+
+            <span class="c1"># start the buffering thread</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cont_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer_continuous</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cont_thread</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cont_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">loop</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">continuous_loop</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">continuous_loop</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+
+            <span class="c1"># tell the sound server that it has a continuous sound now</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">continuous_flag</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">continuous</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+        <span class="k">def</span> <span class="nf">_buffer_continuous</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+            <span class="c1"># empty queue</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_q</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_q</span><span class="o">.</span><span class="n">get_nowait</span><span class="p">()</span>
+                <span class="k">except</span> <span class="n">Empty</span><span class="p">:</span>
+                    <span class="c1"># normal, get until it&#39;s empty</span>
+                    <span class="k">break</span>
+
+            <span class="c1"># want to be able to quit if queue remains full for, say, 20 periods</span>
+            <span class="c1">#wait_time = (self.blocksize/float(self.fs))*20</span>
+
+            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">quitting</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1">#self.continuous_q.put(self.continuous_cycle.next(), timeout=wait_time)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">continuous_q</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_cycle</span><span class="o">.</span><span class="n">next</span><span class="p">())</span>
+                <span class="k">except</span> <span class="n">Full</span><span class="p">:</span>
+                    <span class="k">pass</span>
+            <span class="c1"># for chunk in self.chunks:</span>
+            <span class="c1">#     self.continuous_q.put_nowait(chunk)</span>
+
+
+
+
+
+
+<div class="viewcode-block" id="Jack_Sound.stop_continuous"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.stop_continuous">[docs]</a>        <span class="k">def</span> <span class="nf">stop_continuous</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Stop playing a continuous sound</span>
+
+<span class="sd">            Should be merged into a general stop method</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous</span><span class="p">:</span>
+                <span class="ne">Warning</span><span class="p">(</span><span class="s2">&quot;Not a continous sound!&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">quitting</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">continuous_flag</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">continuous_loop</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+
+
+
+
 
 <div class="viewcode-block" id="Jack_Sound.end"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.end">[docs]</a>        <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
@@ -615,7 +810,21 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_evt</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">stop_evt</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="bp">None</span></div></div>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous</span><span class="p">:</span>
+                <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_q</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_q</span><span class="o">.</span><span class="n">get_nowait</span><span class="p">()</span>
+                    <span class="k">except</span> <span class="n">Empty</span><span class="p">:</span>
+                        <span class="c1"># normal, get until it&#39;s empty</span>
+                        <span class="k">break</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buffered_continuous</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">continuous_flag</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+        <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">()</span></div>
 
 
 
@@ -675,7 +884,7 @@
             <span class="c1">#self.table = np.column_stack((self.table, self.table))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">chunk</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="bp">True</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">True</span></div></div>
 
 <div class="viewcode-block" id="Noise"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Noise">[docs]</a><span class="k">class</span> <span class="nc">Noise</span><span class="p">(</span><span class="n">BASE_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;White Noise&quot;&quot;&quot;</span>
@@ -706,10 +915,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">table_wrap</span><span class="p">(</span><span class="n">noiser</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_type</span> <span class="o">==</span> <span class="s1">&#39;jack&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_nsamples</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nsamples</span><span class="p">)</span>
+            <span class="c1"># rand generates from 0 to 1, so subtract 0.5, double to get -1 to 1,</span>
+            <span class="c1"># then multiply by amplitude.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">nsamples</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">chunk</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="bp">True</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">True</span></div></div>
 
 <div class="viewcode-block" id="File"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.File">[docs]</a><span class="k">class</span> <span class="nc">File</span><span class="p">(</span><span class="n">BASE_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -736,13 +947,13 @@
         <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">SOUNDDIR</span><span class="p">,</span> <span class="n">path</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">SOUNDDIR</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Could not find {} in current directory or sound directory&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+            <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Could not find </span><span class="si">{}</span><span class="s1"> in current directory or sound directory&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">amplitude</span><span class="p">)</span>
 
         <span class="c1"># because files can be v memory intensive, we only load the sound once we&#39;re called to buffer them</span>
         <span class="c1"># store our initialization status</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1">#self.init_sound()</span>
 
@@ -768,7 +979,7 @@
             <span class="n">server_fs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtable</span><span class="o">.</span><span class="n">getServer</span><span class="p">()</span><span class="o">.</span><span class="n">getSamplingRate</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtable</span><span class="o">.</span><span class="n">getSize</span><span class="p">())</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="n">pyo</span><span class="o">.</span><span class="n">TableRead</span><span class="p">(</span><span class="n">table</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtable</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span> <span class="o">/</span> <span class="n">server_fs</span><span class="p">,</span>
-                                       <span class="n">loop</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">mul</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span><span class="p">)</span>
+                                       <span class="n">loop</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mul</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_type</span> <span class="o">==</span> <span class="s1">&#39;jack&#39;</span><span class="p">:</span>
             <span class="c1"># attenuate amplitude</span>
@@ -781,7 +992,7 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="n">audio</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="bp">True</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">True</span></div></div>
 
 
 <div class="viewcode-block" id="Speech"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Speech">[docs]</a><span class="k">class</span> <span class="nc">Speech</span><span class="p">(</span><span class="n">File</span><span class="p">):</span>
@@ -810,6 +1021,76 @@
 
         <span class="c1"># sound is init&#39;d in the superclass</span>
 
+<div class="viewcode-block" id="Gap"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Gap">[docs]</a><span class="k">class</span> <span class="nc">Gap</span><span class="p">(</span><span class="n">BASE_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A silent sound that does not pad its final chunk -- used for creating precise silent</span>
+<span class="sd">    gaps in a continuous noise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;Gap&quot;</span>
+    <span class="n">PARAMS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            duration (float): duration of gap in ms</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Gap</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gap_zero</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gap_zero</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_nsamples</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">((</span><span class="mi">0</span><span class="p">,),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_sound</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Gap.init_sound"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Gap.init_sound">[docs]</a>    <span class="k">def</span> <span class="nf">init_sound</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_type</span> <span class="o">==</span> <span class="s2">&quot;pyo&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This sound has not been implemented for pyo sound server -- pyo is deprecated, and kept as a skeleton in the case interested programmers want to revive its use&quot;</span><span class="p">)</span>
+
+        <span class="c1"># get the number of samples for the sound given our self.duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_nsamples</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nsamples</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+        <span class="c1"># chunk without padding -- jackclient will pad with ongoing continuous noise (or silence if none)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Gap.chunk"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Gap.chunk">[docs]</a>    <span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap_zero</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">Gap</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">pad</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">padded</span><span class="o">=</span><span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Gap.buffer"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Gap.buffer">[docs]</a>    <span class="k">def</span> <span class="nf">buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap_zero</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">Gap</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">buffer</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffered</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Gap.play"><a class="viewcode-back" href="../../../../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Gap.play">[docs]</a>    <span class="k">def</span> <span class="nf">play</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap_zero</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">Gap</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trigger</span><span class="p">):</span>
+                <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wait_trigger</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div></div>
+
+
+
+
+
+
+
 
 
 
@@ -823,7 +1104,8 @@
     <span class="s1">&#39;Noise&#39;</span><span class="p">:</span><span class="n">Noise</span><span class="p">,</span>
     <span class="s1">&#39;File&#39;</span><span class="p">:</span><span class="n">File</span><span class="p">,</span>
     <span class="s1">&#39;Speech&#39;</span><span class="p">:</span><span class="n">Speech</span><span class="p">,</span>
-    <span class="s1">&#39;speech&#39;</span><span class="p">:</span><span class="n">Speech</span>
+    <span class="s1">&#39;speech&#39;</span><span class="p">:</span><span class="n">Speech</span><span class="p">,</span>
+    <span class="s1">&#39;Gap&#39;</span><span class="p">:</span> <span class="n">Gap</span>
 <span class="p">}</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Sounds must be added to this SOUND_LIST so they can be indexed by the string keys used elsewhere. </span>

@@ -57,7 +57,10 @@ except:
 
 
 if server_type in ("pyo", "docs"):
-    import pyo
+    try:
+        import pyo
+    except ImportError:
+        pass
 
     class Pyo_Sound(object):
         """

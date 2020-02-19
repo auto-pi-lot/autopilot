@@ -20,6 +20,7 @@ import pdb
 from mock import MagicMock
 sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../..'))
+
 sys.setrecursionlimit(1500)
 #import sphinx_bootstrap_theme
 #import guzzle_sphinx_theme

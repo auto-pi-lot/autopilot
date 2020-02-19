@@ -22,21 +22,11 @@
   <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../../',
-              VERSION:'0.2',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -45,6 +35,7 @@
   
   <link rel="stylesheet" href="../../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -70,9 +61,6 @@
             <a href="../../../index.html" class="icon icon-home"> Autopilot
           
 
-          
-            
-            <img src="../../../_static/autopilot_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -154,7 +142,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#params">PARAMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#data">Data</a></li>
@@ -175,7 +163,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id1">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id5">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -332,7 +320,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">npyscreen</span> <span class="kn">as</span> <span class="nn">nps</span>
+<span class="kn">import</span> <span class="nn">npyscreen</span> <span class="k">as</span> <span class="nn">nps</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span> <span class="k">as</span> <span class="n">odict</span>
 <span class="kn">import</span> <span class="nn">pprint</span>
 <span class="kn">import</span> <span class="nn">json</span>
@@ -340,18 +328,22 @@
 <span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">platform</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 
+<span class="n">LOG_LEVELS</span><span class="o">=</span> <span class="p">(</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">)</span>
 <div class="viewcode-block" id="TerminalSetupForm"><a class="viewcode-back" href="../../../autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.TerminalSetupForm">[docs]</a><span class="k">class</span> <span class="nc">TerminalSetupForm</span><span class="p">(</span><span class="n">nps</span><span class="o">.</span><span class="n">SplitForm</span><span class="p">):</span>
 <div class="viewcode-block" id="TerminalSetupForm.create"><a class="viewcode-back" href="../../../autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.TerminalSetupForm.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">odict</span><span class="p">({</span>
             <span class="s1">&#39;BASEDIR&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nps</span><span class="o">.</span><span class="n">TitleText</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Base Directory:&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;/usr/autopilot&quot;</span><span class="p">),</span>
             <span class="s1">&#39;MSGPORT&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nps</span><span class="o">.</span><span class="n">TitleText</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Message Port - Our router port:&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;5560&quot;</span><span class="p">),</span>
+            <span class="s1">&#39;LOGLEVEL&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nps</span><span class="o">.</span><span class="n">TitleSelectOne</span><span class="p">,</span> <span class="n">max_height</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Log Level:&quot;</span><span class="p">,</span>
+                                 <span class="n">values</span><span class="o">=</span><span class="n">LOG_LEVELS</span><span class="p">,</span> <span class="n">scroll_exit</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="s1">&#39;DRAWFPS&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nps</span><span class="o">.</span><span class="n">TitleText</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;FPS to draw continuous data, video at&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;20&quot;</span><span class="p">)</span>
         <span class="p">})</span></div>
         <span class="c1">#self.inName = self.add(nps.)</span>
 
 
     <span class="c1"># after we&#39;re done editing, close the input program</span>
 <div class="viewcode-block" id="TerminalSetupForm.afterEditing"><a class="viewcode-back" href="../../../autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.TerminalSetupForm.afterEditing">[docs]</a>    <span class="k">def</span> <span class="nf">afterEditing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parentApp</span><span class="o">.</span><span class="n">setNextForm</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parentApp</span><span class="o">.</span><span class="n">setNextForm</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div></div>
 
 <div class="viewcode-block" id="SetupApp"><a class="viewcode-back" href="../../../autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.SetupApp">[docs]</a><span class="k">class</span> <span class="nc">SetupApp</span><span class="p">(</span><span class="n">nps</span><span class="o">.</span><span class="n">NPSAppManaged</span><span class="p">):</span>
 <div class="viewcode-block" id="SetupApp.onStart"><a class="viewcode-back" href="../../../autopilot.setup.setup_terminal.html#autopilot.setup.setup_terminal.SetupApp.onStart">[docs]</a>    <span class="k">def</span> <span class="nf">onStart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -385,7 +377,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">adir</span><span class="p">):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">adir</span><span class="p">)</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">adir</span><span class="p">,</span> <span class="mo">0777</span><span class="p">)</span></div>
+        <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">adir</span><span class="p">,</span> <span class="mo">0o777</span><span class="p">)</span></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
@@ -404,14 +396,28 @@
     <span class="c1">##############################</span>
     <span class="c1"># Compute derived values</span>
 
+    <span class="n">params</span><span class="p">[</span><span class="s1">&#39;LOGLEVEL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">LOG_LEVELS</span><span class="p">[</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;LOGLEVEL&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
+
+
     <span class="c1"># we are known as a terminal</span>
     <span class="n">params</span><span class="p">[</span><span class="s1">&#39;AGENT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;terminal&#39;</span>
+
+    <span class="c1"># try making basedir, if we can&#39;t do it, modify and alert</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">make_dir</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">])</span>
+    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">),</span> <span class="s1">&#39;autopilot&#39;</span><span class="p">)</span>
+        <span class="n">make_dir</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Permissions error making base directory, instead using </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">]))</span>
+
+
 
     <span class="c1"># define and make directory structure</span>
     <span class="n">params</span><span class="p">[</span><span class="s1">&#39;DATADIR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">],</span> <span class="s1">&#39;data&#39;</span><span class="p">)</span>
     <span class="n">params</span><span class="p">[</span><span class="s1">&#39;SOUNDDIR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">],</span> <span class="s1">&#39;sounds&#39;</span><span class="p">)</span>
     <span class="n">params</span><span class="p">[</span><span class="s1">&#39;PROTOCOLDIR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">],</span> <span class="s1">&#39;protocols&#39;</span><span class="p">)</span>
     <span class="n">params</span><span class="p">[</span><span class="s1">&#39;LOGDIR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">],</span> <span class="s1">&#39;logs&#39;</span><span class="p">)</span>
+    <span class="n">params</span><span class="p">[</span><span class="s1">&#39;VIZDIR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">],</span> <span class="s1">&#39;viz&#39;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">adir</span> <span class="ow">in</span> <span class="p">[</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;DATADIR&#39;</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;SOUNDDIR&#39;</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;LOGDIR&#39;</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;PROTOCOLDIR&#39;</span><span class="p">]]:</span>
         <span class="n">make_dir</span><span class="p">(</span><span class="n">adir</span><span class="p">)</span>
@@ -428,15 +434,15 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pilot_db</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pilot_db_file</span><span class="p">:</span>
             <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">({},</span> <span class="n">pilot_db_file</span><span class="p">)</span>
 
-    <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">pilot_db</span><span class="p">,</span> <span class="mo">0777</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">pilot_db</span><span class="p">,</span> <span class="mo">0o777</span><span class="p">)</span>
 
     <span class="c1"># save prefs</span>
     <span class="n">prefs_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">],</span> <span class="s1">&#39;prefs.json&#39;</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">prefs_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">prefs_file_open</span><span class="p">:</span>
-        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">prefs_file_open</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">),</span> <span class="n">sort_keys</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">prefs_file</span><span class="p">,</span> <span class="mo">0775</span><span class="p">)</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">prefs_file_open</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">),</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">prefs_file</span><span class="p">,</span> <span class="mo">0o775</span><span class="p">)</span>
 
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;params saved to {}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefs_file</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;params saved to </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefs_file</span><span class="p">))</span>
 
     <span class="c1">###############################</span>
     <span class="c1"># Install service or create runfile</span>
@@ -444,10 +450,10 @@
     <span class="n">launch_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">],</span> <span class="s1">&#39;launch_terminal.sh&#39;</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">launch_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">launch_file_open</span><span class="p">:</span>
         <span class="n">launch_file_open</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">launch_string</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">launch_file</span><span class="p">,</span> <span class="mo">0775</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">launch_file</span><span class="p">,</span> <span class="mo">0o775</span><span class="p">)</span>
 
     <span class="n">pp</span> <span class="o">=</span> <span class="n">pprint</span><span class="o">.</span><span class="n">PrettyPrinter</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Terminal set up with prefs written to:</span><span class="se">\n</span><span class="s1">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">launch_file</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Terminal set up with prefs written to:</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">launch_file</span><span class="p">))</span>
     <span class="n">pp</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
 
     <span class="c1"># create alias</span>
@@ -456,14 +462,14 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">prof_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">),</span> <span class="s1">&#39;.profile&#39;</span><span class="p">)</span>
 
-    <span class="n">alias_cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">#autopilot terminal alias</span><span class="se">\n\n</span><span class="s2">alias terminal=&#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">launch_file</span><span class="p">)</span>
+    <span class="n">alias_cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">#autopilot terminal alias</span><span class="se">\n\n</span><span class="s2">alias terminal=&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">launch_file</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">prof_file</span><span class="p">,</span> <span class="s1">&#39;a+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">profile</span><span class="p">:</span>
         <span class="n">profile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">alias_cmd</span><span class="p">)</span>
 
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s1">&#39;alias&#39;</span><span class="p">,</span> <span class="s1">&#39;terminal=</span><span class="se">\&#39;</span><span class="s1">{}</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">launch_file</span><span class="p">)])</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s1">&#39;alias&#39;</span><span class="p">,</span> <span class="s1">&#39;terminal=</span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">launch_file</span><span class="p">)])</span>
 
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Attempted to create alias </span><span class="se">\&#39;</span><span class="s1">terminal</span><span class="se">\&#39;</span><span class="s1"> to launch file {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">launch_file</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Attempted to create alias </span><span class="se">\&#39;</span><span class="s1">terminal</span><span class="se">\&#39;</span><span class="s1"> to launch file </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">launch_file</span><span class="p">))</span>
 
 
 

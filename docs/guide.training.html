@@ -22,21 +22,11 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'0.2',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -45,6 +35,7 @@
   
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Writing a Task" href="guide.task.html" />
@@ -72,9 +63,6 @@
             <a href="index.html" class="icon icon-home"> Autopilot
           
 
-          
-            
-            <img src="_static/autopilot_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -156,7 +144,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
@@ -177,7 +165,7 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id1">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id5">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -320,7 +308,7 @@
 <p>If the <code class="docutils literal notranslate"><span class="pre">TERMINAL_IP</span></code> and port information is correctly set in the <code class="docutils literal notranslate"><span class="pre">prefs.json</span></code> file of the Pilot, it should automatically attempt to connect to the Terminal when it starts.
 It will send a <code class="docutils literal notranslate"><span class="pre">handshake</span></code> message that lets the Terminal know of its existence, its IP address, and its state.
 Once the Terminal receives its initial message, it will refresh, adding an entry to its <code class="docutils literal notranslate"><span class="pre">pilot_db.json</span></code> file and displaying a control panel for the pilot.</p>
-<div class="figure">
+<div class="figure align-default">
 <img alt="_images/terminal.png" src="_images/terminal.png" />
 </div>
 <p>If the Pilot is not automatically detected, a pilot can be manually added with its name and IP using the “New Pilot” command in the file menu.</p>
@@ -332,14 +320,14 @@ Protocols are stored as <code class="docutils literal notranslate"><span class="
 <div class="section" id="using-the-protocol-wizard">
 <h3>Using the Protocol Wizard<a class="headerlink" href="#using-the-protocol-wizard" title="Permalink to this headline">¶</a></h3>
 <div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">The Protocol Wizard does not currently support any Reward type except <code class="docutils literal notranslate"><span class="pre">time</span></code>, and the stimulus specification widget is limited to specifying ‘L’(eft) and ‘R’(ight) sounds.
+<p class="admonition-title">Warning</p>
+<p>The Protocol Wizard does not currently support any Reward type except <code class="docutils literal notranslate"><span class="pre">time</span></code>, and the stimulus specification widget is limited to specifying ‘L’(eft) and ‘R’(ight) sounds.
 This is related to the unification of the parameter structure in Autopilot 0.3 (see <a class="reference internal" href="todo.html#todo"><span class="std std-ref">To-Do</span></a>).
 Protocols can be edited after creation in the Protocol Wizard using the format examples in the manual protocol creation section below.</p>
 </div>
 <p>The Protocol Wizard allows you to build protocols using all the tasks in <a class="reference internal" href="autopilot.tasks.html#module-autopilot.tasks" title="autopilot.tasks"><code class="xref py py-mod docutils literal notranslate"><span class="pre">autopilot.tasks</span></code></a> (specifically that are registered in the <code class="xref py py-data docutils literal notranslate"><span class="pre">TASK_LIST</span></code>).
 It extracts the <cite>PARAMS</cite> dictionary from each task class, adds a few general parameters, and allows the user to fill them.</p>
-<p>For this example, we will create a protocol for a freely-moving two-alternative forced choice task <a class="footnote-reference" href="#f1" id="id1">[1]</a> .
+<p>For this example, we will create a protocol for a freely-moving two-alternative forced choice task <a class="footnote-reference brackets" href="#f1" id="id1">1</a> .
 This task has three ‘nosepokes,’ which consist of an IR break beam sensor, a solenoid, and an LED.
 The subject is supposed to poke in the center port to present a stimulus and begin a trial,
 and then report the identity of that stimulus category by poking in the nosepokes on either side.
@@ -347,38 +335,38 @@ If the subject is correct, they are rewarded with water.</p>
 <p>It is relatively challenging for an animal subject to learn this task without having a few beginning shaping steps that introduce it to the nature of the arena and the structure of the task.
 In this example we will program a three-step shaping regimen:</p>
 <ul class="simple">
-<li><strong>Step 1 - Free Water:</strong>  The subject will be rewarded for merely poking the IR sensor in order to let them know that in this universe water comes out of these particular holes in the wall</li>
-<li><strong>Step 2 - Request Rewards:</strong> The task will operate as normal (stimuli are presented, etc.), but the subject will be rewarded for the initial center-poke as well as for a correct answer. This teaches them the temporal structure of the task – center first, then side ports.</li>
-<li><strong>Step 3 - Frequency Discrimination:</strong> The final step of the protocol, the mouse is taught to respond left to a low-frequency tone and right to a high-frequency tone.</li>
+<li><p><strong>Step 1 - Free Water:</strong>  The subject will be rewarded for merely poking the IR sensor in order to let them know that in this universe water comes out of these particular holes in the wall</p></li>
+<li><p><strong>Step 2 - Request Rewards:</strong> The task will operate as normal (stimuli are presented, etc.), but the subject will be rewarded for the initial center-poke as well as for a correct answer. This teaches them the temporal structure of the task – center first, then side ports.</p></li>
+<li><p><strong>Step 3 - Frequency Discrimination:</strong> The final step of the protocol, the mouse is taught to respond left to a low-frequency tone and right to a high-frequency tone.</p></li>
 </ul>
 <ol class="arabic simple">
-<li>To start, select <code class="docutils literal notranslate"><span class="pre">New</span> <span class="pre">Protocol</span></code> from the ‘file’ menu.</li>
+<li><p>To start, select <code class="docutils literal notranslate"><span class="pre">New</span> <span class="pre">Protocol</span></code> from the ‘file’ menu.</p></li>
 </ol>
-<div class="figure">
+<div class="figure align-default">
 <img alt="_images/protocol_1.png" src="_images/protocol_1.png" />
 </div>
 <ol class="arabic simple" start="2">
-<li>Add a step from the list of tasks in the leftmost column by selecting it and pressing the ‘+’ button. Here we are adding the Free Water step.</li>
+<li><p>Add a step from the list of tasks in the leftmost column by selecting it and pressing the ‘+’ button. Here we are adding the Free Water step.</p></li>
 </ol>
-<div class="figure">
+<div class="figure align-default">
 <img alt="_images/protocol_2.png" src="_images/protocol_2.png" />
 </div>
 <ol class="arabic simple" start="3">
-<li>Specify the parameters for the task in the rightmost window – we give 20ms of water every time the subject poke, etc.</li>
+<li><p>Specify the parameters for the task in the rightmost window – we give 20ms of water every time the subject poke, etc.</p></li>
 </ol>
-<div class="figure">
+<div class="figure align-default">
 <img alt="_images/protocol_3.png" src="_images/protocol_3.png" />
 </div>
 <p>4. Add the second “Request Rewards” step, the remaining options that are configured are:
 * list
 * of
 * options</p>
-<div class="figure">
+<div class="figure align-default">
 <img alt="_images/protocol_5.png" src="_images/protocol_5.png" />
 </div>
 <ol class="arabic simple" start="5">
-<li>Press ok, save and name the protocol file.</li>
-<li>That leaves us with a protocol file:</li>
+<li><p>Press ok, save and name the protocol file.</p></li>
+<li><p>That leaves us with a protocol file:</p></li>
 </ol>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
     <span class="p">{</span>
@@ -483,7 +471,7 @@ In this example we will program a three-step shaping regimen:</p>
 <h3>Manual Protocol Creation<a class="headerlink" href="#manual-protocol-creation" title="Permalink to this headline">¶</a></h3>
 <p>Protocols can be created manually by…</p>
 <ol class="arabic">
-<li><p class="first">Extracting the task specific parameters, eg:</p>
+<li><p>Extracting the task specific parameters, eg:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">params</span> <span class="o">=</span> <span class="n">autopilot</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">Nafc</span><span class="o">.</span><span class="n">PARAMS</span>
 <span class="c1"># for example...</span>
 <span class="n">params</span><span class="p">[</span><span class="s1">&#39;param_1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_1</span>
@@ -526,56 +514,55 @@ The <code class="docutils literal notranslate"><span class="pre">graduation</spa
 <p>A <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> stores the data, protocol, and history of a subject.
 Each subject is implicitly assigned to a Pilot by virtue of the structure of the <code class="docutils literal notranslate"><span class="pre">pilot_db.json</span></code> file, but they can be switched by editing that file.</p>
 <ol class="arabic simple">
-<li>Create a subject by clicking the <code class="docutils literal notranslate"><span class="pre">+</span></code> button in the control panel of a particular Pilot</li>
-<li>Fill out the basic biographical information</li>
+<li><p>Create a subject by clicking the <code class="docutils literal notranslate"><span class="pre">+</span></code> button in the control panel of a particular Pilot</p></li>
+<li><p>Fill out the basic biographical information</p></li>
 </ol>
-<div class="figure">
+<div class="figure align-default">
 <img alt="_images/subject_2.png" src="_images/subject_2.png" />
 </div>
-<div class="admonition-todo admonition" id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">Currently the biographical fields are hardcoded in the Subject class. In the future we will allow users to create their own Subject schema where, for example, ‘genotype’ may not be as relevant.</p>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<p>Currently the biographical fields are hardcoded in the Subject class. In the future we will allow users to create their own Subject schema where, for example, ‘genotype’ may not be as relevant.</p>
 </div>
 <ol class="arabic simple" start="3">
-<li>Assign the subject to a protocol and step. Notice how the task we created earlier is here!</li>
+<li><p>Assign the subject to a protocol and step. Notice how the task we created earlier is here!</p></li>
 </ol>
-<div class="figure">
+<div class="figure align-default">
 <img alt="_images/subject_3.png" src="_images/subject_3.png" />
 </div>
 <p>By creating one, we create an HDF5 file that stores a serialized version of the <code class="docutils literal notranslate"><span class="pre">.json</span></code> protocol file that was generated above,
 as well as the basic directory and table structure to enable the subject to store data from running the task.</p>
-<div class="figure">
+<div class="figure align-default">
 <img alt="_images/subject_4.png" src="_images/subject_4.png" />
 </div>
 </div>
 <div class="section" id="running-the-task">
 <h2>Running the Task<a class="headerlink" href="#running-the-task" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li>Select the subject’s name and press the start button! The Terminal will send a <code class="docutils literal notranslate"><span class="pre">START</span></code> message to the Pilot that includes the parameter dictionary for the current step, and if the Pilot is configured with the hardware required in the <code class="docutils literal notranslate"><span class="pre">HARDWARE</span></code> dictionary of the task, it should run.</li>
-<li>The Terminal will initialize the Pilot’s plot using the parameters in the task’s <code class="docutils literal notranslate"><span class="pre">PLOT</span></code> dictionary and display data as it is received.</li>
+<li><p>Select the subject’s name and press the start button! The Terminal will send a <code class="docutils literal notranslate"><span class="pre">START</span></code> message to the Pilot that includes the parameter dictionary for the current step, and if the Pilot is configured with the hardware required in the <code class="docutils literal notranslate"><span class="pre">HARDWARE</span></code> dictionary of the task, it should run.</p></li>
+<li><p>The Terminal will initialize the Pilot’s plot using the parameters in the task’s <code class="docutils literal notranslate"><span class="pre">PLOT</span></code> dictionary and display data as it is received.</p></li>
 </ol>
 </div>
 <div class="section" id="debugging-a-task">
 <h2>Debugging a Task<a class="headerlink" href="#debugging-a-task" title="Permalink to this headline">¶</a></h2>
 <p>If a Pilot doesn’t start the task appropriately, if you have installed the Pilot as a system daemon you can retrieve the logs and see the stack trace by accessing the pilot via SSH:</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">ssh</span> <span class="n">pi</span><span class="nd">@your.pi.ip.address</span>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">ssh</span> <span class="n">pi</span><span class="nd">@your</span><span class="o">.</span><span class="n">pi</span><span class="o">.</span><span class="n">ip</span><span class="o">.</span><span class="n">address</span>
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Because Raspberry Pis are common prey on the internet, we strongly advise changing the default password, installing RSA keys to access the pi, and disabling password access via SSH (see <a href="#id3"><span class="problematic" id="id4">`Pilot Setup &lt;setup_pilot_&gt;`_</span></a>).</p>
+<p class="admonition-title">Note</p>
+<p>Because Raspberry Pis are common prey on the internet, we strongly advise changing the default password, installing RSA keys to access the pi, and disabling password access via SSH (see <a href="#id4"><span class="problematic" id="id5">`Pilot Setup &lt;setup_pilot_&gt;`_</span></a>).</p>
 </div>
 <p>and then printing the end of the logs with <code class="docutils literal notranslate"><span class="pre">journalctl</span></code>:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># print the -end of the logs for system -unit autopilot</span>
 <span class="n">journalctl</span> <span class="o">-</span><span class="n">u</span> <span class="n">autopilot</span> <span class="o">-</span><span class="n">e</span>
 </pre></div>
 </div>
-<table class="docutils footnote" frame="void" id="f1" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Yes we are aware that the “two-alternative forced choice” task described here is actually maybe called a “yes-no task” because there is only one stimulus presented at a time. The literature appears stuck with this term, however.</td></tr>
-</tbody>
-</table>
+<dl class="footnote brackets">
+<dt class="label" id="f1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Yes we are aware that the “two-alternative forced choice” task described here is actually maybe called a “yes-no task” because there is only one stimulus presented at a time. The literature appears stuck with this term, however.</p>
+</dd>
+</dl>
 </div>
 </div>
 

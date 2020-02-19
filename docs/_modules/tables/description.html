@@ -22,21 +22,11 @@
   <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../',
-              VERSION:'0.2',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -45,6 +35,7 @@
   
   <link rel="stylesheet" href="../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 
@@ -70,9 +61,6 @@
             <a href="../../index.html" class="icon icon-home"> Autopilot
           
 
-          
-            
-            <img src="../../_static/autopilot_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -154,7 +142,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide.task.html">Writing a Task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#the-task-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../guide.task.html#params">PARAMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../guide.task.html#data">Data</a></li>
@@ -175,7 +163,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#id1">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#id5">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -325,8 +313,6 @@
 
 <span class="c1"># Imports</span>
 <span class="c1"># =======</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
@@ -336,8 +322,6 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">atom</span>
 <span class="kn">from</span> <span class="nn">.path</span> <span class="kn">import</span> <span class="n">check_name_validity</span>
 
-<span class="kn">import</span> <span class="nn">six</span>
-<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">zip</span>
 
 
 <span class="c1"># Public variables</span>
@@ -354,7 +338,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">other</span><span class="o">.</span><span class="n">_v_pos</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">False</span>  <span class="c1"># not a column definition</span>
+            <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># not a column definition</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_pos</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_v_pos</span> <span class="ow">and</span> <span class="n">oldmethod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
     <span class="n">newmethod</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">oldmethod</span><span class="o">.</span><span class="vm">__name__</span>
     <span class="n">newmethod</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">oldmethod</span><span class="o">.</span><span class="vm">__doc__</span>
@@ -363,7 +347,7 @@
 
 <span class="c1"># Column classes</span>
 <span class="c1"># ==============</span>
-<span class="k">class</span> <span class="nc">Col</span><span class="p">(</span><span class="n">six</span><span class="o">.</span><span class="n">with_metaclass</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">atom</span><span class="o">.</span><span class="n">Atom</span><span class="p">)):</span>
+<span class="k">class</span> <span class="nc">Col</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">Atom</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="nb">type</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Defines a non-nested column.</span>
 
 <span class="sd">    Col instances are used as a means to declare the different properties of a</span>
@@ -417,7 +401,7 @@
         <span class="k">return</span> <span class="n">cname</span><span class="p">[:</span><span class="n">cname</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;Col&#39;</span><span class="p">)]</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_atom</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">atom</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">_offset</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_atom</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">atom</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_offset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a Col definition from a PyTables atom.</span>
 
 <span class="sd">        An optional position may be specified as the pos argument.</span>
@@ -430,7 +414,7 @@
         <span class="k">return</span> <span class="n">colclass</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">_offset</span><span class="o">=</span><span class="n">_offset</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_sctype</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">sctype</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(),</span> <span class="n">dflt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_sctype</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">sctype</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(),</span> <span class="n">dflt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a `Col` definition from a NumPy scalar type `sctype`.</span>
 
 <span class="sd">        Optional shape, default value and position may be specified as</span>
@@ -444,7 +428,7 @@
         <span class="k">return</span> <span class="n">class_</span><span class="o">.</span><span class="n">from_atom</span><span class="p">(</span><span class="n">newatom</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_dtype</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">dflt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">_offset</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_dtype</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">dflt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_offset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a `Col` definition from a NumPy `dtype`.</span>
 
 <span class="sd">        Optional default value and position may be specified as the</span>
@@ -459,7 +443,7 @@
         <span class="k">return</span> <span class="n">class_</span><span class="o">.</span><span class="n">from_atom</span><span class="p">(</span><span class="n">newatom</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">_offset</span><span class="o">=</span><span class="n">_offset</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_type</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(),</span> <span class="n">dflt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_type</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(),</span> <span class="n">dflt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a `Col` definition from a PyTables `type`.</span>
 
 <span class="sd">        Optional shape, default value and position may be specified as</span>
@@ -471,7 +455,7 @@
         <span class="k">return</span> <span class="n">class_</span><span class="o">.</span><span class="n">from_atom</span><span class="p">(</span><span class="n">newatom</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_kind</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">itemsize</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(),</span> <span class="n">dflt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_kind</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">itemsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(),</span> <span class="n">dflt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a `Col` definition from a PyTables `kind`.</span>
 
 <span class="sd">        Optional item size, shape, default value and position may be</span>
@@ -505,8 +489,8 @@
 <span class="sd">            &quot;&quot;&quot;</span>
 
             <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                <span class="n">pos</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-                <span class="n">offset</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;_offset&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;_offset&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
                 <span class="n">class_from_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_from_prefix</span>
                 <span class="n">atombase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="c1"># The constructor of an abstract atom may have changed</span>
@@ -552,7 +536,7 @@
         <span class="sd">&quot;&quot;&quot;Get a dictionary of instance constructor arguments.&quot;&quot;&quot;</span>
 
         <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">arg</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">))</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;shape&#39;</span><span class="p">,</span> <span class="s1">&#39;dflt&#39;</span><span class="p">))</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;pos&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_v_pos&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;pos&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_v_pos&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">kwargs</span>
 
 
@@ -561,12 +545,12 @@
 
     <span class="c1"># Abstract classes are not in the class map.</span>
     <span class="n">cprefixes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Int&#39;</span><span class="p">,</span> <span class="s1">&#39;UInt&#39;</span><span class="p">,</span> <span class="s1">&#39;Float&#39;</span><span class="p">,</span> <span class="s1">&#39;Time&#39;</span><span class="p">]</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">kdata</span><span class="p">)</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">atom_map</span><span class="p">):</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">kdata</span><span class="p">)</span> <span class="ow">in</span> <span class="n">atom</span><span class="o">.</span><span class="n">atom_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kdata</span><span class="p">,</span> <span class="s1">&#39;kind&#39;</span><span class="p">):</span>  <span class="c1"># atom class: non-fixed item size</span>
             <span class="n">atomclass</span> <span class="o">=</span> <span class="n">kdata</span>
             <span class="n">cprefixes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atomclass</span><span class="o">.</span><span class="n">prefix</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># dictionary: fixed item size</span>
-            <span class="k">for</span> <span class="n">atomclass</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">itervalues</span><span class="p">(</span><span class="n">kdata</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">atomclass</span> <span class="ow">in</span> <span class="n">kdata</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="n">cprefixes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atomclass</span><span class="o">.</span><span class="n">prefix</span><span class="p">())</span>
 
     <span class="c1"># Bottom-level complex classes are not in the type map, of course.</span>
@@ -626,7 +610,6 @@
 
 <span class="c1"># Table description classes</span>
 <span class="c1"># =========================</span>
-<span class="nd">@six.python_2_unicode_compatible</span>
 <span class="k">class</span> <span class="nc">Description</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;This class represents descriptions of the structure of tables.</span>
 
@@ -764,7 +747,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classdict</span><span class="p">,</span> <span class="n">nestedlvl</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">ptparams</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classdict</span><span class="p">,</span> <span class="n">nestedlvl</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ptparams</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">classdict</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;cannot create an empty data type&quot;</span><span class="p">)</span>
@@ -778,7 +761,7 @@
         <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;_v_types&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;_v_dflts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;_v_colobjects&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;_v_is_nested&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">newdict</span><span class="p">[</span><span class="s2">&quot;_v_is_nested&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">nestedFormats</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">nestedDType</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -788,10 +771,10 @@
         <span class="n">cols_with_pos</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># colum (position, name) pairs</span>
         <span class="n">cols_no_pos</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># just column names</span>
         <span class="n">cols_offsets</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># the offsets of the columns</span>
-        <span class="n">valid_offsets</span> <span class="o">=</span> <span class="bp">False</span>  <span class="c1"># by default there a no valid offsets</span>
+        <span class="n">valid_offsets</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># by default there a no valid offsets</span>
 
         <span class="c1"># Check for special variables and convert column descriptions</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">descr</span><span class="p">)</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">classdict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">descr</span><span class="p">)</span> <span class="ow">in</span> <span class="n">classdict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_v_&#39;</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">newdict</span><span class="p">:</span>
                     <span class="c1"># print(&quot;Warning!&quot;)</span>
@@ -803,7 +786,7 @@
                     <span class="n">newdict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">descr</span>
                 <span class="k">continue</span>  <span class="c1"># This variable is not needed anymore</span>
 
-            <span class="n">columns</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">columns</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">descr</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="n">IsDescription</span><span class="p">)</span> <span class="ow">and</span>
                     <span class="nb">issubclass</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="n">IsDescription</span><span class="p">)):</span>
                 <span class="c1"># print(&quot;Nested object (type I)--&gt;&quot;, name)</span>
@@ -821,17 +804,17 @@
             <span class="c1"># The copies above and below ensure that the structures</span>
             <span class="c1"># provided by the user will remain unchanged even if we</span>
             <span class="c1"># tamper with the values of ``_v_pos`` here.</span>
-            <span class="k">if</span> <span class="n">columns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">columns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">descr</span> <span class="o">=</span> <span class="n">Description</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">columns</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_nestedlvl</span><span class="p">,</span> <span class="n">ptparams</span><span class="o">=</span><span class="n">ptparams</span><span class="p">)</span>
             <span class="n">classdict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">descr</span>
 
-            <span class="n">pos</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="s1">&#39;_v_pos&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">pos</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="s1">&#39;_v_pos&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pos</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">cols_no_pos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">cols_with_pos</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pos</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
-            <span class="n">offset</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="s1">&#39;_v_offset&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">offset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="s1">&#39;_v_offset&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">offset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">cols_offsets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
 
         <span class="c1"># Sort field names:</span>
@@ -844,7 +827,7 @@
         <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">cols_with_pos</span><span class="p">]</span> <span class="o">+</span> <span class="n">cols_no_pos</span>
 
         <span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">nested</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">nested</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># Get properties for compound types</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">validate</span><span class="p">:</span>
@@ -869,12 +852,8 @@
 
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="c1"># numpy only accepts &quot;str&quot; for field names</span>
-                <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
-                    <span class="c1"># Python 2.x: unicode --&gt; str</span>
-                    <span class="n">kk</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>  <span class="c1"># use the default encoding</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># Python 3.x: bytes --&gt; str (unicode)</span>
-                    <span class="n">kk</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+                <span class="c1"># Python 3.x: bytes --&gt; str (unicode)</span>
+                <span class="n">kk</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">kk</span> <span class="o">=</span> <span class="n">k</span>
 
@@ -889,7 +868,7 @@
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># A description</span>
                 <span class="n">nestedFormats</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">object</span><span class="o">.</span><span class="n">_v_nested_formats</span><span class="p">)</span>
                 <span class="n">nestedDType</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">kk</span><span class="p">,</span> <span class="nb">object</span><span class="o">.</span><span class="n">_v_dtype</span><span class="p">))</span>
-                <span class="n">nested</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">nested</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="c1"># Useful for debugging purposes</span>
         <span class="c1"># import traceback</span>
@@ -902,7 +881,7 @@
         <span class="c1">#   2) Make padding False by default (except if ALLOW_PADDING is set to True)</span>
         <span class="c1"># Currently we choose 1) because it favours honoring padding even on unhandled situations (should be very few).</span>
         <span class="c1"># However, for development, option 2) is recommended as it catches most of the unhandled situations.</span>
-        <span class="n">allow_padding</span> <span class="o">=</span> <span class="bp">False</span> <span class="k">if</span> <span class="n">ptparams</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ptparams</span><span class="p">[</span><span class="s1">&#39;ALLOW_PADDING&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="bp">True</span>
+        <span class="n">allow_padding</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">ptparams</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ptparams</span><span class="p">[</span><span class="s1">&#39;ALLOW_PADDING&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="kc">True</span>
         <span class="c1"># allow_padding = True if ptparams is not None and ptparams[&#39;ALLOW_PADDING&#39;] else False</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">allow_padding</span> <span class="ow">and</span>
                 <span class="nb">len</span><span class="p">(</span><span class="n">cols_offsets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span>
@@ -912,7 +891,7 @@
             <span class="c1"># We have to sort the offsets too, as they must follow the column order.</span>
             <span class="c1"># As the offsets and the pos should be place in the same order, a single sort is enough here.</span>
             <span class="n">cols_offsets</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-            <span class="n">valid_offsets</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">valid_offsets</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">newdict</span><span class="p">[</span><span class="s1">&#39;_v_offsets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -933,8 +912,14 @@
         <span class="c1"># Compute the dtype with offsets or without</span>
         <span class="c1"># print(&quot;offsets -&gt;&quot;, cols_offsets, nestedDType, nested, valid_offsets)</span>
         <span class="k">if</span> <span class="n">valid_offsets</span><span class="p">:</span>
-            <span class="c1"># TODO: support offsets with nested types</span>
-            <span class="n">dtype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">({</span><span class="s1">&#39;names&#39;</span><span class="p">:</span> <span class="n">newdict</span><span class="p">[</span><span class="s1">&#39;_v_names&#39;</span><span class="p">],</span> <span class="s1">&#39;formats&#39;</span><span class="p">:</span> <span class="n">nestedFormats</span><span class="p">,</span> <span class="s1">&#39;offsets&#39;</span><span class="p">:</span> <span class="n">cols_offsets</span><span class="p">})</span>
+            <span class="c1"># TODO: support offsets within nested types</span>
+            <span class="n">dtype_fields</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;names&#39;</span><span class="p">:</span> <span class="n">newdict</span><span class="p">[</span><span class="s1">&#39;_v_names&#39;</span><span class="p">],</span> <span class="s1">&#39;formats&#39;</span><span class="p">:</span> <span class="n">nestedFormats</span><span class="p">,</span>
+                <span class="s1">&#39;offsets&#39;</span><span class="p">:</span> <span class="n">cols_offsets</span><span class="p">}</span>
+            <span class="n">itemsize</span> <span class="o">=</span> <span class="n">newdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;_v_itemsize&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">itemsize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+              <span class="n">dtype_fields</span><span class="p">[</span><span class="s1">&#39;itemsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">itemsize</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype_fields</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dtype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">nestedDType</span><span class="p">)</span>
         <span class="n">newdict</span><span class="p">[</span><span class="s1">&#39;_v_dtype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dtype</span>
@@ -957,7 +942,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_v_nested_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">new_object</span><span class="o">.</span><span class="n">_v_nested_names</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_v_nested_descr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">new_object</span><span class="o">.</span><span class="n">_v_nested_descr</span><span class="p">)</span>
                 <span class="c1"># set the _v_is_nested flag</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_v_is_nested</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_v_is_nested</span> <span class="o">=</span> <span class="kc">True</span>
 
 
     <span class="k">def</span> <span class="nf">_g_set_path_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1022,7 +1007,7 @@
                 <span class="c1"># children lists, a string signals that no more children</span>
                 <span class="c1"># remain to be processed, so we are done with the</span>
                 <span class="c1"># description at the top of the stack.</span>
-                <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">)</span>
+                <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
                 <span class="c1"># Assign the computed set of descendent column paths.</span>
                 <span class="n">desc</span><span class="o">.</span><span class="n">_v_pathnames</span> <span class="o">=</span> <span class="n">cols</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -1102,7 +1087,7 @@
 
 
 
-<span class="k">class</span> <span class="nc">IsDescription</span><span class="p">(</span><span class="n">six</span><span class="o">.</span><span class="n">with_metaclass</span><span class="p">(</span><span class="n">MetaIsDescription</span><span class="p">,</span> <span class="nb">object</span><span class="p">)):</span>
+<span class="k">class</span> <span class="nc">IsDescription</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">MetaIsDescription</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Description of the structure of a table or nested column.</span>
 
 <span class="sd">    This class is designed to be used as an easy, yet meaningful way to</span>
@@ -1147,7 +1132,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">descr_from_dtype</span><span class="p">(</span><span class="n">dtype_</span><span class="p">,</span> <span class="n">ptparams</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">descr_from_dtype</span><span class="p">(</span><span class="n">dtype_</span><span class="p">,</span> <span class="n">ptparams</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get a description instance and byteorder from a (nested) NumPy dtype.&quot;&quot;&quot;</span>
 
     <span class="n">fields</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1182,7 +1167,7 @@
     <span class="k">return</span> <span class="n">Description</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">ptparams</span><span class="o">=</span><span class="n">ptparams</span><span class="p">),</span> <span class="n">fbyteorder</span>
 
 
-<span class="k">def</span> <span class="nf">dtype_from_descr</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ptparams</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">dtype_from_descr</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ptparams</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get a (nested) NumPy dtype from a description instance and byteorder.</span>
 
 <span class="sd">    The descr parameter can be a Description or IsDescription</span>
@@ -1278,31 +1263,31 @@
     <span class="n">klass</span> <span class="o">=</span> <span class="n">Test</span><span class="p">()</span>
     <span class="c1"># klass = Info()</span>
     <span class="n">desc</span> <span class="o">=</span> <span class="n">Description</span><span class="p">(</span><span class="n">klass</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Description representation (short) ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Description representation (long) ==&gt;&quot;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">desc</span><span class="p">))</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Column names ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">_v_names</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Column x ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Column Info ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">Info</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Column Info.value ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">Info</span><span class="o">.</span><span class="n">Value</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Nested column names  ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">_v_nested_names</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Defaults ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">_v_dflts</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Nested Formats ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">_v_nested_formats</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Nested Descriptions ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">_v_nested_descr</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Nested Descriptions (info) ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">_v_nested_descr</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Total size ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">_v_dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Description representation (short) ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Description representation (long) ==&gt;&quot;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">desc</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Column names ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">_v_names</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Column x ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Column Info ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">Info</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Column Info.value ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">Info</span><span class="o">.</span><span class="n">Value</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nested column names  ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">_v_nested_names</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Defaults ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">_v_dflts</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nested Formats ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">_v_nested_formats</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nested Descriptions ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">_v_nested_descr</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nested Descriptions (info) ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">_v_nested_descr</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total size ==&gt;&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">.</span><span class="n">_v_dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="p">)</span>
 
     <span class="c1"># check _f_walk</span>
     <span class="k">for</span> <span class="nb">object</span> <span class="ow">in</span> <span class="n">desc</span><span class="o">.</span><span class="n">_f_walk</span><span class="p">():</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">Description</span><span class="p">):</span>
-            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;******begin object*************&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
-            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;name --&gt;&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="o">.</span><span class="n">_v_name</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;******begin object*************&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;name --&gt;&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="o">.</span><span class="n">_v_name</span><span class="p">)</span>
             <span class="c1"># print(&quot;name --&gt;&quot;, object._v_dtype.name)</span>
             <span class="c1"># print(&quot;object childs--&gt;&quot;, object._v_names)</span>
             <span class="c1"># print(&quot;object nested childs--&gt;&quot;, object._v_nested_names)</span>
-            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;totalsize--&gt;&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="o">.</span><span class="n">_v_dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;totalsize--&gt;&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="o">.</span><span class="n">_v_dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># pass</span>
-            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;leaf --&gt;&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="o">.</span><span class="n">_v_name</span><span class="p">,</span> <span class="nb">object</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;leaf --&gt;&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="o">.</span><span class="n">_v_name</span><span class="p">,</span> <span class="nb">object</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
 
     <span class="k">class</span> <span class="nc">testDescParent</span><span class="p">(</span><span class="n">IsDescription</span><span class="p">):</span>
         <span class="n">c</span> <span class="o">=</span> <span class="n">Int32Col</span><span class="p">()</span>

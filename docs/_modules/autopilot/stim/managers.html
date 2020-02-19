@@ -22,21 +22,11 @@
   <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../../',
-              VERSION:'0.2',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -45,6 +35,7 @@
   
   <link rel="stylesheet" href="../../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -70,9 +61,6 @@
             <a href="../../../index.html" class="icon icon-home"> Autopilot
           
 
-          
-            
-            <img src="../../../_static/autopilot_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -154,7 +142,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#params">PARAMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#data">Data</a></li>
@@ -175,7 +163,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id1">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id5">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -319,12 +307,14 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pdb</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">autopilot</span> <span class="kn">import</span> <span class="n">prefs</span>
 <span class="k">if</span> <span class="n">prefs</span><span class="o">.</span><span class="n">AGENT</span> <span class="o">==</span> <span class="s1">&#39;pilot&#39;</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">prefs</span><span class="o">.</span><span class="n">CONFIG</span> <span class="o">==</span> <span class="s1">&#39;AUDIO&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s1">&#39;AUDIO&#39;</span> <span class="ow">in</span> <span class="n">prefs</span><span class="o">.</span><span class="n">CONFIG</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">autopilot.stim.sound</span> <span class="kn">import</span> <span class="n">sounds</span>
+
 
 <div class="viewcode-block" id="init_manager"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.init_manager">[docs]</a><span class="k">def</span> <span class="nf">init_manager</span><span class="p">(</span><span class="n">stim</span><span class="p">):</span>
     <span class="k">if</span> <span class="s1">&#39;manager&#39;</span> <span class="ow">in</span> <span class="n">stim</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -332,7 +322,7 @@
             <span class="n">manager</span> <span class="o">=</span> <span class="n">stim</span><span class="p">[</span><span class="s1">&#39;manager&#39;</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">MANAGER_MAP</span><span class="p">[</span><span class="n">manager</span><span class="p">](</span><span class="n">stim</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Couldnt find stim manager of type: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stim</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]))</span>
+            <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Couldnt find stim manager of type: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stim</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Stim_Manager</span><span class="p">(</span><span class="n">stim</span><span class="p">)</span></div>
 
@@ -366,7 +356,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Metaclass for managing stimuli...</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            stim (dict): Dictionary describing sound stimuli, in a format like::</span>
@@ -378,20 +368,21 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stimuli</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c1"># What is the correct port?</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">distractor</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c1"># What is the incorrect port</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c1"># What was the last response?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># What is the correct port?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distractor</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># What is the incorrect port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># What was the last response?</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">correct</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Was the last response correct?</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">last_stim</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c1"># What was the last stim?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_stim</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># What was the last stim?</span>
 
         <span class="c1"># Correction trials</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">correction</span> <span class="o">=</span> <span class="bp">False</span>  <span class="c1"># Are we doing correction trials</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">correction_trial</span> <span class="o">=</span> <span class="bp">False</span>  <span class="c1"># Is this a correction trial?</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">last_was_correction</span> <span class="o">=</span> <span class="bp">False</span>  <span class="c1"># Was the last trial a correction trial?</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">correction</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Are we doing correction trials</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">correction_trial</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Is this a correction trial?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_was_correction</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Was the last trial a correction trial?</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">correction_pct</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># proportion of trials that are correction trials</span>
 
         <span class="c1"># Bias correction</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="bp">False</span>  <span class="c1"># or a bias correction mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># or a bias correction mode</span>
 
         <span class="c1"># if we&#39;re being init&#39;d as a superclass, no stim passed.</span>
         <span class="k">if</span> <span class="n">stim</span><span class="p">:</span>
@@ -408,7 +399,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            correction_pct (float): Proportion of trials that should randomly be set to be correction trials.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">correction</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">correction</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">correction_pct</span> <span class="o">=</span> <span class="n">correction_pct</span></div>
 
 <div class="viewcode-block" id="Stim_Manager.do_bias"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.do_bias">[docs]</a>    <span class="k">def</span> <span class="nf">do_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -474,7 +465,7 @@
         <span class="c1"># If we want a punishment sound...</span>
         <span class="c1"># if self.punish_sound:</span>
         <span class="c1">#     self.stimuli[&#39;punish&#39;] = sounds.Noise(self.punish_dur)</span>
-        <span class="c1">#     #change_to_green = lambda: self.pins[&#39;LEDS&#39;][&#39;C&#39;].set_color([0, 255, 0])</span>
+        <span class="c1">#     #change_to_green = lambda: self.hardware[&#39;LEDS&#39;][&#39;C&#39;].set_color([0, 255, 0])</span>
         <span class="c1">#     #self.stimuli[&#39;punish&#39;].set_trigger(change_to_green)</span>
         <span class="k">pass</span></div>
 
@@ -543,21 +534,23 @@
         <span class="c1"># if we are doing a correction trial this time return true</span>
 
         <span class="c1"># if this is the first trial, we can&#39;t do correction trials now can we</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># if the last trial was a correction trial and we didn&#39;t get it correct,</span>
         <span class="c1"># then this is a correction trial too</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">correction_trial</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">correct</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">correction_trial</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_was_correction</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">correct</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
         <span class="c1"># if the last trial was a correction trial and we just corrected, no correction trial this time</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">correction_trial</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">correct</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">False</span>
-        <span class="c1"># if last trial was not a correction trial we spin for one</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">correction_trial</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_was_correction</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">correct</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_was_correction</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="c1"># if last trial was not a correction trial we spin  *to test* for one</span>
         <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">correction_pct</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_was_correction</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">False</span></div>
+            <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Stim_Manager.update"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Stim_Manager.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">correct</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -584,7 +577,7 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">stim</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
                 <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;stim does not have an end method! </span><span class="se">\n</span><span class="s1">{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stim</span><span class="p">)))</span></div></div>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;stim does not have an end method! </span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stim</span><span class="p">)))</span></div></div>
 
 <div class="viewcode-block" id="Proportional"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Proportional">[docs]</a><span class="k">class</span> <span class="nc">Proportional</span><span class="p">(</span><span class="n">Stim_Manager</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -624,12 +617,25 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stim</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Proportional</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">stimuli</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">frequency_type</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="k">if</span> <span class="n">stim</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;sounds&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">init_sounds</span><span class="p">(</span><span class="n">stim</span><span class="p">[</span><span class="s1">&#39;groups&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s1">&#39;groups&#39;</span> <span class="ow">in</span> <span class="n">stim</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">frequency_type</span> <span class="o">=</span> <span class="s2">&quot;within_groups&quot;</span>
+                <span class="c1"># top-level groups, choose group then choose side</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">init_sounds_grouped</span><span class="p">(</span><span class="n">stim</span><span class="p">[</span><span class="s1">&#39;groups&#39;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">store_groups</span><span class="p">(</span><span class="n">stim</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">frequency_type</span> <span class="o">=</span> <span class="s2">&quot;within_side&quot;</span>
+                <span class="c1"># second-level frequencies, side is chosen and then</span>
+                <span class="c1"># probability from within a side</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">init_sounds_individual</span><span class="p">(</span><span class="n">stim</span><span class="p">[</span><span class="s1">&#39;sounds&#39;</span><span class="p">])</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">store_groups</span><span class="p">(</span><span class="n">stim</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Proportional.init_sounds"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Proportional.init_sounds">[docs]</a>    <span class="k">def</span> <span class="nf">init_sounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sound_stim</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Proportional.init_sounds_grouped"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Proportional.init_sounds_grouped">[docs]</a>    <span class="k">def</span> <span class="nf">init_sounds_grouped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sound_stim</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Instantiate sound objects similarly to :class:`.Stim_Manager`, just organizes them into groups.</span>
 
@@ -671,6 +677,25 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">stimuli</span><span class="p">[</span><span class="n">group_name</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">sounds</span><span class="o">.</span><span class="n">SOUND_LIST</span><span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]](</span><span class="o">**</span><span class="n">v</span><span class="p">)]</span></div>
 
+
+<div class="viewcode-block" id="Proportional.init_sounds_individual"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Proportional.init_sounds_individual">[docs]</a>    <span class="k">def</span> <span class="nf">init_sounds_individual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sound_stim</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stim_freqs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">side</span><span class="p">,</span> <span class="n">sound_params</span> <span class="ow">in</span> <span class="n">sound_stim</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stimuli</span><span class="p">[</span><span class="n">side</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stim_freqs</span><span class="p">[</span><span class="n">side</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sound_params</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">sound</span> <span class="ow">in</span> <span class="n">sound_params</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">stimuli</span><span class="p">[</span><span class="n">side</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sounds</span><span class="o">.</span><span class="n">SOUND_LIST</span><span class="p">[</span><span class="n">sound</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]](</span><span class="o">**</span><span class="n">sound</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">stim_freqs</span><span class="p">[</span><span class="n">side</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">sound</span><span class="p">[</span><span class="s1">&#39;management&#39;</span><span class="p">][</span><span class="s1">&#39;frequency&#39;</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stimuli</span><span class="p">[</span><span class="n">side</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sounds</span><span class="o">.</span><span class="n">SOUND_LIST</span><span class="p">[</span><span class="n">sound_params</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]](</span><span class="o">**</span><span class="n">sound_params</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stim_freqs</span><span class="p">[</span><span class="n">side</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">sound_params</span><span class="p">[</span><span class="s1">&#39;management&#39;</span><span class="p">][</span><span class="s1">&#39;frequency&#39;</span><span class="p">]))</span>
+
+        <span class="c1"># normalize frequencies within sides to sum to 1</span>
+        <span class="k">for</span> <span class="n">side</span><span class="p">,</span> <span class="n">freqs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_freqs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">side_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stim_freqs</span><span class="p">[</span><span class="n">side</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">/</span><span class="n">side_sum</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">freqs</span><span class="p">])</span></div>
+
 <div class="viewcode-block" id="Proportional.store_groups"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Proportional.store_groups">[docs]</a>    <span class="k">def</span> <span class="nf">store_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stim</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        store groups and frequencies</span>
@@ -705,10 +730,19 @@
 <span class="sd">            trig_fn (callable): A function to be given to stimuli via `set_trigger`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># set a callback function for when the stimulus ends</span>
-        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stimuli</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">group</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">for</span> <span class="n">astim</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
-                    <span class="n">astim</span><span class="o">.</span><span class="n">set_trigger</span><span class="p">(</span><span class="n">trig_fn</span><span class="p">)</span></div>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency_type</span> <span class="o">==</span> <span class="s2">&quot;within_group&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stimuli</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">group</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">for</span> <span class="n">astim</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                            <span class="n">astim</span><span class="o">.</span><span class="n">set_trigger</span><span class="p">(</span><span class="n">trig_fn</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency_type</span> <span class="o">==</span> <span class="s2">&quot;within_side&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">side</span><span class="p">,</span> <span class="n">sound_group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stimuli</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">astim</span> <span class="ow">in</span> <span class="n">sound_group</span><span class="p">:</span>
+                    <span class="n">astim</span><span class="o">.</span><span class="n">set_trigger</span><span class="p">(</span><span class="n">trig_fn</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Dont know how to set triggers&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Proportional.next_stim"><a class="viewcode-back" href="../../../autopilot.stim.managers.html#autopilot.stim.managers.Proportional.next_stim">[docs]</a>    <span class="k">def</span> <span class="nf">next_stim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -750,10 +784,18 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">==</span> <span class="s1">&#39;R&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">distractor</span> <span class="o">=</span> <span class="s1">&#39;L&#39;</span>
 
-        <span class="c1"># pick a stimulus based on group frequency</span>
-        <span class="n">group</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group_names</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">group_freqs</span><span class="p">)</span>
-        <span class="c1"># within that group pick a random stimulus</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">last_stim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stimuli</span><span class="p">[</span><span class="n">group</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency_type</span> <span class="o">==</span> <span class="s2">&quot;within_group&quot;</span><span class="p">:</span>
+
+            <span class="c1"># pick a stimulus based on group frequency</span>
+            <span class="n">group</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group_names</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">group_freqs</span><span class="p">)</span>
+            <span class="c1"># within that group pick a random stimulus</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_stim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stimuli</span><span class="p">[</span><span class="n">group</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">])</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency_type</span> <span class="o">==</span> <span class="s2">&quot;within_side&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_stim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stimuli</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">],</span>
+                                              <span class="n">p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stim_freqs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Dont know what freq type we are&#39;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">distractor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_stim</span></div></div>
 
@@ -827,13 +869,13 @@
 <span class="sd">            response (&#39;R&#39;, &#39;L&#39;): Which side the subject responded to</span>
 <span class="sd">            target (&#39;R&#39;, &#39;L&#39;): The correct side.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="s2">&quot;R&quot;</span><span class="p">:</span>
                 <span class="n">response</span> <span class="o">=</span> <span class="mf">1.0</span>
             <span class="k">elif</span> <span class="n">response</span> <span class="o">==</span> <span class="s2">&quot;L&quot;</span><span class="p">:</span>
                 <span class="n">response</span> <span class="o">=</span> <span class="mf">0.0</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">target</span> <span class="o">==</span> <span class="s2">&quot;R&quot;</span><span class="p">:</span>
                 <span class="n">target</span> <span class="o">=</span> <span class="mf">1.0</span>
             <span class="k">elif</span> <span class="n">target</span> <span class="o">==</span> <span class="s2">&quot;L&quot;</span><span class="p">:</span>

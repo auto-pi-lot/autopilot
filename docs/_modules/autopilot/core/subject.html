@@ -22,21 +22,11 @@
   <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../../',
-              VERSION:'0.2',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -45,6 +35,7 @@
   
   <link rel="stylesheet" href="../../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -70,9 +61,6 @@
             <a href="../../../index.html" class="icon icon-home"> Autopilot
           
 
-          
-            
-            <img src="../../../_static/autopilot_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -154,7 +142,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#params">PARAMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#data">Data</a></li>
@@ -175,7 +163,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id1">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id5">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -326,7 +314,7 @@
 <span class="kn">from</span> <span class="nn">tables.nodes</span> <span class="kn">import</span> <span class="n">filenode</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))))</span>
@@ -337,9 +325,10 @@
 <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">):</span>
     <span class="kn">import</span> <span class="nn">queue</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">Queue</span> <span class="kn">as</span> <span class="nn">queue</span>
+    <span class="kn">import</span> <span class="nn">Queue</span> <span class="k">as</span> <span class="nn">queue</span>
 
 <span class="kn">import</span> <span class="nn">pdb</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
 <div class="viewcode-block" id="Subject"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject">[docs]</a><span class="k">class</span> <span class="nc">Subject</span><span class="p">:</span>
@@ -391,7 +380,7 @@
 
 
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">biography</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">biography</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            name (str): subject ID</span>
@@ -410,22 +399,25 @@
             <span class="p">(</span><span class="s1">&#39;/info&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="s1">&#39;group&#39;</span><span class="p">)</span>
         <span class="p">]</span>
 
+        <span class="c1"># use a filter to compress continuous data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">continuous_filter</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Filters</span><span class="p">(</span><span class="n">complib</span><span class="o">=</span><span class="s1">&#39;blosc&#39;</span><span class="p">,</span> <span class="n">complevel</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">dir</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="nb">dir</span> <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">DATADIR</span>
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="nb">dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="nb">file</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="nb">dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">file</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">file</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">file</span><span class="p">:</span>
                 <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Need to either have a name or a file, how else would we find the .h5 file?&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="nb">file</span><span class="p">):</span>
-                <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;no file was found at passed file: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">file</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="nb">file</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+                <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;no file was found at passed file: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">file</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">file</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">file</span><span class="p">:</span>
                 <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;file passed, but so was name, defaulting to using name + dir&#39;</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
@@ -443,14 +435,14 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">_v_attrs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
                 <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;No Name attribute saved, trying to recover from filename&#39;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="nb">file</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">file</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
 
 
 
         <span class="c1"># If subject has a protocol, load it to a dict</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">step</span>    <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol_name</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span>    <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol_name</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="s2">&quot;/current&quot;</span> <span class="ow">in</span> <span class="n">h5f</span><span class="p">:</span>
             <span class="c1"># We load the info from &#39;current&#39; but don&#39;t keep the node open</span>
             <span class="c1"># Stash it as a dict so better access from Python</span>
@@ -460,16 +452,22 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;step&#39;</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">protocol_name</span> <span class="o">=</span> <span class="n">current_node</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;protocol_name&#39;</span><span class="p">]</span>
 
+        <span class="c1"># get last session number if we have it</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">h5f</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">_v_attrs</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="c1"># We will get handles to trial and continuous data when we start running</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">current_trial</span>  <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_trial</span>  <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># Is the subject currently running (ie. we expect data to be incoming)</span>
         <span class="c1"># Used to keep the subject object alive, otherwise we close the file whenever we don&#39;t need it</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># We use a threading queue to dump data into a kept-alive h5f file</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_queue</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_queue</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">did_graduate</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
 
         <span class="c1"># Every time we are initialized we stash the git hash</span>
@@ -570,6 +568,8 @@
                 <span class="n">h5f</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">_v_attrs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
         <span class="n">h5f</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">_v_attrs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">h5f</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">_v_attrs</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
 
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
@@ -597,7 +597,7 @@
 
                 <span class="c1"># python 2</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="nb">basestring</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
                         <span class="k">if</span> <span class="n">node</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;group&#39;</span><span class="p">:</span>
                             <span class="n">h5f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">node</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
                     <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">tables</span><span class="o">.</span><span class="n">IsDescription</span><span class="p">):</span>
@@ -619,7 +619,7 @@
             <span class="n">h5f</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">_v_attrs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
         <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Subject.update_history"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.update_history">[docs]</a>    <span class="k">def</span> <span class="nf">update_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.update_history"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.update_history">[docs]</a>    <span class="k">def</span> <span class="nf">update_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the history table when changes are made to the subject&#39;s protocol.</span>
 
@@ -657,18 +657,18 @@
 
 
         <span class="c1"># Check that we&#39;re all strings in here</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="nb">type</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
         <span class="c1"># log the change</span>
         <span class="n">h5f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_hdf</span><span class="p">()</span>
         <span class="n">history_row</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">row</span>
 
-        <span class="n">history_row</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">(</span><span class="n">simple</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">history_row</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">(</span><span class="n">simple</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">history_row</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span>
         <span class="n">history_row</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
         <span class="n">history_row</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
@@ -720,7 +720,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">protocol</span><span class="p">):</span>
             <span class="n">fullpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">PROTOCOLDIR</span><span class="p">,</span> <span class="n">protocol</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fullpath</span><span class="p">):</span>
-                <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Could not find either {} or {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protocol</span><span class="p">,</span> <span class="n">fullpath</span><span class="p">))</span>
+                <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Could not find either </span><span class="si">{}</span><span class="s1"> or </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protocol</span><span class="p">,</span> <span class="n">fullpath</span><span class="p">))</span>
+            <span class="n">protocol</span> <span class="o">=</span> <span class="n">fullpath</span>
 
         <span class="c1"># Set name and step</span>
         <span class="c1"># Strip off path and extension to get the protocol name</span>
@@ -751,11 +752,16 @@
         <span class="n">current_node</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;step&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">step_n</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">step_n</span><span class="p">)</span>
 
+        <span class="c1"># always start out on session 0 on a new task</span>
+        <span class="n">h5f</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">_v_attrs</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="mi">0</span>
+
         <span class="c1"># Make file group for protocol</span>
-        <span class="k">if</span> <span class="s2">&quot;/data/{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protocol_name</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">h5f</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;/data/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protocol_name</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">h5f</span><span class="p">:</span>
             <span class="n">current_group</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s1">&#39;/data&#39;</span><span class="p">,</span> <span class="n">protocol_name</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">current_group</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="s1">&#39;/data&#39;</span><span class="p">,</span> <span class="n">protocol_name</span><span class="p">)</span>
+
 
         <span class="c1"># Create groups for each step</span>
         <span class="c1"># There are two types of data - continuous and trialwise.</span>
@@ -767,7 +773,7 @@
             <span class="n">task_class</span> <span class="o">=</span> <span class="n">TASK_LIST</span><span class="p">[</span><span class="n">step</span><span class="p">[</span><span class="s1">&#39;task_type&#39;</span><span class="p">]]</span>
             <span class="n">step_name</span> <span class="o">=</span> <span class="n">step</span><span class="p">[</span><span class="s1">&#39;step_name&#39;</span><span class="p">]</span>
             <span class="c1"># group name is S##_&#39;step_name&#39;</span>
-            <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;S{:02d}_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">step_name</span><span class="p">)</span>
+            <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;S</span><span class="si">{:02d}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">step_name</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">group_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">current_group</span><span class="p">:</span>
                 <span class="n">step_group</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">current_group</span><span class="p">,</span> <span class="n">group_name</span><span class="p">)</span>
@@ -818,10 +824,19 @@
                 <span class="c1"># we already have made this table, that&#39;s fine</span>
                 <span class="k">pass</span>
             <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># if we have continuous data, make a folder for each data stream.</span>
+                <span class="c1"># each session will make its own subfolder,</span>
+                <span class="c1"># which contains tables for each of the streams for that session</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">task_class</span><span class="p">,</span> <span class="s2">&quot;ContinuousData&quot;</span><span class="p">):</span>
-                    <span class="n">cont_descriptor</span> <span class="o">=</span> <span class="n">task_class</span><span class="o">.</span><span class="n">ContinuousData</span>
-                    <span class="n">cont_descriptor</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;session&#39;</span><span class="p">:</span> <span class="n">tables</span><span class="o">.</span><span class="n">Int32Col</span><span class="p">()})</span>
-                    <span class="n">h5f</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="n">step_group</span><span class="p">,</span> <span class="s2">&quot;continuous_data&quot;</span><span class="p">,</span> <span class="n">cont_descriptor</span><span class="p">)</span>
+                    <span class="n">cont_group</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">step_group</span><span class="p">,</span> <span class="s2">&quot;continuous_data&quot;</span><span class="p">)</span>
+
+                    <span class="c1"># save data names as attributes</span>
+                    <span class="n">data_names</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">task_class</span><span class="o">.</span><span class="n">ContinuousData</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+                    <span class="n">cont_group</span><span class="o">.</span><span class="n">_v_attrs</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_names</span>
+                    <span class="c1">#cont_descriptor = task_class.ContinuousData</span>
+                    <span class="c1">#cont_descriptor.columns.update({&#39;session&#39;: tables.Int32Col()})</span>
+                    <span class="c1">#h5f.create_table(step_group, &quot;continuous_data&quot;, cont_descriptor)</span>
             <span class="k">except</span> <span class="n">tables</span><span class="o">.</span><span class="n">NodeError</span><span class="p">:</span>
                 <span class="c1"># already made it</span>
                 <span class="k">pass</span>
@@ -858,10 +873,10 @@
         <span class="n">h5f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_hdf</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">protocol_name</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">get_node_attr</span><span class="p">(</span><span class="s1">&#39;/current&#39;</span><span class="p">,</span> <span class="s1">&#39;protocol_name&#39;</span><span class="p">)</span>
-            <span class="n">archive_name</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">(</span><span class="n">simple</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span> <span class="n">protocol_name</span><span class="p">])</span>
+            <span class="n">archive_name</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">(</span><span class="n">simple</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">protocol_name</span><span class="p">])</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;protocol_name attribute couldn&#39;t be accessed, using timestamp to stash protocol&quot;</span><span class="p">)</span>
-            <span class="n">archive_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">(</span><span class="n">simple</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">archive_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">(</span><span class="n">simple</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># TODO: When would we want to prefer the .h5f copy over the live one?</span>
         <span class="c1">#current_node = filenode.open_node(h5f.root.current)</span>
@@ -886,8 +901,8 @@
 <span class="sd">                current trial, and session number included.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">trial_table</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="n">cont_table</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">trial_table</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">cont_table</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="n">h5f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_hdf</span><span class="p">()</span>
 
@@ -896,7 +911,7 @@
         <span class="n">step_name</span> <span class="o">=</span> <span class="n">task_params</span><span class="p">[</span><span class="s1">&#39;step_name&#39;</span><span class="p">]</span>
 
         <span class="c1"># file structure is &#39;/data/protocol_name/##_step_name/tables&#39;</span>
-        <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;/data/{}/S{:02d}_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">,</span> <span class="n">step_name</span><span class="p">)</span>
+        <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;/data/</span><span class="si">{}</span><span class="s2">/S</span><span class="si">{:02d}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">,</span> <span class="n">step_name</span><span class="p">)</span>
         <span class="c1">#try:</span>
         <span class="n">trial_table</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">group_name</span><span class="p">,</span> <span class="s1">&#39;trial_data&#39;</span><span class="p">)</span>
         <span class="c1">#self.trial_row = self.trial_table.row</span>
@@ -908,10 +923,35 @@
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">current_trial</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">trial_table</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span>
-        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># should have gotten session from current node when we started</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">trial_table</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">h5f</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">_v_attrs</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
+        <span class="n">h5f</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="c1"># try:</span>
+        <span class="c1">#     self.session = trial_table.cols.session[-1]+1</span>
+        <span class="c1"># except IndexError:</span>
+        <span class="c1">#     self.session = 0</span>
+
+        <span class="c1"># prepare continuous data group and tables</span>
+        <span class="n">task_class</span> <span class="o">=</span> <span class="n">TASK_LIST</span><span class="p">[</span><span class="n">task_params</span><span class="p">[</span><span class="s1">&#39;task_type&#39;</span><span class="p">]]</span>
+        <span class="n">cont_group</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">task_class</span><span class="p">,</span> <span class="s1">&#39;ContinuousData&#39;</span><span class="p">):</span>
+
+            <span class="n">cont_group</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">group_name</span><span class="p">,</span> <span class="s1">&#39;continuous_data&#39;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">session_group</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">cont_group</span><span class="p">,</span> <span class="s2">&quot;session_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">))</span>
+            <span class="k">except</span> <span class="n">tables</span><span class="o">.</span><span class="n">NodeError</span><span class="p">:</span>
+                <span class="n">session_group</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">cont_group</span><span class="p">,</span> <span class="s2">&quot;session_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">))</span>
+
+            <span class="c1"># don&#39;t create arrays for each dtype here, we will create them as we receive data</span>
 
         <span class="c1"># try:</span>
         <span class="c1">#     #cont_table = h5f.get_node(group_name, &#39;continuous_data&#39;)</span>
@@ -920,8 +960,8 @@
         <span class="c1"># except:</span>
         <span class="c1">#     pass</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">cont_table</span><span class="p">,</span> <span class="n">trial_table</span><span class="p">]):</span>
-            <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No data tables exist for step {}! Is there a Trial or Continuous data descriptor in the task class?&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">cont_group</span><span class="p">,</span> <span class="n">trial_table</span><span class="p">]):</span>
+            <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No data tables exist for step </span><span class="si">{}</span><span class="s2">! Is there a Trial or Continuous data descriptor in the task class?&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">))</span>
         <span class="c1"># TODO: Spawn graduation checking object!</span>
         <span class="k">if</span> <span class="s1">&#39;graduation&#39;</span> <span class="ow">in</span> <span class="n">task_params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">grad_type</span> <span class="o">=</span> <span class="n">task_params</span><span class="p">[</span><span class="s1">&#39;graduation&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
@@ -945,13 +985,13 @@
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">grad_params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">col</span><span class="p">:</span> <span class="n">trial_table</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">col</span><span class="p">)})</span>
                     <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                        <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;Graduation object requested column {}, but it was not found in the trial table&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="p">))</span>
+                        <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;Graduation object requested column </span><span class="si">{}</span><span class="s1">, but it was not found in the trial table&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="p">))</span>
 
             <span class="c1">#grad_params[&#39;value&#39;][&#39;current_trial&#39;] = str(self.current_trial) # str so it&#39;s json serializable</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">graduation</span> <span class="o">=</span> <span class="n">grad_obj</span><span class="p">(</span><span class="o">**</span><span class="n">grad_params</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">did_graduate</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">graduation</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graduation</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span>
 
@@ -959,7 +999,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">data_queue</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_thread</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_queue</span><span class="p">,))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="c1"># return a task parameter dictionary</span>
 
@@ -993,42 +1033,76 @@
         <span class="n">step_name</span> <span class="o">=</span> <span class="n">task_params</span><span class="p">[</span><span class="s1">&#39;step_name&#39;</span><span class="p">]</span>
 
         <span class="c1"># file structure is &#39;/data/protocol_name/##_step_name/tables&#39;</span>
-        <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;/data/{}/S{:02d}_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">,</span> <span class="n">step_name</span><span class="p">)</span>
+        <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;/data/</span><span class="si">{}</span><span class="s2">/S</span><span class="si">{:02d}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">,</span> <span class="n">step_name</span><span class="p">)</span>
         <span class="c1">#try:</span>
         <span class="n">trial_table</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">group_name</span><span class="p">,</span> <span class="s1">&#39;trial_data&#39;</span><span class="p">)</span>
         <span class="n">trial_keys</span> <span class="o">=</span> <span class="n">trial_table</span><span class="o">.</span><span class="n">colnames</span>
         <span class="n">trial_row</span> <span class="o">=</span> <span class="n">trial_table</span><span class="o">.</span><span class="n">row</span>
 
         <span class="c1"># try to get continuous data table if any</span>
+        <span class="n">cont_data</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
+        <span class="n">cont_tables</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">cont_rows</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">continuous_table</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">group_name</span><span class="p">,</span> <span class="s1">&#39;continuous_data&#39;</span><span class="p">)</span>
-            <span class="n">continuous_keys</span>  <span class="o">=</span> <span class="n">continuous_table</span><span class="o">.</span><span class="n">colnames</span>
-            <span class="n">continous_row</span>    <span class="o">=</span> <span class="n">continuous_table</span><span class="o">.</span><span class="n">row</span>
+            <span class="n">continuous_group</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">group_name</span><span class="p">,</span> <span class="s1">&#39;continuous_data&#39;</span><span class="p">)</span>
+            <span class="n">session_group</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">continuous_group</span><span class="p">,</span> <span class="s1">&#39;session_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">))</span>
+            <span class="n">cont_data</span> <span class="o">=</span> <span class="n">continuous_group</span><span class="o">.</span><span class="n">_v_attrs</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+
+
+            <span class="n">cont_tables</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">cont_rows</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="c1">#continuous_keys  = continuous_table.colnames</span>
+            <span class="c1">#continous_row    = continuous_table.row</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="n">continuous_table</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">continuous_table</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># start getting data</span>
         <span class="c1"># stop when &#39;END&#39; gets put in the queue</span>
         <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="s1">&#39;END&#39;</span><span class="p">):</span>
-
             <span class="c1"># wrap everything in try because this thread shouldn&#39;t crash</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="c1"># if we get continuous data, this should be simple because we always get a whole row</span>
                 <span class="c1"># there must be a more elegant way to check if something is a key and it is true...</span>
                 <span class="c1"># yet here we are</span>
                 <span class="k">if</span> <span class="s1">&#39;continuous&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">continuous_table</span><span class="p">:</span>
-                        <span class="c1"># TODO log this</span>
-                        <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Received continuous data, but no continuous data descriptor was specified in task.</span><span class="se">\n</span><span class="s1">received data: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">continuous_keys</span><span class="p">:</span>
-                                <span class="n">continuous_row</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
-                        <span class="c1"># also store session</span>
-                        <span class="n">continuous_row</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
-                        <span class="n">continuous_row</span><span class="o">.</span><span class="n">append</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="c1"># if this isn&#39;t data that we&#39;re expecting, ignore it</span>
+                        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cont_data</span><span class="p">:</span>
+                            <span class="k">continue</span>
 
-                    <span class="c1"># continue with data processing loop</span>
+                        <span class="c1"># if we haven&#39;t made a table yet, do it</span>
+                        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cont_tables</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                            <span class="c1"># make atom for this data</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="c1"># if it&#39;s a numpy array...</span>
+                                <span class="n">col_atom</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Atom</span><span class="o">.</span><span class="n">from_type</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                                <span class="n">temp_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                                <span class="n">col_atom</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Atom</span><span class="o">.</span><span class="n">from_type</span><span class="p">(</span><span class="n">temp_array</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">temp_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                            <span class="c1"># should have come in with a timestamp</span>
+                            <span class="c1"># TODO: Log if no timestamp is received</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="n">temp_timestamp_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">])</span>
+                                <span class="n">timestamp_atom</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">Atom</span><span class="o">.</span><span class="n">from_type</span><span class="p">(</span><span class="n">temp_timestamp_arr</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                                                       <span class="n">temp_timestamp_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+                            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                                <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;no timestamp sent with continuous data&#39;</span><span class="p">)</span>
+                                <span class="k">continue</span>
+
+
+                            <span class="n">cont_tables</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="n">session_group</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="p">{</span>
+                                <span class="n">k</span><span class="p">:</span> <span class="n">tables</span><span class="o">.</span><span class="n">Col</span><span class="o">.</span><span class="n">from_atom</span><span class="p">(</span><span class="n">col_atom</span><span class="p">),</span>
+                                <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="n">tables</span><span class="o">.</span><span class="n">Col</span><span class="o">.</span><span class="n">from_atom</span><span class="p">(</span><span class="n">timestamp_atom</span><span class="p">)</span>
+                            <span class="p">},</span> <span class="n">filters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_filter</span><span class="p">)</span>
+
+                            <span class="n">cont_rows</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">cont_tables</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">row</span>
+
+                        <span class="n">cont_rows</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+                        <span class="n">cont_rows</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span>
+                        <span class="n">cont_rows</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">()</span>
+
+                    <span class="c1"># continue, the rest is for handling trial data</span>
                     <span class="k">continue</span>
 
 
@@ -1043,7 +1117,7 @@
                         <span class="c1"># find row with this trial number if it exists</span>
                         <span class="c1"># this will return a list of rows with matching trial_num.</span>
                         <span class="c1"># if it&#39;s empty, we didn&#39;t receive a TRIAL_END and should create a new row</span>
-                        <span class="n">other_row</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">trial_table</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;trial_num == {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;trial_num&#39;</span><span class="p">]))]</span>
+                        <span class="n">other_row</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">trial_table</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;trial_num == </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;trial_num&#39;</span><span class="p">]))]</span>
 
                         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">other_row</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                             <span class="c1"># proceed to fill the row below</span>
@@ -1052,7 +1126,7 @@
                         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">other_row</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                             <span class="c1"># update the row and continue so we don&#39;t double write</span>
                             <span class="c1"># have to be in the middle of iteration to use update()</span>
-                            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">trial_table</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;trial_num == {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;trial_num&#39;</span><span class="p">])):</span>
+                            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">trial_table</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;trial_num == </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;trial_num&#39;</span><span class="p">])):</span>
                                 <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                                     <span class="n">row</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
                                 <span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
@@ -1061,7 +1135,7 @@
                         <span class="k">else</span><span class="p">:</span>
                             <span class="c1"># we have more than one row with this trial_num.</span>
                             <span class="c1"># shouldn&#39;t happen, but we dont&#39; want to throw any data away</span>
-                            <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;Found multiple rows with same trial_num: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;trial_num&#39;</span><span class="p">]))</span>
+                            <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;Found multiple rows with same trial_num: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;trial_num&#39;</span><span class="p">]))</span>
                             <span class="c1"># continue just for data conservancy&#39;s sake</span>
                             <span class="n">trial_row</span><span class="o">.</span><span class="n">append</span><span class="p">()</span>
 
@@ -1073,7 +1147,7 @@
                             <span class="n">trial_row</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
                         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
                             <span class="c1"># TODO: Logging here</span>
-                            <span class="ne">Warning</span><span class="p">(</span><span class="s2">&quot;Data dropped: key: {}, value: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+                            <span class="ne">Warning</span><span class="p">(</span><span class="s2">&quot;Data dropped: key: </span><span class="si">{}</span><span class="s2">, value: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
 
                 <span class="c1"># TODO: Or if all the values have been filled, shouldn&#39;t need explicit TRIAL_END flags</span>
                 <span class="k">if</span> <span class="s1">&#39;TRIAL_END&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -1083,7 +1157,7 @@
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graduation</span><span class="p">:</span>
                         <span class="c1"># set our graduation flag, the terminal will get the rest rolling</span>
                         <span class="n">did_graduate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graduation</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">trial_row</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">did_graduate</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">did_graduate</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">did_graduate</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
                 <span class="c1"># always flush so that our row iteration routines above will find what they&#39;re looking for</span>
@@ -1091,7 +1165,7 @@
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="c1"># TODO: Get logger and log this</span>
                 <span class="c1"># we shouldn&#39;t throw any exception in this thread, just log it and move on</span>
-                <span class="k">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
@@ -1111,11 +1185,24 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;END&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
             <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;Data thread did not exit&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Subject.get_trial_data"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.get_trial_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_trial_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.to_csv"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.to_csv">[docs]</a>    <span class="k">def</span> <span class="nf">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;current&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+        <span class="c1"># TODO: Jonny just scratching out temporarily, doesn&#39;t have all features implemented</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_trial_data</span><span class="p">(</span><span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;Subject </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">dataframe saved to:</span><span class="se">\n</span><span class="s2"> </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">========================</span>
+<span class="s2">N Trials:   </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">N Sessions: </span><span class="si">{}</span><span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">unique</span><span class="p">())))</span></div>
+
+
+
+<div class="viewcode-block" id="Subject.get_trial_data"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.get_trial_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_trial_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">what</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get trial data from the current task.</span>
 
@@ -1127,6 +1214,11 @@
 <span class="sd">                * list of two integers eg. [0, 5], an inclusive range of steps.</span>
 <span class="sd">                * anything else, eg. &#39;all&#39;: all steps.</span>
 
+<span class="sd">            what (str): What should be returned?</span>
+
+<span class="sd">                * &#39;data&#39; : Dataframe of requested steps&#39; trial data</span>
+<span class="sd">                * &#39;variables&#39;: dict of variables *without* loading data into memory</span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            :class:`pandas.DataFrame`: DataFrame of requested steps&#39; trial data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1135,7 +1227,7 @@
         <span class="c1"># step= [n1, n2] is from step n1 to n2 inclusive</span>
         <span class="c1"># step= &#39;all&#39; or anything that isn&#39;t an int or a list is all steps</span>
         <span class="n">h5f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_hdf</span><span class="p">()</span>
-        <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;/data/{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_name</span><span class="p">)</span>
+        <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;/data/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_name</span><span class="p">)</span>
         <span class="n">group</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">group_name</span><span class="p">)</span>
         <span class="n">step_groups</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">_v_children</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
@@ -1147,27 +1239,85 @@
                     <span class="k">break</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">step_groups</span><span class="p">):</span>
-                <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;You provided a step number ({}) greater than the number of steps in the subjects assigned protocol: ()&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">step_groups</span><span class="p">)))</span>
+                <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;You provided a step number (</span><span class="si">{}</span><span class="s1">) greater than the number of steps in the subjects assigned protocol: ()&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">step_groups</span><span class="p">)))</span>
             <span class="n">step_groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">step_groups</span><span class="p">[</span><span class="n">step</span><span class="p">]]</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># since step names have S##_ prepended in the hdf5 file,</span>
+            <span class="c1"># but we want to be able to call them by their human readable name,</span>
+            <span class="c1"># have to make sure we have the right form</span>
+            <span class="n">_step_groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">step_groups</span> <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="n">step</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_step_groups</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">_step_groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">step_groups</span> <span class="k">if</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">s</span><span class="p">]</span>
+            <span class="n">step_groups</span> <span class="o">=</span> <span class="n">_step_groups</span>
+
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="n">step_groups</span> <span class="o">=</span> <span class="n">step_groups</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">step</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span><span class="nb">int</span><span class="p">(</span><span class="n">step</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="n">step_groups</span> <span class="o">=</span> <span class="n">step_groups</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">step</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span><span class="nb">int</span><span class="p">(</span><span class="n">step</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">_step_groups</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">a_step</span> <span class="ow">in</span> <span class="n">step</span><span class="p">:</span>
+                    <span class="n">step_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">step_groups</span> <span class="k">if</span> <span class="n">s</span><span class="o">==</span><span class="n">a_step</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">step_name</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">step_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">step_groups</span> <span class="k">if</span> <span class="n">a_step</span> <span class="ow">in</span> <span class="n">s</span><span class="p">]</span>
+                    <span class="n">_step_groups</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">step_name</span><span class="p">)</span>
+
+                <span class="n">step_groups</span> <span class="o">=</span> <span class="n">_step_groups</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;step groups:&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">step_groups</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">step_key</span> <span class="ow">in</span> <span class="n">step_groups</span><span class="p">:</span>
             <span class="n">step_n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">step_key</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="c1"># beginning of keys will be &#39;S##&#39;</span>
             <span class="n">step_tab</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">_v_children</span><span class="p">[</span><span class="n">step_key</span><span class="p">]</span><span class="o">.</span><span class="n">_v_children</span><span class="p">[</span><span class="s1">&#39;trial_data&#39;</span><span class="p">]</span>
-            <span class="n">step_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">step_tab</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-            <span class="n">step_df</span><span class="p">[</span><span class="s1">&#39;step&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">step_n</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">return_df</span> <span class="o">=</span> <span class="n">return_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_df</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
-                <span class="n">return_df</span> <span class="o">=</span> <span class="n">step_df</span>
+            <span class="k">if</span> <span class="n">what</span> <span class="o">==</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span>
+                <span class="n">step_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">step_tab</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+                <span class="n">step_df</span><span class="p">[</span><span class="s1">&#39;step&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">step_n</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">return_data</span> <span class="o">=</span> <span class="n">return_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_df</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+                    <span class="n">return_data</span> <span class="o">=</span> <span class="n">step_df</span>
+
+            <span class="k">elif</span> <span class="n">what</span> <span class="o">==</span> <span class="s2">&quot;variables&quot;</span><span class="p">:</span>
+                <span class="n">return_data</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">return_data</span><span class="p">[</span><span class="n">step_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">step_tab</span><span class="o">.</span><span class="n">coldescrs</span>
+
 
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">return_df</span></div>
+        <span class="k">return</span> <span class="n">return_data</span></div>
+
+<div class="viewcode-block" id="Subject.apply_along"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.apply_along">[docs]</a>    <span class="k">def</span> <span class="nf">apply_along</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">along</span><span class="o">=</span><span class="s1">&#39;session&#39;</span><span class="p">,</span> <span class="n">step</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">h5f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_hdf</span><span class="p">()</span>
+        <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;/data/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_name</span><span class="p">)</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">group_name</span><span class="p">)</span>
+        <span class="n">step_groups</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">_v_children</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">along</span> <span class="o">==</span> <span class="s2">&quot;session&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">step</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># find the last trial step with data</span>
+                <span class="k">for</span> <span class="n">step_name</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">step_groups</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">group</span><span class="o">.</span><span class="n">_v_children</span><span class="p">[</span><span class="n">step_name</span><span class="p">]</span><span class="o">.</span><span class="n">trial_data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;NROWS&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">step_groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">step_name</span><span class="p">]</span>
+                        <span class="k">break</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">step_groups</span><span class="p">):</span>
+                    <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s1">&#39;You provided a step number (</span><span class="si">{}</span><span class="s1">) greater than the number of steps in the subjects assigned protocol: ()&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">step</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">step_groups</span><span class="p">)))</span>
+                <span class="n">step_groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">step_groups</span><span class="p">[</span><span class="n">step</span><span class="p">]]</span>
+
+            <span class="k">for</span> <span class="n">step_key</span> <span class="ow">in</span> <span class="n">step_groups</span><span class="p">:</span>
+                <span class="n">step_n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">step_key</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>  <span class="c1"># beginning of keys will be &#39;S##&#39;</span>
+                <span class="n">step_tab</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">_v_children</span><span class="p">[</span><span class="n">step_key</span><span class="p">]</span><span class="o">.</span><span class="n">_v_children</span><span class="p">[</span><span class="s1">&#39;trial_data&#39;</span><span class="p">]</span>
+                <span class="n">step_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">step_tab</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+                <span class="n">step_df</span><span class="p">[</span><span class="s1">&#39;step&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">step_n</span>
+                <span class="k">yield</span> <span class="n">step_df</span></div>
 
 
-<div class="viewcode-block" id="Subject.get_step_history"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.get_step_history">[docs]</a>    <span class="k">def</span> <span class="nf">get_step_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_history</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+
+
+
+<div class="viewcode-block" id="Subject.get_step_history"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.get_step_history">[docs]</a>    <span class="k">def</span> <span class="nf">get_step_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_history</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets a dataframe of step numbers, timestamps, and step names</span>
 <span class="sd">        as a coarse view of training status.</span>
@@ -1191,10 +1341,10 @@
                                       <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;name&#39;</span><span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">)</span>
 
             <span class="n">step_df</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">step_df</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">],</span>
-                                                  <span class="n">format</span><span class="o">=</span><span class="s1">&#39;%y%m</span><span class="si">%d</span><span class="s1">-%H%M%S&#39;</span><span class="p">)</span>
+                                                  <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%y%m</span><span class="si">%d</span><span class="s1">-%H%M%S&#39;</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;/data/{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_name</span><span class="p">)</span>
+            <span class="n">group_name</span> <span class="o">=</span> <span class="s2">&quot;/data/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_name</span><span class="p">)</span>
             <span class="n">group</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">group_name</span><span class="p">)</span>
             <span class="n">step_groups</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">_v_children</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
@@ -1225,7 +1375,7 @@
                      <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="n">step_name</span>
                     <span class="p">})</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">return_df</span> <span class="o">=</span> <span class="n">return_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_df</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                    <span class="n">return_df</span> <span class="o">=</span> <span class="n">return_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_df</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
                     <span class="n">return_df</span> <span class="o">=</span> <span class="n">step_df</span>
 
@@ -1234,7 +1384,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">step_df</span></div>
 
-<div class="viewcode-block" id="Subject.get_timestamp"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.get_timestamp">[docs]</a>    <span class="k">def</span> <span class="nf">get_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simple</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.get_timestamp"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.get_timestamp">[docs]</a>    <span class="k">def</span> <span class="nf">get_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simple</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># type: (bool) -&gt; str</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Makes a timestamp.</span>
@@ -1257,7 +1407,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Subject.get_weight"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.get_weight">[docs]</a>    <span class="k">def</span> <span class="nf">get_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="n">include_baseline</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.get_weight"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.get_weight">[docs]</a>    <span class="k">def</span> <span class="nf">get_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="n">include_baseline</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets start and stop weights.</span>
 
@@ -1282,15 +1432,15 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">weights</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight_table</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="n">column</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                    <span class="n">weights</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+                    <span class="n">weights</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">weight_table</span><span class="o">.</span><span class="n">colnames</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">weights</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight_table</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="n">column</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                    <span class="n">weights</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+                    <span class="n">weights</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="k">if</span> <span class="n">include_baseline</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">include_baseline</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">baseline</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">h5f</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">_v_attrs</span><span class="p">[</span><span class="s1">&#39;baseline_mass&#39;</span><span class="p">])</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -1318,14 +1468,14 @@
         <span class="n">h5f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_hdf</span><span class="p">()</span>
         <span class="n">weight_table</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">weights</span>
         <span class="c1"># there should only be one matching row since it includes seconds</span>
-        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">weight_table</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s1">&#39;date == b&quot;{}&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">date</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">weight_table</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s1">&#39;date == b&quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">date</span><span class="p">)):</span>
             <span class="n">row</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
             <span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">close_hdf</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Subject.update_weights"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.update_weights">[docs]</a>    <span class="k">def</span> <span class="nf">update_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject.update_weights"><a class="viewcode-back" href="../../../autopilot.core.subject.html#autopilot.core.subject.Subject.update_weights">[docs]</a>    <span class="k">def</span> <span class="nf">update_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Store either a starting or stopping mass.</span>
 
@@ -1337,13 +1487,13 @@
 <span class="sd">            stop (float): Mass after running task in grams.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">h5f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_hdf</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">weight_row</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">row</span>
-            <span class="n">weight_row</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">(</span><span class="n">simple</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">weight_row</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">(</span><span class="n">simple</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">weight_row</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
             <span class="n">weight_row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
             <span class="n">weight_row</span><span class="o">.</span><span class="n">append</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">stop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">stop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># TODO: Make this more robust - don&#39;t assume we got a start weight</span>
             <span class="n">h5f</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">stop</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">stop</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1356,7 +1506,7 @@
 <span class="sd">        Increase the current step by one, unless it is the last step.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">)</span><span class="o">&lt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span>
-            <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;Tried to graduate from the last step!</span><span class="se">\n</span><span class="s1"> Task has {} steps and we are on {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+            <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;Tried to graduate from the last step!</span><span class="se">\n</span><span class="s1"> Task has </span><span class="si">{}</span><span class="s1"> steps and we are on </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
             <span class="k">return</span>
 
         <span class="c1"># increment step, update_history should handle the rest</span>

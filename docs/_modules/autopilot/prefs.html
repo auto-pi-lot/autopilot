@@ -22,21 +22,11 @@
   <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../',
-              VERSION:'0.2',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -45,6 +35,7 @@
   
   <link rel="stylesheet" href="../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 
@@ -70,9 +61,6 @@
             <a href="../../index.html" class="icon icon-home"> Autopilot
           
 
-          
-            
-            <img src="../../_static/autopilot_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -154,7 +142,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide.task.html">Writing a Task</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#the-task-class">The <code class="docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#the-task-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../guide.task.html#params">PARAMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../guide.task.html#data">Data</a></li>
@@ -175,7 +163,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#additional-prefs">Additional Prefs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#id1">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#id5">Initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#the-child-task">The Child Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
@@ -343,6 +331,7 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span> <span class="k">as</span> <span class="n">odict</span>
 
 <span class="n">prefdict</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -356,7 +345,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        fn (str, dict): a path to `prefs.json` or a dictionary of preferences</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pfile</span><span class="p">:</span>
             <span class="n">prefs</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">pfile</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -365,7 +354,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">prefs</span><span class="p">,</span> <span class="nb">dict</span><span class="p">))</span>
     <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">prefs</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">prefs</span><span class="p">)</span>
         <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;prefs must return a dict&#39;</span><span class="p">)</span>
 
     <span class="c1"># Get the current git hash</span>
@@ -384,7 +373,7 @@
         <span class="n">prefs</span><span class="p">[</span><span class="s1">&#39;PORT_CALIBRATION&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cal_fns</span>
     <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cal_raw</span><span class="p">):</span>
         <span class="c1"># aka raw calibration results exist but no fit has been computed</span>
-        <span class="n">luts</span> <span class="o">=</span> <span class="n">compute_calibration</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">cal_raw</span><span class="p">,</span> <span class="n">do_return</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">luts</span> <span class="o">=</span> <span class="n">compute_calibration</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">cal_raw</span><span class="p">,</span> <span class="n">do_return</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cal_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">calf</span><span class="p">:</span>
             <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">luts</span><span class="p">,</span> <span class="n">calf</span><span class="p">)</span>
         <span class="n">prefs</span><span class="p">[</span><span class="s1">&#39;PORT_CALIBRATION&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">luts</span>
@@ -438,7 +427,7 @@
         <span class="n">env</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SYSTEMROOT&#39;</span><span class="p">,</span> <span class="s1">&#39;PATH&#39;</span><span class="p">]:</span>
             <span class="n">v</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">env</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
         <span class="c1"># LANGUAGE is used on win32</span>
         <span class="n">env</span><span class="p">[</span><span class="s1">&#39;LANGUAGE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;C&#39;</span>
@@ -456,10 +445,10 @@
     <span class="k">return</span> <span class="n">GIT_REVISION</span></div>
 
 
-<div class="viewcode-block" id="compute_calibration"><a class="viewcode-back" href="../../autopilot.prefs.html#autopilot.prefs.compute_calibration">[docs]</a><span class="k">def</span> <span class="nf">compute_calibration</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">calibration</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">do_return</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="compute_calibration"><a class="viewcode-back" href="../../autopilot.prefs.html#autopilot.prefs.compute_calibration">[docs]</a><span class="k">def</span> <span class="nf">compute_calibration</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">calibration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">do_return</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
     <span class="c1"># FIXME: UGLY HACK - move this function to another module</span>
-    <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+    <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
     <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">linregress</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">calibration</span><span class="p">:</span>
@@ -504,6 +493,69 @@
 <span class="c1"># null values of params that every agent should have</span>
 <span class="k">if</span> <span class="s1">&#39;AGENT&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
     <span class="n">add</span><span class="p">(</span><span class="s1">&#39;AGENT&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<span class="n">BASE_PREFS</span> <span class="o">=</span> <span class="n">odict</span><span class="p">({</span>
+    <span class="s1">&#39;AGENT&#39;</span>      <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;Agent type&quot;</span><span class="p">,</span> <span class="s2">&quot;choices&quot;</span><span class="p">:(</span><span class="s2">&quot;PILOT&quot;</span><span class="p">,</span> <span class="s2">&quot;TERMINAL&quot;</span><span class="p">,</span> <span class="s2">&quot;CHILD&quot;</span><span class="p">)},</span>
+    <span class="s1">&#39;NAME&#39;</span>       <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span><span class="s2">&quot;Agent Name:&quot;</span><span class="p">},</span>
+    <span class="s1">&#39;BASEDIR&#39;</span>    <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span><span class="s2">&quot;Base Directory:&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span><span class="s2">&quot;~/autopilot&quot;</span><span class="p">},</span>
+    <span class="s1">&#39;PUSHPORT&#39;</span>   <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span><span class="s2">&quot;Push Port - Router port used by the Terminal or upstream agent:&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span><span class="s2">&quot;5560&quot;</span><span class="p">},</span>
+    <span class="s1">&#39;MSGPORT&#39;</span>    <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span><span class="s2">&quot;Message Port - Router port used by this agent to receive messages:&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span><span class="s2">&quot;5565&quot;</span><span class="p">},</span>
+    <span class="s1">&#39;TERMINALIP&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span><span class="s2">&quot;Terminal IP:&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span><span class="s2">&quot;192.168.0.100&quot;</span><span class="p">},</span>
+    <span class="s1">&#39;LOGLEVEL&#39;</span>   <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;Log Level:&quot;</span><span class="p">,</span> <span class="s2">&quot;choices&quot;</span><span class="p">:(</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">),</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">},</span>
+    <span class="s1">&#39;CONFIG&#39;</span>     <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;System Configuration&quot;</span><span class="p">,</span> <span class="s2">&quot;choices&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;pigpio&quot;</span><span class="p">,</span> <span class="s1">&#39;jackd&#39;</span><span class="p">,</span> <span class="s1">&#39;psychopy&#39;</span><span class="p">),</span> <span class="s2">&quot;multiselect&quot;</span><span class="p">:</span><span class="kc">True</span><span class="p">}</span>
+<span class="p">})</span>
+
+<span class="n">LINEAGE_PREFS</span> <span class="o">=</span> <span class="n">odict</span><span class="p">({</span>
+<span class="s1">&#39;LINEAGE&#39;</span><span class="p">:</span>     <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;Are we a parent or a child?&quot;</span><span class="p">,</span> <span class="s2">&quot;choices&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span> <span class="s2">&quot;PARENT&quot;</span><span class="p">,</span> <span class="s2">&quot;CHILD&quot;</span><span class="p">),</span> <span class="s2">&quot;multiselect&quot;</span><span class="p">:</span><span class="kc">True</span><span class="p">},</span>
+<span class="s1">&#39;CHILDID&#39;</span>    <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span><span class="s2">&quot;Child ID:&quot;</span><span class="p">,</span> <span class="s2">&quot;depends&quot;</span><span class="p">:(</span><span class="s2">&quot;LINEAGE&quot;</span><span class="p">,</span> <span class="s2">&quot;PARENT&quot;</span><span class="p">)},</span>
+<span class="s1">&#39;PARENTID&#39;</span>   <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span><span class="s2">&quot;Parent ID:&quot;</span><span class="p">,</span> <span class="s2">&quot;depends&quot;</span><span class="p">:(</span><span class="s2">&quot;LINEAGE&quot;</span><span class="p">,</span> <span class="s2">&quot;CHILD&quot;</span><span class="p">)},</span>
+<span class="s1">&#39;PARENTIP&#39;</span>   <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span><span class="s2">&quot;Parent IP:&quot;</span><span class="p">,</span> <span class="s2">&quot;depends&quot;</span><span class="p">:(</span><span class="s2">&quot;LINEAGE&quot;</span><span class="p">,</span><span class="s2">&quot;CHILD&quot;</span><span class="p">)},</span>
+<span class="s1">&#39;PARENTPORT&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span><span class="s2">&quot;Parent Port:&quot;</span><span class="p">,</span> <span class="s2">&quot;depends&quot;</span><span class="p">:(</span><span class="s2">&quot;LINEAGE&quot;</span><span class="p">,</span> <span class="s2">&quot;CHILD&quot;</span><span class="p">)},</span>
+<span class="p">})</span>
+<span class="c1">#</span>
+<span class="c1"># HARDWARE_PREFS = odict({</span>
+<span class="c1">#             &#39;HARDWARE&#39;:{</span>
+<span class="c1">#                 &#39;POKES&#39;:{</span>
+<span class="c1">#                     &#39;L&#39;:self.add(nps.TitleText, name=&quot;HARDWARE - POKES - L&quot;, value=&quot;24&quot;),</span>
+<span class="c1">#                     &#39;C&#39;: self.add(nps.TitleText, name=&quot;HARDWARE - POKES - C&quot;, value=&quot;8&quot;),</span>
+<span class="c1">#                     &#39;R&#39;: self.add(nps.TitleText, name=&quot;HARDWARE - POKES - R&quot;, value=&quot;10&quot;),</span>
+<span class="c1">#                 },</span>
+<span class="c1">#                 &#39;LEDS&#39;: {</span>
+<span class="c1">#                     &#39;L&#39;: self.add(nps.TitleText, name=&quot;HARDWARE - LEDS - L&quot;, value=&quot;[11, 13, 15]&quot;),</span>
+<span class="c1">#                     &#39;C&#39;: self.add(nps.TitleText, name=&quot;HARDWARE - LEDS - C&quot;, value=&quot;[22, 18, 16]&quot;),</span>
+<span class="c1">#                     &#39;R&#39;: self.add(nps.TitleText, name=&quot;HARDWARE - LEDS - R&quot;, value=&quot;[19, 21, 23]&quot;),</span>
+<span class="c1">#                 },</span>
+<span class="c1">#                 &#39;PORTS&#39;: {</span>
+<span class="c1">#                     &#39;L&#39;: self.add(nps.TitleText, name=&quot;HARDWARE - PORTS - L&quot;, value=&quot;31&quot;),</span>
+<span class="c1">#                     &#39;C&#39;: self.add(nps.TitleText, name=&quot;HARDWARE - PORTS - C&quot;, value=&quot;33&quot;),</span>
+<span class="c1">#                     &#39;R&#39;: self.add(nps.TitleText, name=&quot;HARDWARE - PORTS - R&quot;, value=&quot;37&quot;),</span>
+<span class="c1">#                 },</span>
+<span class="c1">#                 &#39;FLAGS&#39;: {</span>
+<span class="c1">#                     &#39;L&#39;: self.add(nps.TitleText, name=&quot;HARDWARE - FLAGS - L&quot;, value=&quot;&quot;),</span>
+<span class="c1">#                     &#39;R&#39;: self.add(nps.TitleText, name=&quot;HARDWARE - FLAGS - R&quot;, value=&quot;&quot;)</span>
+<span class="c1">#                 }},</span>
+<span class="c1">#             &#39;PULLUPS&#39;: self.add(nps.TitleText, name=&quot;Pins to pull up on boot&quot;,</span>
+<span class="c1">#                                 value=&quot;[7]&quot;),</span>
+<span class="c1">#             &#39;PULLDOWNS&#39;: self.add(nps.TitleText, name=&quot;Pins to pull down on boot&quot;,</span>
+<span class="c1">#                                   value=&quot;[]&quot;),</span>
+<span class="c1">#     &#39;AUDIO&#39;:{</span>
+<span class="c1">#         &#39;AUDIOSERVER&#39;: self.add(nps.TitleSelectOne, max_height:4, &quot;default&quot;: [0, ], name: &quot;Audio Server:&quot;, &quot;default&quot;</span>
+<span class="c1"># s: [&quot;jack&quot;, &quot;pyo&quot;, &quot;none&quot;], scroll_exit: True},</span>
+<span class="c1">#</span>
+<span class="c1"># &#39;NCHANNELS&#39;  : {&quot;text&quot;: &quot;N Audio Channels&quot;, &quot;default&quot;: &quot;1&quot;},</span>
+<span class="c1">#     &#39;OUTCHANNELS&#39;: {&quot;text&quot;: &quot;List of output ports for jack audioserver to connect to&quot;, &quot;default&quot;: &quot;[1]&quot;},</span>
+<span class="c1">#     &#39;FS&#39;         : {&quot;text&quot;: &quot;Audio Sampling Rate&quot;, &quot;default&quot;: &quot;192000&quot;},</span>
+<span class="c1">#     &#39;JACKDSTRING&#39;: {&quot;text&quot;   : &quot;Command used to launch jackd - note that \&#39;fs\&#39; will be replaced with above FS&quot;,</span>
+<span class="c1">#                     &quot;default&quot;: &quot;jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -n3 -s &amp;&quot;},</span>
+<span class="c1">#     }</span>
+<span class="c1"># })</span>
+<span class="c1">#</span>
+<span class="c1"># PILOT_PREFS = BASE_PREFS</span>
+<span class="c1"># PILOT_PREFS.update(odict({</span>
+<span class="c1">#     &#39;PIGPIOMASK&#39; : {&quot;text&quot;:&quot;Binary mask to enable pigpio to access pins according to the BCM numbering&quot;, &quot;default&quot;:&quot;1111110000111111111111110000&quot;},</span>
+<span class="c1">#                           }))</span>
+<span class="c1">#</span>
+<span class="c1"># TERMINAL_PREFS = BASE_PREFS</span>
 
 </pre></div>
 
