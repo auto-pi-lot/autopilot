@@ -1,0 +1,208 @@
+.. _changelog_v030:
+
+
+v0.3.0 (Februrary DATE, 2020)
+-----------------------------
+
+Major Updates
+~~~~~~~~~~~~~
+
+* **Python 3** - We've finally made it to Python 3! Specifically we have brought Autopilot up to compatibility with Python 3.8.
+  I will *not attempt to keep Autopilot compatible with Python 2*, but no decision has been made about compatibility
+  with other versions of Python 3. Until then, expect that Autopilot will attempt to keep up with major version changes.
+  The switch also let up update PySide (Qt library used for the GUI) to PySide2, which uses Qt5 and has a whole raft of other improvements.
+* **Continuous Data Handling** - The :class:`~.core.subject.Subject` class and :mod:`~.core.networking` modules have been improved
+  to handle continuous data (eg. streaming data, generally non-trialwise or non-event-sampled data). Continuous data
+  can be set in a Task description either with a ``tables`` column descriptor as trial data is, but also can be set as
+  ``'infer'``, for which the :class:`~.core.subject.Subject` class will wait until it receives the first data and
+  automatically create a ``tables`` column depending on its type and shape. While previously we intended to nudge users
+  to be explicit about declaring their data, this was necessary to allow for data that might be variable in type and shape
+  to be included in a Task -- eg. it should be possible to record video data without needing to specify the resolution
+  or bit depth as a hardcoded parameter in a task class. I have come to like type inference, and may make it a general
+  practice for all types of data. That would potentially allow tasks to be written without explicitly declaring the
+  data that they produce at all, but I haven't decided if that's a good thing or not yet.
+* The **GPIO engine** has been rebuilt, relying more on ``pigpio``'s function interface. This means that GPIO timing is now
+  ~microsecond precise, important for reward delivery, LED flashing, and a number of other basic infrastructural needs.
+  The reorganization of hardware modules resulted in general :class:`~.gpio.GPIO`, :class:`~.gpio.Digital_In`
+  and :class:`~.gpio.Digital_Out` metaclasses, making common operations like setting polarity, triggers, and pullup/down resistors
+  much easier.
+
+Minor Updates
+~~~~~~~~~~~~~
+
+* **Logging** level is now set from ``prefs``, so where before, eg. every message through the networking modules would be logged to stdout,
+  now only warnings and exceptions are. This gives a surprisingly large performance boost.
+
+    * Logging has also been much improved in :mod:`~.core.networking` modules, where rather than an awkward ``do_logging`` flag
+      that was used to avoid logging performance-critical events like streaming data, logging is controlled by log level throughout the system.
+      By default, logging of most messages is set at ``debug`` level so they don't drown out important messages in the logs as they used to.
+
+* **Networking** modules now only deserialize messages if they are the final recipient, saving lots of processing time -- particularly
+  with streamed arrays. :class:`.Message` objects also only re-serialize messages if they have been changed.
+  Message structure has been changed such that serialized messages are now of the general format::
+
+    [sender,
+     (optional) intermediate_node_1, intermediate_node_2, ...
+     final_recipient,
+     message_contents]
+
+
+* Configuration will continue to be a point of improvement, but a few minor updates were made:
+
+    * ``prefs.CONFIG`` will be used to signal multiple, potentially overlapping agent configurations, each of which
+      may have their own system dependencies, external daemons, etc. Eg. a Pilot could
+      be configured to play audio (which requires a jackd daemon to be started before Autopilot) and video
+      (which requires Autopilot to be started in a X session). Checks of ``prefs.CONFIG`` are now ``in`` rather than
+      ``==`` to reflect that.
+    * ``prefs.PINS`` was renamed ``prefs.HARDWARE``, and now allows hardware to be configured with dictionaries rather than
+      integers only. Initially ``PINS`` was meant to just contain pin numbering for GPIO objects, but having a single point of
+      hardware configuration is preferable. :meth:`.Task.init_hardware` now respects all parameters set in ``prefs``.
+
+* Throughout the code, minimal ``get_this`` type methods have begun to be replaced with ``@property`` attributes. This is because a) I
+  love them and think they are magical, but b) will also be building Autopilot's closed-loop infrastructure around a Qt-style
+  signal/slot architecture that wraps ``@property`` attributes so they can be ``.connected`` to one another easily.
+* Previously it was possible to control presentation by *groups* of stimuli, but now it is possible to control the
+  presentation frequency of individual stimuli.
+* ``PySide2`` has proper support for CSS Stylesheets, so the design of Autopilot's GUI has been marginally improved,
+  a process that will continue in the ceaseless quest for aesthetic perfection.
+* Several setup routines have been added to make installation of opencv, pyspin, etc. easier. I also wrote a routine
+  to :func:`~.setup.request_helpers.download_box` files from a URL, which is mysteriously hard to do.
+* The :ref:`todo` page now reflects the full ambition of Autopilot, where before this vision was contained only in
+  the whitepaper_ and a disorganized plaintext_ file in the repo.
+* The ``make serve`` command for the docs now uses sphinx-autobuild_, so they are rebuilt as they are changed and the page auto-reloads
+* The :class:`~.subject.Subject` class can now export trial data :meth:`~.Subject.to_csv`. A very minor update, but
+  one that is the first in a number of planned improvements to data export.
+* I have also opened up a message board in google groups to make feature requests and discuss use and development, hope to see you there :)
+
+  `<https://groups.google.com/forum/#!forum/autopilot-users>`_
+
+
+
+New Features
+~~~~~~~~~~~~
+
+* **HARDWARE** has been substantially refactored to give objects an appropriate inheritance structure. This substantially
+  reduces effort duplication across hardware objects and makes a bunch of obvious capabilities available to all of them,
+  for example all hardware objects are now network (:meth:`~.hardware.Hardware.init_networking`) and logging (:meth:`~.hardware.Hardware.init_logging`)
+  capable.
+
+    * **Cameras**: The :class:`.cameras.Camera_CV` class allows webcams/other simple cameras to be accessed through OpenCV,
+      and the :class:`.cameras.Camera_Spinnaker` class allows FLIR and other cameras to be accessed through the Spinnaker_ SDK.
+      Cameras are capable of encoding videos locally (with x264), streaming frames over the network, and making
+      acquired frames available to other objects on the same computer. The :class:`~.cameras.Camera_Spinnaker` class
+      provides simple ``@property`` setter/getter methods for common parameters, but also makes all ``PySpin`` attributes
+      available to the user with its :meth:`~.Camera_Spinnaker.get` and :meth:`~.Camera_Spinnaker.set` methods.
+      The :class:`.cameras.Camera` metaclass is written so that new camera types can be added by overriding a few methods. A
+      new :class:`~.tasks.children.Video_Child` can be used to run a camera on a Child agent.
+    * **9DOF Motion Sensor**: The :class:`.i2c.I2C_9DOF` class can use the LSM9DS1 sensor to collect accelerometer, magnetometer, and
+      gyroscopic data to compute unambiguous position and orientation information. We will be including calibration and
+      computation routines that make it easier to extract properties of interest -- eg. computing vertical motion by
+      combining readings from the three sensors.
+    * **Temperature Sensor**: The :class:`.i2c.MLX90640` class can use the MLX90640_ sensor to measure temperature. The
+      sensor is 32x24px, which the class can :meth:`~.i2c.MLX90640.interpolate`. The class also allows frames to be integrated
+      and averaged over time, substantially reducing noise. I modified the driver library to enable capture at the full
+      64fps on the Raspberry Pi.
+
+* **NETWORKING** modules can stream continuous data better in a few ways:
+
+    * :class:`~.networking.Net_Node` modules were given a :meth:`~.Net_Node.get_stream` method that lets objects, well,
+      stream data. Specifically, they are given a :class:`queue.Queue` to shovel data into, which is then picked up by a
+      dedicated :class:`zmq.Socket` in its own thread, which handles batching, serialization, and load balancing. Streamed
+      messages are batched (ie. contain multiple messages), but behave like normal message when received -- they are split and
+      contain an ``inner_key`` that is used to call the ``listen`` with each message (see :meth:`~.Networking.Station.l_stream`).
+    * :mod:`~.networking` objects also now compress arrays-in-transit with the superfast blosc_ compression library.
+      This increases their throughput dramatically, as many data streams in neuroscience are relatively low-entropy
+      (eg. the pixels in a video of a mostly-white arena are mostly unchanged frame-to-frame and are thus highly compressible).
+      See the :meth:`.Message._serialize_numpy` and :meth:`.Message._deserialize_numpy` methods.
+
+* **STIMULI** - The :class:`~.jackclient.JackClient` can now play continuous sounds rather than discrete sounds. An example
+  can be found in the :class:`~.nafc.Nafc_Gap` task, which plays continuous white noise. All sounds now have a
+  :meth:`~Jack_Sound.play_continuous` method, which continually dumps samples in a cycle into a queue for
+  the :class:`~.jackclient.JackClient`. The continuous sound will be interrupted if another sound has its :meth:`.Jack_Sound.play`
+  method called, but the continuous sound will resume seamlessly even if number of samples in the played sound aren't a
+  multiple of the jack buffer size. We use this for gaps in noise (using the new :class:`~.sounds.Gap` class),
+  which we have confirmed are sample-accurate.
+
+* **UI & VIZ**
+
+    * A :class:`~.plots.Video` window has been created to display streaming video. The :meth:`.Terminal_Networking.l_continuous` method
+      meters frames such that even if high-speed video is being acquired, frames are only sent at a rate of ``prefs.DRAWFPS``.
+      The :class:`~.plots.Video` class uses the :class:`~.plots.ImageItem_TimedUpdate` object, a slight modification of
+      :class:`pyqtgraph.ImageItem`, that calls its ``update`` method according to a :class:`PySide2.QtCore.QTimer`.
+    * A :attr:`~.Terminal.plots_menu` menu has been added to the Terminal, and a GUI dialog (:class:`.gui.Psychometric`)
+      has been added to create simple psychometric curves with the :mod:`.viz.psychometric` module, which uses altair_.
+      Plans for developing visualization are described in :ref:`todo`.
+    * A general :func:`.gui.pop_dialog` function simplifies displaying messages to the user using the Terminal UI. This was an initial step
+      towards improving status/error reporting from other agents, further detailed in :ref:`todo`.
+
+
+
+
+Bugfixes
+~~~~~~~~
+
+* Some objects, particularly several :py:mod:`.gui` objects, had the old `mouse`/`mice` terminology updated to `subject`/`subjects`.
+* :class:`.Net_Node` objects were only implicitly destroyed by their :attr:`~.Net_Node.loop_thread``s being set as daemons, and
+  would thus occasionally hang and keep the program open but unresponsive. They are now explicitly closed with a
+  :meth:`~.Net_Node.release` method which ends the threaded loop by setting the :attr:`~.Net_Node.closing` event.
+* Embarassingly, :class:`.Pilot` objects were not prevented from running multiple tasks at a time. This led to some very
+  confusing and hard-to-debug problems, as well as frequent conflicts over hardware access and resources. Typically what would
+  happen is the Terminal would send a ``START`` message to begin a task, and if it wouldn't received a message receipt
+  quickly enough would resend it, resulting in two tasks being started -- but this would happen whenever two ``START`` messages were sent
+  to a pilot. This was fixed with a simple check of :attr:`.Pilot.state` before a task is initialized. Similar bugs were fixed in
+  :class:`~.plots.Plot` objects.
+* The :class:`~.core.subject.Subject` class would sometimes fail to get and increment the trial session. This has been fixed
+  by saving the session number as an attribute in the ``info`` node.
+* The :meth:`~.Terminal.update_protocols` method didn't report which subjects had their protocols updated, and so if there was some
+  exception when setting new protocols it happened silently, making it so a user would never know their task was never updated.
+  This was fixed with a noisier protocol update method for the Subject class and by displaying a list of subjects that were updated
+  after the method is called.
+* Correction trials were being calculated incorrectly by the :class:`~.managers.Stim_Manager`, such that rather than
+  only repeating a stimulus *if the subject got the previous trial incorrect,* the stimulus was always repeated at least once.
+
+
+Code Structure
+~~~~~~~~~~~~~~
+
+* Modified versions of external libraries have been added as git submodules in `autopilot/external`.
+* Requirements files have been split out to better differentiate between different agents and use-cases.
+  eg. requirements for Terminal agents are in ``requirements_terminal.txt``, requirements for build the docs are in ``requirements_docs.txt``, etc.
+  This is a temporary arrangement, as a future design goal is restructuring setup routines so that they can flexibly install components as-needed (see :ref:`todo`)
+* ``autopilot.core.hardware`` has been refactored into its own module, :mod:`autopilot.hardware`, and split by device type, currently...
+
+    * :mod:`autopilot.cameras`
+    * :mod:`autopilot.gpio` - devices that use the GPIO pins for standard digital I/O logic
+    * :mod:`autopilot.i2c` - devices that use the GPIO pins for I2C
+    * :mod:`autopilot.usb`
+
+
+External Libraries
+~~~~~~~~~~~~~~~~~~
+
+* pigpio `<https://github.com/sneakers-the-rat/pigpio/>`_
+
+    * Added the ability to return absolute timestamps rather than system ticks.
+      pigpio typically returns 1 32-bit integer of ticks since the daemon started, absolute timestamps are 64-bit,
+      so the pigpio daemon and python interface (`pi`) were given two new methods:
+
+            * `synchronize` gets several (default 5) sets of paired timestamps and ticks using `get_sync_time`.
+              It then computes an offset for translating ticks to timestamps
+            * `ticks_to_timestamp` converts ticks to timestamps based on the offset found with `synchronize`
+            * `get_current_time` sends two requests to the daemon to get the seconds and microseconds of the complete
+              timestamp and returns an isoformatted string
+
+* mlx90640-library `<https://github.com/pimoroni/mlx90640-library>`_
+
+    * Removed building examples by default which require additional dependencies
+    * When using the raspi I2C driver, the baudrate would never be set to 1MHz, which is necessary to achieve full 64fps. This was fixed to use 1MHz by default.
+
+
+
+.. _whitepaper: https://www.biorxiv.org/content/10.1101/807693v1
+.. _plaintext: https://github.com/wehr-lab/autopilot/blob/master/notes/todo
+.. _sphinx-autobuild: https://github.com/GaretJax/sphinx-autobuild
+.. _altair: https://altair-viz.github.io/
+.. _blosc: http://python-blosc.blosc.org/
+.. _Spinnaker: https://www.flir.com/products/spinnaker-sdk/
+.. _LSM9DS1: https://www.sparkfun.com/products/13944
+.. _MLX90640: https://www.melexis.com/en/product/MLX90640/Far-Infrared-Thermal-Sensor-Array

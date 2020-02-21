@@ -64,6 +64,9 @@
           
 
           
+            
+            <img src="_static/autopilot_logo.svg" class="logo" alt="Logo"/>
+          
           </a>
 
           
@@ -228,8 +231,23 @@
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">To-Do</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">To-Do</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#completed-goals">Completed Goals</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-3">Version 0.3</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (Februrary DATE, 2020)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#major-updates">Major Updates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#new-features">New Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#bugfixes">Bugfixes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#code-structure">Code Structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#external-libraries">External Libraries</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-2">Version 0.2</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="changelog/v0.2.0.html">v0.2.0 (October 26, 2019)</a></li>
 </ul>
@@ -300,10 +318,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="to-do">
+  <p>Development Roadmap, Minor To-dos, and all future plans :)</p>
+<div class="section" id="to-do">
 <span id="todo"></span><h1>To-Do<a class="headerlink" href="#to-do" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><p>Upgrade to PySide 2 &amp; Qt5</p></li>
 <li><p>Split the ncurses setup functions into multiple tabs, have them load exiting prefs, change values depending on config values (eg. selection Configuration : “VISUAL” should remove audio options)</p></li>
 <li><dl class="simple">
 <dt>Unify “Parameters” across Autopilot</dt><dd><ul>
@@ -314,7 +332,23 @@
 </dl>
 </li>
 <li><p>Finalize continuous data handling in the <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> class.</p></li>
+<li><p>Sound Calibration</p></li>
 </ul>
+<ul class="simple">
+<li><p>Setup routines and prefs editing</p></li>
+<li><p>Visualization &amp; data server</p></li>
+<li><p>Error reporting, status checking for pilots</p></li>
+<li><p>Mesh Networking</p></li>
+<li><p>Parameter updating in subjects via GUI</p></li>
+<li><p>Parameter updating in plot objects – generally more interactive plot customization</p></li>
+</ul>
+<div class="section" id="completed-goals">
+<h2>Completed Goals<a class="headerlink" href="#completed-goals" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="changelog/v0.3.0.html#changelog-v030"><span class="std std-ref">v0.3.0 (Februrary DATE, 2020)</span></a> - Upgrade to Python 3</p></li>
+<li><p><a class="reference internal" href="changelog/v0.3.0.html#changelog-v030"><span class="std std-ref">v0.3.0 (Februrary DATE, 2020)</span></a> - Upgrade to PySide 2 &amp; Qt5</p></li>
+</ul>
+</div>
 </div>
 
 

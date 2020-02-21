@@ -153,6 +153,9 @@ class Task(object):
                     elif isinstance(hw_args, list):
                         for p in hw_args:
                             self.pin_id[p] = pin
+                    elif isinstance(hw_args, dict):
+                        if 'pin' in hw_args.keys():
+                            self.pin_id[hw_args['pin']] = pin 
 
                 except:
                     self.logger.exception("Pin could not be instantiated - Type: {}, Pin: {}".format(type, pin))

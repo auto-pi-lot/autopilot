@@ -17,7 +17,7 @@ import sys
 import re
 from time import time
 import pdb
-from mock import MagicMock
+#from mock import MagicMock
 sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../..'))
 
@@ -141,7 +141,7 @@ pygments_style = None
 if try_theme == 'rtd':
     html_theme = 'sphinx_rtd_theme'
     html_style = 'css/autopilot_theme.css'
-    html_logo = 'autopilot_logo.svg'
+    html_logo = '../_images/autopilot_logo.svg'
 elif try_theme == 'bootstrap':
     html_theme = 'bootstrap'
     html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()

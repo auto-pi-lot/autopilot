@@ -230,16 +230,8 @@ class Camera(Hardware):
             'START': self.l_start,
             'STOP': self.l_stop
         }
-        self.node = Net_Node(
-            self.name,
-            upstream=prefs.NAME,
-            port=prefs.MSGPORT,
-            listens=self.listens,
-            instance=False,
-            **kwargs
-            #upstream_ip=prefs.TERMINALIP,
-            #daemon=False
-        )
+
+        self.init_networking(listens=self.listens)
 
         if hasattr(prefs, 'SUBJECT'):
             subject = prefs.SUBJECT

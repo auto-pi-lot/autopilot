@@ -1344,7 +1344,7 @@ class Net_Node(object):
         self.init_networking()
 
     def __del__(self):
-        self.closing.set()
+        self.release()
 
     def init_networking(self):
         """

@@ -29,8 +29,7 @@ try:
         0: pigpio.FALLING_EDGE,
         False: pigpio.FALLING_EDGE,
         'B': pigpio.EITHER_EDGE,
-        (0,1): pigpio.EITHER_EDGE,
-        [0,1]: pigpio.EITHER_EDGE
+        (0,1): pigpio.EITHER_EDGE
     }
 
     INVERSE_TRIGGER_MAP = {

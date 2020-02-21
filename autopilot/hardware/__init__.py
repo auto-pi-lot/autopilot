@@ -36,6 +36,7 @@ Warning:
 
 
 from autopilot import prefs
+from autopilot.core.networking import Net_Node
 from datetime import datetime
 import os
 import logging
@@ -106,6 +107,8 @@ class Hardware(object):
         self.logger = None
         self.log_handler = None
         self.log_formatter = None
+        self.listens = {}
+        self.node = None
         self.init_logging()
 
     def release(self):
@@ -117,7 +120,7 @@ class Hardware(object):
 
         When not redefined, a warning is given.
         """
-        Warning('The release method was not overridden by the subclass!')
+        Exception('The release method was not overridden by the subclass!')
 
     def assign_cb(self, trigger_fn):
         """
@@ -128,7 +131,7 @@ class Hardware(object):
         When not redefined, a warning is given.
         """
         if self.is_trigger:
-            Warning("The assign_cb method was not overridden by the subclass!")
+            Exception("The assign_cb method was not overridden by the subclass!")
 
     def get_name(self):
         """
@@ -171,7 +174,21 @@ class Hardware(object):
         self.logger.setLevel(loglevel)
         self.logger.info('{} Logging Initiated'.format(self.name))
 
+    def init_networking(self, listens=None, **kwargs):
 
+        if not listens:
+            listens = self.listens
+
+        self.node = Net_Node(
+            self.name,
+            upstream=prefs.NAME,
+            port=prefs.MSGPORT,
+            listens=listens,
+            instance=False,
+            **kwargs
+            #upstream_ip=prefs.TERMINALIP,
+            #daemon=False
+        )
 
 
 

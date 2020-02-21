@@ -64,6 +64,9 @@
           
 
           
+            
+            <img src="_static/autopilot_logo.svg" class="logo" alt="Logo"/>
+          
           </a>
 
           
@@ -228,8 +231,23 @@
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#completed-goals">Completed Goals</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-3">Version 0.3</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (Februrary DATE, 2020)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#major-updates">Major Updates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#new-features">New Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#bugfixes">Bugfixes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#code-structure">Code Structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#external-libraries">External Libraries</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-2">Version 0.2</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="changelog/v0.2.0.html">v0.2.0 (October 26, 2019)</a></li>
 </ul>
@@ -1289,11 +1307,6 @@ an error to call this method if the child process is still running.</p>
 </tr>
 </tbody>
 </table>
-<dl class="attribute">
-<dt id="autopilot.core.plots.ImageItem_TimedUpdate.staticMetaObject">
-<code class="sig-name descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#autopilot.core.plots.ImageItem_TimedUpdate.staticMetaObject" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="method">
 <dt id="autopilot.core.plots.ImageItem_TimedUpdate.setImage">
 <code class="sig-name descname">setImage</code><span class="sig-paren">(</span><em class="sig-param">image=None</em>, <em class="sig-param">autoLevels=None</em>, <em class="sig-param">**kargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/plots.html#ImageItem_TimedUpdate.setImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.plots.ImageItem_TimedUpdate.setImage" title="Permalink to this definition">¶</a></dt>
@@ -1328,6 +1341,11 @@ reduces aliasing. If autoDownsample is not specified, then ImageItem will
 choose whether to downsample the image based on its size.</p>
 </div></blockquote>
 </dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.core.plots.ImageItem_TimedUpdate.staticMetaObject">
+<code class="sig-name descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#autopilot.core.plots.ImageItem_TimedUpdate.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="autopilot.core.plots.ImageItem_TimedUpdate.update_img">

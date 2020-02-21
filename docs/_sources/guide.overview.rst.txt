@@ -14,6 +14,12 @@ These sections are stubs to be expanded.
 Concepts and Terms in Autopilot
 ===============================
 
+.. glossary::
+
+    term 1
+        term 1 test text
+
+
 
 
 Program Structure Overview

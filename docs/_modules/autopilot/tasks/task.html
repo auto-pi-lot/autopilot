@@ -62,6 +62,9 @@
           
 
           
+            
+            <img src="../../../_static/autopilot_logo.svg" class="logo" alt="Logo"/>
+          
           </a>
 
           
@@ -226,8 +229,23 @@
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">To-Do</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">To-Do</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#completed-goals">Completed Goals</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../changelog/index.html#version-0-3">Version 0.3</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../changelog/v0.3.0.html">v0.3.0 (Februrary DATE, 2020)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#major-updates">Major Updates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#new-features">New Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#bugfixes">Bugfixes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#code-structure">Code Structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#external-libraries">External Libraries</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../../changelog/index.html#version-0-2">Version 0.2</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../changelog/v0.2.0.html">v0.2.0 (October 26, 2019)</a></li>
 </ul>
@@ -452,6 +470,9 @@
                     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hw_args</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">hw_args</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">pin_id</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">pin</span>
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hw_args</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="s1">&#39;pin&#39;</span> <span class="ow">in</span> <span class="n">hw_args</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">pin_id</span><span class="p">[</span><span class="n">hw_args</span><span class="p">[</span><span class="s1">&#39;pin&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pin</span> 
 
                 <span class="k">except</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Pin could not be instantiated - Type: </span><span class="si">{}</span><span class="s2">, Pin: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">pin</span><span class="p">))</span></div>

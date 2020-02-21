@@ -8,7 +8,7 @@ npyscreen
 scipy
 tornado
 pigpio
-pyqtgraph>=1.11.0
+git+https://github.com/pyqtgraph/pyqtgraph@develop
 inputs
 altair
 scikit-learn
@@ -17,3 +17,10 @@ tqdm
 inputs
 bokeh
 colorcet
+PySide2
+autodocsumm
+sphinx_rtd_theme
+tables
+blosc
+scikit-video
+sphinx-autobuild
