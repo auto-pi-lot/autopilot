@@ -198,6 +198,8 @@ class Station(multiprocessing.Process):
         is instantiated, given an ID and the rest of its attributes.
 
         Args:
+            flags:
+            repeat:
             to (str): The identity of the socket this message is to
             key (str): The type of message - used to select which method the receiver
                 uses to process this message.
@@ -243,6 +245,7 @@ class Station(multiprocessing.Process):
         :meth:`~.Station.repeat` unless `repeat` is False.
 
         Args:
+            flags:
             to (str): The identity of the socket this message is to
             key (str): The type of message - used to select which method the receiver
                 uses to process this message.
@@ -329,6 +332,7 @@ class Station(multiprocessing.Process):
         :meth:`~.Station.repeat` unless `repeat` is False.
 
         Args:
+            flags:
             to (str): The identity of the socket this message is to. If not included,
                 sent to :meth:`~.Station.push_id` .
             key (str): The type of message - used to select which method the receiver
@@ -1610,6 +1614,8 @@ class Net_Node(object):
         the rest of its attributes.
 
         Args:
+            flags:
+            repeat:
             to (str): The identity of the socket this message is to
             key (str): The type of message - used to select which method the receiver
                 uses to process this message.

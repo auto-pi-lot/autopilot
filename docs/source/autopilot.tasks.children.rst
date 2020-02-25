@@ -1,16 +1,9 @@
-gui
+children
 ======================
 
 
-.. automodule:: autopilot.core.gui
+.. automodule:: autopilot.tasks.children
     :members:
     :undoc-members:
     :show-inheritance:
     :autosummary:
-
-
-
-
-
-
-

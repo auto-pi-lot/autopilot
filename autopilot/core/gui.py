@@ -8,7 +8,7 @@ Note:
 
 These classes implement the GUI used by the Terminal.
 
-The GUI is built using `PySide <https://pypi.org/project/PySide/>`_, a Python wrapper around Qt4.
+The GUI is built using `PySide2 <https://doc.qt.io/qtforpython/>`_, a Python wrapper around Qt5.
 
 These classes are all currently used only by the :class:`~.autopilot.core.terminal.Terminal`.
 
@@ -496,8 +496,6 @@ class Pilot_Button(QtWidgets.QPushButton):
         Minor window dressing to call the :py:meth:`~.Pilot_Button.start_fn` with the
         appropriate pilot, subject, and whether the task is starting or stopping
 
-        Args:
-            toggled (bool): T/F this button is now toggled down (starting the task) or vice versa.
         """
         # If we're stopped, start, and vice versa...
         current_subject = self.subject_list.currentItem().text()
@@ -2739,9 +2737,9 @@ def pop_dialog(message, msg_type="info", details="", buttons=['Ok']):
     """Convenience function to pop a :class:`.QtGui.QDialog window to display a message.
 
     Args:
+        details:
         message (str): message to be displayed
         msg_type (str): "info" (default), "question", "warning", or "error" to use :meth:`.QtGui.QMessageBox.information`, :meth:`.QtGui.QMessageBox.question`, :meth:`.QtGui.QMessageBox.warning`, or :meth:`.QtGui.QMessageBox.error`, respectively
-        header (str): A string elaborating on the message
         buttons (list): A list specifying which :class:`.QtGui.QMessageBox.StandardButton` s to display. Use a string matching the button name, eg. "Ok" gives :class:`.QtGui.QMessageBox.Ok`
 
 

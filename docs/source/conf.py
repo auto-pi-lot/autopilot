@@ -39,9 +39,9 @@ copyright = u'2019, Jonny Saunders'
 author = u'Jonny Saunders'
 
 # The short X.Y version
-version = u'0.2'
+version = u'0.3'
 # The full version, including alpha/beta/rc tags
-release = u'0.2'
+release = u'0.3.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -66,7 +66,8 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
     'sphinx.ext.inheritance_diagram',
-    #'sphinx.ext.autosummary',
+    'sphinx.ext.graphviz',
+    'sphinx.ext.autosummary',
     #'sphinx_automodapi.automodapi',
     'autodocsumm',   # https://github.com/Chilipp/autodocsumm
     #'sphinxcontrib.fulltoc',
@@ -81,7 +82,8 @@ if try_theme == 'rtd':
 napoleon_google_docstring = True
 napoleon_numpy_docstring = False
 napoleon_use_param = True
-napoleon_use_ivar = True
+napoleon_use_ivar = False
+napoleon_include_init_with_doc = False
 napoleon_include_private_with_doc = True
 napoleon_include_special_with_doc = True
 
@@ -89,18 +91,25 @@ autoclass_content = "both"
 autodoc_member_order = "bysource"
 #autodoc_default_flags = ['members']
 #autodoc_mock_imports = ['tables', 'PySide', 'pyo', 'jack', 'pyqtgraph']
+autodata_content = "both"
 
 autodoc_default_options = {
+    'members': True,
     'member-order': 'bysource',
-    'exclude-members': '__doc__',
+    # 'exclude-members': '__doc__',
+    'undoc-members': False,
+    'show-inheritance': True,
     'autosummary': True
 }
 
+# testing something from sklearn
+add_module_names = False
+
 #automodsumm_writereprocessed = True
-numpydoc_show_class_members = False
-automodsumm_inherited_members = False
-automodsumm_writereprocessed = False
-automodapi_toctreedirnm = 'api'
+# numpydoc_show_class_members = False
+# automodsumm_inherited_members = False
+# automodsumm_writereprocessed = False
+# automodapi_toctreedirnm = 'api'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -282,8 +291,8 @@ epub_exclude_files = ['search.html']
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'python': ('https://docs.python.org/2', None),
-                       'PySide': ('http://pyside.github.io/docs/pyside/', None),
+intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
+                       'PySide2': ('https://doc.qt.io/qtforpython/PySide2/', None),
                        'tables': ('https://pytables.readthedocs.io/en/latest/', None),
                        'pandas': ('http://pandas.pydata.org/pandas-docs/stable/', None),
                        'zmq': ('https://pyzmq.readthedocs.io/en/latest/', None),
@@ -426,7 +435,8 @@ def fix_html_links(app, exception):
 
 
 
-
+def test_grouper(app, what, name, obj, section, parent):
+    pdb.set_trace()
 
 
 def setup(app):

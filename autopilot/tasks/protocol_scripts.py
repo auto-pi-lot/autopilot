@@ -20,8 +20,8 @@ def manystep_speech(token_dir, out_fn):
         * many steps that introduce new tokens pairwise.
 
     Args:
+        out_fn (str): where to write the task .json file
         token_dir (str): where the speech tokens are
-        write_dir (str): where to write the task .json file
 
     """
 

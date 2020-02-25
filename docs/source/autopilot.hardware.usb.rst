@@ -1,16 +1,9 @@
-gui
+usb
 ======================
 
 
-.. automodule:: autopilot.core.gui
+.. automodule:: autopilot.hardware.usb
     :members:
     :undoc-members:
     :show-inheritance:
     :autosummary:
-
-
-
-
-
-
-

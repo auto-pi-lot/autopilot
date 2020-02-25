@@ -78,7 +78,7 @@ class Hardware(object):
     even if not explicitly.
 
     Attributes:
-        trigger (bool): Is this object a discrete event input device?
+        is_trigger (bool): Is this object a discrete event input device?
             or, will this device be used to trigger some event? If `True`,
             will be given a callback by :class:`.Task`, and :meth:`.assign_cb`
             must be redefined.

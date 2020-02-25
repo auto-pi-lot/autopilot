@@ -123,7 +123,7 @@ def git_version(repo_dir):
         unicode: git commit hash.
     """
     def _minimal_ext_cmd(cmd):
-        # type: (List[str]) -> str
+        # type: (list[str]) -> str
         # construct minimal environment
         env = {}
         for k in ['SYSTEMROOT', 'PATH']:
@@ -147,7 +147,16 @@ def git_version(repo_dir):
 
 
 def compute_calibration(path=None, calibration=None, do_return=False):
+    """
 
+    Args:
+        path:
+        calibration:
+        do_return:
+
+    Returns:
+
+    """
     # FIXME: UGLY HACK - move this function to another module
     import pandas as pd
     from scipy.stats import linregress
@@ -180,7 +189,7 @@ def compute_calibration(path=None, calibration=None, do_return=False):
 
     else:
         # do write
-        lut_fn = os.path.join(prefs.BASEDIR, 'port_calibration_fit.json')
+        lut_fn = os.path.join(globals()['BASEDIR'], 'port_calibration_fit.json')
         with open(lut_fn, 'w') as lutf:
             json.dump(luts, lutf)
 

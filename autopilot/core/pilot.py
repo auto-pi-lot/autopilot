@@ -488,6 +488,7 @@ class Pilot:
         # compute curve to compute duration from desired volume
 
         Args:
+            calibration:
             path: If present, use calibration file specified, otherwise use default.
         """
 

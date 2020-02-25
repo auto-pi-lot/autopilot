@@ -370,6 +370,7 @@ class Digital_Out(GPIO):
         """
 
         Args:
+            unit:
             id (str): shorthand key used to call this series with :meth:`.series`
             values:
             durations:
@@ -405,6 +406,9 @@ class Digital_Out(GPIO):
         Otherwise, this method calls :meth:`.store_script` and runs it.
 
         Args:
+            finish_off:
+            repeat:
+            unit:
             id (str, int): ID of the script, can be either the shorthand string id supplied to :meth:`.store_script` or the int returned by pigpio if you have it for some reason.
             values (list, tuple): Either a list of (value, duration_)
             durations:

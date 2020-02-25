@@ -24,3 +24,5 @@ tables
 blosc
 scikit-video
 sphinx-autobuild
+
+# also need graphviz available so 'dot' command in env

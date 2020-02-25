@@ -29,11 +29,13 @@ This documentation is very young and is very much a work in progress! Please `su
    :caption: API Documentation:
 
    Core Modules <autopilot.core>
+   Hardware <autopilot.hardware>
    Tasks <autopilot.tasks>
    Stimuli <autopilot.stim>
    Visualization Tools <autopilot.viz>
    Setup <autopilot.setup>
    Prefs <autopilot.prefs>
+   External <autopilot.external>
 
 
 .. toctree::

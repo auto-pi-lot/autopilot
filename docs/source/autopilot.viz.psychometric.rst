@@ -1,16 +1,9 @@
-gui
+psychometric
 ======================
 
 
-.. automodule:: autopilot.core.gui
+.. automodule:: autopilot.viz.psychometric
     :members:
     :undoc-members:
     :show-inheritance:
     :autosummary:
-
-
-
-
-
-
-

@@ -1,16 +1,9 @@
-gui
+gpio
 ======================
 
 
-.. automodule:: autopilot.core.gui
+.. automodule:: autopilot.hardware.gpio
     :members:
     :undoc-members:
     :show-inheritance:
     :autosummary:
-
-
-
-
-
-
-

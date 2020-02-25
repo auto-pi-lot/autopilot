@@ -341,7 +341,7 @@ class Proportional(Stim_Manager):
         Instantiate sound objects similarly to :class:`.Stim_Manager`, just organizes them into groups.
 
         Args:
-            sound_dict (tuple, list): an iterator like::
+            sound_stim (tuple, list): an iterator like::
                 (
                  {'name':'group_name',
                   'frequency': 0.2,
