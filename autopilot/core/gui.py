@@ -1803,6 +1803,18 @@ class Bandwidth_Test(QtWidgets.QDialog):
 
 
     def send_test(self, rate, payload, n_msg, confirm):
+        """
+        Send a message describing the test to each of the pilots in :attr:`Bandwidth_Test.test_pilots`
+
+        Args:
+            rate (int): Rate of message sending in Hz
+            payload (int): Size of message payload in bytes
+            n_msg (int): Number of messages to send
+            confirm (bool): If True, use message confirmation, if False no confirmation.
+
+        Returns:
+
+        """
         self.finished_pilots = []
         self.messages = []
 
@@ -1821,6 +1833,17 @@ class Bandwidth_Test(QtWidgets.QDialog):
 
     @gui_event
     def process_test(self, rate, n_msg, confirm):
+        """
+        Process the results of the test and update the plot window.
+
+        Reads message results from :attr:`~Bandwidth_Test.messages`, appends computed results to
+        :attr:`~Bandwidth_Test.results`, and starts the next test if any remain.
+
+        Args:
+            rate (int): Rate of current test in Hz
+            n_msg (int): Number of expected messages in this test
+            confirm (bool): Whether message confirmations were enabled for this test.
+        """
 
         # start a timer that continues the test if messages are dropped
         try:
@@ -2247,6 +2270,9 @@ class Pilot_Ports(QtWidgets.QWidget):
 
 
     def update_volumes(self):
+        """
+        Store the result of a volume calibration test in :attr:`~Pilot_Ports.volumes`
+        """
         port = self.sender().objectName()
 
         if port in self.open_params.keys():

@@ -175,6 +175,16 @@ class Hardware(object):
         self.logger.info('{} Logging Initiated'.format(self.name))
 
     def init_networking(self, listens=None, **kwargs):
+        """
+        Spawn a :class:`.Net_Node` to :attr:`Hardware.node` for streaming or networked command
+
+        Args:
+            listens (dict): Dictionary mapping message keys to handling methods
+            **kwargs: Passed to :class:`.Net_Node`
+
+        Returns:
+
+        """
 
         if not listens:
             listens = self.listens

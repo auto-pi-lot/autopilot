@@ -133,6 +133,7 @@ class I2C_9DOF(Hardware):
     GYROSCALE_2000DPS = (0b11 << 3)  # +/- 2000 degrees/s rotation
 
     def __init__(self, *args, **kwargs):
+        super(I2C_9DOF, self).__init__(*args, **kwargs)
 
         # Initialize the pigpio connection
         self.pig = pigpio.pi()
@@ -163,11 +164,11 @@ class I2C_9DOF(Hardware):
 
     @property
     def accel_range(self):
-        """The accelerometer range.  Must be a value of:
-          - ACCELRANGE_2G
-          - ACCELRANGE_4G
-          - ACCELRANGE_8G
-          - ACCELRANGE_16G
+        """The accelerometer range.  Must be one of:
+          - :attr:`I2C_9DOF.ACCELRANGE_2G`
+          - :attr:`I2C_9DOF.ACCELRANGE_4G`
+          - :attr:`I2C_9DOF.ACCELRANGE_8G`
+          - :attr:`I2C_9DOF.ACCELRANGE_16G`
         """
         reg = self.pig.i2c_read_byte_data(self.accel, self._REGISTER_CTRL_REG6_XL)
         return (reg & 0b00011000) & 0xFF
@@ -195,10 +196,10 @@ class I2C_9DOF(Hardware):
     @property
     def mag_gain(self):
         """The magnetometer gain.  Must be a value of:
-          - MAGGAIN_4GAUSS
-          - MAGGAIN_8GAUSS
-          - MAGGAIN_12GAUSS
-          - MAGGAIN_16GAUSS
+          - :attr:`I2C_9DOF.MAGGAIN_4GAUSS`
+          - :attr:`I2C_9DOF.MAGGAIN_8GAUSS`
+          - :attr:`I2C_9DOF.MAGGAIN_12GAUSS`
+          - :attr:`I2C_9DOF.MAGGAIN_16GAUSS`
         """
         reg = self.pig.i2c_read_byte_data(self.magnet, self._REGISTER_CTRL_REG2_M)
         return (reg & 0b01100000) & 0xFF
@@ -210,7 +211,7 @@ class I2C_9DOF(Hardware):
         reg = self.pig.i2c_read_byte_data(self.magnet, self._REGISTER_CTRL_REG2_M)
         reg = (reg & ~(0b01100000)) & 0xFF
         reg |= val
-        self.i2c_write_byte_data(self.magnet, self._REGISTER_CTRL_REG2_M, reg)
+        self.pig.i2c_write_byte_data(self.magnet, self._REGISTER_CTRL_REG2_M, reg)
         if val == self.MAGGAIN_4GAUSS:
             self._mag_mgauss_lsb = self._MAG_MGAUSS_4GAUSS
         elif val == self.MAGGAIN_8GAUSS:
@@ -224,9 +225,9 @@ class I2C_9DOF(Hardware):
     @property
     def gyro_scale(self):
         """The gyroscope scale.  Must be a value of:
-          - GYROSCALE_245DPS
-          - GYROSCALE_500DPS
-          - GYROSCALE_2000DPS
+          - :attr:`I2C_9DOF.GYROSCALE_245DPS`
+          - :attr:`I2C_9DOF.GYROSCALE_500DPS`
+          - :attr:`I2C_9DOF.GYROSCALE_2000DPS`
         """
         reg = self.pig.i2c_read_byte_data(self.accel, self._REGISTER_CTRL_REG1_G)
         return (reg & 0b00011000) & 0xFF
@@ -267,9 +268,13 @@ class I2C_9DOF(Hardware):
 
     @property
     def magnetic(self):
-        """The magnetometer X, Y, Z axis values as a 3-tuple of
-                gauss values.
-                """
+        """
+        The magnetometer X, Y, Z axis values as a 3-tuple of gauss values.
+
+        Returns:
+            (tuple): x, y, z gauss values
+
+        """
         (s, b) = self.pig.i2c_read_i2c_block_data(self.magnet, 0x80 | self._REGISTER_OUT_X_L_M, 6)
 
         if s >= 0:
@@ -278,6 +283,10 @@ class I2C_9DOF(Hardware):
 
     @property
     def gyro(self):
+        """
+        The gyroscope X, Y, Z axis values as a 3-tuple of
+        degrees/second values.
+        """
         (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_G, 6)
 
         if s>=0:
@@ -286,6 +295,10 @@ class I2C_9DOF(Hardware):
 
     @property
     def temperature(self):
+        """
+        Returns:
+            float: Temperature in Degrees C
+        """
         (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_TEMP_OUT_L, 2)
         buf = buffer(b)
         temp = ((buf[1] << 8) | buf[0]) >> 4
@@ -300,11 +313,52 @@ class I2C_9DOF(Hardware):
         return val
 
 class MLX90640(Camera):
+    """
+    A MLX90640 Temperature sensor.
+
+    This device uses I2C, so must be connected accordingly:
+
+    - VCC: 3.3V (pin 2)
+    - Ground: (any ground pin
+    - SDA: I2C.1 SDA (pin 3)
+    - SCL: I2C.1 SCL (pin 5)
+
+    Uses a modified version of the `MLX90640 Library <https://github.com/sneakers-the-rat/mlx90640-library>`_
+    that is capable of outputting 64fps. You must install the library separately, see the
+    ``setup_mlx90640.sh`` script.
+
+    Capture works a bit differently from other Cameras -- the :meth:`~MLX90640.capture_init` method spawns a
+    :meth:`~MLX90640._threaded_capture` thread, which continually puts frames in the :attr:`~MLX90640._frames` array
+    which serves as a ring buffer. The :meth:`~MLX90640._grab` method then awaits the :attr:`~MLX90640._grab_event` to
+    be set by the capture thread, and when it is set returns the mean across frames of the ring buffer.
+
+    .. note::
+        The setup script modifies the systemwide i2c baudrate to 1MHz, which may interfere with other
+        I2C devices. It can be returned to 400kHz (default) by editing ``/config/boot.txt`` to read
+        ``dtparam=i2c_arm_baudrate=400000``
+
+    """
     type='MLX90640'
 
-    ALLOWED_FPS = (1, 2, 4, 8, 16, 32, 64)
+    ALLOWED_FPS = (1, 2, 4, 8, 16, 32, 64) #: FPS must be one of these
+    SHAPE_SENSOR = (32,24) #: (H, W) Output shape of this sensor is always the same. May differ from :attr:`MLX90640.shape` if interpolate >1
 
     def __init__(self, fps=64, integrate_frames = 64, interpolate = 3, **kwargs):
+        """
+        Args:
+            fps (int): Acquisition framerate, must be one of :attr:`MLX90640.ALLOWED_FPS`
+            integrate_frames (int): Number of frames to average over
+            interpolate (int): Interpolation multiplier -- 3 "increases the resolution" 3x
+            **kwargs: passed to :class:`.Camera`
+
+        Attributes:
+            shape (tuple): :attr:`~MLX90640.SHAPE_SENSOR
+            integrate_frames (int): Number of frames to average over
+            interpolate (int): Interpolation multiplier -- 3 "increases the resolution" 3x
+            _grab_event (:class:`threading.Event`): capture thread sets every time it gets a frame,
+                _grab waits every time, keeps us from returning same frame twice
+
+        """
         if not MLX90640_LIB:
             ImportError('the MLX90640 library was not found, please use the setup_mlx90640.sh script or install manually')
 
@@ -313,7 +367,7 @@ class MLX90640(Camera):
         # frame shape from the sensor is always the same
         self.shape_sensor = (32, 24)
         # but output shape is dependent on interpolation
-        self.shape = (32*interpolate, 24*interpolate)
+        self.shape = (self.SHAPE_SENSOR[0]*interpolate, self.SHAPE_SENSOR[1]*interpolate)
 
 
         self._frame_idx = 0
@@ -376,15 +430,26 @@ class MLX90640(Camera):
 
 
     def init_cam(self):
+        """
+        Set the camera object to use our :attr:`MLX90640.fps`
+        """
         return mlx_cam.setup(self.fps)
 
     def capture_init(self):
+        """
+        Spawn a :meth:`~MLX90640._threaded_capture` thread
+        """
         self._cap_thread = threading.Thread(target=self._threaded_capture)
         self._cap_thread.setDaemon(True)
         self._cap_thread.start()
 
 
     def _threaded_capture(self):
+        """
+        Continually capture frames into the :attr:`~MLX90640._frames` ring buffer
+
+        Stops when :attr:`~MLX90640.stopping` is set.
+        """
         while not self.stopping.is_set():
 
             # store the frame in the ringbuffer
@@ -404,6 +469,13 @@ class MLX90640(Camera):
             self._frame_idx = (self._frame_idx + 1) % self.integrate_frames
 
     def _grab(self):
+        """
+        Await the :attr:`~MLX90640._grab_event` and then average over the frames stored in
+        :attr:`~MLX90640._frames`
+
+        Returns:
+            (:class:`~numpy.ndarray`) Averaged and interpolated frame
+        """
         ret = self._grab_event.wait(1)
         if not ret:
             return None
@@ -416,16 +488,34 @@ class MLX90640(Camera):
 
         return self._timestamp(), frame
 
-    def _timestamp(self):
+    def _timestamp(self, frame=None):
+        """
+        Just gets Python timestamps for now...
+
+        Returns:
+            str: Isoformatted timestamp from datetime
+        """
         return datetime.now().isoformat()
 
     def interpolate_frame(self, frame):
+        """
+        Interpolate frame according to :attr:`~MLX90640.interpolate` using :meth:`scipy.interpolate.griddata`
+
+        Args:
+            frame (:class:`numpy.ndarray`): Frame to interpolate
+
+        Returns:
+            (:class:`numpy.ndarray`): Interpolated Frame
+        """
         return griddata(self._points,
                         frame.flatten(),
                         (self._grid_x, self._grid_y),
                         method='cubic')
 
     def release(self):
+        """
+        Stops the capture thread, cleans up the camera, and calls the superclass release method.
+        """
         self.stopping.set()
         self.cam.cleanup()
         self._cam = None
