@@ -1,0 +1,4 @@
+
+- use 'OptionList' in npyscreen for setup forms https://npyscreen.readthedocs.io/options.html
+- multi version installs here: https://packaging.python.org/guides/multi-version-installs/
+- more details on packaging: https://manikos.github.io/a-tour-on-python-packaging

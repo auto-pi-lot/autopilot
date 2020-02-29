@@ -455,6 +455,14 @@ class Nafc_Gap(Nafc):
                                  'type': 'float'}
 
     def __init__(self, noise_amplitude = 0.01, **kwargs):
+        """
+        A Mild variation of :class:`Nafc` that starts continuous white noise that plays
+        continuously while the task is active.
+
+        Args:
+            noise_amplitude (float): Multiplier used to scale amplitude of continuous noise
+            **kwargs: passed to :class:`Nafc`
+        """
 
         # Can't really have a white noise punishment when there is continuous noise
         kwargs['punish_stim'] = False
@@ -472,6 +480,9 @@ class Nafc_Gap(Nafc):
 
 
     def end(self):
+        """
+        Stop the task, ending the continuous white noise.
+        """
         self.noise.stop_continuous()
         super(Nafc_Gap, self).end()
 

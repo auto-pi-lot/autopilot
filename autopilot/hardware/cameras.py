@@ -352,9 +352,21 @@ class Camera(Hardware):
         self.streaming.set()
 
     def l_start(self, val):
+        """
+        Begin capturing by calling :meth:`Camera.capture`
+
+        Args:
+            val: unused
+        """
         self.capture()
 
     def l_stop(self, val):
+        """
+        Stop capture by calling :meth:`Camera.release`
+
+        Args:
+            val: unused
+        """
         self.release()
 
 
@@ -386,7 +398,7 @@ class Camera(Hardware):
 
     def _write_frame(self):
         """
-        Put :attr:`.frame[0]` into the :attr:`._write_q`, optionally compressing it with :func:`blosc.pack_array`
+        Put :attr:`.frame` into the :attr:`._write_q`, optionally compressing it with :func:`blosc.pack_array`
         """
         try:
             if self.blosc:
@@ -571,6 +583,13 @@ class Camera_CV(Camera):
             OpenCV must be installed to use this class! A Prebuilt opencv binary is available for the raspberry pi,
             but it doesn't take advantage of some performance-enhancements available to OpenCV. Use the ``install_opencv.sh``
             script in the setup directory to compile OpenCV with these enhancements.
+
+        If your camera isn't working, to print debugging information you can run::
+
+            echo 3 > /sys/class/video4linux/videox/dev_debug
+
+            # check logs
+            dmesg
 
         Args:
             camera_idx (int): The index of the desired camera
@@ -1551,6 +1570,14 @@ class Video_Writer(mp.Process):
             self.fps = 30
 
     def run(self):
+        """
+        Open a :class:`skvideo.io.FFmpegWriter` and begin processing frames from :attr:`~Video_Writer.q`
+
+        Should not be called by itself, overwrites the :meth:`multiprocessing.Process.run` method,
+        so should call :meth:`Video_Writer.start`
+
+        Continue encoding until 'END' put in queue.
+        """
 
         self.timestamps = []
 

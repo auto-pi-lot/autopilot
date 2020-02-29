@@ -891,6 +891,14 @@ class Subject:
             Warning('Data thread did not exit')
 
     def to_csv(self, path, task='current', step='all'):
+        """
+        Export trial data to .csv
+
+        Args:
+            path (str): output path of .csv
+            task (str, int):  not implemented, but in the future pull data from 'current' or other named task
+            step (str, int, list, tuple): Step to select, see :meth:`.Subject.get_trial_data`
+        """
         # TODO: Jonny just scratching out temporarily, doesn't have all features implemented
         df = self.get_trial_data(step=step)
         df['subject'] = self.name

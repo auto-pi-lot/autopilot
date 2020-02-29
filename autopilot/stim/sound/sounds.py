@@ -734,9 +734,11 @@ class Gap(BASE_CLASS):
 
     def __init__(self, duration, **kwargs):
         """
-
         Args:
             duration (float): duration of gap in ms
+
+        Attributes:
+            gap_zero (bool): True if duration is zero, effectively do nothing on play.
         """
         super(Gap, self).__init__()
 
@@ -754,6 +756,9 @@ class Gap(BASE_CLASS):
             self.init_sound()
 
     def init_sound(self):
+        """
+        Create and chunk an array of zeros according to :attr:`.Gap.duration`
+        """
         if self.server_type == "pyo":
             raise NotImplementedError("This sound has not been implemented for pyo sound server -- pyo is deprecated, and kept as a skeleton in the case interested programmers want to revive its use")
 
@@ -767,6 +772,11 @@ class Gap(BASE_CLASS):
         self.initialized = True
 
     def chunk(self, pad=False):
+        """
+        If gap is not duration == 0, call parent ``chunk``.
+        Args:
+            pad (bool): unused, passed to parent ``chunk``
+        """
         if not self.gap_zero:
             super(Gap, self).chunk(pad)
         else:

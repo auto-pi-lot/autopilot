@@ -1,4 +1,4 @@
-__version__ = '0.2'
+__version__ = '0.3'
 __author__  = 'Jonny Saunders <JLSaunders987@gmail.com>'
 
 import argparse
@@ -400,6 +400,15 @@ class Terminal(QtWidgets.QMainWindow):
     # Listens & inter-object methods
 
     def heartbeat(self, once=False):
+        """
+        Perioducally send an ``INIT`` message that checks the status of connected pilots
+
+        sent with frequency according to :attr:`.Terminal.heartbeat_dur`
+
+        Args:
+            once (bool): if True, do a single heartbeat but don't start a thread to do more.
+
+        """
         self.node.send('T', 'INIT', repeat=False, flags={'NOREPEAT': True})
 
         if not once:
@@ -702,6 +711,10 @@ class Terminal(QtWidgets.QMainWindow):
 
     @property
     def protocols(self):
+        """
+        Returns:
+            list: list of protocol files in ``prefs.PROTOCOLDIR``
+        """
         # get list of protocol files
         protocols = os.listdir(prefs.PROTOCOLDIR)
         protocols = [os.path.splitext(p)[0] for p in protocols if p.endswith('.json')]
@@ -762,6 +775,13 @@ class Terminal(QtWidgets.QMainWindow):
                     self.subjects[subject].update_history('step', step_name, step)
 
     def calibrate_ports(self):
+        """
+        Calibrate :class:`.hardware.gpio.Solenoid` objects.
+
+        See :class:`.gui.Calibrate_Water`.
+
+        After calibration routine, send results to pilot for storage.
+        """
 
         calibrate_window = Calibrate_Water(self.pilots)
         calibrate_window.exec_()
@@ -788,6 +808,12 @@ class Terminal(QtWidgets.QMainWindow):
             msgbox.exec_()
 
     def test_bandwidth(self):
+        """
+        Test bandwidth of Pilot connection with variable sized arrays as paylods
+
+        See :class:`.gui.Bandwidth_Test`
+
+        """
         # turn off logging while we run
         prev_networking_loglevel = self.networking.logger.level
         prev_node_loglevel = self.node.logger.level

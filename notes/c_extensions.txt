@@ -1,0 +1,1 @@
+- https://scipy-cookbook.readthedocs.io/items/C_Extensions_NumPy_arrays.html

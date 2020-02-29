@@ -20,6 +20,17 @@ from autopilot import prefs
 TASK = 'GoNoGo'
 
 class GoNoGo(Task):
+    """
+    A Visual Go/No-Go task using a :class:`.Pilot` and a :class:`.Wheel_Child`.
+
+    .. note::
+
+        This task was written as a proof-of-concept for the Autopilot manuscript,
+        and is thus underdeveloped and underdocumented, submit and issue if you would like to
+        use it yourself :)
+
+    """
+
     STAGE_NAMES = ["request", "discrim", "reinforcement"]
 
     # Class attributes

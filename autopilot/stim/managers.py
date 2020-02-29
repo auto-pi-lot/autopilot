@@ -380,6 +380,20 @@ class Proportional(Stim_Manager):
 
 
     def init_sounds_individual(self, sound_stim):
+        """
+        Initialize sounds with individually set presentation frequencies.
+
+        .. todo::
+
+            This method reflects the need for managers to have a unified schema,
+            which will be built in a future release of Autopilot.
+
+        Args:
+            sound_stim (dict): Dictionary of {'side':[sound_params]} to generate sound stimuli
+
+        Returns:
+
+        """
         self.stim_freqs = {}
         for side, sound_params in sound_stim.items():
             self.stimuli[side] = []

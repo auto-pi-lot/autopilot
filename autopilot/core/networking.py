@@ -466,6 +466,15 @@ class Station(multiprocessing.Process):
         #self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
 
     def l_stream(self, msg):
+        """
+        Reconstitute the original stream of messages and call their handling methods
+
+        The ``msg`` should contain an ``inner_key`` that indicates the key, and thus the
+        handling method.
+
+        Args:
+            msg (dict): Compressed stream sent by :meth:`Net_Node._stream`
+        """
         listen_fn = self.listens[msg.value['inner_key']]
         old_value = copy(msg.value)
         delattr(msg, 'value')
@@ -759,6 +768,10 @@ class Terminal_Station(Station):
 
 
     def start_plot_timer(self):
+        """
+        Start a timer that controls how often streamed video frames are sent to
+        :class:`.gui.Video` plots.
+        """
         self.plot_timer = threading.Thread(target=self._fps_clock)
         self.plot_timer.setDaemon(True)
         self.plot_timer.start()
@@ -871,6 +884,15 @@ class Terminal_Station(Station):
         self.send(to='P_{}'.format(msg.value['pilot']), msg=msg)
 
     def l_continuous(self, msg):
+        """
+        Handle the storage of continuous data
+
+        Forwards all data on to the Terminal's internal :class:`Net_Node`,
+        send to :class:`.Plot` according to update rate in ``prefs.DRAWFPS``
+
+        Args:
+            msg (dict): A continuous data message
+        """
 
         if not self.plot_timer:
             self.start_plot_timer()
@@ -887,14 +909,14 @@ class Terminal_Station(Station):
             self.sent_plot[msg.sender].clear()
 
 
-    def l_continuous(self, msg):
-
-        # Send through to terminal
-        msg.value.update({'continuous':True})
-        self.send('_T', 'DATA', msg.value, flags=msg.flags)
-
-        # Send to plot widget, which should be listening to "P_{pilot_name}"
-        self.send('P_{}'.format(msg.value['pilot']), 'DATA', msg.value, flags=msg.flags)
+    # def l_continuous(self, msg):
+    #
+    #     # Send through to terminal
+    #     msg.value.update({'continuous':True})
+    #     self.send('_T', 'DATA', msg.value, flags=msg.flags)
+    #
+    #     # Send to plot widget, which should be listening to "P_{pilot_name}"
+    #     self.send('P_{}'.format(msg.value['pilot']), 'DATA', msg.value, flags=msg.flags)
 
 
 
@@ -1205,11 +1227,24 @@ class Pilot_Station(Station):
         self.file_block.set()
 
     def l_continuous(self, msg):
+        """
+        Forwards continuous data sent by children back to terminal.
+
+        Continuous data sources from this pilot should be streamed directly to the terminal.
+
+        Args:
+            msg (:class:`Message`): Continuous data message
+
+        """
         if self.child:
             msg.value['pilot'] = self.parent_id
             msg.value['subject'] = self.subject
             msg.value['continuous'] = True
             self.push(to='T', key='DATA', value=msg.value, repeat=False)
+        else:
+            self.logger.warning('Received continuous data but no child found, \
+                                continuous data should be streamed directly to terminal \
+                                from pilot')
 
     def l_child(self, msg):
         """
@@ -1602,10 +1637,10 @@ class Net_Node(object):
 
         self.logger.debug('CONFIRMED MESSAGE {}'.format(value))
 
-    def l_stream(self, value):
-        listen_fn = self.listens[value['inner_key']]
-        for v in value['payload']:
-            listen_fn(v)
+    # def l_stream(self, value):
+    #     listen_fn = self.listens[value['inner_key']]
+    #     for v in value['payload']:
+    #         listen_fn(v)
 
 
     def prepare_message(self, to, key, value, repeat, flags=None):
@@ -1802,9 +1837,6 @@ class Net_Node(object):
         self.closing.set()
         self.loop.stop()
 
-class Dummy_Msg:
-    pending=False
-
 
 
 class Message(object):
@@ -2000,6 +2032,12 @@ class Message(object):
         return len(self.__dict__)
 
     def get_timestamp(self):
+        """
+        Get a Python timestamp
+
+        Returns:
+            str: Isoformatted timestamp from ``datetime``
+        """
         self.timestamp = datetime.datetime.now().isoformat()
 
     def validate(self):
@@ -2057,6 +2095,15 @@ class Message(object):
             return False
 
 def serialize_array(array):
+    """
+    Pack an array with :func:`blosc.pack_array` and serialize with :func:`base64.b64encode`
+
+    Args:
+        array (:class:`numpy.ndarray`): Array to serialize
+
+    Returns:
+        dict: {'NUMPY_ARRAY': base-64 encoded, blosc-compressed array.}
+    """
     compressed = base64.b64encode(blosc.pack_array(array))
     return {'NUMPY_ARRAY': compressed}
 

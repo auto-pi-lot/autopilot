@@ -24,5 +24,6 @@ tables
 blosc
 scikit-video
 sphinx-autobuild
+git+https://github.com/mwibrow/sphinx-sass.git
 
 # also need graphviz available so 'dot' command in env

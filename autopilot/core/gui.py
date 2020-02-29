@@ -517,6 +517,21 @@ class Pilot_Button(QtWidgets.QPushButton):
 
     @gui_event
     def set_state(self, state):
+        """
+        Set the button's appearance and state
+
+        Args:
+            state (str): one of ``('IDLE', 'RUNNING', 'STOPPING', 'DISCONNECTED')
+
+        .. todo::
+
+            There is some logic duplication in this class, ie. if the button state is changed
+            it also emits a start/stop signal to the pi, which is undesirable. This class needs
+            to be reworked.
+
+        Returns:
+
+        """
         # if we're good, do nothing.
         if state == self.state:
             return
@@ -2301,6 +2316,12 @@ class Pilot_Ports(QtWidgets.QWidget):
         #self.flowrates[port].setText("{} uL/ms".format(flowrate))
 
     def start_calibration(self):
+        """
+        Send the calibration test parameters to the :class:`.Pilot`
+
+        Sends a message with a ``'CALIBRATE_PORT'`` key, which is handled by
+        :meth:`.Pilot.l_cal_port`
+        """
         port = self.sender().objectName()
 
         # stash params at the time of starting calibration
@@ -2697,6 +2718,9 @@ class Psychometric(QtGui.QDialog):
         step_box.insertItems(0, step_list)
 
     def populate_variables(self):
+        """
+        Fill selection boxes with step and variable names
+        """
         # get step number from step box
 
         subject = self.sender().objectName()
@@ -2724,6 +2748,9 @@ class Psychometric(QtGui.QDialog):
 
 
     def check_all(self):
+        """
+        Toggle all checkboxes on or off
+        """
         # check states to know if we're toggling everything on or off
         check_states = [objs[0].checkState() for objs in self.subject_objects.values()]
 
@@ -2740,10 +2767,15 @@ class Psychometric(QtGui.QDialog):
 
     @property
     def plot_params(self):
+        """
+        Generate parameters for plot to be passed to :func:`.viz.plot_psychometric`
+
+        Returns:
+            tuple: (subject_name, step_name, x_var_name, n_trials_back)
+        """
         _plot_params = []
 
         for sub_name, objs in self.subject_objects.items():
-            print(objs)
             if objs[0].checkState():
                 _plot_params.append((
                     sub_name,

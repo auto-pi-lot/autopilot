@@ -12,12 +12,15 @@ TASK_LIST = {'2AFC':Nafc,
              'Free Water':Free_Water,
              'GoNoGo': GoNoGo,
              'Parallax': Parallax}
-             # unfinished tasks
-             # '2AFC_Wheel': Nafc_Wheel,
-             #'Gap 2AFC':Gap_2AFC}
+"""
+Link between string task names used in protocol descriptions and task classes
+"""
 
 CHILDREN_LIST = {
     'Wheel Child':Wheel_Child,
     'Video Child':Video_Child
 }
+"""
+Link between string child names used in protocol descriptions and task classes
+"""
 

@@ -359,6 +359,17 @@ class Pilot:
         pass
 
     def l_cal_port(self, value):
+        """
+        Initiate the :meth:`.calibrate_port` routine.
+
+        Args:
+            value (dict): Dictionary of values defining the port calibration to be run, including
+                - ``port`` - which port to calibrate
+                - ``n_clicks`` - how many openings should be performed
+                - ``open_dur`` - how long the valve should be open
+                - ``iti`` - 'inter-trial interval`, or how long should we wait between valve openings.
+
+        """
         port = value['port']
         n_clicks = value['n_clicks']
         open_dur = value['dur']
@@ -367,6 +378,22 @@ class Pilot:
         threading.Thread(target=self.calibrate_port,args=(port, n_clicks, open_dur, iti)).start()
 
     def calibrate_port(self, port_name, n_clicks, open_dur, iti):
+        """
+        Run port calibration routine
+
+        Open a :class:`.hardware.gpio.Solenoid` repeatedly,
+        measure volume of water dispersed, compute lookup table mapping
+        valve open times to volume.
+
+        Continuously sends progress of test with ``CAL_PROGRESS`` messages
+
+        Args:
+            port_name (str): Port name as specified in ``prefs``
+            n_clicks (int): number of times the valve should be opened
+            open_dur (int, float): how long the valve should be opened for in ms
+            iti (int, float): how long we should :func:`~time.sleep` between openings
+
+        """
         pin_num = prefs.HARDWARE['PORTS'][port_name]
         port = autopilot.hardware.gpio.Solenoid(pin_num, duration=int(open_dur))
         msg = {'click_num': 0,

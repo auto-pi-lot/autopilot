@@ -688,12 +688,29 @@ class Timer(QtWidgets.QLabel):
 
 
 class Video(QtWidgets.QWidget):
-    def __init__(self, videos, fps=None, parent=None):
+    def __init__(self, videos, fps=None):
+        """
+        Display Video data as it is collected.
+
+        Uses the :class:`ImageItem_TimedUpdate` class to do timed frame updates.
+
+        Args:
+            videos (list, tuple): Names of video streams that will be displayed
+            fps (int): if None, draw according to ``prefs.DRAWFPS``. Otherwise frequency of widget update
+
+        Attributes:
+            videos (list, tuple): Names of video streams that will be displayed
+            fps (int): if None, draw according to ``prefs.DRAWFPS``. Otherwise frequency of widget update
+            ifps (int): 1/fps, duration of frame in s
+            qs (dict): Dictionary of :class:`~queue.Queue`s in which frames will be dumped
+            quitting (:class:`threading.Event`): Signal to quit drawing
+            update_thread (:class:`threading.Thread`): Thread with target=:meth:`~.Video._update_frame`
+            layout (:class:`PySide2.QtWidgets.QGridLayout`): Widget layout
+            vid_widgets (dict): dict containing widgets for each of the individual video streams.
+        """
         super(Video, self).__init__()
 
         self.videos = videos
-        self._newframe = None
-        self.last_update = 0
 
         if fps is None:
             if hasattr(prefs, 'DRAWFPS'):
@@ -702,10 +719,12 @@ class Video(QtWidgets.QWidget):
                 self.fps = 10
         else:
             self.fps = fps
+
         self.ifps = 1.0/self.fps
 
-        # get app instance
-        self.app = QtWidgets.QApplication.instance()
+        self.layout = None
+        self.vid_widgets = {}
+
 
         #self.q = Queue(maxsize=1)
         self.qs = {}
@@ -726,14 +745,6 @@ class Video(QtWidgets.QWidget):
 
         for i, vid in enumerate(self.videos):
             vid_label = QtWidgets.QLabel(vid)
-            #rawImg = RawImageGLWidget(self)
-
-            #sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-            #sizePolicy.setHorizontalStretch(0)
-            #sizePolicy.setVerticalStretch(0)
-            #sizePolicy.setHeightForWidth(rawImg.sizePolicy().hasHeightForWidth())
-            #rawImg.setSizePolicy(sizePolicy)
-            #self.vid_widgets[vid] = rawImg
 
             # https://github.com/pyqtgraph/pyqtgraph/blob/3d3d0a24590a59097b6906d34b7a43d54305368d/examples/VideoSpeedTest.py#L51
             graphicsView= pg.GraphicsView(self)
@@ -763,6 +774,11 @@ class Video(QtWidgets.QWidget):
         self.show()
 
     def _update_frame(self):
+        """
+        Pulls frames from :attr:`.Video.qs` and feeds them to the video widgets.
+
+        Internal method, run in thread.
+        """
         last_time = 0
         this_time = 0
         while not self.quitting.is_set():
@@ -787,6 +803,15 @@ class Video(QtWidgets.QWidget):
 
 
     def update_frame(self, video, data):
+        """
+        Put a frame for a video stream into its queue.
+
+        If there is a waiting frame, pull it from the queue first -- it's old now.
+
+        Args:
+            video (str): name of video stream
+            data (:class:`numpy.ndarray`): video frame
+        """
         #pdb.set_trace()
         # cur_time = time()
 
@@ -803,137 +828,128 @@ class Video(QtWidgets.QWidget):
             return
         except KeyError:
             return
-        # if (cur_time-self.last_update)>self.ifps:
-        #     try:
-        #         self.vid_widgets[video].setImage(data)
-        #         #self.vid_widgets[video].update()
-        #     except KeyError:
-        #         return
-        #     self.last_update = cur_time
-            #self.update()
-            #self.app.processEvents()
 
     def release(self):
         self.quitting.set()
 
-
-class VideoCV(mp.Process):
-    def __init__(self, videos, fps=30, parent=None):
-        super(VideoCV, self).__init__()
-        self.videos = videos
-
-        self.last_update = 0
-        self.fps = fps
-        self.ifps = 1.0/fps
-
-
-        #self.q = Queue(maxsize=1)
-        self.qs = {}
-        for vid in self.videos:
-            self.qs[vid] = mp.Queue(maxsize=1)
-
-        self.positions = {}
-        n_rows = 0
-        n_cols = 0
-        for i, vid in enumerate(sorted(self.videos)):
-            # 3 videos to a row
-            row = np.floor(i/3.)*2
-            col = i%3
-            if row>n_rows:
-                n_rows = row
-            if col>n_cols:
-                n_cols = col
-            self.positions[vid] = (row, col)
-
-        self.n_rows = n_rows+1
-        self.n_cols = n_cols+1
-
-
-
-        # computed as we receive images
-        self.sizes = {}
-        self.resize_factors = {}
-
-        self.quitting = mp.Event()
-        self.quitting.clear()
-
-    def run(self):
-
-        win = cv2.namedWindow('vid', cv2.WINDOW_NORMAL)
-        max_width = 0
-        max_height = 0
-
-        img_array = None
-        while not self.quitting.is_set():
-            pdb.set_trace()
-            for vid, q in self.qs.items():
-                try:
-                    data = q.get_nowait()
-                except Empty:
-                    continue
-
-                if vid not in self.sizes.keys():
-                    self.sizes[vid] = (data.shape[0], data.shape[1])
-                    max_width, max_height = self.calc_resize()
-                    img_array = np.zeros((max_height*self.n_rows, max_width*self.n_cols))
-
-                data = cv2.resize(data, self.resize_factors[vid])
-                top = self.positions[vid][0] * max_height
-                left = self.positions[vid][1] * max_width
-                img_array[top:top+data.shape[0], left:left+data.shape[1]] = data
-
-            cv2.imshow('vid', img_array)
-            cv2.waitKey(0)
-
-
-
-    def calc_resize(self):
-        max_width = 0
-        max_height = 0
-        for vid, size in self.sizes:
-            if size[1]>max_width:
-                # set both so we don't split
-                max_width = size[1]
-                max_height = size[0]
-            elif size[0]>max_height:
-                max_width = size[1]
-                max_height=size[0]
-
-        for vid, size in self.sizes:
-            self.resize_factors[vid] = (float(max_width)/size[0], float(max_height)/size[1])
-
-        return max_width, max_height
-
-
-    def update_frame(self, video, data):
-        #pdb.set_trace()
-        # cur_time = time()
-
-        try:
-            # if there's a waiting frame, it's old now so pull it.
-            _ = self.qs[video].get_nowait()
-        except Empty:
-            pass
-
-        try:
-            # put the new frame in there.
-            self.qs[video].put_nowait(data)
-        except Full:
-            return
-        except KeyError:
-            return
-        # if (cur_time-self.last_update)>self.ifps:
-        #     try:
-        #         self.vid_widgets[video].setImage(data)
-        #         #self.vid_widgets[video].update()
-        #     except KeyError:
-        #         return
-        #     self.last_update = cur_time
-            #self.update()
-            #self.app.processEvents()
-
-    def close(self):
-        self.quitting.set()
+#
+# class VideoCV(mp.Process):
+#     def __init__(self, videos, fps=30, parent=None):
+#         super(VideoCV, self).__init__()
+#         self.videos = videos
+#
+#         self.last_update = 0
+#         self.fps = fps
+#         self.ifps = 1.0/fps
+#
+#
+#         #self.q = Queue(maxsize=1)
+#         self.qs = {}
+#         for vid in self.videos:
+#             self.qs[vid] = mp.Queue(maxsize=1)
+#
+#         self.positions = {}
+#         n_rows = 0
+#         n_cols = 0
+#         for i, vid in enumerate(sorted(self.videos)):
+#             # 3 videos to a row
+#             row = np.floor(i/3.)*2
+#             col = i%3
+#             if row>n_rows:
+#                 n_rows = row
+#             if col>n_cols:
+#                 n_cols = col
+#             self.positions[vid] = (row, col)
+#
+#         self.n_rows = n_rows+1
+#         self.n_cols = n_cols+1
+#
+#
+#
+#         # computed as we receive images
+#         self.sizes = {}
+#         self.resize_factors = {}
+#
+#         self.quitting = mp.Event()
+#         self.quitting.clear()
+#
+#     def run(self):
+#
+#         win = cv2.namedWindow('vid', cv2.WINDOW_NORMAL)
+#         max_width = 0
+#         max_height = 0
+#
+#         img_array = None
+#         while not self.quitting.is_set():
+#             pdb.set_trace()
+#             for vid, q in self.qs.items():
+#                 try:
+#                     data = q.get_nowait()
+#                 except Empty:
+#                     continue
+#
+#                 if vid not in self.sizes.keys():
+#                     self.sizes[vid] = (data.shape[0], data.shape[1])
+#                     max_width, max_height = self.calc_resize()
+#                     img_array = np.zeros((max_height*self.n_rows, max_width*self.n_cols))
+#
+#                 data = cv2.resize(data, self.resize_factors[vid])
+#                 top = self.positions[vid][0] * max_height
+#                 left = self.positions[vid][1] * max_width
+#                 img_array[top:top+data.shape[0], left:left+data.shape[1]] = data
+#
+#             cv2.imshow('vid', img_array)
+#             cv2.waitKey(0)
+#
+#
+#
+#     def calc_resize(self):
+#         max_width = 0
+#         max_height = 0
+#         for vid, size in self.sizes:
+#             if size[1]>max_width:
+#                 # set both so we don't split
+#                 max_width = size[1]
+#                 max_height = size[0]
+#             elif size[0]>max_height:
+#                 max_width = size[1]
+#                 max_height=size[0]
+#
+#         for vid, size in self.sizes:
+#             self.resize_factors[vid] = (float(max_width)/size[0], float(max_height)/size[1])
+#
+#         return max_width, max_height
+#
+#
+#     def update_frame(self, video, data):
+#         #pdb.set_trace()
+#         # cur_time = time()
+#
+#         try:
+#             # if there's a waiting frame, it's old now so pull it.
+#             _ = self.qs[video].get_nowait()
+#         except Empty:
+#             pass
+#
+#         try:
+#             # put the new frame in there.
+#             self.qs[video].put_nowait(data)
+#         except Full:
+#             return
+#         except KeyError:
+#             return
+#         # if (cur_time-self.last_update)>self.ifps:
+#         #     try:
+#         #         self.vid_widgets[video].setImage(data)
+#         #         #self.vid_widgets[video].update()
+#         #     except KeyError:
+#         #         return
+#         #     self.last_update = cur_time
+#             #self.update()
+#             #self.app.processEvents()
+#
+#     def close(self):
+#         self.quitting.set()
 
 
 
@@ -962,6 +978,20 @@ class HLine(QtWidgets.QFrame):
 VIDEO_TIMER = None
 
 class ImageItem_TimedUpdate(pg.ImageItem):
+    """
+    Reclass of :class:`pyqtgraph.ImageItem` to update with a fixed fps.
+
+    Rather than calling :meth:`~pyqtgraph.ImageItem.update` every time a frame is updated,
+    call it according to the timer.
+
+    fps is set according to ``prefs.DRAWFPS``, if not available, draw at 10fps
+
+    Attributes:
+        timer (:class:`~PySide2.QtCore.QTimer`): Timer held in ``globals()`` that synchronizes frame updates across
+            image items
+
+
+    """
 
     def __init__(self, *args, **kwargs):
         super(ImageItem_TimedUpdate, self).__init__(*args, **kwargs)
@@ -1055,21 +1085,18 @@ class ImageItem_TimedUpdate(pg.ImageItem):
                 mx = 255
             kargs['levels'] = [mn, mx]
 
-        #profile()
 
         self.setOpts(update=False, **kargs)
 
-        #profile()
-
         self.qimage = None
-        #self.update()
-
-        #profile()
 
         if gotNewData:
             self.sigImageChanged.emit()
 
     def update_img(self):
+        """
+        Call :meth:`~ImageItem_TimedUpdate.update`
+        """
         self.update()
 
     def __del__(self):

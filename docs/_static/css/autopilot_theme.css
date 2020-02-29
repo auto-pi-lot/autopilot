@@ -1,3 +1,11 @@
+
+
+
+/*//////////////////////////////////*/
+/*//////////////////////////////////*/
+/*//////////////////////////////////*/
+
+
 /* sphinx_rtd_theme version 0.4.2 | MIT license */
 
 /* Built 20181005 13:10 */
@@ -90,7 +98,6 @@ q {
 
 q:before, q:after {
     content: "";
-    content: none
 }
 
 small {
@@ -116,7 +123,6 @@ ul, ol, dl {
     margin: 0;
     padding: 0;
     list-style: none;
-    list-style-image: none;
 }
 
 li {
@@ -3341,7 +3347,6 @@ a .fa, a .wy-menu-vertical li span.toctree-expand, .wy-menu-vertical li a span.t
     color: #fff;
     font-weight: bold;
     display: block;
-    color: #fff;
     background: #6ab0de;
     margin: -12px;
     padding: 6px 12px;
@@ -4819,7 +4824,6 @@ html {
 
 .wy-menu-vertical header, .wy-menu-vertical p.caption {
     height: 32px;
-    display: inline-block;
     line-height: 32px;
     padding: 0 0.5em;
     margin-bottom: 0;
@@ -4835,7 +4839,7 @@ html {
     color: #f44;
     font-family: "Lexend Deca";
 }
-}
+
 
 .wy-menu-vertical ul {
     margin-bottom: 0
@@ -5022,10 +5026,7 @@ html {
     z-index: 200;
     background-image: url(../grid.png);
     text-align: center;
-    padding: .809em;
-    display: block;
     color: #000;
-    margin-bottom: .809em
 }
 
 .wy-side-nav-search input[type=text] {
@@ -5212,9 +5213,9 @@ html {
 
 .wy-nav-content {
     background: #fcfcfc;
-    padding: 1.618em 3.236em;
+    padding: 2.0em 2.036em;
     height: 100%;
-    max-width: 800px;
+    max-width: 1000px;
     margin: auto
     /*background-image: url(../grid.png);*/
 }
@@ -6059,3 +6060,12 @@ span[id*='MathJax-Span'] {
     src: url("../fonts/RobotoSlab/roboto-slab-v7-bold.eot");
     src: url("../fonts/RobotoSlab/roboto-slab-v7-bold.eot?#iefix") format("embedded-opentype"), url("../fonts/RobotoSlab/roboto-slab-v7-bold.woff2") format("woff2"), url("../fonts/RobotoSlab/roboto-slab-v7-bold.woff") format("woff"), url("../fonts/RobotoSlab/roboto-slab-v7-bold.ttf") format("truetype")
 }
+
+
+.attribute>dt::before {
+    content: "attr";
+    margin-right: 20px;
+    color: #f44 !important;
+    font-weight: normal;
+}
+

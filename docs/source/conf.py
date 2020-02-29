@@ -72,6 +72,7 @@ extensions = [
     'autodocsumm',   # https://github.com/Chilipp/autodocsumm
     #'sphinxcontrib.fulltoc',
     #'localext.fulltoc'
+    'sphinx_sass'
 ]
 
 if try_theme == 'rtd':
@@ -198,6 +199,17 @@ elif html_theme == 'bootstrap':
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+# configure sass compilation
+sass_configs = [
+    {'entry':'../styles/main.scss',
+     'output': 'css/autopilot_sass.css'}
+]
+
+# relative to html_static_path
+html_css_files = [
+    'css/autopilot_sass.css'
+]
+
 html_baseurl = 'http://docs.auto-pi-lot.com/'
 
 # Custom sidebar templates, must be a dictionary that maps document names
@@ -312,100 +324,6 @@ primary_domain = "py"
 
 highlight_language = "py"
 
-# have to have more explicit mocking to use automodapi,
-# which doesn't seem to respect autodoc_mock_imports
-
-
-# class Mock(MagicMock):
-#     @classmethod
-#     def __getattr__(cls, name):
-#         return MagicMock()
-
-#
-# class _MockObject(object):
-#     """Used by autodoc_mock_imports."""
-#
-#     __display_name__ = '_MockObject'
-#
-#     def __new__(cls, *args, **kwargs):
-#         # type: (Any, Any) -> Any
-#         if len(args) == 3 and isinstance(args[1], tuple):
-#             superclass = args[1][-1].__class__
-#             if superclass is cls:
-#                 # subclassing MockObject
-#                 return _make_subclass(args[0], superclass.__display_name__,
-#                                       superclass=superclass, attributes=args[2])
-#
-#         return super(_MockObject, cls).__new__(cls)
-#
-#     def __init__(self, *args, **kwargs):
-#         # type: (Any, Any) -> None
-#         self.__qualname__ = ''
-#
-#     def __len__(self):
-#         # type: () -> int
-#         return 0
-#
-#     def __contains__(self, key):
-#         # type: (str) -> bool
-#         return False
-#
-#     def __iter__(self):
-#         # type: () -> Iterator
-#         return iter([])
-#
-#     def __mro_entries__(self, bases):
-#         # type: (Tuple) -> Tuple
-#         return (self.__class__,)
-#
-#     def __getitem__(self, key):
-#         # type: (str) -> _MockObject
-#         return _make_subclass(key, self.__display_name__, self.__class__)()
-#
-#     def __getattr__(self, key):
-#         # type: (str) -> _MockObject
-#         return _make_subclass(key, self.__display_name__, self.__class__)()
-#
-#     def __call__(self, *args, **kw):
-#         # type: (Any, Any) -> Any
-#         if args and type(args[0]) in [FunctionType, MethodType]:
-#             # Appears to be a decorator, pass through unchanged
-#             return args[0]
-#         return self
-#
-#     def __repr__(self):
-#         # type: () -> str
-#         return self.__display_name__
-#
-# def _make_subclass(name, module, superclass=_MockObject, attributes=None):
-#     # type: (str, str, Any, dict) -> Any
-#     attrs = {'__module__': module, '__display_name__': module + '.' + name}
-#     attrs.update(attributes or {})
-#
-#     return type(name, (superclass,), attrs)
-#
-# class Mock(ModuleType):
-#     """Used by autodoc_mock_imports."""
-#     __file__ = os.devnull
-#
-#     def __init__(self):
-#         name = 'test'
-#         super(Mock, self).__init__(name)
-#         self.__all__ = []  # type: List[str]
-#         self.__path__ = []  # type: List[str]
-#
-#     def __getattr__(self, name):
-#         # type: (str) -> Mock
-#         return _make_subclass(name, self.__name__, Mock)()
-#
-#     def __repr__(self):
-#         # type: () -> str
-#         return self.__name__
-#
-# MOCK_MODULES = autodoc_mock_imports
-# MOCK_MODULES.append("tables.nodes")
-# sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
-
 def fix_html_links(app, exception):
     print('fixing html links...')
     start = time()
@@ -438,10 +356,13 @@ def fix_html_links(app, exception):
 def test_grouper(app, what, name, obj, section, parent):
     pdb.set_trace()
 
+def css_class_role(name, rawtext, text, lineno, inliner, options={}, content={}):
+    pdb.set_trace()
 
 def setup(app):
-    if try_theme == 'bootstrap':
-        app.add_stylesheet("restyle.css")
+    # if try_theme == 'bootstrap':
+    app.add_css_file("restyle.css")
+    # app.add_role('cssclass', css_class_role)
 
     from autopilot import prefs
 

@@ -10,6 +10,7 @@ import pdb
 
 def calc_psychometric(data, var_x, var_y='response'):
     """
+    Calculate a psychometric curve (logistic regression of var_y on var_x)
 
     Args:
         data (:class:`pandas.DataFrame`): Subject data
@@ -42,6 +43,9 @@ def calc_psychometric(data, var_x, var_y='response'):
 
 def plot_psychometric(subject_protocols):
     """
+    Plot psychometric curves for selected subjects, steps, and variables
+
+    Typically called by :meth:`.Terminal.plot_psychometric`.
 
     Args:
         subject_protocols (list): A list of tuples, each with
@@ -51,7 +55,7 @@ def plot_psychometric(subject_protocols):
             * variable (str)
 
     Returns:
-
+        :class:`altair.Chart`
     """
 
     for subject, step, var, n_trials in subject_protocols:

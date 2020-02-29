@@ -1,5 +1,11 @@
 """
-Sub-tasks that serve as children to other tasks
+Sub-tasks that serve as children to other tasks.
+
+.. note::
+
+    The Child agent will be formalized in an upcoming release, until then these classes
+    remain relatively undocumented as their design will likely change.
+
 """
 
 from collections import OrderedDict as odict
