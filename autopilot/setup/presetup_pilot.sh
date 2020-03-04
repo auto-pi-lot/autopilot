@@ -35,10 +35,9 @@ read -p "Disable bluetooth? (y/n): " disablebt
 # prelims
 
 # create git folder if it don't already exist
-GITDIR=$HOME/git
-if [ ! -d "$GITDIR" ]; then
-    echo -e "\n${RED}making git directory at $HOME/git ${NC}"
-    mkdir $GITDIR
+GITDIR=$(git rev-parse --show-toplevel)
+if [[ ! -d $GITDIR ]]; then
+  read -p "Can't detect git directory (probably being run from outside the repo), where is the autopilot repository?: " GITDIR
 fi
 
 
@@ -75,12 +74,16 @@ sudo apt-get install -y \
 echo -e "\n\n${RED}Installing necessary Python packages...\n\n ${NC}"
 
 
-pip3 install -U pyzmq npyscreen tornado inputs requests blosc
+pip3 install -r "${GITDIR}/requirements_terminal.txt"
 
 # install pigpio
 cd $GITDIR
-git clone https://github.com/sneakers-the-rat/pigpio.git
-cd pigpio
+
+# clone submodules if we haven't already
+git submodule init && git submodule update
+
+
+cd external/pigpio
 make -j6
 sudo -H make install
 

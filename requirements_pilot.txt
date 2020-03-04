@@ -11,3 +11,4 @@ requests
 blosc
 JACK-Client
 scikit-video
+tqdm
