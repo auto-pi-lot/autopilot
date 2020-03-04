@@ -129,14 +129,17 @@ class GPIO(Hardware):
         self.trigger_edge = None
         self.pin_bcm = None
         self.pig = None
+
+        # init pigpio
         self.CONNECTED = False
+        self.CONNECTED = self.init_pigpio()
 
         # set default attributes
         self.pin = pin
         self.polarity = polarity
         self.pull = pull
         self.trigger = trigger
-        self.CONNECTED = self.init_pigpio()
+
         if not self.CONNECTED:
             RuntimeError('No connection could be made to the pigpio daemon')
 
