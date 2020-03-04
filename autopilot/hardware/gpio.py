@@ -140,6 +140,7 @@ class GPIO(Hardware):
         self.CONNECTED = self.init_pigpio()
 
         # set default attributes
+
         self.pin = pin
         self.polarity = polarity
         self.pull = pull
@@ -695,9 +696,9 @@ class PWM(Digital_Out):
             range (int): Maximum value of PWM duty-cycle. Default 255.
             **kwargs: passed to :class:`Digital_Out`
         """
-
-        super(PWM, self).__init__(pin, **kwargs)
         self._range = None
+        super(PWM, self).__init__(pin, **kwargs)
+
         self.range = range
 
         #self.pig.set_mode(self.pin_bcm, pigpio.OUTPUT)
