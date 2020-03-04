@@ -1,0 +1,732 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>autopilot.hardware.usb &mdash; Autopilot 0.3.0 documentation</title>
+  
+
+  
+  
+  
+  
+    <link rel="canonical" href="docs.auto-pi-lot.com_modules/autopilot/hardware/usb.html"/>
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/autopilot_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/restyle.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/autopilot_sass.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/autopilot_sass.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+
+    <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js" integrity="sha256-BuxrUdr/4YoztQLxT6xmdO6hSQw2d6BtBUY1pteGds4=" crossorigin="anonymous"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Autopilot
+          
+
+          
+            
+            <img src="../../../_static/autopilot_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#program-structure">Program Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#module-tour">Module Tour</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.pilot.html">Pilot Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#raspbian-performance-improvements">Raspbian Performance Improvements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#audio-setup">Audio Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#video-setup">Video Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#optional-installation-steps">Optional Installation Steps</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.terminal.html">Terminal Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.training.html">Training a Subject</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#debugging-a-task">Debugging a Task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#stage-methods">Stage Methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-prefs">Additional Prefs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id5">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-child-task">The Child Task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.hardware.html">Writing a Hardware Class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.hardware.html#gpio-with-pigpio">GPIO with pigpio</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.hardware.html#input-beambreak">Input - Beambreak</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.hardware.html#output-led-rgb">Output - LED_RGB</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.hardware.html#usb-hardware-with-inputs">USB Hardware with inputs</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.core.html">Core Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.gui.html">gui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.networking.html">networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.pilot.html">pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.styles.html">styles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.subject.html">subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.terminal.html">terminal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.hardware.html">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.hardware.cameras.html">cameras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.hardware.gpio.html">gpio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.hardware.i2c.html">i2c</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.hardware.usb.html">usb</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.children.html">children</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.free_water.html">free_water</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.graduation.html">graduation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.nafc.html">nafc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.task.html">task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.stim.html">Stimuli</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.stim.managers.html">managers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.stim.sound.html">sound</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autopilot.stim.sound.jackclient.html">jackclient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autopilot.stim.sound.pyoserver.html">pyoserver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autopilot.stim.sound.sounds.html">sounds</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.viz.html">Visualization Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.viz.psychometric.html">psychometric</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.setup.html">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.setup.setup_pilot.html">setup_pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.setup.setup_scale.html">setup_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.setup.setup_terminal.html">setup_terminal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.prefs.html">Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.external.html">External</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">To-Do</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#improvements">Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#completed">Completed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#lowest-priority">Lowest Priority</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../changelog/index.html#version-0-3">Version 0.3</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../changelog/v0.3.0.html">v0.3.0 (March 3rd, 2020)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#major-updates">Major Updates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#new-features">New Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#bugfixes">Bugfixes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#code-structure">Code Structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#external-libraries">External Libraries</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../changelog/index.html#version-0-2">Version 0.2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../changelog/v0.2.0.html">v0.2.0 (October 26, 2019)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Autopilot</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../hardware.html">autopilot.hardware</a> &raquo;</li>
+        
+      <li>autopilot.hardware.usb</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for autopilot.hardware.usb</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Hardware that uses USB</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Queue</span><span class="p">,</span> <span class="n">Empty</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">Queue</span> <span class="kn">import</span> <span class="n">Queue</span><span class="p">,</span> <span class="n">Empty</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">inputs</span> <span class="kn">import</span> <span class="n">devices</span>
+
+<span class="kn">from</span> <span class="nn">autopilot</span> <span class="kn">import</span> <span class="n">prefs</span>
+<span class="kn">from</span> <span class="nn">autopilot.core.networking</span> <span class="kn">import</span> <span class="n">Net_Node</span>
+<span class="kn">from</span> <span class="nn">autopilot.hardware</span> <span class="kn">import</span> <span class="n">Hardware</span>
+
+
+<div class="viewcode-block" id="Wheel"><a class="viewcode-back" href="../../../autopilot.hardware.usb.html#autopilot.hardware.usb.Wheel">[docs]</a><span class="k">class</span> <span class="nc">Wheel</span><span class="p">(</span><span class="n">Hardware</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A continuously measured mouse wheel.</span>
+
+<span class="sd">    Uses a USB computer mouse.</span>
+
+<span class="sd">    Warning:</span>
+<span class="sd">        &#39;vel&#39; thresh_type not implemented</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">input</span>   <span class="o">=</span> <span class="kc">True</span>
+    <span class="nb">type</span>    <span class="o">=</span> <span class="s2">&quot;Wheel&quot;</span>
+    <span class="n">trigger</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># even though this is a triggerable option, typically don&#39;t want to assign a cb and instead us a GPIO</span>
+    <span class="c1"># TODO: Make the standard-style trigger.</span>
+    <span class="c1"># TODO: Make wheel movements available locally with a deque</span>
+
+    <span class="n">THRESH_TYPES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;dist&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;vel&#39;</span><span class="p">]</span>
+
+    <span class="n">MODES</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;vel_total&#39;</span><span class="p">,</span> <span class="s1">&#39;steady&#39;</span><span class="p">,</span> <span class="s1">&#39;dist&#39;</span><span class="p">,</span> <span class="s1">&#39;timed&#39;</span><span class="p">)</span>
+
+    <span class="n">MOVE_DTYPE</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;vel&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;dir&#39;</span><span class="p">,</span> <span class="s1">&#39;U5&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;timestamp&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mouse_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">thresh</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">thresh_type</span><span class="o">=</span><span class="s1">&#39;dist&#39;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">digi_out</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;vel_total&#39;</span><span class="p">,</span> <span class="n">integrate_dur</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            mouse_idx (int):</span>
+<span class="sd">            fs (int):</span>
+<span class="sd">            thresh (int):</span>
+<span class="sd">            thresh_type (&#39;dist&#39;):</span>
+<span class="sd">            start (bool):</span>
+<span class="sd">            digi_out (:class:`~.Digital_Out`, bool):</span>
+<span class="sd">            mode (&#39;vel_total&#39;):</span>
+<span class="sd">            integrate_dur (int):</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># try to get mouse from inputs</span>
+        <span class="c1"># TODO: More robust - specify mouse by hardware attrs</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mouse</span> <span class="o">=</span> <span class="n">devices</span><span class="o">.</span><span class="n">mice</span><span class="p">[</span><span class="n">mouse_idx</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;Could not find requested mouse with index </span><span class="si">{}</span><span class="se">\n</span><span class="s1">Attempting to use mouse idx 0&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mouse_idx</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mouse</span> <span class="o">=</span> <span class="n">devices</span><span class="o">.</span><span class="n">mice</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># frequency of our updating</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">fs</span>
+        <span class="c1"># time between updates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_dur</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span> <span class="o">=</span> <span class="n">thresh</span>
+        <span class="c1"># thresh type can be &#39;dist&#39;, &#39;x&#39;, &#39;y&#39;, or &#39;vel&#39;</span>
+        <span class="k">if</span> <span class="n">thresh_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">THRESH_TYPES</span><span class="p">:</span>
+            <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;thresh_type must be one of </span><span class="si">{}</span><span class="s1">, given </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">THRESH_TYPES</span><span class="p">,</span> <span class="n">thresh_type</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thresh_type</span> <span class="o">=</span> <span class="n">thresh_type</span>
+
+        <span class="c1"># mode can be &#39;vel_total&#39;, &#39;vel_x&#39;, &#39;vel_y&#39; or &#39;dist&#39; - report either velocity or distance</span>
+        <span class="c1"># mode can also be &#39;</span>
+        <span class="c1"># TODO: Do two parameters - type &#39;vel&#39; or &#39;dist&#39; and measure &#39;x&#39;, &#39;y&#39;, &#39;total&#39;z</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="c1"># TODO: Implement this</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;steady&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;REL_Y&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MOVE_DTYPE</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">integrate_dur</span> <span class="o">=</span> <span class="n">integrate_dur</span>
+
+
+        <span class="c1"># event to signal quitting</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quit_evt</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quit_evt</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="c1"># event to signal when to start accumulating movements to trigger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">measure_evt</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">measure_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># queue to I/O mouse movements summarized at fs Hz</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+        <span class="c1"># lock to prevent race between putting and getting</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qlock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">listens</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;MEASURE&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">l_measure</span><span class="p">,</span>
+                        <span class="s1">&#39;CLEAR&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">l_clear</span><span class="p">,</span>
+                        <span class="s1">&#39;STOP&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">l_stop</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="n">Net_Node</span><span class="p">(</span><span class="s1">&#39;wheel_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mouse_idx</span><span class="p">),</span>
+                             <span class="n">upstream</span><span class="o">=</span><span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span>
+                             <span class="n">port</span><span class="o">=</span><span class="n">prefs</span><span class="o">.</span><span class="n">MSGPORT</span><span class="p">,</span>
+                             <span class="n">listens</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">listens</span><span class="p">,</span>
+                             <span class="p">)</span>
+
+        <span class="c1"># if we are being used in a child object, we send our trigger via a GPIO pin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digi_out</span> <span class="o">=</span> <span class="n">digi_out</span>
+
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">start</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Wheel.start"><a class="viewcode-back" href="../../../autopilot.hardware.usb.html#autopilot.hardware.usb.Wheel.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_record</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_mouse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">quit_evt</span><span class="p">:</span>
+            <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mouse</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_record</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">moves</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MOVE_DTYPE</span><span class="p">)</span>
+
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_mouse</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="n">last_update</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">quit_evt</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">get_nowait</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">Empty</span><span class="p">:</span>
+                <span class="n">events</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">move</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;REL_Y&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MOVE_DTYPE</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># make a numpy record array of events with 3 fields:</span>
+                <span class="c1"># velocity, dir(ection), timestamp (system seconds)</span>
+                <span class="n">move</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="nb">int</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">state</span><span class="p">),</span> <span class="n">event</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">timestamp</span><span class="p">))</span>\
+                                 <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span> <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">code</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;REL_X&#39;</span><span class="p">,</span> <span class="s1">&#39;REL_Y&#39;</span><span class="p">)],</span>
+                                <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MOVE_DTYPE</span><span class="p">)</span>
+            <span class="n">moves</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">moves</span><span class="p">,</span> <span class="n">move</span><span class="p">])</span>
+
+            <span class="c1"># If we have been told to start measuring for a trigger...</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">measure_evt</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                <span class="n">do_trigger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_thresh</span><span class="p">(</span><span class="n">move</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">do_trigger</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">thresh_trig</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">measure_evt</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="c1"># take the integral of velocities</span>
+
+
+
+            <span class="c1"># If it&#39;s time to report velocity, do it.</span>
+            <span class="n">nowtime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">nowtime</span><span class="o">-</span><span class="n">last_update</span><span class="p">)</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">update_dur</span><span class="p">:</span>
+
+                <span class="c1"># TODO: Implement distance/position reporting</span>
+                <span class="n">y_vel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_move</span><span class="p">(</span><span class="n">moves</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">)</span>
+                <span class="n">x_vel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_move</span><span class="p">(</span><span class="n">moves</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;CONTINUOUS&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="n">x_vel</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span><span class="n">y_vel</span><span class="p">,</span> <span class="s1">&#39;t&#39;</span><span class="p">:</span><span class="n">nowtime</span><span class="p">},</span>
+                               <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+                <span class="n">moves</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MOVE_DTYPE</span><span class="p">)</span>
+
+                <span class="n">last_update</span> <span class="o">=</span> <span class="n">nowtime</span>
+
+<div class="viewcode-block" id="Wheel.check_thresh"><a class="viewcode-back" href="../../../autopilot.hardware.usb.html#autopilot.hardware.usb.Wheel.check_thresh">[docs]</a>    <span class="k">def</span> <span class="nf">check_thresh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">move</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates thresh_val and checks whether it&#39;s above/below threshold</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            move (np.array): Structured array with fields (&#39;vel&#39;, &#39;dir&#39;, &#39;timestamp&#39;)</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Determine whether the threshold was surpassed</span>
+        <span class="n">do_trigger</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;vel_total&#39;</span><span class="p">:</span>
+            <span class="n">thresh_update</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_move</span><span class="p">(</span><span class="n">move</span><span class="p">)</span>
+            <span class="c1"># If instantaneous velocity is above thresh...</span>
+            <span class="k">if</span> <span class="n">thresh_update</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span><span class="p">:</span>
+                <span class="n">do_trigger</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;steady&#39;</span><span class="p">:</span>
+            <span class="c1"># If movements in the recent past are below a certain value</span>
+            <span class="c1"># self.thresh_val should be set to a structured array by l_measure</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span><span class="p">,</span> <span class="n">move</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;THRESH_VAL:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span><span class="p">,</span> <span class="s1">&#39;MOVE:&#39;</span><span class="p">,</span> <span class="n">move</span><span class="p">)</span>
+            <span class="c1"># trim to movements in the time window</span>
+            <span class="n">thresh_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">integrate_dur</span><span class="p">]</span>
+
+            <span class="n">thresh_update</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_move</span><span class="p">(</span><span class="n">thresh_val</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">thresh_update</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">measure_time</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">integrate_dur</span> <span class="o">&lt;</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()):</span>
+                <span class="n">do_trigger</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;dist&#39;</span><span class="p">:</span>
+            <span class="n">thresh_update</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_move</span><span class="p">(</span><span class="n">move</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span> <span class="o">+=</span> <span class="n">thresh_update</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span><span class="p">:</span>
+                <span class="n">do_trigger</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">Warning</span> <span class="p">(</span><span class="s2">&quot;mode is not defined! mode is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">))</span>
+
+
+        <span class="k">return</span> <span class="n">do_trigger</span></div>
+
+<div class="viewcode-block" id="Wheel.calc_move"><a class="viewcode-back" href="../../../autopilot.hardware.usb.html#autopilot.hardware.usb.Wheel.calc_move">[docs]</a>    <span class="k">def</span> <span class="nf">calc_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">move</span><span class="p">,</span> <span class="n">thresh_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate distance move depending on type (x, y, total dist)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            move ():</span>
+<span class="sd">            thresh_type ():</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">thresh_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">thresh_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thresh_type</span>
+
+        <span class="c1"># FIXME: rly inefficient</span>
+        <span class="c1"># get the value of the movement depending on what we&#39;re measuring</span>
+        <span class="k">if</span> <span class="n">thresh_type</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span>
+
+            <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">move</span><span class="p">[</span><span class="s1">&#39;vel&#39;</span><span class="p">][</span><span class="n">move</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;REL_X&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">thresh_type</span> <span class="o">==</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">move</span><span class="p">[</span><span class="s1">&#39;vel&#39;</span><span class="p">][</span><span class="n">move</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;REL_Y&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">thresh_type</span> <span class="o">==</span> <span class="s2">&quot;dist&quot;</span><span class="p">:</span>
+            <span class="n">x_dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">move</span><span class="p">[</span><span class="s1">&#39;vel&#39;</span><span class="p">][</span><span class="n">move</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;REL_X&quot;</span><span class="p">])</span>
+            <span class="n">y_dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">move</span><span class="p">[</span><span class="s1">&#39;vel&#39;</span><span class="p">][</span><span class="n">move</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;REL_Y&quot;</span><span class="p">])</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">x_dist</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">y_dist</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">distance</span></div>
+
+<div class="viewcode-block" id="Wheel.thresh_trig"><a class="viewcode-back" href="../../../autopilot.hardware.usb.html#autopilot.hardware.usb.Wheel.thresh_trig">[docs]</a>    <span class="k">def</span> <span class="nf">thresh_trig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">digi_out</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">digi_out</span><span class="o">.</span><span class="n">pulse</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">measure_evt</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+
+
+
+<div class="viewcode-block" id="Wheel.assign_cb"><a class="viewcode-back" href="../../../autopilot.hardware.usb.html#autopilot.hardware.usb.Wheel.assign_cb">[docs]</a>    <span class="k">def</span> <span class="nf">assign_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger_fn</span><span class="p">):</span>
+        <span class="c1"># want to have callback write an output pin -- so callback should go back to</span>
+        <span class="c1"># the task to write a GPIO pin.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trig_fn</span> <span class="o">=</span> <span class="n">trigger_fn</span></div>
+
+<div class="viewcode-block" id="Wheel.l_measure"><a class="viewcode-back" href="../../../autopilot.hardware.usb.html#autopilot.hardware.usb.Wheel.l_measure">[docs]</a>    <span class="k">def</span> <span class="nf">l_measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Task has signaled that we need to start measuring movements for a trigger</span>
+
+
+<span class="sd">        Args:</span>
+<span class="sd">            value ():</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="s1">&#39;mode&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;mode&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">MODES</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;mode&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;incorrect mode sent: </span><span class="si">{}</span><span class="s1">, needs to be one of </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;mode&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">MODES</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="s1">&#39;thresh&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thresh</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;thresh&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;steady&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;REL_Y&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MOVE_DTYPE</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thresh_val</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">measure_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">measure_evt</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Wheel.l_clear"><a class="viewcode-back" href="../../../autopilot.hardware.usb.html#autopilot.hardware.usb.Wheel.l_clear">[docs]</a>    <span class="k">def</span> <span class="nf">l_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop measuring!</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value ():</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">measure_evt</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Wheel.l_stop"><a class="viewcode-back" href="../../../autopilot.hardware.usb.html#autopilot.hardware.usb.Wheel.l_stop">[docs]</a>    <span class="k">def</span> <span class="nf">l_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop measuring and clear system resources</span>
+<span class="sd">        Args:</span>
+<span class="sd">            value ():</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">measure_evt</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Wheel.release"><a class="viewcode-back" href="../../../autopilot.hardware.usb.html#autopilot.hardware.usb.Wheel.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quit_evt</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Scale"><a class="viewcode-back" href="../../../autopilot.hardware.usb.html#autopilot.hardware.usb.Scale">[docs]</a><span class="k">class</span> <span class="nc">Scale</span><span class="p">(</span><span class="n">Hardware</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Note:</span>
+<span class="sd">        Not implemented, working on using a digital scale to</span>
+<span class="sd">        make weighing faster.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">MODEL</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;stamps.com&#39;</span><span class="p">:{</span>
+            <span class="s1">&#39;vendor_id&#39;</span><span class="p">:</span><span class="mh">0x1446</span><span class="p">,</span>
+            <span class="s1">&#39;product_id&#39;</span><span class="p">:</span> <span class="mh">0x6a73</span>
+
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;stamps.com&#39;</span><span class="p">,</span> <span class="n">vendor_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">product_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            model:</span>
+<span class="sd">            vendor_id:</span>
+<span class="sd">            product_id:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vendor_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MODEL</span><span class="p">[</span><span class="n">model</span><span class="p">][</span><span class="s1">&#39;vendor_id&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">product_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MODEL</span><span class="p">[</span><span class="n">model</span><span class="p">][</span><span class="s1">&#39;product_id&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">vendor_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vendor_id</span> <span class="o">=</span> <span class="n">vendor_id</span>
+        <span class="k">if</span> <span class="n">product_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">product_id</span> <span class="o">=</span> <span class="n">product_id</span>
+
+        <span class="c1"># find device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">usb</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">idVendor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vendor_id</span><span class="p">,</span>
+                                    <span class="n">idProduct</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">product_id</span><span class="p">)</span>
+        <span class="c1"># default configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">set_configuration</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Jonny Saunders
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

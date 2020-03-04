@@ -249,6 +249,11 @@ class Digital_Out(GPIO):
     """
     TTL/Digital logic out through a GPIO pin.
 
+    Args:
+        pin (int): The Board-numbered GPIO pin of this object
+        pulse_width (int): Width of digital output :meth:`~.Digital_Out.pulse` (us). range: 1-100
+        polarity (bool): Whether 'on' is High (1, default) and pulses bring the voltage High, or vice versa (0)
+
     Attributes:
         scripts (dict): maps script IDs to pigpio script handles
         pigs_function (bytes): when using pigpio scripts, what function is used to set the value of the output?
@@ -263,10 +268,7 @@ class Digital_Out(GPIO):
 
     def __init__(self, pin=None, pulse_width=100, polarity=1, **kwargs):
         """
-        Args:
-            pin (int): The Board-numbered GPIO pin of this object
-            pulse_width (int): Width of digital output :meth:`~.Digital_Out.pulse` (us). range: 1-100
-            polarity (bool): Whether 'on' is High (1, default) and pulses bring the voltage High, or vice versa (0)
+
         """
         super(Digital_Out, self).__init__(pin, polarity=polarity, **kwargs)
 
@@ -531,6 +533,14 @@ class Digital_In(GPIO):
     """
     Record digital input and call one or more callbacks on logic transition.
 
+    Args:
+        pin (int): Board-numbered GPIO pin.
+        event (:class:`threading.Event`): For callbacks assigned with :meth:`.assign_cb` with ``evented = True``,
+            set this event whenever the callback is triggered. Can be used to handle
+            stage transition logic here instead of the :class:`.Task` object, as is typical.
+        record (bool): Whether all logic transitions should be recorded as a list of ('EVENT', 'Timestamp') tuples.
+        **kwargs: passed to :class:`GPIO`
+
     Sets the internal pullup/down resistor to :attr:`.Digital_In.off` and
     :attr:`.Digital_In.trigger` to :attr:`.Digital_In.on` upon instantiation.
 
@@ -553,13 +563,7 @@ class Digital_In(GPIO):
 
     def __init__(self, pin, event=None, record=True, **kwargs):
         """
-        Args:
-            pin (int): Board-numbered GPIO pin.
-            event (:class:`threading.Event`): For callbacks assigned with :meth:`.assign_cb` with ``evented = True``,
-                set this event whenever the callback is triggered. Can be used to handle
-                stage transition logic here instead of the :class:`.Task` object, as is typical.
-            record (bool): Whether all logic transitions should be recorded as a list of ('EVENT', 'Timestamp') tuples.
-            **kwargs: passed to :class:`GPIO`
+
         """
         super(Digital_In, self).__init__(pin, **kwargs)
 
@@ -1060,6 +1064,13 @@ class Solenoid(Digital_Out):
     """
     Solenoid valve for water delivery.
 
+    Args:
+        pin (int): Board pin number, converted to BCM on init.
+        polarity (0, 1): Whether HIGH opens the port (1) or closes it (0)
+        duration (int, float): duration of open, ms.
+        vol (int, float): desired volume of reward in uL, must have computed calibration results, see :meth:`~.Terminal.calibrate_ports`
+        **kwargs: passed to :class:`Digital_Out`
+
     Only NC solenoids should be used, as there is no way to guarantee
     that a pin will maintain its voltage when it is released, and you will
     spill water all over the place.
@@ -1078,12 +1089,7 @@ class Solenoid(Digital_Out):
 
     def __init__(self, pin, polarity=1, duration=20, vol=None, **kwargs):
         """
-        Args:
-            pin (int): Board pin number, converted to BCM on init.
-            polarity (0, 1): Whether HIGH opens the port (1) or closes it (0)
-            duration (int, float): duration of open, ms.
-            vol (int, float): desired volume of reward in uL, must have computed calibration results, see :meth:`~.Terminal.calibrate_ports`
-            **kwargs: passed to :class:`Digital_Out`
+
         """
         super(Solenoid, self).__init__(pin, polarity=polarity, **kwargs)
         self.calibration = None

@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>utils &mdash; Autopilot 0.2 documentation</title>
+  <title>utils &mdash; Autopilot 0.3.0 documentation</title>
   
 
   
@@ -36,16 +37,20 @@
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/restyle.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="tasks" href="autopilot.tasks.html" />
+    <link rel="next" title="hardware" href="autopilot.hardware.html" />
     <link rel="prev" title="terminal" href="autopilot.core.terminal.html" />
 
     <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js" integrity="sha256-BuxrUdr/4YoztQLxT6xmdO6hSQw2d6BtBUY1pteGds4=" crossorigin="anonymous"></script>
 
 </head>
 
@@ -73,7 +78,7 @@
             
             
               <div class="version">
-                0.2
+                0.3
               </div>
             
           
@@ -100,11 +105,9 @@
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure">Program Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#module-tour">Module Tour</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
@@ -123,12 +126,6 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -190,7 +187,6 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="autopilot.core.html">Core Modules</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.gui.html">gui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autopilot.core.hardware.html">hardware</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
@@ -200,7 +196,15 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">utils</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.hardware.html">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.cameras.html">cameras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.gpio.html">gpio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.i2c.html">i2c</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.usb.html">usb</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.children.html">children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.free_water.html">free_water</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.graduation.html">graduation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.nafc.html">nafc</a></li>
@@ -219,6 +223,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.viz.psychometric.html">psychometric</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.setup.html">Setup</a><ul>
@@ -228,16 +233,22 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.prefs.html">Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.external.html">External</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="todo.html#completed-goals">Completed Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#improvements">Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#completed">Completed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#lowest-priority">Lowest Priority</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-3">Version 0.3</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (Februrary DATE, 2020)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (March 3rd, 2020)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#major-updates">Major Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#new-features">New Features</a></li>
@@ -363,8 +374,8 @@
 </table>
 <dl class="class">
 <dt id="autopilot.core.utils.Param">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.utils.</code><code class="sig-name descname">Param</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#Param"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Param" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-name descname">Param</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#Param"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>In the future, we will implement a coherent Parameter management system</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -379,29 +390,35 @@
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.utils.Param.__contains__" title="autopilot.core.utils.Param.__contains__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__contains__</span></code></a>(key)</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param key</dt>
-<dd class="field-odd"><p></p></dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong></p>
+</dd>
 </dl>
 </p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.utils.Param.__delitem__" title="autopilot.core.utils.Param.__delitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__delitem__</span></code></a>(key)</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param key</dt>
-<dd class="field-odd"><p></p></dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong></p>
+</dd>
 </dl>
 </p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.utils.Param.__getitem__" title="autopilot.core.utils.Param.__getitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__getitem__</span></code></a>(key)</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param key</dt>
-<dd class="field-odd"><p></p></dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong></p>
+</dd>
 </dl>
 </p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.utils.Param.__setitem__" title="autopilot.core.utils.Param.__setitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__setitem__</span></code></a>(key, value)</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param key</dt>
-<dd class="field-odd"><p></p></dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong></p></li>
+</ul>
+</dd>
 </dl>
 </p></td>
 </tr>
@@ -421,7 +438,7 @@
 </table>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – </p>
+<dd class="field-odd"><p><strong>**kwargs</strong></p>
 </dd>
 </dl>
 <dl class="attribute">
@@ -444,7 +461,7 @@
 <code class="sig-name descname">__getitem__</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#Param.__getitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Param.__getitem__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>key</strong> – </p>
+<dd class="field-odd"><p><strong>key</strong></p>
 </dd>
 </dl>
 </dd></dl>
@@ -455,8 +472,8 @@
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – </p></li>
-<li><p><strong>value</strong> – </p></li>
+<li><p><strong>key</strong></p></li>
+<li><p><strong>value</strong></p></li>
 </ul>
 </dd>
 </dl>
@@ -467,7 +484,7 @@
 <code class="sig-name descname">__delitem__</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#Param.__delitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Param.__delitem__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>key</strong> – </p>
+<dd class="field-odd"><p><strong>key</strong></p>
 </dd>
 </dl>
 </dd></dl>
@@ -477,7 +494,7 @@
 <code class="sig-name descname">__contains__</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#Param.__contains__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Param.__contains__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>key</strong> – </p>
+<dd class="field-odd"><p><strong>key</strong></p>
 </dd>
 </dl>
 </dd></dl>
@@ -486,7 +503,7 @@
 
 <dl class="class">
 <dt id="autopilot.core.utils.InvokeEvent">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.utils.</code><code class="sig-name descname">InvokeEvent</code><span class="sig-paren">(</span><em class="sig-param">fn: function</em>, <em class="sig-param">*args: object</em>, <em class="sig-param">**kwargs: object</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#InvokeEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.InvokeEvent" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">InvokeEvent</code><span class="sig-paren">(</span><em class="sig-param">fn: function</em>, <em class="sig-param">*args: object</em>, <em class="sig-param">**kwargs: object</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#InvokeEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.InvokeEvent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtCore.QEvent</span></code></p>
 <p>Sends signals to the main QT thread from spawned message threads</p>
 <p>See <a class="reference external" href="https://stackoverflow.com/a/12127115">stackoverflow</a></p>
@@ -501,7 +518,7 @@
 
 <dl class="class">
 <dt id="autopilot.core.utils.Invoker">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.utils.</code><code class="sig-name descname">Invoker</code><a class="reference internal" href="_modules/autopilot/core/utils.html#Invoker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Invoker" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Invoker</code><a class="reference internal" href="_modules/autopilot/core/utils.html#Invoker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Invoker" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtCore.QObject</span></code></p>
 <p>Wrapper that calls an evoked event made by <a class="reference internal" href="#autopilot.core.utils.InvokeEvent" title="autopilot.core.utils.InvokeEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvokeEvent</span></code></a></p>
 <p><strong>Methods</strong></p>
@@ -513,8 +530,9 @@
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.utils.Invoker.event" title="autopilot.core.utils.Invoker.event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">event</span></code></a>(event)</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param event</dt>
-<dd class="field-odd"><p></p></dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>event</strong></p>
+</dd>
 </dl>
 </p></td>
 </tr>
@@ -525,7 +543,7 @@
 <code class="sig-name descname">event</code><span class="sig-paren">(</span><em class="sig-param">event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#Invoker.event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.Invoker.event" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>event</strong> – </p>
+<dd class="field-odd"><p><strong>event</strong></p>
 </dd>
 </dl>
 </dd></dl>
@@ -539,8 +557,8 @@
 
 <dl class="class">
 <dt id="autopilot.core.utils.ReturnThread">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.utils.</code><code class="sig-name descname">ReturnThread</code><span class="sig-paren">(</span><em class="sig-param">group=None</em>, <em class="sig-param">target=None</em>, <em class="sig-param">name=None</em>, <em class="sig-param">args=()</em>, <em class="sig-param">kwargs={}</em>, <em class="sig-param">Verbose=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#ReturnThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.ReturnThread" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Thread" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code></a></p>
+<em class="property">class </em><code class="sig-name descname">ReturnThread</code><span class="sig-paren">(</span><em class="sig-param">group=None</em>, <em class="sig-param">target=None</em>, <em class="sig-param">name=None</em>, <em class="sig-param">args=()</em>, <em class="sig-param">kwargs={}</em>, <em class="sig-param">Verbose=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#ReturnThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.ReturnThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Thread" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code></a></p>
 <p>Thread whose .join() method returns the value from the function
 thx to <a class="reference external" href="https://stackoverflow.com/a/6894023">https://stackoverflow.com/a/6894023</a></p>
 <p>This constructor should always be called with keyword arguments. Arguments are:</p>
@@ -606,28 +624,31 @@ exception.</p>
 
 <dl class="function">
 <dt id="autopilot.core.utils.list_subjects">
-<code class="sig-prename descclassname">autopilot.core.utils.</code><code class="sig-name descname">list_subjects</code><span class="sig-paren">(</span><em class="sig-param">pilot_db=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#list_subjects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.list_subjects" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">list_subjects</code><span class="sig-paren">(</span><em class="sig-param">pilot_db=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#list_subjects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.list_subjects" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a dictionary of a pilot_db, return the subjects that are in it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pilot_db</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – a pilot_db. if None tried to load pilot_db with <a href="#id1"><span class="problematic" id="id2">:method:`.load_pilotdb`</span></a></p>
+<dd class="field-odd"><p><strong>pilot_db</strong> (<em>dict</em>) – a pilot_db. if None tried to load pilot_db with <a href="#id1"><span class="problematic" id="id2">:method:`.load_pilotdb`</span></a></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>a list of currently active subjects</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>subjects (list)</p>
+<dd class="field-odd"><p>subjects (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a>)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="autopilot.core.utils.load_pilotdb">
-<code class="sig-prename descclassname">autopilot.core.utils.</code><code class="sig-name descname">load_pilotdb</code><span class="sig-paren">(</span><em class="sig-param">file_name=None</em>, <em class="sig-param">reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#load_pilotdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.load_pilotdb" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">load_pilotdb</code><span class="sig-paren">(</span><em class="sig-param">file_name=None</em>, <em class="sig-param">reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#load_pilotdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.load_pilotdb" title="Permalink to this definition">¶</a></dt>
 <dd><p>Try to load the file_db</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>file_name</strong> – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reverse</strong></p></li>
+<li><p><strong>file_name</strong></p></li>
+</ul>
 </dd>
 </dl>
 <p>Returns:</p>
@@ -635,15 +656,15 @@ exception.</p>
 
 <dl class="function">
 <dt id="autopilot.core.utils.coerce_discrete">
-<code class="sig-prename descclassname">autopilot.core.utils.</code><code class="sig-name descname">coerce_discrete</code><span class="sig-paren">(</span><em class="sig-param">df</em>, <em class="sig-param">col</em>, <em class="sig-param">mapping={'L': 0</em>, <em class="sig-param">'R': 1}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#coerce_discrete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.coerce_discrete" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">coerce_discrete</code><span class="sig-paren">(</span><em class="sig-param">df</em>, <em class="sig-param">col</em>, <em class="sig-param">mapping={'L': 0</em>, <em class="sig-param">'R': 1}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/utils.html#coerce_discrete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.utils.coerce_discrete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Coerce a discrete/string column of a pandas dataframe into numeric values</p>
 <p>Default is to map ‘L’ to 0 and ‘R’ to 1 as in the case of Left/Right 2AFC tasks</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – dataframe with the column to transform</p></li>
-<li><p><strong>col</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – name of column</p></li>
-<li><p><strong>mapping</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – mapping of strings to numbers</p></li>
+<li><p><strong>col</strong> (<em>str</em>) – name of column</p></li>
+<li><p><strong>mapping</strong> (<em>dict</em>) – mapping of strings to numbers</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -665,7 +686,7 @@ exception.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="autopilot.tasks.html" class="btn btn-neutral float-right" title="tasks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="autopilot.hardware.html" class="btn btn-neutral float-right" title="hardware" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="autopilot.core.terminal.html" class="btn btn-neutral float-left" title="terminal" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

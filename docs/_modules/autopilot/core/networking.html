@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>autopilot.core.networking &mdash; Autopilot 0.2 documentation</title>
+  <title>autopilot.core.networking &mdash; Autopilot 0.3.0 documentation</title>
   
 
   
@@ -36,6 +37,9 @@
   <link rel="stylesheet" href="../../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/restyle.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/autopilot_sass.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/autopilot_sass.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -43,7 +47,8 @@
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js" integrity="sha256-BuxrUdr/4YoztQLxT6xmdO6hSQw2d6BtBUY1pteGds4=" crossorigin="anonymous"></script>
 
 </head>
 
@@ -71,7 +76,7 @@
             
             
               <div class="version">
-                0.2
+                0.3
               </div>
             
           
@@ -98,11 +103,9 @@
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.overview.html">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#program-structure">Program Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#tasks">Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#hardware">Hardware</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#agents">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#module-tour">Module Tour</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.installation.html">Installation</a><ul>
@@ -121,12 +124,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -188,7 +185,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../autopilot.core.html">Core Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.gui.html">gui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.hardware.html">hardware</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.plots.html">plots</a></li>
@@ -198,7 +194,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.utils.html">utils</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.hardware.html">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.hardware.cameras.html">cameras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.hardware.gpio.html">gpio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.hardware.i2c.html">i2c</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.hardware.usb.html">usb</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.children.html">children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.free_water.html">free_water</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.graduation.html">graduation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.nafc.html">nafc</a></li>
@@ -217,6 +221,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../autopilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.viz.psychometric.html">psychometric</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../autopilot.setup.html">Setup</a><ul>
@@ -226,16 +231,22 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../autopilot.prefs.html">Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.external.html">External</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#completed-goals">Completed Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#improvements">Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#completed">Completed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#lowest-priority">Lowest Priority</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../changelog/index.html#version-0-3">Version 0.3</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../changelog/v0.3.0.html">v0.3.0 (Februrary DATE, 2020)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../changelog/v0.3.0.html">v0.3.0 (March 3rd, 2020)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#major-updates">Major Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#new-features">New Features</a></li>
@@ -515,6 +526,8 @@
 <span class="sd">        is instantiated, given an ID and the rest of its attributes.</span>
 
 <span class="sd">        Args:</span>
+<span class="sd">            flags:</span>
+<span class="sd">            repeat:</span>
 <span class="sd">            to (str): The identity of the socket this message is to</span>
 <span class="sd">            key (str): The type of message - used to select which method the receiver</span>
 <span class="sd">                uses to process this message.</span>
@@ -560,6 +573,7 @@
 <span class="sd">        :meth:`~.Station.repeat` unless `repeat` is False.</span>
 
 <span class="sd">        Args:</span>
+<span class="sd">            flags:</span>
 <span class="sd">            to (str): The identity of the socket this message is to</span>
 <span class="sd">            key (str): The type of message - used to select which method the receiver</span>
 <span class="sd">                uses to process this message.</span>
@@ -646,6 +660,7 @@
 <span class="sd">        :meth:`~.Station.repeat` unless `repeat` is False.</span>
 
 <span class="sd">        Args:</span>
+<span class="sd">            flags:</span>
 <span class="sd">            to (str): The identity of the socket this message is to. If not included,</span>
 <span class="sd">                sent to :meth:`~.Station.push_id` .</span>
 <span class="sd">            key (str): The type of message - used to select which method the receiver</span>
@@ -779,6 +794,15 @@
         <span class="c1">#self.logger.info(&#39;CONFIRMED MESSAGE {}&#39;.format(msg.value))</span>
 
 <div class="viewcode-block" id="Station.l_stream"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Station.l_stream">[docs]</a>    <span class="k">def</span> <span class="nf">l_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reconstitute the original stream of messages and call their handling methods</span>
+
+<span class="sd">        The ``msg`` should contain an ``inner_key`` that indicates the key, and thus the</span>
+<span class="sd">        handling method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            msg (dict): Compressed stream sent by :meth:`Net_Node._stream`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">listen_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">listens</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;inner_key&#39;</span><span class="p">]]</span>
         <span class="n">old_value</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="nb">delattr</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span>
@@ -1072,6 +1096,10 @@
 
 
 <div class="viewcode-block" id="Terminal_Station.start_plot_timer"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.start_plot_timer">[docs]</a>    <span class="k">def</span> <span class="nf">start_plot_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start a timer that controls how often streamed video frames are sent to</span>
+<span class="sd">        :class:`.gui.Video` plots.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_timer</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fps_clock</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_timer</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
@@ -1183,7 +1211,16 @@
         <span class="c1">#self.send(&#39;P_{}&#39;.format(msg.value[&#39;pilot&#39;]), &#39;DATA&#39;, msg.value, flags=msg.flags)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s1">&#39;P_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]),</span> <span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">l_continuous</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="Terminal_Station.l_continuous"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_continuous">[docs]</a>    <span class="k">def</span> <span class="nf">l_continuous</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle the storage of continuous data</span>
+
+<span class="sd">        Forwards all data on to the Terminal&#39;s internal :class:`Net_Node`,</span>
+<span class="sd">        send to :class:`.Plot` according to update rate in ``prefs.DRAWFPS``</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            msg (dict): A continuous data message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_timer</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">start_plot_timer</span><span class="p">()</span>
@@ -1197,17 +1234,17 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">sent_plot</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">]</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sent_plot</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">]</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s1">&#39;P_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]),</span> <span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sent_plot</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">]</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sent_plot</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">]</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="Terminal_Station.l_continuous"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Terminal_Station.l_continuous">[docs]</a>    <span class="k">def</span> <span class="nf">l_continuous</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
-
-        <span class="c1"># Send through to terminal</span>
-        <span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;continuous&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;_T&#39;</span><span class="p">,</span> <span class="s1">&#39;DATA&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">flags</span><span class="p">)</span>
-
-        <span class="c1"># Send to plot widget, which should be listening to &quot;P_{pilot_name}&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;P_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]),</span> <span class="s1">&#39;DATA&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">flags</span><span class="p">)</span></div>
+    <span class="c1"># def l_continuous(self, msg):</span>
+    <span class="c1">#</span>
+    <span class="c1">#     # Send through to terminal</span>
+    <span class="c1">#     msg.value.update({&#39;continuous&#39;:True})</span>
+    <span class="c1">#     self.send(&#39;_T&#39;, &#39;DATA&#39;, msg.value, flags=msg.flags)</span>
+    <span class="c1">#</span>
+    <span class="c1">#     # Send to plot widget, which should be listening to &quot;P_{pilot_name}&quot;</span>
+    <span class="c1">#     self.send(&#39;P_{}&#39;.format(msg.value[&#39;pilot&#39;]), &#39;DATA&#39;, msg.value, flags=msg.flags)</span>
 
 
 
@@ -1518,11 +1555,24 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">file_block</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Pilot_Station.l_continuous"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_continuous">[docs]</a>    <span class="k">def</span> <span class="nf">l_continuous</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Forwards continuous data sent by children back to terminal.</span>
+
+<span class="sd">        Continuous data sources from this pilot should be streamed directly to the terminal.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            msg (:class:`Message`): Continuous data message</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">:</span>
             <span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_id</span>
             <span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span>
             <span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;continuous&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;DATA&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;DATA&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Received continuous data but no child found, </span><span class="se">\</span>
+<span class="s1">                                continuous data should be streamed directly to terminal </span><span class="se">\</span>
+<span class="s1">                                from pilot&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Pilot_Station.l_child"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_child">[docs]</a>    <span class="k">def</span> <span class="nf">l_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1560,6 +1610,17 @@
 <span class="sd">    To minimize the complexity of the network topology, Net_Nodes</span>
 <span class="sd">    must communicate through a :class:`.Station` ROUTER, rather than</span>
 <span class="sd">    address each other directly.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?</span>
+<span class="sd">        upstream (str): The identity of the ROUTER socket used by our upstream :class:`.Station` object.</span>
+<span class="sd">        port (int): The port that our upstream ROUTER socket is bound to</span>
+<span class="sd">        listens (dict): Dictionary of functions to call for different types of messages.</span>
+<span class="sd">            keys match the :attr:`.Message.key`.</span>
+<span class="sd">        instance (bool): Should the node try and use the existing zmq context and tornado loop?</span>
+<span class="sd">        upstream_ip (str): If this Net_Node is being used on its own (ie. not behind a :class:`.Station`), it can directly connect to another node at this IP. Otherwise use &#39;localhost&#39; to connect to a station.</span>
+<span class="sd">        route_port (int): Typically, Net_Nodes only have a single Dealer socket and receive messages from their encapsulating :class:`.Station`, but</span>
+<span class="sd">            if you want to take this node offroad and use it independently, an int here binds a Router to the port.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        context (:class:`zmq.Context`):  zeromq context</span>
@@ -1599,16 +1660,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">upstream</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">listens</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">upstream_ip</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
                  <span class="n">route_port</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">expand_on_receive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Args:</span>
-<span class="sd">            id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?</span>
-<span class="sd">            upstream (str): The identity of the ROUTER socket used by our upstream :class:`.Station` object.</span>
-<span class="sd">            port (int): The port that our upstream ROUTER socket is bound to</span>
-<span class="sd">            listens (dict): Dictionary of functions to call for different types of messages.</span>
-<span class="sd">                keys match the :attr:`.Message.key`.</span>
-<span class="sd">            instance (bool): Should the node try and use the existing zmq context and tornado loop?</span>
-<span class="sd">            upstream_ip (str): If this Net_Node is being used on its own (ie. not behind a :class:`.Station`), it can directly connect to another node at this IP. Otherwise use &#39;localhost&#39; to connect to a station.</span>
-<span class="sd">            route_port (int): Typically, Net_Nodes only have a single Dealer socket and receive messages from their encapsulating :class:`.Station`, but</span>
-<span class="sd">                if you want to take this node offroad and use it independently, an int here binds a Router to the port.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">instance</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">zmq</span><span class="o">.</span><span class="n">Context</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
@@ -1915,10 +1967,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;CONFIRMED MESSAGE </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Net_Node.l_stream"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Net_Node.l_stream">[docs]</a>    <span class="k">def</span> <span class="nf">l_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">listen_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">listens</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;inner_key&#39;</span><span class="p">]]</span>
-        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;payload&#39;</span><span class="p">]:</span>
-            <span class="n">listen_fn</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></div>
+    <span class="c1"># def l_stream(self, value):</span>
+    <span class="c1">#     listen_fn = self.listens[value[&#39;inner_key&#39;]]</span>
+    <span class="c1">#     for v in value[&#39;payload&#39;]:</span>
+    <span class="c1">#         listen_fn(v)</span>
 
 
 <div class="viewcode-block" id="Net_Node.prepare_message"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Net_Node.prepare_message">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">repeat</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1927,6 +1979,8 @@
 <span class="sd">        the rest of its attributes.</span>
 
 <span class="sd">        Args:</span>
+<span class="sd">            flags:</span>
+<span class="sd">            repeat:</span>
 <span class="sd">            to (str): The identity of the socket this message is to</span>
 <span class="sd">            key (str): The type of message - used to select which method the receiver</span>
 <span class="sd">                uses to process this message.</span>
@@ -2112,9 +2166,6 @@
 <div class="viewcode-block" id="Net_Node.release"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Net_Node.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">closing</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div></div>
-
-<div class="viewcode-block" id="Dummy_Msg"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Dummy_Msg">[docs]</a><span class="k">class</span> <span class="nc">Dummy_Msg</span><span class="p">:</span>
-    <span class="n">pending</span><span class="o">=</span><span class="kc">False</span></div>
 
 
 
@@ -2311,6 +2362,12 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Message.get_timestamp"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Message.get_timestamp">[docs]</a>    <span class="k">def</span> <span class="nf">get_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a Python timestamp</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Isoformatted timestamp from ``datetime``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Message.validate"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Message.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2368,6 +2425,15 @@
             <span class="k">return</span> <span class="kc">False</span></div></div>
 
 <div class="viewcode-block" id="serialize_array"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.serialize_array">[docs]</a><span class="k">def</span> <span class="nf">serialize_array</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pack an array with :func:`blosc.pack_array` and serialize with :func:`base64.b64encode`</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        array (:class:`numpy.ndarray`): Array to serialize</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: {&#39;NUMPY_ARRAY&#39;: base-64 encoded, blosc-compressed array.}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">compressed</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">blosc</span><span class="o">.</span><span class="n">pack_array</span><span class="p">(</span><span class="n">array</span><span class="p">))</span>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;NUMPY_ARRAY&#39;</span><span class="p">:</span> <span class="n">compressed</span><span class="p">}</span></div>
 

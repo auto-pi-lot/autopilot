@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gui &mdash; Autopilot 0.2 documentation</title>
+  <title>gui &mdash; Autopilot 0.3.0 documentation</title>
   
 
   
@@ -36,16 +37,20 @@
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/restyle.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="hardware" href="autopilot.core.hardware.html" />
+    <link rel="next" title="networking" href="autopilot.core.networking.html" />
     <link rel="prev" title="core" href="autopilot.core.html" />
 
     <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js" integrity="sha256-BuxrUdr/4YoztQLxT6xmdO6hSQw2d6BtBUY1pteGds4=" crossorigin="anonymous"></script>
 
 </head>
 
@@ -73,7 +78,7 @@
             
             
               <div class="version">
-                0.2
+                0.3
               </div>
             
           
@@ -100,11 +105,9 @@
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure">Program Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#module-tour">Module Tour</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
@@ -123,12 +126,6 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -190,7 +187,6 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="autopilot.core.html">Core Modules</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">gui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autopilot.core.hardware.html">hardware</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
@@ -200,7 +196,15 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.hardware.html">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.cameras.html">cameras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.gpio.html">gpio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.i2c.html">i2c</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.usb.html">usb</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.children.html">children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.free_water.html">free_water</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.graduation.html">graduation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.nafc.html">nafc</a></li>
@@ -219,6 +223,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.viz.psychometric.html">psychometric</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.setup.html">Setup</a><ul>
@@ -228,16 +233,22 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.prefs.html">Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.external.html">External</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="todo.html#completed-goals">Completed Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#improvements">Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#completed">Completed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#lowest-priority">Lowest Priority</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-3">Version 0.3</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (Februrary DATE, 2020)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (March 3rd, 2020)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#major-updates">Major Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#new-features">New Features</a></li>
@@ -330,7 +341,7 @@ As a result, a lot of modules are interdependent (eg. pass objects between each 
 This will be corrected before v1.0</p>
 </div>
 <p>These classes implement the GUI used by the Terminal.</p>
-<p>The GUI is built using <a class="reference external" href="https://pypi.org/project/PySide/">PySide</a>, a Python wrapper around Qt4.</p>
+<p>The GUI is built using <a class="reference external" href="https://doc.qt.io/qtforpython/">PySide2</a>, a Python wrapper around Qt5.</p>
 <p>These classes are all currently used only by the <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a>.</p>
 <p>If performing any GUI operations in another thread (eg. as a callback from a networking object),
 the method must be decorated with <cite>&#64;gui_event</cite> which will call perform the update in the main thread as required by Qt.</p>
@@ -366,7 +377,7 @@ the method must be decorated with <cite>&#64;gui_event</cite> which will call pe
 <td><p>A little panel with</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.gui.Pilot_Ports" title="autopilot.core.gui.Pilot_Ports"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Pilot_Ports</span></code></a>(pilot[, n_clicks, click_dur])</p></td>
-<td><p>Each pilot’s ports and buttons to control repeated release.</p></td>
+<td><p>Created by <a class="reference internal" href="#autopilot.core.gui.Calibrate_Water" title="autopilot.core.gui.Calibrate_Water"><code class="xref py py-class docutils literal notranslate"><span class="pre">Calibrate_Water</span></code></a>, Each pilot’s ports and buttons to control repeated release.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.gui.Protocol_Wizard" title="autopilot.core.gui.Protocol_Wizard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Protocol_Wizard</span></code></a>()</p></td>
 <td><p>A dialog window to create a new protocol.</p></td>
@@ -399,13 +410,13 @@ the method must be decorated with <cite>&#64;gui_event</cite> which will call pe
 <td><p>Wrapper/decorator around an event that posts GUI events back to the main thread that our window is running in.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.gui.pop_dialog" title="autopilot.core.gui.pop_dialog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pop_dialog</span></code></a>(message[, msg_type, details, buttons])</p></td>
-<td><p>Convenience function to pop a :class:<a href="#id8"><span class="problematic" id="id9">`</span></a>.QtGui.QDialog window to display a message.</p></td>
+<td><p>Convenience function to pop a :class:<a href="#id10"><span class="problematic" id="id11">`</span></a>.QtGui.QDialog window to display a message.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="class">
 <dt id="autopilot.core.gui.Bandwidth_Test">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.gui.</code><code class="sig-name descname">Bandwidth_Test</code><span class="sig-paren">(</span><em class="sig-param">pilots</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Bandwidth_Test" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Bandwidth_Test</code><span class="sig-paren">(</span><em class="sig-param">pilots</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Bandwidth_Test" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QDialog</span></code></p>
 <p>Test the limits of the rate of messaging from the connected Pilots.</p>
 <p>Asks pilots to send messages at varying rates and with varying payload sizes, and with messages with/without receipts.</p>
@@ -413,9 +424,9 @@ the method must be decorated with <cite>&#64;gui_event</cite> which will call pe
 <dl class="field-list simple">
 <dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>rate_list</strong> (<em>list</em>) – List of rates (Hz) to test</p></li>
-<li><p><strong>payload_list</strong> (<em>list</em>) – List of payload sizes (KB) to test</p></li>
-<li><p><strong>messages</strong> (<em>list</em>) – list of messages received during test</p></li>
+<li><p><strong>rate_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – List of rates (Hz) to test</p></li>
+<li><p><strong>payload_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – List of payload sizes (KB) to test</p></li>
+<li><p><strong>messages</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – list of messages received during test</p></li>
 </ul>
 </dd>
 </dl>
@@ -430,7 +441,7 @@ the method must be decorated with <cite>&#64;gui_event</cite> which will call pe
 <td><p>Look we’re just making the stuff in the window over here alright? relax.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.gui.Bandwidth_Test.process_test" title="autopilot.core.gui.Bandwidth_Test.process_test"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_test</span></code></a>(rate, n_msg, confirm)</p></td>
-<td><p></p></td>
+<td><p>Process the results of the test and update the plot window.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.gui.Bandwidth_Test.register_msg" title="autopilot.core.gui.Bandwidth_Test.register_msg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_msg</span></code></a>(value)</p></td>
 <td><p>Receive message from pilot, stash timestamp, number and pilot</p></td>
@@ -439,7 +450,7 @@ the method must be decorated with <cite>&#64;gui_event</cite> which will call pe
 <td><p>Select save file location for test results (csv) and then save them there</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.gui.Bandwidth_Test.send_test" title="autopilot.core.gui.Bandwidth_Test.send_test"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send_test</span></code></a>(rate, payload, n_msg, confirm)</p></td>
-<td><p></p></td>
+<td><p>Send a message describing the test to each of the pilots in <code class="xref py py-attr docutils literal notranslate"><span class="pre">Bandwidth_Test.test_pilots</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.gui.Bandwidth_Test.start" title="autopilot.core.gui.Bandwidth_Test.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
 <td><p>Start the test!!!</p></td>
@@ -461,7 +472,19 @@ the method must be decorated with <cite>&#64;gui_event</cite> which will call pe
 <dl class="method">
 <dt id="autopilot.core.gui.Bandwidth_Test.process_test">
 <code class="sig-name descname">process_test</code><span class="sig-paren">(</span><em class="sig-param">rate</em>, <em class="sig-param">n_msg</em>, <em class="sig-param">confirm</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Bandwidth_Test.process_test" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Process the results of the test and update the plot window.</p>
+<p>Reads message results from <code class="xref py py-attr docutils literal notranslate"><span class="pre">messages</span></code>, appends computed results to
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">results</span></code>, and starts the next test if any remain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rate</strong> (<em>int</em>) – Rate of current test in Hz</p></li>
+<li><p><strong>n_msg</strong> (<em>int</em>) – Number of expected messages in this test</p></li>
+<li><p><strong>confirm</strong> (<em>bool</em>) – Whether message confirmations were enabled for this test.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="autopilot.core.gui.Bandwidth_Test.register_msg">
@@ -469,14 +492,13 @@ the method must be decorated with <cite>&#64;gui_event</cite> which will call pe
 <dd><p>Receive message from pilot, stash timestamp, number and pilot</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>Value should contain</p>
+<dd class="field-odd"><p><strong>value</strong> (<em>dict</em>) – Value should contain</p>
 <ul class="simple">
 <li><p>Pilot</p></li>
 <li><p>Timestamp</p></li>
 <li><p>Message number</p></li>
 <li><p>Payload</p></li>
 </ul>
-</p>
 </dd>
 </dl>
 </dd></dl>
@@ -490,7 +512,19 @@ the method must be decorated with <cite>&#64;gui_event</cite> which will call pe
 <dl class="method">
 <dt id="autopilot.core.gui.Bandwidth_Test.send_test">
 <code class="sig-name descname">send_test</code><span class="sig-paren">(</span><em class="sig-param">rate</em>, <em class="sig-param">payload</em>, <em class="sig-param">n_msg</em>, <em class="sig-param">confirm</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Bandwidth_Test.send_test" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Send a message describing the test to each of the pilots in <code class="xref py py-attr docutils literal notranslate"><span class="pre">Bandwidth_Test.test_pilots</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rate</strong> (<em>int</em>) – Rate of message sending in Hz</p></li>
+<li><p><strong>payload</strong> (<em>int</em>) – Size of message payload in bytes</p></li>
+<li><p><strong>n_msg</strong> (<em>int</em>) – Number of messages to send</p></li>
+<li><p><strong>confirm</strong> (<em>bool</em>) – If True, use message confirmation, if False no confirmation.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="autopilot.core.gui.Bandwidth_Test.start">
@@ -521,13 +555,17 @@ the method must be decorated with <cite>&#64;gui_event</cite> which will call pe
 
 <dl class="class">
 <dt id="autopilot.core.gui.Calibrate_Water">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.gui.</code><code class="sig-name descname">Calibrate_Water</code><span class="sig-paren">(</span><em class="sig-param">pilots</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Calibrate_Water" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Calibrate_Water</code><span class="sig-paren">(</span><em class="sig-param">pilots</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Calibrate_Water" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QDialog</span></code></p>
 <p>A window to calibrate the volume of water dispensed per ms.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Not Implemented</p>
-</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pilots</strong> (<code class="xref py py-attr docutils literal notranslate"><span class="pre">Terminal.pilots</span></code>) – A dictionary of pilots</p></li>
+<li><p><strong>message_fn</strong> (<a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.send" title="autopilot.core.networking.Net_Node.send"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Net_Node.send()</span></code></a>) – The method the Terminal uses to send messages via its net node.</p></li>
+</ul>
+</dd>
+</dl>
 <p><strong>Methods</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -540,14 +578,6 @@ the method must be decorated with <cite>&#64;gui_event</cite> which will call pe
 </tr>
 </tbody>
 </table>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pilots</strong> (<code class="xref py py-attr docutils literal notranslate"><span class="pre">Terminal.pilots</span></code>) – A dictionary of pilots</p></li>
-<li><p><strong>message_fn</strong> (<a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Net_Node.send" title="autopilot.core.networking.Net_Node.send"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Net_Node.send()</span></code></a>) – The method the Terminal uses to send messages via its net node.</p></li>
-</ul>
-</dd>
-</dl>
 <dl class="method">
 <dt id="autopilot.core.gui.Calibrate_Water.init_ui">
 <code class="sig-name descname">init_ui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Calibrate_Water.init_ui" title="Permalink to this definition">¶</a></dt>
@@ -562,14 +592,33 @@ the method must be decorated with <cite>&#64;gui_event</cite> which will call pe
 
 <dl class="class">
 <dt id="autopilot.core.gui.Control_Panel">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.gui.</code><code class="sig-name descname">Control_Panel</code><span class="sig-paren">(</span><em class="sig-param">subjects</em>, <em class="sig-param">start_fn</em>, <em class="sig-param">pilots=None</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Control_Panel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Control_Panel</code><span class="sig-paren">(</span><em class="sig-param">subjects</em>, <em class="sig-param">start_fn</em>, <em class="sig-param">pilots=None</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Control_Panel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QWidget</span></code></p>
 <p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">QtWidgets.QWidget</span></code> that contains the controls for all pilots.</p>
-<p>Specifically, for each pilot, it contains</p>
-<ul class="simple">
-<li><p>one <code class="xref py py-class docutils literal notranslate"><span class="pre">subject_List</span></code>: A list of the subjects that run in each pilot.</p></li>
-<li><p>one <a class="reference internal" href="#autopilot.core.gui.Pilot_Panel" title="autopilot.core.gui.Pilot_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Panel</span></code></a>: A set of button controls for starting/stopping behavior</p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subjects</strong> (<em>dict</em>) – See <code class="xref py py-attr docutils literal notranslate"><span class="pre">Control_Panel.subjects</span></code></p></li>
+<li><p><strong>start_fn</strong> (<a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.toggle_start" title="autopilot.core.terminal.Terminal.toggle_start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">toggle_start()</span></code></a>) – the Terminal’s
+toggle_start function, propagated down to each <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Button</span></code></p></li>
+<li><p><strong>pilots</strong> – Usually the Terminal’s <code class="xref py py-attr docutils literal notranslate"><span class="pre">pilots</span></code> dict. If not passed,
+will try to load <code class="xref py py-attr docutils literal notranslate"><span class="pre">params.PILOT_DB</span></code></p></li>
 </ul>
+</dd>
+<dt class="field-even">Variables</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>subjects</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – A dictionary with subject ID’s as keys and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">core.subject.Subject</span></code> objects as values. Shared with the
+Terminal object to manage access conflicts.</p></li>
+<li><p><strong>start_fn</strong> (<a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.toggle_start" title="autopilot.core.terminal.Terminal.toggle_start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">toggle_start()</span></code></a>) – See <code class="xref py py-attr docutils literal notranslate"><span class="pre">Control_Panel.start_fn</span></code></p></li>
+<li><p><strong>pilots</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – A dictionary with pilot ID’s as keys and nested dictionaries
+containing subjects, IP, etc. as values</p></li>
+<li><p><strong>subject_lists</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – A dict mapping subject ID to <code class="xref py py-class docutils literal notranslate"><span class="pre">subject_List</span></code></p></li>
+<li><p><strong>layout</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QGridLayout</span></code>) – Layout grid for widget</p></li>
+<li><p><strong>panels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – A dict mapping pilot name to the relevant <a class="reference internal" href="#autopilot.core.gui.Pilot_Panel" title="autopilot.core.gui.Pilot_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Panel</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
 <p><strong>Methods</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -588,32 +637,13 @@ the method must be decorated with <cite>&#64;gui_event</cite> which will call pe
 </tr>
 </tbody>
 </table>
+<p>Specifically, for each pilot, it contains</p>
+<ul class="simple">
+<li><p>one <code class="xref py py-class docutils literal notranslate"><span class="pre">subject_List</span></code>: A list of the subjects that run in each pilot.</p></li>
+<li><p>one <a class="reference internal" href="#autopilot.core.gui.Pilot_Panel" title="autopilot.core.gui.Pilot_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Panel</span></code></a>: A set of button controls for starting/stopping behavior</p></li>
+</ul>
 <p>This class should not be instantiated outside the context of a
 <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a> object, as they share the <code class="xref py py-attr docutils literal notranslate"><span class="pre">subjects</span></code> dictionary.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Variables</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>subjects</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary with subject ID’s as keys and
-<code class="xref py py-class docutils literal notranslate"><span class="pre">core.subject.Subject</span></code> objects as values. Shared with the
-Terminal object to manage access conflicts.</p></li>
-<li><p><strong>start_fn</strong> (<a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.toggle_start" title="autopilot.core.terminal.Terminal.toggle_start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">toggle_start()</span></code></a>) – See <code class="xref py py-attr docutils literal notranslate"><span class="pre">Control_Panel.start_fn</span></code></p></li>
-<li><p><strong>pilots</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary with pilot ID’s as keys and nested dictionaries
-containing subjects, IP, etc. as values</p></li>
-<li><p><strong>subject_lists</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dict mapping subject ID to <code class="xref py py-class docutils literal notranslate"><span class="pre">subject_List</span></code></p></li>
-<li><p><strong>layout</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QGridLayout</span></code>) – Layout grid for widget</p></li>
-<li><p><strong>panels</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dict mapping pilot name to the relevant <a class="reference internal" href="#autopilot.core.gui.Pilot_Panel" title="autopilot.core.gui.Pilot_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Panel</span></code></a></p></li>
-</ul>
-</dd>
-<dt class="field-even">Parameters</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>subjects</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – See <code class="xref py py-attr docutils literal notranslate"><span class="pre">Control_Panel.subjects</span></code></p></li>
-<li><p><strong>start_fn</strong> (<a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.toggle_start" title="autopilot.core.terminal.Terminal.toggle_start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">toggle_start()</span></code></a>) – the Terminal’s
-toggle_start function, propagated down to each <code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Button</span></code></p></li>
-<li><p><strong>pilots</strong> – Usually the Terminal’s <code class="xref py py-attr docutils literal notranslate"><span class="pre">pilots</span></code> dict. If not passed,
-will try to load <code class="xref py py-attr docutils literal notranslate"><span class="pre">params.PILOT_DB</span></code></p></li>
-</ul>
-</dd>
-</dl>
 <dl class="method">
 <dt id="autopilot.core.gui.Control_Panel.create_subject">
 <code class="sig-name descname">create_subject</code><span class="sig-paren">(</span><em class="sig-param">pilot</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Control_Panel.create_subject" title="Permalink to this definition">¶</a></dt>
@@ -622,7 +652,7 @@ Opens a <a class="reference internal" href="#autopilot.core.gui.New_Subject_Wiza
 Finally, adds the new subject to the <code class="xref py py-attr docutils literal notranslate"><span class="pre">pilots</span></code> database and updates it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pilot</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Pilot name passed from <a class="reference internal" href="#autopilot.core.gui.Pilot_Panel" title="autopilot.core.gui.Pilot_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Panel</span></code></a>, added to the created Subject object.</p>
+<dd class="field-odd"><p><strong>pilot</strong> (<em>str</em>) – Pilot name passed from <a class="reference internal" href="#autopilot.core.gui.Pilot_Panel" title="autopilot.core.gui.Pilot_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Panel</span></code></a>, added to the created Subject object.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -645,13 +675,12 @@ set size policies and connect Qt signals.</p>
 <dt id="autopilot.core.gui.Control_Panel.update_db">
 <code class="sig-name descname">update_db</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Control_Panel.update_db" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gathers any changes in <a class="reference internal" href="#autopilot.core.gui.Subject_List" title="autopilot.core.gui.Subject_List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject_List</span></code></a> s and dumps <code class="xref py py-attr docutils literal notranslate"><span class="pre">pilots</span></code> to <code class="xref py py-attr docutils literal notranslate"><span class="pre">prefs.PILOT_DB</span></code></p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>kwargs</strong> – <p>Create new pilots by passing a dictionary with the structure</p>
+<dd class="field-odd"><p><strong>kwargs</strong> – Create new pilots by passing a dictionary with the structure</p>
 <p><cite>new={‘pilot_name’:’pilot_values’}</cite></p>
 <p>where <cite>‘pilot_values’</cite> can be nothing, a list of subjects,
 or any other information included in the pilot db</p>
-</p>
 </dd>
 </dl>
 </dd></dl>
@@ -660,7 +689,7 @@ or any other information included in the pilot db</p>
 
 <dl class="class">
 <dt id="autopilot.core.gui.Drag_List">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.gui.</code><code class="sig-name descname">Drag_List</code><a class="headerlink" href="#autopilot.core.gui.Drag_List" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Drag_List</code><a class="headerlink" href="#autopilot.core.gui.Drag_List" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QListWidget</span></code></p>
 <p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">QtWidgets.QListWidget</span></code> that is capable of having files dragged &amp; dropped.</p>
 <p>copied with much gratitude from <a class="reference external" href="https://stackoverflow.com/a/25614674">stackoverflow</a></p>
@@ -687,6 +716,18 @@ dragged onto this widget.</p>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.gui.Drag_List.dropEvent" title="autopilot.core.gui.Drag_List.dropEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dropEvent</span></code></a>(event)</p></td>
 <td><p>When the files are finally dropped, if they contain paths, emit the list of paths through the <cite>fileDropped</cite> signal.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.gui.Drag_List.fileDropped" title="autopilot.core.gui.Drag_List.fileDropped"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fileDropped</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Call self as a function.</p></td>
 </tr>
 </tbody>
 </table>
@@ -740,7 +781,7 @@ emit the list of paths through the <cite>fileDropped</cite> signal.</p>
 
 <dl class="class">
 <dt id="autopilot.core.gui.Graduation_Widget">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.gui.</code><code class="sig-name descname">Graduation_Widget</code><a class="headerlink" href="#autopilot.core.gui.Graduation_Widget" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Graduation_Widget</code><a class="headerlink" href="#autopilot.core.gui.Graduation_Widget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QWidget</span></code></p>
 <p>A widget used in <a class="reference internal" href="#autopilot.core.gui.Protocol_Wizard" title="autopilot.core.gui.Protocol_Wizard"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol_Wizard</span></code></a> to define graduation parameters.</p>
 <p>See <a class="reference internal" href="autopilot.tasks.graduation.html#module-autopilot.tasks.graduation" title="autopilot.tasks.graduation"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tasks.graduation</span></code></a> .</p>
@@ -754,7 +795,7 @@ define when a subject should progress through those steps.</p>
 <li><p><strong>type_selection</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QtWidgets.QComboBox</span></code>) – A box to select from the available
 graduation types listed in <code class="xref py py-data docutils literal notranslate"><span class="pre">tasks.GRAD_LIST</span></code> . Has its <cite>currentIndexChanged</cite>
 signal connected to <a class="reference internal" href="#autopilot.core.gui.Graduation_Widget.populate_params" title="autopilot.core.gui.Graduation_Widget.populate_params"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Graduation_Widget.populate_params()</span></code></a></p></li>
-<li><p><strong>param_dict</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Stores the type of graduation and the relevant params,
+<li><p><strong>param_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – Stores the type of graduation and the relevant params,
 fetched by <a class="reference internal" href="#autopilot.core.gui.Protocol_Wizard" title="autopilot.core.gui.Protocol_Wizard"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol_Wizard</span></code></a> when defining a protocol.</p></li>
 <li><p><strong>set_graduation</strong> (<a class="reference internal" href="#autopilot.core.gui.Protocol_Wizard.set_graduation" title="autopilot.core.gui.Protocol_Wizard.set_graduation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Protocol_Wizard.set_graduation()</span></code></a>) – Passed to us after we’re inited.</p></li>
 </ul>
@@ -799,7 +840,7 @@ the parameter scheme.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>params</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – In the case that <a class="reference internal" href="#autopilot.core.gui.Protocol_Wizard" title="autopilot.core.gui.Protocol_Wizard"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol_Wizard</span></code></a> switches us back to
+<dd class="field-odd"><p><strong>params</strong> (<em>dict</em>) – In the case that <a class="reference internal" href="#autopilot.core.gui.Protocol_Wizard" title="autopilot.core.gui.Protocol_Wizard"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol_Wizard</span></code></a> switches us back to
 a step where we have already defined graduation parameters, it will pass them
 so we can repopulate the relevant widgets with them.</p>
 </dd>
@@ -824,7 +865,7 @@ passed to us after instantiation.</p>
 
 <dl class="class">
 <dt id="autopilot.core.gui.New_Subject_Wizard">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.gui.</code><code class="sig-name descname">New_Subject_Wizard</code><a class="headerlink" href="#autopilot.core.gui.New_Subject_Wizard" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">New_Subject_Wizard</code><a class="headerlink" href="#autopilot.core.gui.New_Subject_Wizard" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QDialog</span></code></p>
 <p>A popup that prompts you to define variables for a new <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">subject.Subject</span></code></a> object</p>
 <p>Called by <a class="reference internal" href="#autopilot.core.gui.Control_Panel.create_subject" title="autopilot.core.gui.Control_Panel.create_subject"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Control_Panel.create_subject()</span></code></a> , which handles actually creating
@@ -835,7 +876,7 @@ the subject file and updating the <code class="xref py py-attr docutils literal 
 <dl class="field-list simple">
 <dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>protocol_dir</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – A full path to where protocols are stored,
+<li><p><strong>protocol_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A full path to where protocols are stored,
 received from <code class="xref py py-const docutils literal notranslate"><span class="pre">prefs.PROTOCOLDIR</span></code></p></li>
 <li><p><strong>bio_tab</strong> (<a class="reference internal" href="#autopilot.core.gui.New_Subject_Wizard.Biography_Tab" title="autopilot.core.gui.New_Subject_Wizard.Biography_Tab"><code class="xref py py-class docutils literal notranslate"><span class="pre">Biography_Tab</span></code></a>) – Sub-object to set and store biographical variables</p></li>
 <li><p><strong>task_tab</strong> (<a class="reference internal" href="#autopilot.core.gui.New_Subject_Wizard.Task_Tab" title="autopilot.core.gui.New_Subject_Wizard.Task_Tab"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task_Tab</span></code></a>) – Sub-object to set and store protocol and step assignment</p></li>
@@ -871,14 +912,14 @@ available in the values dictionary. The attributes themselves are PySide Widgets
 <dl class="field-list simple">
 <dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – A Subject’s ID or name</p></li>
-<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The date the subject started the task. Automatically filled by
+<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A Subject’s ID or name</p></li>
+<li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The date the subject started the task. Automatically filled by
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">datetime.date.today().isoformat()</span></code></p></li>
-<li><p><strong>blmass</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – The subject’s baseline mass</p></li>
-<li><p><strong>minmass_pct</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – The percentage of baseline mass that a water restricted subject is allowed to reach</p></li>
-<li><p><strong>minmass</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – The subject’s minimum mass, automatically calculated <cite>blmass * (minmass_pct / 100.)</cite></p></li>
-<li><p><strong>genotype</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – A string describing the subject’s genotype</p></li>
-<li><p><strong>expt</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – A tag to describe what experiment this subject is a part of</p></li>
+<li><p><strong>blmass</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – The subject’s baseline mass</p></li>
+<li><p><strong>minmass_pct</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – The percentage of baseline mass that a water restricted subject is allowed to reach</p></li>
+<li><p><strong>minmass</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – The subject’s minimum mass, automatically calculated <cite>blmass * (minmass_pct / 100.)</cite></p></li>
+<li><p><strong>genotype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A string describing the subject’s genotype</p></li>
+<li><p><strong>expt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A tag to describe what experiment this subject is a part of</p></li>
 </ul>
 </dd>
 </dl>
@@ -904,7 +945,7 @@ and the allowable percentage of that baseline</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The key of the value being stored</p></li>
+<li><p><strong>key</strong> (<em>str</em>) – The key of the value being stored</p></li>
 <li><p><strong>val</strong> – The value being stored.</p></li>
 </ul>
 </dd>
@@ -928,8 +969,8 @@ Values are stored in a <cite>values</cite> dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>protocol</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – the name of the assigned protocol, filename without .json extension</p></li>
-<li><p><strong>step</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – current step to assign.</p></li>
+<li><p><strong>protocol</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – the name of the assigned protocol, filename without .json extension</p></li>
+<li><p><strong>step</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – current step to assign.</p></li>
 </ul>
 </dd>
 </dl>
@@ -968,7 +1009,7 @@ loads the protocol file and repopulates it.</p>
 
 <dl class="class">
 <dt id="autopilot.core.gui.Pilot_Button">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.gui.</code><code class="sig-name descname">Pilot_Button</code><span class="sig-paren">(</span><em class="sig-param">pilot=None</em>, <em class="sig-param">subject_list=None</em>, <em class="sig-param">start_fn=None</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Pilot_Button" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Pilot_Button</code><span class="sig-paren">(</span><em class="sig-param">pilot=None</em>, <em class="sig-param">subject_list=None</em>, <em class="sig-param">start_fn=None</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Pilot_Button" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QPushButton</span></code></p>
 <p>A subclass of (toggled) <code class="xref py py-class docutils literal notranslate"><span class="pre">QtWidgets.QPushButton</span></code> that incorporates the style logic of a
 start/stop button - ie. color, text.</p>
@@ -976,7 +1017,7 @@ start/stop button - ie. color, text.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pilot</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The ID of the pilot that this button controls</p></li>
+<li><p><strong>pilot</strong> (<em>str</em>) – The ID of the pilot that this button controls</p></li>
 <li><p><strong>subject_list</strong> (<a class="reference internal" href="#autopilot.core.gui.Subject_List" title="autopilot.core.gui.Subject_List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject_List</span></code></a>) – The Subject list used to determine which
 subject is starting/stopping</p></li>
 <li><p><strong>start_fn</strong> (<a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.toggle_start" title="autopilot.core.terminal.Terminal.toggle_start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">toggle_start()</span></code></a>) – The final
@@ -984,7 +1025,7 @@ resting place of the toggle_start method</p></li>
 </ul>
 </dd>
 <dt class="field-even">Variables</dt>
-<dd class="field-even"><p><strong>state</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The state of our pilot, reflected in our graphical properties.
+<dd class="field-even"><p><strong>state</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The state of our pilot, reflected in our graphical properties.
 Mirrors <code class="xref py py-attr docutils literal notranslate"><span class="pre">state</span></code> , with an additional “DISCONNECTED”
 state for before contact is made with the pilot.</p>
 </dd>
@@ -997,7 +1038,7 @@ state for before contact is made with the pilot.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.gui.Pilot_Button.set_state" title="autopilot.core.gui.Pilot_Button.set_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_state</span></code></a>(state)</p></td>
-<td><p></p></td>
+<td><p>Set the button’s appearance and state</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.gui.Pilot_Button.toggle_start" title="autopilot.core.gui.Pilot_Button.toggle_start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">toggle_start</span></code></a>()</p></td>
 <td><p>Minor window dressing to call the <code class="xref py py-meth docutils literal notranslate"><span class="pre">start_fn()</span></code> with the</p></td>
@@ -1007,7 +1048,20 @@ state for before contact is made with the pilot.</p>
 <dl class="method">
 <dt id="autopilot.core.gui.Pilot_Button.set_state">
 <code class="sig-name descname">set_state</code><span class="sig-paren">(</span><em class="sig-param">state</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Pilot_Button.set_state" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set the button’s appearance and state</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state</strong> (<em>str</em>) – one of <a href="#id2"><span class="problematic" id="id3">``</span></a>(‘IDLE’, ‘RUNNING’, ‘STOPPING’, ‘DISCONNECTED’)</p>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id4">
+<p class="admonition-title">Todo</p>
+<p>There is some logic duplication in this class, ie. if the button state is changed
+it also emits a start/stop signal to the pi, which is undesirable. This class needs
+to be reworked.</p>
+</div>
+<p>Returns:</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="autopilot.core.gui.Pilot_Button.staticMetaObject">
@@ -1019,18 +1073,13 @@ state for before contact is made with the pilot.</p>
 <code class="sig-name descname">toggle_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Pilot_Button.toggle_start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Minor window dressing to call the <code class="xref py py-meth docutils literal notranslate"><span class="pre">start_fn()</span></code> with the
 appropriate pilot, subject, and whether the task is starting or stopping</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>toggled</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – T/F this button is now toggled down (starting the task) or vice versa.</p>
-</dd>
-</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="autopilot.core.gui.Pilot_Panel">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.gui.</code><code class="sig-name descname">Pilot_Panel</code><span class="sig-paren">(</span><em class="sig-param">pilot=None</em>, <em class="sig-param">subject_list=None</em>, <em class="sig-param">start_fn=None</em>, <em class="sig-param">create_fn=None</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Pilot_Panel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Pilot_Panel</code><span class="sig-paren">(</span><em class="sig-param">pilot=None</em>, <em class="sig-param">subject_list=None</em>, <em class="sig-param">start_fn=None</em>, <em class="sig-param">create_fn=None</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Pilot_Panel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QWidget</span></code></p>
 <p>A little panel with</p>
 <ul class="simple">
@@ -1061,18 +1110,18 @@ appropriate pilot, subject, and whether the task is starting or stopping</p>
 <p>This class should not be instantiated except by <a class="reference internal" href="#autopilot.core.gui.Control_Panel" title="autopilot.core.gui.Control_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Control_Panel</span></code></a></p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Variables</dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>layout</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QtWidgets.QGridLayout</span></code>) – Layout for UI elements</p></li>
-<li><p><strong>button</strong> (<a class="reference internal" href="#autopilot.core.gui.Pilot_Button" title="autopilot.core.gui.Pilot_Button"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Button</span></code></a>) – button used to control a pilot</p></li>
-</ul>
-</dd>
-<dt class="field-even">Parameters</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>pilot</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The name of the pilot this panel controls</p></li>
+<li><p><strong>pilot</strong> (<em>str</em>) – The name of the pilot this panel controls</p></li>
 <li><p><strong>subject_list</strong> (<a class="reference internal" href="#autopilot.core.gui.Subject_List" title="autopilot.core.gui.Subject_List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject_List</span></code></a>) – The <a class="reference internal" href="#autopilot.core.gui.Subject_List" title="autopilot.core.gui.Subject_List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject_List</span></code></a> we control</p></li>
 <li><p><strong>start_fn</strong> (<a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.toggle_start" title="autopilot.core.terminal.Terminal.toggle_start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">toggle_start()</span></code></a>) – Passed by <a class="reference internal" href="#autopilot.core.gui.Control_Panel" title="autopilot.core.gui.Control_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Control_Panel</span></code></a></p></li>
 <li><p><strong>create_fn</strong> (<a class="reference internal" href="#autopilot.core.gui.Control_Panel.create_subject" title="autopilot.core.gui.Control_Panel.create_subject"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Control_Panel.create_subject()</span></code></a>) – Passed by <a class="reference internal" href="#autopilot.core.gui.Control_Panel" title="autopilot.core.gui.Control_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Control_Panel</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>layout</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QtWidgets.QGridLayout</span></code>) – Layout for UI elements</p></li>
+<li><p><strong>button</strong> (<a class="reference internal" href="#autopilot.core.gui.Pilot_Button" title="autopilot.core.gui.Pilot_Button"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Button</span></code></a>) – button used to control a pilot</p></li>
 </ul>
 </dd>
 </dl>
@@ -1105,16 +1154,15 @@ and calls the <a class="reference internal" href="#autopilot.core.gui.Control_Pa
 
 <dl class="class">
 <dt id="autopilot.core.gui.Pilot_Ports">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.gui.</code><code class="sig-name descname">Pilot_Ports</code><span class="sig-paren">(</span><em class="sig-param">pilot</em>, <em class="sig-param">n_clicks=1000</em>, <em class="sig-param">click_dur=30</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Pilot_Ports" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Pilot_Ports</code><span class="sig-paren">(</span><em class="sig-param">pilot</em>, <em class="sig-param">n_clicks=1000</em>, <em class="sig-param">click_dur=30</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Pilot_Ports" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QWidget</span></code></p>
-<p>Each pilot’s ports and buttons to control repeated release.</p>
+<p>Created by <a class="reference internal" href="#autopilot.core.gui.Calibrate_Water" title="autopilot.core.gui.Calibrate_Water"><code class="xref py py-class docutils literal notranslate"><span class="pre">Calibrate_Water</span></code></a>, Each pilot’s ports and buttons to control repeated release.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pilot</strong> – </p></li>
-<li><p><strong>message_fn</strong> – </p></li>
-<li><p><strong>n_clicks</strong> – </p></li>
-<li><p><strong>click_dur</strong> – </p></li>
+<li><p><strong>pilot</strong> (<em>str</em>) – name of pilot to calibrate</p></li>
+<li><p><strong>n_clicks</strong> (<em>int</em>) – number of times to open the port during calibration</p></li>
+<li><p><strong>click_dur</strong> (<em>int</em>) – how long to open the port (in ms)</p></li>
 </ul>
 </dd>
 </dl>
@@ -1132,10 +1180,10 @@ and calls the <a class="reference internal" href="#autopilot.core.gui.Control_Pa
 <td><p>Value should contain</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.gui.Pilot_Ports.start_calibration" title="autopilot.core.gui.Pilot_Ports.start_calibration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start_calibration</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>Send the calibration test parameters to the <a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.gui.Pilot_Ports.update_volumes" title="autopilot.core.gui.Pilot_Ports.update_volumes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_volumes</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>Store the result of a volume calibration test in <code class="xref py py-attr docutils literal notranslate"><span class="pre">volumes</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1147,12 +1195,7 @@ and calls the <a class="reference internal" href="#autopilot.core.gui.Control_Pa
 <li><p>pilot name</p></li>
 <li><p>port buttons</p></li>
 <li><p>3 times and vol dispersed</p></li>
-<li></li>
 </ul>
-<div class="admonition-todo admonition" id="id2">
-<p class="admonition-title">Todo</p>
-<p>Don’t assume L/C/R, ask the pilot what it has</p>
-</div>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p></p>
@@ -1182,7 +1225,10 @@ and calls the <a class="reference internal" href="#autopilot.core.gui.Control_Pa
 <dl class="method">
 <dt id="autopilot.core.gui.Pilot_Ports.start_calibration">
 <code class="sig-name descname">start_calibration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Pilot_Ports.start_calibration" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Send the calibration test parameters to the <a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a></p>
+<p>Sends a message with a <code class="docutils literal notranslate"><span class="pre">'CALIBRATE_PORT'</span></code> key, which is handled by
+<a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot.l_cal_port" title="autopilot.core.pilot.Pilot.l_cal_port"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Pilot.l_cal_port()</span></code></a></p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="autopilot.core.gui.Pilot_Ports.staticMetaObject">
@@ -1192,13 +1238,14 @@ and calls the <a class="reference internal" href="#autopilot.core.gui.Control_Pa
 <dl class="method">
 <dt id="autopilot.core.gui.Pilot_Ports.update_volumes">
 <code class="sig-name descname">update_volumes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Pilot_Ports.update_volumes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Store the result of a volume calibration test in <code class="xref py py-attr docutils literal notranslate"><span class="pre">volumes</span></code></p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="autopilot.core.gui.Protocol_Wizard">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.gui.</code><code class="sig-name descname">Protocol_Wizard</code><a class="headerlink" href="#autopilot.core.gui.Protocol_Wizard" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Protocol_Wizard</code><a class="headerlink" href="#autopilot.core.gui.Protocol_Wizard" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QDialog</span></code></p>
 <p>A dialog window to create a new protocol.</p>
 <div class="admonition warning">
@@ -1249,13 +1296,13 @@ to handle parameters separately. For now this is what we got though and it works
 with some graduation criterion for moving between them.</p>
 <p>This widget is composed of three windows:</p>
 <ul class="simple">
-<li><p><strong>left</strong>: possible task types from <code class="xref py py-data docutils literal notranslate"><span class="pre">tasks.TASK_LIST</span></code></p></li>
+<li><p><strong>left</strong>: possible task types from <a class="reference internal" href="autopilot.tasks.html#autopilot.tasks.TASK_LIST" title="autopilot.tasks.TASK_LIST"><code class="xref py py-data docutils literal notranslate"><span class="pre">tasks.TASK_LIST</span></code></a></p></li>
 <li><p><strong>center</strong>: current steps in task</p></li>
 <li><p><strong>right</strong>: <code class="xref py py-class docutils literal notranslate"><span class="pre">Parameters</span></code> for currently selected step.</p></li>
 </ul>
 <p>The parameters that are used are of the form used by <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task.PARAMS" title="autopilot.tasks.task.Task.PARAMS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Task.PARAMS</span></code></a>
 (see <a class="reference internal" href="autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc.PARAMS" title="autopilot.tasks.nafc.Nafc.PARAMS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Nafc.PARAMS</span></code></a> for an example).</p>
-<div class="admonition-todo admonition" id="id3">
+<div class="admonition-todo admonition" id="id5">
 <p class="admonition-title">Todo</p>
 <p>Make specific parameter class so this definition is less squishy</p>
 </div>
@@ -1287,7 +1334,7 @@ with some graduation criterion for moving between them.</p>
 <li><p><strong>step_list</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QtWidgets.QListWidget</span></code>) – The center window, lists tasks currently in protocol</p></li>
 <li><p><strong>param_layout</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QtWidgets.QFormLayout</span></code>) – The right window, allows changing available
 parameters for currently selected step.</p></li>
-<li><p><strong>steps</strong> (<em>list</em>) – A list of dictionaries defining the protocol.</p></li>
+<li><p><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – A list of dictionaries defining the protocol.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1302,7 +1349,7 @@ parameters for currently selected step.</p></li>
 <code class="sig-name descname">check_depends</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Protocol_Wizard.check_depends" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handle dependencies between parameters, eg. if “correction trials” are unchecked,
 the box that defines the correction trial percentage should be grayed out.</p>
-<div class="admonition-todo admonition" id="id4">
+<div class="admonition-todo admonition" id="id6">
 <p class="admonition-title">Todo</p>
 <p>Not implemented.</p>
 </div>
@@ -1380,19 +1427,16 @@ fire this function to update <code class="xref py py-attr docutils literal notra
 
 <dl class="class">
 <dt id="autopilot.core.gui.Psychometric">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.gui.</code><code class="sig-name descname">Psychometric</code><span class="sig-paren">(</span><em class="sig-param">subjects_protocols</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Psychometric" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Psychometric</code><span class="sig-paren">(</span><em class="sig-param">subjects_protocols</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Psychometric" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QDialog</span></code></p>
 <p>A Dialog to select subjects, steps, and variables to use in a psychometric curve plot.</p>
 <p>See <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal.plot_psychometric" title="autopilot.core.terminal.Terminal.plot_psychometric"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Terminal.plot_psychometric()</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>subjects_protocols</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – The Terminals <code class="xref py py-attr docutils literal notranslate"><span class="pre">Terminal.subjects_protocols</span></code> dict</p></li>
-<li><p><strong>protocols</strong> (<em>list</em>) – A list of available protocols</p></li>
-</ul>
+<dd class="field-odd"><p><strong>subjects_protocols</strong> (<em>dict</em>) – The Terminals <code class="xref py py-attr docutils literal notranslate"><span class="pre">Terminal.subjects_protocols</span></code> dict</p>
 </dd>
 <dt class="field-even">Variables</dt>
-<dd class="field-even"><p><a class="reference internal" href="#autopilot.core.gui.Psychometric.plot_params" title="autopilot.core.gui.Psychometric.plot_params"><strong>plot_params</strong></a> (<em>list</em>) – A list of tuples, each consisting of (subject_id, step, variable) to be given to <code class="xref py py-func docutils literal notranslate"><span class="pre">viz.plot_psychometric()</span></code></p>
+<dd class="field-even"><p><a class="reference internal" href="#autopilot.core.gui.Psychometric.plot_params" title="autopilot.core.gui.Psychometric.plot_params"><strong>plot_params</strong></a> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – A list of tuples, each consisting of (subject_id, step, variable) to be given to <code class="xref py py-func docutils literal notranslate"><span class="pre">viz.plot_psychometric()</span></code></p>
 </dd>
 </dl>
 <p><strong>Methods</strong></p>
@@ -1403,7 +1447,7 @@ fire this function to update <code class="xref py py-attr docutils literal notra
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.gui.Psychometric.check_all" title="autopilot.core.gui.Psychometric.check_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_all</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>Toggle all checkboxes on or off</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.gui.Psychometric.init_ui" title="autopilot.core.gui.Psychometric.init_ui"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_ui</span></code></a>()</p></td>
 <td><p></p></td>
@@ -1412,7 +1456,7 @@ fire this function to update <code class="xref py py-attr docutils literal notra
 <td><p>When a protocol is selected, populate the selection box with the steps that can be chosen.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.gui.Psychometric.populate_variables" title="autopilot.core.gui.Psychometric.populate_variables"><code class="xref py py-obj docutils literal notranslate"><span class="pre">populate_variables</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>Fill selection boxes with step and variable names</p></td>
 </tr>
 </tbody>
 </table>
@@ -1424,14 +1468,15 @@ fire this function to update <code class="xref py py-attr docutils literal notra
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.gui.Psychometric.plot_params" title="autopilot.core.gui.Psychometric.plot_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_params</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Generate parameters for plot to be passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">viz.plot_psychometric()</span></code></p></td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="autopilot.core.gui.Psychometric.check_all">
 <code class="sig-name descname">check_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Psychometric.check_all" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Toggle all checkboxes on or off</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="autopilot.core.gui.Psychometric.init_ui">
@@ -1441,7 +1486,16 @@ fire this function to update <code class="xref py py-attr docutils literal notra
 <dl class="method">
 <dt id="autopilot.core.gui.Psychometric.plot_params">
 <em class="property">property </em><code class="sig-name descname">plot_params</code><a class="headerlink" href="#autopilot.core.gui.Psychometric.plot_params" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Generate parameters for plot to be passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">viz.plot_psychometric()</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>(subject_name, step_name, x_var_name, n_trials_back)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="autopilot.core.gui.Psychometric.populate_steps">
@@ -1449,7 +1503,7 @@ fire this function to update <code class="xref py py-attr docutils literal notra
 <dd><p>When a protocol is selected, populate the selection box with the steps that can be chosen.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>subject</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – ID of subject whose steps are being populated</p>
+<dd class="field-odd"><p><strong>subject</strong> (<em>str</em>) – ID of subject whose steps are being populated</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1457,7 +1511,8 @@ fire this function to update <code class="xref py py-attr docutils literal notra
 <dl class="method">
 <dt id="autopilot.core.gui.Psychometric.populate_variables">
 <code class="sig-name descname">populate_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Psychometric.populate_variables" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Fill selection boxes with step and variable names</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="autopilot.core.gui.Psychometric.staticMetaObject">
@@ -1468,17 +1523,18 @@ fire this function to update <code class="xref py py-attr docutils literal notra
 
 <dl class="class">
 <dt id="autopilot.core.gui.Reassign">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.gui.</code><code class="sig-name descname">Reassign</code><span class="sig-paren">(</span><em class="sig-param">subjects</em>, <em class="sig-param">protocols</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Reassign" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Reassign</code><span class="sig-paren">(</span><em class="sig-param">subjects</em>, <em class="sig-param">protocols</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Reassign" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QDialog</span></code></p>
 <p>A dialog that lets subjects be batch reassigned to new protocols or steps.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>subjects</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>A dictionary that contains each subject’s protocol and step, ie.:</p>
+<dd class="field-odd"><ul>
+<li><p><strong>subjects</strong> (<em>dict</em>) –</p>
+<p>A dictionary that contains each subject’s protocol and step, ie.:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;subject_id&#39;</span><span class="p">:[</span><span class="s1">&#39;protocol_name&#39;</span><span class="p">,</span> <span class="n">step_int</span><span class="p">],</span> <span class="o">...</span> <span class="p">}</span>
 </pre></div>
 </div>
-</p></li>
+</li>
 <li><p><strong>protocols</strong> (<em>list</em>) – list of protocol files in the <cite>prefs.PROTOCOLDIR</cite>.
 Not entirely sure why we don’t just list them ourselves here.</p></li>
 </ul>
@@ -1518,7 +1574,7 @@ Not entirely sure why we don’t just list them ourselves here.</p></li>
 <dd><p>When a protocol is selected, populate the selection box with the steps that can be chosen.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>subject</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – ID of subject whose steps are being populated</p>
+<dd class="field-odd"><p><strong>subject</strong> (<em>str</em>) – ID of subject whose steps are being populated</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1545,14 +1601,14 @@ Returns:</p>
 
 <dl class="class">
 <dt id="autopilot.core.gui.Sound_Widget">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.gui.</code><code class="sig-name descname">Sound_Widget</code><a class="headerlink" href="#autopilot.core.gui.Sound_Widget" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Sound_Widget</code><a class="headerlink" href="#autopilot.core.gui.Sound_Widget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QWidget</span></code></p>
 <p>A widget that allows sounds to be parameterized.</p>
 <p>Used in <a class="reference internal" href="#autopilot.core.gui.Protocol_Wizard" title="autopilot.core.gui.Protocol_Wizard"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol_Wizard</span></code></a> .</p>
 <p>Has two <a class="reference internal" href="#autopilot.core.gui.Drag_List" title="autopilot.core.gui.Drag_List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Drag_List</span></code></a> s for left and right sounds (for a 2afc task), given
 Buttons beneath them allow adding and removing sounds.</p>
 <p>Adding a sound will open a <code class="xref py py-class docutils literal notranslate"><span class="pre">Add_SoundDialog</span></code></p>
-<div class="admonition-todo admonition" id="id5">
+<div class="admonition-todo admonition" id="id7">
 <p class="admonition-title">Todo</p>
 <p>Sounds will eventually be more elegantly managed by a … sound manager..
 For now sound managers are rudimentary and only support random presentation
@@ -1596,7 +1652,7 @@ with correction trials and bias correction.</p>
 </table>
 <dl class="field-list simple">
 <dt class="field-odd">Variables</dt>
-<dd class="field-odd"><p><strong>sound_dict</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – <p>Dictionary with the structure:</p>
+<dd class="field-odd"><p><strong>sound_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – <p>Dictionary with the structure:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;param_1&#39;</span><span class="p">:</span><span class="s1">&#39;param_1&#39;</span><span class="p">,</span> <span class="o">...</span> <span class="p">}],</span> <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">]}</span>
 </pre></div>
 </div>
@@ -1616,7 +1672,7 @@ so we can fill in its <cite>PARAMS</cite> .</p>
 <dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>type_selection</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">QtWidgets.QComboBox</span></code>) – Select from a list of available sounds</p></li>
-<li><p><strong>param_dict</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Parameters that are retreived by the calling <a class="reference internal" href="#autopilot.core.gui.Sound_Widget" title="autopilot.core.gui.Sound_Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sound_Widget</span></code></a>.</p></li>
+<li><p><strong>param_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – Parameters that are retreived by the calling <a class="reference internal" href="#autopilot.core.gui.Sound_Widget" title="autopilot.core.gui.Sound_Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sound_Widget</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1652,7 +1708,7 @@ so we can fill in its <cite>PARAMS</cite> .</p>
 <dd><p>When the “+” button on either side is pressed, open an <a class="reference internal" href="#autopilot.core.gui.Sound_Widget.Add_Sound_Dialog" title="autopilot.core.gui.Sound_Widget.Add_Sound_Dialog"><code class="xref py py-class docutils literal notranslate"><span class="pre">Add_Sound_Dialog</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>side</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The buttons are connected with a lambda function, this will be either ‘L’ or ‘R’.
+<dd class="field-odd"><p><strong>side</strong> (<em>str</em>) – The buttons are connected with a lambda function, this will be either ‘L’ or ‘R’.
 Used to add sounds to the <cite>sound_dict</cite></p>
 </dd>
 </dl>
@@ -1697,7 +1753,7 @@ relative paths, adds them to the <cite>sound_dict</cite></p>
 <dd><p>Populates the sound lists after re-selecting a step.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>sound_dict</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – passed to us by <a class="reference internal" href="#autopilot.core.gui.Protocol_Wizard" title="autopilot.core.gui.Protocol_Wizard"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol_Wizard</span></code></a> upon reselecting a step.</p>
+<dd class="field-odd"><p><strong>sound_dict</strong> (<em>dict</em>) – passed to us by <a class="reference internal" href="#autopilot.core.gui.Protocol_Wizard" title="autopilot.core.gui.Protocol_Wizard"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol_Wizard</span></code></a> upon reselecting a step.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1708,7 +1764,7 @@ relative paths, adds them to the <cite>sound_dict</cite></p>
 <dd><p>When the “-” button is pressed, remove the currently highlighted sound.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>side</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The buttons are connected with a lambda function, this will be either ‘L’ or ‘R’.
+<dd class="field-odd"><p><strong>side</strong> (<em>str</em>) – The buttons are connected with a lambda function, this will be either ‘L’ or ‘R’.
 Selects that list so we can remove the currently selected row.</p>
 </dd>
 </dl>
@@ -1723,7 +1779,7 @@ Selects that list so we can remove the currently selected row.</p>
 
 <dl class="class">
 <dt id="autopilot.core.gui.Subject_List">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.gui.</code><code class="sig-name descname">Subject_List</code><span class="sig-paren">(</span><em class="sig-param">subjects=None</em>, <em class="sig-param">drop_fn=None</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Subject_List" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Subject_List</code><span class="sig-paren">(</span><em class="sig-param">subjects=None</em>, <em class="sig-param">drop_fn=None</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Subject_List" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QListWidget</span></code></p>
 <p>A trivial modification of <code class="xref py py-class docutils literal notranslate"><span class="pre">QListWidget</span></code> that updates
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">pilots</span></code> when an item in the list is dragged to another location.</p>
@@ -1731,7 +1787,7 @@ Selects that list so we can remove the currently selected row.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>subjects</strong> (<em>list</em>) – A list of subjects ID’s passed by <a class="reference internal" href="#autopilot.core.gui.Control_Panel" title="autopilot.core.gui.Control_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Control_Panel</span></code></a></p></li>
+<li><p><strong>subjects</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – A list of subjects ID’s passed by <a class="reference internal" href="#autopilot.core.gui.Control_Panel" title="autopilot.core.gui.Control_Panel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Control_Panel</span></code></a></p></li>
 <li><p><strong>drop_fn</strong> (<a class="reference internal" href="#autopilot.core.gui.Control_Panel.update_db" title="autopilot.core.gui.Control_Panel.update_db"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Control_Panel.update_db()</span></code></a>) – called on a drop event</p></li>
 </ul>
 </dd>
@@ -1784,7 +1840,7 @@ that calls the parent <cite>dropEvent</cite> and then calls <code class="xref py
 
 <dl class="class">
 <dt id="autopilot.core.gui.Weights">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.gui.</code><code class="sig-name descname">Weights</code><span class="sig-paren">(</span><em class="sig-param">subject_weights</em>, <em class="sig-param">subjects</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Weights" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Weights</code><span class="sig-paren">(</span><em class="sig-param">subject_weights</em>, <em class="sig-param">subjects</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.Weights" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QTableWidget</span></code></p>
 <p>A table for viewing and editing the most recent subject weights.</p>
 <dl class="field-list simple">
@@ -1792,7 +1848,7 @@ that calls the parent <cite>dropEvent</cite> and then calls <code class="xref py
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>subject_weights</strong> (<em>list</em>) – a list of weights of the format returned by
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">Subject.get_weight(baseline=True)()</span></code>.</p></li>
-<li><p><strong>subjects</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – the Terminal’s <code class="xref py py-attr docutils literal notranslate"><span class="pre">Terminal.subjects</span></code> dictionary of <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> objects.</p></li>
+<li><p><strong>subjects</strong> (<em>dict</em>) – the Terminal’s <code class="xref py py-attr docutils literal notranslate"><span class="pre">Terminal.subjects</span></code> dictionary of <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> objects.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1828,8 +1884,8 @@ that calls the parent <cite>dropEvent</cite> and then calls <code class="xref py
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>row</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – row of table</p></li>
-<li><p><strong>column</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – column of table</p></li>
+<li><p><strong>row</strong> (<em>int</em>) – row of table</p></li>
+<li><p><strong>column</strong> (<em>int</em>) – column of table</p></li>
 </ul>
 </dd>
 </dl>
@@ -1844,7 +1900,7 @@ that calls the parent <cite>dropEvent</cite> and then calls <code class="xref py
 
 <dl class="function">
 <dt id="autopilot.core.gui.gui_event">
-<code class="sig-prename descclassname">autopilot.core.gui.</code><code class="sig-name descname">gui_event</code><span class="sig-paren">(</span><em class="sig-param">fn</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.gui_event" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">gui_event</code><span class="sig-paren">(</span><em class="sig-param">fn</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.gui_event" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper/decorator around an event that posts GUI events back to the main
 thread that our window is running in.</p>
 <dl class="field-list simple">
@@ -1856,14 +1912,14 @@ thread that our window is running in.</p>
 
 <dl class="function">
 <dt id="autopilot.core.gui.pop_dialog">
-<code class="sig-prename descclassname">autopilot.core.gui.</code><code class="sig-name descname">pop_dialog</code><span class="sig-paren">(</span><em class="sig-param">message, msg_type='info', details='', buttons=['Ok']</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.pop_dialog" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convenience function to pop a :class:<a href="#id6"><span class="problematic" id="id7">`</span></a>.QtGui.QDialog window to display a message.</p>
+<code class="sig-name descname">pop_dialog</code><span class="sig-paren">(</span><em class="sig-param">message, msg_type='info', details='', buttons=['Ok']</em><span class="sig-paren">)</span><a class="headerlink" href="#autopilot.core.gui.pop_dialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function to pop a :class:<a href="#id8"><span class="problematic" id="id9">`</span></a>.QtGui.QDialog window to display a message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>message</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – message to be displayed</p></li>
-<li><p><strong>msg_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – “info” (default), “question”, “warning”, or “error” to use <code class="xref py py-meth docutils literal notranslate"><span class="pre">QtGui.QMessageBox.information()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">QtGui.QMessageBox.question()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">QtGui.QMessageBox.warning()</span></code>, or <code class="xref py py-meth docutils literal notranslate"><span class="pre">QtGui.QMessageBox.error()</span></code>, respectively</p></li>
-<li><p><strong>header</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – A string elaborating on the message</p></li>
+<li><p><strong>details</strong></p></li>
+<li><p><strong>message</strong> (<em>str</em>) – message to be displayed</p></li>
+<li><p><strong>msg_type</strong> (<em>str</em>) – “info” (default), “question”, “warning”, or “error” to use <code class="xref py py-meth docutils literal notranslate"><span class="pre">QtGui.QMessageBox.information()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">QtGui.QMessageBox.question()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">QtGui.QMessageBox.warning()</span></code>, or <code class="xref py py-meth docutils literal notranslate"><span class="pre">QtGui.QMessageBox.error()</span></code>, respectively</p></li>
 <li><p><strong>buttons</strong> (<em>list</em>) – A list specifying which <code class="xref py py-class docutils literal notranslate"><span class="pre">QtGui.QMessageBox.StandardButton</span></code> s to display. Use a string matching the button name, eg. “Ok” gives <code class="xref py py-class docutils literal notranslate"><span class="pre">QtGui.QMessageBox.Ok</span></code></p></li>
 </ul>
 </dd>
@@ -1871,7 +1927,7 @@ thread that our window is running in.</p>
 <dd class="field-even"><p>The result of the dialog. If Ok/Cancel, boolean True/False, otherwise a string matching the button type</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>result (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)">bool</a>, <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a>)</p>
+<dd class="field-odd"><p>result (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1886,7 +1942,7 @@ thread that our window is running in.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="autopilot.core.hardware.html" class="btn btn-neutral float-right" title="hardware" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="autopilot.core.networking.html" class="btn btn-neutral float-right" title="networking" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="autopilot.core.html" class="btn btn-neutral float-left" title="core" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

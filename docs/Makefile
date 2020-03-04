@@ -9,6 +9,9 @@ BUILDDIR        = build
 AUTOBUILDDIR    = ./
 SPHINXAUTOBUILD = sphinx-autobuild
 
+export PYTHONPATH=${PWD}/../
+# echo $PYTHONPATH
+
 # Put it first so that "make" without argument is like "make help".
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
@@ -16,11 +19,11 @@ help:
 .PHONY: help Makefile
 
 serve:
-	# @$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-	@$(SPHINXAUTOBUILD) -b html "$(SOURCEDIR)" "$(AUTOBUILDDIR)" $(SPHINXOPTS) --watch source/changelog --open-browser --delay 1 $(O)
-	#rsync -av $(BUILDDIR)/html/* ./ --remove-source-files
+	@$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+# 	@$(SPHINXAUTOBUILD) -b html "$(SOURCEDIR)" "$(AUTOBUILDDIR)" $(SPHINXOPTS) --watch source/changelog --open-browser --delay 1 $(O)
+	rsync -av $(BUILDDIR)/html/* ./ --remove-source-files
 	# open up the simple node http-server
-	#http-server
+	http-server
 	# open firefox
 	#UNAME_S := $(shell uname -s)
 	#ifeq ($(UNAME_S),Linux)

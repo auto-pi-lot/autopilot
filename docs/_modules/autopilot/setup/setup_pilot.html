@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>autopilot.setup.setup_pilot &mdash; Autopilot 0.2 documentation</title>
+  <title>autopilot.setup.setup_pilot &mdash; Autopilot 0.3.0 documentation</title>
   
 
   
@@ -36,6 +37,9 @@
   <link rel="stylesheet" href="../../../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/restyle.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/autopilot_sass.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/autopilot_sass.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -43,7 +47,8 @@
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js" integrity="sha256-BuxrUdr/4YoztQLxT6xmdO6hSQw2d6BtBUY1pteGds4=" crossorigin="anonymous"></script>
 
 </head>
 
@@ -71,7 +76,7 @@
             
             
               <div class="version">
-                0.2
+                0.3
               </div>
             
           
@@ -98,11 +103,9 @@
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.overview.html">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#program-structure">Program Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#tasks">Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#hardware">Hardware</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#agents">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#module-tour">Module Tour</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide.installation.html">Installation</a><ul>
@@ -121,12 +124,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -188,7 +185,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../autopilot.core.html">Core Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.gui.html">gui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.hardware.html">hardware</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.plots.html">plots</a></li>
@@ -198,7 +194,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.utils.html">utils</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.hardware.html">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.hardware.cameras.html">cameras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.hardware.gpio.html">gpio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.hardware.i2c.html">i2c</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.hardware.usb.html">usb</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.children.html">children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.free_water.html">free_water</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.graduation.html">graduation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.nafc.html">nafc</a></li>
@@ -217,6 +221,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../autopilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.viz.psychometric.html">psychometric</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../autopilot.setup.html">Setup</a><ul>
@@ -226,16 +231,22 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../autopilot.prefs.html">Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.external.html">External</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#completed-goals">Completed Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#improvements">Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#completed">Completed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#lowest-priority">Lowest Priority</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../changelog/index.html#version-0-3">Version 0.3</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../changelog/v0.3.0.html">v0.3.0 (Februrary DATE, 2020)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../changelog/v0.3.0.html">v0.3.0 (March 3rd, 2020)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#major-updates">Major Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#new-features">New Features</a></li>

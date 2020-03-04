@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>To-Do &mdash; Autopilot 0.2 documentation</title>
+  <title>To-Do &mdash; Autopilot 0.3.0 documentation</title>
   
 
   
@@ -36,16 +37,20 @@
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/restyle.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Changelog" href="changelog/index.html" />
-    <link rel="prev" title="prefs" href="autopilot.prefs.html" />
+    <link rel="prev" title="external" href="autopilot.external.html" />
 
     <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js" integrity="sha256-BuxrUdr/4YoztQLxT6xmdO6hSQw2d6BtBUY1pteGds4=" crossorigin="anonymous"></script>
 
 </head>
 
@@ -73,7 +78,7 @@
             
             
               <div class="version">
-                0.2
+                0.3
               </div>
             
           
@@ -100,11 +105,9 @@
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure">Program Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#module-tour">Module Tour</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
@@ -123,12 +126,6 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -190,7 +187,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.core.html">Core Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.gui.html">gui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autopilot.core.hardware.html">hardware</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
@@ -200,7 +196,15 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.hardware.html">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.cameras.html">cameras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.gpio.html">gpio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.i2c.html">i2c</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.usb.html">usb</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.children.html">children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.free_water.html">free_water</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.graduation.html">graduation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.nafc.html">nafc</a></li>
@@ -219,6 +223,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.viz.psychometric.html">psychometric</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.setup.html">Setup</a><ul>
@@ -228,16 +233,22 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.prefs.html">Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.external.html">External</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#completed-goals">Completed Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#improvements">Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#completed">Completed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lowest-priority">Lowest Priority</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-3">Version 0.3</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (Februrary DATE, 2020)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (March 3rd, 2020)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#major-updates">Major Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#new-features">New Features</a></li>
@@ -321,32 +332,390 @@
   <p>Development Roadmap, Minor To-dos, and all future plans :)</p>
 <div class="section" id="to-do">
 <span id="todo"></span><h1>To-Do<a class="headerlink" href="#to-do" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><p>Split the ncurses setup functions into multiple tabs, have them load exiting prefs, change values depending on config values (eg. selection Configuration : “VISUAL” should remove audio options)</p></li>
-<li><dl class="simple">
-<dt>Unify “Parameters” across Autopilot</dt><dd><ul>
-<li><p>Rebuild protocol parameter handling to allow for stimulus managers, reward managers, graduation to populate their parameters in the GUI.</p></li>
-<li><p>Specifically, want dropdown to select stim manager (sided, n sides, etc.), to create subwidget, then dropdown to select type of stim “audio”, “visual” to control which are populated.</p></li>
+<div class="roadmap high-priority docutils container">
+<p>Test div content inside custom classes</p>
+</div>
+<div class="section" id="visions">
+<h2>Visions<a class="headerlink" href="#visions" title="Permalink to this headline">¶</a></h2>
+<p><em>The long view: design, ux, and major functionality projects roughly corresponding to minor semantic versions</em></p>
+<ul>
+<li><p><strong>Integrations</strong> - Make Autopilot work with…</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>DeepLabCut</strong> - write a realtime mode for DLC that analyzes frames as they are acquired,
+develop a analysis pipelining framework that lets the results of the analysis be operated on (eg x, y coordinates -&gt;
+labeled regions in an arena) and used to control task operation.</p></li>
+<li><p><strong>OpenEphys</strong> - write a C extension to the Rhythm API similar to that used by the OpenEphys
+<a class="reference external" href="https://github.com/open-ephys/plugin-GUI/tree/master/Plugins/RhythmNode">Rhythm Node</a>.
+Enable existing OE configuration files to be loaded and used to configure plugin,
+so ephys data can be collected natively alongside behavioral data.</p></li>
+<li><p><strong>Bonsai</strong> - Write source and sink modules so <a class="reference external" href="https://bonsai-rx.org/">Bonsai</a> pipelines can be
+used within Autopilot for image processing, acquisition etc.</p></li>
 </ul>
+</div></blockquote>
+</li>
+<li><p><strong>Closed-Loop Behavior &amp; Processing Pipelines</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>design a signal/slot architecture like Qt so that hardware devices</p></li>
+</ul>
+<p>and data streams can be connected with low latency. Ideally something like:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># directly connecting acceleration in x direction</span>
+<span class="c1"># to an LED&#39;s brightness</span>
+<span class="n">accelerometer</span><span class="o">.</span><span class="n">acceleration</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">LED</span><span class="o">.</span><span class="n">brightness</span><span class="p">)</span>
+
+<span class="c1"># process some video frame and use it to control task stage logic</span>
+<span class="n">camera</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
+    <span class="n">DLC</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+    <span class="n">task</span><span class="o">.</span><span class="n">subject_position</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<ul>
+<li><p>The pipelining framework should be concurrent, but shouldn’t rely on
+<a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Queue</span></code></a> s and the like for performance, as transferring data
+between processes requires it to be pickled/unpickled. Instead it should use shared memory, like
+<code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.shared_memory</span></code> available in Python 3.8</p></li>
+<li><p>The pipelining framework should be evented, such that changes in the source parameter are automatically pushed
+through the pipeline without polling. This could be done with a decorator around the <code class="docutils literal notranslate"><span class="pre">setter</span></code> method for the sender,</p></li>
+<li><p>The pipelining framework need not be written from scratch, and could use one of Python’s existing pipelining frameworks, like</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://joblib.readthedocs.io/en/latest/">Joblib</a></p></li>
+<li><p><a class="reference external" href="https://luigi.readthedocs.io/en/stable/index.html">Luigi</a></p></li>
+<li><p><a class="reference external" href="https://github.com/baffelli/pyperator">pyperator</a></p></li>
+<li><p><a class="reference external" href="https://streamz.readthedocs.io/en/latest/core.html">streamz</a> (love the ux of this but doesn’t seem v mature)</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>Agents</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The Agent infrastructure is still immature—the terminal, pilot, and child agents are written as independent classes, rather than with a shared inheritance structure.
+The first step is to build a metaclass for autopilot agents that includes the different prefs setups they need and
+their runtime requirements. Many of the further improvements are discussed in the setup section</p></li>
+<li><p>Child agents need to be easier to spawn and configure, and child tasks lack any formalization at all.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>Parameters</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Autopilot has a lot of types of parameters, and at the moment they all have their own styles. This makes a number of things difficult,
+but primarily it makes it hard to predict which style is needed at any particular time. Instead Autopilot needs a
+generalized <a href="#id1"><span class="problematic" id="id2">``</span></a>Param``eter class. It should be able to represent the human readable name of that parameter, the parameter’s
+value, the expected data type, whether that parameter is optional, and so on.</p></li>
+<li><p>The parameter class should also be recursive, so parameter sets are not treated distinctly from an
+individual parameter – eg. a task needs a set of parameters, one of which is a list of hardware. one hardware object
+in that list will have its own list of parameters, and so forth.</p></li>
+<li><p>The parameter class should operate in both directions – ie. it should be able to represent <em>set</em> parameters, as well as
+be able to be used as a specifier of parameters that <em>need to be set</em></p></li>
+<li><p>The parameter class should be cascading, where parameters apply to lower ‘levels’ of parameterization unless specified otherwise.
+For example, one may want to set <code class="docutils literal notranslate"><span class="pre">correction_trials</span></code> on for all stimuli in a task, but be able to turn them off for one
+stimulus in particular. To avoid needing to manually implement layered logic for all objects, handlers should be able to
+assume that a parameter will be passed from parent objects to their children.</p></li>
+<li><p>GUI elements should be automatically populating – some GUI elements are, like the protocol wizard is capable of populating a list of
+parameters from a task description, but it is incapable of choosing different types of stimulus managers, reading all their parameters,
+and so on. Instead it should be possible to descend through all levels of parameters for all objects in all GUI windows without
+duplicating the effort of implementing the parameterization logic every time.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>Configuration &amp; Setup</strong></p>
+<blockquote>
+<div><ul>
+<li><p>Setup routines and configuration options are currently hard-coded into <a class="reference external" href="https://npyscreen.readthedocs.io/">npyscreen</a>
+forms (see <a class="reference internal" href="autopilot.setup.setup_pilot.html#autopilot.setup.setup_pilot.PilotSetupForm" title="autopilot.setup.setup_pilot.PilotSetupForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">PilotSetupForm</span></code></a>). <code class="docutils literal notranslate"><span class="pre">prefs</span></code> setup needs to be separated into a model-view-controller
+type design where the available prefs and values are made separate from their form.</p></li>
+<li><p>Setup routines should include both the ability to install necessary resources and the ability to check if those
+resources have been installed so that hardware objects can be instantiated freely without setup and configuration
+becoming cumbersome.</p></li>
+<li><p>We need to make a unified setup interface with a <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file. To manage the multiple sets of dependencies
+for different agents, we should implement a routine like:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">setup</span><span class="p">(</span>
+    <span class="c1"># ...</span>
+    <span class="n">packages</span> <span class="o">=</span> <span class="n">find_packages</span><span class="p">(),</span>
+    <span class="c1"># ...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>that is able to yield different sets of packages for different install types.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file can also handle all the setup routines that are currently bash scripts by using setuptools,
+specifically by subclassing <code class="xref py py-class docutils literal notranslate"><span class="pre">setuptools.command.build_py.build_py</span></code> like in <a class="reference external" href="https://jichu4n.com/posts/how-to-add-custom-build-steps-and-commands-to-setuppy/">this example</a></p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Currently, Autopilot creates a crude bash script with <code class="docutils literal notranslate"><span class="pre">setup_pilot.sh</span></code> to start external processes before Autopilot.
+This makes handling multiple environment types difficult – ie. one needs to close the program entirely, edit
+the startup script, and restart in order to switch from a primarily auditory to primarily visual experiment.
+Management of external processes should be brought into Autopilot, potentially by using <a class="reference external" href="sargehttps://sarge.readthedocs.io/en/latest/index.html">sargehttps://sarge.readthedocs.io/en/latest/index.html</a>
+or some other process management tool.</p></li>
+<li><p>Autopilot should both install to a virtual environment by default and should have docker containers built for it.
+Further it should be possible to package up your environment for the purposes of experimental replication.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>UI/UX</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The GUI code is now the oldest in the entire library. It needs to be generally overhauled to make use of the tools
+that have been developed since it was written (eg. use of networking modules rather than passing sets of variables around).</p></li>
+<li><p>It should be much easier to read the status of, interact with, and reconfigure agents that are connected to the terminal.
+Currently control of Pilots is relatively opaque and limited, and often requires the user to go read the logs stored on each
+individual pilot to determine what is happening with it. Instead Autopilot should have an additional window that can be used
+to set the parameters, reconfigure, and test each individual Pilot.</p></li>
+<li><p>There are some data -&gt; graphical object mappings available to tasks, but Autopilot needs a fuller grammar of graphics.
+It should be possible to reconfigure plotting in the terminal GUI, and it should be possible to modify short-term
+parameters like bin widths for rolling means.</p></li>
+<li><p>Autopilot shouldn’t sprawl into a data visualization library, but it should have some basic post-experiment
+plotting features like plotting task performance and stages over time.</p></li>
+<li><p>Autopilot should have a web interface for browsing data. We are undecided about building a web interface for controlling tasks,
+but it should be possible to download data, do basic visualization, and observe the status of the system
+from a web portal.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>Tasks</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Task design is a bit <em>too</em> open at the moment. Tasks need to feel like they have more ‘guarantees’ on their operation.
+eg. there should be a generalized callback api for triggering events. the existing <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task.handle_trigger" title="autopilot.tasks.task.Task.handle_trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">handle_trigger()</span></code></a> is
+quite limited. There should be an obvious way for users to implement saving/reporting data from
+their tasks.</p></li>
+<li><p>It’s possible already to use a python generator to have more complex ordering of task stages,
+eg. instead of using an <code class="xref py py-class docutils literal notranslate"><span class="pre">itertools.cycle</span></code> one could write a generator function that yields task
+stages based on some parameters of the task. There should be an additional manager type, the <code class="docutils literal notranslate"><span class="pre">Trial_Manager</span></code>, that
+implements some common stage schemes – cycles, yes, but also DAGs, timed switches, etc. This way tasks could blend
+some intuitive features of finite-state machines while also not being beholden by them.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>Mesh Networking</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Autopilot’s networking system at the moment risks either a) being bottlenecked by having to route all data through
+a hierarchical network tree, or b) being indicipherable and impossible to program with  as individual objects and
+streams are capable of setting up arbitrary connections that need to potentially be manually configured. This
+goal is very abstract, but Autopilot should have a mesh-networking protocol.</p></li>
+<li><p>It should be possible for any object to communicate with any other object in the network without name collisions</p></li>
+<li><p>It should be possible to stream data efficiently both point-to-point but also from one producer to many consumers.</p></li>
+<li><p>It should be possible for networking connections to be recovered automatically in the case a node temporarily becomes unavailable.</p></li>
+<li><p>Accordingly, Autopilot should adapt <a class="reference external" href="https://github.com/zeromq/zyre">Zyre</a> for general communications, and improve
+its file transfer capabilities so that it resembles something like bittorrent.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>Data</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Autopilot’s data format shouldn’t be yet another standard incompatible with all the others that exist. Autopilot
+should at least implement data translators for, if not adopt outright the Neurodata Without Borders standard.</p></li>
+<li><p>For distributed data acquisition, it makes sense to use a distributed database, so we should consider switching
+data collection infrastructure from .hdf5 files to a database system like PostgreSQL.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>Hardware Library</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Populate <a class="reference external" href="https://auto-pi-lot.com/hardware">https://auto-pi-lot.com/hardware</a> with hardware designs, CAD files, BOMs, and assembly instructions</p></li>
+<li><p>Make a ‘thingiverse for experimental hardware’ that allows users to browse hardware based on application, materials, etc.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="improvements">
+<h2>Improvements<a class="headerlink" href="#improvements" title="Permalink to this headline">¶</a></h2>
+<p><em>The shorter view: smaller, specific tweaks to improve functionality of existing features roughly corresponding to patches in semantic versioning.</em></p>
+<ul>
+<li><p><strong>Logging</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>ensure that all events worth logging are logged across all objects.</p></li>
+<li><p>ensure that the structure of logfiles is intuitive – one logfile per object type
+(networking, hardware rather than one per each hardware device)</p></li>
+<li><p>logging of experimental conditions is incomplete – only the git hash of the pilot is stored,
+but the git hash of <em>all</em> relevant agents should be stored, and logging should be expanded
+to include <code class="docutils literal notranslate"><span class="pre">params</span></code> and system configuration (like <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">freeze</span></code>)</p></li>
+<li><p>logs should also be made both human and machine readable – use prettyprint for python objects,
+and standardize fields present in logger messages.</p></li>
+<li><p>File and Console log handlers should be split so that users can configure what they want to <em>see</em> vs. what they
+want <em>stored</em> separately (See <a class="reference external" href="https://docs.python.org/3/howto/logging-cookbook.html#multiple-handlers-and-formatters">https://docs.python.org/3/howto/logging-cookbook.html#multiple-handlers-and-formatters</a>)</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>UI/UX</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Batch subject creation.</p></li>
+<li><p>Double-clicking a subject should open a window to edit and view task parameters.</p></li>
+<li><p>Drag-and-drop subjects between pilots.</p></li>
+<li><p>Plot parameters should be editable - window roll size, etc.</p></li>
+<li><p>Make a messaging routine where a pilot can display some message on the terminal. this should be used to
+alert the user about any errors in task operation rather than having to inspect the logs on the pilot.</p></li>
+<li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Subject_List</span></code> remains selectable/editable once a subject has started running, making it unclear
+which subject is running. It should become fixed once a subject is running, or otherwise unambiguously indicate which
+subject is running.</p></li>
+<li><p>Plot elements should have tooltips that give their value – eg. when hovering over a rolling mean, a tooltip
+should display the current value of the rolling mean as well as other configuration params like how many trials
+it is being computed over.</p></li>
+<li><p>Elements in the GUI should be smarter about resizing, particularly the main window should be able to use a scroll
+bar once the number of subjects forces them off the screen.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>Hardware</strong></p>
+<blockquote>
+<div><ul>
+<li><p>Sound calibration - implement a calibration algorithm that allows speakers to be flattened</p></li>
+<li><p>Implement OpenCL for image processing, specifically decoding on acquisition with OpenCV,
+with VC4CL. See</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://github.com/doe300/VC4CL/issues/29">https://github.com/doe300/VC4CL/issues/29</a></p></li>
+<li><p><a class="reference external" href="https://github.com/thortex/rpi3-opencv/">https://github.com/thortex/rpi3-opencv/</a></p></li>
+<li><p><a class="reference external" href="https://github.com/thortex/rpi3-vc4cl/">https://github.com/thortex/rpi3-vc4cl/</a></p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>Synchronization</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Autopilot needs a unified system to generate timestamps and synchronize events across pilots.
+Currently we rely on implicit NTP-based synchronization across Pilots, which has ~ms jitter
+when configured optimally, but is ultimately not ideal for precise alignment of data streams,
+eg. ephys sampled at 30kHz. <code class="docutils literal notranslate"><span class="pre">pigpio</span></code> should be extended such that a Pilot can generate a
+clock signal that its children synchronize to. With the recent addition of timestamp generation
+within pigpio, that would be one parsimonious way of</p></li>
+<li><p>In order to synchronize audio events with behavioral events, the <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient" title="autopilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">JackClient</span></code></a>
+needs to add a call to <code class="docutils literal notranslate"><span class="pre">jack_last_frame_time</span></code> in order to get an accurate time of when sound
+stimuli start and stop (See <a class="reference external" href="https://jackaudio.org/api/group__TimeFunctions.html">https://jackaudio.org/api/group__TimeFunctions.html</a>)</p></li>
+<li><p>Time synchronization between Terminal and Pilot agents is less important, but having them synchronized
+as much as possible is good. The Terminal should be set up to be an NTP server that Pilots follow.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>Networking</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Multihop messages (eg. send to <code class="docutils literal notranslate"><span class="pre">C</span></code> through <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">B</span></code>) are clumsy. This may be
+irrelevant if Autopilot’s network infrastructure is converted a true meshnet, but in the meantime
+networking modules should be better at tracking and using trees of connected nodes.</p></li>
+<li><p>The system of zmq routers and dealers is somewhat cumbersome, and the new radio/dish pattern in zmq
+might be better suited. Previously, we had chosen not to use pub/sub as the publisher is relatively
+inefficient – it sends every message to every recipient, who filter messages based on their id, but
+the radio/dish method may be more efficient.</p></li>
+<li><p>Network modules should use a thread pool for handling messages, as spawning a new thread for each message
+is needlessly costly</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>Data</strong></p>
+<blockquote>
+<div><ul>
+<li><p>Data specification needs to be formalized further – currently data for a task is described with
+<code class="docutils literal notranslate"><span class="pre">tables</span></code> specifiers, <code class="docutils literal notranslate"><span class="pre">TrialData</span></code> and <code class="docutils literal notranslate"><span class="pre">ContinuousData</span></code>, but there are always additional fields –
+particularly from stimuli. The <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> class should be able to create columns and tables for</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Task data as specified in the task description</p></li>
+<li><p>Stimulus data as specified by a stimulus manager that initializes them. eg. the stimulus manager
+initializes all stimuli for a task, and then is able to yield a description of all columns needed for
+all initialized stimuli. So, for a task that uses</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>Tests</strong> - Currently Autopilot has <em>no unit tests</em> (shocked ghasps, monocles falling into brandy glasses).
+We need to implement an automated test suite and continuous integration system in order to make
+community development of Autopilot manageable.</p></li>
+<li><p><strong>Configuration</strong></p>
+<blockquote>
+<div><ul>
+<li><p>Rather than require all tasks be developed within the directory structure of Autopilot, Tasks and hardware
+objects should be able to be added to the system in a way that mimcs
+<a class="reference external" href="https://github.com/tensorflow/tensor2tensor">tensor2tensor</a>’s
+<a class="reference external" href="https://github.com/tensorflow/tensor2tensor/blob/master/tensor2tensor/utils/registry.py">registry</a>
+For example, users could specify a list of user directories in <code class="docutils literal notranslate"><span class="pre">prefs</span></code>, and user-created Hardware/Tasks
+could be decorated with a <code class="docutils literal notranslate"><span class="pre">&#64;registry.register_task</span></code>.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>This would additionally solve the awkward <a class="reference internal" href="autopilot.tasks.html#autopilot.tasks.TASK_LIST" title="autopilot.tasks.TASK_LIST"><code class="xref py py-data docutils literal notranslate"><span class="pre">tasks.TASK_LIST</span></code></a> method of making tasks available by
+name that is used now by having a more formal task registry.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>Cleanliness &amp; Beauty</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Intra-autopilot imports are a bit messy. They should be streamlined so that importing one class from one module
+doesn’t spiral out of control and import literally everything in the package.</p></li>
+<li><p>Replace <code class="docutils literal notranslate"><span class="pre">getter</span></code>- and <code class="docutils literal notranslate"><span class="pre">setter</span></code>-type methods throughout with <code class="docutils literal notranslate"><span class="pre">&#64;properties</span></code> when it would improve the object,
+eg. in the <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient" title="autopilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">JackClient</span></code></a>, the storage/retrieval of all the global module variables could be made much neater
+with <code class="docutils literal notranslate"><span class="pre">&#64;property</span></code> methods.</p></li>
+<li><p>Like the <a class="reference internal" href="autopilot.hardware.html#autopilot.hardware.Hardware" title="autopilot.hardware.Hardware"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hardware</span></code></a> class, top-level metaclasses should be moved to the <code class="docutils literal notranslate"><span class="pre">__init__</span></code>
+file for the module to avoid awkward imports and extra files like <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.task.Task</span></code></a></p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="bugs">
+<h2>Bugs<a class="headerlink" href="#bugs" title="Permalink to this headline">¶</a></h2>
+<p><em>Known bugs that have eluded us thus far</em></p>
+<ul class="simple">
+<li><p>The <a class="reference internal" href="autopilot.core.gui.html#autopilot.core.gui.Pilot_Button" title="autopilot.core.gui.Pilot_Button"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot_Button</span></code></a> doesn’t always reflect the availability/unavailability of
+connected pilots. The button model as well as the general heartbeating/status indication
+routines need to be made robust.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">pilot_db.json</span></code> and <a class="reference internal" href="autopilot.core.gui.html#autopilot.core.gui.Subject_List" title="autopilot.core.gui.Subject_List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject_List</span></code></a> doesn’t check for duplicate subjects
+across Pilots. That shouldn’t be a problem generally, but if a subject is switched between
+Pilots that may not be reflected in the generated metadata. Pilot ID needs to be more intimately
+linked to the <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a>.</p></li>
+<li><p>If Autopilot needs to be quit harshly, some pigpio-based hardware objects don’t quit nicely,
+and the pigpiod service can remain stuck on. Resource release needs to be made more robust</p></li>
+<li><p>Network connectivity can be lost if the network hardware is disturbed (in our case the router gets kicked
+from the network it is connected to) and is only reliably recovered by restarting the system. Network connections
+should be able to recover disturbance.</p></li>
+</ul>
+</div>
+<div class="section" id="completed">
+<h2>Completed<a class="headerlink" href="#completed" title="Permalink to this headline">¶</a></h2>
+<p><em>good god we did it</em></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="changelog/v0.3.0.html#changelog-v030"><span class="std std-ref">v0.3.0 (March 3rd, 2020)</span></a> - Upgrade to Python 3</p></li>
+<li><p><a class="reference internal" href="changelog/v0.3.0.html#changelog-v030"><span class="std std-ref">v0.3.0 (March 3rd, 2020)</span></a> - Upgrade to PySide 2 &amp; Qt5</p></li>
+<li><p><a class="reference internal" href="changelog/v0.3.0.html#changelog-v030"><span class="std std-ref">v0.3.0 (March 3rd, 2020)</span></a> - Generate full timestamps from pigpio rather than ticks</p></li>
+<li><p><a class="reference internal" href="changelog/v0.3.0.html#changelog-v030"><span class="std std-ref">v0.3.0 (March 3rd, 2020)</span></a> - Continuous data handling</p></li>
+<li><p><a class="reference internal" href="changelog/v0.3.0.html#changelog-v030"><span class="std std-ref">v0.3.0 (March 3rd, 2020)</span></a> - GPIO uses pigpio functions rather than python timing</p></li>
+<li><p><a class="reference internal" href="changelog/v0.3.0.html#changelog-v030"><span class="std std-ref">v0.3.0 (March 3rd, 2020)</span></a> - networking modules compress arrays before transfer</p></li>
+<li><p><a class="reference internal" href="changelog/v0.3.0.html#changelog-v030"><span class="std std-ref">v0.3.0 (March 3rd, 2020)</span></a> - Images can be acquired from cameras</p></li>
+</ul>
+</div>
+<div class="section" id="lowest-priority">
+<h2>Lowest Priority<a class="headerlink" href="#lowest-priority" title="Permalink to this headline">¶</a></h2>
+<p><em>Improvements that are very unimportant or strictly for unproductive joy</em></p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>Classic Mode</strong> - in honor of an ancient piece of software that Autopilot may have descended from,</dt><dd><p>add a hidden key that when pressed causes the entire terminal screen to flicker whenever any subject in any pilot
+gets a trial incorrect.</p>
 </dd>
 </dl>
 </li>
-<li><p>Finalize continuous data handling in the <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> class.</p></li>
-<li><p>Sound Calibration</p></li>
-</ul>
-<ul class="simple">
-<li><p>Setup routines and prefs editing</p></li>
-<li><p>Visualization &amp; data server</p></li>
-<li><p>Error reporting, status checking for pilots</p></li>
-<li><p>Mesh Networking</p></li>
-<li><p>Parameter updating in subjects via GUI</p></li>
-<li><p>Parameter updating in plot objects – generally more interactive plot customization</p></li>
-</ul>
-<div class="section" id="completed-goals">
-<h2>Completed Goals<a class="headerlink" href="#completed-goals" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="changelog/v0.3.0.html#changelog-v030"><span class="std std-ref">v0.3.0 (Februrary DATE, 2020)</span></a> - Upgrade to Python 3</p></li>
-<li><p><a class="reference internal" href="changelog/v0.3.0.html#changelog-v030"><span class="std std-ref">v0.3.0 (Februrary DATE, 2020)</span></a> - Upgrade to PySide 2 &amp; Qt5</p></li>
 </ul>
 </div>
 </div>
@@ -362,7 +731,7 @@
         <a href="changelog/index.html" class="btn btn-neutral float-right" title="Changelog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="autopilot.prefs.html" class="btn btn-neutral float-left" title="prefs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="autopilot.external.html" class="btn btn-neutral float-left" title="external" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

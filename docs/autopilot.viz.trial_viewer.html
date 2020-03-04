@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>trial_viewer &mdash; Autopilot 0.2 documentation</title>
+  <title>trial_viewer &mdash; Autopilot 0.3.0 documentation</title>
   
 
   
@@ -36,16 +37,20 @@
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/restyle.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="setup" href="autopilot.setup.html" />
+    <link rel="next" title="psychometric" href="autopilot.viz.psychometric.html" />
     <link rel="prev" title="viz" href="autopilot.viz.html" />
 
     <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js" integrity="sha256-BuxrUdr/4YoztQLxT6xmdO6hSQw2d6BtBUY1pteGds4=" crossorigin="anonymous"></script>
 
 </head>
 
@@ -73,7 +78,7 @@
             
             
               <div class="version">
-                0.2
+                0.3
               </div>
             
           
@@ -100,11 +105,9 @@
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure">Program Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#module-tour">Module Tour</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
@@ -123,12 +126,6 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -190,7 +187,6 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="autopilot.core.html">Core Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.gui.html">gui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autopilot.core.hardware.html">hardware</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
@@ -200,7 +196,15 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.hardware.html">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.cameras.html">cameras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.gpio.html">gpio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.i2c.html">i2c</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.usb.html">usb</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.children.html">children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.free_water.html">free_water</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.graduation.html">graduation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.nafc.html">nafc</a></li>
@@ -219,6 +223,7 @@
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="autopilot.viz.html">Visualization Tools</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">trial_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.viz.psychometric.html">psychometric</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.setup.html">Setup</a><ul>
@@ -228,16 +233,22 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.prefs.html">Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.external.html">External</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="todo.html#completed-goals">Completed Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#improvements">Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#completed">Completed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#lowest-priority">Lowest Priority</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-3">Version 0.3</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (Februrary DATE, 2020)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (March 3rd, 2020)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#major-updates">Major Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#new-features">New Features</a></li>
@@ -339,8 +350,10 @@
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.viz.trial_viewer.load_subject_dir" title="autopilot.viz.trial_viewer.load_subject_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_subject_dir</span></code></a>(data_dir[, steps, grad, which])</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param data_dir</dt>
-<dd class="field-odd"><p>A path to a directory with <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> style hdf5 files</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_dir</strong> (<em>str</em>) – A path to a directory with <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> style hdf5 files</p></li>
+</ul>
 </dd>
 </dl>
 </p></td>
@@ -350,8 +363,11 @@
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.viz.trial_viewer.trial_viewer" title="autopilot.viz.trial_viewer.trial_viewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trial_viewer</span></code></a>(step_data[, roll_type, …])</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param step_data</dt>
-<dd class="field-odd"><p></p></dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bar</strong></p></li>
+</ul>
+</dd>
 </dl>
 </p></td>
 </tr>
@@ -359,18 +375,18 @@
 </table>
 <dl class="function">
 <dt id="autopilot.viz.trial_viewer.load_subject_data">
-<code class="sig-prename descclassname">autopilot.viz.trial_viewer.</code><code class="sig-name descname">load_subject_data</code><span class="sig-paren">(</span><em class="sig-param">data_dir</em>, <em class="sig-param">subject_name</em>, <em class="sig-param">steps=True</em>, <em class="sig-param">grad=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#load_subject_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.load_subject_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">load_subject_data</code><span class="sig-paren">(</span><em class="sig-param">data_dir</em>, <em class="sig-param">subject_name</em>, <em class="sig-param">steps=True</em>, <em class="sig-param">grad=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#load_subject_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.load_subject_data" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="autopilot.viz.trial_viewer.load_subject_dir">
-<code class="sig-prename descclassname">autopilot.viz.trial_viewer.</code><code class="sig-name descname">load_subject_dir</code><span class="sig-paren">(</span><em class="sig-param">data_dir</em>, <em class="sig-param">steps=True</em>, <em class="sig-param">grad=True</em>, <em class="sig-param">which=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#load_subject_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.load_subject_dir" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">load_subject_dir</code><span class="sig-paren">(</span><em class="sig-param">data_dir</em>, <em class="sig-param">steps=True</em>, <em class="sig-param">grad=True</em>, <em class="sig-param">which=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#load_subject_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.load_subject_dir" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data_dir</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – A path to a directory with <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> style hdf5 files</p></li>
-<li><p><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Whether to return full trial-level data for each step</p></li>
-<li><p><strong>grad</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Whether to return summarized step graduation data.</p></li>
+<li><p><strong>data_dir</strong> (<em>str</em>) – A path to a directory with <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> style hdf5 files</p></li>
+<li><p><strong>steps</strong> (<em>bool</em>) – Whether to return full trial-level data for each step</p></li>
+<li><p><strong>grad</strong> (<em>bool</em>) – Whether to return summarized step graduation data.</p></li>
 <li><p><strong>which</strong> (<em>list</em>) – A list of subjects to subset the loaded subjects to</p></li>
 </ul>
 </dd>
@@ -379,17 +395,19 @@
 
 <dl class="function">
 <dt id="autopilot.viz.trial_viewer.step_viewer">
-<code class="sig-prename descclassname">autopilot.viz.trial_viewer.</code><code class="sig-name descname">step_viewer</code><span class="sig-paren">(</span><em class="sig-param">grad_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#step_viewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.step_viewer" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">step_viewer</code><span class="sig-paren">(</span><em class="sig-param">grad_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#step_viewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.step_viewer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="autopilot.viz.trial_viewer.trial_viewer">
-<code class="sig-prename descclassname">autopilot.viz.trial_viewer.</code><code class="sig-name descname">trial_viewer</code><span class="sig-paren">(</span><em class="sig-param">step_data</em>, <em class="sig-param">roll_type='ewm'</em>, <em class="sig-param">roll_span=100</em>, <em class="sig-param">bar=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#trial_viewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.trial_viewer" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">trial_viewer</code><span class="sig-paren">(</span><em class="sig-param">step_data</em>, <em class="sig-param">roll_type='ewm'</em>, <em class="sig-param">roll_span=100</em>, <em class="sig-param">bar=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/viz/trial_viewer.html#trial_viewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.viz.trial_viewer.trial_viewer" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>step_data</strong> – </p></li>
-<li><p><strong>grad_data</strong> – </p></li>
+<li><p><strong>bar</strong></p></li>
+<li><p><strong>roll_span</strong></p></li>
+<li><p><strong>roll_type</strong></p></li>
+<li><p><strong>step_data</strong></p></li>
 </ul>
 </dd>
 </dl>
@@ -405,7 +423,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="autopilot.setup.html" class="btn btn-neutral float-right" title="setup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="autopilot.viz.psychometric.html" class="btn btn-neutral float-right" title="psychometric" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="autopilot.viz.html" class="btn btn-neutral float-left" title="viz" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

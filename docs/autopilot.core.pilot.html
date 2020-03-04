@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pilot &mdash; Autopilot 0.2 documentation</title>
+  <title>pilot &mdash; Autopilot 0.3.0 documentation</title>
   
 
   
@@ -36,6 +37,9 @@
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/restyle.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="plots" href="autopilot.core.plots.html" />
@@ -45,7 +49,8 @@
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js" integrity="sha256-BuxrUdr/4YoztQLxT6xmdO6hSQw2d6BtBUY1pteGds4=" crossorigin="anonymous"></script>
 
 </head>
 
@@ -73,7 +78,7 @@
             
             
               <div class="version">
-                0.2
+                0.3
               </div>
             
           
@@ -100,11 +105,9 @@
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure">Program Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#module-tour">Module Tour</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
@@ -123,12 +126,6 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -190,7 +187,6 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="autopilot.core.html">Core Modules</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.gui.html">gui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autopilot.core.hardware.html">hardware</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
@@ -200,7 +196,15 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.hardware.html">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.cameras.html">cameras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.gpio.html">gpio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.i2c.html">i2c</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.usb.html">usb</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.children.html">children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.free_water.html">free_water</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.graduation.html">graduation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.nafc.html">nafc</a></li>
@@ -219,6 +223,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.viz.psychometric.html">psychometric</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.setup.html">Setup</a><ul>
@@ -228,16 +233,22 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.prefs.html">Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.external.html">External</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="todo.html#completed-goals">Completed Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#improvements">Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#completed">Completed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#lowest-priority">Lowest Priority</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-3">Version 0.3</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (Februrary DATE, 2020)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (March 3rd, 2020)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#major-updates">Major Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#new-features">New Features</a></li>
@@ -336,8 +347,8 @@
 </table>
 <dl class="class">
 <dt id="autopilot.core.pilot.Pilot">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.core.pilot.</code><code class="sig-name descname">Pilot</code><a class="reference internal" href="_modules/autopilot/core/pilot.html#Pilot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.pilot.Pilot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-name descname">Pilot</code><a class="reference internal" href="_modules/autopilot/core/pilot.html#Pilot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.pilot.Pilot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Drives the Raspberry Pi</p>
 <p>Coordinates the hardware and networking objects to run tasks.</p>
 <p>Typically used with a connection to a <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a> object to
@@ -359,7 +370,7 @@ standalone.</p>
 <td><p>If any ‘LEDS’ are defined in <cite>prefs.HARDWARE</cite> , instantiate them, set their color to [0,0,0], and then release them.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.calibrate_port" title="autopilot.core.pilot.Pilot.calibrate_port"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calibrate_port</span></code></a>(port_name, n_clicks, …)</p></td>
-<td><p></p></td>
+<td><p>Run port calibration routine</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.calibration_curve" title="autopilot.core.pilot.Pilot.calibration_curve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calibration_curve</span></code></a>([path, calibration])</p></td>
 <td><p># compute curve to compute duration from desired volume</p></td>
@@ -380,7 +391,7 @@ standalone.</p>
 <td><p>Send messages with a poissonian process according to the settings in value</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.l_cal_port" title="autopilot.core.pilot.Pilot.l_cal_port"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_cal_port</span></code></a>(value)</p></td>
-<td><p></p></td>
+<td><p>Initiate the <a class="reference internal" href="#autopilot.core.pilot.Pilot.calibrate_port" title="autopilot.core.pilot.Pilot.calibrate_port"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calibrate_port()</span></code></a> routine.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.l_cal_result" title="autopilot.core.pilot.Pilot.l_cal_result"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_cal_result</span></code></a>(value)</p></td>
 <td><p>Save the results of a port calibration</p></td>
@@ -443,21 +454,21 @@ task defines which pins it needs. Currently the default configuration asks for</
 <dl class="field-list simple">
 <dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The name used to identify ourselves in <a class="reference internal" href="autopilot.core.networking.html#module-autopilot.core.networking" title="autopilot.core.networking"><code class="xref py py-mod docutils literal notranslate"><span class="pre">networking</span></code></a></p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The name used to identify ourselves in <a class="reference internal" href="autopilot.core.networking.html#module-autopilot.core.networking" title="autopilot.core.networking"><code class="xref py py-mod docutils literal notranslate"><span class="pre">networking</span></code></a></p></li>
 <li><p><strong>task</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">tasks.Task</span></code>) – The currently instantiated task</p></li>
-<li><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.running" title="autopilot.core.pilot.Pilot.running"><strong>running</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Flag used to control task running state</p></li>
-<li><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.stage_block" title="autopilot.core.pilot.Pilot.stage_block"><strong>stage_block</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Flag given to a task to signal when task stages finish</p></li>
-<li><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.file_block" title="autopilot.core.pilot.Pilot.file_block"><strong>file_block</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Flag used to wait for file transfers</p></li>
-<li><p><strong>state</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – ‘RUNNING’, ‘STOPPING’, ‘IDLE’ - signals what this pilot is up to</p></li>
-<li><p><strong>pulls</strong> (<em>list</em>) – list of <code class="xref py py-class docutils literal notranslate"><span class="pre">Pull</span></code> objects to keep pins pulled up or down</p></li>
+<li><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.running" title="autopilot.core.pilot.Pilot.running"><strong>running</strong></a> (<a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Event" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Flag used to control task running state</p></li>
+<li><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.stage_block" title="autopilot.core.pilot.Pilot.stage_block"><strong>stage_block</strong></a> (<a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Event" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Flag given to a task to signal when task stages finish</p></li>
+<li><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.file_block" title="autopilot.core.pilot.Pilot.file_block"><strong>file_block</strong></a> (<a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Event" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a>) – Flag used to wait for file transfers</p></li>
+<li><p><strong>state</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – ‘RUNNING’, ‘STOPPING’, ‘IDLE’ - signals what this pilot is up to</p></li>
+<li><p><strong>pulls</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – list of <code class="xref py py-class docutils literal notranslate"><span class="pre">Pull</span></code> objects to keep pins pulled up or down</p></li>
 <li><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.server" title="autopilot.core.pilot.Pilot.server"><strong>server</strong></a> – Either a <a class="reference internal" href="autopilot.stim.sound.pyoserver.html#autopilot.stim.sound.pyoserver.pyo_server" title="autopilot.stim.sound.pyoserver.pyo_server"><code class="xref py py-func docutils literal notranslate"><span class="pre">pyo_server()</span></code></a> or <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient" title="autopilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">JackClient</span></code></a> , sound server.</p></li>
 <li><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.node" title="autopilot.core.pilot.Pilot.node"><strong>node</strong></a> (<a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">networking.Net_Node</span></code></a>) – Our Net_Node we use to communicate with our main networking object</p></li>
 <li><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.networking" title="autopilot.core.pilot.Pilot.networking"><strong>networking</strong></a> (<a class="reference internal" href="autopilot.core.networking.html#autopilot.core.networking.Pilot_Station" title="autopilot.core.networking.Pilot_Station"><code class="xref py py-class docutils literal notranslate"><span class="pre">networking.Pilot_Station</span></code></a>) – Our networking object to communicate with the outside world</p></li>
-<li><p><strong>ip</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Our IPv4 address</p></li>
-<li><p><strong>listens</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Dictionary mapping message keys to methods used to process them.</p></li>
-<li><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.logger" title="autopilot.core.pilot.Pilot.logger"><strong>logger</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Logger" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a>) – Used to log messages and network events.</p></li>
-<li><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.log_handler" title="autopilot.core.pilot.Pilot.log_handler"><strong>log_handler</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.handlers.html#logging.FileHandler" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.FileHandler</span></code></a>) – Handler for logging</p></li>
-<li><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.log_formatter" title="autopilot.core.pilot.Pilot.log_formatter"><strong>log_formatter</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging.Formatter" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></a>) – <p>Formats log entries as:</p>
+<li><p><strong>ip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Our IPv4 address</p></li>
+<li><p><strong>listens</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – Dictionary mapping message keys to methods used to process them.</p></li>
+<li><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.logger" title="autopilot.core.pilot.Pilot.logger"><strong>logger</strong></a> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Logger</span></code></a>) – Used to log messages and network events.</p></li>
+<li><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.log_handler" title="autopilot.core.pilot.Pilot.log_handler"><strong>log_handler</strong></a> (<a class="reference external" href="https://docs.python.org/3/library/logging.handlers.html#logging.FileHandler" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.FileHandler</span></code></a>) – Handler for logging</p></li>
+<li><p><a class="reference internal" href="#autopilot.core.pilot.Pilot.log_formatter" title="autopilot.core.pilot.Pilot.log_formatter"><strong>log_formatter</strong></a> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Formatter" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></a>) – <p>Formats log entries as:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2"> : </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
@@ -541,12 +552,12 @@ future requests.</p>
 <code class="sig-name descname">l_start</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/pilot.html#Pilot.l_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.pilot.Pilot.l_start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start running a task.</p>
 <p>Get the task object by using <cite>value[‘task_type’]</cite> to select from
-<code class="xref py py-data docutils literal notranslate"><span class="pre">tasks.TASK_LIST</span></code> , then feed the rest of <cite>value</cite> as kwargs
+<a class="reference internal" href="autopilot.tasks.html#autopilot.tasks.TASK_LIST" title="autopilot.tasks.TASK_LIST"><code class="xref py py-data docutils literal notranslate"><span class="pre">tasks.TASK_LIST</span></code></a> , then feed the rest of <cite>value</cite> as kwargs
 into the task object.</p>
 <p>Calls <code class="xref py py-meth docutils literal notranslate"><span class="pre">autopilot.run_task()</span></code> in a new thread</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – A dictionary of task parameters</p>
+<dd class="field-odd"><p><strong>value</strong> (<em>dict</em>) – A dictionary of task parameters</p>
 </dd>
 </dl>
 </dd></dl>
@@ -577,7 +588,7 @@ into the task object.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>value</strong> – </p>
+<dd class="field-odd"><p><strong>value</strong></p>
 </dd>
 </dl>
 </dd></dl>
@@ -585,12 +596,37 @@ into the task object.</p>
 <dl class="method">
 <dt id="autopilot.core.pilot.Pilot.l_cal_port">
 <code class="sig-name descname">l_cal_port</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/pilot.html#Pilot.l_cal_port"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.pilot.Pilot.l_cal_port" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Initiate the <a class="reference internal" href="#autopilot.core.pilot.Pilot.calibrate_port" title="autopilot.core.pilot.Pilot.calibrate_port"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calibrate_port()</span></code></a> routine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>dict</em>) – Dictionary of values defining the port calibration to be run, including
+- <code class="docutils literal notranslate"><span class="pre">port</span></code> - which port to calibrate
+- <code class="docutils literal notranslate"><span class="pre">n_clicks</span></code> - how many openings should be performed
+- <code class="docutils literal notranslate"><span class="pre">open_dur</span></code> - how long the valve should be open
+- <code class="docutils literal notranslate"><span class="pre">iti</span></code> - ‘inter-trial interval`, or how long should we wait between valve openings.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="autopilot.core.pilot.Pilot.calibrate_port">
 <code class="sig-name descname">calibrate_port</code><span class="sig-paren">(</span><em class="sig-param">port_name</em>, <em class="sig-param">n_clicks</em>, <em class="sig-param">open_dur</em>, <em class="sig-param">iti</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/pilot.html#Pilot.calibrate_port"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.pilot.Pilot.calibrate_port" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Run port calibration routine</p>
+<p>Open a <a class="reference internal" href="autopilot.hardware.gpio.html#autopilot.hardware.gpio.Solenoid" title="autopilot.hardware.gpio.Solenoid"><code class="xref py py-class docutils literal notranslate"><span class="pre">hardware.gpio.Solenoid</span></code></a> repeatedly,
+measure volume of water dispersed, compute lookup table mapping
+valve open times to volume.</p>
+<p>Continuously sends progress of test with <code class="docutils literal notranslate"><span class="pre">CAL_PROGRESS</span></code> messages</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>port_name</strong> (<em>str</em>) – Port name as specified in <code class="docutils literal notranslate"><span class="pre">prefs</span></code></p></li>
+<li><p><strong>n_clicks</strong> (<em>int</em>) – number of times the valve should be opened</p></li>
+<li><p><strong>open_dur</strong> (<em>int, float</em>) – how long the valve should be opened for in ms</p></li>
+<li><p><strong>iti</strong> (<em>int, float</em>) – how long we should <a class="reference external" href="https://docs.python.org/3/library/time.html#time.sleep" title="(in Python v3.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sleep()</span></code></a> between openings</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="autopilot.core.pilot.Pilot.l_cal_result">
@@ -610,7 +646,10 @@ into the task object.</p>
 <dd><p># compute curve to compute duration from desired volume</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> – If present, use calibration file specified, otherwise use default.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>calibration</strong></p></li>
+<li><p><strong>path</strong> – If present, use calibration file specified, otherwise use default.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

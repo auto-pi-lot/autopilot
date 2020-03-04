@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>sounds &mdash; Autopilot 0.2 documentation</title>
+  <title>sounds &mdash; Autopilot 0.3.0 documentation</title>
   
 
   
@@ -36,6 +37,9 @@
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/restyle.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="viz" href="autopilot.viz.html" />
@@ -45,7 +49,8 @@
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js" integrity="sha256-BuxrUdr/4YoztQLxT6xmdO6hSQw2d6BtBUY1pteGds4=" crossorigin="anonymous"></script>
 
 </head>
 
@@ -73,7 +78,7 @@
             
             
               <div class="version">
-                0.2
+                0.3
               </div>
             
           
@@ -100,11 +105,9 @@
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure">Program Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#module-tour">Module Tour</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
@@ -123,12 +126,6 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -190,7 +187,6 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="autopilot.core.html">Core Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.gui.html">gui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autopilot.core.hardware.html">hardware</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
@@ -200,7 +196,15 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.hardware.html">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.cameras.html">cameras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.gpio.html">gpio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.i2c.html">i2c</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.usb.html">usb</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.children.html">children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.free_water.html">free_water</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.graduation.html">graduation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.nafc.html">nafc</a></li>
@@ -219,6 +223,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.viz.psychometric.html">psychometric</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.setup.html">Setup</a><ul>
@@ -228,16 +233,22 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.prefs.html">Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.external.html">External</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="todo.html#completed-goals">Completed Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#improvements">Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#completed">Completed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#lowest-priority">Lowest Priority</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-3">Version 0.3</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (Februrary DATE, 2020)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (March 3rd, 2020)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#major-updates">Major Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#new-features">New Features</a></li>
@@ -395,8 +406,8 @@ and vice versa.</p>
 </table>
 <dl class="class">
 <dt id="autopilot.stim.sound.sounds.Pyo_Sound">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.stim.sound.sounds.</code><code class="sig-name descname">Pyo_Sound</code><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#Pyo_Sound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.Pyo_Sound" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-name descname">Pyo_Sound</code><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#Pyo_Sound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.Pyo_Sound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Metaclass for pyo sound objects.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -416,8 +427,9 @@ intentionally left undocumented.</p>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.stim.sound.sounds.Pyo_Sound.set_trigger" title="autopilot.stim.sound.sounds.Pyo_Sound.set_trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_trigger</span></code></a>(trig_fn)</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param trig_fn</dt>
-<dd class="field-odd"><p></p></dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>trig_fn</strong></p>
+</dd>
 </dl>
 </p></td>
 </tr>
@@ -439,8 +451,8 @@ tableread object which can play the audio with .out()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>audio</strong> – </p></li>
-<li><p><strong>duration</strong> – </p></li>
+<li><p><strong>audio</strong></p></li>
+<li><p><strong>duration</strong></p></li>
 </ul>
 </dd>
 </dl>
@@ -451,7 +463,7 @@ tableread object which can play the audio with .out()</p>
 <code class="sig-name descname">set_trigger</code><span class="sig-paren">(</span><em class="sig-param">trig_fn</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#Pyo_Sound.set_trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.Pyo_Sound.set_trigger" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>trig_fn</strong> – </p>
+<dd class="field-odd"><p><strong>trig_fn</strong></p>
 </dd>
 </dl>
 </dd></dl>
@@ -460,31 +472,31 @@ tableread object which can play the audio with .out()</p>
 
 <dl class="class">
 <dt id="autopilot.stim.sound.sounds.Jack_Sound">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.stim.sound.sounds.</code><code class="sig-name descname">Jack_Sound</code><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#Jack_Sound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.Jack_Sound" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-name descname">Jack_Sound</code><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#Jack_Sound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.Jack_Sound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Base class for sounds that use the <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient" title="autopilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">JackClient</span></code></a> audio
 server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><a class="reference internal" href="#autopilot.stim.sound.sounds.Jack_Sound.PARAMS" title="autopilot.stim.sound.sounds.Jack_Sound.PARAMS"><strong>PARAMS</strong></a> (<em>list</em>) – List of strings of parameters that need to be defined for this sound</p></li>
-<li><p><a class="reference internal" href="#autopilot.stim.sound.sounds.Jack_Sound.type" title="autopilot.stim.sound.sounds.Jack_Sound.type"><strong>type</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Human readable name of sound type</p></li>
-<li><p><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Duration of sound in ms</p></li>
-<li><p><strong>amplitude</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Amplitude of sound as proportion of 1 (eg 0.5 is half amplitude)</p></li>
+<li><p><a class="reference internal" href="#autopilot.stim.sound.sounds.Jack_Sound.PARAMS" title="autopilot.stim.sound.sounds.Jack_Sound.PARAMS"><strong>PARAMS</strong></a> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – List of strings of parameters that need to be defined for this sound</p></li>
+<li><p><a class="reference internal" href="#autopilot.stim.sound.sounds.Jack_Sound.type" title="autopilot.stim.sound.sounds.Jack_Sound.type"><strong>type</strong></a> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Human readable name of sound type</p></li>
+<li><p><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – Duration of sound in ms</p></li>
+<li><p><strong>amplitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – Amplitude of sound as proportion of 1 (eg 0.5 is half amplitude)</p></li>
 <li><p><strong>table</strong> (<a class="reference external" href="https://numpy.readthedocs.io/en/latest/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – A Numpy array of samples</p></li>
-<li><p><strong>chunks</strong> (<em>list</em>) – <code class="xref py py-attr docutils literal notranslate"><span class="pre">table</span></code> split up into chunks of <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.BLOCKSIZE" title="autopilot.stim.sound.jackclient.BLOCKSIZE"><code class="xref py py-data docutils literal notranslate"><span class="pre">BLOCKSIZE</span></code></a></p></li>
+<li><p><strong>chunks</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – <code class="xref py py-attr docutils literal notranslate"><span class="pre">table</span></code> split up into chunks of <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.BLOCKSIZE" title="autopilot.stim.sound.jackclient.BLOCKSIZE"><code class="xref py py-data docutils literal notranslate"><span class="pre">BLOCKSIZE</span></code></a></p></li>
 <li><p><strong>trigger</strong> (<em>callable</em>) – A function that is called when the sound completes</p></li>
-<li><p><strong>nsamples</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of samples in the sound</p></li>
-<li><p><strong>padded</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Whether the sound had to be padded with zeros when split into chunks (ie. sound duration was not a multiple of BLOCKSIZE).</p></li>
-<li><p><strong>fs</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – sampling rate of client from <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.FS" title="autopilot.stim.sound.jackclient.FS"><code class="xref py py-data docutils literal notranslate"><span class="pre">jackclient.FS</span></code></a></p></li>
-<li><p><strong>blocksize</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – blocksize of client from <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.BLOCKSIZE" title="autopilot.stim.sound.jackclient.BLOCKSIZE"><code class="xref py py-data docutils literal notranslate"><span class="pre">jackclient.BLOCKSIZE</span></code></a></p></li>
+<li><p><strong>nsamples</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Number of samples in the sound</p></li>
+<li><p><strong>padded</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Whether the sound had to be padded with zeros when split into chunks (ie. sound duration was not a multiple of BLOCKSIZE).</p></li>
+<li><p><strong>fs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – sampling rate of client from <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.FS" title="autopilot.stim.sound.jackclient.FS"><code class="xref py py-data docutils literal notranslate"><span class="pre">jackclient.FS</span></code></a></p></li>
+<li><p><strong>blocksize</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – blocksize of client from <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.BLOCKSIZE" title="autopilot.stim.sound.jackclient.BLOCKSIZE"><code class="xref py py-data docutils literal notranslate"><span class="pre">jackclient.BLOCKSIZE</span></code></a></p></li>
 <li><p><strong>server</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Jack_Client</span></code>) – Current Jack Client</p></li>
-<li><p><strong>q</strong> (<a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Queue</span></code></a>) – Audio Buffer queue from <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.QUEUE" title="autopilot.stim.sound.jackclient.QUEUE"><code class="xref py py-data docutils literal notranslate"><span class="pre">jackclient.QUEUE</span></code></a></p></li>
-<li><p><strong>q_lock</strong> (<a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Lock" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Lock</span></code></a>) – Audio Buffer lock from <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.Q_LOCK" title="autopilot.stim.sound.jackclient.Q_LOCK"><code class="xref py py-data docutils literal notranslate"><span class="pre">jackclient.Q_LOCK</span></code></a></p></li>
-<li><p><strong>play_evt</strong> (<a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Event</span></code></a>) – play event from <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.PLAY" title="autopilot.stim.sound.jackclient.PLAY"><code class="xref py py-data docutils literal notranslate"><span class="pre">jackclient.PLAY</span></code></a></p></li>
-<li><p><strong>stop_evt</strong> (<a class="reference external" href="https://docs.python.org/2/library/multiprocessing.html#multiprocessing.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Event</span></code></a>) – stop event from <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.STOP" title="autopilot.stim.sound.jackclient.STOP"><code class="xref py py-data docutils literal notranslate"><span class="pre">jackclient.STOP</span></code></a></p></li>
-<li><p><strong>buffered</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – has this sound been dumped into the <code class="xref py py-attr docutils literal notranslate"><span class="pre">q</span></code> ?</p></li>
-<li><p><strong>buffered_continuous</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Has the sound been dumped into the <code class="xref py py-attr docutils literal notranslate"><span class="pre">continuous_q</span></code>?</p></li>
+<li><p><strong>q</strong> (<a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Queue</span></code></a>) – Audio Buffer queue from <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.QUEUE" title="autopilot.stim.sound.jackclient.QUEUE"><code class="xref py py-data docutils literal notranslate"><span class="pre">jackclient.QUEUE</span></code></a></p></li>
+<li><p><strong>q_lock</strong> (<a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Lock" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Lock</span></code></a>) – Audio Buffer lock from <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.Q_LOCK" title="autopilot.stim.sound.jackclient.Q_LOCK"><code class="xref py py-data docutils literal notranslate"><span class="pre">jackclient.Q_LOCK</span></code></a></p></li>
+<li><p><strong>play_evt</strong> (<a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Event" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Event</span></code></a>) – play event from <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.PLAY" title="autopilot.stim.sound.jackclient.PLAY"><code class="xref py py-data docutils literal notranslate"><span class="pre">jackclient.PLAY</span></code></a></p></li>
+<li><p><strong>stop_evt</strong> (<a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Event" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Event</span></code></a>) – stop event from <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.STOP" title="autopilot.stim.sound.jackclient.STOP"><code class="xref py py-data docutils literal notranslate"><span class="pre">jackclient.STOP</span></code></a></p></li>
+<li><p><strong>buffered</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – has this sound been dumped into the <code class="xref py py-attr docutils literal notranslate"><span class="pre">q</span></code> ?</p></li>
+<li><p><strong>buffered_continuous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Has the sound been dumped into the <code class="xref py py-attr docutils literal notranslate"><span class="pre">continuous_q</span></code>?</p></li>
 </ul>
 </dd>
 </dl>
@@ -554,7 +566,7 @@ server.</p>
 <dd><p>list of strings of parameters to be defined</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -565,7 +577,7 @@ server.</p>
 <dd><p>string human readable name of sound</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -576,7 +588,7 @@ server.</p>
 <dd><p>type of server, always ‘jack’ for <cite>Jack_Sound</cite> s.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -587,7 +599,7 @@ server.</p>
 <dd><p>Split our <cite>table</cite> up into a list of <code class="xref py py-attr docutils literal notranslate"><span class="pre">Jack_Sound.blocksize</span></code> chunks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pad</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – If the sound is not evenly divisible into chunks, pad with zeros (True, default), otherwise jackclient will pad with its continuous sound</p>
+<dd class="field-odd"><p><strong>pad</strong> (<em>bool</em>) – If the sound is not evenly divisible into chunks, pad with zeros (True, default), otherwise jackclient will pad with its continuous sound</p>
 </dd>
 </dl>
 </dd></dl>
@@ -627,7 +639,7 @@ the sound should have ended.</p>
 <dd><p>Extend or shorten a sound so that it is a multiple of <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.BLOCKSIZE" title="autopilot.stim.sound.jackclient.BLOCKSIZE"><code class="xref py py-data docutils literal notranslate"><span class="pre">jackclient.BLOCKSIZE</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>ceiling</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – If true, extend duration, otherwise decrease duration.</p>
+<dd class="field-odd"><p><strong>ceiling</strong> (<em>bool</em>) – If true, extend duration, otherwise decrease duration.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -667,7 +679,7 @@ ie. the number of samples in a sound should be a multiple of <a class="reference
 <p>In the future, sound generation methods will be refactored as python generators so sounds can be continuously generated and played.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>loop</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – whether the sound will be stored by the jack client and looped (True), or whether the sound will be continuously streamed (False, not implemented)</p>
+<dd class="field-odd"><p><strong>loop</strong> (<em>bool</em>) – whether the sound will be stored by the jack client and looped (True), or whether the sound will be continuously streamed (False, not implemented)</p>
 </dd>
 </dl>
 <p>Returns:</p>
@@ -694,15 +706,15 @@ ie. the number of samples in a sound should be a multiple of <a class="reference
 
 <dl class="class">
 <dt id="autopilot.stim.sound.sounds.Tone">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.stim.sound.sounds.</code><code class="sig-name descname">Tone</code><span class="sig-paren">(</span><em class="sig-param">frequency</em>, <em class="sig-param">duration</em>, <em class="sig-param">amplitude=0.01</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#Tone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.Tone" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-name descname">Tone</code><span class="sig-paren">(</span><em class="sig-param">frequency</em>, <em class="sig-param">duration</em>, <em class="sig-param">amplitude=0.01</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#Tone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.Tone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>The Humble Sine Wave</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>frequency</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – frequency of sin in Hz</p></li>
-<li><p><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – duration of the sin in ms</p></li>
-<li><p><strong>amplitude</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – amplitude of the sound as a proportion of 1.</p></li>
+<li><p><strong>frequency</strong> (<em>float</em>) – frequency of sin in Hz</p></li>
+<li><p><strong>duration</strong> (<em>float</em>) – duration of the sin in ms</p></li>
+<li><p><strong>amplitude</strong> (<em>float</em>) – amplitude of the sound as a proportion of 1.</p></li>
 <li><p><strong>**kwargs</strong> – extraneous parameters that might come along with instantiating us</p></li>
 </ul>
 </dd>
@@ -754,14 +766,14 @@ ie. the number of samples in a sound should be a multiple of <a class="reference
 
 <dl class="class">
 <dt id="autopilot.stim.sound.sounds.Noise">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.stim.sound.sounds.</code><code class="sig-name descname">Noise</code><span class="sig-paren">(</span><em class="sig-param">duration</em>, <em class="sig-param">amplitude=0.01</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#Noise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.Noise" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-name descname">Noise</code><span class="sig-paren">(</span><em class="sig-param">duration</em>, <em class="sig-param">amplitude=0.01</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#Noise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.Noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>White Noise</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – duration of the noise</p></li>
-<li><p><strong>amplitude</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – amplitude of the sound as a proportion of 1.</p></li>
+<li><p><strong>duration</strong> (<em>float</em>) – duration of the noise</p></li>
+<li><p><strong>amplitude</strong> (<em>float</em>) – amplitude of the sound as a proportion of 1.</p></li>
 <li><p><strong>**kwargs</strong> – extraneous parameters that might come along with instantiating us</p></li>
 </ul>
 </dd>
@@ -813,8 +825,8 @@ ie. the number of samples in a sound should be a multiple of <a class="reference
 
 <dl class="class">
 <dt id="autopilot.stim.sound.sounds.File">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.stim.sound.sounds.</code><code class="sig-name descname">File</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">amplitude=0.01</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#File"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.File" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-name descname">File</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">amplitude=0.01</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#File"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.File" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A .wav file.</p>
 <div class="admonition-todo admonition" id="id2">
 <p class="admonition-title">Todo</p>
@@ -850,8 +862,8 @@ ie. the number of samples in a sound should be a multiple of <a class="reference
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Path to a .wav file relative to the <cite>prefs.SOUNDDIR</cite></p></li>
-<li><p><strong>amplitude</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – amplitude of the sound as a proportion of 1.</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – Path to a .wav file relative to the <cite>prefs.SOUNDDIR</cite></p></li>
+<li><p><strong>amplitude</strong> (<em>float</em>) – amplitude of the sound as a proportion of 1.</p></li>
 <li><p><strong>**kwargs</strong> – extraneous parameters that might come along with instantiating us</p></li>
 </ul>
 </dd>
@@ -878,17 +890,17 @@ converting int to float as needed.</p>
 
 <dl class="class">
 <dt id="autopilot.stim.sound.sounds.Speech">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.stim.sound.sounds.</code><code class="sig-name descname">Speech</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">speaker</em>, <em class="sig-param">consonant</em>, <em class="sig-param">vowel</em>, <em class="sig-param">token</em>, <em class="sig-param">amplitude=0.05</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#Speech"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.Speech" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Speech</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">speaker</em>, <em class="sig-param">consonant</em>, <em class="sig-param">vowel</em>, <em class="sig-param">token</em>, <em class="sig-param">amplitude=0.05</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#Speech"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.Speech" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#autopilot.stim.sound.sounds.File" title="autopilot.stim.sound.sounds.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.stim.sound.sounds.File</span></code></a></p>
 <p>Speech subclass of File sound.</p>
 <p>Example of custom sound class - PARAMS are changed, but nothing else.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>speaker</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Which Speaker recorded this speech token?</p></li>
-<li><p><strong>consonant</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Which consonant is in this speech token?</p></li>
-<li><p><strong>vowel</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Which vowel is in this speech token?</p></li>
-<li><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Which token is this for a given combination of speaker, consonant, and vowel</p></li>
+<li><p><strong>speaker</strong> (<em>str</em>) – Which Speaker recorded this speech token?</p></li>
+<li><p><strong>consonant</strong> (<em>str</em>) – Which consonant is in this speech token?</p></li>
+<li><p><strong>vowel</strong> (<em>str</em>) – Which vowel is in this speech token?</p></li>
+<li><p><strong>token</strong> (<em>int</em>) – Which token is this for a given combination of speaker, consonant, and vowel</p></li>
 </ul>
 </dd>
 </dl>
@@ -921,13 +933,16 @@ converting int to float as needed.</p>
 
 <dl class="class">
 <dt id="autopilot.stim.sound.sounds.Gap">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.stim.sound.sounds.</code><code class="sig-name descname">Gap</code><span class="sig-paren">(</span><em class="sig-param">duration</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#Gap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.Gap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-name descname">Gap</code><span class="sig-paren">(</span><em class="sig-param">duration</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#Gap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.Gap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A silent sound that does not pad its final chunk – used for creating precise silent
 gaps in a continuous noise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – duration of gap in ms</p>
+<dd class="field-odd"><p><strong>duration</strong> (<em>float</em>) – duration of gap in ms</p>
+</dd>
+<dt class="field-even">Variables</dt>
+<dd class="field-even"><p><strong>gap_zero</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – True if duration is zero, effectively do nothing on play.</p>
 </dd>
 </dl>
 <p><strong>Attributes</strong></p>
@@ -956,10 +971,10 @@ gaps in a continuous noise.</p>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.stim.sound.sounds.Gap.chunk" title="autopilot.stim.sound.sounds.Gap.chunk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chunk</span></code></a>([pad])</p></td>
-<td><p></p></td>
+<td><p>If gap is not duration == 0, call parent <code class="docutils literal notranslate"><span class="pre">chunk</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.stim.sound.sounds.Gap.init_sound" title="autopilot.stim.sound.sounds.Gap.init_sound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_sound</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>Create and chunk an array of zeros according to <code class="xref py py-attr docutils literal notranslate"><span class="pre">Gap.duration</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.stim.sound.sounds.Gap.play" title="autopilot.stim.sound.sounds.Gap.play"><code class="xref py py-obj docutils literal notranslate"><span class="pre">play</span></code></a>()</p></td>
 <td><p></p></td>
@@ -979,12 +994,15 @@ gaps in a continuous noise.</p>
 <dl class="method">
 <dt id="autopilot.stim.sound.sounds.Gap.init_sound">
 <code class="sig-name descname">init_sound</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#Gap.init_sound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.Gap.init_sound" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Create and chunk an array of zeros according to <code class="xref py py-attr docutils literal notranslate"><span class="pre">Gap.duration</span></code></p>
+</dd></dl>
 
 <dl class="method">
 <dt id="autopilot.stim.sound.sounds.Gap.chunk">
 <code class="sig-name descname">chunk</code><span class="sig-paren">(</span><em class="sig-param">pad=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#Gap.chunk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.Gap.chunk" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>If gap is not duration == 0, call parent <code class="docutils literal notranslate"><span class="pre">chunk</span></code>.
+:Parameters: <strong>pad</strong> (<em>bool</em>) – unused, passed to parent <code class="docutils literal notranslate"><span class="pre">chunk</span></code></p>
+</dd></dl>
 
 <dl class="method">
 <dt id="autopilot.stim.sound.sounds.Gap.buffer">
@@ -1000,13 +1018,13 @@ gaps in a continuous noise.</p>
 
 <dl class="data">
 <dt id="autopilot.stim.sound.sounds.SOUND_LIST">
-<code class="sig-prename descclassname">autopilot.stim.sound.sounds.</code><code class="sig-name descname">SOUND_LIST</code><em class="property"> = {'File': &lt;class 'autopilot.stim.sound.sounds.File'&gt;, 'Gap': &lt;class 'autopilot.stim.sound.sounds.Gap'&gt;, 'Noise': &lt;class 'autopilot.stim.sound.sounds.Noise'&gt;, 'Speech': &lt;class 'autopilot.stim.sound.sounds.Speech'&gt;, 'Tone': &lt;class 'autopilot.stim.sound.sounds.Tone'&gt;, 'speech': &lt;class 'autopilot.stim.sound.sounds.Speech'&gt;}</em><a class="headerlink" href="#autopilot.stim.sound.sounds.SOUND_LIST" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">SOUND_LIST</code><em class="property"> = {'File': &lt;class 'autopilot.stim.sound.sounds.File'&gt;, 'Gap': &lt;class 'autopilot.stim.sound.sounds.Gap'&gt;, 'Noise': &lt;class 'autopilot.stim.sound.sounds.Noise'&gt;, 'Speech': &lt;class 'autopilot.stim.sound.sounds.Speech'&gt;, 'Tone': &lt;class 'autopilot.stim.sound.sounds.Tone'&gt;, 'speech': &lt;class 'autopilot.stim.sound.sounds.Speech'&gt;}</em><a class="headerlink" href="#autopilot.stim.sound.sounds.SOUND_LIST" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sounds must be added to this SOUND_LIST so they can be indexed by the string keys used elsewhere.</p>
 </dd></dl>
 
 <dl class="data">
 <dt id="autopilot.stim.sound.sounds.STRING_PARAMS">
-<code class="sig-prename descclassname">autopilot.stim.sound.sounds.</code><code class="sig-name descname">STRING_PARAMS</code><em class="property"> = ['path', 'speaker', 'consonant', 'vowel', 'type']</em><a class="headerlink" href="#autopilot.stim.sound.sounds.STRING_PARAMS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">STRING_PARAMS</code><em class="property"> = ['path', 'speaker', 'consonant', 'vowel', 'type']</em><a class="headerlink" href="#autopilot.stim.sound.sounds.STRING_PARAMS" title="Permalink to this definition">¶</a></dt>
 <dd><p>These parameters should be given string columns rather than float columns.</p>
 <p>Bother Jonny to do this better.</p>
 <p>v0.3 will be all about doing parameters better.</p>
@@ -1014,7 +1032,7 @@ gaps in a continuous noise.</p>
 
 <dl class="function">
 <dt id="autopilot.stim.sound.sounds.int_to_float">
-<code class="sig-prename descclassname">autopilot.stim.sound.sounds.</code><code class="sig-name descname">int_to_float</code><span class="sig-paren">(</span><em class="sig-param">audio</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#int_to_float"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.int_to_float" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">int_to_float</code><span class="sig-paren">(</span><em class="sig-param">audio</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/sounds.html#int_to_float"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.sounds.int_to_float" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert 16 or 32 bit integer audio to 32 bit float.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

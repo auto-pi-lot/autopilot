@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Overview &mdash; Autopilot 0.2 documentation</title>
+  <title>Overview &mdash; Autopilot 0.3.0 documentation</title>
   
 
   
@@ -36,16 +37,20 @@
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/restyle.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Installation" href="guide.installation.html" />
-    <link rel="prev" title="Autopilot - Distributed Behavior" href="index.html" />
+    <link rel="prev" title="Indices and tables" href="index.html" />
 
     <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js" integrity="sha256-BuxrUdr/4YoztQLxT6xmdO6hSQw2d6BtBUY1pteGds4=" crossorigin="anonymous"></script>
 
 </head>
 
@@ -73,7 +78,7 @@
             
             
               <div class="version">
-                0.2
+                0.3
               </div>
             
           
@@ -100,11 +105,9 @@
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#program-structure">Program Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#tasks">Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#hardware">Hardware</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#agents">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-tour">Module Tour</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
@@ -123,12 +126,6 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -190,7 +187,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.core.html">Core Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.gui.html">gui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autopilot.core.hardware.html">hardware</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
@@ -200,7 +196,15 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.hardware.html">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.cameras.html">cameras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.gpio.html">gpio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.i2c.html">i2c</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.usb.html">usb</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.children.html">children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.free_water.html">free_water</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.graduation.html">graduation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.nafc.html">nafc</a></li>
@@ -219,6 +223,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.viz.psychometric.html">psychometric</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.setup.html">Setup</a><ul>
@@ -228,16 +233,22 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.prefs.html">Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.external.html">External</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="todo.html#completed-goals">Completed Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#improvements">Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#completed">Completed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#lowest-priority">Lowest Priority</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-3">Version 0.3</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (Februrary DATE, 2020)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (March 3rd, 2020)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#major-updates">Major Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#new-features">New Features</a></li>
@@ -318,32 +329,286 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="overview">
-<span id="id1"></span><h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
-<div class="admonition-todo admonition" id="id2">
-<p class="admonition-title">Todo</p>
-<p>Under construction! For now, the paper stands in as the overview. See “Program Structure” in particular</p>
+  <div class="admonition-todo admonition" id="id1">
+<span id="overview"></span><p class="admonition-title">Todo</p>
+<p>This page is still under construction! For a more detailed description, see the whitepaper, particularly “Program Structure”</p>
 <p><a class="reference external" href="https://www.biorxiv.org/content/10.1101/807693v1">https://www.biorxiv.org/content/10.1101/807693v1</a></p>
 </div>
-<p>These sections are stubs to be expanded.</p>
-<div class="section" id="concepts-and-terms-in-autopilot">
-<h2>Concepts and Terms in Autopilot<a class="headerlink" href="#concepts-and-terms-in-autopilot" title="Permalink to this headline">¶</a></h2>
-<dl class="glossary simple">
-<dt id="term-term-1">term 1</dt><dd><p>term 1 test text</p>
-</dd>
-</dl>
-</div>
-<div class="section" id="program-structure-overview">
-<h2>Program Structure Overview<a class="headerlink" href="#program-structure-overview" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id2">
+<h1>Overview<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="program-structure">
+<h2>Program Structure<a class="headerlink" href="#program-structure" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/whole_system_black.svg"><img alt="Graphical Overview of Autopilot Modules" src="_images/whole_system_black.svg" width="100%" /></a>
+<p>Autopilot performs experiments by distributing them over a network of desktop computers and Raspberry Pis.
+Each Computer or Pi runs an Autopilot <strong>agent</strong>, like the user-facing <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a> or a Raspberry Pi
+<a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a> .</p>
+<p>The <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a> agent provides a <a class="reference internal" href="autopilot.core.gui.html#module-autopilot.core.gui" title="autopilot.core.gui"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gui</span></code></a> to operate the system, manage <a class="reference internal" href="autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> s and
+experimental protocols, and <a class="reference internal" href="autopilot.core.plots.html#module-autopilot.core.plots" title="autopilot.core.plots"><code class="xref py py-mod docutils literal notranslate"><span class="pre">plots</span></code></a> for visualizing data from ongoing experiments.</p>
+<p>Each <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a> manages a swarm of <a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a> s that actually perform the experiments. Each <a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a>
+coordinates <a class="reference internal" href="autopilot.hardware.html#module-autopilot.hardware" title="autopilot.hardware"><code class="xref py py-mod docutils literal notranslate"><span class="pre">hardware</span></code></a> and <a class="reference internal" href="autopilot.stim.html#module-autopilot.stim" title="autopilot.stim"><code class="xref py py-mod docutils literal notranslate"><span class="pre">stim</span></code></a> uli in a <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>. <a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a> s can, in turn, coordinate their
+own swarm of networked <code class="docutils literal notranslate"><span class="pre">Children</span></code> that can manage additional hardware components – allowing <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> s to
+use effectively arbitrary numbers and combinations of hardware.</p>
 </div>
 <div class="section" id="tasks">
 <h2>Tasks<a class="headerlink" href="#tasks" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/figure_protocol.png"><img alt="Protocol Structure" class="align-center" src="_images/figure_protocol.png" style="width: 50%;" /></a>
+<p>Behavioral experiments in Autopilot consist of <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task" title="autopilot.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> s. Tasks define the parameters, coordinate the hardware,
+and perform the logic of an experiment.</p>
+<p>Tasks may consist of one or multiple <strong>stages</strong>, completion of which
+constitutes a <strong>trial</strong>. Stages are analogous to states in a finite-state machine, but don’t share their limitations:
+Tasks can use arbitrary transitions between stages and have computation or hardware operation persist between stages.</p>
+<p>Multiple Tasks can be combined to make <strong>protocols</strong>, in which subjects move between different tasks according to
+<a class="reference internal" href="autopilot.tasks.graduation.html#module-autopilot.tasks.graduation" title="autopilot.tasks.graduation"><code class="xref py py-mod docutils literal notranslate"><span class="pre">graduation</span></code></a> criteria like accuracy or number of trials. Protocols can thus be used to automate shaping routines
+that introduce a subject to the experimental apparatus and task structure.</p>
+<p>For more details on tasks, see <a class="reference internal" href="guide.task.html#guide-task"><span class="std std-ref">Writing a Task</span></a></p>
 </div>
-<div class="section" id="hardware">
-<h2>Hardware<a class="headerlink" href="#hardware" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-tour">
+<h2>Module Tour<a class="headerlink" href="#module-tour" title="Permalink to this headline">¶</a></h2>
+<div class="admonition-todo admonition" id="id3">
+<p class="admonition-title">Todo</p>
+<p>A more comprehensive overview is forthcoming, but the documentation for the most important modules can be found in the
+API documentation. A short tour for now…</p>
 </div>
-<div class="section" id="agents">
-<h2>Agents<a class="headerlink" href="#agents" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a> - user facing agent class used to control and configure program operation. See
+<a class="reference internal" href="guide.installation.terminal.html#setup-terminal"><span class="std std-ref">Terminal Setup</span></a> and <a class="reference internal" href="autopilot.setup.setup_terminal.html#module-autopilot.setup.setup_terminal" title="autopilot.setup.setup_terminal"><code class="xref py py-mod docutils literal notranslate"><span class="pre">setup.setup_terminal</span></code></a></p></li>
+<li><p><a class="reference internal" href="autopilot.core.gui.html#module-autopilot.core.gui" title="autopilot.core.gui"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gui</span></code></a> - GUI classes built with PySide2/Qt5 used by the terminal</p></li>
+<li><p><a class="reference internal" href="autopilot.core.plots.html#module-autopilot.core.plots" title="autopilot.core.plots"><code class="xref py py-mod docutils literal notranslate"><span class="pre">plots</span></code></a> - Classes to plot data from ongoing tasks</p></li>
+<li><p><a class="reference internal" href="autopilot.core.pilot.html#module-autopilot.core.pilot" title="autopilot.core.pilot"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pilot</span></code></a> - Experimental agent that runs tasks on Raspberry Pis</p></li>
+<li><p><a class="reference internal" href="autopilot.core.networking.html#module-autopilot.core.networking" title="autopilot.core.networking"><code class="xref py py-mod docutils literal notranslate"><span class="pre">networking</span></code></a> - Networking modules used for communication between agents, tasks, and hardware objects</p></li>
+<li><p><a class="reference internal" href="autopilot.core.subject.html#module-autopilot.core.subject" title="autopilot.core.subject"><code class="xref py py-mod docutils literal notranslate"><span class="pre">subject</span></code></a> - Data and metadata storage</p></li>
+<li><p><a class="reference internal" href="autopilot.hardware.html#module-autopilot.hardware" title="autopilot.hardware"><code class="xref py py-mod docutils literal notranslate"><span class="pre">hardware</span></code></a> - Hardware objects that can be used in tasks</p></li>
+<li><p><a class="reference internal" href="autopilot.tasks.html#module-autopilot.tasks" title="autopilot.tasks"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tasks</span></code></a> - Customizable and extendable Task templates</p></li>
+<li><p><a class="reference internal" href="autopilot.stim.html#module-autopilot.stim" title="autopilot.stim"><code class="xref py py-mod docutils literal notranslate"><span class="pre">stim</span></code></a> - Stimulus generation &amp; presentation, of which sound is currently the most heavily developed</p></li>
+</ul>
+
+<svg id="modulemap"></svg>
+
+<style> /* set the CSS */
+
+.node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 3px;
+}
+
+.node text { font: 12px sans-serif; }
+
+.node--internal text {
+  text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 2px;
+}
+
+</style>
+
+
+<!-- load the d3.js library -->
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+var treeData =
+  {
+    "name": "",
+    "color": "red",
+    "link": 'https://docs.auto-pi-lot.com',
+      "icon": '_static/autopilot_logo_white.svg',
+    "children": [
+
+         {
+            "name": "Terminal",
+            "color": "red",
+              "link": "autopilot.core.terminal.html",
+              "icon": "_images/icon_terminal.svg",
+             "children":[
+                 {
+            "name": "GUI",
+            "color": "red",
+              "link": "autopilot.core.gui.html",
+              "icon": "_images/icon_gui.svg"
+          },
+                    {
+            "name": "Plots",
+            "color": "orange",
+              "link": "autopilot.core.plots.html",
+              "icon": "_images/icon_plots.svg"
+          },
+             ]
+          },
+          {
+            "name": "Pilot",
+            "color": "red",
+              "link": "autopilot.core.pilot.html",
+              "icon": "_images/icon_pilot.svg"
+          },
+
+
+                      {
+            "name": "Networking",
+            "color": "red",
+              "link": "autopilot.core.networking.html",
+              "icon": "_images/icon_networking.svg"
+          },
+
+
+                      {
+            "name": "Subject",
+            "color": "red",
+              "link": "autopilot.core.subject.html",
+              "icon": "_images/icon_data.svg"
+          },
+
+      {
+        "name": "Hardware",
+        "color": "red",
+          "children": [
+          {
+            "name": "Cameras",
+            "color": "red",
+              "link": "autopilot.hardware.cameras.html",
+              "icon": "_images/icon_cameras.svg"
+          },
+                        {
+            "name": "GPIO",
+            "color": "red",
+              "link": "autopilot.hardware.gpio.html",
+              "icon": "_images/icon_gpio.svg"
+          },
+                        {
+            "name": "I2C",
+            "color": "red",
+              "link": "autopilot.hardware.i2c.html",
+              "icon": "_images/icon_i2c.svg"
+          },
+                        {
+            "name": "USB",
+            "color": "red",
+              "link": "autopilot.hardware.usb.html",
+              "icon": "_images/icon_usb.svg"
+          }
+          ]
+      },
+     {
+        "name": "Tasks",
+        "color": "red",
+          "link": "autopilot.tasks.html",
+          "icon": "_images/icon_tasks.svg"
+      },
+         {
+            "name": "Stimuli",
+            "color": "red",
+              "link": "autopilot.stim.html",
+             "children": [
+                 {
+            "name": "Sound",
+            "color": "red",
+              "link": "autopilot.stim.sound.html",
+              "icon": "_images/icon_sound.svg"
+          }
+             ]
+          }
+    ],
+  };
+
+// set the dimensions and margins of the diagram
+var svg = d3.select("#modulemap")
+      .attr("width", "100%")
+      .attr("height", "700px");
+
+var svg_elem = document.getElementById("modulemap");
+var bounding_size = svg_elem.getBoundingClientRect();
+
+
+var margin = {top: 100, right: 0, bottom: 60, left: 0},
+    width = bounding_size['width'] - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// declares a tree layout and assigns the size
+var treemap = d3.tree()
+    .size([width, height]);
+
+//  assigns the data to a hierarchy using parent-child relationships
+var nodes = d3.hierarchy(treeData, function(d) {
+    return d.children;
+  });
+
+// maps the node data to the tree layout
+nodes = treemap(nodes);
+
+// append the svg object to the body of the page
+// appends a 'group' element to 'svg'
+// moves the 'group' element to the top left margin
+
+var    g = svg.append("g")
+      .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+// adds the links between the nodes
+var link = g.selectAll(".link")
+    .data( nodes.descendants().slice(1))
+  .enter().append("path")
+    .attr("class", "link")
+    .style("stroke", function(d) { return d.data.color; })
+    .attr("d", function(d) {
+       return "M" + d.x + "," + d.y
+         + "C" + d.x + "," + (d.y + d.parent.y)/2
+         + " " + d.parent.x + "," + (d.y + d.parent.y) / 2
+         + " " + d.parent.x + "," + d.parent.y;
+       });
+
+
+
+// adds each node as a group
+var node = g.selectAll(".node")
+    .data(nodes.descendants())
+    .enter()
+    .append('a')
+    .attr('href', function(d){
+        if (d.data.link){
+            return d.data.link;
+        } else {
+            return "";
+        }})
+    .append('g')
+    .attr("class", function(d) {
+      return "node" +
+        (d.children ? " node--internal" : " node--leaf"); })
+    .attr("transform", function(d) {
+      return "translate(" + d.x + "," + d.y + ")"; })
+    .on('mouseover', function(){d3.select(this.parentNode).classed('icon-hover', true)})
+    .on('mouseout',  function(){d3.select(this.parentNode).classed('icon-hover', false)});
+
+
+// adds symbols as nodes
+
+
+node.append("image")
+    .attr("xlink:href", function(d){
+        if (d.data.icon){
+            return d.data.icon;
+        } else {
+            return "";
+        }
+    })
+    .attr("x", function(d){ if(d.data.name === ""){return "-10%";} else {return "-5%";}})
+    .attr("y", function(d){ if(d.data.name === ""){return "-10%";} else {return "-5%";}})
+    .attr("width", function(d){ if(d.data.name === ""){return "20%";} else {return "10%";}})
+    .attr("height", function(d){ if(d.data.name === ""){return "20%";} else {return "10%";}});
+
+// adds the text to the node
+node.append("text")
+  .attr("dy", ".35em")
+  .attr("y", "48px")
+    .attr("text-anchor", "middle")
+  .text(function(d) { return d.data.name; });
+
+
+
+</script>
 </div>
 </div>
 
@@ -358,7 +623,7 @@
         <a href="guide.installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral float-left" title="Autopilot - Distributed Behavior" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Indices and tables" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

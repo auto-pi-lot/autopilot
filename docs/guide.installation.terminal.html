@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Terminal Setup &mdash; Autopilot 0.2 documentation</title>
+  <title>Terminal Setup &mdash; Autopilot 0.3.0 documentation</title>
   
 
   
@@ -36,6 +37,9 @@
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/restyle.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Training a Subject" href="guide.training.html" />
@@ -45,7 +49,8 @@
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js" integrity="sha256-BuxrUdr/4YoztQLxT6xmdO6hSQw2d6BtBUY1pteGds4=" crossorigin="anonymous"></script>
 
 </head>
 
@@ -73,7 +78,7 @@
             
             
               <div class="version">
-                0.2
+                0.3
               </div>
             
           
@@ -100,11 +105,9 @@
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure">Program Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#module-tour">Module Tour</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="guide.installation.html">Installation</a><ul class="current">
@@ -123,12 +126,6 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#scripted-terminal-setup">Scripted Terminal Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -190,7 +187,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.core.html">Core Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.gui.html">gui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autopilot.core.hardware.html">hardware</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
@@ -200,7 +196,15 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.hardware.html">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.cameras.html">cameras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.gpio.html">gpio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.i2c.html">i2c</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.usb.html">usb</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.children.html">children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.free_water.html">free_water</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.graduation.html">graduation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.nafc.html">nafc</a></li>
@@ -219,6 +223,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.viz.psychometric.html">psychometric</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.setup.html">Setup</a><ul>
@@ -228,16 +233,22 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.prefs.html">Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.external.html">External</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="todo.html#completed-goals">Completed Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#improvements">Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#completed">Completed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#lowest-priority">Lowest Priority</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-3">Version 0.3</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (Februrary DATE, 2020)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (March 3rd, 2020)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#major-updates">Major Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#new-features">New Features</a></li>
@@ -324,13 +335,15 @@
 <span id="setup-terminal"></span><h1>Terminal Setup<a class="headerlink" href="#terminal-setup" title="Permalink to this headline">¶</a></h1>
 <p>The Terminal is the user-facing Agent in Autopilot.</p>
 <p>It provides a GUI used to control task operation on a set of Pilots, as well as a few calibration and maintenance routines.</p>
-<p>We have found that locally compiling Qt4 and PySide increases stability, but using precompiled binaries shouldn’t be qualitatively different.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.3.0: </span>Autopilot now uses Python3, so we have upgraded PySide/Qt4 to PySide2/Qt5, which dramatically simplifies installation!!</p>
+</div>
 <div class="section" id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
 <p>The terminal requires:</p>
 <ul class="simple">
 <li><p>libzmq - the zeromq messaging library</p></li>
-<li><p>Qt4 - the GUI library</p></li>
+<li><p>Qt5 - the GUI library</p></li>
 </ul>
 <p>and the Python packages:</p>
 <ul class="simple">
@@ -342,109 +355,49 @@
 <li><p>scipy</p></li>
 <li><p>tornado</p></li>
 <li><p>inputs</p></li>
-<li><p>pyqtgraph - must be installed after Qt + pyside</p></li>
+<li><p>blosc</p></li>
+<li><p>scikit-video</p></li>
+<li><p>PySide2</p></li>
+<li><p>tqdm</p></li>
+<li><p>pyqtgraph&gt;=0.11.0 - must be installed after Qt + pyside from git repo currently</p></li>
 </ul>
-<dl class="simple">
-<dt><strong>macOS:</strong>::</dt><dd><p>brew install hdf5 zmq
-pip install tables numpy pyzmq pandas npyscreen scipy tornado inputs</p>
-</dd>
-</dl>
+<p><strong>macOS:</strong>:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">brew</span> <span class="n">install</span> <span class="n">hdf5</span> <span class="n">zmq</span>
+<span class="n">pip3</span> <span class="n">install</span> <span class="n">tables</span> <span class="n">numpy</span> <span class="n">pyzmq</span> <span class="n">pandas</span> <span class="n">npyscreen</span> <span class="n">scipy</span> <span class="n">tornado</span> <span class="n">inputs</span> <span class="n">blosc</span> <span class="n">scikit</span><span class="o">-</span><span class="n">video</span> <span class="n">PySide2</span> <span class="n">tqdm</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="scripted-terminal-setup">
 <h2>Scripted Terminal Setup<a class="headerlink" href="#scripted-terminal-setup" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic">
-<li><dl class="simple">
-<dt>The <cite>resetup_terminal.sh&gt;</cite> script automates the manual presetup below. It..</dt><dd><ul class="simple">
-<li><p>Downloads, compiles, and installs Qt4</p></li>
-<li><p>Downloads, compiled, and installs PySide</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">presetup_terminal.sh</span></code> script automates the manual presetup below. It..</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Installs system &amp; python dependencies</p></li>
+<li><p>Installs the development version of <code class="docutils literal notranslate"><span class="pre">pyqtgraph</span></code></p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
-<li><dl>
-<dt>The <cite>setup_terminal.sh</cite> script sets two configuration options</dt><dd><ul class="simple">
-<li><p><strong>BASE_DIR:</strong> The base directory used by Autopilot to store data, configuration, etc.</p></li>
-<li><p><strong>MSGPORT:</strong> The port used by the Terminal to send and receive messages.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">setup_terminal.py</span></code> script sets configuration options for <code class="docutils literal notranslate"><span class="pre">prefs</span></code>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>BASEDIR</strong> - Base directory for all local autopilot data, typically <cite>/usr/autopilot</cite></p></li>
+<li><p><strong>MSGPORT</strong> - Port to use for our ROUTER listener, default <cite>5560</cite></p></li>
+<li><p><strong>DATADIR</strong> -  <cite>os.path.join(params[‘BASEDIR’], ‘data’)</cite></p></li>
+<li><p><strong>SOUNDDIR</strong> - <cite>os.path.join(params[‘BASEDIR’], ‘sounds’)</cite></p></li>
+<li><p><strong>PROTOCOLDIR</strong> - <cite>os.path.join(params[‘BASEDIR’], ‘protocols’)</cite></p></li>
+<li><p><strong>LOGDIR</strong> - <cite>os.path.join(params[‘BASEDIR’], ‘logs’)</cite></p></li>
+<li><p><strong>VIZDIR</strong> - <cite>os.path.join(params[‘BASEDIR’], ‘logs’)</cite> directory to store generated visualizations</p></li>
+<li><p><strong>REPODIR</strong> - Path to autopilot git repo</p></li>
+<li><p><strong>PILOT_DB</strong> - Location of <cite>pilot_db.json</cite> used to populate <code class="xref py py-attr docutils literal notranslate"><span class="pre">pilots</span></code></p></li>
+<li><p><strong>DRAWFPS</strong> - fps to update <code class="xref py py-class docutils literal notranslate"><span class="pre">gui.Video</span></code> windows</p></li>
+<li><p><strong>LOGLEVEL</strong> - level for systemwide logging, see <code class="xref py py-data docutils literal notranslate"><span class="pre">LOG_LEVELS</span></code></p></li>
 </ul>
 <p>It then creates the basic directory structure used by the Terminal and creates a launch script (ie. <code class="docutils literal notranslate"><span class="pre">&lt;BASE_DIR&gt;/launch_terminal.sh</span></code>).</p>
-</dd>
-</dl>
+</div></blockquote>
 </li>
 </ol>
 <p>The Terminal does not run as a systemd service, and must be launched each time it is used (typically from <code class="docutils literal notranslate"><span class="pre">/usr/autopilot/launch_terminal.sh</span></code>)</p>
-</div>
-<div class="section" id="manual-terminal-presetup">
-<h2>Manual Terminal Presetup<a class="headerlink" href="#manual-terminal-presetup" title="Permalink to this headline">¶</a></h2>
-<p>Both of these steps take an enormous amount of time, so plan to start the compilation and go get a cup of coffee.</p>
-<div class="section" id="compiling-installing-qt4-linux">
-<h3>Compiling &amp; Installing Qt4 - Linux<a class="headerlink" href="#compiling-installing-qt4-linux" title="Permalink to this headline">¶</a></h3>
-<ol class="arabic">
-<li><p>Download <a class="reference external" href="https://download.qt.io/archive/qt/4.8/4.8.7/qt-everywhere-opensource-src-4.8.7.zip">Qt4.8.7</a></p></li>
-<li><p>Unzip with the -a flag:</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">unzip</span> <span class="o">-</span><span class="n">a</span> <span class="o">./&lt;</span><span class="n">qt</span> <span class="n">archive</span><span class="o">&gt;.</span><span class="n">zip</span>
-</pre></div>
-</div>
-</li>
-<li><p>Optionally, to speed compilation, building the <code class="docutils literal notranslate"><span class="pre">examples</span></code> and <code class="docutils literal notranslate"><span class="pre">demos</span></code> can be disabled by commenting the following lines in <code class="docutils literal notranslate"><span class="pre">projects.pro</span></code>:</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1">#       SUBDIRS += examples</span>
-<span class="p">}</span> <span class="k">else</span><span class="p">:</span><span class="n">isEqual</span><span class="p">(</span><span class="n">PROJECT</span><span class="p">,</span> <span class="n">demos</span><span class="p">)</span> <span class="p">{</span>
-<span class="c1">#       SUBDIRS += demos</span>
-</pre></div>
-</div>
-</li>
-<li><p>Configure, make and install as usual. Use <code class="docutils literal notranslate"><span class="pre">./configure</span> <span class="pre">-h</span></code> to see all configuration options.:</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">configure</span> \
-    <span class="o">-</span><span class="n">debug</span> \
-    <span class="o">-</span><span class="n">opensource</span> \
-    <span class="o">-</span><span class="n">optimized</span><span class="o">-</span><span class="n">qmake</span> \
-    <span class="o">-</span><span class="n">separate</span><span class="o">-</span><span class="n">debug</span><span class="o">-</span><span class="n">info</span> \
-    <span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">webkit</span> \
-    <span class="o">-</span><span class="n">opengl</span>
-
-<span class="n">make</span> <span class="o">-</span><span class="n">j10</span>
-<span class="n">sudo</span> <span class="o">-</span><span class="n">H</span> <span class="n">make</span> <span class="n">install</span>
-</pre></div>
-</div>
-</li>
-</ol>
-</div>
-<div class="section" id="installing-qt4-macos">
-<h3>Installing Qt4 - MacOS<a class="headerlink" href="#installing-qt4-macos" title="Permalink to this headline">¶</a></h3>
-<p>MacOS’s g++ is pretty whacky, it’s easier to install from the Mac Package (with debug libs):</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://download.qt.io/archive/qt/4.8/4.8.5/qt-mac-opensource-4.8.5.dmg">Download Qt4 for Mac</a></p></li>
-<li><p>Mount image, run setup</p></li>
-</ul>
-</div>
-<div class="section" id="compiling-installing-pyside-linux-macos">
-<h3>Compiling &amp; Installing PySide - Linux + macOS<a class="headerlink" href="#compiling-installing-pyside-linux-macos" title="Permalink to this headline">¶</a></h3>
-<ol class="arabic">
-<li><p>Clone the PySide repository:</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">PySide</span><span class="o">/</span><span class="n">pyside</span><span class="o">-</span><span class="n">setup</span><span class="o">.</span><span class="n">git</span>
-</pre></div>
-</div>
-</li>
-<li><p><strong>macOS</strong> - Manually specify the location of the Qt includes in the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file (see <a class="reference external" href="https://github.com/NixOS/nixpkgs/issues/25619#issuecomment-404113402">this github issue</a>). At line ~609 replace:</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">cmake_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-DALTERNATIVE_QT_INCLUDE_DIR=&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">qtinfo</span><span class="o">.</span><span class="n">headers_dir</span><span class="p">)</span>
-</pre></div>
-</div>
-</li>
-</ol>
-<p>with:</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">cmake_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-DALTERNATIVE_QT_INCLUDE_DIR=/Library/Frameworks/&#39;</span> <span class="p">)</span>
-<span class="n">cmake_cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-DCMAKE_CXX_FLAGS=-F/Library/Frameworks/&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<ol class="arabic" start="3">
-<li><p>Run the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> script to build the wheel and then install. Note that macOS doesn’t support the <code class="docutils literal notranslate"><span class="pre">--standalone</span></code> flag, so it must be removed.:</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">pyside</span><span class="o">-</span><span class="n">setup</span>
-<span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">bdist_wheel</span> <span class="o">--</span><span class="n">qmake</span><span class="o">=&lt;/</span><span class="n">location</span><span class="o">/</span><span class="n">of</span><span class="o">/</span><span class="n">qt4</span><span class="o">/</span><span class="n">qmake</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">standalone</span>
-<span class="n">sudo</span> <span class="o">-</span><span class="n">H</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">dist</span><span class="o">/&lt;</span><span class="n">name</span><span class="o">-</span><span class="n">of</span><span class="o">-</span><span class="n">pyside</span><span class="o">-</span><span class="n">wheel</span><span class="o">&gt;.</span><span class="n">whl</span>
-</pre></div>
-</div>
-</li>
-</ol>
-</div>
 </div>
 </div>
 

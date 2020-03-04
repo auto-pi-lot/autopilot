@@ -1,0 +1,228 @@
+
+<svg id="modulemap"></svg>
+
+<style> /* set the CSS */
+
+.node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 3px;
+}
+
+.node text { font: 12px sans-serif; }
+
+.node--internal text {
+  text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 2px;
+}
+
+</style>
+
+
+<!-- load the d3.js library -->
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+var treeData =
+  {
+    "name": "",
+    "color": "red",
+    "link": 'https://docs.auto-pi-lot.com',
+      "icon": '_static/autopilot_logo_white.svg',
+    "children": [
+
+         {
+            "name": "Terminal",
+            "color": "red",
+              "link": "autopilot.core.terminal.html",
+              "icon": "_images/icon_terminal.svg",
+             "children":[
+                 {
+            "name": "GUI",
+            "color": "red",
+              "link": "autopilot.core.gui.html",
+              "icon": "_images/icon_gui.svg"
+          },
+                    {
+            "name": "Plots",
+            "color": "orange",
+              "link": "autopilot.core.plots.html",
+              "icon": "_images/icon_plots.svg"
+          },
+             ]
+          },
+          {
+            "name": "Pilot",
+            "color": "red",
+              "link": "autopilot.core.pilot.html",
+              "icon": "_images/icon_pilot.svg"
+          },
+
+
+                      {
+            "name": "Networking",
+            "color": "red",
+              "link": "autopilot.core.networking.html",
+              "icon": "_images/icon_networking.svg"
+          },
+
+
+                      {
+            "name": "Subject",
+            "color": "red",
+              "link": "autopilot.core.subject.html",
+              "icon": "_images/icon_data.svg"
+          },
+
+      {
+        "name": "Hardware",
+        "color": "red",
+          "children": [
+          {
+            "name": "Cameras",
+            "color": "red",
+              "link": "autopilot.hardware.cameras.html",
+              "icon": "_images/icon_cameras.svg"
+          },
+                        {
+            "name": "GPIO",
+            "color": "red",
+              "link": "autopilot.hardware.gpio.html",
+              "icon": "_images/icon_gpio.svg"
+          },
+                        {
+            "name": "I2C",
+            "color": "red",
+              "link": "autopilot.hardware.i2c.html",
+              "icon": "_images/icon_i2c.svg"
+          },
+                        {
+            "name": "USB",
+            "color": "red",
+              "link": "autopilot.hardware.usb.html",
+              "icon": "_images/icon_usb.svg"
+          }
+          ]
+      },
+     {
+        "name": "Tasks",
+        "color": "red",
+          "link": "autopilot.tasks.html",
+          "icon": "_images/icon_tasks.svg"
+      },
+         {
+            "name": "Stimuli",
+            "color": "red",
+              "link": "autopilot.stim.html",
+             "children": [
+                 {
+            "name": "Sound",
+            "color": "red",
+              "link": "autopilot.stim.sound.html",
+              "icon": "_images/icon_sound.svg"
+          }
+             ]
+          }
+    ],
+  };
+
+// set the dimensions and margins of the diagram
+var svg = d3.select("#modulemap")
+      .attr("width", "100%")
+      .attr("height", "700px");
+
+var svg_elem = document.getElementById("modulemap");
+var bounding_size = svg_elem.getBoundingClientRect();
+
+
+var margin = {top: 100, right: 0, bottom: 60, left: 0},
+    width = bounding_size['width'] - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// declares a tree layout and assigns the size
+var treemap = d3.tree()
+    .size([width, height]);
+
+//  assigns the data to a hierarchy using parent-child relationships
+var nodes = d3.hierarchy(treeData, function(d) {
+    return d.children;
+  });
+
+// maps the node data to the tree layout
+nodes = treemap(nodes);
+
+// append the svg object to the body of the page
+// appends a 'group' element to 'svg'
+// moves the 'group' element to the top left margin
+
+var    g = svg.append("g")
+      .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+// adds the links between the nodes
+var link = g.selectAll(".link")
+    .data( nodes.descendants().slice(1))
+  .enter().append("path")
+    .attr("class", "link")
+    .style("stroke", function(d) { return d.data.color; })
+    .attr("d", function(d) {
+       return "M" + d.x + "," + d.y
+         + "C" + d.x + "," + (d.y + d.parent.y)/2
+         + " " + d.parent.x + "," + (d.y + d.parent.y) / 2
+         + " " + d.parent.x + "," + d.parent.y;
+       });
+
+
+
+// adds each node as a group
+var node = g.selectAll(".node")
+    .data(nodes.descendants())
+    .enter()
+    .append('a')
+    .attr('href', function(d){
+        if (d.data.link){
+            return d.data.link;
+        } else {
+            return "";
+        }})
+    .append('g')
+    .attr("class", function(d) {
+      return "node" +
+        (d.children ? " node--internal" : " node--leaf"); })
+    .attr("transform", function(d) {
+      return "translate(" + d.x + "," + d.y + ")"; })
+    .on('mouseover', function(){d3.select(this.parentNode).classed('icon-hover', true)})
+    .on('mouseout',  function(){d3.select(this.parentNode).classed('icon-hover', false)});
+
+
+// adds symbols as nodes
+
+
+node.append("image")
+    .attr("xlink:href", function(d){
+        if (d.data.icon){
+            return d.data.icon;
+        } else {
+            return "";
+        }
+    })
+    .attr("x", function(d){ if(d.data.name === ""){return "-10%";} else {return "-5%";}})
+    .attr("y", function(d){ if(d.data.name === ""){return "-10%";} else {return "-5%";}})
+    .attr("width", function(d){ if(d.data.name === ""){return "20%";} else {return "10%";}})
+    .attr("height", function(d){ if(d.data.name === ""){return "20%";} else {return "10%";}});
+
+// adds the text to the node
+node.append("text")
+  .attr("dy", ".35em")
+  .attr("y", "48px")
+    .attr("text-anchor", "middle")
+  .text(function(d) { return d.data.name; });
+
+
+
+</script>

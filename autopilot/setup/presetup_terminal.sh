@@ -20,39 +20,10 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 fi
 
 echo -e "${RED}Installing Python dependencies\n${NC}"
-sudo -H pip install -r "${GITDIR}/requirements_terminal.txt"
-sudo -H pip install blosc
+sudo -H pip3 install -r "${GITDIR}/requirements_terminal.txt"
 
-
-
-echo -e "${RED}Qt4 and PySide will be Compiled and installed...\n${NC}"
-
-
-
-echo -e "${RED}Downloading & Compiling Qt4\n${NC}"
-
-wget https://download.qt.io/archive/qt/4.8/4.8.7/qt-everywhere-opensource-src-4.8.7.zip
-
-unzip -a ./qt-everywhere-opensource-src-4.8.7.zip
-
-cd qt-everywhere-opensource-src-4.8.7
-
-# make and install Qt4
-./configure -confirm-license -debug -opensource -optimized-qmake -separate-debug-info -no-webkit -opengl
-make -j10
-sudo -H make install
-cd ..
-
-echo -e "${RED}Downloading & Compiling PySide\n${NC}"
-
-git clone https://github.com/PySide/pyside-setup.git pyside-setup
-cd pyside-setup
-python setup.py bdist_wheel --standalone --qmake=$(which qmake)
-sudo -H pip install dist/$(ls PySide*.whl)
-
-# TODO: Add option to delete download filed
-
-
+echo -e "${RED}Installing Development version of pyqtgraph\n${NC}"
+pip3 install git+https://github.com/pyqtgraph/pyqtgraph@develop
 
 
 

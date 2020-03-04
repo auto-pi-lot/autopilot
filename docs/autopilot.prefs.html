@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>prefs &mdash; Autopilot 0.2 documentation</title>
+  <title>prefs &mdash; Autopilot 0.3.0 documentation</title>
   
 
   
@@ -36,16 +37,20 @@
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/restyle.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="To-Do" href="todo.html" />
+    <link rel="next" title="external" href="autopilot.external.html" />
     <link rel="prev" title="setup_terminal" href="autopilot.setup.setup_terminal.html" />
 
     <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js" integrity="sha256-BuxrUdr/4YoztQLxT6xmdO6hSQw2d6BtBUY1pteGds4=" crossorigin="anonymous"></script>
 
 </head>
 
@@ -73,7 +78,7 @@
             
             
               <div class="version">
-                0.2
+                0.3
               </div>
             
           
@@ -100,11 +105,9 @@
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure">Program Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#module-tour">Module Tour</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
@@ -123,12 +126,6 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -190,7 +187,6 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="autopilot.core.html">Core Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.gui.html">gui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autopilot.core.hardware.html">hardware</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
@@ -200,7 +196,15 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.hardware.html">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.cameras.html">cameras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.gpio.html">gpio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.i2c.html">i2c</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.usb.html">usb</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.children.html">children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.free_water.html">free_water</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.graduation.html">graduation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.nafc.html">nafc</a></li>
@@ -219,6 +223,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.viz.psychometric.html">psychometric</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.setup.html">Setup</a><ul>
@@ -228,16 +233,22 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.external.html">External</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="todo.html#completed-goals">Completed Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#improvements">Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#completed">Completed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#lowest-priority">Lowest Priority</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-3">Version 0.3</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (Februrary DATE, 2020)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (March 3rd, 2020)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#major-updates">Major Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#new-features">New Features</a></li>
@@ -345,7 +356,14 @@ prefs.init(prefs_file)</p>
 <td><p>Add a pref after init</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.prefs.compute_calibration" title="autopilot.prefs.compute_calibration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_calibration</span></code></a>([path, calibration, …])</p></td>
-<td><p></p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong></p></li>
+</ul>
+</dd>
+</dl>
+</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.prefs.git_version" title="autopilot.prefs.git_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">git_version</span></code></a>(repo_dir)</p></td>
 <td><p>Get the git hash of the current commit.</p></td>
@@ -369,29 +387,29 @@ prefs.init(prefs_file)</p>
 </table>
 <dl class="data">
 <dt id="autopilot.prefs.prefdict">
-<code class="sig-prename descclassname">autopilot.prefs.</code><code class="sig-name descname">prefdict</code><em class="property"> = {'AGENT': 'docs', 'AUDIOSERVER': 'docs'}</em><a class="headerlink" href="#autopilot.prefs.prefdict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">prefdict</code><em class="property"> = {'AGENT': 'docs', 'AUDIOSERVER': 'docs'}</em><a class="headerlink" href="#autopilot.prefs.prefdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>stores a dictionary of preferences that mirrors the global variables.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="autopilot.prefs.init">
-<code class="sig-prename descclassname">autopilot.prefs.</code><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">fn</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/prefs.html#init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.prefs.init" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">fn</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/prefs.html#init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.prefs.init" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize prefs on autopilot start.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – a path to <cite>prefs.json</cite> or a dictionary of preferences</p>
+<dd class="field-odd"><p><strong>fn</strong> (<em>str, dict</em>) – a path to <cite>prefs.json</cite> or a dictionary of preferences</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="autopilot.prefs.add">
-<code class="sig-prename descclassname">autopilot.prefs.</code><code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param">param</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/prefs.html#add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.prefs.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param">param</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/prefs.html#add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.prefs.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a pref after init</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>param</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Allcaps parameter name</p></li>
+<li><p><strong>param</strong> (<em>str</em>) – Allcaps parameter name</p></li>
 <li><p><strong>value</strong> – Value of the pref</p></li>
 </ul>
 </dd>
@@ -400,13 +418,13 @@ prefs.init(prefs_file)</p>
 
 <dl class="function">
 <dt id="autopilot.prefs.git_version">
-<code class="sig-prename descclassname">autopilot.prefs.</code><code class="sig-name descname">git_version</code><span class="sig-paren">(</span><em class="sig-param">repo_dir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/prefs.html#git_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.prefs.git_version" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">git_version</code><span class="sig-paren">(</span><em class="sig-param">repo_dir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/prefs.html#git_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.prefs.git_version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the git hash of the current commit.</p>
 <p>Stolen from <a class="reference external" href="https://github.com/numpy/numpy/blob/master/setup.py#L70-L92">numpy’s setup</a></p>
 <p>and linked by ryanjdillon on <a class="reference external" href="https://stackoverflow.com/a/40170206">SO</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>repo_dir</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – directory of the git repository.</p>
+<dd class="field-odd"><p><strong>repo_dir</strong> (<em>str</em>) – directory of the git repository.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>git commit hash.</p>
@@ -419,8 +437,18 @@ prefs.init(prefs_file)</p>
 
 <dl class="function">
 <dt id="autopilot.prefs.compute_calibration">
-<code class="sig-prename descclassname">autopilot.prefs.</code><code class="sig-name descname">compute_calibration</code><span class="sig-paren">(</span><em class="sig-param">path=None</em>, <em class="sig-param">calibration=None</em>, <em class="sig-param">do_return=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/prefs.html#compute_calibration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.prefs.compute_calibration" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">compute_calibration</code><span class="sig-paren">(</span><em class="sig-param">path=None</em>, <em class="sig-param">calibration=None</em>, <em class="sig-param">do_return=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/prefs.html#compute_calibration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.prefs.compute_calibration" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong></p></li>
+<li><p><strong>calibration</strong></p></li>
+<li><p><strong>do_return</strong></p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
 
 </div>
 
@@ -432,7 +460,7 @@ prefs.init(prefs_file)</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="todo.html" class="btn btn-neutral float-right" title="To-Do" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="autopilot.external.html" class="btn btn-neutral float-right" title="external" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="autopilot.setup.setup_terminal.html" class="btn btn-neutral float-left" title="setup_terminal" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Writing a Hardware Class &mdash; Autopilot 0.2 documentation</title>
+  <title>Writing a Hardware Class &mdash; Autopilot 0.3.0 documentation</title>
   
 
   
@@ -36,6 +37,9 @@
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/restyle.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="core" href="autopilot.core.html" />
@@ -45,7 +49,8 @@
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js" integrity="sha256-BuxrUdr/4YoztQLxT6xmdO6hSQw2d6BtBUY1pteGds4=" crossorigin="anonymous"></script>
 
 </head>
 
@@ -73,7 +78,7 @@
             
             
               <div class="version">
-                0.2
+                0.3
               </div>
             
           
@@ -100,11 +105,9 @@
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure">Program Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#module-tour">Module Tour</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
@@ -123,12 +126,6 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -190,7 +187,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.core.html">Core Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.gui.html">gui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autopilot.core.hardware.html">hardware</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
@@ -200,7 +196,15 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.hardware.html">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.cameras.html">cameras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.gpio.html">gpio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.i2c.html">i2c</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.usb.html">usb</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.children.html">children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.free_water.html">free_water</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.graduation.html">graduation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.nafc.html">nafc</a></li>
@@ -219,6 +223,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.viz.psychometric.html">psychometric</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.setup.html">Setup</a><ul>
@@ -228,16 +233,22 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.prefs.html">Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.external.html">External</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="todo.html#completed-goals">Completed Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#improvements">Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#completed">Completed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#lowest-priority">Lowest Priority</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-3">Version 0.3</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (Februrary DATE, 2020)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (March 3rd, 2020)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#major-updates">Major Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#new-features">New Features</a></li>
@@ -318,8 +329,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="writing-a-hardware-class">
-<span id="guide-hardware"></span><h1>Writing a Hardware Class<a class="headerlink" href="#writing-a-hardware-class" title="Permalink to this headline">¶</a></h1>
+  <div class="admonition note" id="guide-hardware">
+<p class="admonition-title">Note</p>
+<p>This guide was written before the hardware classes were refactored. The intuition of the guide
+is still true, but most hardware objects are now built by overwriting metaclass methods.
+See the API documentation for <a class="reference internal" href="autopilot.hardware.html#module-autopilot.hardware" title="autopilot.hardware"><code class="xref py py-mod docutils literal notranslate"><span class="pre">hardware</span></code></a> for examples :)</p>
+<p>This documentation will be updated in <cite>v0.3.1</cite>, sorry for the delay!</p>
+</div>
+<div class="section" id="writing-a-hardware-class">
+<h1>Writing a Hardware Class<a class="headerlink" href="#writing-a-hardware-class" title="Permalink to this headline">¶</a></h1>
 <p>There are precious few requirements for <code class="xref py py-class docutils literal notranslate"><span class="pre">Hardware</span></code> objects in Autopilot.</p>
 <ul class="simple">
 <li><p>Each class should have a <code class="docutils literal notranslate"><span class="pre">release()</span></code> method that stops any running threads and releases any system resources – especially those held by pigpio.</p></li>
@@ -352,7 +370,12 @@ process. Typically this is managed by systemd or the launch script generated for
 which allows communication with the GPIO.</p>
 <div class="section" id="input-beambreak">
 <h3>Input - Beambreak<a class="headerlink" href="#input-beambreak" title="Permalink to this headline">¶</a></h3>
-<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Beambreak</span></code> class is a digital input class that registers (by default)
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>the <code class="docutils literal notranslate"><span class="pre">Beambreak</span></code> class is now <a class="reference internal" href="autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_In" title="autopilot.hardware.gpio.Digital_In"><code class="xref py py-class docutils literal notranslate"><span class="pre">Digital_In</span></code></a>, see its API documentation for its current
+implementation :)</p>
+</div>
+<p>The <a class="reference internal" href="autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_In" title="autopilot.hardware.gpio.Digital_In"><code class="xref py py-class docutils literal notranslate"><span class="pre">Digital_In</span></code></a> class is a digital input class that registers (by default)
 a high-to-low logic transition and calls a callback function. When it is initialized, it
 connects to a GPIO pin, configures it for input, and sets the pull-up (or down) resistor.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Beambreak</span><span class="p">(</span><span class="n">Hardware</span><span class="p">):</span>
@@ -390,7 +413,7 @@ connects to a GPIO pin, configures it for input, and sets the pull-up (or down) 
 to handle the trigger. We redefine <code class="docutils literal notranslate"><span class="pre">assign_cb()</span></code> to make use of pigpio’s callback functionality.
 Since pigpio can handle multiple callback functions, one can optionally specify <code class="docutils literal notranslate"><span class="pre">add=True</span></code>
 to prevent any previous callbacks from being cleared. This has been omitted in this example for clarity,
-but can be inspected in the API documentation for the <code class="xref py py-class docutils literal notranslate"><span class="pre">Beambreak</span></code> class.</p>
+but can be inspected in the API documentation for the <a class="reference internal" href="autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_In" title="autopilot.hardware.gpio.Digital_In"><code class="xref py py-class docutils literal notranslate"><span class="pre">Digital_In</span></code></a> class.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">assign_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_fn</span><span class="p">):</span>
     <span class="n">cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger_ud</span><span class="p">,</span> <span class="n">callback_fn</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
@@ -409,11 +432,17 @@ without explicitly calling <code class="docutils literal notranslate"><span clas
 </div>
 <div class="section" id="output-led-rgb">
 <h3>Output - LED_RGB<a class="headerlink" href="#output-led-rgb" title="Permalink to this headline">¶</a></h3>
-<p>This <code class="xref py py-class docutils literal notranslate"><span class="pre">LED_RGB</span></code> class is a bit different. It’s an output device, yes, but it also manages
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <a class="reference internal" href="autopilot.hardware.gpio.html#autopilot.hardware.gpio.LED_RGB" title="autopilot.hardware.gpio.LED_RGB"><code class="xref py py-class docutils literal notranslate"><span class="pre">LED_RGB</span></code></a> also has been updated to use pigpio’s scripts rather than
+python threads for light series, but this documentation remains as an example of how similar logic could be written for other
+non-gpio hardware objects.</p>
+</div>
+<p>This <a class="reference internal" href="autopilot.hardware.gpio.html#autopilot.hardware.gpio.LED_RGB" title="autopilot.hardware.gpio.LED_RGB"><code class="xref py py-class docutils literal notranslate"><span class="pre">LED_RGB</span></code></a> class is a bit different. It’s an output device, yes, but it also manages
 multiple pins, uses pulse-width modulation rather than strict binary logic, and
 has a few extra tricks up its sleeve.</p>
-<p>Its initialization is similar to <code class="xref py py-class docutils literal notranslate"><span class="pre">Beambreak</span></code> except we add
-a few <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Event" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a> s to handle threaded lighting routines. LEDs can either be
+<p>Its initialization is similar to <a class="reference internal" href="autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_In" title="autopilot.hardware.gpio.Digital_In"><code class="xref py py-class docutils literal notranslate"><span class="pre">Digital_In</span></code></a> except we add
+a few <a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Event" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Event</span></code></a> s to handle threaded lighting routines. LEDs can either be
 <a class="reference external" href="https://forum.digikey.com/t/common-anode-vs-common-cathode/808">common anode or common cathode</a>
 which affects the polarity of the pulse-width modulated signal, but handling different LED polarity
 has been omitted for brevity.</p>
@@ -449,7 +478,7 @@ has been omitted for brevity.</p>
 </pre></div>
 </div>
 <p>Setting colors is straightforward - we are given a length-3 tuple of 8-bit (0-255) RGB color values
-and set the pulse-width modulated duty cycle accordingly. We use a recursive <a class="reference external" href="https://docs.python.org/2/library/threading.html#threading.Timer" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Timer</span></code></a>
+and set the pulse-width modulated duty cycle accordingly. We use a recursive <a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Timer" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Timer</span></code></a>
 in order to manage timed light flashes – after some duration, the <cite>set_color()</cite> method is called
 turning the lights off.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">timed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>

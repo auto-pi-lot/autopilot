@@ -63,6 +63,13 @@ class Camera(Hardware):
     """
     Metaclass for Camera objects. Should not be instantiated on its own.
 
+    Arguments:
+        fps (int): Framerate of video capture
+        timed (bool, int, float): If False (default), camera captures indefinitely. If int or float, captures for this many seconds
+        **kwargs: Arguments to :meth:`~Camera.stream`, :meth:`~Camera.write`, and :meth:`~Camera.queue` can be passed as dictionaries, eg.::
+
+            stream={'to':'T', 'ip':'localhost'}
+
     When the camera is instantiated and :meth:`~.Camera.capture` is called,
     the class uses a series of methods that should be overwritten in subclasses.
     Further details for each can be found in the relevant method documentation.
@@ -109,12 +116,7 @@ class Camera(Hardware):
     def __init__(self, fps=None, timed=False, **kwargs):
         """
 
-        Arguments:
-            fps (int): Framerate of video capture
-            timed (bool, int, float): If False (default), camera captures indefinitely. If int or float, captures for this many seconds
-            **kwargs: Arguments to :meth:`~Camera.stream`, :meth:`~Camera.write`, and :meth:`~Camera.queue` can be passed as dictionaries, eg.::
 
-                stream={'to':'T', 'ip':'localhost'}
         """
         super(Camera, self).__init__(**kwargs)
 
@@ -578,6 +580,16 @@ class Camera_CV(Camera):
         operating multiple cameras at once, so the performance of this class will be variable depending on camera
         type.
 
+        Args:
+            camera_idx (int): The index of the desired camera
+            **kwargs: Passed to the :class:`.Camera` metaclass.
+
+        Attributes:
+            camera_idx (int): The index of the desired camera
+            last_opencv_init (float): See :data:`~cameras.OPENCV_LAST_INIT_TIME`
+            last_init_lock (:class:`threading.Lock`): Lock for setting :attr:`.last_opencv_init`
+
+
         .. note::
 
             OpenCV must be installed to use this class! A Prebuilt opencv binary is available for the raspberry pi,
@@ -591,14 +603,6 @@ class Camera_CV(Camera):
             # check logs
             dmesg
 
-        Args:
-            camera_idx (int): The index of the desired camera
-            **kwargs: Passed to the :class:`.Camera` metaclass.
-
-        Attributes:
-            camera_idx (int): The index of the desired camera
-            last_opencv_init (float): See :data:`~cameras.OPENCV_LAST_INIT_TIME`
-            last_init_lock (:class:`threading.Lock`): Lock for setting :attr:`.last_opencv_init`
 
 
         """
@@ -801,6 +805,11 @@ class Camera_Spinnaker(Camera):
         """
         Capture video from a FLIR brand camera with the Spinnaker SDK.
 
+        Args:
+            serial (str): Serial number of desired camera
+            camera_idx (int): If no serial provided, select camera by index. Using ``serial`` is HIGHLY RECOMMENDED.
+            **kwargs: passed to :class:`.Camera` metaclass
+
         .. note::
 
             PySpin and the Spinnaker SDK must be installed to use this class. Please use the
@@ -810,10 +819,7 @@ class Camera_Spinnaker(Camera):
 
         `<https://www.flir.com/products/spinnaker-sdk/>`_
 
-        Args:
-            serial (str): Serial number of desired camera
-            camera_idx (int): If no serial provided, select camera by index. Using ``serial`` is HIGHLY RECOMMENDED.
-            **kwargs: passed to :class:`.Camera` metaclass
+
 
         Attributes:
             serial (str): Serial number of desired camera

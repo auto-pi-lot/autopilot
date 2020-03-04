@@ -1,0 +1,647 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>usb &mdash; Autopilot 0.3.0 documentation</title>
+  
+
+  
+  
+  
+  
+    <link rel="canonical" href="docs.auto-pi-lot.comautopilot.hardware.usb.html"/>
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/restyle.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="tasks" href="autopilot.tasks.html" />
+    <link rel="prev" title="i2c" href="autopilot.hardware.i2c.html" />
+
+    <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js" integrity="sha256-BuxrUdr/4YoztQLxT6xmdO6hSQw2d6BtBUY1pteGds4=" crossorigin="anonymous"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Autopilot
+          
+
+          
+            
+            <img src="_static/autopilot_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure">Program Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#module-tour">Module Tour</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.pilot.html">Pilot Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#raspbian-performance-improvements">Raspbian Performance Improvements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#audio-setup">Audio Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#video-setup">Video Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.installation.pilot.html#optional-installation-steps">Optional Installation Steps</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide.training.html">Training a Subject</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.training.html#debugging-a-task">Debugging a Task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-task-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#stage-methods">Stage Methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#additional-prefs">Additional Prefs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#id5">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#the-child-task">The Child Task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide.hardware.html">Writing a Hardware Class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.hardware.html#gpio-with-pigpio">GPIO with pigpio</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.hardware.html#input-beambreak">Input - Beambreak</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.hardware.html#output-led-rgb">Output - LED_RGB</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.hardware.html#usb-hardware-with-inputs">USB Hardware with inputs</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="autopilot.core.html">Core Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.gui.html">gui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.styles.html">styles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.subject.html">subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.terminal.html">terminal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="autopilot.hardware.html">Hardware</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.cameras.html">cameras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.gpio.html">gpio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.i2c.html">i2c</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">usb</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.children.html">children</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.free_water.html">free_water</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.graduation.html">graduation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.nafc.html">nafc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.task.html">task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.stim.html">Stimuli</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.stim.managers.html">managers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.stim.sound.html">sound</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autopilot.stim.sound.jackclient.html">jackclient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autopilot.stim.sound.pyoserver.html">pyoserver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autopilot.stim.sound.sounds.html">sounds</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.viz.html">Visualization Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.viz.psychometric.html">psychometric</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.setup.html">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.setup.setup_pilot.html">setup_pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.setup.setup_scale.html">setup_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.setup.setup_terminal.html">setup_terminal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.prefs.html">Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.external.html">External</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#improvements">Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#completed">Completed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#lowest-priority">Lowest Priority</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-3">Version 0.3</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (March 3rd, 2020)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#major-updates">Major Updates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#new-features">New Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#bugfixes">Bugfixes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#code-structure">Code Structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#external-libraries">External Libraries</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-2">Version 0.2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.2.0.html">v0.2.0 (October 26, 2019)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Autopilot</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="autopilot.hardware.html">hardware</a> &raquo;</li>
+        
+      <li>usb</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/autopilot.hardware.usb.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-autopilot.hardware.usb">
+<span id="usb"></span><h1>usb<a class="headerlink" href="#module-autopilot.hardware.usb" title="Permalink to this headline">¶</a></h1>
+<p>Hardware that uses USB</p>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.hardware.usb.Scale" title="autopilot.hardware.usb.Scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Scale</span></code></a>([model, vendor_id, product_id])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.hardware.usb.Wheel" title="autopilot.hardware.usb.Wheel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Wheel</span></code></a>([mouse_idx, fs, thresh, thresh_type, …])</p></td>
+<td><p>A continuously measured mouse wheel.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="autopilot.hardware.usb.Wheel">
+<em class="property">class </em><code class="sig-name descname">Wheel</code><span class="sig-paren">(</span><em class="sig-param">mouse_idx=0</em>, <em class="sig-param">fs=10</em>, <em class="sig-param">thresh=100</em>, <em class="sig-param">thresh_type='dist'</em>, <em class="sig-param">start=True</em>, <em class="sig-param">digi_out=False</em>, <em class="sig-param">mode='vel_total'</em>, <em class="sig-param">integrate_dur=5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/usb.html#Wheel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.usb.Wheel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="autopilot.hardware.html#autopilot.hardware.Hardware" title="autopilot.hardware.Hardware"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.hardware.Hardware</span></code></a></p>
+<p>A continuously measured mouse wheel.</p>
+<p>Uses a USB computer mouse.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>‘vel’ thresh_type not implemented</p>
+</div>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.hardware.usb.Wheel.MODES" title="autopilot.hardware.usb.Wheel.MODES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MODES</span></code></a></p></td>
+<td><p>Built-in immutable sequence.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.hardware.usb.Wheel.MOVE_DTYPE" title="autopilot.hardware.usb.Wheel.MOVE_DTYPE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MOVE_DTYPE</span></code></a></p></td>
+<td><p>Built-in mutable sequence.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.hardware.usb.Wheel.THRESH_TYPES" title="autopilot.hardware.usb.Wheel.THRESH_TYPES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">THRESH_TYPES</span></code></a></p></td>
+<td><p>Built-in mutable sequence.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.hardware.usb.Wheel.input" title="autopilot.hardware.usb.Wheel.input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">input</span></code></a></p></td>
+<td><p>bool(x) -&gt; bool</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.hardware.usb.Wheel.trigger" title="autopilot.hardware.usb.Wheel.trigger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trigger</span></code></a></p></td>
+<td><p>bool(x) -&gt; bool</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.hardware.usb.Wheel.type" title="autopilot.hardware.usb.Wheel.type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></p></td>
+<td><p>str(object=’’) -&gt; str</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.hardware.usb.Wheel.assign_cb" title="autopilot.hardware.usb.Wheel.assign_cb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assign_cb</span></code></a>(trigger_fn)</p></td>
+<td><p>Every hardware device that is a <code class="xref py py-attr docutils literal notranslate"><span class="pre">trigger</span></code> must redefine this to accept a function (typically <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task.handle_trigger" title="autopilot.tasks.task.Task.handle_trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Task.handle_trigger()</span></code></a>) that is called when that trigger is activated.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.hardware.usb.Wheel.calc_move" title="autopilot.hardware.usb.Wheel.calc_move"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_move</span></code></a>(move[, thresh_type])</p></td>
+<td><p>Calculate distance move depending on type (x, y, total dist)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.hardware.usb.Wheel.check_thresh" title="autopilot.hardware.usb.Wheel.check_thresh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_thresh</span></code></a>(move)</p></td>
+<td><p>Updates thresh_val and checks whether it’s above/below threshold</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.hardware.usb.Wheel.l_clear" title="autopilot.hardware.usb.Wheel.l_clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_clear</span></code></a>(value)</p></td>
+<td><p>Stop measuring!</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.hardware.usb.Wheel.l_measure" title="autopilot.hardware.usb.Wheel.l_measure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_measure</span></code></a>(value)</p></td>
+<td><p>Task has signaled that we need to start measuring movements for a trigger</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.hardware.usb.Wheel.l_stop" title="autopilot.hardware.usb.Wheel.l_stop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">l_stop</span></code></a>(value)</p></td>
+<td><p>Stop measuring and clear system resources</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.hardware.usb.Wheel.release" title="autopilot.hardware.usb.Wheel.release"><code class="xref py py-obj docutils literal notranslate"><span class="pre">release</span></code></a>()</p></td>
+<td><p>Every hardware device needs to redefine <cite>release()</cite>, and must</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.hardware.usb.Wheel.start" title="autopilot.hardware.usb.Wheel.start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.hardware.usb.Wheel.thresh_trig" title="autopilot.hardware.usb.Wheel.thresh_trig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thresh_trig</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mouse_idx</strong> (<em>int</em>)</p></li>
+<li><p><strong>fs</strong> (<em>int</em>)</p></li>
+<li><p><strong>thresh</strong> (<em>int</em>)</p></li>
+<li><p><strong>thresh_type</strong> (<em>‘dist’</em>)</p></li>
+<li><p><strong>start</strong> (<em>bool</em>)</p></li>
+<li><p><strong>digi_out</strong> (<a class="reference internal" href="autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_Out" title="autopilot.hardware.gpio.Digital_Out"><code class="xref py py-class docutils literal notranslate"><span class="pre">Digital_Out</span></code></a>, bool)</p></li>
+<li><p><strong>mode</strong> (<em>‘vel_total’</em>)</p></li>
+<li><p><strong>integrate_dur</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="autopilot.hardware.usb.Wheel.input">
+<code class="sig-name descname">input</code><em class="property"> = True</em><a class="headerlink" href="#autopilot.hardware.usb.Wheel.input" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.hardware.usb.Wheel.type">
+<code class="sig-name descname">type</code><em class="property"> = 'Wheel'</em><a class="headerlink" href="#autopilot.hardware.usb.Wheel.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.hardware.usb.Wheel.trigger">
+<code class="sig-name descname">trigger</code><em class="property"> = False</em><a class="headerlink" href="#autopilot.hardware.usb.Wheel.trigger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.hardware.usb.Wheel.THRESH_TYPES">
+<code class="sig-name descname">THRESH_TYPES</code><em class="property"> = ['dist', 'x', 'y', 'vel']</em><a class="headerlink" href="#autopilot.hardware.usb.Wheel.THRESH_TYPES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.hardware.usb.Wheel.MODES">
+<code class="sig-name descname">MODES</code><em class="property"> = ('vel_total', 'steady', 'dist', 'timed')</em><a class="headerlink" href="#autopilot.hardware.usb.Wheel.MODES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="autopilot.hardware.usb.Wheel.MOVE_DTYPE">
+<code class="sig-name descname">MOVE_DTYPE</code><em class="property"> = [('vel', 'i4'), ('dir', 'U5'), ('timestamp', 'f8')]</em><a class="headerlink" href="#autopilot.hardware.usb.Wheel.MOVE_DTYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="autopilot.hardware.usb.Wheel.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/usb.html#Wheel.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.usb.Wheel.start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="autopilot.hardware.usb.Wheel.check_thresh">
+<code class="sig-name descname">check_thresh</code><span class="sig-paren">(</span><em class="sig-param">move</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/usb.html#Wheel.check_thresh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.usb.Wheel.check_thresh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates thresh_val and checks whether it’s above/below threshold</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>move</strong> (<em>np.array</em>) – Structured array with fields (‘vel’, ‘dir’, ‘timestamp’)</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.hardware.usb.Wheel.calc_move">
+<code class="sig-name descname">calc_move</code><span class="sig-paren">(</span><em class="sig-param">move</em>, <em class="sig-param">thresh_type=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/usb.html#Wheel.calc_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.usb.Wheel.calc_move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate distance move depending on type (x, y, total dist)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>move ()</strong></p></li>
+<li><p><strong>thresh_type ()</strong></p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.hardware.usb.Wheel.thresh_trig">
+<code class="sig-name descname">thresh_trig</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/usb.html#Wheel.thresh_trig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.usb.Wheel.thresh_trig" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="autopilot.hardware.usb.Wheel.assign_cb">
+<code class="sig-name descname">assign_cb</code><span class="sig-paren">(</span><em class="sig-param">trigger_fn</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/usb.html#Wheel.assign_cb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.usb.Wheel.assign_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Every hardware device that is a <code class="xref py py-attr docutils literal notranslate"><span class="pre">trigger</span></code> must redefine this
+to accept a function (typically <a class="reference internal" href="autopilot.tasks.task.html#autopilot.tasks.task.Task.handle_trigger" title="autopilot.tasks.task.Task.handle_trigger"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Task.handle_trigger()</span></code></a>) that
+is called when that trigger is activated.</p>
+<p>When not redefined, a warning is given.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.hardware.usb.Wheel.l_measure">
+<code class="sig-name descname">l_measure</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/usb.html#Wheel.l_measure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.usb.Wheel.l_measure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Task has signaled that we need to start measuring movements for a trigger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value ()</strong></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.hardware.usb.Wheel.l_clear">
+<code class="sig-name descname">l_clear</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/usb.html#Wheel.l_clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.usb.Wheel.l_clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop measuring!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value ()</strong></p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.hardware.usb.Wheel.l_stop">
+<code class="sig-name descname">l_stop</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/usb.html#Wheel.l_stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.usb.Wheel.l_stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop measuring and clear system resources
+:Parameters: <strong>value ()</strong></p>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="autopilot.hardware.usb.Wheel.release">
+<code class="sig-name descname">release</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/usb.html#Wheel.release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.usb.Wheel.release" title="Permalink to this definition">¶</a></dt>
+<dd><p>Every hardware device needs to redefine <cite>release()</cite>, and must</p>
+<ul class="simple">
+<li><p>Safely unload any system resources used by the object, and</p></li>
+<li><p>Return the object to a neutral state - eg. LEDs turn off.</p></li>
+</ul>
+<p>When not redefined, a warning is given.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="autopilot.hardware.usb.Scale">
+<em class="property">class </em><code class="sig-name descname">Scale</code><span class="sig-paren">(</span><em class="sig-param">model='stamps.com'</em>, <em class="sig-param">vendor_id=None</em>, <em class="sig-param">product_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/usb.html#Scale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.usb.Scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="autopilot.hardware.html#autopilot.hardware.Hardware" title="autopilot.hardware.Hardware"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.hardware.Hardware</span></code></a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Not implemented, working on using a digital scale to
+make weighing faster.</p>
+</div>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.hardware.usb.Scale.MODEL" title="autopilot.hardware.usb.Scale.MODEL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MODEL</span></code></a></p></td>
+<td><p>dict() -&gt; new empty dictionary</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong></p></li>
+<li><p><strong>vendor_id</strong></p></li>
+<li><p><strong>product_id</strong></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="autopilot.hardware.usb.Scale.MODEL">
+<code class="sig-name descname">MODEL</code><em class="property"> = {'stamps.com': {'product_id': 27251, 'vendor_id': 5190}}</em><a class="headerlink" href="#autopilot.hardware.usb.Scale.MODEL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="autopilot.tasks.html" class="btn btn-neutral float-right" title="tasks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="autopilot.hardware.i2c.html" class="btn btn-neutral float-left" title="i2c" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Jonny Saunders
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

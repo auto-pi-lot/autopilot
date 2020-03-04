@@ -37,6 +37,7 @@ If the ``CONFIG`` is set to ``VISUAL``, these options are ignored. We will make 
 * **Output Ports:** The indices of output that should be used (depending on whether you have connected a speaker to the left or right audio out, for example)
 * **Sampling Rate:** The sampling rate that will be used by the jack server.
 * **Jackd String:** The string used to launch jack, see `the jackd manpage <https://linux.die.net/man/1/jackd>`_. The default configuration is:
+
     - **-P75** - Sets jackd to operate with a high realtime priority
     - **-p16** - Maximum number of ports (16) that the jack server can manage
     - **-t2000** - Set a 2000ms timeout before our client is kicked from jackd's client pool.
@@ -51,18 +52,41 @@ The next menu screen sets the hardware options:
 
 .. image:: ../_images/npyscreen_hardware.png
 
-These settings create a ``PINS`` dictionary that maps hardware objects based on their type and name to a GPIO pin number. These names are the same as those used by tasks to parameterize hardware requirements.
+These settings create a ``HARDWARE`` dictionary that maps hardware objects based on their type and name to a GPIO pin number. These names are the same as those used by tasks to parameterize hardware requirements.
 
-The ``PINS`` that are set by default are
+The ``HARDWARE`` that are set by default are
 
 * **POKES** - IR :class:`~autopilot.core.hardware.Beambreak` s, digital logic input
 * **LEDS** - :class:`~autopilot.core.hardware.LED_RGB` s, which use 3 pins modulated by PWM to output RGB colors.
 * **PORTS** - :class:`~autopilot.core.hardware.Solenoid` s, which dispense water rewards, digital logic output.
 * **FLAGS** - :class:`~autopilot.core.hardware.Flag` s, which are a trivial subclass of :class:`~autopilot.core.hardware.Beambreak` with their default logic directions reversed.
 
-.. todo:
+Additional hardware can be configured by editing ``prefs.json``, so for example if your task calls for::
 
-    Hardware configuration will be extended to include additional configuration options beyond pin number, obviating classes like :class:`~autopilot.core.hardware.Flag` which are identical to other classes with different settings.
+    HARDWARE = {
+        'POKES':{
+            'L': hardware.gpio.Digital_In
+            }
+        }
+
+then one could add an entry to the ``HARDWARE`` dictionary in ``prefs.json`` like::
+
+    "HARDWARE": {
+        "POKES": {
+            "L": {
+                "pin": 1,
+                "polarity": 1,
+                "pull": 0,
+                "trigger": 'U'
+            }
+        }
+    }
+
+(See :class:`~.gpio.Digital_In` and the metacalss :class:`~.gpio.GPIO` for parameter documentation)
+
+.. todo::
+
+    The ``npyscreen`` setup wizard will be extended so that hardware can be added w/ parameters graphically, see :ref:`todo`
 
 The setup script will then create a launch script (ie. ``<BASE_DIR>/launch_pilot.sh``) and optionally install the Pilot to run as an always-on systemd service. If the Pilot is not setup as a systemd service, it needs to be started manually using the ``launch_pilot.sh`` script.
 
@@ -75,9 +99,12 @@ Rasbian Installation
 --------------------
 
 1. Download `Raspbian Lite <https://www.raspberrypi.org/downloads/raspbian/>`_ and unzip
+
     * `As a .torrent (faster, better for the soul of the universe) <https://downloads.raspberrypi.org/raspbian_lite_latest.torrent>`_
     * `Via http (slower) <https://downloads.raspberrypi.org/raspbian_lite_latest>`_
+
 2. Use ``dd`` to write the Raspbian disk image to a microSD card. Note that ``dd`` can and will mess up your entire life if given the opportunity, be very careful that you don't run the command until you're sure your ``if=`` and ``of=`` are correct.
+
     * macOS::
 
         # get the number of the disk, should be something like /dev/disk2
@@ -103,12 +130,18 @@ Rasbian Installation
         dd if=/path/to/raspbian.img of=/dev/<your_disk> bs=1M
 
 3. Boot from the SD card. It should reboot once after it resizes the filesystem. Login with the default credentials:
+
     * username: ``pi``
     * password: ``raspberry``
+
 4. Do an initial ``update`` and ``upgrade`` to grab any critical security fixes so we don't get sunk before we get started:
+
     * ``sudo apt-get update ** sudo apt-get upgrade -y``
+
 5. **Optional:** Change the default password. You'll be sorry if you don't -- I got my credit card stolen this way.
+
     * ``passwd`` and follow the prompts
+
 6. Install necessary system packages::
 
     sudo apt-get install -y \
@@ -131,7 +164,8 @@ Rasbian Installation
         python-tables \      # this one too
         libzmq-dev \
         libffi-dev \         # Allows us to call C functions from python
-        python-cffi
+        python-cffi \
+        blosc
 
 7. And Python packages::
 
@@ -140,11 +174,12 @@ Rasbian Installation
         npyscreen \    # ncurses wrapper used for setup menus
         JACK-Client \  # client for jack audio
         tornado \      # tornado message server
-        inputs         # interactions with USB devices
+        inputs \       # interactions with USB devices
+        blosc          # compression for networking objects
 
-8. Autopilot depends on `pigpio <http://abyz.me.uk/rpi/pigpio/>`_ for high performance GPIO access and control, so install it already::
+8. Autopilot depends on a modified version of `pigpio <http://abyz.me.uk/rpi/pigpio/>`_ for high performance GPIO access and control, so install it already::
 
-    git clone https://github.com/joan2937/pigpio.git
+    git clone https://github.com/sneakers-the-rat/pigpio.git
     cd pigpio
     make -j6
     sudo -H make install
@@ -157,9 +192,13 @@ Raspbian Performance Improvements
 All of these are, strictly speaking, optional, but there's not really a good reason not to do them...
 
 #. Change the CPU Governor - Change the CPU Governor - normally the RPi keeps a low clock speed when not under load, raising it when load increases. this can cause audible glitches which are obviously to be avoided.
+
     * the RPi has a startup script (confusingly, /etc/init.d/raspi-config) that sets the cpu governor to on demand. disable it
+
         - ``sudo systemctl disable raspi-config``
+
     * Add a line to ``etc/rc.local``, which runs on boot, that changes the governor to "performance"
+
         - Either add this above 'exit 0'::
 
             echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
@@ -169,6 +208,7 @@ All of these are, strictly speaking, optional, but there's not really a good rea
             sudo sed -i '/^exit 0/i echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor' /etc/rc.local
 
 #. Disable Bluetooth
+
     * Add ``dtoverlay=pi3-disable-bt`` to ``/boot/config.txt``, or use this::
 
         sudo sed -i '$s/$/\ndtoverlay=pi3-disable-bt/' /boot/config.txt
@@ -302,6 +342,7 @@ If you're using Autopilot to present visual stimuli, it runs in an X11 instance 
         soundfile
 
 #. Enable the Raspberry pi's OpenGL driver:
+
     * ``sudo raspi-config`` > advanced > GL Driver > "GL (FakeKMS)"
     * then reboot
 
@@ -332,7 +373,7 @@ sudo dpkg-reconfigure keyboard-configuration
 
 .. todo::
 
-    xxx. **Optional:** Setup SSH access and install RSA key
+    **Optional:** Setup SSH access and install RSA key
 
 
 

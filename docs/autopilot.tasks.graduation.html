@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>graduation &mdash; Autopilot 0.2 documentation</title>
+  <title>graduation &mdash; Autopilot 0.3.0 documentation</title>
   
 
   
@@ -36,6 +37,9 @@
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/restyle.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="nafc" href="autopilot.tasks.nafc.html" />
@@ -45,7 +49,8 @@
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js" integrity="sha256-BuxrUdr/4YoztQLxT6xmdO6hSQw2d6BtBUY1pteGds4=" crossorigin="anonymous"></script>
 
 </head>
 
@@ -73,7 +78,7 @@
             
             
               <div class="version">
-                0.2
+                0.3
               </div>
             
           
@@ -100,11 +105,9 @@
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure">Program Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#module-tour">Module Tour</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide.installation.html">Installation</a><ul>
@@ -123,12 +126,6 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -190,7 +187,6 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="autopilot.core.html">Core Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.gui.html">gui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autopilot.core.hardware.html">hardware</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
@@ -200,7 +196,15 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.hardware.html">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.cameras.html">cameras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.gpio.html">gpio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.i2c.html">i2c</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.usb.html">usb</a></li>
+</ul>
+</li>
 <li class="toctree-l1 current"><a class="reference internal" href="autopilot.tasks.html">Tasks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.children.html">children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.free_water.html">free_water</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">graduation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.nafc.html">nafc</a></li>
@@ -219,6 +223,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.viz.psychometric.html">psychometric</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.setup.html">Setup</a><ul>
@@ -228,16 +233,22 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.prefs.html">Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.external.html">External</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="todo.html#completed-goals">Completed Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#improvements">Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#completed">Completed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#lowest-priority">Lowest Priority</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-3">Version 0.3</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (Februrary DATE, 2020)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (March 3rd, 2020)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#major-updates">Major Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#new-features">New Features</a></li>
@@ -356,8 +367,8 @@ different tasks in a protocol.</p>
 </table>
 <dl class="class">
 <dt id="autopilot.tasks.graduation.Graduation">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.tasks.graduation.</code><code class="sig-name descname">Graduation</code><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#Graduation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.Graduation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-name descname">Graduation</code><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#Graduation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.Graduation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Base Graduation object.</p>
 <p>All Graduation objects need to populate PARAMS, COLS, and define an
 <cite>update</cite> method.</p>
@@ -384,7 +395,12 @@ different tasks in a protocol.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.tasks.graduation.Graduation.update" title="autopilot.tasks.graduation.Graduation.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(row)</p></td>
-<td><p>:param <code class="xref py py-class docutils literal notranslate"><span class="pre">Row</span></code>: Trial row</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>:class:`~tables.tableextension.Row`</strong> – Trial row</p>
+</dd>
+</dl>
+</p></td>
 </tr>
 </tbody>
 </table>
@@ -394,7 +410,7 @@ different tasks in a protocol.</p>
 <dd><p>list of parameters to be defined</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -405,7 +421,7 @@ different tasks in a protocol.</p>
 <dd><p>list of any data columns that this object should be given.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -413,21 +429,25 @@ different tasks in a protocol.</p>
 <dl class="method">
 <dt id="autopilot.tasks.graduation.Graduation.update">
 <code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">row</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#Graduation.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.Graduation.update" title="Permalink to this definition">¶</a></dt>
-<dd><p>:param <code class="xref py py-class docutils literal notranslate"><span class="pre">Row</span></code>: Trial row</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>:class:`~tables.tableextension.Row`</strong> – Trial row</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="autopilot.tasks.graduation.Accuracy">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.tasks.graduation.</code><code class="sig-name descname">Accuracy</code><span class="sig-paren">(</span><em class="sig-param">threshold=0.75</em>, <em class="sig-param">window=500</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#Accuracy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.Accuracy" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Accuracy</code><span class="sig-paren">(</span><em class="sig-param">threshold=0.75</em>, <em class="sig-param">window=500</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#Accuracy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.Accuracy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#autopilot.tasks.graduation.Graduation" title="autopilot.tasks.graduation.Graduation"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.graduation.Graduation</span></code></a></p>
 <p>Graduate stage based on percent accuracy over some window of trials.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>threshold</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Accuracy above this threshold triggers graduation</p></li>
-<li><p><strong>window</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – number of trials to consider in the past.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) – Accuracy above this threshold triggers graduation</p></li>
+<li><p><strong>window</strong> (<em>int</em>) – number of trials to consider in the past.</p></li>
 <li><p><strong>**kwargs</strong> – should have ‘correct’ corresponding to the corrects/incorrects of the past.</p></li>
 </ul>
 </dd>
@@ -482,7 +502,7 @@ threshold, return True, else False.</p>
 <dd class="field-even"><p>Did we graduate this time or not?</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)">bool</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -491,7 +511,7 @@ threshold, return True, else False.</p>
 
 <dl class="class">
 <dt id="autopilot.tasks.graduation.NTrials">
-<em class="property">class </em><code class="sig-prename descclassname">autopilot.tasks.graduation.</code><code class="sig-name descname">NTrials</code><span class="sig-paren">(</span><em class="sig-param">n_trials</em>, <em class="sig-param">current_trial=0</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#NTrials"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.NTrials" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">NTrials</code><span class="sig-paren">(</span><em class="sig-param">n_trials</em>, <em class="sig-param">current_trial=0</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/tasks/graduation.html#NTrials"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.tasks.graduation.NTrials" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#autopilot.tasks.graduation.Graduation" title="autopilot.tasks.graduation.Graduation"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.tasks.graduation.Graduation</span></code></a></p>
 <p>Graduate after doing n trials</p>
 <dl class="field-list simple">
@@ -500,9 +520,9 @@ threshold, return True, else False.</p>
 </dd>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>n_trials</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of trials to graduate after</p></li>
-<li><p><strong>current_trial</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – If not starting from zero, start from here</p></li>
-<li><p><strong>**kwargs</strong> – </p></li>
+<li><p><strong>n_trials</strong> (<em>int</em>) – Number of trials to graduate after</p></li>
+<li><p><strong>current_trial</strong> (<em>int</em>) – If not starting from zero, start from here</p></li>
+<li><p><strong>**kwargs</strong></p></li>
 </ul>
 </dd>
 </dl>
@@ -547,7 +567,7 @@ threshold, return True, else False.</p>
 <dd class="field-even"><p>Did we graduate or not?</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)">bool</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -556,7 +576,7 @@ threshold, return True, else False.</p>
 
 <dl class="data">
 <dt id="autopilot.tasks.graduation.GRAD_LIST">
-<code class="sig-prename descclassname">autopilot.tasks.graduation.</code><code class="sig-name descname">GRAD_LIST</code><em class="property"> = {'accuracy': &lt;class 'autopilot.tasks.graduation.Accuracy'&gt;, 'n_trials': &lt;class 'autopilot.tasks.graduation.NTrials'&gt;}</em><a class="headerlink" href="#autopilot.tasks.graduation.GRAD_LIST" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">GRAD_LIST</code><em class="property"> = {'accuracy': &lt;class 'autopilot.tasks.graduation.Accuracy'&gt;, 'n_trials': &lt;class 'autopilot.tasks.graduation.NTrials'&gt;}</em><a class="headerlink" href="#autopilot.tasks.graduation.GRAD_LIST" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mapping from string reference of graduation type to object.</p>
 </dd></dl>
 

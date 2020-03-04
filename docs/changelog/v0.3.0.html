@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>v0.3.0 (Februrary DATE, 2020) &mdash; Autopilot 0.2 documentation</title>
+  <title>v0.3.0 (March 3rd, 2020) &mdash; Autopilot 0.3.0 documentation</title>
   
 
   
@@ -36,6 +37,9 @@
   <link rel="stylesheet" href="../_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/restyle.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/autopilot_sass.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/autopilot_sass.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="v0.2.0 (October 26, 2019)" href="v0.2.0.html" />
@@ -45,7 +49,8 @@
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js" integrity="sha256-BuxrUdr/4YoztQLxT6xmdO6hSQw2d6BtBUY1pteGds4=" crossorigin="anonymous"></script>
 
 </head>
 
@@ -73,7 +78,7 @@
             
             
               <div class="version">
-                0.2
+                0.3
               </div>
             
           
@@ -100,11 +105,9 @@
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../guide.overview.html">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.overview.html#program-structure">Program Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide.overview.html#tasks">Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide.overview.html#hardware">Hardware</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide.overview.html#agents">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide.overview.html#module-tour">Module Tour</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../guide.installation.html">Installation</a><ul>
@@ -123,12 +126,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -190,7 +187,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../autopilot.core.html">Core Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../autopilot.core.gui.html">gui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../autopilot.core.hardware.html">hardware</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autopilot.core.plots.html">plots</a></li>
@@ -200,7 +196,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../autopilot.core.utils.html">utils</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../autopilot.hardware.html">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.hardware.cameras.html">cameras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.hardware.gpio.html">gpio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.hardware.i2c.html">i2c</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.hardware.usb.html">usb</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.tasks.children.html">children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autopilot.tasks.free_water.html">free_water</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autopilot.tasks.graduation.html">graduation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autopilot.tasks.nafc.html">nafc</a></li>
@@ -219,6 +223,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../autopilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autopilot.viz.psychometric.html">psychometric</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../autopilot.setup.html">Setup</a><ul>
@@ -228,16 +233,22 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../autopilot.prefs.html">Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autopilot.external.html">External</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../todo.html#completed-goals">Completed Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../todo.html#improvements">Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../todo.html#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../todo.html#completed">Completed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../todo.html#lowest-priority">Lowest Priority</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Changelog</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#version-0-3">Version 0.3</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">v0.3.0 (Februrary DATE, 2020)</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">v0.3.0 (March 3rd, 2020)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#major-updates">Major Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#minor-updates">Minor Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#new-features">New Features</a></li>
@@ -301,7 +312,7 @@
         
           <li><a href="index.html">Changelog</a> &raquo;</li>
         
-      <li>v0.3.0 (Februrary DATE, 2020)</li>
+      <li>v0.3.0 (March 3rd, 2020)</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -320,8 +331,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="v0-3-0-februrary-date-2020">
-<span id="changelog-v030"></span><h1>v0.3.0 (Februrary DATE, 2020)<a class="headerlink" href="#v0-3-0-februrary-date-2020" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="v0-3-0-march-3rd-2020">
+<span id="changelog-v030"></span><h1>v0.3.0 (March 3rd, 2020)<a class="headerlink" href="#v0-3-0-march-3rd-2020" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="major-updates">
 <h2>Major Updates<a class="headerlink" href="#major-updates" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -341,8 +352,8 @@ practice for all types of data. That would potentially allow tasks to be written
 data that they produce at all, but I haven’t decided if that’s a good thing or not yet.</p></li>
 <li><p>The <strong>GPIO engine</strong> has been rebuilt, relying more on <code class="docutils literal notranslate"><span class="pre">pigpio</span></code>’s function interface. This means that GPIO timing is now
 ~microsecond precise, important for reward delivery, LED flashing, and a number of other basic infrastructural needs.
-The reorganization of hardware modules resulted in general <code class="xref py py-class docutils literal notranslate"><span class="pre">GPIO</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Digital_In</span></code>
-and <code class="xref py py-class docutils literal notranslate"><span class="pre">Digital_Out</span></code> metaclasses, making common operations like setting polarity, triggers, and pullup/down resistors
+The reorganization of hardware modules resulted in general <a class="reference internal" href="../autopilot.hardware.gpio.html#autopilot.hardware.gpio.GPIO" title="autopilot.hardware.gpio.GPIO"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIO</span></code></a>, <a class="reference internal" href="../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_In" title="autopilot.hardware.gpio.Digital_In"><code class="xref py py-class docutils literal notranslate"><span class="pre">Digital_In</span></code></a>
+and <a class="reference internal" href="../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_Out" title="autopilot.hardware.gpio.Digital_Out"><code class="xref py py-class docutils literal notranslate"><span class="pre">Digital_Out</span></code></a> metaclasses, making common operations like setting polarity, triggers, and pullup/down resistors
 much easier.</p></li>
 </ul>
 </div>
@@ -394,7 +405,6 @@ a process that will continue in the ceaseless quest for aesthetic perfection.</p
 to <code class="xref py py-func docutils literal notranslate"><span class="pre">download_box()</span></code> files from a URL, which is mysteriously hard to do.</p></li>
 <li><p>The <a class="reference internal" href="../todo.html#todo"><span class="std std-ref">To-Do</span></a> page now reflects the full ambition of Autopilot, where before this vision was contained only in
 the <a class="reference external" href="https://www.biorxiv.org/content/10.1101/807693v1">whitepaper</a> and a disorganized <a class="reference external" href="https://github.com/wehr-lab/autopilot/blob/master/notes/todo">plaintext</a> file in the repo.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">serve</span></code> command for the docs now uses <a class="reference external" href="https://github.com/GaretJax/sphinx-autobuild">sphinx-autobuild</a>, so they are rebuilt as they are changed and the page auto-reloads</p></li>
 <li><p>The <a class="reference internal" href="../autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> class can now export trial data <a class="reference internal" href="../autopilot.core.subject.html#autopilot.core.subject.Subject.to_csv" title="autopilot.core.subject.Subject.to_csv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_csv()</span></code></a>. A very minor update, but
 one that is the first in a number of planned improvements to data export.</p></li>
 <li><p>I have also opened up a message board in google groups to make feature requests and discuss use and development, hope to see you there :)</p>
@@ -407,24 +417,24 @@ one that is the first in a number of planned improvements to data export.</p></l
 <ul>
 <li><p><strong>HARDWARE</strong> has been substantially refactored to give objects an appropriate inheritance structure. This substantially
 reduces effort duplication across hardware objects and makes a bunch of obvious capabilities available to all of them,
-for example all hardware objects are now network (<code class="xref py py-meth docutils literal notranslate"><span class="pre">init_networking()</span></code>) and logging (<code class="xref py py-meth docutils literal notranslate"><span class="pre">init_logging()</span></code>)
+for example all hardware objects are now network (<a class="reference internal" href="../autopilot.hardware.html#autopilot.hardware.Hardware.init_networking" title="autopilot.hardware.Hardware.init_networking"><code class="xref py py-meth docutils literal notranslate"><span class="pre">init_networking()</span></code></a>) and logging (<a class="reference internal" href="../autopilot.hardware.html#autopilot.hardware.Hardware.init_logging" title="autopilot.hardware.Hardware.init_logging"><code class="xref py py-meth docutils literal notranslate"><span class="pre">init_logging()</span></code></a>)
 capable.</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><strong>Cameras</strong>: The <code class="xref py py-class docutils literal notranslate"><span class="pre">cameras.Camera_CV</span></code> class allows webcams/other simple cameras to be accessed through OpenCV,
-and the <code class="xref py py-class docutils literal notranslate"><span class="pre">cameras.Camera_Spinnaker</span></code> class allows FLIR and other cameras to be accessed through the <a class="reference external" href="https://www.flir.com/products/spinnaker-sdk/">Spinnaker</a> SDK.
+<li><p><strong>Cameras</strong>: The <a class="reference internal" href="../autopilot.hardware.cameras.html#autopilot.hardware.cameras.Camera_CV" title="autopilot.hardware.cameras.Camera_CV"><code class="xref py py-class docutils literal notranslate"><span class="pre">cameras.Camera_CV</span></code></a> class allows webcams/other simple cameras to be accessed through OpenCV,
+and the <a class="reference internal" href="../autopilot.hardware.cameras.html#autopilot.hardware.cameras.Camera_Spinnaker" title="autopilot.hardware.cameras.Camera_Spinnaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">cameras.Camera_Spinnaker</span></code></a> class allows FLIR and other cameras to be accessed through the <a class="reference external" href="https://www.flir.com/products/spinnaker-sdk/">Spinnaker</a> SDK.
 Cameras are capable of encoding videos locally (with x264), streaming frames over the network, and making
-acquired frames available to other objects on the same computer. The <code class="xref py py-class docutils literal notranslate"><span class="pre">Camera_Spinnaker</span></code> class
+acquired frames available to other objects on the same computer. The <a class="reference internal" href="../autopilot.hardware.cameras.html#autopilot.hardware.cameras.Camera_Spinnaker" title="autopilot.hardware.cameras.Camera_Spinnaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">Camera_Spinnaker</span></code></a> class
 provides simple <code class="docutils literal notranslate"><span class="pre">&#64;property</span></code> setter/getter methods for common parameters, but also makes all <code class="docutils literal notranslate"><span class="pre">PySpin</span></code> attributes
-available to the user with its <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">set()</span></code> methods.
-The <code class="xref py py-class docutils literal notranslate"><span class="pre">cameras.Camera</span></code> metaclass is written so that new camera types can be added by overriding a few methods. A
-new <code class="xref py py-class docutils literal notranslate"><span class="pre">Video_Child</span></code> can be used to run a camera on a Child agent.</p></li>
-<li><p><strong>9DOF Motion Sensor</strong>: The <code class="xref py py-class docutils literal notranslate"><span class="pre">i2c.I2C_9DOF</span></code> class can use the LSM9DS1 sensor to collect accelerometer, magnetometer, and
+available to the user with its <a class="reference internal" href="../autopilot.hardware.cameras.html#autopilot.hardware.cameras.Camera_Spinnaker.get" title="autopilot.hardware.cameras.Camera_Spinnaker.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code></a> and <a class="reference internal" href="../autopilot.hardware.cameras.html#autopilot.hardware.cameras.Camera_Spinnaker.set" title="autopilot.hardware.cameras.Camera_Spinnaker.set"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set()</span></code></a> methods.
+The <a class="reference internal" href="../autopilot.hardware.cameras.html#autopilot.hardware.cameras.Camera" title="autopilot.hardware.cameras.Camera"><code class="xref py py-class docutils literal notranslate"><span class="pre">cameras.Camera</span></code></a> metaclass is written so that new camera types can be added by overriding a few methods. A
+new <a class="reference internal" href="../autopilot.tasks.children.html#autopilot.tasks.children.Video_Child" title="autopilot.tasks.children.Video_Child"><code class="xref py py-class docutils literal notranslate"><span class="pre">Video_Child</span></code></a> can be used to run a camera on a Child agent.</p></li>
+<li><p><strong>9DOF Motion Sensor</strong>: The <a class="reference internal" href="../autopilot.hardware.i2c.html#autopilot.hardware.i2c.I2C_9DOF" title="autopilot.hardware.i2c.I2C_9DOF"><code class="xref py py-class docutils literal notranslate"><span class="pre">i2c.I2C_9DOF</span></code></a> class can use the LSM9DS1 sensor to collect accelerometer, magnetometer, and
 gyroscopic data to compute unambiguous position and orientation information. We will be including calibration and
 computation routines that make it easier to extract properties of interest – eg. computing vertical motion by
 combining readings from the three sensors.</p></li>
-<li><p><strong>Temperature Sensor</strong>: The <code class="xref py py-class docutils literal notranslate"><span class="pre">i2c.MLX90640</span></code> class can use the <a class="reference external" href="https://www.melexis.com/en/product/MLX90640/Far-Infrared-Thermal-Sensor-Array">MLX90640</a> sensor to measure temperature. The
-sensor is 32x24px, which the class can <code class="xref py py-meth docutils literal notranslate"><span class="pre">interpolate()</span></code>. The class also allows frames to be integrated
+<li><p><strong>Temperature Sensor</strong>: The <a class="reference internal" href="../autopilot.hardware.i2c.html#autopilot.hardware.i2c.MLX90640" title="autopilot.hardware.i2c.MLX90640"><code class="xref py py-class docutils literal notranslate"><span class="pre">i2c.MLX90640</span></code></a> class can use the <a class="reference external" href="https://www.melexis.com/en/product/MLX90640/Far-Infrared-Thermal-Sensor-Array">MLX90640</a> sensor to measure temperature. The
+sensor is 32x24px, which the class can <a class="reference internal" href="../autopilot.hardware.i2c.html#autopilot.hardware.i2c.MLX90640.interpolate" title="autopilot.hardware.i2c.MLX90640.interpolate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">interpolate()</span></code></a>. The class also allows frames to be integrated
 and averaged over time, substantially reducing noise. I modified the driver library to enable capture at the full
 64fps on the Raspberry Pi.</p></li>
 </ul>
@@ -434,7 +444,7 @@ and averaged over time, substantially reducing noise. I modified the driver libr
 <blockquote>
 <div><ul class="simple">
 <li><p><a class="reference internal" href="../autopilot.core.networking.html#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net_Node</span></code></a> modules were given a <a class="reference internal" href="../autopilot.core.networking.html#autopilot.core.networking.Net_Node.get_stream" title="autopilot.core.networking.Net_Node.get_stream"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_stream()</span></code></a> method that lets objects, well,
-stream data. Specifically, they are given a <code class="xref py py-class docutils literal notranslate"><span class="pre">queue.Queue</span></code> to shovel data into, which is then picked up by a
+stream data. Specifically, they are given a <a class="reference external" href="https://docs.python.org/3/library/queue.html#queue.Queue" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">queue.Queue</span></code></a> to shovel data into, which is then picked up by a
 dedicated <a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Socket" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Socket</span></code></a> in its own thread, which handles batching, serialization, and load balancing. Streamed
 messages are batched (ie. contain multiple messages), but behave like normal message when received – they are split and
 contain an <code class="docutils literal notranslate"><span class="pre">inner_key</span></code> that is used to call the <code class="docutils literal notranslate"><span class="pre">listen</span></code> with each message (see <code class="xref py py-meth docutils literal notranslate"><span class="pre">l_stream()</span></code>).</p></li>
@@ -460,7 +470,7 @@ meters frames such that even if high-speed video is being acquired, frames are o
 The <a class="reference internal" href="../autopilot.core.plots.html#autopilot.core.plots.Video" title="autopilot.core.plots.Video"><code class="xref py py-class docutils literal notranslate"><span class="pre">Video</span></code></a> class uses the <a class="reference internal" href="../autopilot.core.plots.html#autopilot.core.plots.ImageItem_TimedUpdate" title="autopilot.core.plots.ImageItem_TimedUpdate"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageItem_TimedUpdate</span></code></a> object, a slight modification of
 <code class="xref py py-class docutils literal notranslate"><span class="pre">pyqtgraph.ImageItem</span></code>, that calls its <code class="docutils literal notranslate"><span class="pre">update</span></code> method according to a <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtCore.QTimer</span></code>.</p></li>
 <li><p>A <code class="xref py py-attr docutils literal notranslate"><span class="pre">plots_menu</span></code> menu has been added to the Terminal, and a GUI dialog (<a class="reference internal" href="../autopilot.core.gui.html#autopilot.core.gui.Psychometric" title="autopilot.core.gui.Psychometric"><code class="xref py py-class docutils literal notranslate"><span class="pre">gui.Psychometric</span></code></a>)
-has been added to create simple psychometric curves with the <code class="xref py py-mod docutils literal notranslate"><span class="pre">viz.psychometric</span></code> module, which uses <a class="reference external" href="https://altair-viz.github.io/">altair</a>.
+has been added to create simple psychometric curves with the <a class="reference internal" href="../autopilot.viz.psychometric.html#module-autopilot.viz.psychometric" title="autopilot.viz.psychometric"><code class="xref py py-mod docutils literal notranslate"><span class="pre">viz.psychometric</span></code></a> module, which uses <a class="reference external" href="https://altair-viz.github.io/">altair</a>.
 Plans for developing visualization are described in <a class="reference internal" href="../todo.html#todo"><span class="std std-ref">To-Do</span></a>.</p></li>
 <li><p>A general <a class="reference internal" href="../autopilot.core.gui.html#autopilot.core.gui.pop_dialog" title="autopilot.core.gui.pop_dialog"><code class="xref py py-func docutils literal notranslate"><span class="pre">gui.pop_dialog()</span></code></a> function simplifies displaying messages to the user using the Terminal UI. This was an initial step
 towards improving status/error reporting from other agents, further detailed in <a class="reference internal" href="../todo.html#todo"><span class="std std-ref">To-Do</span></a>.</p></li>
@@ -497,7 +507,7 @@ only repeating a stimulus <em>if the subject got the previous trial incorrect,</
 <li><p>Requirements files have been split out to better differentiate between different agents and use-cases.
 eg. requirements for Terminal agents are in <code class="docutils literal notranslate"><span class="pre">requirements_terminal.txt</span></code>, requirements for build the docs are in <code class="docutils literal notranslate"><span class="pre">requirements_docs.txt</span></code>, etc.
 This is a temporary arrangement, as a future design goal is restructuring setup routines so that they can flexibly install components as-needed (see <a class="reference internal" href="../todo.html#todo"><span class="std std-ref">To-Do</span></a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">autopilot.core.hardware</span></code> has been refactored into its own module, <code class="xref py py-mod docutils literal notranslate"><span class="pre">autopilot.hardware</span></code>, and split by device type, currently…</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">autopilot.core.hardware</span></code> has been refactored into its own module, <a class="reference internal" href="../autopilot.hardware.html#module-autopilot.hardware" title="autopilot.hardware"><code class="xref py py-mod docutils literal notranslate"><span class="pre">autopilot.hardware</span></code></a>, and split by device type, currently…</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">autopilot.cameras</span></code></p></li>

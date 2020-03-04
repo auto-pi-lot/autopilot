@@ -1283,6 +1283,17 @@ class Net_Node(object):
     must communicate through a :class:`.Station` ROUTER, rather than
     address each other directly.
 
+    Args:
+        id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
+        upstream (str): The identity of the ROUTER socket used by our upstream :class:`.Station` object.
+        port (int): The port that our upstream ROUTER socket is bound to
+        listens (dict): Dictionary of functions to call for different types of messages.
+            keys match the :attr:`.Message.key`.
+        instance (bool): Should the node try and use the existing zmq context and tornado loop?
+        upstream_ip (str): If this Net_Node is being used on its own (ie. not behind a :class:`.Station`), it can directly connect to another node at this IP. Otherwise use 'localhost' to connect to a station.
+        route_port (int): Typically, Net_Nodes only have a single Dealer socket and receive messages from their encapsulating :class:`.Station`, but
+            if you want to take this node offroad and use it independently, an int here binds a Router to the port.
+
     Attributes:
         context (:class:`zmq.Context`):  zeromq context
         loop (:class:`tornado.ioloop.IOLoop`): a tornado ioloop
@@ -1321,16 +1332,7 @@ class Net_Node(object):
     def __init__(self, id, upstream, port, listens, instance=True, upstream_ip='localhost',
                  route_port = None, daemon=True, expand_on_receive=True):
         """
-        Args:
-            id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
-            upstream (str): The identity of the ROUTER socket used by our upstream :class:`.Station` object.
-            port (int): The port that our upstream ROUTER socket is bound to
-            listens (dict): Dictionary of functions to call for different types of messages.
-                keys match the :attr:`.Message.key`.
-            instance (bool): Should the node try and use the existing zmq context and tornado loop?
-            upstream_ip (str): If this Net_Node is being used on its own (ie. not behind a :class:`.Station`), it can directly connect to another node at this IP. Otherwise use 'localhost' to connect to a station.
-            route_port (int): Typically, Net_Nodes only have a single Dealer socket and receive messages from their encapsulating :class:`.Station`, but
-                if you want to take this node offroad and use it independently, an int here binds a Router to the port.
+
         """
         if instance:
             self.context = zmq.Context.instance()

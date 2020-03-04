@@ -1,0 +1,1538 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>autopilot.hardware.gpio &mdash; Autopilot 0.3.0 documentation</title>
+  
+
+  
+  
+  
+  
+    <link rel="canonical" href="docs.auto-pi-lot.com_modules/autopilot/hardware/gpio.html"/>
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/autopilot_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/restyle.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/autopilot_sass.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/autopilot_sass.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+
+    <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js" integrity="sha256-BuxrUdr/4YoztQLxT6xmdO6hSQw2d6BtBUY1pteGds4=" crossorigin="anonymous"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Autopilot
+          
+
+          
+            
+            <img src="../../../_static/autopilot_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#program-structure">Program Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#tasks">Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.overview.html#module-tour">Module Tour</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.pilot.html">Pilot Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.pilot.html#scripted-installation">Scripted Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.pilot.html#manual-preinstall">Manual Preinstall</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#rasbian-installation">Rasbian Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#raspbian-performance-improvements">Raspbian Performance Improvements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#audio-setup">Audio Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#video-setup">Video Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.installation.pilot.html#optional-installation-steps">Optional Installation Steps</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.installation.terminal.html">Terminal Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.training.html">Training a Subject</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#connecting-the-pilot">Connecting the Pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#creating-a-protocol">Creating a Protocol</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.training.html#using-the-protocol-wizard">Using the Protocol Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.training.html#manual-protocol-creation">Manual Protocol Creation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#creating-a-subject">Creating a Subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#running-the-task">Running the Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.training.html#debugging-a-task">Debugging a Task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.task.html">Writing a Task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#the-nafc-task">The Nafc Task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-task-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#four-task-attributes">Four Task Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#params">PARAMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#data">Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#plot">PLOT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#hardware">HARDWARE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#initialization">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#stage-methods">Stage Methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#request">Request</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#discrim">Discrim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../guide.task.html#reinforcement">Reinforcement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-methods">Additional Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.task.html#distributed-go-no-go-using-child-agents">Distributed Go/No-Go - Using Child Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#additional-prefs">Additional Prefs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-parameterization">Go/No-Go Parameterization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#id5">Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#the-child-task">The Child Task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#a-very-smart-wheel">A Very Smart Wheel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.task.html#go-no-go-stage-methods">Go/No-Go Stage Methods</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.hardware.html">Writing a Hardware Class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.hardware.html#gpio-with-pigpio">GPIO with pigpio</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.hardware.html#input-beambreak">Input - Beambreak</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide.hardware.html#output-led-rgb">Output - LED_RGB</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide.hardware.html#usb-hardware-with-inputs">USB Hardware with inputs</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.core.html">Core Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.gui.html">gui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.networking.html">networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.pilot.html">pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.plots.html">plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.styles.html">styles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.subject.html">subject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.terminal.html">terminal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.core.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.hardware.html">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.hardware.cameras.html">cameras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.hardware.gpio.html">gpio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.hardware.i2c.html">i2c</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.hardware.usb.html">usb</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.children.html">children</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.free_water.html">free_water</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.graduation.html">graduation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.nafc.html">nafc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.tasks.task.html">task</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.stim.html">Stimuli</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.stim.managers.html">managers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.stim.sound.html">sound</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autopilot.stim.sound.jackclient.html">jackclient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autopilot.stim.sound.pyoserver.html">pyoserver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autopilot.stim.sound.sounds.html">sounds</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.viz.html">Visualization Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.viz.psychometric.html">psychometric</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.setup.html">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.setup.setup_pilot.html">setup_pilot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.setup.setup_scale.html">setup_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autopilot.setup.setup_terminal.html">setup_terminal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.prefs.html">Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../autopilot.external.html">External</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Meta:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../todo.html">To-Do</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#improvements">Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#completed">Completed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#lowest-priority">Lowest Priority</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/index.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../changelog/index.html#version-0-3">Version 0.3</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../changelog/v0.3.0.html">v0.3.0 (March 3rd, 2020)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#major-updates">Major Updates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#new-features">New Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#bugfixes">Bugfixes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#code-structure">Code Structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../changelog/v0.3.0.html#external-libraries">External Libraries</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../changelog/index.html#version-0-2">Version 0.2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../changelog/v0.2.0.html">v0.2.0 (October 26, 2019)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Autopilot</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../hardware.html">autopilot.hardware</a> &raquo;</li>
+        
+      <li>autopilot.hardware.gpio</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for autopilot.hardware.gpio</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Hardware that uses the GPIO pins of the Raspi. These classes rely on `pigpio</span>
+<span class="sd">&lt;http://abyz.me.uk/rpi/pigpio/&gt;`_, whose daemon (pigpiod) must be running in the background --</span>
+<span class="sd">typically this is handled with a launch script/system daemon (see the launch_pilot.sh script generated by setup_pilot.py)</span>
+
+<span class="sd">Autopilot uses a custom version of pigpio (`&lt;https://github.com/sneakers-the-rat/pigpio&gt;`_) that</span>
+<span class="sd">returns isoformatted timestamps rather than tick numbers in callbacks. See the ``setup_pilot.sh`` script.</span>
+
+<span class="sd">Note:</span>
+<span class="sd">    This module does not include hardware that uses the GPIO pins over a specific protocol like i2c</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+
+<span class="kn">from</span> <span class="nn">autopilot</span> <span class="kn">import</span> <span class="n">prefs</span>
+<span class="kn">from</span> <span class="nn">autopilot.hardware</span> <span class="kn">import</span> <span class="n">Hardware</span><span class="p">,</span> <span class="n">BOARD_TO_BCM</span>
+
+<span class="n">ENABLED</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">False if pigpio cannot be imported -- and GPIO devices cannot be used.</span>
+
+<span class="sd">True if pigpio can be imported</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pigpio</span>
+
+    <span class="n">TRIGGER_MAP</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;U&#39;</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">RISING_EDGE</span><span class="p">,</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">RISING_EDGE</span><span class="p">,</span>
+        <span class="kc">True</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">RISING_EDGE</span><span class="p">,</span>
+        <span class="s1">&#39;D&#39;</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">FALLING_EDGE</span><span class="p">,</span>
+        <span class="mi">0</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">FALLING_EDGE</span><span class="p">,</span>
+        <span class="kc">False</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">FALLING_EDGE</span><span class="p">,</span>
+        <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">EITHER_EDGE</span><span class="p">,</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">EITHER_EDGE</span>
+    <span class="p">}</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Maps user input descriptions of triggers to the corresponding pigpio object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">INVERSE_TRIGGER_MAP</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">pigpio</span><span class="o">.</span><span class="n">RISING_EDGE</span><span class="p">:</span> <span class="s1">&#39;U&#39;</span><span class="p">,</span>
+        <span class="n">pigpio</span><span class="o">.</span><span class="n">FALLING_EDGE</span><span class="p">:</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span>
+        <span class="n">pigpio</span><span class="o">.</span><span class="n">EITHER_EDGE</span><span class="p">:</span> <span class="s1">&#39;B&#39;</span>
+    <span class="p">}</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Inverse of :data:`.TRIGGER_MAP`. Used to assign canonical references to triggers -- </span>
+<span class="sd">    ie. it is possible to take multiple params (1, True, &#39;U&#39;) -&gt; pigpio trigger objects,</span>
+<span class="sd">    but there is one preferred way to refer to a pigpio object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">PULL_MAP</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_UP</span><span class="p">,</span>
+        <span class="kc">True</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_UP</span><span class="p">,</span>
+        <span class="s1">&#39;U&#39;</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_UP</span><span class="p">,</span>
+        <span class="mi">0</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_DOWN</span><span class="p">,</span>
+        <span class="kc">False</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_DOWN</span><span class="p">,</span>
+        <span class="s1">&#39;D&#39;</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_DOWN</span><span class="p">,</span>
+        <span class="kc">None</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_OFF</span>
+    <span class="p">}</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Maps user input descriptions of internal resistor pullups/downs to the corresponding</span>
+<span class="sd">    pigpio object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">INVERSE_PULL_MAP</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_UP</span><span class="p">:</span> <span class="s1">&#39;U&#39;</span><span class="p">,</span>
+        <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_DOWN</span><span class="p">:</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span>
+        <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_OFF</span><span class="p">:</span> <span class="kc">None</span>
+    <span class="p">}</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Inverse of :data:`.PULL_MAP`, mapping pigpio objects for internal resistor pullups/downs to </span>
+<span class="sd">    their canonical form (&#39;U&#39;, &#39;D&#39;, None for pullup, pulldown, or no pull)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="ne">ImportWarning</span><span class="p">(</span><span class="s2">&quot;pigpio could not be imported, gpio not enabled&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="GPIO"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.GPIO">[docs]</a><span class="k">class</span> <span class="nc">GPIO</span><span class="p">(</span><span class="n">Hardware</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Metaclass for hardware that uses GPIO. Should not be instantiated on its own.</span>
+
+<span class="sd">    Handles initializing pigpio and wraps some of its commonly used methods</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pin (int): The Board-numbered GPIO pin of this object.</span>
+<span class="sd">        polarity (int): Logic direction. if 1: on=High=1, off=Low=0; if 0: off=Low=0, on=High=1</span>
+<span class="sd">        pull (str, int): state of pullup/down resistor. Can be set as &#39;U&#39;/&#39;D&#39; or 1/0 to pull up/down. See :data:`.PULL_MAP`</span>
+<span class="sd">        trigger (str, int, bool): whether callbacks are triggered on rising (&#39;U&#39;, 1, True), falling (&#39;D&#39;, 0, False),</span>
+<span class="sd">            or both edges (&#39;B&#39;, (0,1))</span>
+<span class="sd">        kwargs: passed to the :class:`.Hardware` superclass.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        pig (:class:`pigpio.pi`): An object that manages connection to the pigpio daemon. See docs at http://abyz.me.uk/rpi/pigpio/python.html</span>
+<span class="sd">        CONNECTED (bool): Whether the connection to pigpio was successful</span>
+<span class="sd">        pin (int): The Board-numbered GPIO pin of this object.</span>
+<span class="sd">        pin_bcm (int): The BCM number of the connected pin -- used by pigpio. Converted from pin passed as argument on initialization,</span>
+<span class="sd">            which is assumed to be the board number.</span>
+<span class="sd">        pull (str, int): state of pullup/down resistor. Can be set as &#39;U&#39;/&#39;D&#39; or 1/0 to pull up/down</span>
+<span class="sd">        polarity (int): Logic direction. if 1: on=High=1, off=Low=0; if 0: off=Low=0, on=High=1</span>
+<span class="sd">        on (int): if polarity == 1, high/1. if polarity == 0, low/0</span>
+<span class="sd">        off (int): if polarity == 1, low/0. if polarity == 0, high/1</span>
+<span class="sd">        trigger (str, int, bool): whether callbacks are triggered on rising (&#39;U&#39;, 1, True), falling (&#39;D&#39;, 0, False),</span>
+<span class="sd">            or both edges (&#39;B&#39;, (0,1))</span>
+<span class="sd">        trigger_edge: The pigpio object representing RISING_EDGE, FALLING_EDGE, BOTH_EDGES. Set by :attr`.trigger`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">pull</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">trigger</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GPIO</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ENABLED</span><span class="p">:</span>
+            <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Couldnt import pigpio, so GPIO objects cant be used&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># initialize attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_polarity</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pull</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pin</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trigger_edge</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CONNECTED</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># set default attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin</span> <span class="o">=</span> <span class="n">pin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">polarity</span> <span class="o">=</span> <span class="n">polarity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pull</span> <span class="o">=</span> <span class="n">pull</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trigger</span> <span class="o">=</span> <span class="n">trigger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CONNECTED</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_pigpio</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">CONNECTED</span><span class="p">:</span>
+            <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;No connection could be made to the pigpio daemon&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="GPIO.init_pigpio"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.GPIO.init_pigpio">[docs]</a>    <span class="k">def</span> <span class="nf">init_pigpio</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a socket connection to the pigpio daemon and set as :attr:`GPIO.pig`</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if connection was successful, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span> <span class="o">=</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">pi</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Board-numbered GPIO pin.</span>
+
+<span class="sd">        When assigned, also updates :attr:`.pin_bcm` with the BCM-numbered pin.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pin</span>
+
+    <span class="nd">@pin</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">pin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="p">):</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span> <span class="o">=</span> <span class="n">BOARD_TO_BCM</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_pin</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pull</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        State of internal pullup/down resistor.</span>
+
+<span class="sd">        See :data:`.PULL_MAP` for possible values.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: &#39;U&#39;/&#39;D&#39;/None for pulled up, down or not set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pull</span>
+
+    <span class="nd">@pull</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">pull</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pull</span> <span class="o">=</span> <span class="n">PULL_MAP</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pull</span> <span class="o">=</span> <span class="n">INVERSE_PULL_MAP</span><span class="p">[</span><span class="n">pull</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pull</span> <span class="o">=</span> <span class="n">direction</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_pull_up_down</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">,</span> <span class="n">pull</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;pull must be one of 0/&#39;D&#39;/False for pulldown, 1/&#39;U&#39;/True for pullup, or None to clear&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">polarity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Logic direction. if 1: on=High=1, off=Low=0; if 0: off=Low=0, on=High=1.</span>
+
+<span class="sd">        When set, updates :attr:`~.GPIO.on` and :attr:`~.GPIO.off` accordingly</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polarity</span>
+
+    <span class="nd">@polarity</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">polarity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polarity</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">polarity</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">on</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">off</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="n">polarity</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">on</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">off</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;polarity must be 0 or 1&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_polarity</span> <span class="o">=</span> <span class="n">polarity</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        dict: Maps strings ((&#39;U&#39;,1,True), (&#39;D&#39;,0,False), (&#39;B&#39;,[0,1])) to pigpio edge types</span>
+<span class="sd">        (RISING_EDGE, FALLING_EDGE, EITHER_EDGE), respectively.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span>
+
+
+    <span class="nd">@trigger</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trigger_edge</span> <span class="o">=</span> <span class="n">TRIGGER_MAP</span><span class="p">[</span><span class="n">trigger</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span> <span class="o">=</span> <span class="n">INVERSE_TRIGGER_MAP</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">trigger_edge</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;trigger must be one of </span><span class="si">{}</span><span class="s1">. instead got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">INVERSE_TRIGGER_MAP</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span>
+                                                                          <span class="n">trigger</span><span class="p">))</span>
+
+<div class="viewcode-block" id="GPIO.release"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.GPIO.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Release the connection to the pigpio daemon.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            the Hardware metaclass will call this method on object deletion.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pull</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Digital_Out"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_Out">[docs]</a><span class="k">class</span> <span class="nc">Digital_Out</span><span class="p">(</span><span class="n">GPIO</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TTL/Digital logic out through a GPIO pin.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pin (int): The Board-numbered GPIO pin of this object</span>
+<span class="sd">        pulse_width (int): Width of digital output :meth:`~.Digital_Out.pulse` (us). range: 1-100</span>
+<span class="sd">        polarity (bool): Whether &#39;on&#39; is High (1, default) and pulses bring the voltage High, or vice versa (0)</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        scripts (dict): maps script IDs to pigpio script handles</span>
+<span class="sd">        pigs_function (bytes): when using pigpio scripts, what function is used to set the value of the output?</span>
+<span class="sd">            (eg. &#39;w&#39; for digital out, &#39;gdc&#39; for pwm, more info here: http://abyz.me.uk/rpi/pigpio/pigs.html)</span>
+<span class="sd">        script_counter (:class:`itertools.count`): generate script IDs if not explicitly given to :meth:`~.Digital_Out.series`.</span>
+<span class="sd">            generated IDs are of the form &#39;series_#&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;DIGITAL_OUT&quot;</span>
+    <span class="n">pigs_function</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;w&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pulse_width</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Digital_Out</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="n">polarity</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_script</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pulse_width</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">pulse_width</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pulse_width</span> <span class="o">&gt;</span> <span class="mi">100</span> <span class="ow">or</span> <span class="n">pulse_width</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;pulse_width must be &lt;100(ms) &amp; &gt;0 and has been clipped to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pulse_width</span><span class="p">))</span>
+
+        <span class="c1"># setup pin</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">,</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">OUTPUT</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Digital_Out.set"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_Out.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set pin logic level.</span>
+
+<span class="sd">        Default uses :meth:`pigpio.pi.write`, but can be overwritten by inheriting classes</span>
+
+<span class="sd">        Stops the last running script when called.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (int, bool): (1, True) to set High, (0, False) to set Low.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_script</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Digital_Out.turn"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_Out.turn">[docs]</a>    <span class="k">def</span> <span class="nf">turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;on&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change output state using on/off parlance. logic direction varies based on :attr:`Digital_Out.polarity`</span>
+
+<span class="sd">        Stops the last running script when called.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            direction (str, bool): &#39;on&#39;, 1, or True to turn to :attr:`~.Digital_Out.on` and vice versa for :attr:`~.Digital_Out.off`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_script</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">direction</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;on&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">direction</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Digital_Out.toggle"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_Out.toggle">[docs]</a>    <span class="k">def</span> <span class="nf">toggle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If pin is High, set Low, and vice versa.</span>
+
+<span class="sd">        Stops the last running script when called.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_script</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Digital_Out.pulse"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_Out.pulse">[docs]</a>    <span class="k">def</span> <span class="nf">pulse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a timed :attr:`~Digital_Out.on` pulse.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            duration (int): If None (default), uses :attr:`~.Digital_Out.duration`, otherwise</span>
+<span class="sd">                duration of pulse from 1-100us.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">duration</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">gpio_trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pulse_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">duration</span><span class="p">:</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">gpio_trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">,</span>
+                                  <span class="n">duration</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">on</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;How did we even get here? Pulse value must be an int 1-100&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Digital_Out._series_script"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_Out._series_script">[docs]</a>    <span class="k">def</span> <span class="nf">_series_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">durations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;ms&quot;</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">finish_off</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a pigpio script to set a pin to a series of values for a series of durations.</span>
+
+<span class="sd">        Typically shouldn&#39;t be called by itself, is used by :meth:`~.Digital_Out.series` or  :meth:`~.Digital_Out.store_series`</span>
+
+<span class="sd">        For more information on pigpio scripts, see: `&lt;http://abyz.me.uk/rpi/pigpio/pigs.html#Scripts&gt;`_</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            values (list): A list of tuples of (value, duration) or a list of values in (1,0) to set self.pin_bcm to.</span>
+<span class="sd">            durations (list): If ``values`` is not a list of tuples, a list of durations.</span>
+<span class="sd">                len(durations) must be either == len(values) or else len(durations) == 1,</span>
+<span class="sd">                in which case the duration is repeated.</span>
+<span class="sd">            unit (&quot;ms&quot;, &quot;us&quot;): units of durations in milliseconds or microseconds</span>
+<span class="sd">            repeat (int): If the script should be repeated, how many times? A value of 2 results in</span>
+<span class="sd">                the script being run 2 times total, not 2 *additional* times (or, 3 total times)</span>
+<span class="sd">            finish_off (bool): If true, the script ends by turning the pin to :attr:`~.Digital_Out.off`</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (str): the constructed script string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># if single value as an int/float/etc, wrap in list.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">values</span><span class="p">]</span>
+
+
+        <span class="k">if</span> <span class="n">durations</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">durations</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">durations</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="n">durations</span> <span class="o">=</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">durations</span><span class="p">)]</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">durations</span><span class="p">):</span>
+                <span class="n">iter_series</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">izip</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">durations</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">durations</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">iter_series</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">durations</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;length of  values and durations must be equal, or length of durations must be 1. got len(values)=</span><span class="si">{}</span><span class="s2">, len(durations)=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">durations</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">iter_series</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()</span>
+
+
+        <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;ms&quot;</span><span class="p">:</span>
+            <span class="n">wait_fn</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;mils&quot;</span>
+        <span class="k">elif</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;us&quot;</span><span class="p">:</span>
+            <span class="n">wait_fn</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;mics&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unit for durations must be ms (milliseconds) or us (microseconds)&quot;</span><span class="p">)</span>
+
+        <span class="n">string_pieces</span> <span class="o">=</span> <span class="p">[</span><span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">pigs_function</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">),</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">val</span><span class="p">),</span> <span class="n">wait_fn</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">dur</span><span class="p">)))</span> <span class="k">for</span> <span class="n">val</span><span class="p">,</span> <span class="n">dur</span> <span class="ow">in</span> <span class="n">iter_series</span><span class="p">]</span>
+        <span class="n">script_str</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">string_pieces</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">repeat</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">repeat</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">repeat</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Repeat must be coerceable to an integer, got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">repeat</span><span class="p">))</span>
+
+            <span class="n">script_str</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s2">&quot;LD v0&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">repeat</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="c1"># &quot;LD (load) variable 0 with number of repeats&quot;</span>
+                                    <span class="s2">&quot;tag 999&quot;</span><span class="p">,</span>            <span class="c1"># create a tag that can be returned to</span>
+                                    <span class="n">script_str</span><span class="p">,</span>           <span class="c1"># do the script one time</span>
+                                    <span class="s2">&quot;dcr v0&quot;</span>              <span class="c1"># decrement v0. </span>
+                                    <span class="s2">&quot;jp 999&quot;</span><span class="p">)</span>             <span class="c1"># jump to the tag at the beginning if v0 is still positive</span>
+                                   <span class="p">)</span>
+
+        <span class="c1"># turn off when finished</span>
+        <span class="k">if</span> <span class="n">finish_off</span><span class="p">:</span>
+            <span class="n">script_str</span> <span class="o">+=</span> <span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">pigs_function</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">),</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">)))</span>
+
+
+        <span class="k">return</span> <span class="n">script_str</span></div>
+
+<div class="viewcode-block" id="Digital_Out.store_series"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_Out.store_series">[docs]</a>    <span class="k">def</span> <span class="nf">store_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create, and store a pigpio script for a series of output values to be called by :meth:`~.Digital_Out.series`</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (str): shorthand key used to call this series with :meth:`.series`</span>
+<span class="sd">            kwargs: passed to :meth:`~.Digital_Out._series_script`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># actually might want to overwrite scripts w/ same ids, like a solenoid that changes its &#39;open&#39; duration</span>
+        <span class="c1"># if id in self.scripts.keys():</span>
+        <span class="c1">#     Exception(&quot;Script with id {} already created!&quot;.format(id))</span>
+
+        <span class="n">series_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_series_script</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">script_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">store_script</span><span class="p">(</span><span class="n">series_script</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">script_id</span></div>
+
+
+
+<div class="viewcode-block" id="Digital_Out.series"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_Out.series">[docs]</a>    <span class="k">def</span> <span class="nf">series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute a script that sets the pin to a series of values for a series of durations.</span>
+
+<span class="sd">        See :meth:`~.Digital_Out._series_script` for series parameterization.</span>
+
+<span class="sd">        Ideally one would use :meth:`.store_series` and use the returned id to call this function.</span>
+<span class="sd">        Otherwise, this method calls :meth:`.store_series` and runs it.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (str, int): ID of the script, if not already created, created with :meth:`.store_script`.</span>
+<span class="sd">                If None (default), an ID is generated with :attr:`~.Digital_Out.script_counter` of the form</span>
+<span class="sd">                ``&#39;script_#&#39;``</span>
+<span class="sd">            kwargs: passed to :meth:`~.Digital_Out._series_script`</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">return_id</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="nb">id</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">store_series</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># if we weren&#39;t called with an ID, have to have a list of values/etc to create a script</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="s2">&quot;script_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script_counter</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">store_series</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="c1"># since we&#39;ve generated a script ID, we should return it</span>
+            <span class="n">return_id</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">run_script</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="p">[</span><span class="nb">id</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_script</span> <span class="o">=</span> <span class="nb">id</span>
+
+        <span class="k">if</span> <span class="n">return_id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">id</span></div>
+
+<div class="viewcode-block" id="Digital_Out.stop_script"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_Out.stop_script">[docs]</a>    <span class="k">def</span> <span class="nf">stop_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stops a running pigpio script</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (str, none): If None, stops the last run script. if str, stops script with that id.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">id</span><span class="p">:</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_script</span>
+
+        <span class="k">if</span> <span class="nb">id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># if there was no passed id and _last_script is None, return peacefully</span>
+            <span class="k">return</span>
+
+        <span class="c1"># if we were passed a keyed, named script id, convert it to the pigio integer script id</span>
+        <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">script_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+            <span class="n">status</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">script_status</span><span class="p">(</span><span class="n">script_id</span><span class="p">)</span>
+
+            <span class="c1"># if the script is still running, stop it and set the pin to off.</span>
+            <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PI_SCRIPT_RUNNING</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">stop_script</span><span class="p">(</span><span class="n">script_id</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">)</span>
+
+            <span class="c1"># set last_script to None so we won&#39;t try to double-stop this script</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_script</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No script with id </span><span class="si">{}</span><span class="s1"> found to stop&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="Digital_Out.release"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_Out.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stops last running script, sets to :attr:`~.Digital_Out.off`, and calls :meth:`.GPIO.release`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_script</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Digital_Out</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Digital_In"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_In">[docs]</a><span class="k">class</span> <span class="nc">Digital_In</span><span class="p">(</span><span class="n">GPIO</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Record digital input and call one or more callbacks on logic transition.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pin (int): Board-numbered GPIO pin.</span>
+<span class="sd">        event (:class:`threading.Event`): For callbacks assigned with :meth:`.assign_cb` with ``evented = True``,</span>
+<span class="sd">            set this event whenever the callback is triggered. Can be used to handle</span>
+<span class="sd">            stage transition logic here instead of the :class:`.Task` object, as is typical.</span>
+<span class="sd">        record (bool): Whether all logic transitions should be recorded as a list of (&#39;EVENT&#39;, &#39;Timestamp&#39;) tuples.</span>
+<span class="sd">        **kwargs: passed to :class:`GPIO`</span>
+
+<span class="sd">    Sets the internal pullup/down resistor to :attr:`.Digital_In.off` and</span>
+<span class="sd">    :attr:`.Digital_In.trigger` to :attr:`.Digital_In.on` upon instantiation.</span>
+
+
+<span class="sd">    Note:</span>
+<span class="sd">        pull and trigger are set by polarity on initialization in digital inputs, unlike other GPIO classes.</span>
+<span class="sd">        They are not mutually synchronized however, ie. after initialization if any one of these attributes are changed, the other two will remain the same.</span>
+
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        pig (:meth:`pigpio.pi`): The pigpio connection.</span>
+<span class="sd">        pin (int): Broadcom-numbered pin, converted from the argument given on instantiation</span>
+<span class="sd">        callbacks (list): A list of :meth:`pigpio.callback`s kept to clear them on exit</span>
+<span class="sd">        polarity (int): Logic direction, if 1: off=0, on=1, pull=low, trigger=high and vice versa for 0</span>
+<span class="sd">        events (list): if :attr:`.record` is True, a list of (&#39;EVENT&#39;, &#39;TIMESTAMP&#39;) tuples</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">is_trigger</span><span class="o">=</span><span class="kc">True</span>
+    <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;DIGI_IN&#39;</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="p">,</span> <span class="n">event</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">record</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Digital_In</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># pull the resistor in the off direction and set the trigger to be the on direction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pull</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">off</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trigger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">on</span>
+
+        <span class="c1"># We can be passed a threading.Event object if we want to handle stage logic here</span>
+        <span class="c1"># rather than in the parent as is typical.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event</span> <span class="o">=</span> <span class="n">event</span>
+
+        <span class="c1"># List to store callback handles assigned with assign_cb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># List to store logic transition events</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">record</span> <span class="o">=</span> <span class="n">record</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">record</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assign_cb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">record_event</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">evented</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">manual_trigger</span><span class="o">=</span><span class="s1">&#39;B&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Setup pin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">,</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">INPUT</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Digital_In.assign_cb"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_In.assign_cb">[docs]</a>    <span class="k">def</span> <span class="nf">assign_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_fn</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">evented</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">manual_trigger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets ``callback_fn`` to be called when :attr:`.Digital_In.trigger` is detected.</span>
+
+<span class="sd">        ``callback_fn`` must accept three parameters:</span>
+
+<span class="sd">        * GPIO (int, 0-31): the BCM number of the pin that was triggered</span>
+<span class="sd">        * level (0-2):</span>
+
+<span class="sd">            * 0: change to low (falling)</span>
+<span class="sd">            * 1: change to high (rising)</span>
+<span class="sd">            * 2: no change (watchdog timeout)</span>
+
+<span class="sd">        * timestamp (str): If using the Autopilot version of pigpio, an isoformatted timestamp</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            callback_fn (callable): The function to be called when triggered</span>
+<span class="sd">            add (bool): Are we adding another callback?</span>
+<span class="sd">                If False, the previous callbacks are cleared.</span>
+<span class="sd">            evented (bool): Should triggering this event also set the internal :attr:`~.Digital_In.event`?</span>
+<span class="sd">                Note that :attr:`.Digital_In.event` must have been passed.</span>
+<span class="sd">            manual_trigger (&#39;U&#39;, &#39;D&#39;, &#39;B&#39;): Override :attr:`.Digital_In.trigger` if needed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If we aren&#39;t adding, we clear any existing callbacks</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">add</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear_cb</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">record</span><span class="p">:</span>
+                <span class="c1"># if we&#39;re clearing all callbacks (maybe by accident)</span>
+                <span class="c1"># but we&#39;re configured to record events, re-add the record cb.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assign_cb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">record_event</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">evented</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">manual_trigger</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">)</span>
+
+        <span class="c1"># We can set the direction of the trigger manually,</span>
+        <span class="c1"># for example if we want to set &#39;BOTH&#39; only sometimes</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">manual_trigger</span><span class="p">:</span>
+            <span class="n">trigger_ud</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger_edge</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">trigger_ud</span> <span class="o">=</span> <span class="n">TRIGGER_MAP</span><span class="p">[</span><span class="n">manual_trigger</span><span class="p">]</span>
+
+        <span class="c1"># We can handle eventing (blocking) here if we want (usually this is handled in the parent)</span>
+        <span class="c1"># This won&#39;t work if we weren&#39;t init&#39;d with an event.</span>
+        <span class="k">if</span> <span class="n">evented</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">event</span><span class="p">:</span>
+            <span class="n">cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">,</span> <span class="n">trigger_ud</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">set</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">evented</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">event</span><span class="p">:</span>
+            <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;We have no internal event to set!&#39;</span><span class="p">)</span>
+
+        <span class="n">cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">,</span> <span class="n">trigger_ud</span><span class="p">,</span> <span class="n">callback_fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Digital_In.clear_cb"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_In.clear_cb">[docs]</a>    <span class="k">def</span> <span class="nf">clear_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tries to call `.cancel()` on each of the callbacks in :attr:`~Digital_In.callbacks`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">cb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">cb</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;could not cancel callback: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cb</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="Digital_In.record_event"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_In.record_event">[docs]</a>    <span class="k">def</span> <span class="nf">record_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        On either direction of logic transition, record the time</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pin (int): BCM numbered pin passed from pigpio</span>
+<span class="sd">            level (bool): High/Low status of current pin</span>
+<span class="sd">            timestamp (str): isoformatted timestamp</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># use self.pin rather than incoming pin b/c method is bound</span>
+        <span class="c1"># (ie. only will be called by pin assigned to)</span>
+        <span class="c1"># and self.pin is board rather than bcm numbered</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Digital_In.release"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_In.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clears any callbacks and calls :meth:`GPIO.release`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_cb</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Digital_In</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div></div>
+
+<div class="viewcode-block" id="PWM"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.PWM">[docs]</a><span class="k">class</span> <span class="nc">PWM</span><span class="p">(</span><span class="n">Digital_Out</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    PWM output from GPIO.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;PWM&quot;</span>
+    <span class="n">pigs_function</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;pwm&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            pin (int): Board numbered GPIO pin</span>
+<span class="sd">            range (int): Maximum value of PWM duty-cycle. Default 255.</span>
+<span class="sd">            **kwargs: passed to :class:`Digital_Out`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">PWM</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_range</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="nb">range</span>
+
+        <span class="c1">#self.pig.set_mode(self.pin_bcm, pigpio.OUTPUT)</span>
+        <span class="c1"># set to off in case of common anode/inverted polarity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PWM.set"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.PWM.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets PWM duty cycle normalized to :attr:`.polarity` and transformed by :meth:`._clean_value`</span>
+
+<span class="sd">        Stops the last running script</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (int, float):</span>
+<span class="sd">                - if int &gt; 1, sets value (or :attr:`PWM.range`-value if :attr:`PWM.polarity` is inverted).</span>
+<span class="sd">                - if 0 &lt; float &lt; 1, transforms to a proportion of :attr:`.range` (inverted  if needed as well).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_script</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_PWM_dutycycle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_clean_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">range</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;clipping </span><span class="si">{}</span><span class="s1"> to range </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">range</span><span class="p">))</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">range</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">value</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">range</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;PWM value must be an integer between 0 and range: </span><span class="si">{}</span><span class="s1">, or a float between 0 and 1. got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">range</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">polarity</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">range</span> <span class="o">-</span> <span class="n">value</span>
+
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Maximum value of PWM dutycycle.</span>
+
+<span class="sd">        Doesn&#39;t set duration of PWM, but set values will be divided by this range.</span>
+<span class="sd">        eg. if ``range == 200``, calling :meth:`PWM.set(100)` would result in a 50% duty cycle</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            (int): 25-40000</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_range</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">get_pwm_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_range</span>
+
+    <span class="nd">@range</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;PWM Range must be coerceable to an integer, got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="o">&lt;</span> <span class="mi">25</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mi">40000</span><span class="p">):</span>
+            <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;PWM Range must be between 25 and 40000, got </span><span class="si">{}</span><span class="s1">, clipping to range&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">40000</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_PWM_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_range</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="c1"># set polarity again so off/on update</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">polarity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polarity</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">polarity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Logic direction.</span>
+
+<span class="sd">        - if 1: on=High=:attr:`~PWM.range`, off=Low=0;</span>
+<span class="sd">        - if 0: off=Low=0, on=High=:attr:`~PWM.range`.</span>
+
+<span class="sd">        When set, updates :attr:`~PWM.on` and :attr:`~PWM.off`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polarity</span>
+
+    <span class="nd">@polarity</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">polarity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polarity</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">polarity</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">on</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">range</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">off</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="n">polarity</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">on</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">off</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">range</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;polarity must be 0 or 1&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_polarity</span> <span class="o">=</span> <span class="n">polarity</span>
+
+<div class="viewcode-block" id="PWM.release"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.PWM.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Turn off and call :meth:`Digital_Out.release`</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PWM</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="LED_RGB"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.LED_RGB">[docs]</a><span class="k">class</span> <span class="nc">LED_RGB</span><span class="p">(</span><span class="n">Digital_Out</span><span class="p">):</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;LEDS&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pins</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">g</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">polarity</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">blink</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An RGB LED, wrapper around three :class:`PWM` objects.</span>
+
+
+<span class="sd">        Args:</span>
+<span class="sd">            pins (list): A list of (board) pin numbers.</span>
+<span class="sd">                Either `pins` OR all `r`, `g`, `b` must be passed.</span>
+<span class="sd">            r (int): Board number of Red pin - must be passed with `g` and `b`</span>
+<span class="sd">            g (int): Board number of Green pin - must be passed with `r` and `b`</span>
+<span class="sd">            b (int): Board number of Blue pin - must be passed with `r` and `g`:</span>
+<span class="sd">            polarity (0, 1):</span>
+<span class="sd">                0: common anode (low turns LED on)</span>
+<span class="sd">                1: common cathode (low turns LED off)</span>
+<span class="sd">            blink (bool): Flash RGB at the end of init to show we&#39;re alive and bc it&#39;s real cute.</span>
+<span class="sd">            **kwargs: passed to :class:`Digital_Out`</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            channels (dict): The three PWM objects, {&#39;r&#39;:PWM, ... etc}</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LED_RGB</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># self._pin = {}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">pins</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">pins</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">color</span><span class="p">,</span> <span class="n">pin</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">((</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">),</span> <span class="n">pins</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">color</span><span class="p">]</span> <span class="o">=</span> <span class="n">PWM</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="n">polarity</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">r</span> <span class="ow">and</span> <span class="n">g</span> <span class="ow">and</span> <span class="n">b</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;r&#39;</span><span class="p">:</span><span class="n">PWM</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="n">polarity</span><span class="p">),</span>
+                             <span class="s1">&#39;g&#39;</span><span class="p">:</span><span class="n">PWM</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="n">polarity</span><span class="p">),</span>
+                             <span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="n">PWM</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="n">polarity</span><span class="p">)}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Must either set with pins= list/tuple of r,g,b pins, or pass all three as separate params&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">store_series</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;blink&#39;</span><span class="p">,</span>
+                          <span class="n">colors</span><span class="o">=</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)),</span>
+                          <span class="n">durations</span><span class="o">=</span><span class="mi">250</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">blink</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;blink&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: ranges for each of the :attr:`LED_RGB.channels`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">range</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">range</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">range</span><span class="p">}</span>
+
+    <span class="nd">@range</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">range</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">channel</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="nb">range</span>
+
+<div class="viewcode-block" id="LED_RGB.set"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.LED_RGB.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the color of the LED.</span>
+
+<span class="sd">        Can either pass</span>
+
+<span class="sd">        - a full (R, G, B) tuple to ``value``,</span>
+<span class="sd">        - a single ``value`` that is applied to each channel,</span>
+<span class="sd">        - if ``value`` is not passed, individual ``r``, ``g``, or ``b`` values can be passed (any combination can be set in a single call)</span>
+
+<span class="sd">        Stops the last run script</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (int, float, tuple, list):  If list or tuple, an (R, G, B) color. If float or int, applied to each color channe.</span>
+<span class="sd">                Can be set with floats 0-1, or ints &gt;= 1  (See :attr:`PWM.range`).</span>
+<span class="sd">                If None, use ``r``, ``g``, and ``b``.</span>
+<span class="sd">            r (float, int): value to set red channel</span>
+<span class="sd">            g (float, int): value to set green channel</span>
+<span class="sd">            b (float, int): value to set blue channel</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_script</span><span class="p">()</span>
+
+        <span class="c1"># if we were given a value, ignore other arguments</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="n">channel</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">channel_key</span><span class="p">,</span> <span class="n">color_val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">((</span><span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="s1">&#39;g&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">),</span> <span class="n">value</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channel_key</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Value must either be a single value or a tuple of (r,g,b)&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">r</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">g</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">b</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">b</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LED_RGB.toggle"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.LED_RGB.toggle">[docs]</a>    <span class="k">def</span> <span class="nf">toggle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;toggle not well defined for PWM&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LED_RGB.pulse"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.LED_RGB.pulse">[docs]</a>    <span class="k">def</span> <span class="nf">pulse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Use flash for LEDs instead&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LED_RGB._series_script"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.LED_RGB._series_script">[docs]</a>    <span class="k">def</span> <span class="nf">_series_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">durations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;ms&quot;</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">finish_off</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a script to flash a series of colors.</span>
+
+<span class="sd">        Like :meth:`Digital_Out._series_script`, but sets all pins at once.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            colors (list): a list of (R, G, B) colors, or a list of ((R,G,B),duration) tuples.</span>
+<span class="sd">            durations (int, list): Duration of each color. if a single value, used for all ``colors``.</span>
+<span class="sd">                if a list, ``len(durations) == len(colors)``. If None, colors must be ``((R,G,B),duration)`` tuples.</span>
+<span class="sd">            unit (&#39;ms&#39;, &#39;us&#39;): unit of durations, milliseconds or microseconds</span>
+<span class="sd">            repeat (int): Number of repetitions. If None, script runs once.</span>
+<span class="sd">            finish_off (bool): Whether the channels should be set to ``off`` when the script completes</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: constructed pigpio script string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">durations</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">durations</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">durations</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+                <span class="n">iter_series</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">colors</span><span class="p">,</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">durations</span><span class="p">)])</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">durations</span><span class="p">):</span>
+                <span class="n">iter_series</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">colors</span><span class="p">,</span> <span class="n">durations</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">durations</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">iter_series</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">colors</span><span class="p">,</span> <span class="n">durations</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;length of  colors and durations must be equal, or length of durations must be 1. got len(colors)=</span><span class="si">{}</span><span class="s2">, len(durations)=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">durations</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">iter_series</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;ms&quot;</span><span class="p">:</span>
+            <span class="n">wait_fn</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;mils&quot;</span>
+        <span class="k">elif</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;us&quot;</span><span class="p">:</span>
+            <span class="n">wait_fn</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;mics&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unit for durations must be ms (milliseconds) or us (microseconds)&quot;</span><span class="p">)</span>
+
+
+        <span class="n">string_pieces</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">color</span><span class="p">,</span> <span class="n">duration</span> <span class="ow">in</span> <span class="n">iter_series</span><span class="p">:</span>
+            <span class="c1"># iter over keys rather than values of channels dict b/c dicts are unordered and colors are an ordered tuple</span>
+            <span class="k">for</span> <span class="n">channel_key</span><span class="p">,</span> <span class="n">color_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">((</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">),</span> <span class="n">color</span><span class="p">):</span>
+                <span class="n">string_pieces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channel_key</span><span class="p">]</span><span class="o">.</span><span class="n">pigs_function</span><span class="p">,</span>
+                                               <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channel_key</span><span class="p">]</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">),</span>
+                                               <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channel_key</span><span class="p">]</span><span class="o">.</span><span class="n">_clean_value</span><span class="p">(</span><span class="n">color_value</span><span class="p">)))))</span>
+            <span class="n">string_pieces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">wait_fn</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">duration</span><span class="p">))))</span>
+
+        <span class="n">script_str</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">string_pieces</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">repeat</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">repeat</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">repeat</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Repeat must be coerceable to an integer, got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">repeat</span><span class="p">))</span>
+
+            <span class="n">script_str</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s2">&quot;LD v0&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">repeat</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="c1"># &quot;LD (load) variable 0 with number of repeats&quot;</span>
+                                    <span class="s2">&quot;tag 999&quot;</span><span class="p">,</span>            <span class="c1"># create a tag that can be returned to</span>
+                                    <span class="n">script_str</span><span class="p">,</span>           <span class="c1"># do the script one time</span>
+                                    <span class="s2">&quot;dcr v0&quot;</span>              <span class="c1"># decrement v0. </span>
+                                    <span class="s2">&quot;jp 999&quot;</span><span class="p">)</span>             <span class="c1"># jump to the tag at the beginning if v0 is still positive</span>
+                                   <span class="p">)</span>
+
+        <span class="c1"># turn off when finished</span>
+        <span class="k">if</span> <span class="n">finish_off</span><span class="p">:</span>
+            <span class="c1">#script_str += b&quot; &quot;</span>
+            <span class="n">finish_pieces</span> <span class="o">=</span> <span class="p">[</span><span class="n">script_str</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">finish_pieces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">channel</span><span class="o">.</span><span class="n">pigs_function</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">),</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">off</span><span class="p">))))</span>
+            <span class="n">script_str</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">finish_pieces</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">script_str</span></div>
+
+<div class="viewcode-block" id="LED_RGB.flash"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.LED_RGB.flash">[docs]</a>    <span class="k">def</span> <span class="nf">flash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Specify a color series by total duration and flash frequency.</span>
+
+<span class="sd">        Largely a convenience function for on/off flashes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            duration (int, float): Duration of flash in ms.</span>
+<span class="sd">            frequency (int, float): Frequency of flashes in Hz</span>
+<span class="sd">            colors (list): A list of RGB values 0-255 like::</span>
+
+<span class="sd">                [[255,255,255],[0,0,0]]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Duration is total in ms, frequency in Hz</span>
+        <span class="c1"># Get number of flashes in duration rounded down</span>
+
+        <span class="n">n_rep</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1000.</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">frequency</span><span class="p">))</span>
+        <span class="n">flashes</span> <span class="o">=</span> <span class="n">colors</span> <span class="o">*</span> <span class="n">n_rep</span>
+
+        <span class="c1"># Invert frequency to duration for single flash</span>
+        <span class="c1"># divide by 2 b/c each &#39;color&#39; is half the duration</span>
+        <span class="n">single_dur</span> <span class="o">=</span> <span class="p">((</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">frequency</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="n">flashes</span><span class="p">,</span> <span class="n">durations</span><span class="o">=</span><span class="n">single_dur</span><span class="p">)</span></div>
+    <span class="c1">#</span>
+    <span class="c1"># def __getattr__(self, name):</span>
+    <span class="c1">#     &quot;&quot;&quot;if a method is called that we don&#39;t explicitly redefine, try to apply it to each of our channels&quot;&quot;&quot;</span>
+    <span class="c1">#</span>
+    <span class="c1">#     attrs = {color: object.__getattribute__(chan, name) for color, chan in self.channels.items()}</span>
+    <span class="c1">#     if hasattr(list(attrs.values())[0], &#39;__call__&#39;):</span>
+    <span class="c1">#         def newfunc(*args, **kwargs):</span>
+    <span class="c1">#             result = {}</span>
+    <span class="c1">#             # if called with a dictionary of {&#39;r&#39;:params, &#39;g&#39;:params, ...}, call that explicitly</span>
+    <span class="c1">#             if isinstance(args[0], dict):</span>
+    <span class="c1">#                 if any([k in args[0].keys() for k in self.channels.keys()]):</span>
+    <span class="c1">#                     for color, method in attrs.items():</span>
+    <span class="c1">#                         if color in args[0].keys():</span>
+    <span class="c1">#                             result[color] = method(**args[0][color])</span>
+    <span class="c1">#                     return result</span>
+    <span class="c1">#</span>
+    <span class="c1">#             # otherwise, call all channels with the same argument</span>
+    <span class="c1">#             for color, method in attrs.items():</span>
+    <span class="c1">#                 result[color] = method(*args, **kwargs)</span>
+    <span class="c1">#             return result</span>
+    <span class="c1">#</span>
+    <span class="c1">#         return newfunc</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         return attrs</span>
+
+<div class="viewcode-block" id="LED_RGB.release"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.LED_RGB.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Release each channel and stop pig without calling superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">chan</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dict of the board pin number of each channel, ``{&#39;r&#39; : self.channels[&#39;r&#39;].pin, ... }``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;r&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span>
+                <span class="s1">&#39;g&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span>
+                <span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pin</span><span class="p">}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pin_bcm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dict of the broadcom pin number of each channel, ``{&#39;r&#39; : self.channels[&#39;r&#39;].pin_bcm, ... }``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;r&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">,</span>
+                <span class="s1">&#39;g&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">,</span>
+                <span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="Solenoid"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Solenoid">[docs]</a><span class="k">class</span> <span class="nc">Solenoid</span><span class="p">(</span><span class="n">Digital_Out</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solenoid valve for water delivery.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pin (int): Board pin number, converted to BCM on init.</span>
+<span class="sd">        polarity (0, 1): Whether HIGH opens the port (1) or closes it (0)</span>
+<span class="sd">        duration (int, float): duration of open, ms.</span>
+<span class="sd">        vol (int, float): desired volume of reward in uL, must have computed calibration results, see :meth:`~.Terminal.calibrate_ports`</span>
+<span class="sd">        **kwargs: passed to :class:`Digital_Out`</span>
+
+<span class="sd">    Only NC solenoids should be used, as there is no way to guarantee</span>
+<span class="sd">    that a pin will maintain its voltage when it is released, and you will</span>
+<span class="sd">    spill water all over the place.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        calibration (dict): Dict with with line coefficients fitting volume to open duration, see :meth:`~.Terminal.calibrate_ports`.</span>
+<span class="sd">            Retrieved from prefs, specifically ``prefs.PORT_CALIBRATION[name]``</span>
+<span class="sd">        mode (&#39;DURATION&#39;, &#39;VOLUME&#39;): Whether open duration is given in ms, or computed from calibration</span>
+<span class="sd">        duration (int, float): Duration of valve opening, in ms. When set, creates a script &#39;open&#39; that is used to open the valve for a precise amount of time</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;SOLENOID&quot;</span>
+    <span class="n">DURATION_MIN</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1">#: Minimum allowed duration in ms</span>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">vol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Solenoid</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="n">polarity</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibration</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_duration</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Pigpio has us create waves to deliver timed output</span>
+        <span class="c1"># Since we typically only use one duration,</span>
+        <span class="c1"># we make the wave once and only make it again when asked to</span>
+        <span class="c1"># We start with passed or default duration (ms)</span>
+        <span class="k">if</span> <span class="n">vol</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dur_from_vol</span><span class="p">(</span><span class="n">vol</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;VOLUME&#39;</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;DURATION&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_duration</span>
+
+    <span class="nd">@duration</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">duration</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">DURATION_MIN</span><span class="p">:</span>
+            <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;Duration cannot be less than </span><span class="si">{}</span><span class="s1">, so value was clipped. given </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DURATION_MIN</span><span class="p">,</span> <span class="n">duration</span><span class="p">))</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DURATION_MIN</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_duration</span> <span class="o">=</span> <span class="n">duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">store_series</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;open&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">on</span><span class="p">,</span> <span class="n">durations</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_duration</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;ms&quot;</span><span class="p">,</span> <span class="n">finish_off</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+
+
+<div class="viewcode-block" id="Solenoid.dur_from_vol"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Solenoid.dur_from_vol">[docs]</a>    <span class="k">def</span> <span class="nf">dur_from_vol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vol</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a desired volume, compute an open duration.</span>
+
+<span class="sd">        Must have calibration available in prefs, see :meth:`~.Terminal.calibrate_ports`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            vol (float, int): desired reward volume in uL</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: computed opening duration for given volume</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># find our pin name</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+
+        <span class="c1"># prefs should have loaded any calibration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibration</span> <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">PORT_CALIBRATION</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+
+        <span class="c1"># compute duration from slope and intercept</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calibration</span><span class="p">[</span><span class="s1">&#39;intercept&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calibration</span><span class="p">[</span><span class="s1">&#39;slope&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">vol</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">duration</span></div>
+
+
+<div class="viewcode-block" id="Solenoid.open"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Solenoid.open">[docs]</a>    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Open the valve.</span>
+
+<span class="sd">        Uses the &#39;open&#39; script created when assigning duration.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            duration (float): If provided, open for this duration instead of</span>
+<span class="sd">                the duration stored on instantiation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">duration</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;open&quot;</span><span class="p">)</span></div></div>
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Jonny Saunders
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

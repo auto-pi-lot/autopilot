@@ -1,5 +1,13 @@
 .. _guide_hardware:
 
+.. note::
+
+    This guide was written before the hardware classes were refactored. The intuition of the guide
+    is still true, but most hardware objects are now built by overwriting metaclass methods.
+    See the API documentation for :mod:`.hardware` for examples :)
+
+    This documentation will be updated in `v0.3.1`, sorry for the delay!
+
 Writing a Hardware Class
 ************************
 
@@ -36,7 +44,12 @@ which allows communication with the GPIO.
 Input - Beambreak
 -----------------
 
-The :class:`~autopilot.core.hardware.Beambreak` class is a digital input class that registers (by default)
+.. note::
+
+    the ``Beambreak`` class is now :class:`~.hardware.gpio.Digital_In`, see its API documentation for its current
+    implementation :)
+
+The :class:`~.hardware.gpio.Digital_In` class is a digital input class that registers (by default)
 a high-to-low logic transition and calls a callback function. When it is initialized, it
 connects to a GPIO pin, configures it for input, and sets the pull-up (or down) resistor.
 
@@ -76,7 +89,7 @@ Since ``trigger == True``, the instantiating task class will try to give it a me
 to handle the trigger. We redefine ``assign_cb()`` to make use of pigpio's callback functionality.
 Since pigpio can handle multiple callback functions, one can optionally specify ``add=True``
 to prevent any previous callbacks from being cleared. This has been omitted in this example for clarity,
-but can be inspected in the API documentation for the :class:`~autopilot.core.hardware.Beambreak` class.
+but can be inspected in the API documentation for the :class:`~.hardware.gpio.Digital_In` class.
 
 .. code-block:: python
 
@@ -99,11 +112,17 @@ without explicitly calling ``release()``
 Output - LED_RGB
 ----------------
 
-This :class:`~autopilot.core.hardware.LED_RGB` class is a bit different. It's an output device, yes, but it also manages
+.. note::
+
+    The :class:`~autopilot.hardware.gpio.LED_RGB` also has been updated to use pigpio's scripts rather than
+    python threads for light series, but this documentation remains as an example of how similar logic could be written for other
+    non-gpio hardware objects.
+
+This :class:`~autopilot.hardware.gpio.LED_RGB` class is a bit different. It's an output device, yes, but it also manages
 multiple pins, uses pulse-width modulation rather than strict binary logic, and
 has a few extra tricks up its sleeve.
 
-Its initialization is similar to :class:`~autopilot.core.hardware.Beambreak` except we add
+Its initialization is similar to :class:`~.hardware.gpio.Digital_In` except we add
 a few :class:`threading.Event` s to handle threaded lighting routines. LEDs can either be
 `common anode or common cathode <https://forum.digikey.com/t/common-anode-vs-common-cathode/808>`_
 which affects the polarity of the pulse-width modulated signal, but handling different LED polarity

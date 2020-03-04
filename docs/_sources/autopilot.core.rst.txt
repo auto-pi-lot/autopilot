@@ -11,7 +11,6 @@ core
    :maxdepth: 10
 
    autopilot.core.gui
-   autopilot.core.hardware
    autopilot.core.networking
    autopilot.core.pilot
    autopilot.core.plots

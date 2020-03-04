@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Pilot Setup &mdash; Autopilot 0.2 documentation</title>
+  <title>Pilot Setup &mdash; Autopilot 0.3.0 documentation</title>
   
 
   
@@ -36,6 +37,9 @@
   <link rel="stylesheet" href="_static/css/autopilot_theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/restyle.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Terminal Setup" href="guide.installation.terminal.html" />
@@ -45,7 +49,8 @@
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Dosis&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="_static/css/autopilot_sass.css" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js" integrity="sha256-BuxrUdr/4YoztQLxT6xmdO6hSQw2d6BtBUY1pteGds4=" crossorigin="anonymous"></script>
 
 </head>
 
@@ -73,7 +78,7 @@
             
             
               <div class="version">
-                0.2
+                0.3
               </div>
             
           
@@ -100,11 +105,9 @@
               <p class="caption"><span class="caption-text">User Guide:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="guide.overview.html">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#concepts-and-terms-in-autopilot">Concepts and Terms in Autopilot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure-overview">Program Structure Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#program-structure">Program Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide.overview.html#tasks">Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#hardware">Hardware</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#agents">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.overview.html#module-tour">Module Tour</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="guide.installation.html">Installation</a><ul class="current">
@@ -123,12 +126,6 @@
 <li class="toctree-l2"><a class="reference internal" href="guide.installation.terminal.html">Terminal Setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#scripted-terminal-setup">Scripted Terminal Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="guide.installation.terminal.html#manual-terminal-presetup">Manual Terminal Presetup</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-qt4-linux">Compiling &amp; Installing Qt4 - Linux</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#installing-qt4-macos">Installing Qt4 - MacOS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="guide.installation.terminal.html#compiling-installing-pyside-linux-macos">Compiling &amp; Installing PySide - Linux + macOS</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -190,7 +187,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.core.html">Core Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.gui.html">gui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autopilot.core.hardware.html">hardware</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.networking.html">networking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.pilot.html">pilot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.plots.html">plots</a></li>
@@ -200,7 +196,15 @@
 <li class="toctree-l2"><a class="reference internal" href="autopilot.core.utils.html">utils</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.hardware.html">Hardware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.cameras.html">cameras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.gpio.html">gpio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.i2c.html">i2c</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.hardware.usb.html">usb</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.tasks.html">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.children.html">children</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.free_water.html">free_water</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.graduation.html">graduation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.tasks.nafc.html">nafc</a></li>
@@ -219,6 +223,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.viz.html">Visualization Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="autopilot.viz.trial_viewer.html">trial_viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autopilot.viz.psychometric.html">psychometric</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.setup.html">Setup</a><ul>
@@ -228,16 +233,22 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autopilot.prefs.html">Prefs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autopilot.external.html">External</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Meta:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="todo.html#completed-goals">Completed Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#improvements">Improvements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#bugs">Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#completed">Completed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#lowest-priority">Lowest Priority</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog/index.html">Changelog</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="changelog/index.html#version-0-3">Version 0.3</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (Februrary DATE, 2020)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog/v0.3.0.html">v0.3.0 (March 3rd, 2020)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#major-updates">Major Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#minor-updates">Minor Updates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog/v0.3.0.html#new-features">New Features</a></li>
@@ -345,13 +356,14 @@
 </ul>
 <p><strong>Audio Configuration</strong></p>
 <p>If the <code class="docutils literal notranslate"><span class="pre">CONFIG</span></code> is set to <code class="docutils literal notranslate"><span class="pre">VISUAL</span></code>, these options are ignored. We will make the setup menu responsive in future versions (see <a class="reference internal" href="todo.html#todo"><span class="std std-ref">To-Do</span></a>).</p>
-<ul class="simple">
+<ul>
 <li><p><strong>Audio Server:</strong> While both options use <code class="docutils literal notranslate"><span class="pre">jack</span></code> as a backend, choose between using our internal <a class="reference internal" href="autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient" title="autopilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">JackClient</span></code></a> that dumps samples directly into Jack streams (strongly recommended) or <a class="reference external" href="http://ajaxsoundstudio.com/software/pyo/">pyo</a> which is a more flexible synthesis library but has issues with latency and reliability and will likely be deprecated in future versions</p></li>
 <li><p><strong>N Audio Channels:</strong> How many audio channels should be used for output.</p></li>
 <li><p><strong>Output Ports:</strong> The indices of output that should be used (depending on whether you have connected a speaker to the left or right audio out, for example)</p></li>
 <li><p><strong>Sampling Rate:</strong> The sampling rate that will be used by the jack server.</p></li>
-<li><dl class="simple">
-<dt><strong>Jackd String:</strong> The string used to launch jack, see <a class="reference external" href="https://linux.die.net/man/1/jackd">the jackd manpage</a>. The default configuration is:</dt><dd><ul>
+<li><p><strong>Jackd String:</strong> The string used to launch jack, see <a class="reference external" href="https://linux.die.net/man/1/jackd">the jackd manpage</a>. The default configuration is:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p><strong>-P75</strong> - Sets jackd to operate with a high realtime priority</p></li>
 <li><p><strong>-p16</strong> - Maximum number of ports (16) that the jack server can manage</p></li>
 <li><p><strong>-t2000</strong> - Set a 2000ms timeout before our client is kicked from jackd’s client pool.</p></li>
@@ -362,20 +374,45 @@
 <li><p><strong>-n3</strong> - Latency is <code class="docutils literal notranslate"><span class="pre">--nperiods</span></code> * <code class="docutils literal notranslate"><span class="pre">--period</span></code> (number of samples in a period) / <code class="docutils literal notranslate"><span class="pre">--rate</span></code>. This sets the number of periods to 3 to make buffer underruns less likely while slightly increasing latency</p></li>
 <li><p><strong>-s</strong> - “Soft mode,” Ignore buffer under/overruns from ALSA.</p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
 </ul>
 <p>The next menu screen sets the hardware options:</p>
 <img alt="_images/npyscreen_hardware.png" src="_images/npyscreen_hardware.png" />
-<p>These settings create a <code class="docutils literal notranslate"><span class="pre">PINS</span></code> dictionary that maps hardware objects based on their type and name to a GPIO pin number. These names are the same as those used by tasks to parameterize hardware requirements.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">PINS</span></code> that are set by default are</p>
+<p>These settings create a <code class="docutils literal notranslate"><span class="pre">HARDWARE</span></code> dictionary that maps hardware objects based on their type and name to a GPIO pin number. These names are the same as those used by tasks to parameterize hardware requirements.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">HARDWARE</span></code> that are set by default are</p>
 <ul class="simple">
 <li><p><strong>POKES</strong> - IR <code class="xref py py-class docutils literal notranslate"><span class="pre">Beambreak</span></code> s, digital logic input</p></li>
 <li><p><strong>LEDS</strong> - <code class="xref py py-class docutils literal notranslate"><span class="pre">LED_RGB</span></code> s, which use 3 pins modulated by PWM to output RGB colors.</p></li>
 <li><p><strong>PORTS</strong> - <code class="xref py py-class docutils literal notranslate"><span class="pre">Solenoid</span></code> s, which dispense water rewards, digital logic output.</p></li>
 <li><p><strong>FLAGS</strong> - <code class="xref py py-class docutils literal notranslate"><span class="pre">Flag</span></code> s, which are a trivial subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">Beambreak</span></code> with their default logic directions reversed.</p></li>
 </ul>
+<p>Additional hardware can be configured by editing <code class="docutils literal notranslate"><span class="pre">prefs.json</span></code>, so for example if your task calls for:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">HARDWARE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;POKES&#39;</span><span class="p">:{</span>
+        <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">Digital_In</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>then one could add an entry to the <code class="docutils literal notranslate"><span class="pre">HARDWARE</span></code> dictionary in <code class="docutils literal notranslate"><span class="pre">prefs.json</span></code> like:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;HARDWARE&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;POKES&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;L&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;pin&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;polarity&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;pull&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;trigger&quot;</span><span class="p">:</span> <span class="s1">&#39;U&#39;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>(See <a class="reference internal" href="autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_In" title="autopilot.hardware.gpio.Digital_In"><code class="xref py py-class docutils literal notranslate"><span class="pre">Digital_In</span></code></a> and the metacalss <a class="reference internal" href="autopilot.hardware.gpio.html#autopilot.hardware.gpio.GPIO" title="autopilot.hardware.gpio.GPIO"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIO</span></code></a> for parameter documentation)</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">npyscreen</span></code> setup wizard will be extended so that hardware can be added w/ parameters graphically, see <a class="reference internal" href="todo.html#todo"><span class="std std-ref">To-Do</span></a></p>
+</div>
 <p>The setup script will then create a launch script (ie. <code class="docutils literal notranslate"><span class="pre">&lt;BASE_DIR&gt;/launch_pilot.sh</span></code>) and optionally install the Pilot to run as an always-on systemd service. If the Pilot is not setup as a systemd service, it needs to be started manually using the <code class="docutils literal notranslate"><span class="pre">launch_pilot.sh</span></code> script.</p>
 </div>
 <div class="section" id="manual-preinstall">
@@ -383,16 +420,17 @@
 <div class="section" id="rasbian-installation">
 <h3>Rasbian Installation<a class="headerlink" href="#rasbian-installation" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic">
-<li><dl class="simple">
-<dt>Download <a class="reference external" href="https://www.raspberrypi.org/downloads/raspbian/">Raspbian Lite</a> and unzip</dt><dd><ul class="simple">
+<li><p>Download <a class="reference external" href="https://www.raspberrypi.org/downloads/raspbian/">Raspbian Lite</a> and unzip</p>
+<blockquote>
+<div><ul class="simple">
 <li><p><a class="reference external" href="https://downloads.raspberrypi.org/raspbian_lite_latest.torrent">As a .torrent (faster, better for the soul of the universe)</a></p></li>
 <li><p><a class="reference external" href="https://downloads.raspberrypi.org/raspbian_lite_latest">Via http (slower)</a></p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
-<li><dl>
-<dt>Use <code class="docutils literal notranslate"><span class="pre">dd</span></code> to write the Raspbian disk image to a microSD card. Note that <code class="docutils literal notranslate"><span class="pre">dd</span></code> can and will mess up your entire life if given the opportunity, be very careful that you don’t run the command until you’re sure your <code class="docutils literal notranslate"><span class="pre">if=</span></code> and <code class="docutils literal notranslate"><span class="pre">of=</span></code> are correct.</dt><dd><ul>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">dd</span></code> to write the Raspbian disk image to a microSD card. Note that <code class="docutils literal notranslate"><span class="pre">dd</span></code> can and will mess up your entire life if given the opportunity, be very careful that you don’t run the command until you’re sure your <code class="docutils literal notranslate"><span class="pre">if=</span></code> and <code class="docutils literal notranslate"><span class="pre">of=</span></code> are correct.</p>
+<blockquote>
+<div><ul>
 <li><p>macOS:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># get the number of the disk, should be something like /dev/disk2</span>
 <span class="n">diskutil</span> <span class="nb">list</span>
@@ -420,30 +458,29 @@
 </div>
 </li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
-<li><dl class="simple">
-<dt>Boot from the SD card. It should reboot once after it resizes the filesystem. Login with the default credentials:</dt><dd><ul class="simple">
+<li><p>Boot from the SD card. It should reboot once after it resizes the filesystem. Login with the default credentials:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>username: <code class="docutils literal notranslate"><span class="pre">pi</span></code></p></li>
 <li><p>password: <code class="docutils literal notranslate"><span class="pre">raspberry</span></code></p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
-<li><dl class="simple">
-<dt>Do an initial <code class="docutils literal notranslate"><span class="pre">update</span></code> and <code class="docutils literal notranslate"><span class="pre">upgrade</span></code> to grab any critical security fixes so we don’t get sunk before we get started:</dt><dd><ul class="simple">
+<li><p>Do an initial <code class="docutils literal notranslate"><span class="pre">update</span></code> and <code class="docutils literal notranslate"><span class="pre">upgrade</span></code> to grab any critical security fixes so we don’t get sunk before we get started:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">update</span> <span class="pre">**</span> <span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">upgrade</span> <span class="pre">-y</span></code></p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
-<li><dl class="simple">
-<dt><strong>Optional:</strong> Change the default password. You’ll be sorry if you don’t – I got my credit card stolen this way.</dt><dd><ul class="simple">
+<li><p><strong>Optional:</strong> Change the default password. You’ll be sorry if you don’t – I got my credit card stolen this way.</p>
+<blockquote>
+<div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">passwd</span></code> and follow the prompts</p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
 <li><p>Install necessary system packages:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> \
@@ -466,7 +503,8 @@
     <span class="n">python</span><span class="o">-</span><span class="n">tables</span> \      <span class="c1"># this one too</span>
     <span class="n">libzmq</span><span class="o">-</span><span class="n">dev</span> \
     <span class="n">libffi</span><span class="o">-</span><span class="n">dev</span> \         <span class="c1"># Allows us to call C functions from python</span>
-    <span class="n">python</span><span class="o">-</span><span class="n">cffi</span>
+    <span class="n">python</span><span class="o">-</span><span class="n">cffi</span> \
+    <span class="n">blosc</span>
 </pre></div>
 </div>
 </li>
@@ -476,12 +514,13 @@
     <span class="n">npyscreen</span> \    <span class="c1"># ncurses wrapper used for setup menus</span>
     <span class="n">JACK</span><span class="o">-</span><span class="n">Client</span> \  <span class="c1"># client for jack audio</span>
     <span class="n">tornado</span> \      <span class="c1"># tornado message server</span>
-    <span class="n">inputs</span>         <span class="c1"># interactions with USB devices</span>
+    <span class="n">inputs</span> \       <span class="c1"># interactions with USB devices</span>
+    <span class="n">blosc</span>          <span class="c1"># compression for networking objects</span>
 </pre></div>
 </div>
 </li>
-<li><p>Autopilot depends on <a class="reference external" href="http://abyz.me.uk/rpi/pigpio/">pigpio</a> for high performance GPIO access and control, so install it already:</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">joan2937</span><span class="o">/</span><span class="n">pigpio</span><span class="o">.</span><span class="n">git</span>
+<li><p>Autopilot depends on a modified version of <a class="reference external" href="http://abyz.me.uk/rpi/pigpio/">pigpio</a> for high performance GPIO access and control, so install it already:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">sneakers</span><span class="o">-</span><span class="n">the</span><span class="o">-</span><span class="n">rat</span><span class="o">/</span><span class="n">pigpio</span><span class="o">.</span><span class="n">git</span>
 <span class="n">cd</span> <span class="n">pigpio</span>
 <span class="n">make</span> <span class="o">-</span><span class="n">j6</span>
 <span class="n">sudo</span> <span class="o">-</span><span class="n">H</span> <span class="n">make</span> <span class="n">install</span>
@@ -494,17 +533,19 @@
 <h3>Raspbian Performance Improvements<a class="headerlink" href="#raspbian-performance-improvements" title="Permalink to this headline">¶</a></h3>
 <p>All of these are, strictly speaking, optional, but there’s not really a good reason not to do them…</p>
 <ol class="arabic">
-<li><dl>
-<dt>Change the CPU Governor - Change the CPU Governor - normally the RPi keeps a low clock speed when not under load, raising it when load increases. this can cause audible glitches which are obviously to be avoided.</dt><dd><ul>
-<li><dl class="simple">
-<dt>the RPi has a startup script (confusingly, /etc/init.d/raspi-config) that sets the cpu governor to on demand. disable it</dt><dd><ul class="simple">
+<li><p>Change the CPU Governor - Change the CPU Governor - normally the RPi keeps a low clock speed when not under load, raising it when load increases. this can cause audible glitches which are obviously to be avoided.</p>
+<blockquote>
+<div><ul>
+<li><p>the RPi has a startup script (confusingly, /etc/init.d/raspi-config) that sets the cpu governor to on demand. disable it</p>
+<blockquote>
+<div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">systemctl</span> <span class="pre">disable</span> <span class="pre">raspi-config</span></code></p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
-<li><dl>
-<dt>Add a line to <code class="docutils literal notranslate"><span class="pre">etc/rc.local</span></code>, which runs on boot, that changes the governor to “performance”</dt><dd><ul>
+<li><p>Add a line to <code class="docutils literal notranslate"><span class="pre">etc/rc.local</span></code>, which runs on boot, that changes the governor to “performance”</p>
+<blockquote>
+<div><ul>
 <li><p>Either add this above ‘exit 0’:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="s2">&quot;performance&quot;</span> <span class="o">|</span> <span class="n">sudo</span> <span class="n">tee</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">devices</span><span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">cpu</span><span class="o">/</span><span class="n">cpu</span><span class="o">*/</span><span class="n">cpufreq</span><span class="o">/</span><span class="n">scaling_governor</span>
 </pre></div>
@@ -516,15 +557,14 @@
 </div>
 </li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
-<li><dl>
-<dt>Disable Bluetooth</dt><dd><ul>
+<li><p>Disable Bluetooth</p>
+<blockquote>
+<div><ul>
 <li><p>Add <code class="docutils literal notranslate"><span class="pre">dtoverlay=pi3-disable-bt</span></code> to <code class="docutils literal notranslate"><span class="pre">/boot/config.txt</span></code>, or use this:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;$s/$/</span><span class="se">\n</span><span class="s1">dtoverlay=pi3-disable-bt/&#39;</span> <span class="o">/</span><span class="n">boot</span><span class="o">/</span><span class="n">config</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
@@ -538,8 +578,7 @@
 </div>
 </li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
 <li><p>You can decrease the memory that is allocated to the video card, but keep in mind pigpio allocates its memory from the GPU store. Don’t reduce to lower than ~8MB</p>
 <ul class="simple">
@@ -677,13 +716,13 @@ card 0: sndrpihifiberry [snd_rpi_hifiberry_dacplus], device 0: HiFiBerry DAC+ Hi
 </pre></div>
 </div>
 </li>
-<li><dl class="simple">
-<dt>Enable the Raspberry pi’s OpenGL driver:</dt><dd><ul class="simple">
+<li><p>Enable the Raspberry pi’s OpenGL driver:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">raspi-config</span></code> &gt; advanced &gt; GL Driver &gt; “GL (FakeKMS)”</p></li>
 <li><p>then reboot</p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
 <li><p>Psychopy uses a few video backends, but in our experience <a class="reference external" href="https://www.glfw.org/">glfw</a> is the fastest. We have to <a class="reference external" href="https://www.glfw.org/docs/latest/compile_guide.html">compile it manually</a>:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">glfw</span><span class="o">/</span><span class="n">glfw</span>
@@ -712,11 +751,9 @@ card 0: sndrpihifiberry [snd_rpi_hifiberry_dacplus], device 0: HiFiBerry DAC+ Hi
 <h3>Optional Installation Steps<a class="headerlink" href="#optional-installation-steps" title="Permalink to this headline">¶</a></h3>
 <p>sudo dpkg-reconfigure locales
 sudo dpkg-reconfigure keyboard-configuration</p>
-<div class="admonition-todo admonition" id="id1">
+<div class="admonition-todo admonition" id="id2">
 <p class="admonition-title">Todo</p>
-<ol class="lowerroman simple" start="30">
-<li><p><strong>Optional:</strong> Setup SSH access and install RSA key</p></li>
-</ol>
+<p><strong>Optional:</strong> Setup SSH access and install RSA key</p>
 </div>
 </div>
 </div>

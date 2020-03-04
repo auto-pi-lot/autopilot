@@ -1,5 +1,9 @@
 .. _installation:
 
+.. todo::
+
+    The formalization of Agent classes and smoothing the install process is a major development goal
+    for Autopilot! See :ref:`todo` !
 
 Installation
 ************

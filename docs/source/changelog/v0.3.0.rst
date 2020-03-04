@@ -1,7 +1,7 @@
 .. _changelog_v030:
 
 
-v0.3.0 (Februrary DATE, 2020)
+v0.3.0 (March 3rd, 2020)
 -----------------------------
 
 Major Updates
@@ -69,7 +69,6 @@ Minor Updates
   to :func:`~.setup.request_helpers.download_box` files from a URL, which is mysteriously hard to do.
 * The :ref:`todo` page now reflects the full ambition of Autopilot, where before this vision was contained only in
   the whitepaper_ and a disorganized plaintext_ file in the repo.
-* The ``make serve`` command for the docs now uses sphinx-autobuild_, so they are rebuilt as they are changed and the page auto-reloads
 * The :class:`~.subject.Subject` class can now export trial data :meth:`~.Subject.to_csv`. A very minor update, but
   one that is the first in a number of planned improvements to data export.
 * I have also opened up a message board in google groups to make feature requests and discuss use and development, hope to see you there :)

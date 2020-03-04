@@ -72,13 +72,12 @@ def gui_event(fn):
 class Control_Panel(QtWidgets.QWidget):
     """A :class:`QtWidgets.QWidget` that contains the controls for all pilots.
 
-    Specifically, for each pilot, it contains
-
-    * one :class:`subject_List`: A list of the subjects that run in each pilot.
-    * one :class:`Pilot_Panel`: A set of button controls for starting/stopping behavior
-
-    This class should not be instantiated outside the context of a
-    :py:class:`~.terminal.Terminal` object, as they share the :py:attr:`.subjects` dictionary.
+    Args:
+        subjects (dict): See :py:attr:`.Control_Panel.subjects`
+        start_fn (:py:meth:`~autopilot.core.terminal.Terminal.toggle_start`): the Terminal's
+            toggle_start function, propagated down to each :class:`~core.gui.Pilot_Button`
+        pilots: Usually the Terminal's :py:attr:`~.Terminal.pilots` dict. If not passed,
+            will try to load :py:attr:`.params.PILOT_DB`
 
     Attributes:
         subjects (dict): A dictionary with subject ID's as keys and
@@ -91,18 +90,21 @@ class Control_Panel(QtWidgets.QWidget):
         layout (:py:class:`~QtWidgets.QGridLayout`): Layout grid for widget
         panels (dict): A dict mapping pilot name to the relevant :py:class:`.Pilot_Panel`
 
+    Specifically, for each pilot, it contains
+
+    * one :class:`subject_List`: A list of the subjects that run in each pilot.
+    * one :class:`Pilot_Panel`: A set of button controls for starting/stopping behavior
+
+    This class should not be instantiated outside the context of a
+    :py:class:`~.terminal.Terminal` object, as they share the :py:attr:`.subjects` dictionary.
+
     """
     # Hosts two nested tab widgets to select pilot and subject,
     # set params, run subjects, etc.
 
     def __init__(self, subjects, start_fn, pilots=None):
         """
-        Args:
-            subjects (dict): See :py:attr:`.Control_Panel.subjects`
-            start_fn (:py:meth:`~autopilot.core.terminal.Terminal.toggle_start`): the Terminal's
-                toggle_start function, propagated down to each :class:`~core.gui.Pilot_Button`
-            pilots: Usually the Terminal's :py:attr:`~.Terminal.pilots` dict. If not passed,
-                will try to load :py:attr:`.params.PILOT_DB`
+
         """
         super(Control_Panel, self).__init__()
 
@@ -352,17 +354,19 @@ class Pilot_Panel(QtWidgets.QWidget):
     Note:
         This class should not be instantiated except by :class:`Control_Panel`
 
+    Args:
+        pilot (str): The name of the pilot this panel controls
+        subject_list (:py:class:`.Subject_List`): The :py:class:`.Subject_List` we control
+        start_fn (:py:meth:`~autopilot.core.terminal.Terminal.toggle_start`): Passed by :class:`Control_Panel`
+        create_fn (:py:meth:`Control_Panel.create_subject`): Passed by :class:`Control_Panel`
+
     Attributes:
         layout (:py:class:`QtWidgets.QGridLayout`): Layout for UI elements
         button (:class:`.Pilot_Button`): button used to control a pilot
     """
     def __init__(self, pilot=None, subject_list=None, start_fn=None, create_fn=None):
         """
-        Args:
-            pilot (str): The name of the pilot this panel controls
-            subject_list (:py:class:`.Subject_List`): The :py:class:`.Subject_List` we control
-            start_fn (:py:meth:`~autopilot.core.terminal.Terminal.toggle_start`): Passed by :class:`Control_Panel`
-            create_fn (:py:meth:`Control_Panel.create_subject`): Passed by :class:`Control_Panel`
+
         """
         super(Pilot_Panel, self).__init__()
 
@@ -2085,9 +2089,6 @@ class Bandwidth_Test(QtWidgets.QDialog):
 class Calibrate_Water(QtWidgets.QDialog):
     """
     A window to calibrate the volume of water dispensed per ms.
-
-    Warning:
-        Not Implemented
     """
     def __init__(self, pilots):
         """
@@ -2155,15 +2156,15 @@ class Calibrate_Water(QtWidgets.QDialog):
 
 class Pilot_Ports(QtWidgets.QWidget):
     """
-    Each pilot's ports and buttons to control repeated release.
+    Created by :class:`.Calibrate_Water`, Each pilot's ports and buttons to control repeated release.
     """
+
     def __init__(self, pilot, n_clicks=1000, click_dur=30):
         """
         Args:
-            pilot:
-            message_fn:
-            n_clicks:
-            click_dur:
+            pilot (str): name of pilot to calibrate
+            n_clicks (int): number of times to open the port during calibration
+            click_dur (int): how long to open the port (in ms)
         """
         super(Pilot_Ports, self).__init__()
 
@@ -2193,10 +2194,6 @@ class Pilot_Ports(QtWidgets.QWidget):
         * pilot name
         * port buttons
         * 3 times and vol dispersed
-        *
-
-        TODO:
-            Don't assume L/C/R, ask the pilot what it has
 
         :return:
         """
@@ -2600,7 +2597,6 @@ class Psychometric(QtGui.QDialog):
 
     Args:
         subjects_protocols (dict): The Terminals :attr:`.Terminal.subjects_protocols` dict
-        protocols (list): A list of available protocols
 
     Attributes:
         plot_params (list): A list of tuples, each consisting of (subject_id, step, variable) to be given to :func:`.viz.plot_psychometric`

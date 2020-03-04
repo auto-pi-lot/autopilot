@@ -14,9 +14,11 @@ Sets the following prefs:
 * **SOUNDDIR** - `os.path.join(params['BASEDIR'], 'sounds')`
 * **PROTOCOLDIR** - `os.path.join(params['BASEDIR'], 'protocols')`
 * **LOGDIR** - `os.path.join(params['BASEDIR'], 'logs')`
+* **VIZDIR** - `os.path.join(params['BASEDIR'], 'logs')` directory to store generated visualizations
 * **REPODIR** - Path to autopilot git repo
 * **PILOT_DB** - Location of `pilot_db.json` used to populate :attr:`~.Terminal.pilots`
-
+* **DRAWFPS** - fps to update :class:`.gui.Video` windows
+* **LOGLEVEL** - level for systemwide logging, see :data:`.LOG_LEVELS`
 
 
 """

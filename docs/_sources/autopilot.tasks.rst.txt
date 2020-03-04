@@ -7,7 +7,7 @@ tasks
     :show-inheritance:
 
 .. toctree::
-
+   autopilot.tasks.children
    autopilot.tasks.free_water
    autopilot.tasks.graduation
    autopilot.tasks.nafc

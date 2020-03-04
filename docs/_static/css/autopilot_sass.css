@@ -1,0 +1,12 @@
+.logo-banner {
+  max-width: 750px; }
+
+ul.simple {
+  list-style: disc; }
+  ul.simple li {
+    list-style: disc;
+    margin-left: 24px; }
+
+.icon-hover {
+  box-shadow: 5px 10px #000000;
+  background-color: #ff0000 !important; }

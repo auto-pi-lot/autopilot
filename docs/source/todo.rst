@@ -5,6 +5,10 @@ Development Roadmap, Minor To-dos, and all future plans :)
 To-Do
 =====
 
+.. container:: roadmap high-priority
+
+    Test div content inside custom classes
+
 Visions
 -----------
 
@@ -156,7 +160,10 @@ Visions
     * For distributed data acquisition, it makes sense to use a distributed database, so we should consider switching
       data collection infrastructure from .hdf5 files to a database system like PostgreSQL.
 
+* **Hardware Library**
 
+    * Populate `<https://auto-pi-lot.com/hardware>`_ with hardware designs, CAD files, BOMs, and assembly instructions
+    * Make a 'thingiverse for experimental hardware' that allows users to browse hardware based on application, materials, etc.
 
 
 Improvements
@@ -185,6 +192,14 @@ Improvements
     * Plot parameters should be editable - window roll size, etc.
     * Make a messaging routine where a pilot can display some message on the terminal. this should be used to
       alert the user about any errors in task operation rather than having to inspect the logs on the pilot.
+    * The :class:`~gui.Subject_List` remains selectable/editable once a subject has started running, making it unclear
+      which subject is running. It should become fixed once a subject is running, or otherwise unambiguously indicate which
+      subject is running.
+    * Plot elements should have tooltips that give their value -- eg. when hovering over a rolling mean, a tooltip
+      should display the current value of the rolling mean as well as other configuration params like how many trials
+      it is being computed over.
+    * Elements in the GUI should be smarter about resizing, particularly the main window should be able to use a scroll
+      bar once the number of subjects forces them off the screen.
 
 * **Hardware**
 
@@ -256,6 +271,8 @@ Improvements
     * Replace ``getter``- and ``setter``-type methods throughout with ``@properties`` when it would improve the object,
       eg. in the :class:`.JackClient`, the storage/retrieval of all the global module variables could be made much neater
       with ``@property`` methods.
+    * Like the :class:`~autopilot.hardware.Hardware` class, top-level metaclasses should be moved to the ``__init__``
+      file for the module to avoid awkward imports and extra files like :class:`autopilot.tasks.task.Task`
 
 Bugs
 ----
@@ -271,6 +288,9 @@ Bugs
   linked to the :class:`~.subject.Subject`.
 * If Autopilot needs to be quit harshly, some pigpio-based hardware objects don't quit nicely,
   and the pigpiod service can remain stuck on. Resource release needs to be made more robust
+* Network connectivity can be lost if the network hardware is disturbed (in our case the router gets kicked
+  from the network it is connected to) and is only reliably recovered by restarting the system. Network connections
+  should be able to recover disturbance.
 
 
 Completed

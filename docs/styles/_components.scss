@@ -5,3 +5,23 @@
 //#to-do #visions h2 {
 //    background-color: #ff0000;
 //}
+
+.logo-banner {
+  max-width: 750px;
+}
+
+// lists within admonitions and such don't have bullet points by default :(
+ul.simple {
+  list-style: disc;
+
+  li {
+    list-style: disc;
+    margin-left: 24px;
+  }
+
+}
+
+.icon-hover {
+  box-shadow: 5px 10px #000000;
+  background-color: #ff0000 !important;
+}

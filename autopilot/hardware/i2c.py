@@ -316,6 +316,19 @@ class MLX90640(Camera):
     """
     A MLX90640 Temperature sensor.
 
+    Args:
+        fps (int): Acquisition framerate, must be one of :attr:`MLX90640.ALLOWED_FPS`
+        integrate_frames (int): Number of frames to average over
+        interpolate (int): Interpolation multiplier -- 3 "increases the resolution" 3x
+        **kwargs: passed to :class:`.Camera`
+
+    Attributes:
+        shape (tuple): :attr:`~MLX90640.SHAPE_SENSOR
+        integrate_frames (int): Number of frames to average over
+        interpolate (int): Interpolation multiplier -- 3 "increases the resolution" 3x
+        _grab_event (:class:`threading.Event`): capture thread sets every time it gets a frame,
+            _grab waits every time, keeps us from returning same frame twice
+
     This device uses I2C, so must be connected accordingly:
 
     - VCC: 3.3V (pin 2)
@@ -345,18 +358,7 @@ class MLX90640(Camera):
 
     def __init__(self, fps=64, integrate_frames = 64, interpolate = 3, **kwargs):
         """
-        Args:
-            fps (int): Acquisition framerate, must be one of :attr:`MLX90640.ALLOWED_FPS`
-            integrate_frames (int): Number of frames to average over
-            interpolate (int): Interpolation multiplier -- 3 "increases the resolution" 3x
-            **kwargs: passed to :class:`.Camera`
 
-        Attributes:
-            shape (tuple): :attr:`~MLX90640.SHAPE_SENSOR
-            integrate_frames (int): Number of frames to average over
-            interpolate (int): Interpolation multiplier -- 3 "increases the resolution" 3x
-            _grab_event (:class:`threading.Event`): capture thread sets every time it gets a frame,
-                _grab waits every time, keeps us from returning same frame twice
 
         """
         if not MLX90640_LIB:

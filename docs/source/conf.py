@@ -17,11 +17,24 @@ import sys
 import re
 from time import time
 import pdb
+from docutils.parsers.rst import Directive
+from docutils import nodes
+from sphinx.directives import directives
 #from mock import MagicMock
 sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../..'))
 
+# for localext
+
+# if 'PYTHONPATH' not in os.environ.keys():
+#     os.environ['PYTHONPATH'] =  os.path.abspath('../')
+# else:
+#     os.environ['PYTHONPATH'] += ':'+os.path.abspath('../')
+
 sys.setrecursionlimit(1500)
+# sys.path.insert(0, os.path.abspath('./'))
+# from local_directives import UMLGenerateDirective
+
 #import sphinx_bootstrap_theme
 #import guzzle_sphinx_theme
 # import contextlib
@@ -72,7 +85,8 @@ extensions = [
     'autodocsumm',   # https://github.com/Chilipp/autodocsumm
     #'sphinxcontrib.fulltoc',
     #'localext.fulltoc'
-    'sphinx_sass'
+    'sphinx_sass',
+    'sphinx_pyreverse'
 ]
 
 if try_theme == 'rtd':
@@ -82,8 +96,8 @@ if try_theme == 'rtd':
 # see http://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html#configuration
 napoleon_google_docstring = True
 napoleon_numpy_docstring = False
-napoleon_use_param = True
-napoleon_use_ivar = False
+napoleon_use_param = False
+napoleon_use_ivar = True
 napoleon_include_init_with_doc = False
 napoleon_include_private_with_doc = True
 napoleon_include_special_with_doc = True
@@ -358,11 +372,82 @@ def test_grouper(app, what, name, obj, section, parent):
 
 def css_class_role(name, rawtext, text, lineno, inliner, options={}, content={}):
     pdb.set_trace()
+#
+# class RoadmapNode(nodes.Element):
+#     pass
+#
+# class RoadmapDirective(Directive):
+#     """
+#     http://www.xavierdupre.fr/blog/2015-06-07_nojs.html
+#
+#     """
+#
+#     # defines the parameter the directive expects
+#     # directives.unchanged means you get the raw value from RST
+#     required_arguments = 0
+#     optional_arguments = 0
+#     final_argument_whitespace = True
+#     option_spec = {'conversation': directives.unchanged}
+#     has_content = False
+#     # add_index =
+#
+#     # def run(self):
+#     #     super(RoadmapDirective, self).run()
+#     #     s
+#
+#     def run(self):
+#
+#         # sett = self.state.document.settings
+#         # language_code = sett.language_code
+#         # env = self.state.document.settings.env
+#
+#         # gives you access to the parameter stored
+#         # in the main configuration file (conf.py)
+#         # config = env.config
+#
+#         # gives you access to the options of the directive
+#         # options = self.options
+#
+#         # we create a section
+#         # idb = nodes.make_id("todo-" + options["conversation"])
+#         # section = nodes.section(ids=[idb])
+#
+#         # we create a title and we add it to section
+#         # section += nodes.title(options["title"])
+#
+#         # we create the content of the blog post
+#         # because it contains any kind of RST
+#         # we parse parse it with function nested_parse
+#         # par = nodes.paragraph()
+#         # self.state.nested_parse(content, self.content_offset, par)
+#
+#         # we create a blogpost and we add the section
+#         # node = self.__class__.roadmap_class()
+#         # node += section
+#         # node += par
+#
+#         # we return the result
+#         section = nodes.section(ids=nodes.make_id('the-html-anchor'))
+#         section += nodes.title('Text', 'Text')  # Just add the text twice
+#         # section += nodes.any_other_element_that_can_be_in_a_section()
+#         sections = [section]
+#         return sections
+#
+# def visit_roadmap_node(self, node):
+#     pass
+#
+# def depart_roadmap_node(self, node):
+#     link = """<p><a class="reference internal" href="something.html" title="a title">a title</a></p>"""
+#     self.body.append(link)
+
 
 def setup(app):
     # if try_theme == 'bootstrap':
     app.add_css_file("restyle.css")
+    # app.add_directive('uml', UMLGenerateDirective)
     # app.add_role('cssclass', css_class_role)
+    # app.add_node(RoadmapNode, html=(visit_roadmap_node, depart_roadmap_node))
+    # app.add_directive('roadmap', RoadmapDirective)
 
     from autopilot import prefs
 
