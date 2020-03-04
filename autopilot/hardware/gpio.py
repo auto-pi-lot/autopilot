@@ -288,8 +288,9 @@ class Digital_Out(GPIO):
         if pulse_width > 100 or pulse_width < 0:
             Warning('pulse_width must be <100(ms) & >0 and has been clipped to {}'.format(self.pulse_width))
 
-        # setup pin
-        if self.pin_bcm:
+        # setup pin if we are a true single-pin digital output and not a subclass
+        if isinstance(self.pin_bcm, int):
+
             self.pig.set_mode(self.pin_bcm, pigpio.OUTPUT)
             self.set(self.off)
 
