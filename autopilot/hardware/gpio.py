@@ -1089,7 +1089,7 @@ class LED_RGB(Digital_Out):
     @pull.setter
     def pull(self, direction):
         self.logger.warning('pull cant be set via the attribute')
-        
+
 
 class Solenoid(Digital_Out):
     """
