@@ -461,7 +461,7 @@ class Digital_Out(GPIO):
 
 
 
-    def series(self, id=None, **kwargs):
+    def series(self, id=None, delete=None, **kwargs):
         """
         Execute a script that sets the pin to a series of values for a series of durations.
 
@@ -489,6 +489,10 @@ class Digital_Out(GPIO):
         else:
             id = "script_{}".format(next(self.script_counter))
             self.store_series(id, **kwargs)
+            # if we haven't been explicitly told to not delete it, we should
+            if delete is None:
+                delete = True
+
 
             # since we've generated a script ID, we should return it
             return_id = True
@@ -504,8 +508,26 @@ class Digital_Out(GPIO):
         self.pig.run_script(self.scripts[id])
         self._last_script = id
 
+        if delete:
+            self.delete_script(id)
+
+
         if return_id:
             return id
+
+    def delete_script(self, script_id):
+        delete_script = threading.Thread(target=self._delete_script, args=(script_id,))
+        delete_script.start()
+
+    def _delete_script(self, script_id):
+        checktimes = 0
+        while self.pig.script_status(self.scripts[script_id]) == pigpio.PI_SCRIPT_RUNNING:
+            time.sleep(1)
+            checktimes += 1
+            if checktimes > 10:
+                continue
+
+        self.pig.delete_script(self.scripts[script_id])
 
     def stop_script(self, id=None):
         """
@@ -1032,7 +1054,9 @@ class LED_RGB(Digital_Out):
         # Invert frequency to duration for single flash
         # divide by 2 b/c each 'color' is half the duration
         single_dur = ((1. / frequency) * 1000) / 2.
-        self.series(colors=flashes, durations=single_dur)
+        script_id = self.series(colors=flashes, durations=single_dur)
+
+
     #
     # def __getattr__(self, name):
     #     """if a method is called that we don't explicitly redefine, try to apply it to each of our channels"""

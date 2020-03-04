@@ -706,9 +706,9 @@ class Subject:
 
         task = copy(self.current[self.step])
         task['subject'] = self.name
-        task['step'] = self.step
-        task['current_trial'] = self.current_trial
-        task['session'] = self.session
+        task['step'] = int(self.step)
+        task['current_trial'] = int(self.current_trial)
+        task['session'] = int(self.session)
         return task
 
     def data_thread(self, queue):

@@ -1566,7 +1566,7 @@ class Net_Node(object):
         msg_enc = msg.serialize()
         #pdb.set_trace()
         if not msg_enc:
-            #pdb.set_trace()
+            pdb.set_trace()
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 

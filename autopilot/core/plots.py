@@ -394,8 +394,10 @@ class Plot(QtWidgets.QWidget):
         #pdb.set_trace()
         if 'trial_num' in value.keys():
             v = value.pop('trial_num')
-            if v != self.last_trial:
+            if v >= self.last_trial:
                 self.session_trials = next(self.n_trials)
+            elif v < self.last_trial:
+                self.logger.exception('Shouldnt be going back in time!')
             self.last_trial = v
             # self.last_trial = v
             self.info['N Trials'].setText("{}/{}".format(self.session_trials, v))
