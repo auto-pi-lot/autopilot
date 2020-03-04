@@ -1082,6 +1082,15 @@ class LED_RGB(Digital_Out):
         """
         self.logger.warning('pin_bcm cant be set via the attribute')
 
+    @property
+    def pull(self):
+        return None
+
+    @pull.setter
+    def pull(self, direction):
+        self.logger.warning('pull cant be set via the attribute')
+        
+
 class Solenoid(Digital_Out):
     """
     Solenoid valve for water delivery.
