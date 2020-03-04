@@ -520,7 +520,7 @@ class Digital_Out(GPIO):
             # if the script is still running, stop it and set the pin to off.
             if status == pigpio.PI_SCRIPT_RUNNING:
                 self.pig.stop_script(script_id)
-                self.set(self.off)
+                #self.set(self.off)
 
             # set last_script to None so we won't try to double-stop this script
             self._last_script = None
