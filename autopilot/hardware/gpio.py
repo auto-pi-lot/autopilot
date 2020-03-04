@@ -907,7 +907,7 @@ class LED_RGB(Digital_Out):
                     channel.set(value)
             elif len(value) == 3:
                 for channel_key, color_val in zip(('r','g','b'), value):
-                    self.channels[channel_key].set(value)
+                    self.channels[channel_key].set(color_val)
             else:
                 ValueError('Value must either be a single value or a tuple of (r,g,b)')
         else:
