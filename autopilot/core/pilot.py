@@ -676,7 +676,7 @@ class Pilot:
 
         while True:
             # Calculate next stage data and prep triggers
-            data = self.task.stages.next()() # Double parens because next just gives us the function, we still have to call it
+            data = next(self.task.stages)() # Double parens because next just gives us the function, we still have to call it
 
             if data:
                 data['pilot'] = self.name
