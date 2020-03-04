@@ -489,7 +489,14 @@ class Digital_Out(GPIO):
             # since we've generated a script ID, we should return it
             return_id = True
 
-
+        script_status = self.pig.script_status(self.scripts[id])
+        if script_status == pigpio.PI_SCRIPT_INITING:
+            check_times = 0
+            while self.pig.script_status(self.scripts[id]) == pigpio.PI_SCRIPT_INITING:
+                time.sleep(0.001)
+                check_times += 1
+                if check_times > 1000:
+                    break
         self.pig.run_script(self.scripts[id])
         self._last_script = id
 
