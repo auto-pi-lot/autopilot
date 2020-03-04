@@ -412,7 +412,7 @@ class Digital_Out(GPIO):
         else:
             ValueError("Unit for durations must be ms (milliseconds) or us (microseconds)")
 
-        string_pieces = [b" ".join((self.pigs_function, bytes(self.pin_bcm), bytes(val), bytes(wait_fn, 'utf-8'), bytes(dur))) for val, dur in iter_series]
+        string_pieces = [b" ".join((self.pigs_function, bytes(self.pin_bcm), str(val).encode('utf-8'), bytes(wait_fn, 'utf-8'), str(dur).encode('utf-8'))) for val, dur in iter_series]
         script_str = b" ".join(string_pieces)
 
         if repeat:
@@ -850,9 +850,9 @@ class LED_RGB(Digital_Out):
                 self.channels[color] = PWM(pin, polarity=polarity)
 
         elif r and g and b:
-            self.channels = {'r':PWM(r, polarity=polarity),
-                             'g':PWM(g, polarity=polarity),
-                             'b':PWM(b, polarity=polarity)}
+            self.channels = {'r':PWM(r, polarity=polarity, name="{}_R".format(self.name)),
+                             'g':PWM(g, polarity=polarity, name="{}_G".format(self.name)),
+                             'b':PWM(b, polarity=polarity, name="{}_B".format(self.name))}
         else:
             ValueError('Must either set with pins= list/tuple of r,g,b pins, or pass all three as separate params')
 
