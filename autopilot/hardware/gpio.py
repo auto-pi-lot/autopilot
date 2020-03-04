@@ -127,7 +127,12 @@ class GPIO(Hardware):
         self._pin = None
         self._trigger = None
         self.trigger_edge = None
-        self.pin_bcm = None
+        try:
+            self.pin_bcm = None
+        except AttributeError:
+            # if a subclass has made this a property, don't fail here
+            self.logger.warning('pin_bcm is defined as a property without a setter so cant be set')
+
         self.pig = None
 
         # init pigpio
@@ -389,7 +394,7 @@ class Digital_Out(GPIO):
                 durations = [round(durations)]
 
             if len(values) == len(durations):
-                iter_series = itertools.izip(values, durations)
+                iter_series = zip(values, durations)
             if len(durations) == 1:
                 iter_series = itertools.product(values, durations)
             else:

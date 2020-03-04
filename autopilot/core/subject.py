@@ -411,7 +411,7 @@ class Subject:
 
         h5f = self.open_hdf()
 
-
+        pdb.set_trace()
 
         ## Assign new protocol
         if not protocol.endswith('.json'):
@@ -441,7 +441,7 @@ class Subject:
 
         # Make filenode and save as serialized json
         current_node = filenode.new_node(h5f, where='/', name='current')
-        current_node.write(json.dumps(prot_dict))
+        current_node.write(json.dumps(prot_dict).encode('utf-8'))
         h5f.flush()
 
         # save some protocol attributes
@@ -558,7 +558,7 @@ class Subject:
         h5f = self.open_hdf()
         h5f.remove_node('/current')
         current_node = filenode.new_node(h5f, where='/', name='current')
-        current_node.write(json.dumps(self.current))
+        current_node.write(json.dumps(self.current).encode('utf-8'))
         current_node.attrs['step'] = self.step
         current_node.attrs['protocol_name'] = self.protocol_name
         self.close_hdf(h5f)
@@ -584,7 +584,7 @@ class Subject:
         #old_protocol = current_node.readall()
 
         archive_node = filenode.new_node(h5f, where='/history/past_protocols', name=archive_name)
-        archive_node.write(json.dumps(self.current))
+        archive_node.write(json.dumps(self.current).encode('utf-8'))
 
         h5f.remove_node('/current')
         self.close_hdf(h5f)
