@@ -836,11 +836,13 @@ class LED_RGB(Digital_Out):
             channels (dict): The three PWM objects, {'r':PWM, ... etc}
 
         """
-        super(LED_RGB, self).__init__(**kwargs)
-
         # self._pin = {}
         self.channels = {}
         self.scripts = {}
+
+        super(LED_RGB, self).__init__(**kwargs)
+
+
 
         if pins and len(pins) == 3:
             for color, pin in zip(('r', 'g', 'b'), pins):
@@ -1056,9 +1058,12 @@ class LED_RGB(Digital_Out):
         """
         Dict of the board pin number of each channel, ``{'r' : self.channels['r'].pin, ... }``
         """
-        return {'r':self.channels['r'].pin,
-                'g':self.channels['g'].pin,
-                'b':self.channels['b'].pin}
+        try:
+            return {'r':self.channels['r'].pin,
+                    'g':self.channels['g'].pin,
+                    'b':self.channels['b'].pin}
+        except AttributeError:
+            return {}
 
     @pin.setter
     def pin(self, pin):
@@ -1072,9 +1077,12 @@ class LED_RGB(Digital_Out):
         """
         Dict of the broadcom pin number of each channel, ``{'r' : self.channels['r'].pin_bcm, ... }``
         """
-        return {'r':self.channels['r'].pin_bcm,
-                'g':self.channels['g'].pin_bcm,
-                'b':self.channels['b'].pin_bcm}
+        try:
+            return {'r':self.channels['r'].pin_bcm,
+                    'g':self.channels['g'].pin_bcm,
+                    'b':self.channels['b'].pin_bcm}
+        except AttributeError:
+            return {}
 
     @pin_bcm.setter
     def pin_bcm(self, pin_bcm):
