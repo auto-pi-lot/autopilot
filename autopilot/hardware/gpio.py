@@ -967,9 +967,9 @@ class LED_RGB(Digital_Out):
             # iter over keys rather than values of channels dict b/c dicts are unordered and colors are an ordered tuple
             for channel_key, color_value in zip(('r', 'g', 'b'), color):
                 string_pieces.append(b" ".join((self.channels[channel_key].pigs_function,
-                                               bytes(self.channels[channel_key].pin_bcm),
-                                               bytes(self.channels[channel_key]._clean_value(color_value)))))
-            string_pieces.append(bytes("{} {}".format(wait_fn, bytes(duration))))
+                                               bytes(self.channels[channel_key].pin_bcm, 'utf-8'),
+                                               bytes(self.channels[channel_key]._clean_value(color_value), 'utf-8'))))
+            string_pieces.append(bytes("{} {}".format(wait_fn, duration), 'utf-8'))
 
         script_str = b" ".join(string_pieces)
 
@@ -991,7 +991,7 @@ class LED_RGB(Digital_Out):
             #script_str += b" "
             finish_pieces = [script_str]
             for channel in self.channels.values():
-                finish_pieces.append(b" ".join((channel.pigs_function, bytes(channel.pin_bcm), bytes(channel.off))))
+                finish_pieces.append(b" ".join((channel.pigs_function, bytes(channel.pin_bcm, 'utf-8'), bytes(channel.off, 'utf-8'))))
             script_str = b" ".join(finish_pieces)
 
         return script_str
