@@ -600,7 +600,7 @@ class Roll_Mean(pg.PlotDataItem):
         data = data.astype(np.float)
 
         self.series = pd.Series(data[...,1])
-        ys = self.series.rolling(self.winsize, min_periods=0).mean().as_matrix()
+        ys = self.series.rolling(self.winsize, min_periods=0).mean().to_numpy()
 
         #print(ys)
 

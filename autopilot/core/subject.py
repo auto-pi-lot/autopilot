@@ -813,6 +813,9 @@ class Subject:
                 # and the trial number we just got is not the same,
                 # we edit that row if we already have some data on it or else start a new row
                 if 'trial_num' in data.keys():
+                    if (trial_row['trial_num']) and (trial_row['trial_num'] is None):
+                        trial_row['trial_num'] = data['trial_num']
+
                     if (trial_row['trial_num']) and (trial_row['trial_num'] != data['trial_num']):
 
                         # find row with this trial number if it exists
@@ -829,7 +832,8 @@ class Subject:
                             # have to be in the middle of iteration to use update()
                             for row in trial_table.where("trial_num == {}".format(data['trial_num'])):
                                 for k, v in data.items():
-                                    row[k] = v
+                                    if k in trial_keys:
+                                        row[k] = v
                                 row.update()
                             continue
 
