@@ -138,9 +138,12 @@ class Task(object):
                 try:
                     hw_args = pin_numbers[type][pin]
                     if isinstance(hw_args, dict):
+                        if 'name' not in hw_args.keys():
+                            hw_name = "{}_{}".format(type, pin)
                         hw = handler(**hw_args)
                     else:
-                        hw = handler(hw_args)
+                        hw_name = "{}_{}".format(type, pin)
+                        hw = handler(hw_args, name=hw_name)
 
                     # if a pin is a trigger pin (event-based input), give it the trigger handler
                     if hw.trigger:
