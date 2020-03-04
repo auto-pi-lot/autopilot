@@ -1062,7 +1062,7 @@ class LED_RGB(Digital_Out):
             return {'r':self.channels['r'].pin,
                     'g':self.channels['g'].pin,
                     'b':self.channels['b'].pin}
-        except AttributeError:
+        except KeyError:
             return {}
 
     @pin.setter
@@ -1081,7 +1081,7 @@ class LED_RGB(Digital_Out):
             return {'r':self.channels['r'].pin_bcm,
                     'g':self.channels['g'].pin_bcm,
                     'b':self.channels['b'].pin_bcm}
-        except AttributeError:
+        except KeyError:
             return {}
 
     @pin_bcm.setter
