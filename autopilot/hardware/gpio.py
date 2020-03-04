@@ -430,7 +430,7 @@ class Digital_Out(GPIO):
 
         # turn off when finished
         if finish_off:
-            script_str += b" ".join((self.pigs_function, bytes(self.pin_bcm), bytes(self.off)))
+            script_str += b" ".join((self.pigs_function, str(self.pin_bcm).encode('utf-8'), str(self.off).encode('utf-8')))
 
 
         return script_str
