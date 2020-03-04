@@ -955,9 +955,9 @@ class LED_RGB(Digital_Out):
             iter_series = colors.__iter__()
 
         if unit == "ms":
-            wait_fn = b"mils"
+            wait_fn = "mils"
         elif unit == "us":
-            wait_fn = b"mics"
+            wait_fn = "mics"
         else:
             ValueError("Unit for durations must be ms (milliseconds) or us (microseconds)")
 
