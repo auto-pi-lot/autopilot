@@ -1059,6 +1059,13 @@ class LED_RGB(Digital_Out):
                 'g':self.channels['g'].pin,
                 'b':self.channels['b'].pin}
 
+    @pin.setter
+    def pin(self, pin):
+        """
+        Pins don't get set like this for the LED_RGB, ignore.
+        """
+        self.logger.warning('pin cant be set via the attribute')
+
     @property
     def pin_bcm(self):
         """
@@ -1067,6 +1074,13 @@ class LED_RGB(Digital_Out):
         return {'r':self.channels['r'].pin_bcm,
                 'g':self.channels['g'].pin_bcm,
                 'b':self.channels['b'].pin_bcm}
+
+    @pin_bcm.setter
+    def pin_bcm(self, pin_bcm):
+        """
+        Pins don't get set like this for the LED_RGB, ignore\
+        """
+        self.logger.warning('pin_bcm cant be set via the attribute')
 
 class Solenoid(Digital_Out):
     """
