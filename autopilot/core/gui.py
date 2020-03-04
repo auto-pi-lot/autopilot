@@ -655,14 +655,14 @@ class New_Subject_Wizard(QtWidgets.QDialog):
             self.id = QtWidgets.QLineEdit()
             self.start_date = QtWidgets.QLineEdit(datetime.date.today().isoformat())
             self.blmass = QtWidgets.QLineEdit()
-            self.blmass.setValidator(QtWidgets.QDoubleValidator(0.0, 30.0, 1, self.blmass))
+            self.blmass.setValidator(QtGui.QDoubleValidator(0.0, 30.0, 1, self.blmass))
             self.minmass_pct = QtWidgets.QSpinBox()
             self.minmass_pct.setRange(0,100)
             self.minmass_pct.setSingleStep(5)
             self.minmass_pct.setSuffix('%')
             self.minmass_pct.setValue(80)
             self.minmass = QtWidgets.QLineEdit()
-            self.minmass.setValidator(QtWidgets.QDoubleValidator(0.0, 30.0, 1, self.minmass))
+            self.minmass.setValidator(QtGui.QDoubleValidator(0.0, 30.0, 1, self.minmass))
             self.genotype = QtWidgets.QLineEdit()
             self.expt     = QtWidgets.QLineEdit()
 
@@ -995,9 +995,9 @@ class Protocol_Wizard(QtWidgets.QDialog):
                 input_widget = QtWidgets.QLineEdit()
                 input_widget.setObjectName(k)
                 if v['type'] == 'int':
-                    input_widget.setValidator(QtWidgets.QIntValidator())
+                    input_widget.setValidator(QtGui.QIntValidator())
                 elif v['type'] == 'float':
-                    input_widget.setValidator(QtWidgets.QDoubleValidator())
+                    input_widget.setValidator(QtGui.QDoubleValidator())
                 input_widget.editingFinished.connect(self.set_param)
                 if 'value' in v.keys():
                     input_widget.setText(v['value'])
@@ -1660,7 +1660,7 @@ class Bandwidth_Test(QtWidgets.QDialog):
         self.settings = QtWidgets.QFormLayout()
 
         self.n_messages = QtWidgets.QLineEdit('1000')
-        self.n_messages.setValidator(QtWidgets.QIntValidator())
+        self.n_messages.setValidator(QtGui.QIntValidator())
 
         self.receipts = QtWidgets.QCheckBox('Get receipts?')
         self.receipts.setChecked(True)
@@ -2211,10 +2211,10 @@ class Pilot_Ports(QtWidgets.QWidget):
         param_layout = QtWidgets.QFormLayout()
         self.n_clicks = QtWidgets.QLineEdit(str(1000))
         self.n_clicks.setSizePolicy(QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed)
-        self.n_clicks.setValidator(QtWidgets.QIntValidator())
+        self.n_clicks.setValidator(QtGui.QIntValidator())
         self.interclick_interval = QtWidgets.QLineEdit(str(50))
         self.interclick_interval.setSizePolicy(QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed)
-        self.interclick_interval.setValidator(QtWidgets.QIntValidator())
+        self.interclick_interval.setValidator(QtGui.QIntValidator())
 
         param_layout.addRow("n clicks", self.n_clicks)
         param_layout.addRow("interclick (ms)", self.interclick_interval)
@@ -2245,7 +2245,7 @@ class Pilot_Ports(QtWidgets.QWidget):
             dur_label = QtWidgets.QLabel("Click dur (ms)")
             self.dur_boxes[port] = QtWidgets.QLineEdit(str(20))
             self.dur_boxes[port].setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-            self.dur_boxes[port].setValidator(QtWidgets.QIntValidator())
+            self.dur_boxes[port].setValidator(QtGui.QIntValidator())
             vol_layout.addWidget(dur_label, i, 1)
             vol_layout.addWidget(self.dur_boxes[port], i, 2)
 
@@ -2259,7 +2259,7 @@ class Pilot_Ports(QtWidgets.QWidget):
             self.vol_boxes[port] = QtWidgets.QLineEdit()
             self.vol_boxes[port].setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
             self.vol_boxes[port].setObjectName(port)
-            self.vol_boxes[port].setValidator(QtWidgets.QDoubleValidator())
+            self.vol_boxes[port].setValidator(QtGui.QDoubleValidator())
             self.vol_boxes[port].textEdited.connect(self.update_volumes)
             vol_layout.addWidget(vol_label, i, 4)
             vol_layout.addWidget(self.vol_boxes[port], i, 5)
@@ -2980,7 +2980,7 @@ def pop_dialog(message, msg_type="info", details="", buttons=['Ok']):
 #                 input_widget = QtWidgets.QLineEdit()
 #                 input_widget.setObjectName(k)
 #                 if v['type'] == 'int':
-#                     input_widget.setValidator(QtWidgets.QIntValidator())
+#                     input_widget.setValidator(QtGui.QIntValidator())
 #                 input_widget.textEdited.connect(self.set_param)
 #                 if k in self.params.keys():
 #                     input_widget.setText(self.params[k])

@@ -1347,7 +1347,7 @@ class Net_Node(object):
         # we have a few builtin listens
         self.listens = {
             'CONFIRM': self.l_confirm,
-            'STREAM' : self.l_stream
+            #'STREAM' : self.l_stream
         }
         # then add the rest
         self.listens.update(listens)
@@ -1638,11 +1638,13 @@ class Net_Node(object):
 
 
         self.logger.debug('CONFIRMED MESSAGE {}'.format(value))
-
+    #
     # def l_stream(self, value):
     #     listen_fn = self.listens[value['inner_key']]
     #     for v in value['payload']:
     #         listen_fn(v)
+    #
+    #
 
 
     def prepare_message(self, to, key, value, repeat, flags=None):

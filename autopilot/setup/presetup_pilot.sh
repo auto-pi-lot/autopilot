@@ -75,7 +75,7 @@ sudo apt-get install -y \
 echo -e "\n\n${RED}Installing necessary Python packages...\n\n ${NC}"
 
 
-sudo -H pip3 install -U pyzmq npyscreen tornado inputs requests blosc
+pip3 install -U pyzmq npyscreen tornado inputs requests blosc
 
 # install pigpio
 cd $GITDIR
@@ -128,7 +128,7 @@ if [ "$installjack" == "y" ]; then
 
     # installing jack python packages
     sudo apt-get install -y python-cffi
-    sudo -H pip install JACK-Client
+    pip3 install JACK-Client
 fi
 
 if [ "$setuphifi" == "y" ]; then
@@ -159,7 +159,7 @@ if [ "$visualstim" == "y" ]; then
     sudo apt-get install -y xserver-xorg xorg-dev xinit xserver-xorg-video-fbdev python-opencv mesa-utils
 
     echo -e "\n${RED}Installing Psychopy dependencies.. ${NC}"
-    pip install \
+    pip3 install \
         pyopengl \
         pyglet \
         pillow \
@@ -192,7 +192,7 @@ if [ "$visualstim" == "y" ]; then
 
     echo -e "\n${RED}Installing Psychopy... ${NC}"
 
-    pip install psychopy --no_deps
+    pip3 install psychopy --no_deps
 
     sudo sh -c "echo winType = \"glfw\" >> /home/pi/.psychopy3/userPrefs.cfg"
 fi

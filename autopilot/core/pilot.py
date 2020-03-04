@@ -24,7 +24,7 @@ from scipy.stats import linregress
 import tables
 
 # TODO: This is lazy, make the paths work.
-import autopilot.hardware.gpio
+
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from autopilot import prefs
@@ -58,6 +58,7 @@ if __name__ == '__main__':
 
 from autopilot.core.networking import Pilot_Station, Net_Node, Message
 from autopilot import tasks
+from autopilot.hardware import gpio
 
 
 ########################################
@@ -188,10 +189,10 @@ class Pilot:
         self.pulls = []
         if hasattr(prefs, 'PULLUPS'):
             for pin in prefs.PULLUPS:
-                self.pulls.append(autopilot.hardware.gpio.Digital_Out(int(pin), pull='U'))
+                self.pulls.append(gpio.Digital_Out(int(pin), pull='U'))
         if hasattr(prefs, 'PULLDOWNS'):
             for pin in prefs.PULLDOWNS:
-                self.pulls.append(autopilot.hardware.gpio.Digital_Out(int(pin), pull='D'))
+                self.pulls.append(gpio.Digital_Out(int(pin), pull='D'))
 
         # check if the calibration file needs to be updated
 
@@ -395,7 +396,7 @@ class Pilot:
 
         """
         pin_num = prefs.HARDWARE['PORTS'][port_name]
-        port = autopilot.hardware.gpio.Solenoid(pin_num, duration=int(open_dur))
+        port = gpio.Solenoid(pin_num, duration=int(open_dur))
         msg = {'click_num': 0,
                'pilot': self.name,
                'port': port_name
@@ -588,7 +589,7 @@ class Pilot:
             return
 
         for position, pins in prefs.HARDWARE['LEDS'].items():
-            led = autopilot.hardware.gpio.LED_RGB(pins=pins)
+            led = gpio.LED_RGB(pins=pins)
             time.sleep(1.)
             led.set_color(col=[0,0,0])
             led.release()

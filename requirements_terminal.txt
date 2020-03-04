@@ -10,7 +10,7 @@ inputs
 blosc
 scikit-video
 PyOpenGL
-pyqtgraph>=0.11.0
+#pyqtgraph>=0.11.0
 PySide2
 tqdm
 

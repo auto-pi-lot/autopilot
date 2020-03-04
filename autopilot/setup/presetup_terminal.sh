@@ -9,6 +9,12 @@ if [[ ! -d $GITDIR ]]; then
   read -p "Can't detect git directory (probably being run from outside the repo), where is the autopilot repository?: " GITDIR
 fi
 
+#read -p "Use a virtual environment?(n/env_name): " VENV_NAME
+#
+#if [[ "$VENV_NAME" != "n" ]]; then
+#  source "${VENV_NAME/bin/activate}"
+#fi
+
 
 
 
@@ -20,7 +26,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 fi
 
 echo -e "${RED}Installing Python dependencies\n${NC}"
-sudo -H pip3 install -r "${GITDIR}/requirements_terminal.txt"
+pip3 install -r "${GITDIR}/requirements_terminal.txt" --no-cache-dir
 
 echo -e "${RED}Installing Development version of pyqtgraph\n${NC}"
 pip3 install git+https://github.com/pyqtgraph/pyqtgraph@develop
