@@ -752,7 +752,7 @@ class PWM(Digital_Out):
             (int): 25-40000
         """
         if not self._range:
-            self._range = self.pig.get_pwm_range(self.pin_bcm)
+            self._range = self.pig.get_PWM_range(self.pin_bcm)
 
         return self._range
 
