@@ -480,20 +480,20 @@ class Pilot:
         time.sleep(0.25)
 
         if spacing > 0:
-            last_message = time.clock()
+            last_message = time.perf_counter()
             for i in range(n_msg):
                 message['n_msg'] = i
                 message['timestamp'] = datetime.datetime.now().isoformat()
                 self.node.send(to='bandwidth',key='BANDWIDTH_MSG',
                                value=message, repeat=confirm, flags={'MINPRINT':True})
-                this_message = time.clock()
+                this_message = time.perf_counter()
                 waitfor = np.clip(spacing-(this_message-last_message), 0, spacing)
 
                 #time.sleep(np.random.exponential(1.0/rate))
                 # just do linear spacing lol.
 
                 time.sleep(waitfor)
-                last_message = time.clock()
+                last_message = time.perf_counter()
         else:
             for i in range(n_msg):
                 message['n_msg'] = i

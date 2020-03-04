@@ -1640,8 +1640,7 @@ class Bandwidth_Test(QtWidgets.QDialog):
         self.node = Net_Node(id="bandwidth",
                              upstream='T',
                              port = prefs.MSGPORT,
-                             listens=self.listens,
-                             log_level= logging.ERROR)
+                             listens=self.listens)
 
         self.init_ui()
 
