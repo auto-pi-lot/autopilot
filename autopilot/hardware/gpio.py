@@ -250,7 +250,11 @@ class GPIO(Hardware):
         Note:
             the Hardware metaclass will call this method on object deletion.
         """
-        self.pull = None
+        try:
+            self.pull = None
+        except:
+            pass
+
         self.pig.stop()
 
 
@@ -543,6 +547,7 @@ class Digital_Out(GPIO):
         """
         self.stop_script()
         self.set(self.off)
+        time.sleep(0.1)
         super(Digital_Out, self).release()
 
 
@@ -815,6 +820,7 @@ class PWM(Digital_Out):
 
         """
         self.set(self.off)
+        time.sleep(0.1)
         super(PWM, self).release()
 
 

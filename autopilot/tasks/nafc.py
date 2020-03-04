@@ -277,10 +277,10 @@ class Nafc(Task):
         # Set sound trigger and LEDs
         self.triggers['C'] = [self.stim.play, self.stim_start]
         if self.stim_light:
-            change_to_blue = lambda: self.hardware['LEDS']['C'].set_color([0, 0, 255])
+            change_to_blue = lambda: self.hardware['LEDS']['C'].set([0, 0, 255])
             self.triggers['C'].append(change_to_blue)
         else:
-            turn_off = lambda: self.hardware['LEDS']['C'].set_color([0,0,0])
+            turn_off = lambda: self.hardware['LEDS']['C'].set([0,0,0])
             self.triggers['C'].append(turn_off)
 
         if self.req_reward:
