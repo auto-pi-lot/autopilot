@@ -59,7 +59,7 @@ echo -e "\n${RED}Attempting to download Spinnaker SDK files from static link${NC
 #SPINNAME="spinnaker-1.27.0.48-Ubuntu16.04-armhf-pkg.tar.gz"
 #PYSPINNAME="spinnaker_python-1.27.0.48-Ubuntu16.04-cp27-cp27mu-linux_armv7l.tar.gz"
 SPINURL="https://flir.app.boxcn.net/v/SpinnakerSDK/file/545650882106"
-PYSPINURL="https://flir.app.boxcn.net/v/SpinnakerSDK/file/545648953427"
+PYSPINURL="https://flir.app.boxcn.net/v/SpinnakerSDK/file/545654685895"
 
 python -c "from request_helpers import download_box; download_box('${SPINURL}')"
 python -c "from request_helpers import download_box; download_box('${PYSPINURL}')"

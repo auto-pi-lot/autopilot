@@ -411,7 +411,7 @@ class Station(multiprocessing.Process):
                             pass
                     else:
                         # if we didn't just put this message in our outbox
-                        if (time.time() - push_outbox[id][0]) > self.repeat_interval:
+                        if (time.time() - push_outbox[id][0]) > self.repeat_interval*2:
 
                             self.logger.debug('REPUBLISH {} - {}'.format(id, str(push_outbox[id][1])))
                             self.pusher.send_multipart([self.push_id, push_outbox[id][1].serialize()])
@@ -431,7 +431,7 @@ class Station(multiprocessing.Process):
 
                     else:
                         # if we didn't just put this message in our outbox
-                        if (time.time() - send_outbox[id][0]) > self.repeat_interval:
+                        if (time.time() - send_outbox[id][0]) > self.repeat_interval*2:
 
                             self.logger.debug('REPUBLISH {} - {}'.format(id, str(send_outbox[id][1])))
                             self.listener.send_multipart([bytes(send_outbox[id][1].to, encoding="utf-8"), send_outbox[id][1].serialize()])
