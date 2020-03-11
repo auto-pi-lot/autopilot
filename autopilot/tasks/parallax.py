@@ -26,8 +26,8 @@ class Parallax(Task):
         'data': {
             'accel_x': 'shaded'
         },
-        'video' : ['SIDE', 'EYE', 'POV'],
-        #'video': ['SIDE'],
+        # 'video' : ['SIDE', 'EYE', 'POV'],
+        'video': ['SIDE'],
         'continuous': True
     }
 
@@ -46,9 +46,9 @@ class Parallax(Task):
     }
 
     HARDWARE = {
-        'CAMS': {
+        'CAMERAS': {
             'SIDE': cameras.Camera_Spinnaker,
-            'EYE': cameras.Camera_CV
+            # 'EYE': cameras.Camera_CV
             # top...
         },
         # 'DOF': {

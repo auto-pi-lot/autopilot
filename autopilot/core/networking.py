@@ -455,9 +455,9 @@ class Station(multiprocessing.Process):
         # delete message from outbox if we still have it
         try:
             if msg.value in self.send_outbox.keys():
-                del self.send_outbox[msg.id]
+                del self.send_outbox[msg.value]
             elif msg.value in self.push_outbox.keys():
-                del self.push_outbox[msg.id]
+                del self.push_outbox[msg.value]
         except KeyError:
             # fine, already deleted
             pass
@@ -1467,12 +1467,6 @@ class Net_Node(object):
                 self.logger.error('Message failed to validate:\n{}'.format(str(msg)))
             return
 
-        log_this = True
-        if 'NOLOG' in msg.flags.keys():
-            log_this = False
-
-        if self.logger and log_this:
-            self.logger.debug('{} - RECEIVED: {}'.format(self.id, str(msg)))
 
         # if msg.key == 'CONFIRM':
         #     if msg.value in self.outbox.keys():
@@ -1507,6 +1501,14 @@ class Net_Node(object):
         if (msg.key != "CONFIRM") and ('NOREPEAT' not in msg.flags.keys()) :
             # send confirmation
             self.send(msg.sender, 'CONFIRM', msg.id)
+
+        log_this = True
+        if 'NOLOG' in msg.flags.keys():
+            log_this = False
+
+        if self.logger and log_this:
+            self.logger.debug('{} - RECEIVED: {}'.format(self.id, str(msg)))
+
 
     def send(self, to=None, key=None, value=None, msg=None, repeat=True, flags = None, force_to = False):
         """
@@ -1922,9 +1924,9 @@ class Message(object):
         #     self.DETECTED_MINPRINT = True
         # TODO: Make verbose/debugging mode, print value in that case.
         if self.key == 'FILE' or ('MINPRINT' in self.flags.keys()):
-            me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}".format(self.id, self.to, self.sender, self.key)
+            me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}, FLAGS: {}".format(self.id, self.to, self.sender, self.key, self.flags)
         else:
-            me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}; VALUE: {}".format(self.id, self.to, self.sender, self.key, self.value)
+            me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}; FLAGS: {}; VALUE: {}".format(self.id, self.to, self.sender, self.key, self.flags, self.value)
         #me_string = "ID: {}; TO: {}; SENDER: {}; KEY: {}".format(self.id, self.to, self.sender, self.key)
 
         return me_string
