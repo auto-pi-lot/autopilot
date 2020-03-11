@@ -112,6 +112,7 @@ class Camera(Hardware):
     """
     input = True #: test documenting input
     type = "CAMERA" #: (str): what are we anyway?
+    trigger = False
 
     def __init__(self, fps=None, timed=False, **kwargs):
         """
@@ -1542,7 +1543,7 @@ class Directory_Writer(object):
                       '-pattern_type', 'glob', '-i', glob_str,
                       '-pix_fmt', 'yuv420p', '-r', str(self.fps),
                       '-vcodec', 'libx264', '-preset', 'veryfast',
-                      self.dir.rstrip(os.sep)+'.mp4']
+                      self.dir.rstrip(os.sep).rstrip('__')+'.mp4']
 
         result = subprocess.call(ffmpeg_cmd)
         return result
