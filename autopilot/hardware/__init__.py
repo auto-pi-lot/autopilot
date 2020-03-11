@@ -94,7 +94,7 @@ class Hardware(object):
     input = False
     output = False
 
-    def __init__(self, name=None):
+    def __init__(self, name=None, **kwargs):
         if name:
             self.name = name
         else:
