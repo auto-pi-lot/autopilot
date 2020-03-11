@@ -305,8 +305,8 @@ class Station(multiprocessing.Process):
         #     log_this = False
 
 
-        if msg.key != "CONFIRM":
-            self.logger.debug('MESSAGE SENT - {}'.format(str(msg)))
+        #if msg.key != "CONFIRM":
+        self.logger.debug('MESSAGE SENT - {}'.format(str(msg)))
 
         if repeat and not msg.key == "CONFIRM":
             # add to outbox and spawn timer to resend
@@ -538,6 +538,9 @@ class Station(multiprocessing.Process):
                 else:
                     #if we know who they are or not, try to send it through router anyway.
                     self.listener.send_multipart([unserialized_to, unserialized_to, msg[-1]])
+
+                # send confirmation
+
                 return
 
             #msg = json.loads(msg[-1])
@@ -601,7 +604,9 @@ class Station(multiprocessing.Process):
             # send a return message that confirms even if we except
             # don't confirm confirmations
             if (msg.key != "CONFIRM") and ('NOREPEAT' not in msg.flags.keys()):
+                self.logger.debug('SENDING CONFIRMATION!!!')
                 if send_type == 'router':
+                    self.logger.debug('SENDING CONFIRMATION TO {}'.format(sender, msg.id))
                     self.send(sender, 'CONFIRM', msg.id)
                 elif send_type == 'dealer':
                     self.push(msg.sender, 'CONFIRM', msg.id)
