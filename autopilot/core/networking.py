@@ -1330,7 +1330,7 @@ class Net_Node(object):
     repeat_interval = 5 # how many seconds to wait before trying to repeat a message
 
     def __init__(self, id, upstream, port, listens, instance=True, upstream_ip='localhost',
-                 route_port = None, daemon=True, expand_on_receive=True):
+                 daemon=True, expand_on_receive=True):
         """
 
         """
@@ -1362,7 +1362,6 @@ class Net_Node(object):
         self.msg_counter = count()
 
         # try to get a logger
-
         self.init_logging()
 
         # If we were given an explicit IP to connect to, stash it

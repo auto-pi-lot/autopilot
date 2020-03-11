@@ -82,29 +82,30 @@ class Parallax(Task):
 
         self.init_hardware()
 
-        self.node = Net_Node(id="T_{}".format(prefs.NAME),
+        self.node = Net_Node(id="{}_TASK".format(prefs.NAME),
                              upstream=prefs.NAME,
                              port=prefs.MSGPORT,
                              listens = {},
-                             instance = True)
+                             instance = False)
 
         self.subject = kwargs['subject']
-        value = {
-            'child': {'parent': prefs.NAME, 'subject': self.subject},
-            'subject' : self.subject,
-
-        }
-        value.update(self.CHILDREN['HEADCAM'])
-
-        self.node.send(to=prefs.NAME, key='CHILD', value=value)
+        # value = {
+        #     'child': {'parent': prefs.NAME, 'subject': self.subject},
+        #     'subject' : self.subject,
+        #
+        # }
+        # value.update(self.CHILDREN['HEADCAM'])
+        #
+        # self.node.send(to=prefs.NAME, key='CHILD', value=value)
 
         self.stages = itertools.cycle([self.test])
 
         self.n_trials = itertools.count()
 
-        print(self.hardware)
+        # print(self.hardware)
 
-        self.hardware['CAMS']['EYE'].capture()
+        # self.hardware['CAMS']['EYE'].capture()
+        self.hardware['CAMS']['SIDE'].stream(to="T")
         self.hardware['CAMS']['SIDE'].capture()
 
     def test(self):
