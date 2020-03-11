@@ -5,28 +5,46 @@ Development Roadmap, Minor To-dos, and all future plans :)
 To-Do
 =====
 
-.. container:: roadmap high-priority
-
-    Test div content inside custom classes
-
 Visions
 -----------
 
 *The long view: design, ux, and major functionality projects roughly corresponding to minor semantic versions*
 
-* **Integrations** - Make Autopilot work with...
+Integrations
+~~~~~~~~~~~~
 
-    * **DeepLabCut** - write a realtime mode for DLC that analyzes frames as they are acquired,
-      develop a analysis pipelining framework that lets the results of the analysis be operated on (eg x, y coordinates ->
-      labeled regions in an arena) and used to control task operation.
-    * **OpenEphys** - write a C extension to the Rhythm API similar to that used by the OpenEphys
+Make autopilot work with...
+
+.. roadmap::
+   :title: DeepLabCut Integration
+   :priority: high
+   :dblink: https://groups.google.com/forum/#!topic/autopilot-users/T-PNfrHDtzA
+
+   * collaborate w/ DLC crew to write a realtime mode for DLC that analyzes frames as they are acquired,
+   * develop a analysis pipelining framework that lets the results of the analysis be operated on (eg x, y coordinates ->
+     labeled regions in an arena) and used to control task operation.
+
+.. roadmap::
+    :title: Open Ephys Integration
+    :priority: medium
+    :dblink: https://google.com
+
+
+    * write a C extension to the Rhythm API similar to that used by the OpenEphys
       `Rhythm Node <https://github.com/open-ephys/plugin-GUI/tree/master/Plugins/RhythmNode>`_.
-      Enable existing OE configuration files to be loaded and used to configure plugin,
+    * Enable existing OE configuration files to be loaded and used to configure plugin,
       so ephys data can be collected natively alongside behavioral data.
-    * **Bonsai** - Write source and sink modules so `Bonsai <https://bonsai-rx.org/>`_ pipelines can be
+
+.. roadmap::
+    :title: Bonsai Integration
+    :priority: low
+    :dblink: https://google.com
+
+    * Write source and sink modules so `Bonsai <https://bonsai-rx.org/>`_ pipelines can be
       used within Autopilot for image processing, acquisition etc.
 
-* **Closed-Loop Behavior & Processing Pipelines**
+Closed-Loop Behavior & Processing Pipelines
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     * design a signal/slot architecture like Qt so that hardware devices
     and data streams can be connected with low latency. Ideally something like::

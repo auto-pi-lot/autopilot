@@ -32,8 +32,8 @@ sys.path.insert(0, os.path.abspath('../..'))
 #     os.environ['PYTHONPATH'] += ':'+os.path.abspath('../')
 
 sys.setrecursionlimit(1500)
-# sys.path.insert(0, os.path.abspath('./'))
-# from local_directives import UMLGenerateDirective
+sys.path.insert(0, os.path.abspath('./'))
+from local_directives import RoadmapDirective, RoadmapNode
 
 #import sphinx_bootstrap_theme
 #import guzzle_sphinx_theme
@@ -86,7 +86,8 @@ extensions = [
     #'sphinxcontrib.fulltoc',
     #'localext.fulltoc'
     'sphinx_sass',
-    'sphinx_pyreverse'
+    'sphinx_pyreverse',
+    'local_directives'
 ]
 
 if try_theme == 'rtd':
@@ -433,17 +434,15 @@ def css_class_role(name, rawtext, text, lineno, inliner, options={}, content={})
 #         sections = [section]
 #         return sections
 #
-# def visit_roadmap_node(self, node):
-#     pass
-#
-# def depart_roadmap_node(self, node):
-#     link = """<p><a class="reference internal" href="something.html" title="a title">a title</a></p>"""
-#     self.body.append(link)
+
 
 
 def setup(app):
     # if try_theme == 'bootstrap':
     app.add_css_file("restyle.css")
+
+    # app.add_node(RoadmapNode, html=(visit_roadmap_node, depart_roadmap_node))
+    # app.add_directive('roadmap', RoadmapDirective)
     # app.add_directive('uml', UMLGenerateDirective)
     # app.add_role('cssclass', css_class_role)
     # app.add_node(RoadmapNode, html=(visit_roadmap_node, depart_roadmap_node))

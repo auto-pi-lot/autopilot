@@ -18,7 +18,7 @@ For a detailed overview of Autopilot's motivation, design, and structure, see ou
 
 .. admonition:: What's New :ref:`(v0.3.0) <changelog_v030>`
 
-    * Autopilot has moved to Python 3.8!!
+    * Autopilot has moved to Python 3!! (Tested on 3.6-3.8)
     * Capturing video with OpenCV and the Spinnaker SDK is now supported (See :mod:`autopilot.hardware.cameras`)
     * An :class:`~hardware.i2c.I2C_9DOF` motion sensor and the :class:`~hardware.i2c.MLX90640` temperature sensor
       are now supported.

@@ -25,3 +25,65 @@ ul.simple {
   box-shadow: 5px 10px #000000;
   background-color: #ff0000 !important;
 }
+
+.roadmap-title {
+  //float: left;
+  width: 100%;
+  padding: 0.1em 0.5em 0.1em 0.5em;
+  //color: #ffffff;
+
+  &.roadmap-priority-high {
+    border-top: solid 3px #ff0000;
+    background: #ffeeee;
+    //background-color: #dd0000;
+    color: #dd0000;
+
+    .roadmap-dblink {
+      color: #dd0000;
+      &:visited{
+        color: #dd0000;
+      }
+    }
+  }
+
+  &.roadmap-priority-medium {
+
+    border-top: solid 3px #f77423;
+    background: rgba(255, 228, 222, 0.9);
+    color: #f77423;
+
+    .roadmap-dblink {
+      color:  #f77423;
+      &:visited{
+        color:  #f77423;
+      }
+    }
+  }
+
+  &.roadmap-priority-low {
+    border-top: solid 3px #008000;
+    background: rgb(225, 255, 222);
+    color: #008000;
+
+    .roadmap-dblink {
+      color:  #008000;
+      &:visited{
+        color: #008000;
+      }
+    }
+  }
+
+
+}
+
+.roadmap-dblink {
+  float: right;
+  font-family: 'Cutive Mono', monospace;
+  font-size: 0.6em;
+  //color: #dddddd;
+  line-height: 2;
+
+  //&:visited {
+  //  color: #cccccc;
+  //}
+}
