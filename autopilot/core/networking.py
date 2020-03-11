@@ -604,9 +604,7 @@ class Station(multiprocessing.Process):
             # send a return message that confirms even if we except
             # don't confirm confirmations
             if (msg.key != "CONFIRM") and ('NOREPEAT' not in msg.flags.keys()):
-                self.logger.debug('SENDING CONFIRMATION!!!')
                 if send_type == 'router':
-                    self.logger.debug('SENDING CONFIRMATION TO {}'.format(sender, msg.id))
                     self.send(sender, 'CONFIRM', msg.id)
                 elif send_type == 'dealer':
                     self.push(msg.sender, 'CONFIRM', msg.id)

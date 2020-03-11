@@ -105,8 +105,8 @@ class Parallax(Task):
         # print(self.hardware)
 
         # self.hardware['CAMS']['EYE'].capture()
-        self.hardware['CAMS']['SIDE'].stream(to="T")
-        self.hardware['CAMS']['SIDE'].capture()
+        self.hardware['CAMERAS']['SIDE'].stream(to="T")
+        self.hardware['CAMERAS']['SIDE'].capture()
 
     def test(self):
         self.stage_block.clear()
