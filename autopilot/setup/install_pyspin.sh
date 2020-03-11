@@ -112,7 +112,7 @@ cd ../../
 mkdir pyspin
 tar -xvf ${PYSPINFILES[0]} -C pyspin
 cd pyspin
-python -m pip install spinnaker_*.whl
+python3 -m pip install spinnaker_*.whl
 
 cd ../
 

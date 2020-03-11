@@ -870,6 +870,25 @@ class Camera_Spinnaker(Camera):
         self._writable_attributes = {}
         self._timestamps = []
 
+        # set passed parameters
+        # has to be done in a specific order, as they are mutually dependent.
+        # eg. exposure depends on fps, which depends on bin, etc.
+        if 'pixel_format' in kwargs.keys():
+            self.set('PixelFormat', kwargs['pixel_format'])
+        else:
+            self.set('PixelFormat', PySpin.PixelFormat_Mono8)
+
+        if 'bin' in kwargs.keys():
+            self.bin = kwargs['bin']
+        if 'fps' in kwargs.keys():
+            self.fps = kwargs['fps']
+
+        if 'acquisition_mode' in kwargs.keys():
+            self.set('AcquisitionMode', kwargs['acquisition_mode'])
+        else:
+            self.acquisition_mode = 'continuous'
+
+
 
     def init_cam(self):
         """
