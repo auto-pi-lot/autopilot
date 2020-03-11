@@ -135,7 +135,7 @@ class Camera(Hardware):
 
         self.blosc = True
 
-        self.fps = fps
+        #self.fps = fps
         self.timed = timed
 
         self.q = None
