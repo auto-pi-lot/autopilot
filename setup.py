@@ -10,7 +10,6 @@ CMAKE_INSTALL_DIR = ''
 
 # detect if on raspberry pi
 ret = subprocess.call(['grep', '-q', 'BCM', '/proc/cpuinfo'])
-
 if ret == 0:
     IS_RASPI = True
 
