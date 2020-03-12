@@ -1,0 +1,2 @@
+from skbuild import setup
+
