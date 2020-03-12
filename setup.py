@@ -26,7 +26,7 @@ setup(
     description="Distributed behavioral experiments",
     author="Jonny Saunders",
     license="MPL2",
-
+    # dependency_links=['src/pigpio/'],
     packages=find_packages(),
     cmake_args=CMAKE_ARGS,
     cmake_install_dir = CMAKE_INSTALL_DIR

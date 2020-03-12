@@ -5,13 +5,13 @@ project(autopilot VERSION 0.3)
 option(PIGPIO "Install pigpio (only possible on the raspberry pi)" OFF)
 
 if(PIGPIO)
-    add_subdirectory(autopilot/external/pigpio)
+    add_subdirectory(src/pigpio)
     list(APPEND INSTALL_AUTOPILOT_PACKAGES pigpio)
 endif()
 
 
 
 if(INSTALL_AUTOPILOT_PACKAGES)
-    install(TARGETS ${INSTALL_PACKAGES} LIBRARY DESTINATION external)
+    install(TARGETS ${INSTALL_PACKAGES} LIBRARY DESTINATION autopilot/external)
 endif()
 
