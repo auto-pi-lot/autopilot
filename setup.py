@@ -17,7 +17,7 @@ if ret == 0:
 # configure for raspberry pi
 if IS_RASPI:
     CMAKE_ARGS = ['-DPIGPIO=ON']
-    CMAKE_INSTALL_DIR = '/usr/local'
+    #CMAKE_INSTALL_DIR = '/usr/local'
     SCRIPTS = ['autopilot/setup/setup_pilot.py']
 
 setup(
@@ -27,7 +27,7 @@ setup(
     author="Jonny Saunders",
     license="MPL2",
 
-    #packages=find_packages(),
+    packages=find_packages(),
     cmake_args=CMAKE_ARGS,
     cmake_install_dir = CMAKE_INSTALL_DIR
 

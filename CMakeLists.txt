@@ -6,11 +6,12 @@ option(PIGPIO "Install pigpio (only possible on the raspberry pi)" OFF)
 
 if(PIGPIO)
     add_subdirectory(autopilot/external/pigpio)
-    list(APPEND INSTALL_PACKAGES pigpio)
+    list(APPEND INSTALL_AUTOPILOT_PACKAGES pigpio)
 endif()
 
 
-#set(tool_dest "bin")
 
-install(TARGETS ${INSTALL_PACKAGES} LIBRARY DESTINATION "bin")
+if(INSTALL_AUTOPILOT_PACKAGES)
+    install(TARGETS ${INSTALL_PACKAGES} LIBRARY DESTINATION external)
+endif()
 
