@@ -1,6 +1,7 @@
-[submodule "autopilot/external/pigpio"]
-	path = autopilot/external/pigpio
-	url = https://github.com/sneakers-the-rat/pigpio.git
-[submodule "autopilot/external/mlx90640-library"]
-	path = autopilot/external/mlx90640-library
-	url = https://github.com/sneakers-the-rat/mlx90640-library.git
+
+[submodule "src/pigpio"]
+	path = src/pigpio
+	url = https://github.com/sneakers-the-rat/pigpio/
+[submodule "src/mlx90640-library"]
+	path = src/mlx90640-library
+	url = https://github.com/sneakers-the-rat/mlx90640-library/
