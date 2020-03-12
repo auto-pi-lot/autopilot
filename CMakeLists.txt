@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 project(autopilot VERSION 0.3)
-find_package(PythonExtensions REQUIRED)
+#find_package(PythonExtensions REQUIRED)
 
 option(PIGPIO "Install pigpio (only possible on the raspberry pi)" OFF)
 
