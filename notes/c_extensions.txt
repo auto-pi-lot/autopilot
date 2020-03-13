@@ -1,1 +1,2 @@
 - https://scipy-cookbook.readthedocs.io/items/C_Extensions_NumPy_arrays.html
+- https://python-packaging.readthedocs.io/en/latest/command-line-scripts.html#the-scripts-keyword-argument

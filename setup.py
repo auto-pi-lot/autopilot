@@ -18,7 +18,7 @@ if ret == 0:
 if IS_RASPI:
     CMAKE_ARGS = ['-DPIGPIO=ON']
     #CMAKE_INSTALL_DIR = '/usr/local'
-    SCRIPTS = ['autopilot/setup/setup_pilot.py']
+    SCRIPTS.append('autopilot/external/pigpio/bin/pigpiod')
 
 setup(
     name="autopilot",
@@ -26,9 +26,11 @@ setup(
     description="Distributed behavioral experiments",
     author="Jonny Saunders",
     license="MPL2",
+    scripts = SCRIPTS,
     # dependency_links=['src/pigpio/'],
     packages=find_packages(),
     cmake_args=CMAKE_ARGS,
-    cmake_install_dir = CMAKE_INSTALL_DIR
+    cmake_install_dir = CMAKE_INSTALL_DIR,
+
 
 )
