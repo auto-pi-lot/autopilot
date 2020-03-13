@@ -22,6 +22,9 @@ if IS_RASPI:
     SCRIPTS.append('autopilot/external/pigpio/pigpiod')
     PACKAGES.append('autopilot.external.pigpio')
 
+packs = find_packages()
+packs.extend(PACKAGES)
+
 setup(
     name="autopilot",
     version="0.3.0",
@@ -30,7 +33,7 @@ setup(
     license="MPL2",
     scripts = SCRIPTS,
     # dependency_links=['src/pigpio/'],
-    packages=find_packages().extend(PACKAGES),
+    packages=packs,
     cmake_args=CMAKE_ARGS,
     cmake_install_dir = CMAKE_INSTALL_DIR,
 
