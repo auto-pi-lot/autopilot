@@ -19,7 +19,7 @@ if ret == 0:
 if IS_RASPI:
     CMAKE_ARGS = ['-DPIGPIO=ON']
     #CMAKE_INSTALL_DIR = '/usr/local'
-    SCRIPTS.append('autopilot/external/pigpio/pigpiod')
+    #SCRIPTS.append('autopilot/external/pigpio/pigpiod')
     PACKAGES.append('autopilot.external.pigpio')
 
 packs = find_packages()
