@@ -5,6 +5,7 @@ import subprocess
 # declare defaults
 IS_RASPI = False
 SCRIPTS = []
+PACKAGES = []
 CMAKE_ARGS = []
 CMAKE_INSTALL_DIR = ''
 
@@ -18,7 +19,8 @@ if ret == 0:
 if IS_RASPI:
     CMAKE_ARGS = ['-DPIGPIO=ON']
     #CMAKE_INSTALL_DIR = '/usr/local'
-    SCRIPTS.append('autopilot/external/pigpio/bin/pigpiod')
+    SCRIPTS.append('autopilot/external/pigpio/pigpiod')
+    PACKAGES.append('autopilot.external.pigpio')
 
 setup(
     name="autopilot",
@@ -28,7 +30,7 @@ setup(
     license="MPL2",
     scripts = SCRIPTS,
     # dependency_links=['src/pigpio/'],
-    packages=find_packages(),
+    packages=find_packages().extend(PACKAGES),
     cmake_args=CMAKE_ARGS,
     cmake_install_dir = CMAKE_INSTALL_DIR,
 
