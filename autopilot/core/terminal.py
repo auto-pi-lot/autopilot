@@ -6,7 +6,13 @@ import json
 import sys
 import os
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+import datetime
+import logging
+import threading
+from collections import OrderedDict as odict
+import numpy as np
+
+from PySide2 import QtCore, QtGui, QtSvg, QtWidgets
 
 from autopilot import prefs
 from autopilot.core import styles
@@ -33,14 +39,7 @@ if __name__ == '__main__':
     prefs.init(prefs_file)
 
 
-import datetime
-import logging
-import threading
-from collections import OrderedDict as odict
-import numpy as np
 
-
-from PySide2 import QtCore, QtGui, QtSvg, QtWidgets
 from autopilot.core.subject import Subject
 from autopilot.core.plots import Plot_Widget
 from autopilot.core.networking import Terminal_Station, Net_Node
@@ -896,8 +895,6 @@ class Terminal(QtWidgets.QMainWindow):
         self.node.send(key="KILL")
 
 if __name__ == "__main__":
-
-    sys.path.append(prefs.REPODIR)
 
     #with open(prefs_file) as prefs_file_open:
     #    prefs = json.load(prefs_file_open)

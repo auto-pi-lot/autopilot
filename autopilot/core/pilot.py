@@ -23,10 +23,6 @@ from scipy.stats import linregress
 
 import tables
 
-# TODO: This is lazy, make the paths work.
-
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from autopilot import prefs
 
 if __name__ == '__main__':
@@ -48,7 +44,6 @@ if __name__ == '__main__':
         prefs_file = args.prefs
 
     prefs.init(prefs_file)
-    sys.path.append(os.path.dirname(prefs.REPODIR))
 
     if hasattr(prefs, 'AUDIOSERVER') and 'AUDIO' in prefs.CONFIG:
         if prefs.AUDIOSERVER == 'pyo':
