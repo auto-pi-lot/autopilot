@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.10)
 project(autopilot VERSION 0.3)
 #find_package(PythonExtensions REQUIRED)
 
@@ -13,5 +13,7 @@ endif()
 
 if(INSTALL_AUTOPILOT_PACKAGES)
     install(TARGETS ${INSTALL_PACKAGES} LIBRARY DESTINATION autopilot/external)
+else()
+    install(FILES "nofile" LIBRARY DESTINATION autopilot/external OPTIONAL)
 endif()
 

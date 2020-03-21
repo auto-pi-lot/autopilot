@@ -1,4 +1,4 @@
-
+blosc<1.8
 tables>=3.4.2
 numpy>=1.12.1
 pyzmq>=17.1.2
@@ -7,13 +7,8 @@ npyscreen
 scipy
 tornado
 inputs
-blosc
 scikit-video
 PyOpenGL
-#pyqtgraph>=0.11.0
+pyqtgraph>=0.11.0rc0
 PySide2
 tqdm
-
-# rpi specific requirements
-# pigpio
-# RPi.GPIO
