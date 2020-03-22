@@ -14,7 +14,7 @@ endif()
 if(JACK)
     include(ExternalProject)
     ExternalProject_Add(jack
-        GIT_REPOSITORY
+        GIT_REPOSITORY git://github.com/jackaudio/jack2
         CONFIGURE_COMMAND "waf configure --alsa=yes"
         BUILD_COMMAND "waf build -j6"
         INSTALL_COMMAND "./waf install"
