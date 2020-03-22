@@ -17,12 +17,18 @@ if(JACK)
         PREFIX autopilot/external/jack
         INSTALL_DIR autopilot/external/jack
         GIT_REPOSITORY git://github.com/jackaudio/jack2
-        SOURCE_DIR "${CMAKE_SOURCE_DIR}/src/jack"
+        SOURCE_DIR "${CMAKE_BINARY_DIR}/jack-src"
+        BINARY_DIR "${CMAKE_BINARY_DIR}/jack-build"
         CONFIGURE_COMMAND "waf configure --alsa=yes"
         BUILD_COMMAND "waf build -j6"
         INSTALL_COMMAND "./waf install"
         )
     #list(APPEND INSTALL_AUTOPILOT_PACKAGES jack)
+
+    add_subdirectory(
+        "${CMAKE_BINARY_DIR}/jack-src"
+        "${CMAKE_BINARY_DIR}/jack-build"
+        )
 endif()
 
 
