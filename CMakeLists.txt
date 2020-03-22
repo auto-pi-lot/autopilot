@@ -19,7 +19,7 @@ if(JACK)
         BUILD_COMMAND "waf build -j6"
         INSTALL_COMMAND "./waf install"
         )
-    list(APPEND INSTALL_AUTOPILOT_PACKAGES jack)
+    #list(APPEND INSTALL_AUTOPILOT_PACKAGES jack)
 endif()
 
 
