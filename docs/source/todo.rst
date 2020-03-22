@@ -229,6 +229,9 @@ Improvements
         * `<https://github.com/thortex/rpi3-opencv/>`_
         * `<https://github.com/thortex/rpi3-vc4cl/>`_
 
+    * Have hardware objects sense if they are configured on instantiation -- eg. when an audio device is configured,
+      check if the system has been configured as well as the hifiberry is in ``setup/presetup_pilot.sh``
+
 * **Synchronization**
 
     * Autopilot needs a unified system to generate timestamps and synchronize events across pilots.

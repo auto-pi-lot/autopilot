@@ -35,7 +35,7 @@ def load_requirements(req_file):
 # configure for raspberry pi
 if IS_RASPI:
     # install raspi dependencies
-    subprocess.call(['autopilot/setup/presetup_pilot.sh'])
+    subprocess.call(['autopilot/setup/setup_environment_pi.sh'])
 
 
     CMAKE_ARGS = ['-DPIGPIO=ON', '-DJACK=ON']
