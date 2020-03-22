@@ -25,7 +25,7 @@ def load_requirements(req_file):
         requirements = f.read().splitlines()
 
     # filter commented reqs
-    requirements = [r for r in requirements if not f.startswith('#')]
+    requirements = [r for r in requirements if not r.startswith('#')]
 
     # filter empty reqs
     requirements = [r for r in requirements if r]

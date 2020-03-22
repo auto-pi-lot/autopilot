@@ -53,7 +53,7 @@ sudo apt-get install -y \
     python3-pip \
     python3-dev \
     python3-distutils \
-    python3-setuptools
+    python3-setuptools \
     libsamplerate0-dev \
     libsndfile1-dev \
     libreadline-dev \
@@ -71,10 +71,10 @@ sudo apt-get install -y \
 
 # install necessary python packages
 
-echo -e "\n\n${RED}Installing necessary Python packages...\n\n ${NC}"
+# echo -e "\n\n${RED}Installing necessary Python packages...\n\n ${NC}"
 
 
-pip3 install -r "${GITDIR}/requirements_terminal.txt"
+# pip3 install -r "${GITDIR}/requirements_terminal.txt"
 
 # install pigpio
 cd $GITDIR
@@ -83,9 +83,9 @@ cd $GITDIR
 git submodule init && git submodule update
 
 
-cd external/pigpio
-make -j6
-sudo -H make install
+#cd external/pigpio
+#make -j6
+#sudo -H make install
 
 #############
 # performance
@@ -96,7 +96,7 @@ echo -e "\n${RED}Changing CPU governor to performance ${NC}"
 
 # disable startup script that changes cpu governor
 # note that this is not the same raspi-config as you're thinking
-sudo systemctl disable raspi-config
+sudo systemctl disable raspi-configq2
 
 sudo sed -i '/^exit 0/i echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor' /etc/rc.local
 
@@ -131,7 +131,7 @@ if [ "$installjack" == "y" ]; then
 
     # installing jack python packages
     sudo apt-get install -y python-cffi
-    pip3 install JACK-Client
+ a   pip3 install JACK-Client
 fi
 
 if [ "$setuphifi" == "y" ]; then
