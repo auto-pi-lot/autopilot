@@ -28,8 +28,7 @@ sudo apt-get install -y \
     python3-tables \
     python3-cffi \
     libzmq-dev \
-    libffi-dev \
-    blosc
+    libffi-dev
 
     # python3-pip \
 
