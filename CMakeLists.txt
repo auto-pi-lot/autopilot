@@ -14,7 +14,10 @@ endif()
 if(JACK)
     include(ExternalProject)
     ExternalProject_Add(jack
+        PREFIX autopilot/external/jack
+        INSTALL_DIR autopilot/external/jack
         GIT_REPOSITORY git://github.com/jackaudio/jack2
+        SOURCE_DIR "${CMAKE_SOURCE_DIR}/src/jack"
         CONFIGURE_COMMAND "waf configure --alsa=yes"
         BUILD_COMMAND "waf build -j6"
         INSTALL_COMMAND "./waf install"
