@@ -34,7 +34,11 @@ def load_requirements(req_file):
 
 # configure for raspberry pi
 if IS_RASPI:
-    CMAKE_ARGS = ['-DPIGPIO=ON']
+    # install raspi dependencies
+    subprocess.call(['autopilot/setup/presetup_pilot.sh'])
+
+
+    CMAKE_ARGS = ['-DPIGPIO=ON', '-DJACK=ON']
     #SCRIPTS.append('autopilot/external/pigpio/pigpiod')
     PACKAGES.append('autopilot.external.pigpio')
     REQUIREMENTS = load_requirements('requirements_pilot.txt')

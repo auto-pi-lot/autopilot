@@ -3,16 +3,31 @@ project(autopilot VERSION 0.3)
 #find_package(PythonExtensions REQUIRED)
 
 option(PIGPIO "Install pigpio (only possible on the raspberry pi)" OFF)
+option(JACK "Install jack audio" OFF)
+
 
 if(PIGPIO)
     add_subdirectory(src/pigpio)
     list(APPEND INSTALL_AUTOPILOT_PACKAGES pigpio)
 endif()
 
+if(JACK)
+    include(ExternalProject)
+    ExternalProject_Add(jack
+        GIT_REPOSITORY
+        CONFIGURE_COMMAND "waf configure --alsa=yes"
+        BUILD_COMMAND "waf build -j6"
+        INSTALL_COMMAND "./waf install"
+        )
+    list(APPEND INSTALL_AUTOPILOT_PACKAGES jack)
+endif()
+
+
+
 
 
 if(INSTALL_AUTOPILOT_PACKAGES)
-    install(TARGETS ${INSTALL_PACKAGES} LIBRARY DESTINATION autopilot/external)
+    install(TARGETS ${INSTALL_AUTOPILOT_PACKAGES} LIBRARY DESTINATION autopilot/external)
 else()
     install(FILES "nofile" LIBRARY DESTINATION autopilot/external OPTIONAL)
 endif()

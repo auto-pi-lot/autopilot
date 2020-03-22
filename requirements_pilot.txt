@@ -11,3 +11,4 @@ blosc
 JACK-Client
 scikit-video
 tqdm
+JACK-Client
