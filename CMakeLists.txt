@@ -33,7 +33,7 @@ if(JACK)
 
     #add_dependencies(jack project_jack)
 
-    install(DIRECTORY ${project_jack_DESTDIR}/${CMAKE_INSTALL_PREFIX}/ DESTINATION ".")
+    install(DIRECTORY ${project_jack_DESTDIR}/${CMAKE_INSTALL_PREFIX}/ DESTINATION "./autopilot/external/jack")
 
     #install( DIRECTORY ${CMAKE_BINARY_DIR}/jack/bin ${CMAKE_BINARY_DIR}/jack/include ${CMAKE_BINARY_DIR}/jack/lib
     # 	DESTINATION autopilot/external/jack/bin
