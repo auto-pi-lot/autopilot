@@ -12,15 +12,16 @@ if(PIGPIO)
 endif()
 
 if(JACK)
+    # modified from https://mirkokiefer.com/cmake-by-example-f95eb47d45b1
     include(ExternalProject)
     ExternalProject_Add(project_jack
         PREFIX ${CMAKE_CURRENT_BINARY_DIR}/jack
         INSTALL_DIR autopilot/external/jack
         GIT_REPOSITORY git://github.com/jackaudio/jack2
         SOURCE_DIR ${CMAKE_BINARY_DIR}/jack-src
-        BINARY_DIR ${CMAKE_BINARY_DIR}/jack-build
-        CONFIGURE_COMMAND waf configure --alsa=yes
-        BUILD_COMMAND waf build -j6
+        BUILD_IN_SOURCE 1
+        CONFIGURE_COMMAND ./waf configure --alsa=yes  --prefix=autopilot/external/jack
+        BUILD_COMMAND ./waf build -j6
         INSTALL_COMMAND ./waf install
         )
 
@@ -32,7 +33,15 @@ if(JACK)
 
     add_dependencies(jack project_jack)
 
-    target_link_libraries(autopilot jack)
+    install( DIRECTORY ${CMAKE_BINARY_DIR}/jack/bin ${CMAKE_BINARY_DIR}/jack/include ${CMAKE_BINARY_DIR}/jack/lib
+     	DESTINATION autopilot/external/jack/bin
+     	DESTINATION autopilot/external/jack/include
+     	DESTINATION autopilot/external/jack/lib
+     	PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+     	            GROUP_EXECUTE GROUP_READ)
+
+
+    #target_link_libraries(autopilot jack)
 
     #list(APPEND INSTALL_AUTOPILOT_PACKAGES jack)
 
