@@ -28,7 +28,8 @@ sudo apt-get install -y \
     python3-tables \
     python3-cffi \
     libzmq-dev \
-    libffi-dev
+    libffi-dev \
+    jackd
 
     # python3-pip \
 

@@ -38,7 +38,10 @@ if IS_RASPI:
     subprocess.call(['autopilot/setup/setup_environment_pi.sh'])
 
 
-    CMAKE_ARGS = ['-DPIGPIO=ON', '-DJACK=ON']
+    #CMAKE_ARGS = ['-DPIGPIO=ON', '-DJACK=ON']
+    # FIXME: Need to get jack build in egg working, continue the CMakelists work on integrating during build. for now just adding to env dependencies
+    
+    CMAKE_ARGS = ['-DPIGPIO=ON']
     #SCRIPTS.append('autopilot/external/pigpio/pigpiod')
     PACKAGES.append('autopilot.external.pigpio')
     REQUIREMENTS = load_requirements('requirements_pilot.txt')

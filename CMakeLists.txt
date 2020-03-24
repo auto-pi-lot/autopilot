@@ -22,6 +22,7 @@ if(JACK)
         # PREFIX ${CMAKE_BINARY_DIR}/jack
         # INSTALL_DIR autopilot/external/jack
         GIT_REPOSITORY git://github.com/jackaudio/jack2
+        GIT_SHALLOW 1
         #SOURCE_DIR ${CMAKE_BINARY_DIR}/jack-src
         SOURCE_DIR ${project_jack_SOURCE_DIR}
         BUILD_IN_SOURCE 1
@@ -30,15 +31,21 @@ if(JACK)
         INSTALL_COMMAND ./waf install --destdir=${project_jack_DESTDIR}
         )
 
-    #ExternalProject_Get_Property(project_jack install_dir)
+    ExternalProject_Get_Property(project_jack install_dir)
 
-    #add_library(jack STATIC IMPORTED)
+    add_library(jack SHARED IMPORTED)
 
-    #set_property(TARGET jack PROPERTY IMPORTED_LOCATION autopilot/external/jack)
+    set_property(TARGET jack PROPERTY IMPORTED_LOCATION ${install_dir}/lib/libjackserver.so.0)
 
-    #add_dependencies(jack project_jack)
 
-    install(DIRECTORY ${project_jack_DESTDIR}/${CMAKE_INSTALL_PREFIX}/ DESTINATION "./autopilot/external/jack")
+    add_dependencies(jack project_jack)
+
+    include_directories(${install_dir}/lib)
+
+    install(DIRECTORY ${project_jack_DESTDIR}/${CMAKE_INSTALL_PREFIX}/
+        DESTINATION "./autopilot/external/jack"
+        FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+     	            GROUP_EXECUTE GROUP_READ))
 
     #install( DIRECTORY ${CMAKE_BINARY_DIR}/jack/bin ${CMAKE_BINARY_DIR}/jack/include ${CMAKE_BINARY_DIR}/jack/lib
     # 	DESTINATION autopilot/external/jack/bin
