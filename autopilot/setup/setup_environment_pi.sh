@@ -15,6 +15,7 @@ sudo apt-get install -y \
     cmake \
     git \
     python3-dev \
+    libatlas-base-dev \ #numpy dependency
     libsamplerate0-dev \
     libsndfile1-dev \
     libreadline-dev \
@@ -23,10 +24,6 @@ sudo apt-get install -y \
     libportmidi-dev \
     liblo-dev \
     libhdf5-dev \
-    python3-numpy \
-    python3-pandas \
-    python3-tables \
-    python3-cffi \
     libzmq-dev \
     libffi-dev \
     jackd

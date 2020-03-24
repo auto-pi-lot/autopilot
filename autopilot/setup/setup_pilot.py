@@ -225,7 +225,8 @@ if __name__ == "__main__":
 
     ##############################
     # Compute derived values
-    pigpio_string = 'pigpiod -t 0 -l -x {}'.format(params['PIGPIOMASK'])
+    pigpio_string = '-t 0 -l -x {}'.format(params['PIGPIOMASK'])
+    params['PIGPIO_STRING'] = pigpio_string
 
     # define and make directory structure
     params['DATADIR'] = os.path.join(params['BASEDIR'], 'data')
@@ -258,10 +259,10 @@ if __name__ == "__main__":
             launch_file_open.write('killall jackd\n')  # Try to kill any existing jackd processes
             launch_file_open.write('sudo killall pigpiod\n')
             launch_file_open.write('sudo mount -o remount,size=128M /dev/shm\n') # refresh shared memory
-            launch_file_open.write('sudo ' + pigpio_string + '\n')
-            launch_file_open.write(params['JACKDSTRING'] + '\n')  # Then launch ours
-            launch_file_open.write('sleep 2\n')  # We wait a damn second to let jackd start up
-            launch_string = "python3 " + os.path.join(params['REPODIR'], "core", "pilot.py") + " -f " + prefs_file
+            #launch_file_open.write('sudo ' + pigpio_string + '\n')
+            #launch_file_open.write(params['JACKDSTRING'] + '\n')  # Then launch ours
+            #launch_file_open.write('sleep 2\n')  # We wait a damn second to let jackd start up
+            launch_string = "python -m autopilot.core.pilot -f " + prefs_file
             launch_file_open.write(launch_string)
 
     elif params['CONFIG'] == 'VISUAL':
@@ -270,9 +271,9 @@ if __name__ == "__main__":
             launch_file_open.write('sudo killall python\n')  # Try to kill any existing jackd processes
             launch_file_open.write('sudo killall pigpiod\n')
             launch_file_open.write('sudo mount -o remount,size=128M /dev/shm\n') # refresh shared memory
-            launch_file_open.write('sudo ' + pigpio_string + '\n')
-            launch_file_open.write('sleep 2\n')  # We wait a damn second to let jackd start up
-            launch_string = "xinit /usr/bin/python " + os.path.join(params['REPODIR'], "core", "pilot.py") + " -f " + prefs_file
+            #launch_file_open.write('sudo ' + pigpio_string + '\n')
+            #launch_file_open.write('sleep 2\n')  # We wait a damn second to let jackd start up
+            launch_string = "python -m autopilot.core.pilot -f " + prefs_file
             launch_file_open.write(launch_string)
 
     else:
@@ -281,8 +282,8 @@ if __name__ == "__main__":
             launch_file_open.write('sudo killall python\n')  # Try to kill any existing jackd processes
             launch_file_open.write('sudo killall pigpiod\n')
             launch_file_open.write('sudo mount -o remount,size=128M /dev/shm\n')  # refresh shared memory
-            launch_file_open.write('sudo ' + pigpio_string + '\n')
-            launch_string = "python " + os.path.join(params['REPODIR'], "core", "pilot.py") + " -f " + prefs_file
+            #launch_file_open.write('sudo ' + pigpio_string + '\n')
+            launch_string = "python -m autopilot.core.pilot -f " + prefs_file
             launch_file_open.write(launch_string)
 
 

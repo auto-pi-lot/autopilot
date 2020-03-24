@@ -12,3 +12,7 @@ JACK-Client
 scikit-video
 tqdm
 JACK-Client
+numpy
+pandas
+tables
+cffi

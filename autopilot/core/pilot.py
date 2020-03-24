@@ -17,6 +17,7 @@ import time
 import socket
 import json
 import base64
+import subprocess
 import numpy as np
 import pandas as pd
 from scipy.stats import linregress
@@ -52,6 +53,7 @@ if __name__ == '__main__':
             from autopilot.stim.sound import jackclient
 
 from autopilot.core.networking import Pilot_Station, Net_Node, Message
+from autopilot import external
 from autopilot import tasks
 from autopilot.hardware import gpio
 
@@ -155,6 +157,9 @@ class Pilot:
         self.running = threading.Event() # Are we running a task?
         self.stage_block = threading.Event() # Are we waiting on stage triggers?
         self.file_block = threading.Event() # Are we waiting on file transfer?
+
+        # init pigpiod process
+        self.init_pigpio()
 
         # Init audio server
         if hasattr(prefs, 'AUDIOSERVER') and 'AUDIO' in prefs.CONFIG:
@@ -557,6 +562,9 @@ class Pilot:
     # Hardware Init
     #################################################################
 
+    def init_pigpio(self):
+        self.pigpiod = external.start_pigpiod()
+
     def init_audio(self):
         """
         Initialize an audio server depending on the value of
@@ -569,6 +577,7 @@ class Pilot:
             self.server = pyoserver.pyo_server()
             self.logger.info("pyo server started")
         elif prefs.AUDIOSERVER == 'jack':
+            self.jackd = subprocess.Popen(prefs['JACKDSTRING'], shell=True)
             self.server = jackclient.JackClient()
             self.server.start()
             self.logger.info('Started jack audio server')
