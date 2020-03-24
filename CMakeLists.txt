@@ -37,7 +37,7 @@ if(JACK)
      	DESTINATION autopilot/external/jack/bin
      	DESTINATION autopilot/external/jack/include
      	DESTINATION autopilot/external/jack/lib
-     	PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+     	FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
      	            GROUP_EXECUTE GROUP_READ)
 
 
