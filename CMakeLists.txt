@@ -20,25 +20,28 @@ if(JACK)
         GIT_REPOSITORY git://github.com/jackaudio/jack2
         SOURCE_DIR ${CMAKE_BINARY_DIR}/jack-src
         BUILD_IN_SOURCE 1
-        CONFIGURE_COMMAND ./waf configure --alsa=yes  --prefix=${CMAKE_BINARY_DIR}/jack
+        CONFIGURE_COMMAND ./waf configure --alsa=yes  --prefix=${CMAKE_INSTALL_PREFIX}
         BUILD_COMMAND ./waf build -j6
-        INSTALL_COMMAND ./waf install
+        INSTALL_COMMAND ./waf install --destdir=${project_jack_DESTDIR}
         )
 
-    ExternalProject_Get_Property(project_jack install_dir)
+    #ExternalProject_Get_Property(project_jack install_dir)
 
-    add_library(jack STATIC IMPORTED)
+    #add_library(jack STATIC IMPORTED)
 
-    set_property(TARGET jack PROPERTY IMPORTED_LOCATION autopilot/external/jack)
+    #set_property(TARGET jack PROPERTY IMPORTED_LOCATION autopilot/external/jack)
 
-    add_dependencies(jack project_jack)
+    #add_dependencies(jack project_jack)
 
-    install( DIRECTORY ${CMAKE_BINARY_DIR}/jack/bin ${CMAKE_BINARY_DIR}/jack/include ${CMAKE_BINARY_DIR}/jack/lib
-     	DESTINATION autopilot/external/jack/bin
-     	DESTINATION autopilot/external/jack/include
-     	DESTINATION autopilot/external/jack/lib
-     	FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-     	            GROUP_EXECUTE GROUP_READ)
+    install(DIRECTORY ${project_jack_DESTDIR}/${CMAKE_INSTALL_PREFIX}/ DESTINATION ".")
+
+    #install( DIRECTORY ${CMAKE_BINARY_DIR}/jack/bin ${CMAKE_BINARY_DIR}/jack/include ${CMAKE_BINARY_DIR}/jack/lib
+    # 	DESTINATION autopilot/external/jack/bin
+    # 	DESTINATION autopilot/external/jack/include
+    # 	DESTINATION autopilot/external/jack/lib
+    # 	FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+    # 	            GROUP_EXECUTE GROUP_READ)
+
 
 
     #target_link_libraries(autopilot jack)
