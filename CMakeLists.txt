@@ -15,12 +15,12 @@ if(JACK)
     # modified from https://mirkokiefer.com/cmake-by-example-f95eb47d45b1
     include(ExternalProject)
     ExternalProject_Add(project_jack
-        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/jack
+        PREFIX ${CMAKE_BINARY_DIR}/jack
         INSTALL_DIR autopilot/external/jack
         GIT_REPOSITORY git://github.com/jackaudio/jack2
         SOURCE_DIR ${CMAKE_BINARY_DIR}/jack-src
         BUILD_IN_SOURCE 1
-        CONFIGURE_COMMAND ./waf configure --alsa=yes  --prefix=autopilot/external/jack
+        CONFIGURE_COMMAND ./waf configure --alsa=yes  --prefix=${CMAKE_BINARY_DIR}/jack
         BUILD_COMMAND ./waf build -j6
         INSTALL_COMMAND ./waf install
         )
