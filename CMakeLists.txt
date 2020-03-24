@@ -13,12 +13,17 @@ endif()
 
 if(JACK)
     # modified from https://mirkokiefer.com/cmake-by-example-f95eb47d45b1
+    # with some witchcraft from https://stackoverflow.com/a/35935971/13113166
+
+    set(project_jack_SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/lib/project_jack)
+    set(project_jack_DESTDIR ${CMAKE_CURRENT_BINARY_DIR}/lib/project_jack_install)
     include(ExternalProject)
     ExternalProject_Add(project_jack
-        PREFIX ${CMAKE_BINARY_DIR}/jack
-        INSTALL_DIR autopilot/external/jack
+        # PREFIX ${CMAKE_BINARY_DIR}/jack
+        # INSTALL_DIR autopilot/external/jack
         GIT_REPOSITORY git://github.com/jackaudio/jack2
-        SOURCE_DIR ${CMAKE_BINARY_DIR}/jack-src
+        #SOURCE_DIR ${CMAKE_BINARY_DIR}/jack-src
+        SOURCE_DIR ${project_jack_SOURCE_DIR}
         BUILD_IN_SOURCE 1
         CONFIGURE_COMMAND ./waf configure --alsa=yes  --prefix=${CMAKE_INSTALL_PREFIX}
         BUILD_COMMAND ./waf build -j6
