@@ -577,7 +577,7 @@ class Pilot:
             self.server = pyoserver.pyo_server()
             self.logger.info("pyo server started")
         elif prefs.AUDIOSERVER == 'jack':
-            self.jackd = subprocess.Popen(prefs['JACKDSTRING'], shell=True)
+            self.jackd = subprocess.Popen(prefs.JACKDSTRING, shell=True)
             self.server = jackclient.JackClient()
             self.server.start()
             self.logger.info('Started jack audio server')

@@ -45,7 +45,7 @@ if(JACK)
     install(DIRECTORY ${project_jack_DESTDIR}/${CMAKE_INSTALL_PREFIX}/
         DESTINATION "./autopilot/external/jack"
         FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-     	            GROUP_EXECUTE GROUP_READ))
+     	            GROUP_EXECUTE GROUP_READ)
 
     #install( DIRECTORY ${CMAKE_BINARY_DIR}/jack/bin ${CMAKE_BINARY_DIR}/jack/include ${CMAKE_BINARY_DIR}/jack/lib
     # 	DESTINATION autopilot/external/jack/bin
