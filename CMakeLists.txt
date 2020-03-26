@@ -19,7 +19,7 @@ if(JACK)
         PROJ jack
         GIT_REPOSITORY git://github.com/jackaudio/jack2
         GIT_TAG master
-        BUILD_IN_SOURCE 1
+        # BUILD_IN_SOURCE 1
         CONFIGURE_COMMAND ./waf configure --alsa=yes
         BUILD_COMMAND ./waf build -j6
         INSTALL_COMMAND ./waf install
