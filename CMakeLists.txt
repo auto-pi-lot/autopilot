@@ -3,14 +3,14 @@ project(autopilot VERSION 0.3)
 #find_package(PythonExtensions REQUIRED)
 
 # include download project function from https://github.com/Crascit/DownloadProject/
-include(DownloadProject.cmake)
+include(cmake/DownloadProject.cmake)
 
 option(PIGPIO "Install pigpio (only possible on the raspberry pi)" OFF)
 option(JACK "Install jack audio" OFF)
 
 
 if(PIGPIO)
-    add_subdirectory(../src/pigpio)
+    add_subdirectory(src/pigpio)
     list(APPEND INSTALL_AUTOPILOT_PACKAGES pigpio)
 endif()
 
@@ -34,8 +34,8 @@ endif()
 
 
 if(INSTALL_AUTOPILOT_PACKAGES)
-    install(TARGETS ${INSTALL_AUTOPILOT_PACKAGES} LIBRARY DESTINATION ../autopilot/external)
+    install(TARGETS ${INSTALL_AUTOPILOT_PACKAGES} LIBRARY DESTINATION autopilot/external)
 else()
-    install(FILES "nofile" LIBRARY DESTINATION ../autopilot/external OPTIONAL)
+    install(FILES "nofile" LIBRARY DESTINATION autopilot/external OPTIONAL)
 endif()
 

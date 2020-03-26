@@ -67,6 +67,5 @@ setup(
     scripts = SCRIPTS,
     packages=packs,
     cmake_args=CMAKE_ARGS,
-    install_requires = REQUIREMENTS,
-    cmake_source_dir = 'cmake'
+    install_requires = REQUIREMENTS
 )
