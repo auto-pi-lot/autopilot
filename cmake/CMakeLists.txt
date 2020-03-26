@@ -26,7 +26,7 @@ if(JACK)
     )
 
     add_subdirectory(${jack_SOURCE_DIR} ${jack_BINARY_DIR})
-    list(APPEND INSTALL_AUTOPILOG_PACKAGES jack
+    list(APPEND INSTALL_AUTOPILOG_PACKAGES jack)
 endif()
 
 

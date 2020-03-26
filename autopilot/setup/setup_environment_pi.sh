@@ -15,7 +15,7 @@ sudo apt-get install -y \
     cmake \
     git \
     python3-dev \
-    libatlas-base-dev \ #numpy dependency
+    libatlas-base-dev \
     libsamplerate0-dev \
     libsndfile1-dev \
     libreadline-dev \
