@@ -25,8 +25,7 @@ sudo apt-get install -y \
     liblo-dev \
     libhdf5-dev \
     libzmq-dev \
-    libffi-dev \
-    jackd
+    libffi-dev
 
     # python3-pip \
 

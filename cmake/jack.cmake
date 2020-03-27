@@ -27,15 +27,15 @@ ExternalProject_Get_Property(project_jack install_dir)
 
 add_library(jack SHARED IMPORTED)
 
-#set_property(TARGET jack PROPERTY IMPORTED_LOCATION ${install_dir}/lib/libjackserver.so.0)
+set_property(TARGET jack PROPERTY IMPORTED_LOCATION ${install_dir}/lib/libjackserver.so.0)
 
 
 add_dependencies(jack project_jack)
 
 include_directories(${install_dir}/lib)
-include_directories(${install_dir}/include)
-include_directories(${CMAKE_INSTALL_PREFIX}/autopilot/external/jack/include)
-include_directories(${project_jack_DESTDIR}/${CMAKE_INSTALL_PREFIX}/include)
+include_directories(${install_dir}/include/jack)
+include_directories(${CMAKE_INSTALL_PREFIX}/autopilot/external/jack/include/jack)
+include_directories(${project_jack_DESTDIR}/${CMAKE_INSTALL_PREFIX}/include/jack)
 
 install(DIRECTORY ${project_jack_DESTDIR}/${CMAKE_INSTALL_PREFIX}/
     DESTINATION "autopilot/external/jack"
