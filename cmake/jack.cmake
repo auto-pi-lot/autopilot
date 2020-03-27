@@ -10,7 +10,7 @@ ExternalProject_Add(jack
     BUILD_IN_SOURCE 1
     CONFIGURE_COMMAND ./waf configure --alsa=yes --prefix=${CMAKE_INSTALL_PREFIX}
     BUILD_COMMAND ./waf build -j6
-    INSTALL_COMMAND ./waf install --destdir=autopilot/external/jack"
+    INSTALL_COMMAND ./waf install --destdir=autopilot/external/jack
     )
 
 
