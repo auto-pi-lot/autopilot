@@ -2,7 +2,7 @@
 import subprocess
 subprocess.call('autopilot/setup/setup_environment.sh')
 
-from skbuild import setup
+from skbuild import setup, constants
 from setuptools import find_packages
 import subprocess
 
@@ -10,8 +10,12 @@ import subprocess
 IS_RASPI = False
 SCRIPTS = []
 PACKAGES = []
-CMAKE_ARGS = []
+CMAKE_ARGS = ['-DCMAKE_BUILD_DIR={}'.format(constants.CMAKE_BUILD_DIR()),
+              '-DCMAKE_INSTALL_DIR={}'.format(constants.CMAKE_INSTALL_DIR()),
+              '-DSETUPTOOLS_INSTALL_DIR={}'.format(constants.SETUPTOOLS_INSTALL_DIR()),
+              '-DSKBUILD_DIR={}'.format(constants.SKBUILD_DIR()),]
 REQUIREMENTS = []
+
 
 
 # detect if on raspberry pi
@@ -38,7 +42,7 @@ if IS_RASPI:
     subprocess.call(['autopilot/setup/setup_environment_pi.sh'])
 
 
-    CMAKE_ARGS = ['-DPIGPIO=ON', '-DJACK=ON']
+    CMAKE_ARGS.extend(['-DPIGPIO=ON', '-DJACK=ON'])
     # FIXME: Need to get jack build in egg working, continue the CMakelists work on integrating during build. for now just adding to env dependencies
 
     # CMAKE_ARGS = ['-DPIGPIO=ON']
