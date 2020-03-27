@@ -21,7 +21,7 @@
 
     add_library(jack SHARED IMPORTED)
 
-    set_property(TARGET jack PROPERTY IMPORTED_LOCATION ${install_dir}/lib/libjackserver.so.0)
+    #set_property(TARGET jack PROPERTY IMPORTED_LOCATION ${install_dir}/lib/libjackserver.so.0)
 
 
     add_dependencies(jack project_jack)
