@@ -13,7 +13,9 @@ PACKAGES = []
 CMAKE_ARGS = ['-DCMAKE_BUILD_DIR={}'.format(constants.CMAKE_BUILD_DIR()),
               '-DCMAKE_INSTALL_DIR={}'.format(constants.CMAKE_INSTALL_DIR()),
               '-DSETUPTOOLS_INSTALL_DIR={}'.format(constants.SETUPTOOLS_INSTALL_DIR()),
-              '-DSKBUILD_DIR={}'.format(constants.SKBUILD_DIR())]
+              '-DSKBUILD_DIR={}'.format(constants.SKBUILD_DIR()),
+              '-DCMAKE_BUILD_RPATH_USE_ORIGIN=1', # use relative paths in Rpaths
+              ]
 
 REQUIREMENTS = []
 
