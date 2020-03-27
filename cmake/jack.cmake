@@ -2,14 +2,14 @@
 # with some witchcraft from https://stackoverflow.com/a/35935971/13113166
 
 set(JACK_ROOT ${CMAKE_CURRENT_BINARY_DIR}/jack)
-set(JACK_DESTDIR autopilot/external/jack)
+set(JACK_DESTDIR ${CMAKE_CURRENT_BINARY_DIR}/jack_install)
 #set(project_jack_DESTDIR ${CMAKE_CURRENT_BINARY_DIR}/lib/project_jack_install)
 include(ExternalProject)
 ExternalProject_Add(jack
-    PREFIX jack_prefix1
     GIT_REPOSITORY git://github.com/jackaudio/jack2
     GIT_SHALLOW 1
     BUILD_IN_SOURCE 1
+    SOURCE_DIR ${JACK_ROOT}
     CONFIGURE_COMMAND ./waf configure --alsa=yes --prefix=${CMAKE_INSTALL_PREFIX}
     BUILD_COMMAND ./waf build -j6
     INSTALL_COMMAND ./waf install --destdir=${JACK_DESTDIR}
