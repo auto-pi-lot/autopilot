@@ -33,6 +33,8 @@ add_library(jack SHARED IMPORTED)
 add_dependencies(jack project_jack)
 
 include_directories(${install_dir}/lib)
+include_directories(${install_dir}/include)
+include_directories(${install_dir}/include)
 
 install(DIRECTORY ${project_jack_DESTDIR}/${CMAKE_INSTALL_PREFIX}/
     DESTINATION "autopilot/external/jack"
