@@ -16,7 +16,9 @@ ExternalProject_Add(jack
     )
 
 
-ExternalProject_Get_Property(project_jack install_dir)
+ExternalProject_Get_Property(jack install_dir)
+
+message(STATUS "JACK install_dir: ${install_dir}")
 
 link_directories(${JACK_ROOT}/lib)
 link_directories(${install_dir}/lib)
