@@ -8,6 +8,11 @@ include(cmake/DownloadProject.cmake)
 option(PIGPIO "Install pigpio (only possible on the raspberry pi)" OFF)
 option(JACK "Install jack audio" OFF)
 
+message(STATUS "CMAKE_BUILD_DIR: ${CMAKE_BUILD_DIR}")
+message(STATUS "CMAKE_INSTALL_DIR: ${CMAKE_INSTALL_DIR}")
+message(STATUS "SETUPTOOLS_INSTALL_DIR: ${SETUPTOOLS_INSTALL_DIR}")
+message(STATUS "SKBUILD_DIR: ${SKBUILD_DIR}")
+
 
 if(PIGPIO)
     add_subdirectory(src/pigpio)
