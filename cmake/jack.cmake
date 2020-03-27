@@ -18,7 +18,7 @@ ExternalProject_Add(project_jack
     #SOURCE_DIR ${CMAKE_BINARY_DIR}/jack-src
     SOURCE_DIR ${project_jack_SOURCE_DIR}
     BUILD_IN_SOURCE 1
-    CONFIGURE_COMMAND ./waf configure --alsa=yes --prefix=${CMAKE_INSTALL_PREFIX}
+    CONFIGURE_COMMAND ./waf configure --alsa=yes --prefix="."
     BUILD_COMMAND ./waf build -j6
     INSTALL_COMMAND ./waf install --destdir=${project_jack_DESTDIR}
     )
@@ -37,7 +37,7 @@ include_directories(${install_dir}/include/jack)
 include_directories(${CMAKE_INSTALL_PREFIX}/autopilot/external/jack/include/jack)
 include_directories(${project_jack_DESTDIR}/${CMAKE_INSTALL_PREFIX}/include/jack)
 
-install(DIRECTORY ${project_jack_DESTDIR}/${CMAKE_INSTALL_PREFIX}/
+install(DIRECTORY ${project_jack_DESTDIR}/
     DESTINATION "autopilot/external/jack"
     FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
                 GROUP_EXECUTE GROUP_READ)
