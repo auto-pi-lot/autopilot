@@ -14,6 +14,7 @@ ExternalProject_Add(project_jack
     # INSTALL_DIR autopilot/external/jack
     GIT_REPOSITORY git://github.com/jackaudio/jack2
     GIT_SHALLOW 1
+    GIT_TAG v1.9.14
     #SOURCE_DIR ${CMAKE_BINARY_DIR}/jack-src
     SOURCE_DIR ${project_jack_SOURCE_DIR}
     BUILD_IN_SOURCE 1

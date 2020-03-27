@@ -24,48 +24,9 @@ if(PIGPIO)
 endif()
 
 if(JACK)
-    #include(cmake/jack.cmake)
+    include(cmake/jack.cmake)
 
 
-    set(project_jack_SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/lib/project_jack)
-    set(project_jack_DESTDIR ${CMAKE_CURRENT_BINARY_DIR}/lib/project_jack_install)
-    include(ExternalProject)
-    ExternalProject_Add(project_jack
-        GIT_REPOSITORY git://github.com/jackaudio/jack2
-        GIT_SHALLOW 1
-        SOURCE_DIR ${project_jack_SOURCE_DIR}
-        BUILD_IN_SOURCE 1
-        CONFIGURE_COMMAND ./waf configure --alsa=yes --prefix=${CMAKE_INSTALL_PREFIX}
-        BUILD_COMMAND ./waf build -j6
-        INSTALL_COMMAND ./waf install --destdir=${project_jack_DESTDIR}
-        )
-
-    ExternalProject_Get_Property(project_jack install_dir)
-
-    add_library(jack SHARED IMPORTED)
-
-    #set_property(TARGET jack PROPERTY IMPORTED_LOCATION ${install_dir}/lib/libjackserver.so.0)
-
-
-    add_dependencies(jack project_jack)
-
-    include_directories(${install_dir}/lib)
-
-    install(DIRECTORY ${project_jack_DESTDIR}/${CMAKE_INSTALL_PREFIX}/
-        DESTINATION "autopilot/external/jack"
-        FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-                    GROUP_EXECUTE GROUP_READ)
-
-    #download_project(
-    #    PROJ jack
-    #    GIT_REPOSITORY git://github.com/jackaudio/jack2
-    #    CONFIGURE_COMMAND "./waf configure --alsa=yes"
-    #    BUILD_COMMAND "./waf build -j6"
-    #    INSTALL_COMMAND "./waf install"
-    #)
-    #
-    #add_subdirectory(${jack_SOURCE_DIR} ${jack_BINARY_DIR})
-    #list(APPEND INSTALL_AUTOPILOT_PACKAGES jack)
 endif()
 
 
