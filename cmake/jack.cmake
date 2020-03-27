@@ -34,7 +34,8 @@ add_dependencies(jack project_jack)
 
 include_directories(${install_dir}/lib)
 include_directories(${install_dir}/include)
-include_directories(${install_dir}/include)
+include_directories(${CMAKE_INSTALL_PREFIX}/autopilot/external/jack/include)
+include_directories(${project_jack_DESTDIR}/${CMAKE_INSTALL_PREFIX}/include)
 
 install(DIRECTORY ${project_jack_DESTDIR}/${CMAKE_INSTALL_PREFIX}/
     DESTINATION "autopilot/external/jack"
