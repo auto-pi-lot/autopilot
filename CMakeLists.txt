@@ -3,8 +3,8 @@ project(autopilot VERSION 0.3)
 #find_package(PythonExtensions REQUIRED)
 
 # Global settings
-set(GLOBAL_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
-set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/install)
+#set(GLOBAL_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
+#set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/install)
 
 # include download project function from https://github.com/Crascit/DownloadProject/
 # include(cmake/DownloadProject.cmake)
