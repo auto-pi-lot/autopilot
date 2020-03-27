@@ -28,14 +28,24 @@ def start_jackd():
         raise ImportError('jackd was not found in autopilot.external')
     jackd_path = os.path.join(jack.__path__._path[0])
 
-    jackd_string = "LD_LIBRARY_PATH={libpath} {jpath}".format(
-        libpath=os.path.join(jackd_path,'lib'),
-        jpath=jackd_path
-    )
+    # specify location of libraries when starting jackd
+    lib_string = "LD_LIBRARY_PATH=" + os.path.join(jackd_path, 'lib')
 
-    if hasattr(prefs, 'JACKDSTRING'):
-        jackd_string += prefs.JACKDSTRING.lstrip('jackd')
+    # specify location of drivers when starting jackd
+    driver_string = "JACK_DRIVER_DIR=" + os.path.join(jackd_path, 'lib', 'jack')
 
-    proc = subprocess.Popen(jackd_string, shell=True)
+    jackd_bin = os.path.join(jackd_path, 'bin', 'jackd')
+
+    if hasattr(prefs, "JACKDSTRING"):
+        jackd_string = prefs.JACKDSTRING.lstrip('jackd')
+
+    else:
+        jackd_string = ""
+
+    # combine all the pieces
+    launch_jackd = " ".join([lib_string, driver_string, jackd_bin, jackd_string])
+
+
+    proc = subprocess.Popen(launch_jackd, shell=True)
     return proc
 
