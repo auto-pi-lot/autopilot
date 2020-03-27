@@ -18,10 +18,9 @@ if(JACK)
     download_project(
         PROJ jack
         GIT_REPOSITORY git://github.com/jackaudio/jack2
-        # BUILD_IN_SOURCE 1
-        CONFIGURE_COMMAND ./waf configure --alsa=yes
-        BUILD_COMMAND ./waf build -j6
-        INSTALL_COMMAND ./waf install
+        CONFIGURE_COMMAND "./waf configure --alsa=yes"
+        BUILD_COMMAND "./waf build -j6"
+        INSTALL_COMMAND "./waf install"
     )
 
     add_subdirectory(${jack_SOURCE_DIR} ${jack_BINARY_DIR})
