@@ -41,6 +41,10 @@ from datetime import datetime
 import os
 import logging
 
+# FIXME: Hardcoding names of metaclasses, should have some better system of denoting which classes can be instantiated
+# directly for setup and prefs management.
+META_CLASS_NAMES = ['Hardware', 'Camera', 'GPIO', 'Directory_Writer', 'Video_Writer']
+
 
 # pigpio only uses BCM numbers, we need to translate them
 # See https://www.element14.com/community/servlet/JiveServlet/previewBody/73950-102-11-339300/pi3_gpio.png

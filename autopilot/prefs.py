@@ -204,24 +204,7 @@ def compute_calibration(path=None, calibration=None, do_return=False):
 if 'AGENT' not in globals().keys():
     add('AGENT', '')
 
-BASE_PREFS = odict({
-    'AGENT'      : {"text": "Agent type", "choices":("PILOT", "TERMINAL", "CHILD")},
-    'NAME'       : {"text":"Agent Name:"},
-    'BASEDIR'    : {"text":"Base Directory:", "default":"~/autopilot"},
-    'PUSHPORT'   : {"text":"Push Port - Router port used by the Terminal or upstream agent:", "default":"5560"},
-    'MSGPORT'    : {"text":"Message Port - Router port used by this agent to receive messages:", "default":"5565"},
-    'TERMINALIP' : {"text":"Terminal IP:", "default":"192.168.0.100"},
-    'LOGLEVEL'   : {"text": "Log Level:", "choices":("DEBUG", "INFO", "WARNING", "ERROR"), "default": "WARNING"},
-    'CONFIG'     : {"text": "System Configuration", "choices": ("pigpio", 'jackd', 'psychopy'), "multiselect":True}
-})
 
-LINEAGE_PREFS = odict({
-'LINEAGE':     {"text": "Are we a parent or a child?", "choices": ("NONE", "PARENT", "CHILD"), "multiselect":True},
-'CHILDID'    : {"text":"Child ID:", "depends":("LINEAGE", "PARENT")},
-'PARENTID'   : {"text":"Parent ID:", "depends":("LINEAGE", "CHILD")},
-'PARENTIP'   : {"text":"Parent IP:", "depends":("LINEAGE","CHILD")},
-'PARENTPORT' : {"text":"Parent Port:", "depends":("LINEAGE", "CHILD")},
-})
 #
 # HARDWARE_PREFS = odict({
 #             'HARDWARE':{
