@@ -96,7 +96,7 @@ echo -e "\n${RED}Changing CPU governor to performance ${NC}"
 
 # disable startup script that changes cpu governor
 # note that this is not the same raspi-config as you're thinking
-sudo systemctl disable raspi-configq2
+sudo systemctl disable raspi-config
 
 sudo sed -i '/^exit 0/i echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor' /etc/rc.local
 

@@ -18,6 +18,7 @@ import pkgutil
 import ast
 import importlib
 import threading
+import shlex
 
 sys.path.append('/home/jonny/git/autopilot')
 
@@ -25,13 +26,15 @@ from autopilot import hardware
 
 # CLI Options
 parser = argparse.ArgumentParser(description="Setup an Autopilot Agent")
-parser.add_argument('-f', '--prefs', help="Location of .json prefs file (default: /usr/autopilot/prefs.json")
-parser.add_argument('-d', '--dir', help="Autopilot directory (default: /usr/autopilot)")
+parser.add_argument('-f', '--prefs', help="Location of .json prefs file (default: ~/autopilot/prefs.json")
+parser.add_argument('-d', '--dir', help="Autopilot directory (default: ~/autopilot)")
 
 AGENTS = ('TERMINAL', 'PILOT', 'CHILD')
 
 
 ENV_PILOT = odict({
+    'performance' : {'type': 'bool',
+                     'text': 'Do performance enhancements? (recommended, change cpu governor and give more memory to audio)'},
     'change_pw': {'type': 'bool',
                   'text': "If you haven't, you should change the default raspberry pi password or you _will_ get your identity stolen. Change it now?"},
     'set_locale': {'type': 'bool',
@@ -41,14 +44,15 @@ ENV_PILOT = odict({
     'viz'       : {'type': 'bool',
                    'text': 'Install X11 server and psychopy for visual stimuli?'},
     'bluetooth' : {'type': 'bool',
-                   'text': 'Disable Bluetooth?'}
+                   'text': 'Disable Bluetooth? (recommended unless you\'re using it <3'},
+    'systemd'   : {'type': 'bool',
+                   'text': 'Install Autopilot as a systemd service?\nIf you are running this command in a virtual environment it will be used to launch Autopilot'}
 
 })
 
 BASE_PREFS = odict({
-    'AGENT'      : {'type': 'choice', "text": "Agent type", "choices":("PILOT", "TERMINAL", "CHILD")},
     'NAME'       : {'type': 'str', "text": "Agent Name:"},
-    'BASEDIR'    : {'type': 'str', "text":"Base Directory:", "default":"~/autopilot"},
+    'BASEDIR'    : {'type': 'str', "text":"Base Directory:", "default":os.path.join(os.path.expanduser("~"),"autopilot")},
     'PUSHPORT'   : {'type': 'int',"text":"Push Port - Router port used by the Terminal or upstream agent:", "default":"5560"},
     'MSGPORT'    : {'type': 'int', "text":"Message Port - Router port used by this agent to receive messages:", "default":"5565"},
     'TERMINALIP' : {'type': 'str', "text":"Terminal IP:", "default":"192.168.0.100"},
@@ -58,7 +62,11 @@ BASE_PREFS = odict({
 
 PILOT_PREFS = odict({
     'PIGPIOMASK': {'type': 'str', 'text': 'Binary mask controlling which pins pigpio controls according to their BCM numbering, see the -x parameter of pigpiod',
-                   'default': "1111110000111111111111110000"}
+                   'default': "1111110000111111111111110000"},
+    'PIGPIOARGS': {'type': 'str', 'text': 'Arguments to pass to pigpiod on startup',
+                   'default': '-t 0 -l -x'},
+    'PULLUPS'   : {'type': 'list', 'text': 'Pins to pull up on system startup? (list of form [1, 2]'},
+    'PULLDOWNS'   : {'type': 'list', 'text': 'Pins to pull down on system startup? (list of form [1, 2]'}
 })
 
 LINEAGE_PREFS = odict({
@@ -77,6 +85,13 @@ AUDIO_PREFS = odict({
     'JACKDSTRING': {'type': 'str', 'text': 'Arguments to pass to jackd, see the jackd manpage',
                     'default': 'jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -n3 -s &', 'depends': 'AUDIOSERVER'},
 })
+
+DIRECTORY_STRUCTURE = {
+    'DATADIR': 'data',
+    'SOUDNDIR': 'sounds',
+    'LOGDIR': 'logs',
+    'VIZDIR': 'viz'
+}
 
 
 class Autopilot_Form(nps.Form):
@@ -355,8 +370,51 @@ class Pilot_Config_Form(Autopilot_Form):
         self.parentApp.setNextForm('HARDWARE')
 
 
+PILOT_ENV_CMDS = {
+    'performance':
+        ['sudo systemctl disable raspi-config',
+         'sudo sed -i \'/^exit 0/i echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor\' /etc/rc.local',
+         'sudo sh -c "echo @audio - memlock 256000 >> /etc/security/limits.conf"',
+         'sudo sh -c "echo @audio - rtprio 75 >> /etc/security/limits.conf"',
+                    ],
+    'change_pw': ['passwd'],
+    'set_locale': ['sudo dpkg-reconfigure locales',
+                   'sudo dpkg-reconfigure keyboard-configuration'],
+    'hifiberry':
+    [
+        'sudo adduser pi i2c',
+        'sudo sed -i \'s/^dtparam=audio=on/#dtparam=audio=on/g\' /boot/config.txt',
+        'sudo sed -i \'$s/$/\ndtoverlay=hifiberry-dacplus\ndtoverlay=i2s-mmap\ndtoverlay=i2c-mmap\ndtparam=i2c1=on\ndtparam=i2c_arm=on/\' /boot/config.txt',
+        'echo -e \'pcm.!default {\n type hw card 0\n}\nctl.!default {\n type hw card 0\n}\' | sudo tee /etc/asound.conf'
+    ],
+    'viz': [],
+    'bluetooth':
+    [
+        'sudo sed - i \'$s/$/\ndtoverlay=pi3-disable-bt/\' / boot / config.txt',
+        'sudo systemctl disable hciuart.service',
+        'sudo systemctl disable bluealsa.service',
+        'sudo systemctl disable bluetooth.service'
+    ]
 
+}
+"""
+performance: 
+    * disable startup script that changes cpu governor,
+    * change cpu governor to "performance" on boot
+    * increase memlock and realtime priority limits for audio group
+    
+hifiberry:
+    * turn onboard audio off
+    * enable hifiberry stuff in /boot/config.txt
+    * edit alsa config so hifiberry is default sound card
 
+viz:
+
+.. todo::
+
+    Need to find a more elegant way to do this, for now see lines 160-200 in the presetup_pilot.sh legacy script
+
+"""
 
 
 class Autopilot_Setup(nps.NPSAppManaged):
@@ -382,6 +440,9 @@ def unfold_values(v):
         v = {k: unfold_values(v) for k, v in v.items()}
     elif isinstance(v, list):
         v = [unfold_values(v) for v in v]
+    elif isinstance(v, str):
+        # do nothing since this is what we want yno
+        pass
     else:
 
         try:
@@ -393,7 +454,51 @@ def unfold_values(v):
                 v = v.value
     return v
 
+def call_series(commands, series_name=None):
+    """
+    Call a series of commands, giving a single return code on completion or failure
+
+    :param commands:
+    :return:
+    """
+    if series_name:
+        print('\n\033[1;37;42m Running commands for {}\u001b[0m'.format(series_name))
+
+    status = False
+
+    for command in commands:
+        result = subprocess.run(command, shell=True)
+        if result.returncode == 0:
+            status = True
+        else:
+            status = False
+
+    if series_name:
+        if status:
+            print('\n\033[1;37;42m  {} Successful, you lucky duck\u001b[0m'.format(series_name))
+        else:
+            print('\n\033[1;37;41m  {} Failed, check the error message & ur crystal ball\u001b[0m'.format(series_name))
+
+    return status
+
+def make_dir(adir):
+    """
+    Make a directory if it doesn't exist and set its permissions to `0777`
+
+    Args:
+        adir (str): Path to the directory
+    """
+    if not os.path.exists(adir):
+        os.makedirs(adir)
+        os.chmod(adir, 0o774)
+
 if __name__ == "__main__":
+    env = {}
+    env_params = {}
+    prefs = {}
+    error_msgs = []
+    config_msgs = []
+
     args = parser.parse_args()
 
     if args.dir:
@@ -404,14 +509,12 @@ if __name__ == "__main__":
         autopilot_conf_fn = os.path.join(os.path.expanduser('~'), '.autopilot')
         if os.path.exists(autopilot_conf_fn):
             with open(autopilot_conf_fn, 'r') as aconf:
-                autopilof_conf = json.load(aconf)
-                autopilot_dir = autopilof_conf['AUTOPILOTDIR']
+                autopilot_dir = aconf.read()
+                # autopilot_dir = autopilof_conf['AUTOPILOTDIR']
         else:
-            autopilot_dir = '/usr/autopilot/'
+            autopilot_dir = os.path.join(os.path.expanduser('~'), 'autopilot', '')
 
-    # attempt to load .prefs from standard location (/usr/autopilot/prefs.json)
-    prefs = {}
-
+    # attempt to load .prefs from standard location (~/autopilot/prefs.json)
     if args.prefs:
         prefs_fn = args.prefs
     else:
@@ -421,13 +524,193 @@ if __name__ == "__main__":
         with open(prefs_fn, 'r') as prefs_f:
             prefs = json.load(prefs_f)
 
+    ###################################3
+    # Run the npyscreen prompt
+
     setup = Autopilot_Setup(prefs)
     setup.run()
 
+    ####################################
+    # Collect values
+
     agent = {k:unfold_values(v) for k, v in setup.agent.input.items()}
+    prefs['AGENT'] = agent['AGENT']
     if agent['AGENT'] in ('PILOT', 'CHILD'):
         pilot = odict({k: unfold_values(v) for k, v in setup.pilot.input.items()})
-        hardware = odict({k: unfold_values(v) for k, v in setup.hardware.input.items()})
+        hardware_flat = odict({k: unfold_values(v) for k, v in setup.hardware.input.items()})
+
+        # have to un-nest hardware a bit
+        # currently is hardware['CAMERAS'] = [{config 1}, {config 2]
+        # want         hardware['CAMERAS']['cam_name_1'] = {config}
+        hardware = {}
+        for hardware_group, hardware_list in hardware_flat.items():
+            hardware[hardware_group] = {}
+            for hardware_config in hardware_list:
+                hardware[hardware_group][hardware_config['name']] = hardware_config
+
+        # get env commands to run
+        env_params = odict({k: unfold_values(v) for k, v in setup.env_pilot.input.items()})
+        for env_param, result in env_params.items():
+            if env_param in PILOT_ENV_CMDS.keys() and result == 1:
+                env[env_param] = PILOT_ENV_CMDS[env_param]
+
+        # merge with any existing prefs
+        prefs.update(pilot)
+        if 'HARDWARE' not in prefs.keys():
+            prefs['HARDWARE'] = hardware
+        else:
+            prefs['HARDWARE'].update(hardware)
+
+
+    ####################################
+    # Configure Environment
+
+    # detect if we are in a virtual environment
+    venv_path = ''
+    if hasattr(sys, 'real_prefix') or (sys.base_prefix != sys.prefix):
+        # virtualenv and pyenv populate these system attrs
+        venv_path = sys.prefix
+        prefs['VENV'] = venv_path
+
+    # get repo directory
+    file_loc = os.path.realpath(__file__)
+    file_loc = file_loc.split(os.sep)[:-2]
+    prefs['REPODIR'] = os.path.join(os.sep, *file_loc)
+
+    # run any environment configuration commands
+    env_results = {}
+    for env_config, env_command in env.items():
+        env_results[env_config] = call_series(env_command, env_config)
+
+    # Create directory structure if needed
+    #pdb.set_trace()
+    for dir_name, dir_path in DIRECTORY_STRUCTURE.items():
+        prefs[dir_name] = os.path.join(prefs['BASEDIR'], dir_path)
+        make_dir(prefs[dir_name])
+
+    # Create a launch script
+    prefs_fn = os.path.join(prefs['BASEDIR'], 'prefs.json')
+    launch_file = os.path.join(prefs['BASEDIR'], 'launch_autopilot.sh')
+
+    if prefs['AGENT'] in ('PILOT', 'CHILD'):
+        with open(launch_file, 'w') as launch_file_open:
+            launch_file_open.write('#!/bin/bash\n')
+            launch_file_open.write('killall jackd\n')
+            launch_file_open.write('sudo killall pigpiod\n')
+            launch_file_open.write('sudo mount -o remount,size=128M /dev/shm\n')
+            if prefs['VENV']:
+                launch_file_open.write(os.path.join(prefs['VENV'], 'bin', 'activate')+'\n')
+            launch_file_open.write('python3 -m autopilot.core.pilot -f {}'.format(prefs_fn))
+
+
+    config_msgs.append("Launch file created at {}".format(launch_file))
+    #os.chmod(launch_file, 0o775)
+
+    # install as systemd service if requested
+    if 'systemd' in env_params.keys():
+        if env_params['systemd'] in (1, True):
+            systemd_string = '''
+[Unit]
+Description=autopilot
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart={launch_pi}
+
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target'''.format(launch_pi=launch_file)
+
+            try:
+                unit_loc = '/lib/systemd/system/autopilot.service'
+
+                subprocess.call('sudo sh -c \"echo \'{}\' > {}\"'.format(systemd_string, unit_loc), shell=True)
+                # enable the service
+                subprocess.call(['sudo', 'systemctl', 'daemon-reload'])
+                sysd_result = subprocess.call(['sudo', 'systemctl', 'enable', 'autopilot.service'])
+
+                if sysd_result != 0:
+                    error_msgs.append('Systemd service could not be enabled :(')
+                else:
+                    env_results['systemd'] = True
+                    config_msgs.append('Systemd service installed and enabled, unit file written to {}'.format(unit_loc))
+
+            except PermissionError:
+                error_msgs.append("systemd service could not be installed due to a permissions error.\n"+\
+                                  "create a unit file containing the following at {}\n\n{}".format(unit_loc, systemd_string))
+                env_results['systemd'] = False
+
+
+
+    ####################################
+    # save prefs and finalize environment
+
+
+    # save prefs
+    #prefs_json = json.dumps(prefs, indent=4, separators=(',', ': '), sort_keys=True)
+    #prefs_ret = subprocess.call('sudo sh -c \"echo \'{}\' > {}\"'.format(shlex.quote(prefs_json), shlex.quote(prefs_fn)), shell=True)
+    # if prefs_ret != 0:
+    #     error_msgs.append('Couldnt create prefs file :(')
+    with open(prefs_fn, 'w') as prefs_f:
+       json.dump(prefs, prefs_f, indent=4, separators=(',', ': '), sort_keys=True)
+
+    # save basedir in autopilot user file
+    with open(os.path.join(os.path.expanduser('~'), '.autopilot'), 'w') as autopilot_f:
+        autopilot_f.write(prefs['BASEDIR'])
+
+
+
+
+
+    #####################################3
+    # User feedback
+
+    env_result = "\033[0;32;40m\n--------------------------------\nEnvironment Configuration:\n"
+    for config, result in env_results.items():
+        if result:
+            env_result += "  [ SUCCESS ] "
+        else:
+            env_result += "  [ FAILURE ] "
+
+        env_result += config
+        env_result += '\n'
+
+    if venv_path:
+        env_result += "  [ SUCCESS ] virtualenv detected, path: {}\n".format(venv_path)
+    else:
+        env_result += "  [ CMONDOG ] no virtualenv detected, running autopilot outside a venv is not recommended but it might work who knows\n"
+
+
+    if len(config_msgs)>0:
+        env_result += '\nAdditional Messages:'
+        for msg in config_msgs:
+            env_result += '  '
+            env_result += msg
+            env_result += '\n'
+
+
+
+    env_result += '--------------------------------\u001b[0m'
+
+
+    print('\n----------------------------------------')
+    print('prefs.json has been created and saved to {}'.format(prefs_fn))
+    pprint.pprint(prefs)
+    print('----------------------------------------\n')
+
+    print(env_result)
+
+    if len(error_msgs)>0:
+        for i, msg in enumerate(error_msgs):
+            print('\033[1;37;41mSomething went wrong during setup, this is wrong thing #{}\u001b[0m'.format(i))
+            print('\033[0;31;40m\n{}\n\u001b[0m'.format(msg))
+
+
+
+
+
 
 
 
