@@ -64,7 +64,7 @@ PILOT_PREFS = odict({
     'PIGPIOMASK': {'type': 'str', 'text': 'Binary mask controlling which pins pigpio controls according to their BCM numbering, see the -x parameter of pigpiod',
                    'default': "1111110000111111111111110000"},
     'PIGPIOARGS': {'type': 'str', 'text': 'Arguments to pass to pigpiod on startup',
-                   'default': '-t 0 -l -x'},
+                   'default': '-t 0 -l'},
     'PULLUPS'   : {'type': 'list', 'text': 'Pins to pull up on system startup? (list of form [1, 2]'},
     'PULLDOWNS'   : {'type': 'list', 'text': 'Pins to pull down on system startup? (list of form [1, 2]'}
 })

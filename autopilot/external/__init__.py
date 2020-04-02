@@ -19,8 +19,14 @@ except ImportError:
 def start_pigpiod():
     if not PIGPIO:
         raise ImportError('pigpio was not found in autopilot.external')
-    pigpiod_path = os.path.join(pigpio.__path__._path[0], 'pigpiod')
-    proc = subprocess.Popen('sudo ' + pigpiod_path, shell=True)
+    launch_pigpiod = os.path.join(pigpio.__path__._path[0], 'pigpiod')
+    if hasattr(prefs, 'PIGPIOARGS'):
+        launch_pigpiod += ' ' + prefs.PIGPIOARGS
+
+    if hasattr(prefs, 'PIGPIOMASK'):
+        launch_pigpiod += ' -x ' + prefs.PIGPIOMASK
+
+    proc = subprocess.Popen('sudo ' + launch_pigpiod, shell=True)
     return proc
 
 def start_jackd():
