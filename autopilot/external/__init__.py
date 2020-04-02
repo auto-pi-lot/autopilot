@@ -1,6 +1,7 @@
 import subprocess
 import os
 from autopilot import prefs
+import atexit
 
 PIGPIO = False
 try:
@@ -27,6 +28,10 @@ def start_pigpiod():
         launch_pigpiod += ' -x ' + prefs.PIGPIOMASK
 
     proc = subprocess.Popen('sudo ' + launch_pigpiod, shell=True)
+
+    # kill process when session ends
+    atexit.register(lambda pigpio_proc=proc: pigpio_proc.kill())
+
     return proc
 
 def start_jackd():
@@ -53,5 +58,9 @@ def start_jackd():
 
 
     proc = subprocess.Popen(launch_jackd, shell=True)
+
+    # kill process when session ends
+    atexit.register(lambda jackd_proc=proc: jackd_proc.kill())
+
     return proc
 
