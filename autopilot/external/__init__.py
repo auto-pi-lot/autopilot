@@ -26,6 +26,9 @@ def start_pigpiod():
         launch_pigpiod += ' ' + prefs.PIGPIOARGS
 
     if hasattr(prefs, 'PIGPIOMASK'):
+        # if it's been converted to an integer, convert back to a string and zfill any leading zeros that were lost
+        if isinstance(prefs.PIGPIOMASK, int):
+            prefs.PIGPIOMASK = str(prefs.PIGPIOMASK).zfill(28)
         launch_pigpiod += ' -x ' + prefs.PIGPIOMASK
 
     proc = subprocess.Popen('sudo ' + launch_pigpiod, shell=True)
