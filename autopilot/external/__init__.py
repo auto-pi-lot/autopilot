@@ -2,6 +2,7 @@ import subprocess
 import os
 from autopilot import prefs
 import atexit
+from time import sleep
 
 PIGPIO = False
 try:
@@ -32,6 +33,9 @@ def start_pigpiod():
     # kill process when session ends
     atexit.register(lambda pigpio_proc=proc: pigpio_proc.kill())
 
+    # sleep to let it boot up
+    sleep(1)
+
     return proc
 
 def start_jackd():
@@ -61,6 +65,9 @@ def start_jackd():
 
     # kill process when session ends
     atexit.register(lambda jackd_proc=proc: jackd_proc.kill())
+
+    # sleep to let it boot
+    sleep(1)
 
     return proc
 
