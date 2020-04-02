@@ -428,6 +428,11 @@ class Subject:
         # Strip off path and extension to get the protocol name
         protocol_name = os.path.splitext(protocol)[0].split(os.sep)[-1]
 
+        # check if this is the same protocol so we don't reset session number
+        same_protocol = False
+        if (protocol_name == self.protocol_name) and (step_n == self.step):
+            same_protocol = True
+
         # Load protocol to dict
         with open(protocol) as protocol_file:
             prot_dict = json.load(protocol_file)
@@ -454,8 +459,10 @@ class Subject:
         self.step = int(step_n)
 
         # always start out on session 0 on a new task
-        h5f.root.info._v_attrs['session'] = 0
-        self.session = 0
+        # unless this is the same task as was already assigned
+        if not same_protocol:
+            h5f.root.info._v_attrs['session'] = 0
+            self.session = 0
 
         # Make file group for protocol
         if "/data/{}".format(protocol_name) not in h5f:

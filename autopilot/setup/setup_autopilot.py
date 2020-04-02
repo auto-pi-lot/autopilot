@@ -86,11 +86,19 @@ AUDIO_PREFS = odict({
                     'default': 'jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -n3 -s &', 'depends': 'AUDIOSERVER'},
 })
 
+TERMINAL_PREFS = odict({
+    'DRAWFPS': {'type': 'int', "text": "FPS to draw videos displayed during acquisition",
+                "default": "20"},
+    'PILOT_DB': {'type': 'str', 'text': "filename to use for the .json pilot_db that maps pilots to subjects (relative to BASEDIR)",
+                 "default": "pilot_db.json"}
+})
+
 DIRECTORY_STRUCTURE = {
     'DATADIR': 'data',
     'SOUDNDIR': 'sounds',
     'LOGDIR': 'logs',
-    'VIZDIR': 'viz'
+    'VIZDIR': 'viz',
+    'PROTOCOLDIR': 'protocols',
 }
 
 
@@ -326,6 +334,12 @@ class Agent_Form(nps.Form):
         #                       name="Select an Agent. If this is a Raspberry Pi you should select either 'PILOT' or 'CHILD', and if this is the computer you will be using to control Autopilot you should select 'TERMINAL'", values = AGENTS, scroll_exit=True)
         # })
 
+        if os.path.exists(os.path.join(os.path.dirname(__file__),'welcome_msg.txt')):
+            with open(os.path.join(os.path.dirname(__file__),'welcome_msg.txt'), 'r') as welcome_f:
+                welcome = welcome_f.read()
+                for line in welcome.split('\n'):
+                    self.add(nps.FixedText, value=line)
+
         self.input = odict({
             'AGENT': self.add(nps.TitleSelectOne, max_height=len(AGENTS)+1, value=0,
                               name="Select an Autopilot Agent", values=AGENTS, scroll_exit=True)
@@ -416,6 +430,14 @@ viz:
 
 """
 
+class Terminal_Form(Autopilot_Form):
+    def create(self):
+        self.populate_form(TERMINAL_PREFS)
+
+    def afterEditing(self):
+        self.parentApp.setNextForm(None)
+
+
 
 class Autopilot_Setup(nps.NPSAppManaged):
     def __init__(self, prefs):
@@ -427,6 +449,7 @@ class Autopilot_Setup(nps.NPSAppManaged):
         self.env_pilot = self.addForm('ENV_PILOT', Pilot_Env_Form, name="Configure Pilot Environment")
         self.pilot = self.addForm('CONFIG_PILOT', Pilot_Config_Form, name="Setup Pilot Agent")
         self.hardware = self.addForm('HARDWARE', Hardware_Form, name="Hardware Configuration")
+        self.terminal = self.addForm('TERMINAL', Terminal_Form, name="Terminal Configuration")
 
 def unfold_values(v):
     """
@@ -445,13 +468,16 @@ def unfold_values(v):
         pass
     else:
 
+        if hasattr(v, 'values'):
+            # if it's an object that has mutiple values, ie. a choice box, value is inside a list.
+            v = v.values[v.value[0]]
+
         try:
-            v = int(v.value)
+            # convert ints to ints, lists to lists, etc. from strings
+            v = ast.literal_eval(v.value)
         except:
-            if hasattr(v, 'values'):
-                v = v.values[v.value[0]]
-            else:
-                v = v.value
+            # if it fails, still return the string.
+            v = v.value
     return v
 
 def call_series(commands, series_name=None):
@@ -560,6 +586,24 @@ if __name__ == "__main__":
             prefs['HARDWARE'] = hardware
         else:
             prefs['HARDWARE'].update(hardware)
+    elif agent['AGENT'] == 'TERMINAL':
+        # unpack prefs
+
+        terminal = odict({k: unfold_values(v) for k, v in setup.terminal.input.items()})
+
+
+        # create the pilot_db if it doesn't exist
+        terminal['PILOT_DB'] = os.path.join(terminal['BASEDIR'], terminal['PILOT_DB'])
+        if not os.path.exists(terminal['PILOT_DB']):
+            with open(terminal['PILOT_DB'], 'w') as pilot_db_file:
+                json.dump({}, pilot_db_file)
+
+        os.chmod(terminal['PILOT_DB'], 0o775)
+
+        # merge with any existing prefs
+        prefs.update(terminal)
+
+
 
 
     ####################################
@@ -599,12 +643,19 @@ if __name__ == "__main__":
             launch_file_open.write('sudo killall pigpiod\n')
             launch_file_open.write('sudo mount -o remount,size=128M /dev/shm\n')
             if prefs['VENV']:
-                launch_file_open.write(os.path.join(prefs['VENV'], 'bin', 'activate')+'\n')
+                launch_file_open.write("source " + os.path.join(prefs['VENV'], 'bin', 'activate')+'\n')
             launch_file_open.write('python3 -m autopilot.core.pilot -f {}'.format(prefs_fn))
+
+    elif prefs['AGENT'] == 'TERMINAL':
+        with open(launch_file, 'w') as launch_file_open:
+            launch_file_open.write('#!/bin/bash\n')
+            if prefs['VENV']:
+                launch_file_open.write("source " + os.path.join(prefs['VENV'], 'bin', 'activate')+'\n')
+            launch_file_open.write("python3 -m autopilot.core.terminal -f " + prefs_fn + "\n")
 
 
     config_msgs.append("Launch file created at {}".format(launch_file))
-    #os.chmod(launch_file, 0o775)
+    os.chmod(launch_file, 0o775)
 
     # install as systemd service if requested
     if 'systemd' in env_params.keys():

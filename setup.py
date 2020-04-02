@@ -55,7 +55,11 @@ if IS_RASPI:
     REQUIREMENTS = load_requirements('requirements_pilot.txt')
 
 else:
-    # is a terminal, should have minimum dependencies installed
+    # is a terminal,
+    # install dependencies
+    subprocess.call(['autopilot/setup/setup_environment_terminal.sh'])
+
+
     # sys.argv.append('--skip-cmake')
     REQUIREMENTS = load_requirements('requirements_terminal.txt')
 
