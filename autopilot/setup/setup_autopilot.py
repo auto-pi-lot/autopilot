@@ -367,7 +367,7 @@ class Pilot_Env_Form(Autopilot_Form):
         self.populate_form(ENV_PILOT)
 
     def afterEditing(self):
-        self.parentApp.setNextForm('CONFIG_PILOT')
+        self.parentApp.setNextForm('CONFIG_PILOT_1')
 
 class Pilot_Config_Form_1(Autopilot_Form):
     def create(self):
