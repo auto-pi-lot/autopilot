@@ -142,7 +142,7 @@ class Pilot:
     # audio server
     server = None
 
-    def __init__(self):
+    def __init__(self, splash=True):
         self.name = prefs.NAME
         if prefs.LINEAGE == "CHILD":
             self.child = True
@@ -204,6 +204,15 @@ class Pilot:
         # Since we're starting up, handshake to introduce ourselves
         self.ip = self.get_ip()
         self.handshake()
+
+        if splash:
+            with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'setup', 'welcome_msg.txt'), 'r') as welcome_f:
+                welcome = welcome_f.read()
+                print('')
+                for line in welcome.split('\n'):
+                    print(line)
+                print('')
+                sys.stdout.flush()
 
         #self.blank_LEDs()
 
