@@ -493,7 +493,7 @@ def unfold_values(v):
         except:
             # fine, just a string that can't be evaluated into another type
             pass
-        return v
+    return v
 
 def call_series(commands, series_name=None):
     """
