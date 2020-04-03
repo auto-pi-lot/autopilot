@@ -456,8 +456,8 @@ class Autopilot_Setup(nps.NPSAppManaged):
     def onStart(self):
         self.agent = self.addForm('MAIN', Agent_Form, name="Select Agent")
         self.env_pilot = self.addForm('ENV_PILOT', Pilot_Env_Form, name="Configure Pilot Environment")
-        self.pilot_1 = self.addForm('CONFIG_PILOT_1', Pilot_Config_Form_1, name="Setup Pilot Agent")
-        self.pilot_2 = self.addForm('CONFIG_PILOT_2', Pilot_Config_Form_2, name="Setup Pilot Agent")
+        self.pilot_1 = self.addForm('CONFIG_PILOT_1', Pilot_Config_Form_1, name="Setup Pilot Agent - 1/2")
+        self.pilot_2 = self.addForm('CONFIG_PILOT_2', Pilot_Config_Form_2, name="Setup Pilot Agent - 2/2")
         self.hardware = self.addForm('HARDWARE', Hardware_Form, name="Hardware Configuration")
         self.terminal = self.addForm('TERMINAL', Terminal_Form, name="Terminal Configuration")
 
