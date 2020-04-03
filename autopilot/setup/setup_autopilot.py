@@ -293,7 +293,7 @@ class Hardware_Form(nps.FormWithMenus):
 
         #pdb.set_trace()
 
-        self.add(nps.FixedText, value="{}.{}".format(module, class_name), rely=self.altrely, color="VERYGOOD")
+        self.add(nps.FixedText, value="{}.{}".format(module, class_name), rely=self.altrely, editable=False, color="VERYGOOD")
 
         self.altrely+=1
 
