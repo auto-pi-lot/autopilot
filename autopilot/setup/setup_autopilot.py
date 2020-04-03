@@ -217,7 +217,7 @@ class Hardware_Form(nps.FormWithMenus):
 
 
     def create(self):
-        self.add(nps.FixedText, value="Use the ctrl+X menu to add new hardware")
+        self.add(nps.FixedText, value="Use the ctrl+X menu to add new hardware", editable=False, color="VERYGOOD")
 
         hardware_objs = self.list_hardware()
 
@@ -293,7 +293,7 @@ class Hardware_Form(nps.FormWithMenus):
 
         #pdb.set_trace()
 
-        self.add(nps.FixedText, value="{}.{}".format(module, class_name), rely=self.altrely)
+        self.add(nps.FixedText, value="{}.{}".format(module, class_name), rely=self.altrely, color="VERYGOOD")
 
         self.altrely+=1
 
@@ -338,7 +338,7 @@ class Agent_Form(nps.Form):
             with open(os.path.join(os.path.dirname(__file__),'welcome_msg.txt'), 'r') as welcome_f:
                 welcome = welcome_f.read()
                 for line in welcome.split('\n'):
-                    self.add(nps.FixedText, value=line)
+                    self.add(nps.FixedText, value=line, editable=False)
 
         self.input = odict({
             'AGENT': self.add(nps.TitleSelectOne, max_height=len(AGENTS)+1, value=0,
@@ -371,13 +371,13 @@ class Pilot_Env_Form(Autopilot_Form):
 
 class Pilot_Config_Form(Autopilot_Form):
     def create(self):
-        self.add(nps.FixedText, value='Base Prefs')
+        self.add(nps.FixedText, value='Base Prefs', editable=False, color="VERYGOOD")
         self.populate_form(BASE_PREFS)
-        self.add(nps.FixedText, value='Pilot Prefs')
+        self.add(nps.FixedText, value='Pilot Prefs', editable=False, color="VERYGOOD")
         self.populate_form(PILOT_PREFS)
-        self.add(nps.FixedText, value='Lineage Prefs')
+        self.add(nps.FixedText, value='Lineage Prefs', editable=False, color="VERYGOOD")
         self.populate_form(LINEAGE_PREFS)
-        self.add(nps.FixedText, value='Audio Prefs')
+        self.add(nps.FixedText, value='Audio Prefs', editable=False, color="VERYGOOD")
         self.populate_form(AUDIO_PREFS)
 
     def afterEditing(self):
@@ -432,6 +432,9 @@ viz:
 
 class Terminal_Form(Autopilot_Form):
     def create(self):
+        self.add(nps.FixedText, value='Base Prefs', editable=False, color="VERYGOOD")
+        self.populate_form(BASE_PREFS)
+        self.add(nps.FixedText, value='Terminal Prefs', editable=False, color="VERYGOOD")
         self.populate_form(TERMINAL_PREFS)
 
     def afterEditing(self):
@@ -467,18 +470,23 @@ def unfold_values(v):
         # do nothing since this is what we want yno
         pass
     else:
+        #pdb.set_trace()
 
         if hasattr(v, 'values'):
             # if it's an object that has mutiple values, ie. a choice box, value is inside a list.
             v = v.values[v.value[0]]
+        elif hasattr(v, 'value'):
+            # if it isn't a list, but is still a widget object, get the value
+            v = v.value
+
 
         try:
             # convert ints to ints, lists to lists, etc. from strings
-            v = ast.literal_eval(v.value)
+            v = ast.literal_eval(v)
         except:
-            # if it fails, still return the string.
-            v = v.value
-    return v
+            # fine, just a string that can't be evaluated into another type
+            pass
+        return v
 
 def call_series(commands, series_name=None):
     """
@@ -618,7 +626,7 @@ if __name__ == "__main__":
 
     # get repo directory
     file_loc = os.path.realpath(__file__)
-    file_loc = file_loc.split(os.sep)[:-2]
+    file_loc = file_loc.split(os.sep)[:-3]
     prefs['REPODIR'] = os.path.join(os.sep, *file_loc)
 
     # run any environment configuration commands

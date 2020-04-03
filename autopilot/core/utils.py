@@ -1,6 +1,6 @@
 # import numpy as np
 from autopilot import prefs
-if prefs.AGENT in ("terminal", "docs"):
+if prefs.AGENT in ("TERMINAL", "DOCS"):
     from PySide2 import QtCore
 import json
 import pandas as pd
@@ -74,7 +74,7 @@ class Param(object):
 
 
 
-if prefs.AGENT in ["terminal", "docs"]:
+if prefs.AGENT in ["TERMINAL", "DOCS"]:
     class InvokeEvent(QtCore.QEvent):
         """
         Sends signals to the main QT thread from spawned message threads
