@@ -369,12 +369,18 @@ class Pilot_Env_Form(Autopilot_Form):
     def afterEditing(self):
         self.parentApp.setNextForm('CONFIG_PILOT')
 
-class Pilot_Config_Form(Autopilot_Form):
+class Pilot_Config_Form_1(Autopilot_Form):
     def create(self):
         self.add(nps.FixedText, value='Base Prefs', editable=False, color="VERYGOOD")
         self.populate_form(BASE_PREFS)
         self.add(nps.FixedText, value='Pilot Prefs', editable=False, color="VERYGOOD")
         self.populate_form(PILOT_PREFS)
+
+    def afterEditing(self):
+        self.parentApp.setNextForm('CONFIG_PILOT_2')
+
+class Pilot_Config_Form_2(Autopilot_Form):
+    def create(self):
         self.add(nps.FixedText, value='Lineage Prefs', editable=False, color="VERYGOOD")
         self.populate_form(LINEAGE_PREFS)
         self.add(nps.FixedText, value='Audio Prefs', editable=False, color="VERYGOOD")
@@ -450,7 +456,8 @@ class Autopilot_Setup(nps.NPSAppManaged):
     def onStart(self):
         self.agent = self.addForm('MAIN', Agent_Form, name="Select Agent")
         self.env_pilot = self.addForm('ENV_PILOT', Pilot_Env_Form, name="Configure Pilot Environment")
-        self.pilot = self.addForm('CONFIG_PILOT', Pilot_Config_Form, name="Setup Pilot Agent")
+        self.pilot_1 = self.addForm('CONFIG_PILOT_1', Pilot_Config_Form_1, name="Setup Pilot Agent")
+        self.pilot_2 = self.addForm('CONFIG_PILOT_2', Pilot_Config_Form_2, name="Setup Pilot Agent")
         self.hardware = self.addForm('HARDWARE', Hardware_Form, name="Hardware Configuration")
         self.terminal = self.addForm('TERMINAL', Terminal_Form, name="Terminal Configuration")
 
@@ -570,7 +577,8 @@ if __name__ == "__main__":
     agent = {k:unfold_values(v) for k, v in setup.agent.input.items()}
     prefs['AGENT'] = agent['AGENT']
     if agent['AGENT'] in ('PILOT', 'CHILD'):
-        pilot = odict({k: unfold_values(v) for k, v in setup.pilot.input.items()})
+        pilot = odict({k: unfold_values(v) for k, v in setup.pilot_1.input.items()})
+        pilot.update(odict({k: unfold_values(v) for k, v in setup.pilot_2.input.items()}))
         hardware_flat = odict({k: unfold_values(v) for k, v in setup.hardware.input.items()})
 
         # have to un-nest hardware a bit
