@@ -313,6 +313,8 @@ class Subject_List(QtWidgets.QListWidget):
         if subjects:
             self.subjects = subjects
             self.populate_list()
+        else:
+            self.subjects = []
 
         # make draggable
         self.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
@@ -1556,8 +1558,12 @@ class Sound_Widget(QtWidgets.QWidget):
 
             self.setLayout(layout)
 
+
             # dict for storing params
             self.param_dict = {}
+
+            # do initial population
+            self.populate_params()
 
         def populate_params(self):
             """

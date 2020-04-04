@@ -95,7 +95,7 @@ TERMINAL_PREFS = odict({
 
 DIRECTORY_STRUCTURE = {
     'DATADIR': 'data',
-    'SOUDNDIR': 'sounds',
+    'SOUNDDIR': 'sounds',
     'LOGDIR': 'logs',
     'VIZDIR': 'viz',
     'PROTOCOLDIR': 'protocols',
@@ -276,6 +276,8 @@ class Hardware_Form(nps.FormWithMenus):
         # get signatures for each
         # go in reverse order so top classes options come first
         sigs = []
+        # list to keep track of parameter names to remove duplicates
+        param_names = []
         for cls in reversed(hw_parents):
             # get signature
             sig = inspect.signature(cls)
@@ -286,7 +288,12 @@ class Hardware_Form(nps.FormWithMenus):
                     param_default = None
                 if param_name in ('kwargs', 'args'):
                     continue
-                sigs.append((param_name, param_default))
+
+                if param_name not in param_names:
+                    # check if we already have a parameter with this name,
+                    # if we don't add it.
+                    sigs.append((param_name, param_default))
+                    param_names.append(param_name)
 
         MODULE = module.upper()
         # create title and input widgets for arguments

@@ -123,6 +123,7 @@ class Nafc(Task):
         }
     }
 
+
     def __init__(self, stage_block=None, stim=None, reward=50, req_reward=False,
                  punish_stim=False, punish_dur=100, correction=False, correction_pct=50.,
                  bias_mode=False, bias_threshold=20, current_trial=0, stim_light=True, **kwargs):

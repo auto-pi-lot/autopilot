@@ -462,6 +462,10 @@ class Station(multiprocessing.Process):
             # fine, already deleted
             pass
 
+        # if this is a message to our internal net_node, make sure it gets the memo that shit was confirmed too
+        if msg.to == "_{}".format(self.id):
+            self.send("_{}".format(self.id), 'CONFIRM', msg.value)
+
 
         #self.logger.info('CONFIRMED MESSAGE {}'.format(msg.value))
 
@@ -539,7 +543,7 @@ class Station(multiprocessing.Process):
                     #if we know who they are or not, try to send it through router anyway.
                     self.listener.send_multipart([unserialized_to, unserialized_to, msg[-1]])
 
-                # send confirmation
+                self.logger.debug('FORWARDING: to - {}, {}'.format(unserialized_to, msg[-1]))
 
                 return
 
@@ -1137,23 +1141,7 @@ class Pilot_Station(Station):
                 f_sounds = []
 
             if len(f_sounds)>0:
-                # check to see if we have these files, if not
-                #     def update(self, data):
-                #         """
-                #         Args:
-                #             data (:class:`numpy.ndarray`): an x_width x 2 array where
-                #                 column 0 is trial number and column 1 is the value.
-                #         """
-                #         # data should come in as an n x 2 array,
-                #         # 0th column - trial number (x), 1st - (y) value
-                #         data = data.astype(np.float)
-                #
-                #         self.series = pd.Series(data[...,1])
-                #         ys = self.series.rolling(self.winsize, min_periods=0).mean().as_matrix()
-                #
-                #         #print(ys)
-                #
-                #         self.curve.setData(data[...,0], ys, fillLevel=0.5), request them
+                # check to see if we have these files, if not, request them
                 for sound in f_sounds:
                     full_path = os.path.join(prefs.SOUNDDIR, sound['path'])
                     if not os.path.exists(full_path):
@@ -1509,7 +1497,7 @@ class Net_Node(object):
             log_this = False
 
         if self.logger and log_this:
-            self.logger.debug('{} - RECEIVED: {}'.format(self.id, str(msg)))
+            self.logger.debug('RECEIVED: {}'.format(self.id, str(msg)))
 
 
     def send(self, to=None, key=None, value=None, msg=None, repeat=True, flags = None, force_to = False):
@@ -1570,7 +1558,6 @@ class Net_Node(object):
         msg_enc = msg.serialize()
         #pdb.set_trace()
         if not msg_enc:
-            pdb.set_trace()
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
@@ -1610,7 +1597,7 @@ class Net_Node(object):
                             pass
                     else:
                         # if we didn't just put this message in the outbox...
-                        if (time.time() - outbox[id][0]) > self.repeat_interval:
+                        if (time.time() - outbox[id][0]) > (self.repeat_interval*2):
                             self.logger.debug('REPUBLISH {} - {}'.format(id, str(outbox[id][1])))
                             self.sock.send_multipart([self.upstream.encode('utf-8'), outbox[id][1].serialize()])
                             self.outbox[id][1].ttl -= 1

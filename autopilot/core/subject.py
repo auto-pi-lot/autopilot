@@ -411,8 +411,6 @@ class Subject:
 
         h5f = self.open_hdf()
 
-        pdb.set_trace()
-
         ## Assign new protocol
         if not protocol.endswith('.json'):
             protocol = protocol + '.json'
