@@ -609,7 +609,7 @@ class Station(multiprocessing.Process):
             # don't confirm confirmations
             if (msg.key != "CONFIRM") and ('NOREPEAT' not in msg.flags.keys()):
                 if send_type == 'router':
-                    self.send(sender, 'CONFIRM', msg.id)
+                    self.send(msg.sender, 'CONFIRM', msg.id)
                 elif send_type == 'dealer':
                     self.push(msg.sender, 'CONFIRM', msg.id)
             return
