@@ -894,6 +894,8 @@ class Terminal(QtWidgets.QMainWindow):
         # send message to kill networking process
         self.node.send(key="KILL")
 
+        event.accept()
+
 if __name__ == "__main__":
 
     #with open(prefs_file) as prefs_file_open:

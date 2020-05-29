@@ -237,7 +237,16 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#visions">Visions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../todo.html#integrations">Integrations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../todo.html#roadmap-deeplabcut-integration">DeepLabCut Integration<span><a href="https://groups.google.com/forum/#!topic/autopilot-users/T-PNfrHDtzA" class="roadmap-dblink">priority: high | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../todo.html#roadmap-open-ephys-integration">Open Ephys Integration<span><a href="https://google.com" class="roadmap-dblink">priority: medium | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../todo.html#roadmap-bonsai-integration">Bonsai Integration<span><a href="https://google.com" class="roadmap-dblink">priority: low | discuss>></a></span></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../todo.html#closed-loop-behavior-processing-pipelines">Closed-Loop Behavior &amp; Processing Pipelines</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../../todo.html#improvements">Improvements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../todo.html#bugs">Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../todo.html#completed">Completed</a></li>
@@ -352,7 +361,7 @@
 <span class="kn">import</span> <span class="nn">tables</span>
 
 <span class="c1"># TODO: This is lazy, make the paths work.</span>
-<span class="kn">import</span> <span class="nn">autopilot.hardware.gpio</span>
+
 
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))))</span>
 <span class="kn">from</span> <span class="nn">autopilot</span> <span class="kn">import</span> <span class="n">prefs</span>
@@ -386,6 +395,7 @@
 
 <span class="kn">from</span> <span class="nn">autopilot.core.networking</span> <span class="kn">import</span> <span class="n">Pilot_Station</span><span class="p">,</span> <span class="n">Net_Node</span><span class="p">,</span> <span class="n">Message</span>
 <span class="kn">from</span> <span class="nn">autopilot</span> <span class="kn">import</span> <span class="n">tasks</span>
+<span class="kn">from</span> <span class="nn">autopilot.hardware</span> <span class="kn">import</span> <span class="n">gpio</span>
 
 
 <span class="c1">########################################</span>
@@ -516,10 +526,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pulls</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prefs</span><span class="p">,</span> <span class="s1">&#39;PULLUPS&#39;</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">pin</span> <span class="ow">in</span> <span class="n">prefs</span><span class="o">.</span><span class="n">PULLUPS</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pulls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">Digital_Out</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">),</span> <span class="n">pull</span><span class="o">=</span><span class="s1">&#39;U&#39;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pulls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gpio</span><span class="o">.</span><span class="n">Digital_Out</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">),</span> <span class="n">pull</span><span class="o">=</span><span class="s1">&#39;U&#39;</span><span class="p">))</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prefs</span><span class="p">,</span> <span class="s1">&#39;PULLDOWNS&#39;</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">pin</span> <span class="ow">in</span> <span class="n">prefs</span><span class="o">.</span><span class="n">PULLDOWNS</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pulls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">Digital_Out</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">),</span> <span class="n">pull</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pulls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gpio</span><span class="o">.</span><span class="n">Digital_Out</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">),</span> <span class="n">pull</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">))</span>
 
         <span class="c1"># check if the calibration file needs to be updated</span>
 
@@ -723,7 +733,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pin_num</span> <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">HARDWARE</span><span class="p">[</span><span class="s1">&#39;PORTS&#39;</span><span class="p">][</span><span class="n">port_name</span><span class="p">]</span>
-        <span class="n">port</span> <span class="o">=</span> <span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">Solenoid</span><span class="p">(</span><span class="n">pin_num</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">open_dur</span><span class="p">))</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="n">gpio</span><span class="o">.</span><span class="n">Solenoid</span><span class="p">(</span><span class="n">pin_num</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">open_dur</span><span class="p">))</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;click_num&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
                <span class="s1">&#39;pilot&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                <span class="s1">&#39;port&#39;</span><span class="p">:</span> <span class="n">port_name</span>
@@ -807,20 +817,20 @@
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.25</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">spacing</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">last_message</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">clock</span><span class="p">()</span>
+            <span class="n">last_message</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_msg</span><span class="p">):</span>
                 <span class="n">message</span><span class="p">[</span><span class="s1">&#39;n_msg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
                 <span class="n">message</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s1">&#39;bandwidth&#39;</span><span class="p">,</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;BANDWIDTH_MSG&#39;</span><span class="p">,</span>
                                <span class="n">value</span><span class="o">=</span><span class="n">message</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="n">confirm</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;MINPRINT&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">})</span>
-                <span class="n">this_message</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">clock</span><span class="p">()</span>
+                <span class="n">this_message</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
                 <span class="n">waitfor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">spacing</span><span class="o">-</span><span class="p">(</span><span class="n">this_message</span><span class="o">-</span><span class="n">last_message</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">spacing</span><span class="p">)</span>
 
                 <span class="c1">#time.sleep(np.random.exponential(1.0/rate))</span>
                 <span class="c1"># just do linear spacing lol.</span>
 
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">waitfor</span><span class="p">)</span>
-                <span class="n">last_message</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">clock</span><span class="p">()</span>
+                <span class="n">last_message</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_msg</span><span class="p">):</span>
                 <span class="n">message</span><span class="p">[</span><span class="s1">&#39;n_msg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
@@ -916,7 +926,7 @@
             <span class="k">return</span>
 
         <span class="k">for</span> <span class="n">position</span><span class="p">,</span> <span class="n">pins</span> <span class="ow">in</span> <span class="n">prefs</span><span class="o">.</span><span class="n">HARDWARE</span><span class="p">[</span><span class="s1">&#39;LEDS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">led</span> <span class="o">=</span> <span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">(</span><span class="n">pins</span><span class="o">=</span><span class="n">pins</span><span class="p">)</span>
+            <span class="n">led</span> <span class="o">=</span> <span class="n">gpio</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">(</span><span class="n">pins</span><span class="o">=</span><span class="n">pins</span><span class="p">)</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.</span><span class="p">)</span>
             <span class="n">led</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">led</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
@@ -1003,7 +1013,7 @@
 
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="c1"># Calculate next stage data and prep triggers</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">stages</span><span class="o">.</span><span class="n">next</span><span class="p">()()</span> <span class="c1"># Double parens because next just gives us the function, we still have to call it</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">stages</span><span class="p">)()</span> <span class="c1"># Double parens because next just gives us the function, we still have to call it</span>
 
             <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
                 <span class="n">data</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>

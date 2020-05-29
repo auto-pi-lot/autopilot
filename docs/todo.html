@@ -239,7 +239,16 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visions">Visions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#integrations">Integrations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#roadmap-deeplabcut-integration">DeepLabCut Integration<span><a href="https://groups.google.com/forum/#!topic/autopilot-users/T-PNfrHDtzA" class="roadmap-dblink">priority: high | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#roadmap-open-ephys-integration">Open Ephys Integration<span><a href="https://google.com" class="roadmap-dblink">priority: medium | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#roadmap-bonsai-integration">Bonsai Integration<span><a href="https://google.com" class="roadmap-dblink">priority: low | discuss>></a></span></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#closed-loop-behavior-processing-pipelines">Closed-Loop Behavior &amp; Processing Pipelines</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#improvements">Improvements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#bugs">Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#completed">Completed</a></li>
@@ -332,29 +341,42 @@
   <p>Development Roadmap, Minor To-dos, and all future plans :)</p>
 <div class="section" id="to-do">
 <span id="todo"></span><h1>To-Do<a class="headerlink" href="#to-do" title="Permalink to this headline">¶</a></h1>
-<div class="roadmap high-priority docutils container">
-<p>Test div content inside custom classes</p>
-</div>
 <div class="section" id="visions">
 <h2>Visions<a class="headerlink" href="#visions" title="Permalink to this headline">¶</a></h2>
 <p><em>The long view: design, ux, and major functionality projects roughly corresponding to minor semantic versions</em></p>
-<ul>
-<li><p><strong>Integrations</strong> - Make Autopilot work with…</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><strong>DeepLabCut</strong> - write a realtime mode for DLC that analyzes frames as they are acquired,
-develop a analysis pipelining framework that lets the results of the analysis be operated on (eg x, y coordinates -&gt;
+<div class="section" id="integrations">
+<h3>Integrations<a class="headerlink" href="#integrations" title="Permalink to this headline">¶</a></h3>
+<p>Make autopilot work with…</p>
+<div class="roadmap-high section" id="roadmap-deeplabcut-integration">
+<h4 class="roadmap-title roadmap-priority-high">DeepLabCut Integration<span><a href="https://groups.google.com/forum/#!topic/autopilot-users/T-PNfrHDtzA" class="roadmap-dblink">priority: high | discuss>></a></span><a class="headerlink" href="#roadmap-deeplabcut-integration" title="Permalink to this headline">¶</a></h4>
+<span></span><p><ul class="simple">
+<li><p>collaborate w/ DLC crew to write a realtime mode for DLC that analyzes frames as they are acquired,</p></li>
+<li><p>develop a analysis pipelining framework that lets the results of the analysis be operated on (eg x, y coordinates -&gt;
 labeled regions in an arena) and used to control task operation.</p></li>
-<li><p><strong>OpenEphys</strong> - write a C extension to the Rhythm API similar to that used by the OpenEphys
-<a class="reference external" href="https://github.com/open-ephys/plugin-GUI/tree/master/Plugins/RhythmNode">Rhythm Node</a>.
-Enable existing OE configuration files to be loaded and used to configure plugin,
+</ul>
+</p>
+</div>
+<div class="roadmap-medium section" id="roadmap-open-ephys-integration">
+<h4 class="roadmap-title roadmap-priority-medium">Open Ephys Integration<span><a href="https://google.com" class="roadmap-dblink">priority: medium | discuss>></a></span><a class="headerlink" href="#roadmap-open-ephys-integration" title="Permalink to this headline">¶</a></h4>
+<span></span><p><ul class="simple">
+<li><p>write a C extension to the Rhythm API similar to that used by the OpenEphys
+<a class="reference external" href="https://github.com/open-ephys/plugin-GUI/tree/master/Plugins/RhythmNode">Rhythm Node</a>.</p></li>
+<li><p>Enable existing OE configuration files to be loaded and used to configure plugin,
 so ephys data can be collected natively alongside behavioral data.</p></li>
-<li><p><strong>Bonsai</strong> - Write source and sink modules so <a class="reference external" href="https://bonsai-rx.org/">Bonsai</a> pipelines can be
+</ul>
+</p>
+</div>
+<div class="roadmap-low section" id="roadmap-bonsai-integration">
+<h4 class="roadmap-title roadmap-priority-low">Bonsai Integration<span><a href="https://google.com" class="roadmap-dblink">priority: low | discuss>></a></span><a class="headerlink" href="#roadmap-bonsai-integration" title="Permalink to this headline">¶</a></h4>
+<span></span><p><ul class="simple">
+<li><p>Write source and sink modules so <a class="reference external" href="https://bonsai-rx.org/">Bonsai</a> pipelines can be
 used within Autopilot for image processing, acquisition etc.</p></li>
 </ul>
-</div></blockquote>
-</li>
-<li><p><strong>Closed-Loop Behavior &amp; Processing Pipelines</strong></p>
+</p>
+</div>
+</div>
+<div class="section" id="closed-loop-behavior-processing-pipelines">
+<h3>Closed-Loop Behavior &amp; Processing Pipelines<a class="headerlink" href="#closed-loop-behavior-processing-pipelines" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li><p>design a signal/slot architecture like Qt so that hardware devices</p></li>
@@ -391,7 +413,7 @@ through the pipeline without polling. This could be done with a decorator around
 </li>
 </ul>
 </div></blockquote>
-</li>
+<ul>
 <li><p><strong>Agents</strong></p>
 <blockquote>
 <div><ul class="simple">
@@ -530,6 +552,7 @@ data collection infrastructure from .hdf5 files to a database system like Postgr
 </div></blockquote>
 </li>
 </ul>
+</div>
 </div>
 <div class="section" id="improvements">
 <h2>Improvements<a class="headerlink" href="#improvements" title="Permalink to this headline">¶</a></h2>
