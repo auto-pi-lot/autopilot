@@ -74,7 +74,7 @@ class Param(object):
 
 
 
-if prefs.AGENT in ["TERMINAL", "DOCS"]:
+if prefs.AGENT not in ["PILOT"]:
     class InvokeEvent(QtCore.QEvent):
         """
         Sends signals to the main QT thread from spawned message threads
