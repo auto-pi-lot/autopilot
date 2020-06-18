@@ -43,7 +43,7 @@ def load_requirements(req_file):
 # configure for raspberry pi
 if IS_RASPI:
     # install raspi dependencies
-    subprocess.call(['autopilot/setup/setup_environment_pi.sh'])
+    #subprocess.call(['autopilot/setup/setup_environment_pi.sh'])
 
 
     CMAKE_ARGS.extend(['-DPIGPIO=ON', '-DJACK=ON'])
@@ -57,7 +57,7 @@ if IS_RASPI:
 else:
     # is a terminal,
     # install dependencies
-    subprocess.call(['autopilot/setup/setup_environment_terminal.sh'])
+    #subprocess.call(['autopilot/setup/setup_environment_terminal.sh'])
 
 
     # sys.argv.append('--skip-cmake')
