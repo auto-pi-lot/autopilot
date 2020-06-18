@@ -1,6 +1,6 @@
 # import numpy as np
 from autopilot import prefs
-if prefs.AGENT in ("TERMINAL", "DOCS"):
+if prefs.AGENT not in ("PILOT"):
     from PySide2 import QtCore
 import json
 import pandas as pd
