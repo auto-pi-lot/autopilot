@@ -34,5 +34,5 @@ before_script:
   - sleep 1
 
 script:
-  pytest --cov=autopilot --cov-report ter-missing tests
+  pytest --cov=autopilot --cov-report term-missing tests
 
