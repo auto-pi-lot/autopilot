@@ -15,7 +15,7 @@ from autopilot import prefs
 if prefs.AGENT == 'pilot':
     if 'AUDIO' in prefs.CONFIG:
         from autopilot.stim.sound import sounds
-
+        # TODO be loud about trying to init sounds when not in config
 
 def init_manager(stim):
     if 'manager' in stim.keys():

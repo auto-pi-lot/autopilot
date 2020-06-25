@@ -143,6 +143,16 @@ class Pilot:
     server = None
 
     def __init__(self, splash=True):
+
+        if splash:
+            with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'setup', 'welcome_msg.txt'), 'r') as welcome_f:
+                welcome = welcome_f.read()
+                print('')
+                for line in welcome.split('\n'):
+                    print(line)
+                print('')
+                sys.stdout.flush()
+
         self.name = prefs.NAME
         if prefs.LINEAGE == "CHILD":
             self.child = True
@@ -205,14 +215,7 @@ class Pilot:
         self.ip = self.get_ip()
         self.handshake()
 
-        if splash:
-            with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'setup', 'welcome_msg.txt'), 'r') as welcome_f:
-                welcome = welcome_f.read()
-                print('')
-                for line in welcome.split('\n'):
-                    print(line)
-                print('')
-                sys.stdout.flush()
+
 
         #self.blank_LEDs()
 
@@ -726,6 +729,7 @@ class Pilot:
 
 
 if __name__ == "__main__":
+
 
     a = Pilot()
 

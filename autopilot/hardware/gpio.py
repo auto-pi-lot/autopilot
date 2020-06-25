@@ -173,6 +173,8 @@ class GPIO(Hardware):
 
     @pin.setter
     def pin(self, pin):
+        if pin is None:
+            return
         assert(int(pin))
 
         self._pin = int(pin)
@@ -1107,6 +1109,9 @@ class LED_RGB(Digital_Out):
         """
         Pins don't get set like this for the LED_RGB, ignore.
         """
+        if pin is None:
+            # just remnants of the attempt to set from the GPIO metaclass
+            return
         self.logger.warning('pin cant be set via the attribute')
 
     @property

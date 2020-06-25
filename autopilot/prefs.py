@@ -204,6 +204,8 @@ def compute_calibration(path=None, calibration=None, do_return=False):
 if 'AGENT' not in globals().keys():
     add('AGENT', '')
 
+add('AUTOPILOT_ROOT', os.path.dirname(os.path.abspath(__file__)))
+
 
 #
 # HARDWARE_PREFS = odict({

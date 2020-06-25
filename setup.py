@@ -5,6 +5,7 @@ subprocess.call('autopilot/setup/setup_environment.sh')
 from skbuild import setup, constants
 from setuptools import find_packages
 import subprocess
+import sys
 
 # declare defaults
 IS_RASPI = False

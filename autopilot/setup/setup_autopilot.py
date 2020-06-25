@@ -538,7 +538,8 @@ def make_dir(adir):
     """
     if not os.path.exists(adir):
         os.makedirs(adir)
-        os.chmod(adir, 0o774)
+
+    os.chmod(adir, 0o774)
 
 if __name__ == "__main__":
     env = {}
@@ -561,6 +562,9 @@ if __name__ == "__main__":
                 # autopilot_dir = autopilof_conf['AUTOPILOTDIR']
         else:
             autopilot_dir = os.path.join(os.path.expanduser('~'), 'autopilot', '')
+
+    make_dir(autopilot_dir)
+
 
     # attempt to load .prefs from standard location (~/autopilot/prefs.json)
     if args.prefs:
