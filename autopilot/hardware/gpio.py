@@ -883,7 +883,7 @@ class LED_RGB(Digital_Out):
 
         if pins and len(pins) == 3:
             for color, pin in zip(('r', 'g', 'b'), pins):
-                self.channels[color] = PWM(pin, polarity=polarity)
+                self.channels[color] = PWM(pin, polarity=polarity, name=f"{self.name}_{color.upper()}")
 
         elif r and g and b:
             self.channels = {'r':PWM(r, polarity=polarity, name="{}_R".format(self.name)),
@@ -1131,6 +1131,9 @@ class LED_RGB(Digital_Out):
         """
         Pins don't get set like this for the LED_RGB, ignore\
         """
+        if pin_bcm is None:
+            return
+
         self.logger.warning('pin_bcm cant be set via the attribute')
 
     @property
@@ -1139,6 +1142,8 @@ class LED_RGB(Digital_Out):
 
     @pull.setter
     def pull(self, direction):
+        if direction is None:
+            return
         self.logger.warning('pull cant be set via the attribute')
 
 
