@@ -28,6 +28,8 @@ from autopilot import hardware
 parser = argparse.ArgumentParser(description="Setup an Autopilot Agent")
 parser.add_argument('-f', '--prefs', help="Location of .json prefs file (default: ~/autopilot/prefs.json")
 parser.add_argument('-d', '--dir', help="Autopilot directory (default: ~/autopilot)")
+parser.add_argument('-s', '--script', help="Run a setup script without entering a full setup routine. for available scripts see -l")
+parser.add_argument('-l', '--list_scripts', help="list available setup scripts!", action='store_true')
 
 AGENTS = ('TERMINAL', 'PILOT', 'CHILD')
 
@@ -46,8 +48,9 @@ ENV_PILOT = odict({
     'bluetooth' : {'type': 'bool',
                    'text': 'Disable Bluetooth? (recommended unless you\'re using it <3'},
     'systemd'   : {'type': 'bool',
-                   'text': 'Install Autopilot as a systemd service?\nIf you are running this command in a virtual environment it will be used to launch Autopilot'}
-
+                   'text': 'Install Autopilot as a systemd service?\nIf you are running this command in a virtual environment it will be used to launch Autopilot'},
+    'jackd'     : {'type': 'bool',
+                   'text': 'Install jack audio (required if AUDIOSERVER == jack)'}
 })
 
 BASE_PREFS = odict({
@@ -100,6 +103,65 @@ DIRECTORY_STRUCTURE = {
     'VIZDIR': 'viz',
     'PROTOCOLDIR': 'protocols',
 }
+
+PILOT_ENV_CMDS = {
+    'performance':
+        ['sudo systemctl disable raspi-config',
+         'sudo sed -i \'/^exit 0/i echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor\' /etc/rc.local',
+         'sudo sh -c "echo @audio - memlock 256000 >> /etc/security/limits.conf"',
+         'sudo sh -c "echo @audio - rtprio 75 >> /etc/security/limits.conf"',
+         ],
+    'change_pw': ['passwd'],
+    'set_locale': ['sudo dpkg-reconfigure locales',
+                   'sudo dpkg-reconfigure keyboard-configuration'],
+    'hifiberry':
+        [
+            'sudo adduser pi i2c',
+            'sudo sed -i \'s/^dtparam=audio=on/#dtparam=audio=on/g\' /boot/config.txt',
+            'sudo sed -i \'$s/$/\ndtoverlay=hifiberry-dacplus\ndtoverlay=i2s-mmap\ndtoverlay=i2c-mmap\ndtparam=i2c1=on\ndtparam=i2c_arm=on/\' /boot/config.txt',
+            'echo -e \'pcm.!default {\n type hw card 0\n}\nctl.!default {\n type hw card 0\n}\' | sudo tee /etc/asound.conf'
+        ],
+    'viz': [],
+    'bluetooth':
+        [
+            'sudo sed - i \'$s/$/\ndtoverlay=pi3-disable-bt/\' / boot / config.txt',
+            'sudo systemctl disable hciuart.service',
+            'sudo systemctl disable bluealsa.service',
+            'sudo systemctl disable bluetooth.service'
+        ],
+    'jackd':
+        [
+            "cd $HOME",
+            "git clone git://github.com/jackaudio/jack2 --depth 1",
+            "cd jack2",
+            "./waf configure --alsa=yes --libdir=/usr/lib/arm-linux-gnueabihf/",
+            "./waf build -j6",
+            "sudo ./waf install",
+            "sudo ldconfig",
+            "sudo sh -c \"echo @audio - memlock 256000 >> /etc/security/limits.conf\"",             # giving jack more juice
+            "sudo sh -c \"echo @audio - rtprio 75 >> /etc/security/limits.conf\""
+        ]
+
+}
+"""
+performance: 
+    * disable startup script that changes cpu governor,
+    * change cpu governor to "performance" on boot
+    * increase memlock and realtime priority limits for audio group
+
+hifiberry:
+    * turn onboard audio off
+    * enable hifiberry stuff in /boot/config.txt
+    * edit alsa config so hifiberry is default sound card
+
+viz:
+
+.. todo::
+
+    Need to find a more elegant way to do this, for now see lines 160-200 in the presetup_pilot.sh legacy script
+
+"""
+
 
 
 class Autopilot_Form(nps.Form):
@@ -397,51 +459,6 @@ class Pilot_Config_Form_2(Autopilot_Form):
         self.parentApp.setNextForm('HARDWARE')
 
 
-PILOT_ENV_CMDS = {
-    'performance':
-        ['sudo systemctl disable raspi-config',
-         'sudo sed -i \'/^exit 0/i echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor\' /etc/rc.local',
-         'sudo sh -c "echo @audio - memlock 256000 >> /etc/security/limits.conf"',
-         'sudo sh -c "echo @audio - rtprio 75 >> /etc/security/limits.conf"',
-                    ],
-    'change_pw': ['passwd'],
-    'set_locale': ['sudo dpkg-reconfigure locales',
-                   'sudo dpkg-reconfigure keyboard-configuration'],
-    'hifiberry':
-    [
-        'sudo adduser pi i2c',
-        'sudo sed -i \'s/^dtparam=audio=on/#dtparam=audio=on/g\' /boot/config.txt',
-        'sudo sed -i \'$s/$/\ndtoverlay=hifiberry-dacplus\ndtoverlay=i2s-mmap\ndtoverlay=i2c-mmap\ndtparam=i2c1=on\ndtparam=i2c_arm=on/\' /boot/config.txt',
-        'echo -e \'pcm.!default {\n type hw card 0\n}\nctl.!default {\n type hw card 0\n}\' | sudo tee /etc/asound.conf'
-    ],
-    'viz': [],
-    'bluetooth':
-    [
-        'sudo sed - i \'$s/$/\ndtoverlay=pi3-disable-bt/\' / boot / config.txt',
-        'sudo systemctl disable hciuart.service',
-        'sudo systemctl disable bluealsa.service',
-        'sudo systemctl disable bluetooth.service'
-    ]
-
-}
-"""
-performance: 
-    * disable startup script that changes cpu governor,
-    * change cpu governor to "performance" on boot
-    * increase memlock and realtime priority limits for audio group
-    
-hifiberry:
-    * turn onboard audio off
-    * enable hifiberry stuff in /boot/config.txt
-    * edit alsa config so hifiberry is default sound card
-
-viz:
-
-.. todo::
-
-    Need to find a more elegant way to do this, for now see lines 160-200 in the presetup_pilot.sh legacy script
-
-"""
 
 class Terminal_Form(Autopilot_Form):
     def create(self):
@@ -529,6 +546,20 @@ def call_series(commands, series_name=None):
 
     return status
 
+
+def run_script(script_name):
+    if script_name in PILOT_ENV_CMDS.keys():
+        call_series(PILOT_ENV_CMDS[script_name], script_name)
+    else:
+        Exception('No script named {}, must be one of {}'.format(script_name, "\n".join(PILOT_ENV_CMDS.keys())))
+
+
+def list_scripts():
+    print('Available Scripts:')
+    for script_name in sorted(PILOT_ENV_CMDS.keys()):
+        print(f'{script_name}: {PILOT_ENV_CMDS[script_name]["text"]}\n')
+
+
 def make_dir(adir):
     """
     Make a directory if it doesn't exist and set its permissions to `0777`
@@ -549,6 +580,13 @@ if __name__ == "__main__":
     config_msgs = []
 
     args = parser.parse_args()
+
+    if args.list_scripts:
+        list_scripts()
+        sys.exit()
+    elif args.script:
+        run_script(args.script)
+        sys.exit()
 
     if args.dir:
         autopilot_dir = args.dir
