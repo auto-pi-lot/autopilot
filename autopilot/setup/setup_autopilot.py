@@ -131,15 +131,14 @@ PILOT_ENV_CMDS = {
         ],
     'jackd':
         [
-            "cd $HOME",
             "git clone git://github.com/jackaudio/jack2 --depth 1",
-            "cd jack2",
-            "./waf configure --alsa=yes --libdir=/usr/lib/arm-linux-gnueabihf/",
-            "./waf build -j6",
-            "sudo ./waf install",
+            "./jack2/waf configure --alsa=yes --libdir=/usr/lib/arm-linux-gnueabihf/",
+            "./jack2/waf build -j6",
+            "sudo ./jack2/waf install",
             "sudo ldconfig",
             "sudo sh -c \"echo @audio - memlock 256000 >> /etc/security/limits.conf\"",             # giving jack more juice
-            "sudo sh -c \"echo @audio - rtprio 75 >> /etc/security/limits.conf\""
+            "sudo sh -c \"echo @audio - rtprio 75 >> /etc/security/limits.conf\"",
+            "rm -r ./jack2"
         ]
 
 }
@@ -537,6 +536,7 @@ def call_series(commands, series_name=None):
             status = True
         else:
             status = False
+            break
 
     if series_name:
         if status:
