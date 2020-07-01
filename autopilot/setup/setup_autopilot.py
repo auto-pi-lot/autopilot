@@ -528,26 +528,14 @@ def call_series(commands, series_name=None):
     if series_name:
         print('\n\033[1;37;42m Running commands for {}\u001b[0m'.format(series_name))
 
+    # have to just combine them -- can't do multiple calls b/c shell doesn't preserve between them
+    combined_calls = " && ".join(commands)
+
+    result = subprocess.run(combined_calls, shell=True)
+
     status = False
-
-    process = subprocess.Popen('/bin/bash', stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-
-    for command in commands:
-        out, err = process.communicate(command.encode('utf-8'))
-
-        # if command.startswith('cd '):
-        #     # cd only applies to a single shell so catch it and do it wth python
-        #     os.chdir(command.lstrip('cd '))
-        #     result = True
-        # else:
-        #     result = subprocess.run(command, shell=True)
-
-        print(f'out: {out}, err: {err}')
-        # if result.returncode == 0:
-        #     status = True
-        # else:
-        #     status = False
-        #     break
+    if result.returncode == 0:
+        status = True
 
     if series_name:
         if status:
