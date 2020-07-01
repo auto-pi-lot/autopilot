@@ -542,7 +542,7 @@ def call_series(commands, series_name=None):
             else:
                 combined_calls = " && ".join([combined_calls, command['command']])
 
-    result = subprocess.run('/bin/bash ' + combined_calls, shell=True)
+    result = subprocess.run(combined_calls, shell=True, executable='/bin/bash')
 
     status = False
     if result.returncode == 0:
