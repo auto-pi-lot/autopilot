@@ -530,19 +530,24 @@ def call_series(commands, series_name=None):
 
     status = False
 
-    for command in commands:
-        if command.startswith('cd '):
-            # cd only applies to a single shell so catch it and do it wth python
-            os.chdir(command.lstrip('cd '))
-            result = True
-        else:
-            result = subprocess.run(command, shell=True)
+    process = subprocess.Popen('/bin/bash', stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
-        if result.returncode == 0:
-            status = True
-        else:
-            status = False
-            break
+    for command in commands:
+        out, err = process.communicate(command)
+
+        # if command.startswith('cd '):
+        #     # cd only applies to a single shell so catch it and do it wth python
+        #     os.chdir(command.lstrip('cd '))
+        #     result = True
+        # else:
+        #     result = subprocess.run(command, shell=True)
+
+        print(f'out: {out}, err: {err}')
+        # if result.returncode == 0:
+        #     status = True
+        # else:
+        #     status = False
+        #     break
 
     if series_name:
         if status:
