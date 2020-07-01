@@ -138,7 +138,7 @@ PILOT_ENV_CMDS = {
             "sudo ldconfig",
             "sudo sh -c \"echo @audio - memlock 256000 >> /etc/security/limits.conf\"",             # giving jack more juice
             "sudo sh -c \"echo @audio - rtprio 75 >> /etc/security/limits.conf\"",
-            "rm -r ./jack2"
+            "rm -rf ./jack2"
         ]
 
 }
@@ -531,7 +531,13 @@ def call_series(commands, series_name=None):
     status = False
 
     for command in commands:
-        result = subprocess.run(command, shell=True)
+        if command.startswith('cd '):
+            # cd only applies to a single shell so catch it and do it wth python
+            os.chdir(command.lstrip('cd '))
+            result = True
+        else:
+            result = subprocess.run(command, shell=True)
+
         if result.returncode == 0:
             status = True
         else:
