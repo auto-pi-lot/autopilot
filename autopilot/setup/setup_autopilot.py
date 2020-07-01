@@ -132,9 +132,9 @@ PILOT_ENV_CMDS = {
     'jackd':
         [
             "git clone git://github.com/jackaudio/jack2 --depth 1",
-            "./jack2/waf configure --alsa=yes --libdir=/usr/lib/arm-linux-gnueabihf/",
-            "./jack2/waf build -j6",
-            "sudo ./jack2/waf install",
+            "./waf configure --alsa=yes --libdir=/usr/lib/arm-linux-gnueabihf/",
+            "./waf build -j6",
+            "sudo ./waf install",
             "sudo ldconfig",
             "sudo sh -c \"echo @audio - memlock 256000 >> /etc/security/limits.conf\"",             # giving jack more juice
             "sudo sh -c \"echo @audio - rtprio 75 >> /etc/security/limits.conf\"",
