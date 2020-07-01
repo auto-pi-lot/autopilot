@@ -532,15 +532,23 @@ def call_series(commands, series_name=None):
 
     # have to just combine them -- can't do multiple calls b/c shell doesn't preserve between them
     combined_calls = ""
-    for command in commands:
+    last_command = len(commands)-1
+    for i, command in enumerate(commands):
+        join_with = " && "
+
         if isinstance(command, str):
             # just a command, default necessary
-            combined_calls = " && ".join([combined_calls, command])
+            combined_calls += command
         elif isinstance(command, dict):
+            combined_calls += command['command']
+
             if command.get('optional', False):
-                combined_calls = "; ".join([combined_calls, command['command']])
-            else:
-                combined_calls = " && ".join([combined_calls, command['command']])
+                join_with = "; "
+
+        if i < last_command:
+            combined_calls += join_with
+
+
 
     result = subprocess.run(combined_calls, shell=True, executable='/bin/bash')
 
