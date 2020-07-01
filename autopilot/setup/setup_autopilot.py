@@ -116,7 +116,7 @@ PILOT_ENV_CMDS = {
                    'sudo dpkg-reconfigure keyboard-configuration'],
     'hifiberry':
         [
-            'sudo adduser pi i2c',
+            {'command':'sudo adduser pi i2c', 'optional':True},
             'sudo sed -i \'s/^dtparam=audio=on/#dtparam=audio=on/g\' /boot/config.txt',
             'sudo sed -i \'$s/$/\ndtoverlay=hifiberry-dacplus\ndtoverlay=i2s-mmap\ndtoverlay=i2c-mmap\ndtparam=i2c1=on\ndtparam=i2c_arm=on/\' /boot/config.txt',
             'echo -e \'pcm.!default {\n type hw card 0\n}\nctl.!default {\n type hw card 0\n}\' | sudo tee /etc/asound.conf'
@@ -531,8 +531,17 @@ def call_series(commands, series_name=None):
         print('\n\033[1;37;42m Running commands for {}\u001b[0m'.format(series_name))
 
     # have to just combine them -- can't do multiple calls b/c shell doesn't preserve between them
-    combined_calls = " && ".join(commands)
-
+    combined_calls = ""
+    for command in commands:
+        if isinstance(command, str):
+            # just a command, default necessary
+            combined_calls = " && ".join([combined_calls, command])
+        elif isinstance(command, dict):
+            if command.get('optional', False):
+                combined_calls = "; ".join([combined_calls, command['command']])
+            else:
+                combined_calls = " && ".join([combined_calls, command['command']])
+                
     result = subprocess.run(combined_calls, shell=True)
 
     status = False
