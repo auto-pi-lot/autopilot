@@ -533,7 +533,7 @@ def call_series(commands, series_name=None):
     process = subprocess.Popen('/bin/bash', stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
     for command in commands:
-        out, err = process.communicate(command)
+        out, err = process.communicate(command.encode('utf-8'))
 
         # if command.startswith('cd '):
         #     # cd only applies to a single shell so catch it and do it wth python
