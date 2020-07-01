@@ -118,8 +118,8 @@ PILOT_ENV_CMDS = {
         [
             {'command':'sudo adduser pi i2c', 'optional':True},
             'sudo sed -i \'s/^dtparam=audio=on/#dtparam=audio=on/g\' /boot/config.txt',
-            'sudo sed -i \'$s/$/\ndtoverlay=hifiberry-dacplus\ndtoverlay=i2s-mmap\ndtoverlay=i2c-mmap\ndtparam=i2c1=on\ndtparam=i2c_arm=on/\' /boot/config.txt',
-            'echo -e \'pcm.!default {\n type hw card 0\n}\nctl.!default {\n type hw card 0\n}\' | sudo tee /etc/asound.conf'
+            'sudo sed -i \'$s/$/\\ndtoverlay=hifiberry-dacplus\\ndtoverlay=i2s-mmap\\ndtoverlay=i2c-mmap\\ndtparam=i2c1=on\\ndtparam=i2c_arm=on/\' /boot/config.txt',
+            'echo -e \'pcm.!default {\\n type hw card 0\\n}\\nctl.!default {\\n type hw card 0\\n}\' | sudo tee /etc/asound.conf'
         ],
     'viz': [],
     'bluetooth':
@@ -550,7 +550,7 @@ def call_series(commands, series_name=None):
 
 
     print('Executing:\n    {}'.format(combined_calls))
-    
+
     result = subprocess.run(combined_calls, shell=True, executable='/bin/bash')
 
     status = False
