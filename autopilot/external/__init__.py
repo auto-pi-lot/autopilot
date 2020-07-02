@@ -65,8 +65,7 @@ def start_pigpiod():
             prefs.PIGPIOMASK = str(prefs.PIGPIOMASK).zfill(28)
         launch_pigpiod += ' -x ' + prefs.PIGPIOMASK
 
-    proc = subprocess.Popen('sudo ' + launch_pigpiod, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE,
-                            creationflags= subprocess.HIGH_PRIORITY_CLASS | subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP)
+    proc = subprocess.Popen('sudo ' + launch_pigpiod, shell=True)
 
     # kill process when session ends
     atexit.register(lambda pigpio_proc=proc: pigpio_proc.kill())
@@ -111,8 +110,7 @@ def start_jackd():
 
     launch_jackd = " ".join([jackd_bin, jackd_string])
 
-    proc = subprocess.Popen(launch_jackd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE,
-                            creationflags= subprocess.REALTIME_PRIORITY_CLASS | subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP)
+    proc = subprocess.Popen(launch_jackd, shell=True)
     globals()['JACKD_PROCESS'] = proc
 
     # kill process when session ends
