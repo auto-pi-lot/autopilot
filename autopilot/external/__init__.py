@@ -23,8 +23,12 @@ try:
     # specify location of libraries when starting jackd
 
 
-    os.environ['LD_LIBRARY_PATH'] = ":".join([os.path.join(jackd_path, 'lib'),
-                                              os.environ.get('LD_LIBRARY_PATH',"")])
+    if 'LD_LIBRARY_PATH' in os.environ.keys():
+
+        os.environ['LD_LIBRARY_PATH'] = ":".join([os.path.join(jackd_path, 'lib'),
+                                                  os.environ.get('LD_LIBRARY_PATH',"")])
+    else:
+        os.environ['LD_LIBRARY_PATH'] = os.path.join(jackd_path, 'lib')
     # lib_string = "LD_LIBRARY_PATH=" + os.path.join(jackd_path, 'lib')
 
     # specify location of drivers when starting jackd
