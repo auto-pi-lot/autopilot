@@ -21,8 +21,10 @@ try:
     jackd_path = os.path.join(autopilot_jack.__path__._path[0])
 
     # specify location of libraries when starting jackd
+
+
     os.environ['LD_LIBRARY_PATH'] = ":".join([os.path.join(jackd_path, 'lib'),
-                                              os.environ['LD_LIBRARY_PATH']])
+                                              os.environ.get('LD_LIBRARY_PATH',"")])
     # lib_string = "LD_LIBRARY_PATH=" + os.path.join(jackd_path, 'lib')
 
     # specify location of drivers when starting jackd
