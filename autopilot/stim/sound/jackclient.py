@@ -14,6 +14,9 @@ from itertools import cycle
 from queue import Empty
 import sys
 
+# importing configures environment variables necessary for importing jack-client module below
+from autopilot import external
+
 try:
     import jack
 except OSError as e:
