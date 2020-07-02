@@ -294,6 +294,7 @@ Improvements
       with ``@property`` methods.
     * Like the :class:`~autopilot.hardware.Hardware` class, top-level metaclasses should be moved to the ``__init__``
       file for the module to avoid awkward imports and extra files like :class:`autopilot.tasks.task.Task`
+    * Use :class:`enum.Enum` s all over! eg. things like :data:`autopilot.hardware.gpio.TRIGGER_MAP` etc.
 
 Bugs
 ----

@@ -288,6 +288,7 @@ class Digital_Out(GPIO):
 
         self._last_script = None
         self.scripts = {}
+        self.script_handles = {}
         self.script_counter = itertools.count()
 
         self.pulse_width = np.clip(pulse_width, 0, 100).astype(np.int)
@@ -366,7 +367,7 @@ class Digital_Out(GPIO):
                                   self.on)
 
         else:
-            RuntimeError('How did we even get here? Pulse value must be an int 1-100')
+            raise RuntimeError('How did we even get here? Pulse value must be an int 1-100')
 
 
     def _series_script(self, values, durations = None, unit="ms", repeat=None, finish_off = True):
@@ -450,17 +451,22 @@ class Digital_Out(GPIO):
 
         """
 
-        # actually might want to overwrite scripts w/ same ids, like a solenoid that changes its 'open' duration
-        # if id in self.scripts.keys():
+        # actually might want to overwrite script_handles w/ same ids, like a solenoid that changes its 'open' duration
+        # if id in self.script_handles.keys():
         #     Exception("Script with id {} already created!".format(id))
 
         series_script = self._series_script(**kwargs)
 
-        script_id = self.pig.store_script(series_script)
+        # check if there is an identical script already and use that instead
+        matches = [script_id for script_id, test_script in self.scripts.items() if test_script == series_script]
+        if len(matches)>0:
+            script_id = self.script_handles[matches[0]]
+        else:
 
-        self.scripts[id] = script_id
+            script_id = self.pig.store_script(series_script)
 
-
+        self.script_handles[id] = script_id
+        self.scripts[id] = series_script
 
     def series(self, id=None, delete=None, **kwargs):
         """
@@ -483,7 +489,7 @@ class Digital_Out(GPIO):
         return_id = False
 
         if id:
-            if id not in self.scripts.keys():
+            if id not in self.script_handles.keys():
                 self.store_series(id, **kwargs)
 
         # if we weren't called with an ID, have to have a list of values/etc to create a script
@@ -498,15 +504,15 @@ class Digital_Out(GPIO):
             # since we've generated a script ID, we should return it
             return_id = True
 
-        script_status = self.pig.script_status(self.scripts[id])
+        script_status = self.pig.script_status(self.script_handles[id])
         if script_status == pigpio.PI_SCRIPT_INITING:
             check_times = 0
-            while self.pig.script_status(self.scripts[id]) == pigpio.PI_SCRIPT_INITING:
+            while self.pig.script_status(self.script_handles[id]) == pigpio.PI_SCRIPT_INITING:
                 time.sleep(0.001)
                 check_times += 1
                 if check_times > 1000:
                     break
-        self.pig.run_script(self.scripts[id])
+        self.pig.run_script(self.script_handles[id])
         self._last_script = id
 
         if delete:
@@ -522,13 +528,16 @@ class Digital_Out(GPIO):
 
     def _delete_script(self, script_id):
         checktimes = 0
-        while self.pig.script_status(self.scripts[script_id]) == pigpio.PI_SCRIPT_RUNNING:
+        while self.pig.script_status(self.script_handles[script_id]) == pigpio.PI_SCRIPT_RUNNING:
             time.sleep(1)
             checktimes += 1
             if checktimes > 10:
                 continue
 
-        self.pig.delete_script(self.scripts[script_id])
+        self.pig.delete_script(self.script_handles[script_id])
+
+        del self.script_handles[script_id]
+        del self.scripts[script_id]
 
     def stop_script(self, id=None):
         """
@@ -547,8 +556,8 @@ class Digital_Out(GPIO):
             return
 
         # if we were passed a keyed, named script id, convert it to the pigio integer script id
-        if id in self.scripts.keys():
-            script_id = self.scripts[id]
+        if id in self.script_handles.keys():
+            script_id = self.script_handles[id]
             status, _ = self.pig.script_status(script_id)
 
             # if the script is still running, stop it and set the pin to off.
@@ -879,6 +888,8 @@ class LED_RGB(Digital_Out):
 
         super(LED_RGB, self).__init__(**kwargs)
 
+        self.flash_params = None
+
 
 
         if pins and len(pins) == 3:
@@ -1055,8 +1066,23 @@ class LED_RGB(Digital_Out):
         # Invert frequency to duration for single flash
         # divide by 2 b/c each 'color' is half the duration
         single_dur = ((1. / frequency) * 1000) / 2.
-        script_id = self.series(colors=flashes, durations=single_dur)
 
+        flash_params = (flashes, single_dur)
+
+        new_flash = True
+        if self.flash_params:
+            if self.flash_params == flash_params:
+                # do nothing
+                new_flash = False
+
+        if new_flash:
+            self.store_series('flash',
+                              colors=flashes,
+                              durations=single_dur)
+            self.flash_params = flash_params
+
+
+        self.series('flash')
 
     #
     # def __getattr__(self, name):
