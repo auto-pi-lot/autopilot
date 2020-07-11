@@ -39,7 +39,9 @@ prefdict = {}
 stores a dictionary of preferences that mirrors the global variables.
 """
 
-def init(fn):
+INITIALIZED = False
+
+def init(fn=None):
     """
     Initialize prefs on autopilot start.
 
@@ -51,6 +53,17 @@ def init(fn):
             prefs = json.load(pfile)
     elif isinstance(fn, dict):
         prefs = fn
+    elif fn is None:
+        # try to load from default location
+        autopilot_wayfinder = os.path.join(os.path.expanduser('~'), '.autopilot')
+        if os.path.exists(autopilot_wayfinder):
+            with open(autopilot_wayfinder, 'r') as wayfinder_f:
+                fn = os.path.join(wayfinder_f.read(), 'prefs.json')
+        else:
+            fn = os.path.join(os.path.expanduser('~'), 'autopilot', 'prefs.json')
+
+        with open(fn, 'r') as pfile:
+            prefs = json.load(pfile)
 
     try:
         assert(isinstance(prefs, dict))
@@ -92,6 +105,8 @@ def init(fn):
 
     # also store as a dictionary so other modules can have one if they want it
     globals()['__dict__'] = prefs
+
+    globals()['INITIALIZED'] = True
 
 def add(param, value):
     """
@@ -206,7 +221,8 @@ if 'AGENT' not in globals().keys():
 
 add('AUTOPILOT_ROOT', os.path.dirname(os.path.abspath(__file__)))
 
-
+if not INITIALIZED:
+    init()
 #
 # HARDWARE_PREFS = odict({
 #             'HARDWARE':{
