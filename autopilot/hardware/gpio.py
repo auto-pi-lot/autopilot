@@ -28,13 +28,8 @@ False if pigpio cannot be imported -- and GPIO devices cannot be used.
 True if pigpio can be imported
 """
 try:
-    try:
-        import pigpio
-    except ImportError:
-        # first try and check in external dir
-        external = os.path.join(prefs.REPODIR, 'external')
-        sys.path.append(external)
-        import pigpio
+    import pigpio
+
 
     TRIGGER_MAP = {
         'U': pigpio.RISING_EDGE,

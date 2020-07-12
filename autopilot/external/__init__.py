@@ -9,7 +9,6 @@ PIGPIO = False
 try:
     from autopilot.external import pigpio
     PIGPIO = True
-    sys.path.append(os.path.dirname(__file__))
 
 except ImportError:
     pass
