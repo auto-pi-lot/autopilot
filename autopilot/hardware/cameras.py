@@ -1133,7 +1133,7 @@ class Camera_Spinnaker(Camera):
                 exposure = (1.0 / self.fps) * exposure * 1e6
 
             self.cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Off)
-            self.cam.ExposureMode.SetValue(PySpin.ExposureMode_Timed)
+            # self.cam.ExposureMode.SetValue(PySpin.ExposureMode_Timed)
             self.cam.ExposureTime.SetValue(exposure)
             self._exposure = exposure
         else:
@@ -1157,6 +1157,7 @@ class Camera_Spinnaker(Camera):
         if isinstance(fps, int):
             #self.cam.AcquisitionFrameRateEnable.SetValue(True)
             #self.cam.AcquisitionFrameRate.SetValue(fps)
+            self.set('AcquisitionFrameRateAuto', 'Off')
             self.set('AcquisitionFrameRateEnable',True)
             self.set('AcquisitionFrameRate',fps)
 
