@@ -845,6 +845,8 @@ class Camera_Spinnaker(Camera):
             self.logger.warning("serial and camera_idx were both passed, defaulting to serial")
             camera_idx = None
 
+        if isinstance(serial, float) or isinstance(serial, int):
+            serial = str(serial)
         self.serial = serial
         self.camera_idx = camera_idx
 
