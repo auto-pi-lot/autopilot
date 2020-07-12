@@ -62,6 +62,10 @@ def init(fn=None):
         else:
             fn = os.path.join(os.path.expanduser('~'), 'autopilot', 'prefs.json')
 
+        if not os.path.exists(fn):
+            # tried to load defaults, return quietly
+            return
+
         with open(fn, 'r') as pfile:
             prefs = json.load(pfile)
 
