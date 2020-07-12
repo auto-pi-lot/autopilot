@@ -9,6 +9,7 @@ returns isoformatted timestamps rather than tick numbers in callbacks. See the `
 Note:
     This module does not include hardware that uses the GPIO pins over a specific protocol like i2c
 """
+import os
 import sys
 import threading
 import time
@@ -27,7 +28,13 @@ False if pigpio cannot be imported -- and GPIO devices cannot be used.
 True if pigpio can be imported
 """
 try:
-    import pigpio
+    try:
+        import pigpio
+    except ImportError:
+        # first try and check in external dir
+        external = os.path.join(prefs.REPODIR, 'external')
+        sys.path.append(external)
+        import pigpio
 
     TRIGGER_MAP = {
         'U': pigpio.RISING_EDGE,
