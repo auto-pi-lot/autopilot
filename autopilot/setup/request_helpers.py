@@ -61,7 +61,7 @@ def download_box(file_url, filename = None, save_path = None):
         'box_visitor_id': page.cookies.get('box_visitor_id'),
         'bv': page.cookies.get('bv'),
         'cn': page.cookies.get('cn'),
-        'token': re.search('(?<=\"requestToken\":\")(.+?)(?=\")', page.content).group(0)
+        'token': re.search('(?<=\"requestToken\":\")(.+?)(?=\")', page.content.decode('utf-8')).group(0)
     }
 
 
