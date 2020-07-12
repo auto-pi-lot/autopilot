@@ -837,7 +837,7 @@ class Camera_Spinnaker(Camera):
         """
 
         if not PYSPIN:
-            ImportError('PySpin was not imported, and is required for Camera_Spinnaker')
+            raise ImportError('PySpin was not imported, and is required for Camera_Spinnaker')
 
         super(Camera_Spinnaker, self).__init__(**kwargs)
 
@@ -1155,8 +1155,11 @@ class Camera_Spinnaker(Camera):
     @fps.setter
     def fps(self, fps):
         if isinstance(fps, int):
-            self.cam.AcquisitionFrameRateEnable.SetValue(True)
-            self.cam.AcquisitionFrameRate.SetValue(fps)
+            #self.cam.AcquisitionFrameRateEnable.SetValue(True)
+            #self.cam.AcquisitionFrameRate.SetValue(fps)
+            self.set('AcquisitionFrameRateEnable',True)
+            self.set('AcquisitionFrameRate',fps)
+
         elif fps is None:
             # initially set to None on superclass init
             pass
@@ -1685,7 +1688,7 @@ def list_spinnaker_cameras():
 
         cam_info.append(info_dict)
 
-    del cam
+        del cam
     cam_list.Clear()
     system.ReleaseInstance()
 
