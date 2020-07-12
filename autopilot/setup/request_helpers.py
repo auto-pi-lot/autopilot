@@ -26,6 +26,17 @@ def download_box(file_url, filename = None, save_path = None):
     """
     sess = requests.Session()
 
+
+    if isinstance(file_url, bytes):
+        file_url = file_url.decode('utf-8')
+
+    if isinstance(filename, bytes):
+        filename = filename.decode('utf-8')
+
+    if isinstance(save_path, bytes):
+        save_path = save_path.decode('utf-8')
+
+
     file_name = "file_"+file_url.split('/')[-1]
     file_number = file_url.split('/')[-1]
     base_url = '/'.join(file_url.split('/')[0:3])
