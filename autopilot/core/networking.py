@@ -1028,7 +1028,7 @@ class Pilot_Station(Station):
             self.push_id = b'T'
             self.push_port = prefs.PUSHPORT
             self.push_ip = prefs.TERMINALIP
-            self.child - False
+            self.child = False
 
         # Store some prefs values
         self.listen_port = prefs.MSGPORT
@@ -1247,8 +1247,11 @@ class Pilot_Station(Station):
         Returns:
 
         """
-
-        self.send(to=prefs.CHILDID, key='START', value=msg.value)
+        if 'KEY' in msg.value.keys():
+            KEY = msg.value['keys']
+        else:
+            KEY = 'START'
+        self.send(to=prefs.CHILDID, key=KEY, value=msg.value)
 
     def l_forward(self, msg):
         """

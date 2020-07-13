@@ -14,6 +14,7 @@ from autopilot.hardware.gpio import Digital_Out
 from autopilot.hardware.usb import Wheel
 from autopilot.hardware import cameras
 from autopilot.core.networking import Net_Node
+from autopilot.transform import transforms
 from itertools import cycle
 from queue import Empty
 import threading
@@ -160,6 +161,15 @@ class Video_Child(object):
     # def stop(self):
     #     for cam in self.cams.values():
     #         cam.release()
+
+class Transformer(object):
+
+    def __init__(self, transform, stage_block = None, **kwargs):
+
+
+        self.transform = transforms.make_transform(transform)
+
+
 
 
 

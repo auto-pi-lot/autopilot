@@ -41,6 +41,8 @@ class TransformRhythm(Enum):
 
 
 
+
+
 class Transform(object):
     """
     Metaclass for data transformations
@@ -361,10 +363,19 @@ class T_DLC(T_Image):
             #     # self.create_modelzoo()
 
         elif self.model_type == 'local':
+
             if not os.path.exists(model_dir):
                 # if we were given a path that can be resolved, use it
                 # otherwise, check if the model is in our DLC_DIR
-                model_dir = os.path.join(self.dlc_dir, model_dir)
+                autopilot_model_dir = os.path.join(self.dlc_dir, model_dir)
+                if os.path.exists(autopilot_model_dir):
+                    model_dir = autopilot_model_dir
+                else:
+                    # see if a model *starting* with the model name exists
+                    autopilot_models = os.listdir(self.dlc_dir)
+                    autopilot_models = [a for a in autopilot_models if a.startswith(model_dir)]
+                    if len(autopilot_models)>0:
+                        model_dir = os.path.join(self.dlc_dir,autopilot_models[0])
 
         if not os.path.exists(model_dir):
             raise ValueError(f'model_dir given, but model could not be found!\nmodel_dir: {model_dir}')
@@ -646,6 +657,10 @@ class T_Condition(Transform):
 
     @minimum.setter
     def minimum(self, minimum: [np.ndarray, float]):
+
+        if isinstance(minimum, list):
+            minimum = np.array(minimum)
+
         if isinstance(minimum, float) or isinstance(minimum, int):
             shape = (1,)
         elif isinstance(minimum, np.ndarray):
@@ -667,6 +682,9 @@ class T_Condition(Transform):
 
     @maximum.setter
     def maximum(self, maximum: [np.ndarray, float]):
+        if isinstance(maximum, list):
+            minimum = np.array(maximum)
+
         if isinstance(maximum, float) or isinstance(maximum, int):
             shape = (1,)
         elif isinstance(maximum, np.ndarray):
@@ -718,52 +736,86 @@ class T_Condition(Transform):
         return ret
 
 
+def make_transform(transforms: typing.List[dict]):
+    """
+    Make a transform from a list of iterator specifications.
 
 
 
+    Args:
+        transforms (list): A list of :class:`Transform` s and parameterizations in the form::
 
+            [
+                {'transform': Transform,
+                'args': (arg1, arg2,), # optional
+                'kwargs': {'key1':'val1', ...}, # optional
+                {'transform': ...}
+            ]
 
-class Img2Loc_binarymass(object):
-    METHODS = ('largest')
-    def __init__(self, dark_object=True, method="largest"):
-        """
-
-        Args:
-            dark_object (bool): Is the object dark on a light background (default) or light on a dark background?
-            method (str): one of "largest" (find the largest object in each frame)
-        """
-
-        self.dark_object = dark_object
-
-        if method in self.METHODS:
-            self.method = method
-            self.method_fn = getattr(self, self.method)
+    Returns:
+        :class:`Transform`
+    """
+    ret = None
+    for t in transforms:
+        if isinstance(t['transform'], str):
+            t['transform'] = globals()[t['transform']]
+        transform = t['transform'](
+            *t.get('args', []),
+            **t.get('kwargs', {})
+        )
+        if ret is None:
+            ret = transform
         else:
-            Exception("Unknown method, must be one of {}, got : {}".format(self.METHODS, method))
+            ret = ret + transform
 
-    def __call__(self, *args, **kwargs):
-        return self.method_fn(*args, **kwargs)
+    return ret
 
-    def largest(self, input, return_image=False):
 
-        # TODO: Check if rgb or gray, convert if so
 
-        # blur and binarize with otsu's method
-        blur = cv2.GaussianBlur(input, (3,3),0)
-        ret, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 
-        # get connected components
-        n_components, labels, stats, centroids = cv2.connectedComponentsWithStats(thresh)
 
-        # find largest component
-        largest_ind = np.argmax(stats[:,-1])
 
-        # return centroid of largest object
-        if return_image:
-            return centroids[largest_ind], thresh
-        else:
-            return centroids[largest_ind]
-
+# class Img2Loc_binarymass(object):
+#     METHODS = ('largest')
+#     def __init__(self, dark_object=True, method="largest"):
+#         """
+#
+#         Args:
+#             dark_object (bool): Is the object dark on a light background (default) or light on a dark background?
+#             method (str): one of "largest" (find the largest object in each frame)
+#         """
+#
+#         self.dark_object = dark_object
+#
+#         if method in self.METHODS:
+#             self.method = method
+#             self.method_fn = getattr(self, self.method)
+#         else:
+#             Exception("Unknown method, must be one of {}, got : {}".format(self.METHODS, method))
+#
+#     def __call__(self, *args, **kwargs):
+#         return self.method_fn(*args, **kwargs)
+#
+#     def largest(self, input, return_image=False):
+#
+#         # TODO: Check if rgb or gray, convert if so
+#
+#         # blur and binarize with otsu's method
+#         blur = cv2.GaussianBlur(input, (3,3),0)
+#         ret, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+#
+#         # get connected components
+#         n_components, labels, stats, centroids = cv2.connectedComponentsWithStats(thresh)
+#
+#         # find largest component
+#         largest_ind = np.argmax(stats[:,-1])
+#
+#         # return centroid of largest object
+#         if return_image:
+#             return centroids[largest_ind], thresh
+#         else:
+#             return centroids[largest_ind]
+#
 
 
 

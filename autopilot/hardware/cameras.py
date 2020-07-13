@@ -1134,6 +1134,13 @@ class Camera_Spinnaker(Camera):
                 # proportional to fps
                 exposure = (1.0 / self.fps) * exposure * 1e6
 
+            try:
+                self.set('GainAuto', 'Off')
+                self.set('Gain', 1)
+            except Exception as e:
+                self.logger.exception(e)
+
+
             self.cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Off)
             # self.cam.ExposureMode.SetValue(PySpin.ExposureMode_Timed)
             self.cam.ExposureTime.SetValue(exposure)

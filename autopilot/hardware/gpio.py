@@ -760,7 +760,7 @@ class PWM(Digital_Out):
         Args:
             value (int, float):
                 - if int > 1, sets value (or :attr:`PWM.range`-value if :attr:`PWM.polarity` is inverted).
-                - if 0 < float < 1, transforms to a proportion of :attr:`.range` (inverted  if needed as well).
+                - if 0 <= float <= 1, transforms to a proportion of :attr:`.range` (inverted  if needed as well).
 
         """
         value = self._clean_value(value)
@@ -913,14 +913,14 @@ class LED_RGB(Digital_Out):
             self.series(id='blink')
 
     @property
-    def range(self):
+    def range(self) -> dict:
         """
         Returns:
             dict: ranges for each of the :attr:`LED_RGB.channels`
         """
-        return {self.channels['r'].range,
-                self.channels['g'].range,
-                self.channels['b'].range}
+        return {'r':self.channels['r'].range,
+                'g':self.channels['g'].range,
+                'b':self.channels['b'].range}
 
     @range.setter
     def range(self, range):

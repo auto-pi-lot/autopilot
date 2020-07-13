@@ -89,7 +89,7 @@ class Task(object):
 
 
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
 
         # Task management
         self.stage_block = None  # a threading.Event used by the pilot to manage stage transitions
@@ -139,7 +139,7 @@ class Task(object):
                     hw_args = pin_numbers[type][pin]
                     if isinstance(hw_args, dict):
                         if 'name' not in hw_args.keys():
-                            hw_name = "{}_{}".format(type, pin)
+                            hw_args['name'] = "{}_{}".format(type, pin)
                         hw = handler(**hw_args)
                     else:
                         hw_name = "{}_{}".format(type, pin)
