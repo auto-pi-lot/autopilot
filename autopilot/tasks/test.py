@@ -9,7 +9,8 @@ import tables
 from datetime import datetime
 from time import sleep
 
-from autopilot import Task, prefs
+from autopilot import prefs
+from autopilot.tasks.task import Task
 from autopilot.hardware import gpio, cameras
 from autopilot.transform import make_transform, transforms
 from autopilot.core.networking import Net_Node

@@ -74,6 +74,8 @@ elif ARCH == 'x86':
     # sys.argv.append('--skip-cmake')
     REQUIREMENTS = load_requirements('requirements_terminal.txt')
 
+else:
+    REQUIREMENTS = load_requirements('requirements_common.txt')
 
 # add external packages that wouldn't get detected normally
 packs = find_packages()

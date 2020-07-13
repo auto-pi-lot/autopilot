@@ -5,13 +5,15 @@ from autopilot.tasks.parallax import Parallax
 from autopilot.tasks.free_water import Free_Water
 from autopilot.tasks.graduation import GRAD_LIST
 from autopilot.tasks.children import Wheel_Child, Video_Child, Transformer
+from autopilot.tasks.test import DLC_Latency
 
 
 TASK_LIST = {'2AFC':Nafc,
              '2AFC_Gap':Nafc_Gap,
              'Free Water':Free_Water,
              'GoNoGo': GoNoGo,
-             'Parallax': Parallax}
+             'Parallax': Parallax,
+             'Test_DLC_Latency': DLC_Latency}
 """
 Link between string task names used in protocol descriptions and task classes
 """
