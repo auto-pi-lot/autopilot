@@ -1,6 +1,7 @@
 # preinstall, check system dependencies
 import subprocess
 subprocess.call('autopilot/setup/setup_environment.sh')
+import platform
 
 from skbuild import setup, constants
 from setuptools import find_packages
@@ -27,6 +28,16 @@ REQUIREMENTS = []
 ret = subprocess.call(['grep', '-q', 'BCM', '/proc/cpuinfo'])
 if ret == 0:
     IS_RASPI = True
+
+# detect architecture
+_ARCH = platform.uname().machine
+ARCH = None
+if _ARCH in ('armv7l',):
+    ARCH = "ARM32"
+elif _ARCH in ('aarch64',):
+    ARCH = 'ARM64'
+elif _ARCH in ('x86_64',):
+    ARCH = "x86"
 
 
 def load_requirements(req_file):
@@ -55,11 +66,10 @@ if IS_RASPI:
     PACKAGES.append('autopilot.external.pigpio')
     REQUIREMENTS = load_requirements('requirements_pilot.txt')
 
-else:
+elif ARCH == 'x86':
     # is a terminal,
     # install dependencies
     subprocess.call(['autopilot/setup/setup_environment_terminal.sh'])
-
 
     # sys.argv.append('--skip-cmake')
     REQUIREMENTS = load_requirements('requirements_terminal.txt')
