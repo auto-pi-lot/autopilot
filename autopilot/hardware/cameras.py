@@ -300,7 +300,7 @@ class Camera(Hardware):
                 self._indicator = tqdm()
             self._indicator.update()
 
-    def stream(self, to='T', ip=None, port=None, **kwargs):
+    def stream(self, to='T', ip=None, port=None, min_size=5, **kwargs):
         """
         Enable streaming frames on capture.
 
@@ -349,7 +349,8 @@ class Camera(Hardware):
 
         self._stream_q = self.node.get_stream(
             'stream', 'CONTINUOUS', upstream=to,
-            ip=ip, port=port, subject=subject
+            ip=ip, port=port, subject=subject,
+            min_size=min_size
         )
 
         self.streaming.set()

@@ -4,7 +4,10 @@ Tasks to test different features of autopilot.
 Benchmarks, diagnostics, etc.
 """
 from collections import OrderedDict as odict
+from itertools import cycle, count
 import tables
+from datetime import datetime
+from time import sleep
 
 from autopilot import Task, prefs
 from autopilot.hardware import gpio, cameras
@@ -46,6 +49,8 @@ class DLC_Latency(Task):
                      'type': 'int'}
     PARAMS['exposure'] = {'tag': 'Exposure of camera (see cameras.Camera_Spinnaker.exposure)',
                           'type':'float'}
+    PARAMS['delay'] = {'tag': 'Delay between trials (ms)',
+                       'type': 'int'}
 
 
     PLOT = {
@@ -92,6 +97,7 @@ class DLC_Latency(Task):
                  crop_box: list = None,
                  fps: int = 30,
                  exposure: float = 0.5,
+                 delay : int = 5000,
                  *args, **kwargs):
         """
 
@@ -103,6 +109,8 @@ class DLC_Latency(Task):
             trigger_limitx_y:
             crop_box:
             fps:
+            exposure:
+            delay (int): time to wait between trials (ms)
         """
 
         # if we have left and right LEDs, init them and turn them off
@@ -125,19 +133,13 @@ class DLC_Latency(Task):
         self.crop_box = crop_box
         self.fps = fps
         self.exposure = exposure
+        self.delay = delay
+        self.trial_counter = count()
+        self.current_trial = 0
+
+
 
         self.init_hardware()
-
-        # configure camera
-        self.cam = self.hardware['CAMERAS']['MAIN']
-
-        self.cam.fps = self.fps
-        self.cam.exposure = self.exposure
-        if self.crop_box:
-            self.cam.set('OffsetX', self.crop_box[0])
-            self.cam.set('OffsetY', self.crop_box[1])
-            self.cam.set('Width', self.crop_box[2])
-            self.cam.set('Height', self.crop_box[3])
 
         # if we have extra LEDs attached (as in the tripoke mount), turn them off
         if HAS_LR_LEDS:
@@ -163,23 +165,89 @@ class DLC_Latency(Task):
              }}
             ]
 
-
-        self.node = Net_Node(id="T_{}".format(prefs.NAME),
+        self.node_id = f"T_{prefs.NAME}"
+        self.node = Net_Node(id=self.node_id,
                              upstream=prefs.NAME,
                              port=prefs.MSGPORT,
-                             listens={},
+                             listens={'STATE':self.l_state,
+                                      'TRIGGER':self.l_trigger},
                              instance=True)
 
         # get our child started
         self.subject = kwargs['subject']
         value = {
             'child': {'parent': prefs.NAME, 'subject': kwargs['subject']},
-            'task_type': 'Wheel Child',
+            'task_type': 'Transformer',
             'subject': kwargs['subject'],
-            'transform':transform_descriptor
+            'transform':transform_descriptor,
+            'return_id': self.node_id
         }
 
         self.node.send(to=prefs.NAME, key='CHILD', value=value)
+
+        # configure camera
+        self.cam = self.hardware['CAMERAS']['MAIN']
+
+        self.cam.fps = self.fps
+        self.cam.exposure = self.exposure
+        if self.crop_box:
+            self.cam.set('OffsetX', self.crop_box[0])
+            self.cam.set('OffsetY', self.crop_box[1])
+            self.cam.set('Width', self.crop_box[2])
+            self.cam.set('Height', self.crop_box[3])
+
+        self.cam.stream(to=f"{self.child_id}_TRANSFORMER",
+                        min_size=1)
+
+        self.stages = cycle([self.trig, self.wait])
+        self.stage_block = kwargs['stage_block']
+
+    def trig(self, *args, **kwargs):
+        """
+        Blink the LED and await a trigger
+
+        Returns:
+
+        """
+        self.stage_block.clear()
+
+        self.current_trial = next(self.trial_counter)
+
+        # pulse gpio and turn off LED when triggered
+        self.triggers['CAMERA'] = [self.hardware['DIGITAL_OUT']['C'].pulse,
+                                   lambda: self.hardware['LEDS']['C'].set(0.0001)]
+
+        trig_time = datetime.now().isoformat()
+        self.hardware['LEDS']['C'].set(1)
+
+        return {
+            'trigger': trig_time,
+            'trial_num': self.current_trial
+        }
+
+    def wait(self):
+        # self.stage_block.clear()
+        response_time = datetime.now().isoformat()
+
+        sleep(self.delay/1000)
+
+        return {
+            'response' : response_time
+        }
+
+
+    def l_state(self, value):
+        self.logger.debug(f'STATE from transformer: {value}')
+
+        if value == 'READY':
+            if not self.cam.capturing.is_set():
+                self.cam.capture()
+                self.logger.debug(f"started capture")
+
+    def l_trigger(self, value):
+        if value:
+            self.handle_trigger(pin="CAMERA")
+
 
 
 

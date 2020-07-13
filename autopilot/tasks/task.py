@@ -227,6 +227,7 @@ class Task(object):
             pin = self.pin_id[pin]
 
         if pin not in self.triggers.keys():
+            self.logger.debug(f"No trigger found for {pin}")
             # No trigger assigned, get out without waiting
             return
 

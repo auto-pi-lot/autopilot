@@ -164,10 +164,54 @@ class Video_Child(object):
 
 class Transformer(object):
 
-    def __init__(self, transform, stage_block = None, **kwargs):
+    def __init__(self, transform,
+                 operation: str ="trigger",
+                 return_id = 'T',
+                 stage_block = None,
+                 **kwargs):
+        """
 
+        Args:
+            transform:
+            operation (str): either
+
+                * "trigger", where the last transform is a :class:`~autopilot.transform.transforms.Condition`
+                and a trigger is returned to sender only when the return value of the transformation changes, or
+                * "stream", where each result of the transformation is returned to sender
+
+            return_id:
+            stage_block:
+            **kwargs:
+        """
+        assert operation in ('trigger', 'stream')
+        self.operation = operation
+        self._last_result = None
 
         self.transform = transforms.make_transform(transform)
+
+        self.node = Net_Node(
+            f"{prefs.NAME}_TRANSFORMER",
+            upstream=prefs.NAME,
+            port=prefs.MSGPORT,
+            listens = {
+                'PROCESS': self.l_process
+            }
+        )
+
+        self.return_id = return_id
+
+        self.node.send(self.return_id, 'STATUS', value='READY')
+
+    def l_process(self, value):
+        result = self.transform.process(value)
+
+        if self.operation == "trigger":
+            if result != self._last_result:
+                self.node.send(self.return_id, 'TRIGGER', result)
+                self._last_result = result
+
+        elif self.operation == 'stream':
+            raise NotImplementedError()
 
 
 
