@@ -1653,10 +1653,10 @@ class Net_Node(object):
         old_value = copy(msg.value)
         delattr(msg, 'value')
         for v in old_value['payload']:
-            if isinstance(v, dict) and ('headers' in old_value.keys()):
-                v.update(old_value['headers'])
-            msg.value = v
-            listen_fn(msg)
+            # if isinstance(v, dict) and ('headers' in old_value.keys()):
+            #     v.update(old_value['headers'])
+            #msg.value = v
+            listen_fn(v)
     #
     # def l_stream(self, value):
     #     listen_fn = self.listens[value['inner_key']]
@@ -2031,7 +2031,7 @@ class Message(object):
     def _deserialize_numpy(self, obj_pairs):
         # print(len(obj_pairs), obj_pairs)
         if (len(obj_pairs) == 1) and obj_pairs[0][0] == "NUMPY_ARRAY":
-            return blosc.unpack_array(base64.b64decode(obj_pairs[0][1]).encode('ascii'))
+            return blosc.unpack_array(base64.b64decode(obj_pairs[0][1]))
         else:
             return dict(obj_pairs)
 
