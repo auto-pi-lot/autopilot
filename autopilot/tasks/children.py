@@ -19,6 +19,7 @@ from autopilot.transform import transforms
 from itertools import cycle
 from queue import Empty
 import threading
+import logging
 
 class Wheel_Child(object):
     STAGE_NAMES = ['collect']
@@ -193,6 +194,8 @@ class Transformer(object):
         self.stages = cycle([self.noop])
         self.input_q = deque(maxlen=1)
 
+        self.logger = logging.getLogger('main')
+
         self.process_thread = threading.Thread(target=self._process, args=(transform,))
         self.process_thread.daemon = True
         self.process_thread.start()
@@ -226,6 +229,9 @@ class Transformer(object):
             except IndexError:
                 continue
             result = self.transform.process(value)
+
+            self.logger.debug(f'Processed frame, result: {result}')
+
 
             if self.operation == "trigger":
                 if result != self._last_result:
