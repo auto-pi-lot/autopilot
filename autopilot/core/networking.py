@@ -1754,7 +1754,7 @@ class Net_Node(object):
 
         socket = ZMQStream(socket, self.loop)
 
-        upstream = bytes(upstream, encoding="utf-8")
+        upstream = upstream
 
         if subject is None:
             if hasattr(prefs, 'SUBJECT'):
@@ -1986,6 +1986,9 @@ class Message(object):
         Returns:
 
         """
+        if isinstance(array, bytes):
+            # array has already been serialzied and json is passing it here bc u cant serialize serialized things.
+            return array
 
         compressed = base64.b64encode(blosc.pack_array(array))
         return {'NUMPY_ARRAY': compressed}
