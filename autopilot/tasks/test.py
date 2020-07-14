@@ -194,10 +194,11 @@ class DLC_Latency(Task):
         self.cam.fps = self.fps
         self.cam.exposure = self.exposure
         if self.crop_box:
-            self.cam.set('OffsetX', self.crop_box[0])
-            self.cam.set('OffsetY', self.crop_box[1])
             self.cam.set('Width', self.crop_box[2])
             self.cam.set('Height', self.crop_box[3])
+            self.cam.set('OffsetX', self.crop_box[0])
+            self.cam.set('OffsetY', self.crop_box[1])
+
 
         self.cam.stream(to=f"{self.child_id}_TRANSFORMER",
                         min_size=1)
