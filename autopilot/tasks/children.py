@@ -247,6 +247,7 @@ class Transformer(object):
         # get array out of value
 
         # FIXME hack for dlc
+        self.logger.debug('Received and queued processing!')
         self.input_q.put_nowait(value['MAIN'])
 
 

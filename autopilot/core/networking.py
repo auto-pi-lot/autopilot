@@ -543,7 +543,7 @@ class Station(multiprocessing.Process):
                     #if we know who they are or not, try to send it through router anyway.
                     self.listener.send_multipart([unserialized_to, unserialized_to, msg[-1]])
 
-                self.logger.debug('FORWARDING: to - {}, {}'.format(unserialized_to, msg[-1]))
+                # self.logger.debug('FORWARDING: to - {}, {}'.format(unserialized_to, msg[-1][:100] if len(msg[-1])>100 else msg[-1]))
 
                 return
 
