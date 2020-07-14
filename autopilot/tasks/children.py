@@ -9,6 +9,7 @@ Sub-tasks that serve as children to other tasks.
 """
 
 from collections import OrderedDict as odict
+from collections import deque
 from autopilot import prefs
 from autopilot.hardware.gpio import Digital_Out
 from autopilot.hardware.usb import Wheel
@@ -187,6 +188,24 @@ class Transformer(object):
         self.operation = operation
         self._last_result = None
 
+        self.return_id = return_id
+        self.stage_block = stage_block
+        self.stages = cycle([self.noop])
+        self.input_q = deque(maxlen=1)
+
+        self.process_thread = threading.Thread(target=self._process, args=(transform,))
+        self.process_thread.daemon = True
+        self.process_thread.start()
+
+    def noop(self):
+        # just fitting in with the task structure.
+        self.stage_block.clear()
+        return {}
+
+
+
+    def _process(self, transform):
+
         self.transform = transforms.make_transform(transform)
 
         self.node = Net_Node(
@@ -198,20 +217,29 @@ class Transformer(object):
             }
         )
 
-        self.return_id = return_id
-
         self.node.send(self.return_id, 'STATUS', value='READY')
 
+        while True:
+            try:
+                value = self.input_q.pop()
+            except IndexError:
+                continue
+            result = self.transform.process(value)
+
+            if self.operation == "trigger":
+                if result != self._last_result:
+                    self.node.send(self.return_id, 'TRIGGER', result)
+                    self._last_result = result
+
+            elif self.operation == 'stream':
+                raise NotImplementedError()
+
+
+
     def l_process(self, value):
-        result = self.transform.process(value)
+        self.input_q.append(value)
 
-        if self.operation == "trigger":
-            if result != self._last_result:
-                self.node.send(self.return_id, 'TRIGGER', result)
-                self._last_result = result
 
-        elif self.operation == 'stream':
-            raise NotImplementedError()
 
 
 
