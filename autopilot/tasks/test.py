@@ -244,7 +244,8 @@ class DLC_Latency(Task):
 
         return {
             'response' : response_time,
-            'plot_response': 1
+            'plot_response': 1,
+            'TRIAL_END': True
         }
 
 

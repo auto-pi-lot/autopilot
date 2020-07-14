@@ -206,7 +206,7 @@ class Task(object):
     # def init_sound(self):
     #     pass
 
-    def handle_trigger(self, pin, level, tick):
+    def handle_trigger(self, pin, level=None, tick=None):
         """
         All GPIO triggers call this function with the pin number, level (high, low),
         and ticks since booting pigpio.
