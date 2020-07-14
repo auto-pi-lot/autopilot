@@ -17,7 +17,7 @@ from autopilot.hardware import cameras
 from autopilot.core.networking import Net_Node
 from autopilot.transform import transforms
 from itertools import cycle
-from queue import Empty
+from queue import Empty, LifoQueue
 import threading
 import logging
 
@@ -192,7 +192,7 @@ class Transformer(object):
         self.return_id = return_id
         self.stage_block = stage_block
         self.stages = cycle([self.noop])
-        self.input_q = deque(maxlen=1)
+        self.input_q = LifoQueue()
 
         self.logger = logging.getLogger('main')
 
@@ -225,8 +225,8 @@ class Transformer(object):
 
         while True:
             try:
-                value = self.input_q.pop()
-            except IndexError:
+                value = self.input_q.get_nowait()
+            except Empty:
                 continue
             result = self.transform.process(value)
 
@@ -247,7 +247,7 @@ class Transformer(object):
         # get array out of value
 
         # FIXME hack for dlc
-        self.input_q.append(value['MAIN'])
+        self.input_q.put_nowait(value['MAIN'])
 
 
 
