@@ -58,8 +58,8 @@ class DLC_Latency(Task):
 
     PLOT = {
         'data': {
-            'trigger': 'segment',
-            'response': 'point'
+            'plot_trigger': 'segment',
+            'plot_response': 'point'
         },
         'continuous': True
     }
@@ -68,6 +68,8 @@ class DLC_Latency(Task):
         trial_num = tables.Int32Col()
         trigger = tables.StringCol(26)
         response = tables.StringCol(26)
+        plot_trigger = tables.Int8Col()
+        plot_response = tables.Int8Col()
 
     HARDWARE = {
         'LEDS': {
@@ -228,7 +230,8 @@ class DLC_Latency(Task):
 
         return {
             'trigger': trig_time,
-            'trial_num': self.current_trial
+            'trial_num': self.current_trial,
+            'plot_trigger': 1
         }
 
     def wait(self):
@@ -238,7 +241,8 @@ class DLC_Latency(Task):
         sleep(self.delay/1000)
 
         return {
-            'response' : response_time
+            'response' : response_time,
+            'plot_response': 1
         }
 
 
