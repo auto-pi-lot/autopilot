@@ -201,6 +201,8 @@ class DLC_Latency(Task):
 
 
         self.cam.stream(to=f"{self.child_id}_TRANSFORMER",
+                        ip=prefs.CHILDIP, # FIXME: Hack before network discovery is fixed
+                        port=prefs.CHILDPORT,
                         min_size=1)
 
         self.stages = cycle([self.trig, self.wait])
