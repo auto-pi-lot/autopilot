@@ -1488,6 +1488,12 @@ class Net_Node(object):
             listen_thread = threading.Thread(target=listen_funk, args=(msg.value,))
             listen_thread.start()
         except KeyError:
+            if msg.key=="STREAM":
+                try:
+                    listen_thread = threading.Thread(target=self.l_stream, args=(msg,))
+                    listen_thread.start()
+                except Exception as e:
+                    self.logger.exception(e)
 
             self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
 
@@ -1632,6 +1638,25 @@ class Net_Node(object):
 
 
         self.logger.debug('CONFIRMED MESSAGE {}'.format(value))
+
+    def l_stream(self, msg):
+        """
+        Reconstitute the original stream of messages and call their handling methods
+
+        The ``msg`` should contain an ``inner_key`` that indicates the key, and thus the
+        handling method.
+
+        Args:
+            msg (dict): Compressed stream sent by :meth:`Net_Node._stream`
+        """
+        listen_fn = self.listens[msg.value['inner_key']]
+        old_value = copy(msg.value)
+        delattr(msg, 'value')
+        for v in old_value['payload']:
+            if isinstance(v, dict) and ('headers' in old_value.keys()):
+                v.update(old_value['headers'])
+            msg.value = v
+            listen_fn(msg)
     #
     # def l_stream(self, value):
     #     listen_fn = self.listens[value['inner_key']]
