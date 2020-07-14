@@ -1500,7 +1500,7 @@ class Net_Node(object):
             log_this = False
 
         if self.logger and log_this:
-            self.logger.debug('RECEIVED: {}'.format(self.id, str(msg)))
+            self.logger.debug('RECEIVED: {}'.format(str(msg)))
 
 
     def send(self, to=None, key=None, value=None, msg=None, repeat=True, flags = None, force_to = False):

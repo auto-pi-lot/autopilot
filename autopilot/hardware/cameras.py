@@ -840,17 +840,6 @@ class Camera_Spinnaker(Camera):
         if not PYSPIN:
             raise ImportError('PySpin was not imported, and is required for Camera_Spinnaker')
 
-        super(Camera_Spinnaker, self).__init__(**kwargs)
-
-        if serial and camera_idx:
-            self.logger.warning("serial and camera_idx were both passed, defaulting to serial")
-            camera_idx = None
-
-        if isinstance(serial, float) or isinstance(serial, int):
-            serial = str(serial)
-        self.serial = serial
-        self.camera_idx = camera_idx
-
 
 
         self.system = None #spinnaker system
@@ -873,6 +862,20 @@ class Camera_Spinnaker(Camera):
         self._readable_attributes = {}
         self._writable_attributes = {}
         self._timestamps = []
+
+
+        super(Camera_Spinnaker, self).__init__(**kwargs)
+
+        if serial and camera_idx:
+            self.logger.warning("serial and camera_idx were both passed, defaulting to serial")
+            camera_idx = None
+
+        if isinstance(serial, float) or isinstance(serial, int):
+            serial = str(serial)
+        self.serial = serial
+        self.camera_idx = camera_idx
+
+
 
         # set passed parameters
         # has to be done in a specific order, as they are mutually dependent.
@@ -1322,21 +1325,23 @@ class Camera_Spinnaker(Camera):
             attr (str): Name of attribute to be set
             val (str, int, float): Value to set attribute
         """
-        if attr in self._camera_attributes:
+        if self.cam:
+            # checking ensures we have camera initialized
+            if attr in self._camera_attributes:
 
-            prop = self._camera_attributes[attr]
-            if not PySpin.IsWritable(prop):
-                self.logger.exception("Property '%s' is not currently writable!" % attr)
+                prop = self._camera_attributes[attr]
+                if not PySpin.IsWritable(prop):
+                    self.logger.exception("Property '%s' is not currently writable!" % attr)
 
-            if hasattr(prop, 'SetValue'):
-                prop.SetValue(val)
+                if hasattr(prop, 'SetValue'):
+                    prop.SetValue(val)
+                else:
+                    prop.FromString(val)
+
+            elif attr in self._camera_methods:
+                self.logger.exception("Camera method '%s' is a function -- you can't assign it a value!" % attr)
             else:
-                prop.FromString(val)
-
-        elif attr in self._camera_methods:
-            self.logger.exception("Camera method '%s' is a function -- you can't assign it a value!" % attr)
-        else:
-            self.logger.exception('Not sure what to do with attr: {}, value: {}'.format(attr, val))
+                self.logger.exception('Not sure what to do with attr: {}, value: {}'.format(attr, val))
 
         # else:
         #

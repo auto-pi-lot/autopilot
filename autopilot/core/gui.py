@@ -1094,7 +1094,11 @@ class Protocol_Wizard(QtWidgets.QDialog):
         sender_type = self.steps[current_step][param_name]['type']
 
         if sender_type == 'int' or sender_type == 'str':
-            self.steps[current_step][param_name]['value'] = sender.text()
+            try:
+                sender_text = ast.literal_eval(sender.text())
+            except:
+                sender_text = sender.text()
+            self.steps[current_step][param_name]['value'] = sender_text
         elif sender_type == 'bool':
             self.steps[current_step][param_name]['value'] = sender.isChecked()
         elif sender_type == 'list':
