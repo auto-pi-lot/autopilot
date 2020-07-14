@@ -309,7 +309,6 @@ class Pilot:
                 task_class = tasks.TASK_LIST[value['task_type']]
             # Instantiate the task
             self.stage_block.clear()
-            self.task = task_class(stage_block=self.stage_block, **value)
 
             # Make a group for this subject if we don't already have one
             self.subject = value['subject']
@@ -319,7 +318,7 @@ class Pilot:
 
             # Run the task and tell the terminal we have
             # self.running.set()
-            threading.Thread(target=self.run_task).start()
+            threading.Thread(target=self.run_task, args=(task_class, value)).start()
 
 
             self.update_state()
@@ -671,7 +670,7 @@ class Pilot:
         else:
             return h5f, None, None
 
-    def run_task(self):
+    def run_task(self, task_class, task_params):
         """
         Called in a new thread, run the task.
 
@@ -684,6 +683,7 @@ class Pilot:
         """
         # TODO: give a net node to the Task class and let the task run itself.
         # Run as a separate thread, just keeps calling next() and shoveling data
+        self.task = task_class(stage_block=self.stage_block, **task_params)
 
         # do we expect TrialData?
         trial_data = False
