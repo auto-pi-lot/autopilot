@@ -1776,17 +1776,17 @@ class Net_Node(object):
                 # tuples are immutable, so can't serialize numpy arrays they contain
                 data = list(data)
 
-            if isinstance(data, list):
-                for i, item in enumerate(data):
-                    if isinstance(item, np.ndarray):
-                        data[i] = serialize_array(item)
-            elif isinstance(data, dict):
-                for key, value in data.items():
-                    if isinstance(value, np.ndarray):
-                        data[key] = serialize_array(value)
-            elif isinstance(data, np.ndarray):
-                data = serialize_array(data)
-
+            # if isinstance(data, list):
+            #     for i, item in enumerate(data):
+            #         if isinstance(item, np.ndarray):
+            #             data[i] = serialize_array(item)
+            # elif isinstance(data, dict):
+            #     for key, value in data.items():
+            #         if isinstance(value, np.ndarray):
+            #             data[key] = serialize_array(value)
+            # elif isinstance(data, np.ndarray):
+            #     data = serialize_array(data)
+            #
             pending_data.append(data)
 
             if not socket.sending() and len(pending_data)>=min_size:
@@ -1986,10 +1986,6 @@ class Message(object):
         Returns:
 
         """
-        if isinstance(array, bytes):
-            # array has already been serialzied and json is passing it here bc u cant serialize serialized things.
-            return array
-
         compressed = base64.b64encode(blosc.pack_array(array))
         return {'NUMPY_ARRAY': compressed}
 
