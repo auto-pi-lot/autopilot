@@ -174,7 +174,7 @@ class DLC_Latency(Task):
                              port=prefs.MSGPORT,
                              listens={'STATE':self.l_state,
                                       'TRIGGER':self.l_trigger},
-                             instance=True)
+                             instance=False)
 
         # get our child started
         self.subject = kwargs['subject']
