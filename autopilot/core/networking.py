@@ -1411,10 +1411,10 @@ class Net_Node(object):
             self.loop_thread.daemon = True
         self.loop_thread.start()
 
-        self.repeat_thread = threading.Thread(target=self.repeat)
-        if self.daemon:
-            self.repeat_thread.daemon = True
-        self.repeat_thread.start()
+        # self.repeat_thread = threading.Thread(target=self.repeat)
+        # if self.daemon:
+        #     self.repeat_thread.daemon = True
+        # self.repeat_thread.start()
 
         #self.connected = True
 
