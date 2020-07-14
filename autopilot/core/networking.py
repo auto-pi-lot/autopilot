@@ -1777,17 +1777,17 @@ class Net_Node(object):
             if isinstance(data, tuple):
                 # tuples are immutable, so can't serialize numpy arrays they contain
                 data = list(data)
-
-            if isinstance(data, list):
-                for i, item in enumerate(data):
-                    if isinstance(item, np.ndarray):
-                        data[i] = serialize_array(item)
-            elif isinstance(data, dict):
-                for key, value in data.items():
-                    if isinstance(value, np.ndarray):
-                        data[key] = serialize_array(value)
-            elif isinstance(data, np.ndarray):
-                data = serialize_array(data)
+            #
+            # if isinstance(data, list):
+            #     for i, item in enumerate(data):
+            #         if isinstance(item, np.ndarray):
+            #             data[i] = serialize_array(item)
+            # elif isinstance(data, dict):
+            #     for key, value in data.items():
+            #         if isinstance(value, np.ndarray):
+            #             data[key] = serialize_array(value)
+            # elif isinstance(data, np.ndarray):
+            #     data = serialize_array(data)
 
             pending_data.append(data)
 
@@ -1988,14 +1988,14 @@ class Message(object):
         Returns:
 
         """
-        compressed = base64.b64encode(blosc.pack_array(array))
+        compressed = base64.b64encode(blosc.pack_array(array)).decode('ascii')
         return {'NUMPY_ARRAY': compressed}
 
 
     def _deserialize_numpy(self, obj_pairs):
         # print(len(obj_pairs), obj_pairs)
         if (len(obj_pairs) == 1) and obj_pairs[0][0] == "NUMPY_ARRAY":
-            return blosc.unpack_array(base64.b64decode(obj_pairs[0][1]))
+            return blosc.unpack_array(base64.b64decode(obj_pairs[0][1]).encode('ascii'))
         else:
             return dict(obj_pairs)
 
@@ -2103,7 +2103,7 @@ def serialize_array(array):
     Returns:
         dict: {'NUMPY_ARRAY': base-64 encoded, blosc-compressed array.}
     """
-    compressed = base64.b64encode(blosc.pack_array(array))
+    compressed = base64.b64encode(blosc.pack_array(array)).decode('ascii')
     return {'NUMPY_ARRAY': compressed}
 
 
