@@ -883,7 +883,10 @@ class Camera_Spinnaker(Camera):
         if 'pixel_format' in kwargs.keys():
             self.set('PixelFormat', kwargs['pixel_format'])
         else:
-            self.set('PixelFormat', PySpin.PixelFormat_Mono8)
+            try:
+                self.set('PixelFormat', PySpin.PixelFormat_Mono8)
+            except:
+                pass
 
         if 'bin' in kwargs.keys():
             self.bin = kwargs['bin']
