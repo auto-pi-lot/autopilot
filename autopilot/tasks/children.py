@@ -239,7 +239,7 @@ class Transformer(object):
                     self._last_result = result
 
             elif self.operation == 'stream':
-                raise NotImplementedError()
+                print(result)
 
 
 
