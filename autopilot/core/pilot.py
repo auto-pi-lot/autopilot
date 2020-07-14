@@ -575,7 +575,11 @@ class Pilot:
     #################################################################
 
     def init_pigpio(self):
-        self.pigpiod = external.start_pigpiod()
+        try:
+            self.pigpiod = external.start_pigpiod()
+        except ImportError as e:
+            self.pigpiod = None
+            self.logger.exception(e)
 
     def init_audio(self):
         """

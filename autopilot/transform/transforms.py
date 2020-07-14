@@ -441,8 +441,8 @@ class T_DLC(T_Image):
         Returns:
             str
         """
-        if 'DLC_DIR' in prefs.prefdict.keys():
-            dlc_dir = prefs.DLC_DIR
+        if 'DLCDIR' in prefs.prefdict.keys():
+            dlc_dir = prefs.DLCDIR
         else:
             dlc_dir = os.path.join(prefs.BASEDIR, 'dlc')
             if not os.path.exists(dlc_dir):

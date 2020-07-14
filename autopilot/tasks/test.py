@@ -40,8 +40,14 @@ class DLC_Latency(Task):
                               'type': 'float'}
     PARAMS['trigger_thresh'] = {'tag': 'Probability Threshold of Detection (0-1)',
                                 'type': 'float'}
-    PARAMS['trigger_limits_x'] = {'tag': 'Limits in x (pixels) for object detection (list like [0, 100])',
-                                  'type': 'list'}
+    PARAMS['trigger_min_x'] = {'tag': 'Minimum x (pixels) for object detection',
+                                  'type': 'int'}
+    PARAMS['trigger_max_x'] = {'tag': 'Maximum x (pixels) for object detection',
+                                  'type': 'int'}
+    PARAMS['trigger_min_y'] = {'tag': 'Minimum y (pixels) for object detection',
+                                  'type': 'int'}
+    PARAMS['trigger_max_y'] = {'tag': 'Maximum y (pixels) for object detection',
+                                  'type': 'int'}
     PARAMS['trigger_limits_y'] = {'tag': 'Limits in y (pixels) for object detection (list like [0, 100])',
                                   'type': 'list'}
     PARAMS['crop_box'] = {'tag': 'Bounding box of image capture for FLIR camera [x_offset, y_offset, x_width, y_height]',
