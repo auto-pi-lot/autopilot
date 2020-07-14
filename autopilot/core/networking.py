@@ -1773,39 +1773,50 @@ class Net_Node(object):
 
         pending_data = []
 
-        for data in iter(q.get, 'END'):
-            if isinstance(data, tuple):
-                # tuples are immutable, so can't serialize numpy arrays they contain
-                data = list(data)
-            #
-            # if isinstance(data, list):
-            #     for i, item in enumerate(data):
-            #         if isinstance(item, np.ndarray):
-            #             data[i] = serialize_array(item)
-            # elif isinstance(data, dict):
-            #     for key, value in data.items():
-            #         if isinstance(value, np.ndarray):
-            #             data[key] = serialize_array(value)
-            # elif isinstance(data, np.ndarray):
-            #     data = serialize_array(data)
+        if min_size > 1:
 
-            pending_data.append(data)
+            for data in iter(q.get, 'END'):
+                if isinstance(data, tuple):
+                    # tuples are immutable, so can't serialize numpy arrays they contain
+                    data = list(data)
 
-            if not socket.sending() and len(pending_data)>=min_size:
-                msg = Message(to=upstream.decode('utf-8'), key="STREAM",
-                              value={'inner_key' : msg_key,
-                                     'headers'   : {'subject': subject,
-                                                    'pilot'  : pilot,
-                                                    'continuous': True},
-                                     'payload'   : pending_data},
-                              id="{}_{}".format(id, next(msg_counter)),
-                              flags={'NOREPEAT':True, 'MINPRINT':True},
-                              sender=socket_id).serialize()
-                last_msg = socket.send_multipart((upstream, upstream, msg),
-                                                 track=True, copy=True)
+                pending_data.append(data)
 
-                self.logger.debug("STREAM {}: Sent {} items".format(self.id+'_'+id, len(pending_data)))
-                pending_data = []
+                if not socket.sending() and len(pending_data)>=min_size:
+                    msg = Message(to=upstream.decode('utf-8'), key="STREAM",
+                                  value={'inner_key' : msg_key,
+                                         'headers'   : {'subject': subject,
+                                                        'pilot'  : pilot,
+                                                        'continuous': True},
+                                         'payload'   : pending_data},
+                                  id="{}_{}".format(id, next(msg_counter)),
+                                  flags={'NOREPEAT':True, 'MINPRINT':True},
+                                  sender=socket_id).serialize()
+                    last_msg = socket.send_multipart((upstream, upstream, msg),
+                                                     track=True, copy=True)
+
+                    self.logger.debug("STREAM {}: Sent {} items".format(self.id+'_'+id, len(pending_data)))
+                    pending_data = []
+        else:
+            # just send like normal messags
+            for data in iter(q.get, 'END'):
+                if isinstance(data, tuple):
+                    # tuples are immutable, so can't serialize numpy arrays they contain
+                    data = list(data)
+
+                if not socket.sending():
+                    msg = Message(to=upstream.decode('utf-8'), key=msg_key,
+                                  subject=subject,
+                                  pilot=pilot,
+                                  continuous=True,
+                                  value=data,
+                                  flags={'NOREPEAT': True, 'MINPRINT': True},
+                                  id="{}_{}".format(id, next(msg_counter)),
+                                  sender=socket_id).serialize()
+                    last_msg = socket.send_multipart((upstream, upstream, msg),
+                                                     track=True, copy=True)
+
+                    self.logger.debug("STREAM {}: Sent 1 item".format(self.id + '_' + id))
 
 
 

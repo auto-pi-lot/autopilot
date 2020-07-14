@@ -213,7 +213,7 @@ class Transformer(object):
             upstream=prefs.NAME,
             port=prefs.MSGPORT,
             listens = {
-                'PROCESS': self.l_process
+                'CONTINUOUS': self.l_process
             },
             instance=False
         )
@@ -238,7 +238,10 @@ class Transformer(object):
 
 
     def l_process(self, value):
-        self.input_q.append(value)
+        # get array out of value
+
+        # FIXME hack for dlc
+        self.input_q.append(value['MAIN'])
 
 
 
