@@ -1754,7 +1754,7 @@ class Net_Node(object):
 
         socket = ZMQStream(socket, self.loop)
 
-        upstream = upstream
+        upstream = upstream.encode('utf-8')
 
         if subject is None:
             if hasattr(prefs, 'SUBJECT'):
