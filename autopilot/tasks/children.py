@@ -239,8 +239,8 @@ class Transformer(object):
                     self._last_result = result
 
             elif self.operation == 'stream':
-                print(result)
-
+                # print(result)
+                raise NotImplementedError()
 
 
     def l_process(self, value):
