@@ -218,7 +218,7 @@ class Transformer(object):
             instance=False
         )
 
-        self.node.send(self.return_id, 'STATUS', value='READY')
+        self.node.send(self.return_id, 'STATE', value='READY')
 
         while True:
             try:
