@@ -214,7 +214,8 @@ class Transformer(object):
             port=prefs.MSGPORT,
             listens = {
                 'PROCESS': self.l_process
-            }
+            },
+            instance=False
         )
 
         self.node.send(self.return_id, 'STATUS', value='READY')
