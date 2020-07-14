@@ -1763,9 +1763,11 @@ class Net_Node(object):
                 subject = b""
 
         if prefs.LINEAGE == "CHILD":
-            pilot = bytes(prefs.PARENTID, encoding="utf-8")
+            # pilot = bytes(prefs.PARENTID, encoding="utf-8")
+            pilot = prefs.PARENTID
         else:
-            pilot = bytes(prefs.NAME, encoding="utf-8")
+            # pilot = bytes(prefs.NAME, encoding="utf-8")
+            pilot = prefs.NAME
 
         msg_counter = count()
 
@@ -1776,21 +1778,21 @@ class Net_Node(object):
                 # tuples are immutable, so can't serialize numpy arrays they contain
                 data = list(data)
 
-            # if isinstance(data, list):
-            #     for i, item in enumerate(data):
-            #         if isinstance(item, np.ndarray):
-            #             data[i] = serialize_array(item)
-            # elif isinstance(data, dict):
-            #     for key, value in data.items():
-            #         if isinstance(value, np.ndarray):
-            #             data[key] = serialize_array(value)
-            # elif isinstance(data, np.ndarray):
-            #     data = serialize_array(data)
-            #
+            if isinstance(data, list):
+                for i, item in enumerate(data):
+                    if isinstance(item, np.ndarray):
+                        data[i] = serialize_array(item)
+            elif isinstance(data, dict):
+                for key, value in data.items():
+                    if isinstance(value, np.ndarray):
+                        data[key] = serialize_array(value)
+            elif isinstance(data, np.ndarray):
+                data = serialize_array(data)
+
             pending_data.append(data)
 
             if not socket.sending() and len(pending_data)>=min_size:
-                msg = Message(to=upstream, key="STREAM",
+                msg = Message(to=upstream.decode('utf-8'), key="STREAM",
                               value={'inner_key' : msg_key,
                                      'headers'   : {'subject': subject,
                                                     'pilot'  : pilot,
