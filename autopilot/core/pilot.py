@@ -295,11 +295,12 @@ class Pilot:
         # Value should be a dict of protocol params
         # The networking object should have already checked that we have all the files we need
 
-        if self.state == "RUNNING":
+        if self.state == "RUNNING" or self.running.is_set():
             self.logger.warning("Asked to a run a task when already running")
             return
 
         self.state = 'RUNNING'
+        self.running.set()
         try:
             # Get the task object by its type
             if 'child' in value.keys():
@@ -317,7 +318,7 @@ class Pilot:
 
 
             # Run the task and tell the terminal we have
-            self.running.set()
+            # self.running.set()
             threading.Thread(target=self.run_task).start()
 
 
