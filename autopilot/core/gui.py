@@ -1999,6 +1999,7 @@ class Bandwidth_Test(QtWidgets.QDialog):
         # and then add size of container itself.
         # payload size is distinct from the serialized message size, this is the end size
         # as it ends up on the disk of the receiver
+        pdb.set_trace()
         payload_size = np.sum([sys.getsizeof(v) for k, v in value.items()]) + sys.getsizeof(value)
 
 

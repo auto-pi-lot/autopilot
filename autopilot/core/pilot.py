@@ -488,6 +488,13 @@ class Pilot:
         else:
             spacing = 0
 
+        # spawn stream
+        stream = self.node.get_stream(
+            'bandwidth_stream',
+            key='BANDWIDTH_MSG',
+            
+        )
+
         # wait for half a second to let the terminal get messages out
         time.sleep(0.25)
 
@@ -496,8 +503,9 @@ class Pilot:
             for i in range(n_msg):
                 message['n_msg'] = i
                 message['timestamp'] = datetime.datetime.now().isoformat()
-                self.node.send(to='bandwidth',key='BANDWIDTH_MSG',
-                               value=message, repeat=confirm, flags={'MINPRINT':True})
+                # self.node.send(to='bandwidth',key='BANDWIDTH_MSG',
+                #                value=message, repeat=confirm, flags={'MINPRINT':True})
+                stream.put_nowait(message)
                 this_message = time.perf_counter()
                 waitfor = np.clip(spacing-(this_message-last_message), 0, spacing)
 
