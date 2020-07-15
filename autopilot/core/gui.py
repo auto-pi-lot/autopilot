@@ -2001,8 +2001,6 @@ class Bandwidth_Test(QtWidgets.QDialog):
         # as it ends up on the disk of the receiver
         # pdb.set_trace()
         # payload_size = np.sum([sys.getsizeof(v) for k, v in value.items()]) + sys.getsizeof(value)
-        payload_size = value['payload_size']
-
         if 'test_end' in value.keys():
             self.finished_pilots.append(value['pilot'])
 
@@ -2010,6 +2008,10 @@ class Bandwidth_Test(QtWidgets.QDialog):
                 self.process_test(value['rate'], value['n_msg'], value['confirm'])
 
             return
+
+        payload_size = value['payload_size']
+
+
 
 
         #payload_size = np.frombuffer(base64.b64decode(value['payload']),dtype=np.bool).nbytes
