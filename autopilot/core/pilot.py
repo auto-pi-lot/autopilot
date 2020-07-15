@@ -469,7 +469,7 @@ class Pilot:
         confirm = bool(value['confirm'])
 
         payload = np.zeros(payload*1024, dtype=np.bool)
-
+        payload_size = sys.getsizeof(payload)
 
         message = {
             'pilot': self.name,
@@ -482,6 +482,7 @@ class Pilot:
         msg_size = sys.getsizeof(test_msg.serialize())
 
         message['message_size'] = msg_size
+        message['payload_size'] = payload_size
 
         if rate > 0:
             spacing = 1.0/rate
