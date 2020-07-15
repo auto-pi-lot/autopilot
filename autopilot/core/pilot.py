@@ -468,7 +468,7 @@ class Pilot:
         payload = int(value['payload'])
         confirm = bool(value['confirm'])
 
-        payload = base64.b64encode(np.zeros(payload*1024, dtype=np.bool))
+        payload = np.zeros(payload*1024, dtype=np.bool)
 
 
         message = {

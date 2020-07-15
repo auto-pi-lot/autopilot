@@ -32,6 +32,7 @@ import itertools
 import threading
 import logging
 from operator import ior
+import pdb
 
 # adding autopilot parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -1710,9 +1711,9 @@ class Bandwidth_Test(QtWidgets.QDialog):
         # combine settings
         self.settings.addRow('N messages per test', self.n_messages)
         self.settings.addRow('Confirm sent messages?', self.receipts)
-        self.settings.addRow('Message Rates per Pilot \n(in Hz, list of integers like "1, 2, 3")',
+        self.settings.addRow('Message Rates per Pilot \n(in Hz, list of integers like "[1, 2, 3]")',
                              self.rates)
-        self.settings.addRow('Payload sizes per message \n(in KB, list of integers like "32, 64, 128")',
+        self.settings.addRow('Payload sizes per message \n(in KB, list of integers like "[32, 64, 128]")',
                              self.payloads)
         self.settings.addRow('Which Pilots to include in test',
                              self.pilot_layout)
@@ -2043,6 +2044,7 @@ class Bandwidth_Test(QtWidgets.QDialog):
 
 
         """
+        # pdb.set_trace()
         sender = self.sender()
 
         text = sender.text()
