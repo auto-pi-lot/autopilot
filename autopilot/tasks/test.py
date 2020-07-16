@@ -232,8 +232,7 @@ class DLC_Latency(Task):
         self.current_trial = next(self.trial_counter)
 
         # pulse gpio and turn off LED when triggered
-        self.triggers['CAMERA'] = [self.hardware['DIGITAL_OUT']['C'].pulse,
-                                   lambda: self.hardware['LEDS']['C'].set(0.0001)]
+        self.triggers['CAMERA'] = [self.hardware['DIGITAL_OUT']['C'].pulse]
 
         trig_time = datetime.now().isoformat()
         self.hardware['LEDS']['C'].set(1)
@@ -245,13 +244,13 @@ class DLC_Latency(Task):
         }
 
     def wait(self):
-        self.stage_block.clear()
+        # self.stage_block.clear()
         response_time = datetime.now().isoformat()
         self.hardware['LEDS']['C'].set(0.0001)
 
-        # sleep(self.delay/1000)
-        timer = threading.Timer(interval=self.delay/1000, target=self.stage_block.clear)
-        timer.start()
+        sleep(self.delay/1000)
+        # timer = threading.Timer(interval=self.delay/1000, target=self.stage_block.clear)
+        # timer.start()
 
         return {
             'response' : response_time,
