@@ -20,6 +20,7 @@ from itertools import cycle
 from queue import Empty, LifoQueue
 import threading
 import logging
+from time import sleep
 
 class Wheel_Child(object):
     STAGE_NAMES = ['collect']
@@ -192,7 +193,8 @@ class Transformer(object):
         self.return_id = return_id
         self.stage_block = stage_block
         self.stages = cycle([self.noop])
-        self.input_q = LifoQueue()
+        # self.input_q = LifoQueue()
+        self.input_q = deque(maxlen=1)
 
         self.logger = logging.getLogger('main')
 
@@ -225,8 +227,11 @@ class Transformer(object):
 
         while True:
             try:
-                value = self.input_q.get_nowait()
-            except Empty:
+                # value = self.input_q.get_nowait()
+                value = self.input_q.popleft()
+            # except Empty:
+            except IndexError:
+                sleep(0.001)
                 continue
             result = self.transform.process(value)
 
@@ -251,7 +256,8 @@ class Transformer(object):
 
         # FIXME hack for dlc
         self.node.logger.debug('Received and queued processing!')
-        self.input_q.put_nowait(value['MAIN'])
+        # self.input_q.put_nowait(value['MAIN'])
+        self.input_q.append()
 
 
 
