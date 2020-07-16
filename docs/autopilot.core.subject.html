@@ -239,7 +239,16 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="todo.html#integrations">Integrations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="todo.html#roadmap-deeplabcut-integration">DeepLabCut Integration<span><a href="https://groups.google.com/forum/#!topic/autopilot-users/T-PNfrHDtzA" class="roadmap-dblink">priority: high | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="todo.html#roadmap-open-ephys-integration">Open Ephys Integration<span><a href="https://google.com" class="roadmap-dblink">priority: medium | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="todo.html#roadmap-bonsai-integration">Bonsai Integration<span><a href="https://google.com" class="roadmap-dblink">priority: low | discuss>></a></span></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="todo.html#closed-loop-behavior-processing-pipelines">Closed-Loop Behavior &amp; Processing Pipelines</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="todo.html#improvements">Improvements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="todo.html#bugs">Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="todo.html#completed">Completed</a></li>
@@ -308,7 +317,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="autopilot.core.html">core</a> &raquo;</li>
         
@@ -348,9 +357,9 @@ models should the need arise.</p>
 </tr>
 </tbody>
 </table>
-<dl class="class">
+<dl class="py class">
 <dt id="autopilot.core.subject.Subject">
-<em class="property">class </em><code class="sig-name descname">Subject</code><span class="sig-paren">(</span><em class="sig-param">name=None</em>, <em class="sig-param">dir=None</em>, <em class="sig-param">file=None</em>, <em class="sig-param">new=False</em>, <em class="sig-param">biography=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Subject</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">new</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">biography</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Class for managing one subject’s data and protocol.</p>
 <p>Creates a <code class="xref py py-mod docutils literal notranslate"><span class="pre">tables</span></code> hdf5 file in <cite>prefs.DATADIR</cite> with the general structure:</p>
@@ -379,13 +388,13 @@ models should the need arise.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.subject.Subject.Hash_Table" title="autopilot.core.subject.Subject.Hash_Table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Hash_Table</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.subject.Subject.Hash_Table" title="autopilot.core.subject.Subject.Hash_Table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Hash_Table</span></code></a>()</p></td>
 <td><p>Class to describe table for hash history</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.subject.Subject.History_Table" title="autopilot.core.subject.Subject.History_Table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">History_Table</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.subject.Subject.History_Table" title="autopilot.core.subject.Subject.History_Table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">History_Table</span></code></a>()</p></td>
 <td><p>Class to describe parameter and protocol change history</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.subject.Subject.Weight_Table" title="autopilot.core.subject.Subject.Weight_Table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Weight_Table</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.subject.Subject.Weight_Table" title="autopilot.core.subject.Subject.Weight_Table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Weight_Table</span></code></a>()</p></td>
 <td><p>Class to describe table for weight history</p></td>
 </tr>
 </tbody>
@@ -418,7 +427,7 @@ models should the need arise.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.subject.Subject.get_step_history" title="autopilot.core.subject.Subject.get_step_history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_step_history</span></code></a>([use_history])</p></td>
 <td><p>Gets a dataframe of step numbers, timestamps, and step names as a coarse view of training status.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.subject.Subject.get_timestamp" title="autopilot.core.subject.Subject.get_timestamp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_timestamp</span></code></a>(simple)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#autopilot.core.subject.Subject.get_timestamp" title="autopilot.core.subject.Subject.get_timestamp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_timestamp</span></code></a>([simple])</p></td>
 <td><p>Makes a timestamp.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.core.subject.Subject.get_trial_data" title="autopilot.core.subject.Subject.get_trial_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trial_data</span></code></a>([step, what])</p></td>
@@ -501,9 +510,9 @@ the ‘current’ <code class="xref py py-mod docutils literal notranslate"><spa
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.open_hdf">
-<code class="sig-name descname">open_hdf</code><span class="sig-paren">(</span><em class="sig-param">mode='r+'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.open_hdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.open_hdf" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">open_hdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'r+'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.open_hdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.open_hdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Opens the hdf5 file.</p>
 <p>This should be called at the start of every method that access the h5 file
 and <a class="reference internal" href="#autopilot.core.subject.Subject.close_hdf" title="autopilot.core.subject.Subject.close_hdf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close_hdf()</span></code></a> should be called at the end. Otherwise
@@ -530,9 +539,9 @@ the file will close and we risk file corruption.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.close_hdf">
-<code class="sig-name descname">close_hdf</code><span class="sig-paren">(</span><em class="sig-param">h5f: tables.file.File</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.close_hdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.close_hdf" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">close_hdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">h5f</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.close_hdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.close_hdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Flushes &amp; closes the open hdf file.
 Must be called whenever <a class="reference internal" href="#autopilot.core.subject.Subject.open_hdf" title="autopilot.core.subject.Subject.open_hdf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open_hdf()</span></code></a> is used.</p>
 <dl class="field-list simple">
@@ -542,29 +551,29 @@ Must be called whenever <a class="reference internal" href="#autopilot.core.subj
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.new_subject_file">
-<code class="sig-name descname">new_subject_file</code><span class="sig-paren">(</span><em class="sig-param">biography</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.new_subject_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.new_subject_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">new_subject_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">biography</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.new_subject_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.new_subject_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new subject file and make the general filestructure.</p>
 <p>If a file already exists, open it in append mode, otherwise create it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>biography</strong> (<em>dict</em>) – Biographical details like DOB, mass, etc.
-Typically created by <a class="reference internal" href="autopilot.core.gui.html#autopilot.core.gui.New_Subject_Wizard.Biography_Tab" title="autopilot.core.gui.New_Subject_Wizard.Biography_Tab"><code class="xref py py-class docutils literal notranslate"><span class="pre">Biography_Tab</span></code></a>.</p>
+Typically created by <code class="xref py py-class docutils literal notranslate"><span class="pre">Biography_Tab</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.ensure_structure">
 <code class="sig-name descname">ensure_structure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.ensure_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.ensure_structure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ensure that our h5f has the appropriate baseline structure as defined in <cite>self.STRUCTURE</cite></p>
 <p>Checks that all groups and tables are made, makes them if not</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.update_biography">
-<code class="sig-name descname">update_biography</code><span class="sig-paren">(</span><em class="sig-param">params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.update_biography"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.update_biography" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update_biography</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.update_biography"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.update_biography" title="Permalink to this definition">¶</a></dt>
 <dd><p>Change or make a new biographical attribute, stored as
 attributes of the <cite>info</cite> group.</p>
 <dl class="field-list simple">
@@ -574,9 +583,9 @@ attributes of the <cite>info</cite> group.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.update_history">
-<code class="sig-name descname">update_history</code><span class="sig-paren">(</span><em class="sig-param">type</em>, <em class="sig-param">name</em>, <em class="sig-param">value</em>, <em class="sig-param">step=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.update_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.update_history" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update_history</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">type</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">step</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.update_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.update_history" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update the history table when changes are made to the subject’s protocol.</p>
 <p>The current protocol is flushed to the past_protocols group and an updated
 filenode is created.</p>
@@ -604,9 +613,9 @@ otherwise the current step is used.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.assign_protocol">
-<code class="sig-name descname">assign_protocol</code><span class="sig-paren">(</span><em class="sig-param">protocol</em>, <em class="sig-param">step_n=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.assign_protocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.assign_protocol" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">assign_protocol</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">protocol</span></em>, <em class="sig-param"><span class="n">step_n</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.assign_protocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.assign_protocol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assign a protocol to the subject.</p>
 <p>If the subject has a currently assigned task, stashes it with <a class="reference internal" href="#autopilot.core.subject.Subject.stash_current" title="autopilot.core.subject.Subject.stash_current"><code class="xref py py-meth docutils literal notranslate"><span class="pre">stash_current()</span></code></a></p>
 <p>Creates groups and tables according to the data descriptions in the task class being assigned.
@@ -628,7 +637,7 @@ eg. as described in <code class="xref py py-class docutils literal notranslate">
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.flush_current">
 <code class="sig-name descname">flush_current</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.flush_current"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.flush_current" title="Permalink to this definition">¶</a></dt>
 <dd><p>Flushes the ‘current’ attribute in the subject object to the current filenode
@@ -637,7 +646,7 @@ in the .h5</p>
 with the params set in the subject object</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.stash_current">
 <code class="sig-name descname">stash_current</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.stash_current"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.stash_current" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the current protocol in the history group and delete the node</p>
@@ -645,7 +654,7 @@ with the params set in the subject object</p>
 <p>Stored as the date that it was changed followed by its name if it has one</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.prepare_run">
 <code class="sig-name descname">prepare_run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.prepare_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.prepare_run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepares the Subject object to receive data while running the task.</p>
@@ -666,9 +675,9 @@ spawns <code class="xref py py-attr docutils literal notranslate"><span class="p
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.data_thread">
-<code class="sig-name descname">data_thread</code><span class="sig-paren">(</span><em class="sig-param">queue</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.data_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.data_thread" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">data_thread</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">queue</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.data_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.data_thread" title="Permalink to this definition">¶</a></dt>
 <dd><p>Thread that keeps hdf file open and receives data while task is running.</p>
 <p>receives data through <code class="xref py py-attr docutils literal notranslate"><span class="pre">queue</span></code> as dictionaries. Data can be
 partial-trial data (eg. each phase of a trial) as long as the task returns a dict with
@@ -684,9 +693,9 @@ objects to pass data to be stored.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.save_data">
-<code class="sig-name descname">save_data</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.save_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.save_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">save_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.save_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.save_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alternate and equivalent method of putting data in the queue as <cite>Subject.data_queue.put(data)</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -696,15 +705,15 @@ objects to pass data to be stored.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.stop_run">
 <code class="sig-name descname">stop_run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.stop_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.stop_run" title="Permalink to this definition">¶</a></dt>
 <dd><p>puts ‘END’ in the data_queue, which causes <a class="reference internal" href="#autopilot.core.subject.Subject.data_thread" title="autopilot.core.subject.Subject.data_thread"><code class="xref py py-meth docutils literal notranslate"><span class="pre">data_thread()</span></code></a> to end.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.to_csv">
-<code class="sig-name descname">to_csv</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">task='current'</em>, <em class="sig-param">step='all'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.to_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.to_csv" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">to_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">task</span><span class="o">=</span><span class="default_value">'current'</span></em>, <em class="sig-param"><span class="n">step</span><span class="o">=</span><span class="default_value">'all'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.to_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.to_csv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Export trial data to .csv</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -717,9 +726,9 @@ objects to pass data to be stored.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.get_trial_data">
-<code class="sig-name descname">get_trial_data</code><span class="sig-paren">(</span><em class="sig-param">step=-1</em>, <em class="sig-param">what='data'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.get_trial_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.get_trial_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_trial_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">step</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">what</span><span class="o">=</span><span class="default_value">'data'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.get_trial_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.get_trial_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get trial data from the current task.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -744,19 +753,19 @@ objects to pass data to be stored.</p>
 <dd class="field-even"><p>DataFrame of requested steps’ trial data.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.apply_along">
-<code class="sig-name descname">apply_along</code><span class="sig-paren">(</span><em class="sig-param">along='session'</em>, <em class="sig-param">step=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.apply_along"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.apply_along" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">apply_along</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">along</span><span class="o">=</span><span class="default_value">'session'</span></em>, <em class="sig-param"><span class="n">step</span><span class="o">=</span><span class="default_value">- 1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.apply_along"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.apply_along" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.get_step_history">
-<code class="sig-name descname">get_step_history</code><span class="sig-paren">(</span><em class="sig-param">use_history=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.get_step_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.get_step_history" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_step_history</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">use_history</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.get_step_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.get_step_history" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets a dataframe of step numbers, timestamps, and step names
 as a coarse view of training status.</p>
 <dl class="field-list simple">
@@ -765,14 +774,14 @@ as a coarse view of training status.</p>
 compatibility fix for old versions that didn’t stash step changes when the whole protocol was updated.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></p>
+<dd class="field-even"><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.get_timestamp">
-<code class="sig-name descname">get_timestamp</code><span class="sig-paren">(</span><em class="sig-param">simple: bool = False</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.get_timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.get_timestamp" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_timestamp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simple</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.get_timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.get_timestamp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes a timestamp.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
@@ -790,9 +799,9 @@ compatibility fix for old versions that didn’t stash step changes when the who
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.get_weight">
-<code class="sig-name descname">get_weight</code><span class="sig-paren">(</span><em class="sig-param">which='last'</em>, <em class="sig-param">include_baseline=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.get_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.get_weight" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_weight</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">which</span><span class="o">=</span><span class="default_value">'last'</span></em>, <em class="sig-param"><span class="n">include_baseline</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.get_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.get_weight" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets start and stop weights.</p>
 <div class="admonition-todo admonition" id="id2">
 <p class="admonition-title">Todo</p>
@@ -811,9 +820,9 @@ compatibility fix for old versions that didn’t stash step changes when the who
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.set_weight">
-<code class="sig-name descname">set_weight</code><span class="sig-paren">(</span><em class="sig-param">date</em>, <em class="sig-param">col_name</em>, <em class="sig-param">new_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.set_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.set_weight" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_weight</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">date</span></em>, <em class="sig-param"><span class="n">col_name</span></em>, <em class="sig-param"><span class="n">new_value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.set_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.set_weight" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates an existing weight in the weight table.</p>
 <div class="admonition-todo admonition" id="id3">
 <p class="admonition-title">Todo</p>
@@ -830,9 +839,9 @@ compatibility fix for old versions that didn’t stash step changes when the who
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.update_weights">
-<code class="sig-name descname">update_weights</code><span class="sig-paren">(</span><em class="sig-param">start=None</em>, <em class="sig-param">stop=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.update_weights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.update_weights" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update_weights</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">stop</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.update_weights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.update_weights" title="Permalink to this definition">¶</a></dt>
 <dd><p>Store either a starting or stopping mass.</p>
 <p><cite>start</cite> and <cite>stop</cite> can be passed simultaneously, <cite>start</cite> can be given in one
 call and <cite>stop</cite> in a later call, but <cite>stop</cite> should not be given before <cite>start</cite>.</p>
@@ -846,13 +855,13 @@ call and <cite>stop</cite> in a later call, but <cite>stop</cite> should not be 
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.core.subject.Subject.graduate">
 <code class="sig-name descname">graduate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/core/subject.html#Subject.graduate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.core.subject.Subject.graduate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Increase the current step by one, unless it is the last step.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="autopilot.core.subject.Subject.History_Table">
 <em class="property">class </em><code class="sig-name descname">History_Table</code><a class="headerlink" href="#autopilot.core.subject.Subject.History_Table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tables.description.IsDescription</span></code></p>
@@ -867,14 +876,14 @@ call and <cite>stop</cite> in a later call, but <cite>stop</cite> should not be 
 </ul>
 </dd>
 </dl>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="autopilot.core.subject.Subject.History_Table.columns">
 <code class="sig-name descname">columns</code><em class="property"> = {'name': StringCol(itemsize=256, shape=(), dflt=b'', pos=None), 'time': StringCol(itemsize=256, shape=(), dflt=b'', pos=None), 'type': StringCol(itemsize=256, shape=(), dflt=b'', pos=None), 'value': StringCol(itemsize=4028, shape=(), dflt=b'', pos=None)}</em><a class="headerlink" href="#autopilot.core.subject.Subject.History_Table.columns" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="autopilot.core.subject.Subject.Weight_Table">
 <em class="property">class </em><code class="sig-name descname">Weight_Table</code><a class="headerlink" href="#autopilot.core.subject.Subject.Weight_Table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tables.description.IsDescription</span></code></p>
@@ -889,14 +898,14 @@ call and <cite>stop</cite> in a later call, but <cite>stop</cite> should not be 
 </ul>
 </dd>
 </dl>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="autopilot.core.subject.Subject.Weight_Table.columns">
 <code class="sig-name descname">columns</code><em class="property"> = {'date': StringCol(itemsize=256, shape=(), dflt=b'', pos=None), 'session': Int32Col(shape=(), dflt=0, pos=None), 'start': Float32Col(shape=(), dflt=0.0, pos=None), 'stop': Float32Col(shape=(), dflt=0.0, pos=None)}</em><a class="headerlink" href="#autopilot.core.subject.Subject.Weight_Table.columns" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="autopilot.core.subject.Subject.Hash_Table">
 <em class="property">class </em><code class="sig-name descname">Hash_Table</code><a class="headerlink" href="#autopilot.core.subject.Subject.Hash_Table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tables.description.IsDescription</span></code></p>
@@ -909,7 +918,7 @@ call and <cite>stop</cite> in a later call, but <cite>stop</cite> should not be 
 </ul>
 </dd>
 </dl>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="autopilot.core.subject.Subject.Hash_Table.columns">
 <code class="sig-name descname">columns</code><em class="property"> = {'hash': StringCol(itemsize=40, shape=(), dflt=b'', pos=None), 'time': StringCol(itemsize=256, shape=(), dflt=b'', pos=None)}</em><a class="headerlink" href="#autopilot.core.subject.Subject.Hash_Table.columns" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -940,11 +949,19 @@ call and <cite>stop</cite> in a later call, but <cite>stop</cite> should not be 
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2019, Jonny Saunders
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -955,7 +972,6 @@ call and <cite>stop</cite> in a later call, but <cite>stop</cite> should not be 
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

@@ -237,7 +237,16 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#visions">Visions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../todo.html#integrations">Integrations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../todo.html#roadmap-deeplabcut-integration">DeepLabCut Integration<span><a href="https://groups.google.com/forum/#!topic/autopilot-users/T-PNfrHDtzA" class="roadmap-dblink">priority: high | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../todo.html#roadmap-open-ephys-integration">Open Ephys Integration<span><a href="https://google.com" class="roadmap-dblink">priority: medium | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../todo.html#roadmap-bonsai-integration">Bonsai Integration<span><a href="https://google.com" class="roadmap-dblink">priority: low | discuss>></a></span></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../todo.html#closed-loop-behavior-processing-pipelines">Closed-Loop Behavior &amp; Processing Pipelines</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../../todo.html#improvements">Improvements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../todo.html#bugs">Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../todo.html#completed">Completed</a></li>
@@ -306,7 +315,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
@@ -328,7 +337,7 @@
   <h1>Source code for autopilot.core.utils</h1><div class="highlight"><pre>
 <span></span><span class="c1"># import numpy as np</span>
 <span class="kn">from</span> <span class="nn">autopilot</span> <span class="kn">import</span> <span class="n">prefs</span>
-<span class="k">if</span> <span class="n">prefs</span><span class="o">.</span><span class="n">AGENT</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;terminal&quot;</span><span class="p">,</span> <span class="s2">&quot;docs&quot;</span><span class="p">):</span>
+<span class="k">if</span> <span class="n">prefs</span><span class="o">.</span><span class="n">AGENT</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;TERMINAL&quot;</span><span class="p">,</span> <span class="s2">&quot;DOCS&quot;</span><span class="p">):</span>
     <span class="kn">from</span> <span class="nn">PySide2</span> <span class="kn">import</span> <span class="n">QtCore</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -402,8 +411,8 @@
 
 
 
-<span class="k">if</span> <span class="n">prefs</span><span class="o">.</span><span class="n">AGENT</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;terminal&quot;</span><span class="p">,</span> <span class="s2">&quot;docs&quot;</span><span class="p">]:</span>
-<div class="viewcode-block" id="InvokeEvent"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.InvokeEvent">[docs]</a>    <span class="k">class</span> <span class="nc">InvokeEvent</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="p">):</span>
+<span class="k">if</span> <span class="n">prefs</span><span class="o">.</span><span class="n">AGENT</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;TERMINAL&quot;</span><span class="p">,</span> <span class="s2">&quot;DOCS&quot;</span><span class="p">]:</span>
+    <span class="k">class</span> <span class="nc">InvokeEvent</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sends signals to the main QT thread from spawned message threads</span>
 
@@ -422,20 +431,20 @@
             <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">InvokeEvent</span><span class="o">.</span><span class="n">EVENT_TYPE</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">fn</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
 
 
-<div class="viewcode-block" id="Invoker"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.Invoker">[docs]</a>    <span class="k">class</span> <span class="nc">Invoker</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Invoker</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Wrapper that calls an evoked event made by :class:`.InvokeEvent`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="Invoker.event"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.Invoker.event">[docs]</a>        <span class="k">def</span> <span class="nf">event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Args:</span>
 <span class="sd">                event:</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">event</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">event</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">event</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">True</span></div></div>
+            <span class="k">return</span> <span class="kc">True</span>
 
 
 <div class="viewcode-block" id="ReturnThread"><a class="viewcode-back" href="../../../autopilot.core.utils.html#autopilot.core.utils.ReturnThread">[docs]</a><span class="k">class</span> <span class="nc">ReturnThread</span><span class="p">(</span><span class="n">Thread</span><span class="p">):</span>
@@ -587,11 +596,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2019, Jonny Saunders
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -602,7 +619,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

@@ -237,7 +237,16 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#visions">Visions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../todo.html#integrations">Integrations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../todo.html#roadmap-deeplabcut-integration">DeepLabCut Integration<span><a href="https://groups.google.com/forum/#!topic/autopilot-users/T-PNfrHDtzA" class="roadmap-dblink">priority: high | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../todo.html#roadmap-open-ephys-integration">Open Ephys Integration<span><a href="https://google.com" class="roadmap-dblink">priority: medium | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../todo.html#roadmap-bonsai-integration">Bonsai Integration<span><a href="https://google.com" class="roadmap-dblink">priority: low | discuss>></a></span></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../todo.html#closed-loop-behavior-processing-pipelines">Closed-Loop Behavior &amp; Processing Pipelines</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../../todo.html#improvements">Improvements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../todo.html#bugs">Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../todo.html#completed">Completed</a></li>
@@ -306,7 +315,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
@@ -339,6 +348,7 @@
 <span class="sd">Note:</span>
 <span class="sd">    This module does not include hardware that uses the GPIO pins over a specific protocol like i2c</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">time</span>
@@ -358,6 +368,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">pigpio</span>
+
 
     <span class="n">TRIGGER_MAP</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;U&#39;</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">RISING_EDGE</span><span class="p">,</span>
@@ -448,8 +459,7 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">GPIO</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ENABLED</span><span class="p">:</span>
-            <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Couldnt import pigpio, so GPIO objects cant be used&#39;</span><span class="p">)</span>
-            <span class="k">return</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Couldnt import pigpio, so GPIO objects cant be used&#39;</span><span class="p">)</span>
 
         <span class="c1"># initialize attributes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_polarity</span> <span class="o">=</span> <span class="kc">None</span>
@@ -457,16 +467,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_pin</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trigger_edge</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="c1"># if a subclass has made this a property, don&#39;t fail here</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;pin_bcm is defined as a property without a setter so cant be set&#39;</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">pig</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># init pigpio</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">CONNECTED</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CONNECTED</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_pigpio</span><span class="p">()</span>
 
         <span class="c1"># set default attributes</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">pin</span> <span class="o">=</span> <span class="n">pin</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">polarity</span> <span class="o">=</span> <span class="n">polarity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pull</span> <span class="o">=</span> <span class="n">pull</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trigger</span> <span class="o">=</span> <span class="n">trigger</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">CONNECTED</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_pigpio</span><span class="p">()</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">CONNECTED</span><span class="p">:</span>
             <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;No connection could be made to the pigpio daemon&#39;</span><span class="p">)</span>
 
@@ -495,6 +514,8 @@
 
     <span class="nd">@pin</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">pin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">pin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
         <span class="k">assert</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_pin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">)</span>
@@ -571,7 +592,11 @@
 <span class="sd">        Note:</span>
 <span class="sd">            the Hardware metaclass will call this method on object deletion.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pull</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pull</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div></div>
 
 
@@ -604,14 +629,16 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_script</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script_handles</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">script_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">pulse_width</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">pulse_width</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">pulse_width</span> <span class="o">&gt;</span> <span class="mi">100</span> <span class="ow">or</span> <span class="n">pulse_width</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;pulse_width must be &lt;100(ms) &amp; &gt;0 and has been clipped to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pulse_width</span><span class="p">))</span>
 
-        <span class="c1"># setup pin</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">:</span>
+        <span class="c1"># setup pin if we are a true single-pin digital output and not a subclass</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">,</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">OUTPUT</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">)</span>
 
@@ -681,7 +708,7 @@
                                   <span class="bp">self</span><span class="o">.</span><span class="n">on</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;How did we even get here? Pulse value must be an int 1-100&#39;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;How did we even get here? Pulse value must be an int 1-100&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Digital_Out._series_script"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_Out._series_script">[docs]</a>    <span class="k">def</span> <span class="nf">_series_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">durations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;ms&quot;</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">finish_off</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
@@ -707,7 +734,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># if single value as an int/float/etc, wrap in list.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
             <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">values</span><span class="p">]</span>
 
 
@@ -716,7 +743,7 @@
                 <span class="n">durations</span> <span class="o">=</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">durations</span><span class="p">)]</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">durations</span><span class="p">):</span>
-                <span class="n">iter_series</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">izip</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">durations</span><span class="p">)</span>
+                <span class="n">iter_series</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">durations</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">durations</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">iter_series</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">durations</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -726,13 +753,13 @@
 
 
         <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;ms&quot;</span><span class="p">:</span>
-            <span class="n">wait_fn</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;mils&quot;</span>
+            <span class="n">wait_fn</span> <span class="o">=</span> <span class="s2">&quot;mils&quot;</span>
         <span class="k">elif</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;us&quot;</span><span class="p">:</span>
-            <span class="n">wait_fn</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;mics&quot;</span>
+            <span class="n">wait_fn</span> <span class="o">=</span> <span class="s2">&quot;mics&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unit for durations must be ms (milliseconds) or us (microseconds)&quot;</span><span class="p">)</span>
 
-        <span class="n">string_pieces</span> <span class="o">=</span> <span class="p">[</span><span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">pigs_function</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">),</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">val</span><span class="p">),</span> <span class="n">wait_fn</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">dur</span><span class="p">)))</span> <span class="k">for</span> <span class="n">val</span><span class="p">,</span> <span class="n">dur</span> <span class="ow">in</span> <span class="n">iter_series</span><span class="p">]</span>
+        <span class="n">string_pieces</span> <span class="o">=</span> <span class="p">[</span><span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">pigs_function</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">wait_fn</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dur</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)))</span> <span class="k">for</span> <span class="n">val</span><span class="p">,</span> <span class="n">dur</span> <span class="ow">in</span> <span class="n">iter_series</span><span class="p">]</span>
         <span class="n">script_str</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">string_pieces</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">repeat</span><span class="p">:</span>
@@ -750,7 +777,7 @@
 
         <span class="c1"># turn off when finished</span>
         <span class="k">if</span> <span class="n">finish_off</span><span class="p">:</span>
-            <span class="n">script_str</span> <span class="o">+=</span> <span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">pigs_function</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">),</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">)))</span>
+            <span class="n">script_str</span> <span class="o">+=</span> <span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">pigs_function</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)))</span>
 
 
         <span class="k">return</span> <span class="n">script_str</span></div>
@@ -765,19 +792,24 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="c1"># actually might want to overwrite scripts w/ same ids, like a solenoid that changes its &#39;open&#39; duration</span>
-        <span class="c1"># if id in self.scripts.keys():</span>
+        <span class="c1"># actually might want to overwrite script_handles w/ same ids, like a solenoid that changes its &#39;open&#39; duration</span>
+        <span class="c1"># if id in self.script_handles.keys():</span>
         <span class="c1">#     Exception(&quot;Script with id {} already created!&quot;.format(id))</span>
 
         <span class="n">series_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_series_script</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-        <span class="n">script_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">store_script</span><span class="p">(</span><span class="n">series_script</span><span class="p">)</span>
+        <span class="c1"># check if there is an identical script already and use that instead</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span><span class="n">script_id</span> <span class="k">for</span> <span class="n">script_id</span><span class="p">,</span> <span class="n">test_script</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">test_script</span> <span class="o">==</span> <span class="n">series_script</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">script_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">script_handles</span><span class="p">[</span><span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">script_id</span></div>
+            <span class="n">script_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">store_script</span><span class="p">(</span><span class="n">series_script</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">script_handles</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">script_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">series_script</span></div>
 
-
-<div class="viewcode-block" id="Digital_Out.series"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_Out.series">[docs]</a>    <span class="k">def</span> <span class="nf">series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Digital_Out.series"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_Out.series">[docs]</a>    <span class="k">def</span> <span class="nf">series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute a script that sets the pin to a series of values for a series of durations.</span>
 
@@ -798,23 +830,55 @@
         <span class="n">return_id</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="nb">id</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">script_handles</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">store_series</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="c1"># if we weren&#39;t called with an ID, have to have a list of values/etc to create a script</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">id</span> <span class="o">=</span> <span class="s2">&quot;script_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script_counter</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">store_series</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="c1"># if we haven&#39;t been explicitly told to not delete it, we should</span>
+            <span class="k">if</span> <span class="n">delete</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">delete</span> <span class="o">=</span> <span class="kc">True</span>
+
 
             <span class="c1"># since we&#39;ve generated a script ID, we should return it</span>
             <span class="n">return_id</span> <span class="o">=</span> <span class="kc">True</span>
 
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">run_script</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="p">[</span><span class="nb">id</span><span class="p">])</span>
+        <span class="n">script_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">script_status</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script_handles</span><span class="p">[</span><span class="nb">id</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">script_status</span> <span class="o">==</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PI_SCRIPT_INITING</span><span class="p">:</span>
+            <span class="n">check_times</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">script_status</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script_handles</span><span class="p">[</span><span class="nb">id</span><span class="p">])</span> <span class="o">==</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PI_SCRIPT_INITING</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)</span>
+                <span class="n">check_times</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">check_times</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="p">:</span>
+                    <span class="k">break</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">run_script</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script_handles</span><span class="p">[</span><span class="nb">id</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_script</span> <span class="o">=</span> <span class="nb">id</span>
+
+        <span class="k">if</span> <span class="n">delete</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delete_script</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+
 
         <span class="k">if</span> <span class="n">return_id</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">id</span></div>
+
+<div class="viewcode-block" id="Digital_Out.delete_script"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_Out.delete_script">[docs]</a>    <span class="k">def</span> <span class="nf">delete_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">script_id</span><span class="p">):</span>
+        <span class="n">delete_script</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_delete_script</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">script_id</span><span class="p">,))</span>
+        <span class="n">delete_script</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_delete_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">script_id</span><span class="p">):</span>
+        <span class="n">checktimes</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">script_status</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script_handles</span><span class="p">[</span><span class="n">script_id</span><span class="p">])</span> <span class="o">==</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PI_SCRIPT_RUNNING</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">checktimes</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">checktimes</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">delete_script</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script_handles</span><span class="p">[</span><span class="n">script_id</span><span class="p">])</span>
+
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">script_handles</span><span class="p">[</span><span class="n">script_id</span><span class="p">]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="p">[</span><span class="n">script_id</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Digital_Out.stop_script"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Digital_Out.stop_script">[docs]</a>    <span class="k">def</span> <span class="nf">stop_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -833,14 +897,14 @@
             <span class="k">return</span>
 
         <span class="c1"># if we were passed a keyed, named script id, convert it to the pigio integer script id</span>
-        <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">script_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">script_handles</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">script_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">script_handles</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
             <span class="n">status</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">script_status</span><span class="p">(</span><span class="n">script_id</span><span class="p">)</span>
 
             <span class="c1"># if the script is still running, stop it and set the pin to off.</span>
             <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PI_SCRIPT_RUNNING</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">stop_script</span><span class="p">(</span><span class="n">script_id</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">)</span>
+                <span class="c1">#self.set(self.off)</span>
 
             <span class="c1"># set last_script to None so we won&#39;t try to double-stop this script</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_last_script</span> <span class="o">=</span> <span class="kc">None</span>
@@ -856,6 +920,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_script</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Digital_Out</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div></div>
 
 
@@ -1016,9 +1081,9 @@
 <span class="sd">            range (int): Maximum value of PWM duty-cycle. Default 255.</span>
 <span class="sd">            **kwargs: passed to :class:`Digital_Out`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="nb">super</span><span class="p">(</span><span class="n">PWM</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_range</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PWM</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="nb">range</span>
 
         <span class="c1">#self.pig.set_mode(self.pin_bcm, pigpio.OUTPUT)</span>
@@ -1034,7 +1099,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            value (int, float):</span>
 <span class="sd">                - if int &gt; 1, sets value (or :attr:`PWM.range`-value if :attr:`PWM.polarity` is inverted).</span>
-<span class="sd">                - if 0 &lt; float &lt; 1, transforms to a proportion of :attr:`.range` (inverted  if needed as well).</span>
+<span class="sd">                - if 0 &lt;= float &lt;= 1, transforms to a proportion of :attr:`.range` (inverted  if needed as well).</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -1072,7 +1137,7 @@
 <span class="sd">            (int): 25-40000</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_range</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">get_pwm_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pig</span><span class="o">.</span><span class="n">get_PWM_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_range</span>
 
@@ -1128,6 +1193,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">PWM</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div></div>
 
 
@@ -1157,20 +1223,24 @@
 <span class="sd">            channels (dict): The three PWM objects, {&#39;r&#39;:PWM, ... etc}</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">LED_RGB</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
         <span class="c1"># self._pin = {}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span> <span class="o">=</span> <span class="p">{}</span>
 
+        <span class="nb">super</span><span class="p">(</span><span class="n">LED_RGB</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">flash_params</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+
         <span class="k">if</span> <span class="n">pins</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">pins</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">color</span><span class="p">,</span> <span class="n">pin</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">((</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">),</span> <span class="n">pins</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">color</span><span class="p">]</span> <span class="o">=</span> <span class="n">PWM</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="n">polarity</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">color</span><span class="p">]</span> <span class="o">=</span> <span class="n">PWM</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="n">polarity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">color</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">r</span> <span class="ow">and</span> <span class="n">g</span> <span class="ow">and</span> <span class="n">b</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;r&#39;</span><span class="p">:</span><span class="n">PWM</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="n">polarity</span><span class="p">),</span>
-                             <span class="s1">&#39;g&#39;</span><span class="p">:</span><span class="n">PWM</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="n">polarity</span><span class="p">),</span>
-                             <span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="n">PWM</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="n">polarity</span><span class="p">)}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;r&#39;</span><span class="p">:</span><span class="n">PWM</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="n">polarity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_R&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)),</span>
+                             <span class="s1">&#39;g&#39;</span><span class="p">:</span><span class="n">PWM</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="n">polarity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_G&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)),</span>
+                             <span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="n">PWM</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">polarity</span><span class="o">=</span><span class="n">polarity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_B&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Must either set with pins= list/tuple of r,g,b pins, or pass all three as separate params&#39;</span><span class="p">)</span>
 
@@ -1182,14 +1252,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;blink&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">range</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            dict: ranges for each of the :attr:`LED_RGB.channels`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">range</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">range</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">range</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;r&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">range</span><span class="p">,</span>
+                <span class="s1">&#39;g&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">range</span><span class="p">,</span>
+                <span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">range</span><span class="p">}</span>
 
     <span class="nd">@range</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">range</span><span class="p">):</span>
@@ -1225,7 +1295,7 @@
                     <span class="n">channel</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">channel_key</span><span class="p">,</span> <span class="n">color_val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">((</span><span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="s1">&#39;g&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">),</span> <span class="n">value</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channel_key</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channel_key</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">color_val</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Value must either be a single value or a tuple of (r,g,b)&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1273,9 +1343,9 @@
             <span class="n">iter_series</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;ms&quot;</span><span class="p">:</span>
-            <span class="n">wait_fn</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;mils&quot;</span>
+            <span class="n">wait_fn</span> <span class="o">=</span> <span class="s2">&quot;mils&quot;</span>
         <span class="k">elif</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;us&quot;</span><span class="p">:</span>
-            <span class="n">wait_fn</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;mics&quot;</span>
+            <span class="n">wait_fn</span> <span class="o">=</span> <span class="s2">&quot;mics&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unit for durations must be ms (milliseconds) or us (microseconds)&quot;</span><span class="p">)</span>
 
@@ -1285,9 +1355,9 @@
             <span class="c1"># iter over keys rather than values of channels dict b/c dicts are unordered and colors are an ordered tuple</span>
             <span class="k">for</span> <span class="n">channel_key</span><span class="p">,</span> <span class="n">color_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">((</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">),</span> <span class="n">color</span><span class="p">):</span>
                 <span class="n">string_pieces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channel_key</span><span class="p">]</span><span class="o">.</span><span class="n">pigs_function</span><span class="p">,</span>
-                                               <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channel_key</span><span class="p">]</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">),</span>
-                                               <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channel_key</span><span class="p">]</span><span class="o">.</span><span class="n">_clean_value</span><span class="p">(</span><span class="n">color_value</span><span class="p">)))))</span>
-            <span class="n">string_pieces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">wait_fn</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">duration</span><span class="p">))))</span>
+                                               <span class="nb">bytes</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channel_key</span><span class="p">]</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">),</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">),</span>
+                                               <span class="nb">bytes</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channel_key</span><span class="p">]</span><span class="o">.</span><span class="n">_clean_value</span><span class="p">(</span><span class="n">color_value</span><span class="p">)),</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">))))</span>
+            <span class="n">string_pieces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">wait_fn</span><span class="p">,</span> <span class="n">duration</span><span class="p">),</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
 
         <span class="n">script_str</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">string_pieces</span><span class="p">)</span>
 
@@ -1309,7 +1379,7 @@
             <span class="c1">#script_str += b&quot; &quot;</span>
             <span class="n">finish_pieces</span> <span class="o">=</span> <span class="p">[</span><span class="n">script_str</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="n">finish_pieces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">channel</span><span class="o">.</span><span class="n">pigs_function</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">),</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">off</span><span class="p">))))</span>
+                <span class="n">finish_pieces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">channel</span><span class="o">.</span><span class="n">pigs_function</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">),</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">),</span> <span class="nb">bytes</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">off</span><span class="p">),</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">))))</span>
             <span class="n">script_str</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">finish_pieces</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">script_str</span></div>
@@ -1337,7 +1407,24 @@
         <span class="c1"># Invert frequency to duration for single flash</span>
         <span class="c1"># divide by 2 b/c each &#39;color&#39; is half the duration</span>
         <span class="n">single_dur</span> <span class="o">=</span> <span class="p">((</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">frequency</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="n">flashes</span><span class="p">,</span> <span class="n">durations</span><span class="o">=</span><span class="n">single_dur</span><span class="p">)</span></div>
+
+        <span class="n">flash_params</span> <span class="o">=</span> <span class="p">(</span><span class="n">flashes</span><span class="p">,</span> <span class="n">single_dur</span><span class="p">)</span>
+
+        <span class="n">new_flash</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flash_params</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flash_params</span> <span class="o">==</span> <span class="n">flash_params</span><span class="p">:</span>
+                <span class="c1"># do nothing</span>
+                <span class="n">new_flash</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">new_flash</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">store_series</span><span class="p">(</span><span class="s1">&#39;flash&#39;</span><span class="p">,</span>
+                              <span class="n">colors</span><span class="o">=</span><span class="n">flashes</span><span class="p">,</span>
+                              <span class="n">durations</span><span class="o">=</span><span class="n">single_dur</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">flash_params</span> <span class="o">=</span> <span class="n">flash_params</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="p">(</span><span class="s1">&#39;flash&#39;</span><span class="p">)</span></div>
+
     <span class="c1">#</span>
     <span class="c1"># def __getattr__(self, name):</span>
     <span class="c1">#     &quot;&quot;&quot;if a method is called that we don&#39;t explicitly redefine, try to apply it to each of our channels&quot;&quot;&quot;</span>
@@ -1377,18 +1464,55 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dict of the board pin number of each channel, ``{&#39;r&#39; : self.channels[&#39;r&#39;].pin, ... }``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;r&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span>
-                <span class="s1">&#39;g&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span>
-                <span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pin</span><span class="p">}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;r&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span>
+                    <span class="s1">&#39;g&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span>
+                    <span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pin</span><span class="p">}</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="nd">@pin</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">pin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pins don&#39;t get set like this for the LED_RGB, ignore.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">pin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># just remnants of the attempt to set from the GPIO metaclass</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;pin cant be set via the attribute&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pin_bcm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dict of the broadcom pin number of each channel, ``{&#39;r&#39; : self.channels[&#39;r&#39;].pin_bcm, ... }``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;r&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">,</span>
-                <span class="s1">&#39;g&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">,</span>
-                <span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">}</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;r&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">,</span>
+                    <span class="s1">&#39;g&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">,</span>
+                    <span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pin_bcm</span><span class="p">}</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="nd">@pin_bcm</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">pin_bcm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin_bcm</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pins don&#39;t get set like this for the LED_RGB, ignore\</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">pin_bcm</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;pin_bcm cant be set via the attribute&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pull</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@pull</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">pull</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;pull cant be set via the attribute&#39;</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="Solenoid"><a class="viewcode-back" href="../../../autopilot.hardware.gpio.html#autopilot.hardware.gpio.Solenoid">[docs]</a><span class="k">class</span> <span class="nc">Solenoid</span><span class="p">(</span><span class="n">Digital_Out</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -1506,11 +1630,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2019, Jonny Saunders
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1521,7 +1653,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

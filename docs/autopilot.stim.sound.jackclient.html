@@ -239,7 +239,16 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="todo.html#integrations">Integrations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="todo.html#roadmap-deeplabcut-integration">DeepLabCut Integration<span><a href="https://groups.google.com/forum/#!topic/autopilot-users/T-PNfrHDtzA" class="roadmap-dblink">priority: high | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="todo.html#roadmap-open-ephys-integration">Open Ephys Integration<span><a href="https://google.com" class="roadmap-dblink">priority: medium | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="todo.html#roadmap-bonsai-integration">Bonsai Integration<span><a href="https://google.com" class="roadmap-dblink">priority: low | discuss>></a></span></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="todo.html#closed-loop-behavior-processing-pipelines">Closed-Loop Behavior &amp; Processing Pipelines</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="todo.html#improvements">Improvements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="todo.html#bugs">Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="todo.html#completed">Completed</a></li>
@@ -308,7 +317,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="autopilot.stim.html">stim</a> &raquo;</li>
         
@@ -344,34 +353,34 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.stim.sound.jackclient.BLOCKSIZE" title="autopilot.stim.sound.jackclient.BLOCKSIZE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BLOCKSIZE</span></code></a></p></td>
-<td><p>Blocksize, or the amount of samples processed by jack per each <a class="reference internal" href="#autopilot.stim.sound.jackclient.JackClient.process" title="autopilot.stim.sound.jackclient.JackClient.process"><code class="xref py py-meth docutils literal notranslate"><span class="pre">JackClient.process()</span></code></a> call.</p></td>
+<td><p>int: Blocksize, or the amount of samples processed by jack per each <a class="reference internal" href="#autopilot.stim.sound.jackclient.JackClient.process" title="autopilot.stim.sound.jackclient.JackClient.process"><code class="xref py py-meth docutils literal notranslate"><span class="pre">JackClient.process()</span></code></a> call.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.stim.sound.jackclient.CONTINUOUS" title="autopilot.stim.sound.jackclient.CONTINUOUS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONTINUOUS</span></code></a></p></td>
-<td><p>Event that (when set) signals the sound server should play some sound continuously rather than remain silent by default (eg.</p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Event" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Event</span></code></a>: Event that (when set) signals the sound server should play some sound continuously rather than remain silent by default (eg. play a background sound).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.stim.sound.jackclient.CONTINUOUS_LOOP" title="autopilot.stim.sound.jackclient.CONTINUOUS_LOOP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONTINUOUS_LOOP</span></code></a></p></td>
-<td><p>Event flag that is set when frames dropped into the CONTINUOUS_QUEUE should be looped (eg.</p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Event" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Event</span></code></a>: Event flag that is set when frames dropped into the CONTINUOUS_QUEUE should be looped (eg. in the case of stationary background noise),</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.stim.sound.jackclient.CONTINUOUS_QUEUE" title="autopilot.stim.sound.jackclient.CONTINUOUS_QUEUE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONTINUOUS_QUEUE</span></code></a></p></td>
-<td><p>Queue that</p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Queue</span></code></a>: Queue that</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.stim.sound.jackclient.FS" title="autopilot.stim.sound.jackclient.FS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FS</span></code></a></p></td>
-<td><p>Sampling rate of the active server</p></td>
+<td><p>int: Sampling rate of the active server</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.stim.sound.jackclient.PLAY" title="autopilot.stim.sound.jackclient.PLAY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLAY</span></code></a></p></td>
-<td><p>Event used to trigger loading samples from <cite>QUEUE</cite>, ie.</p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Event" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Event</span></code></a>: Event used to trigger loading samples from <cite>QUEUE</cite>, ie. playing.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.stim.sound.jackclient.QUEUE" title="autopilot.stim.sound.jackclient.QUEUE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QUEUE</span></code></a></p></td>
-<td><p>Queue to be loaded with frames of BLOCKSIZE audio.</p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Queue</span></code></a>: Queue to be loaded with frames of BLOCKSIZE audio.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.stim.sound.jackclient.Q_LOCK" title="autopilot.stim.sound.jackclient.Q_LOCK"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Q_LOCK</span></code></a></p></td>
-<td><p>Lock that enforces a single writer to the <cite>QUEUE</cite> at a time.</p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Lock" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Lock</span></code></a>: Lock that enforces a single writer to the <cite>QUEUE</cite> at a time.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#autopilot.stim.sound.jackclient.SERVER" title="autopilot.stim.sound.jackclient.SERVER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SERVER</span></code></a></p></td>
-<td><p>After initializing, JackClient will register itself with this variable.</p></td>
+<td><p><a class="reference internal" href="#autopilot.stim.sound.jackclient.JackClient" title="autopilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">JackClient</span></code></a>: After initializing, JackClient will register itself with this variable.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#autopilot.stim.sound.jackclient.STOP" title="autopilot.stim.sound.jackclient.STOP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">STOP</span></code></a></p></td>
-<td><p>Event that is triggered on the end of buffered audio.</p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Event" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Event</span></code></a>: Event that is triggered on the end of buffered audio.</p></td>
 </tr>
 </tbody>
 </table>
@@ -387,7 +396,7 @@
 </tr>
 </tbody>
 </table>
-<dl class="data">
+<dl class="py data">
 <dt id="autopilot.stim.sound.jackclient.SERVER">
 <code class="sig-name descname">SERVER</code><em class="property"> = None</em><a class="headerlink" href="#autopilot.stim.sound.jackclient.SERVER" title="Permalink to this definition">¶</a></dt>
 <dd><p>After initializing, JackClient will register itself with this variable.</p>
@@ -398,7 +407,7 @@
 </dl>
 </dd></dl>
 
-<dl class="data">
+<dl class="py data">
 <dt id="autopilot.stim.sound.jackclient.FS">
 <code class="sig-name descname">FS</code><em class="property"> = None</em><a class="headerlink" href="#autopilot.stim.sound.jackclient.FS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sampling rate of the active server</p>
@@ -409,7 +418,7 @@
 </dl>
 </dd></dl>
 
-<dl class="data">
+<dl class="py data">
 <dt id="autopilot.stim.sound.jackclient.BLOCKSIZE">
 <code class="sig-name descname">BLOCKSIZE</code><em class="property"> = None</em><a class="headerlink" href="#autopilot.stim.sound.jackclient.BLOCKSIZE" title="Permalink to this definition">¶</a></dt>
 <dd><p>Blocksize, or the amount of samples processed by jack per each <a class="reference internal" href="#autopilot.stim.sound.jackclient.JackClient.process" title="autopilot.stim.sound.jackclient.JackClient.process"><code class="xref py py-meth docutils literal notranslate"><span class="pre">JackClient.process()</span></code></a> call.</p>
@@ -420,7 +429,7 @@
 </dl>
 </dd></dl>
 
-<dl class="data">
+<dl class="py data">
 <dt id="autopilot.stim.sound.jackclient.QUEUE">
 <code class="sig-name descname">QUEUE</code><em class="property"> = None</em><a class="headerlink" href="#autopilot.stim.sound.jackclient.QUEUE" title="Permalink to this definition">¶</a></dt>
 <dd><p>Queue to be loaded with frames of BLOCKSIZE audio.</p>
@@ -431,7 +440,7 @@
 </dl>
 </dd></dl>
 
-<dl class="data">
+<dl class="py data">
 <dt id="autopilot.stim.sound.jackclient.PLAY">
 <code class="sig-name descname">PLAY</code><em class="property"> = None</em><a class="headerlink" href="#autopilot.stim.sound.jackclient.PLAY" title="Permalink to this definition">¶</a></dt>
 <dd><p>Event used to trigger loading samples from <cite>QUEUE</cite>, ie. playing.</p>
@@ -442,7 +451,7 @@
 </dl>
 </dd></dl>
 
-<dl class="data">
+<dl class="py data">
 <dt id="autopilot.stim.sound.jackclient.STOP">
 <code class="sig-name descname">STOP</code><em class="property"> = None</em><a class="headerlink" href="#autopilot.stim.sound.jackclient.STOP" title="Permalink to this definition">¶</a></dt>
 <dd><p>Event that is triggered on the end of buffered audio.</p>
@@ -457,7 +466,7 @@
 </dl>
 </dd></dl>
 
-<dl class="data">
+<dl class="py data">
 <dt id="autopilot.stim.sound.jackclient.Q_LOCK">
 <code class="sig-name descname">Q_LOCK</code><em class="property"> = None</em><a class="headerlink" href="#autopilot.stim.sound.jackclient.Q_LOCK" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lock that enforces a single writer to the <cite>QUEUE</cite> at a time.</p>
@@ -468,7 +477,7 @@
 </dl>
 </dd></dl>
 
-<dl class="data">
+<dl class="py data">
 <dt id="autopilot.stim.sound.jackclient.CONTINUOUS">
 <code class="sig-name descname">CONTINUOUS</code><em class="property"> = None</em><a class="headerlink" href="#autopilot.stim.sound.jackclient.CONTINUOUS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Event that (when set) signals the sound server should play some sound continuously rather than remain silent by default (eg. play a background sound).</p>
@@ -479,7 +488,7 @@
 </dl>
 </dd></dl>
 
-<dl class="data">
+<dl class="py data">
 <dt id="autopilot.stim.sound.jackclient.CONTINUOUS_QUEUE">
 <code class="sig-name descname">CONTINUOUS_QUEUE</code><em class="property"> = None</em><a class="headerlink" href="#autopilot.stim.sound.jackclient.CONTINUOUS_QUEUE" title="Permalink to this definition">¶</a></dt>
 <dd><p>Queue that</p>
@@ -490,7 +499,7 @@
 </dl>
 </dd></dl>
 
-<dl class="data">
+<dl class="py data">
 <dt id="autopilot.stim.sound.jackclient.CONTINUOUS_LOOP">
 <code class="sig-name descname">CONTINUOUS_LOOP</code><em class="property"> = None</em><a class="headerlink" href="#autopilot.stim.sound.jackclient.CONTINUOUS_LOOP" title="Permalink to this definition">¶</a></dt>
 <dd><p>Event flag that is set when frames dropped into the CONTINUOUS_QUEUE should be looped (eg. in the case of stationary background noise),
@@ -502,9 +511,9 @@ otherwise they are played and then discarded (ie. the sound is continuously gene
 </dl>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="autopilot.stim.sound.jackclient.JackClient">
-<em class="property">class </em><code class="sig-name descname">JackClient</code><span class="sig-paren">(</span><em class="sig-param">name='jack_client'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/jackclient.html#JackClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.jackclient.JackClient" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">JackClient</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'jack_client'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/jackclient.html#JackClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.jackclient.JackClient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.context.Process</span></code></p>
 <p>Client that dumps frames of audio directly into a running jackd client.</p>
 <p>When first initialized, sets module level variables above.</p>
@@ -549,7 +558,7 @@ otherwise they are played and then discarded (ie. the sound is continuously gene
 </tr>
 </tbody>
 </table>
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.sound.jackclient.JackClient.boot_server">
 <code class="sig-name descname">boot_server</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/jackclient.html#JackClient.boot_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.jackclient.JackClient.boot_server" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by <a class="reference internal" href="#autopilot.stim.sound.jackclient.JackClient.run" title="autopilot.stim.sound.jackclient.JackClient.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">JackClient.run()</span></code></a> to boot the server upon starting the process.</p>
@@ -559,21 +568,21 @@ determined by <cite>prefs.NCHANNELS</cite></p>
 processing sample starts.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.sound.jackclient.JackClient.run">
 <code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/jackclient.html#JackClient.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.jackclient.JackClient.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start the process, boot the server, start processing frames and wait for the end.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.sound.jackclient.JackClient.quit">
 <code class="sig-name descname">quit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/jackclient.html#JackClient.quit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.jackclient.JackClient.quit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the <code class="xref py py-attr docutils literal notranslate"><span class="pre">JackClient.quit_evt</span></code></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.sound.jackclient.JackClient.process">
-<code class="sig-name descname">process</code><span class="sig-paren">(</span><em class="sig-param">frames</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/jackclient.html#JackClient.process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.jackclient.JackClient.process" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">process</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frames</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/sound/jackclient.html#JackClient.process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.sound.jackclient.JackClient.process" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process a frame of audio.</p>
 <p>If the <code class="xref py py-attr docutils literal notranslate"><span class="pre">JackClient.play_evt</span></code> is not set, fill port buffers with zeroes.</p>
 <p>Otherwise, pull frames of audio from the <code class="xref py py-attr docutils literal notranslate"><span class="pre">JackClient.q</span></code> until it’s empty.</p>
@@ -613,11 +622,19 @@ processing sample starts.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2019, Jonny Saunders
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -628,7 +645,6 @@ processing sample starts.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

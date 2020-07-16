@@ -163,12 +163,12 @@ class DLC_Latency(Task):
                  'select': self.point_name,
                  'min_probability': self.trigger_thresh
              }},
-            {'transform': 'T_Condition',
-             'kwargs': {
-                 'minimum': [self.trigger_limits_x[0], self.trigger_limits_y[0]],
-                 'maximum': [self.trigger_limits_x[1], self.trigger_limits_y[1]],
-                 'elementwise': False
-             }}
+            # {'transform': 'T_Condition',
+            #  'kwargs': {
+            #      'minimum': [self.trigger_limits_x[0], self.trigger_limits_y[0]],
+            #      'maximum': [self.trigger_limits_x[1], self.trigger_limits_y[1]],
+            #      'elementwise': False
+            #  }}
             ]
 
         self.node_id = f"T_{prefs.NAME}"
@@ -185,7 +185,7 @@ class DLC_Latency(Task):
             'child': {'parent': prefs.NAME, 'subject': kwargs['subject']},
             'task_type': 'Transformer',
             'subject': kwargs['subject'],
-            'operation':'trigger',
+            'operation':'debug',
             'transform':transform_descriptor,
             'return_id': self.node_id
         }

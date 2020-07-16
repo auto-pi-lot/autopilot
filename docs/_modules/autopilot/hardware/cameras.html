@@ -237,7 +237,16 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#visions">Visions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../todo.html#integrations">Integrations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../todo.html#roadmap-deeplabcut-integration">DeepLabCut Integration<span><a href="https://groups.google.com/forum/#!topic/autopilot-users/T-PNfrHDtzA" class="roadmap-dblink">priority: high | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../todo.html#roadmap-open-ephys-integration">Open Ephys Integration<span><a href="https://google.com" class="roadmap-dblink">priority: medium | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../todo.html#roadmap-bonsai-integration">Bonsai Integration<span><a href="https://google.com" class="roadmap-dblink">priority: low | discuss>></a></span></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../todo.html#closed-loop-behavior-processing-pipelines">Closed-Loop Behavior &amp; Processing Pipelines</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../../todo.html#improvements">Improvements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../todo.html#bugs">Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../todo.html#completed">Completed</a></li>
@@ -306,7 +315,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
@@ -442,6 +451,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nb">input</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1">#: test documenting input</span>
     <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;CAMERA&quot;</span> <span class="c1">#: (str): what are we anyway?</span>
+    <span class="n">trigger</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -465,7 +475,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">blosc</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">fps</span> <span class="o">=</span> <span class="n">fps</span>
+        <span class="c1">#self.fps = fps</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timed</span> <span class="o">=</span> <span class="n">timed</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="kc">None</span>
@@ -629,7 +639,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_indicator</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_indicator</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Camera.stream"><a class="viewcode-back" href="../../../autopilot.hardware.cameras.html#autopilot.hardware.cameras.Camera.stream">[docs]</a>    <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Camera.stream"><a class="viewcode-back" href="../../../autopilot.hardware.cameras.html#autopilot.hardware.cameras.Camera.stream">[docs]</a>    <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Enable streaming frames on capture.</span>
 
@@ -678,7 +688,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_stream_q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">get_stream</span><span class="p">(</span>
             <span class="s1">&#39;stream&#39;</span><span class="p">,</span> <span class="s1">&#39;CONTINUOUS&#39;</span><span class="p">,</span> <span class="n">upstream</span><span class="o">=</span><span class="n">to</span><span class="p">,</span>
-            <span class="n">ip</span><span class="o">=</span><span class="n">ip</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="n">subject</span>
+            <span class="n">ip</span><span class="o">=</span><span class="n">ip</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span>
+            <span class="n">min_size</span><span class="o">=</span><span class="n">min_size</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">streaming</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
@@ -1166,16 +1177,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">PYSPIN</span><span class="p">:</span>
-            <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;PySpin was not imported, and is required for Camera_Spinnaker&#39;</span><span class="p">)</span>
-
-        <span class="nb">super</span><span class="p">(</span><span class="n">Camera_Spinnaker</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">serial</span> <span class="ow">and</span> <span class="n">camera_idx</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;serial and camera_idx were both passed, defaulting to serial&quot;</span><span class="p">)</span>
-            <span class="n">camera_idx</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">serial</span> <span class="o">=</span> <span class="n">serial</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">camera_idx</span> <span class="o">=</span> <span class="n">camera_idx</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;PySpin was not imported, and is required for Camera_Spinnaker&#39;</span><span class="p">)</span>
 
 
 
@@ -1199,6 +1201,42 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_readable_attributes</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_writable_attributes</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_timestamps</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Camera_Spinnaker</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">serial</span> <span class="ow">and</span> <span class="n">camera_idx</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;serial and camera_idx were both passed, defaulting to serial&quot;</span><span class="p">)</span>
+            <span class="n">camera_idx</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">serial</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">serial</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">serial</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">serial</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">serial</span> <span class="o">=</span> <span class="n">serial</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera_idx</span> <span class="o">=</span> <span class="n">camera_idx</span>
+
+
+
+        <span class="c1"># set passed parameters</span>
+        <span class="c1"># has to be done in a specific order, as they are mutually dependent.</span>
+        <span class="c1"># eg. exposure depends on fps, which depends on bin, etc.</span>
+        <span class="k">if</span> <span class="s1">&#39;pixel_format&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;PixelFormat&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;pixel_format&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;PixelFormat&#39;</span><span class="p">,</span> <span class="n">PySpin</span><span class="o">.</span><span class="n">PixelFormat_Mono8</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="s1">&#39;bin&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bin</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;bin&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;fps&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fps</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;fps&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s1">&#39;acquisition_mode&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;AcquisitionMode&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;acquisition_mode&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">acquisition_mode</span> <span class="o">=</span> <span class="s1">&#39;continuous&#39;</span>
+
 
 
 <div class="viewcode-block" id="Camera_Spinnaker.init_cam"><a class="viewcode-back" href="../../../autopilot.hardware.cameras.html#autopilot.hardware.cameras.Camera_Spinnaker.init_cam">[docs]</a>    <span class="k">def</span> <span class="nf">init_cam</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1442,8 +1480,15 @@
                 <span class="c1"># proportional to fps</span>
                 <span class="n">exposure</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">)</span> <span class="o">*</span> <span class="n">exposure</span> <span class="o">*</span> <span class="mf">1e6</span>
 
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;GainAuto&#39;</span><span class="p">,</span> <span class="s1">&#39;Off&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;Gain&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+
             <span class="bp">self</span><span class="o">.</span><span class="n">cam</span><span class="o">.</span><span class="n">ExposureAuto</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="n">PySpin</span><span class="o">.</span><span class="n">ExposureAuto_Off</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cam</span><span class="o">.</span><span class="n">ExposureMode</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="n">PySpin</span><span class="o">.</span><span class="n">ExposureMode_Timed</span><span class="p">)</span>
+            <span class="c1"># self.cam.ExposureMode.SetValue(PySpin.ExposureMode_Timed)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cam</span><span class="o">.</span><span class="n">ExposureTime</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="n">exposure</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_exposure</span> <span class="o">=</span> <span class="n">exposure</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1465,8 +1510,12 @@
     <span class="nd">@fps</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">fps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fps</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fps</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cam</span><span class="o">.</span><span class="n">AcquisitionFrameRateEnable</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cam</span><span class="o">.</span><span class="n">AcquisitionFrameRate</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="n">fps</span><span class="p">)</span>
+            <span class="c1">#self.cam.AcquisitionFrameRateEnable.SetValue(True)</span>
+            <span class="c1">#self.cam.AcquisitionFrameRate.SetValue(fps)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;AcquisitionFrameRateAuto&#39;</span><span class="p">,</span> <span class="s1">&#39;Off&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;AcquisitionFrameRateEnable&#39;</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;AcquisitionFrameRate&#39;</span><span class="p">,</span><span class="n">fps</span><span class="p">)</span>
+
         <span class="k">elif</span> <span class="n">fps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># initially set to None on superclass init</span>
             <span class="k">pass</span>
@@ -1618,21 +1667,23 @@
 <span class="sd">            attr (str): Name of attribute to be set</span>
 <span class="sd">            val (str, int, float): Value to set attribute</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_camera_attributes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cam</span><span class="p">:</span>
+            <span class="c1"># checking ensures we have camera initialized</span>
+            <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_camera_attributes</span><span class="p">:</span>
 
-            <span class="n">prop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_camera_attributes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">PySpin</span><span class="o">.</span><span class="n">IsWritable</span><span class="p">(</span><span class="n">prop</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Property &#39;</span><span class="si">%s</span><span class="s2">&#39; is not currently writable!&quot;</span> <span class="o">%</span> <span class="n">attr</span><span class="p">)</span>
+                <span class="n">prop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_camera_attributes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">PySpin</span><span class="o">.</span><span class="n">IsWritable</span><span class="p">(</span><span class="n">prop</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Property &#39;</span><span class="si">%s</span><span class="s2">&#39; is not currently writable!&quot;</span> <span class="o">%</span> <span class="n">attr</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="s1">&#39;SetValue&#39;</span><span class="p">):</span>
-                <span class="n">prop</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="s1">&#39;SetValue&#39;</span><span class="p">):</span>
+                    <span class="n">prop</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">prop</span><span class="o">.</span><span class="n">FromString</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_camera_methods</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Camera method &#39;</span><span class="si">%s</span><span class="s2">&#39; is a function -- you can&#39;t assign it a value!&quot;</span> <span class="o">%</span> <span class="n">attr</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">prop</span><span class="o">.</span><span class="n">FromString</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
-
-        <span class="k">elif</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_camera_methods</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Camera method &#39;</span><span class="si">%s</span><span class="s2">&#39; is a function -- you can&#39;t assign it a value!&quot;</span> <span class="o">%</span> <span class="n">attr</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Not sure what to do with attr: </span><span class="si">{}</span><span class="s1">, value: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Not sure what to do with attr: </span><span class="si">{}</span><span class="s1">, value: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span></div>
 
         <span class="c1"># else:</span>
         <span class="c1">#</span>
@@ -1853,7 +1904,7 @@
                       <span class="s1">&#39;-pattern_type&#39;</span><span class="p">,</span> <span class="s1">&#39;glob&#39;</span><span class="p">,</span> <span class="s1">&#39;-i&#39;</span><span class="p">,</span> <span class="n">glob_str</span><span class="p">,</span>
                       <span class="s1">&#39;-pix_fmt&#39;</span><span class="p">,</span> <span class="s1">&#39;yuv420p&#39;</span><span class="p">,</span> <span class="s1">&#39;-r&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">),</span>
                       <span class="s1">&#39;-vcodec&#39;</span><span class="p">,</span> <span class="s1">&#39;libx264&#39;</span><span class="p">,</span> <span class="s1">&#39;-preset&#39;</span><span class="p">,</span> <span class="s1">&#39;veryfast&#39;</span><span class="p">,</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">dir</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;.mp4&#39;</span><span class="p">]</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">dir</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;.mp4&#39;</span><span class="p">]</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">ffmpeg_cmd</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
@@ -1995,7 +2046,7 @@
 
         <span class="n">cam_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">info_dict</span><span class="p">)</span>
 
-    <span class="k">del</span> <span class="n">cam</span>
+        <span class="k">del</span> <span class="n">cam</span>
     <span class="n">cam_list</span><span class="o">.</span><span class="n">Clear</span><span class="p">()</span>
     <span class="n">system</span><span class="o">.</span><span class="n">ReleaseInstance</span><span class="p">()</span>
 
@@ -2012,11 +2063,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2019, Jonny Saunders
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -2027,7 +2086,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

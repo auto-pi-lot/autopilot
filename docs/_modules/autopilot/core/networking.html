@@ -237,7 +237,16 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#visions">Visions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../todo.html#integrations">Integrations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../todo.html#roadmap-deeplabcut-integration">DeepLabCut Integration<span><a href="https://groups.google.com/forum/#!topic/autopilot-users/T-PNfrHDtzA" class="roadmap-dblink">priority: high | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../todo.html#roadmap-open-ephys-integration">Open Ephys Integration<span><a href="https://google.com" class="roadmap-dblink">priority: medium | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../todo.html#roadmap-bonsai-integration">Bonsai Integration<span><a href="https://google.com" class="roadmap-dblink">priority: low | discuss>></a></span></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../todo.html#closed-loop-behavior-processing-pipelines">Closed-Loop Behavior &amp; Processing Pipelines</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../../todo.html#improvements">Improvements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../todo.html#bugs">Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../todo.html#completed">Completed</a></li>
@@ -306,7 +315,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
@@ -633,8 +642,8 @@
         <span class="c1">#     log_this = False</span>
 
 
-        <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;CONFIRM&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;MESSAGE SENT - </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)))</span>
+        <span class="c1">#if msg.key != &quot;CONFIRM&quot;:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;MESSAGE SENT - </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)))</span>
 
         <span class="k">if</span> <span class="n">repeat</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">msg</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;CONFIRM&quot;</span><span class="p">:</span>
             <span class="c1"># add to outbox and spawn timer to resend</span>
@@ -739,7 +748,7 @@
                             <span class="k">pass</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="c1"># if we didn&#39;t just put this message in our outbox</span>
-                        <span class="k">if</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">push_outbox</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">repeat_interval</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">push_outbox</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">repeat_interval</span><span class="o">*</span><span class="mi">2</span><span class="p">:</span>
 
                             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;REPUBLISH </span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">push_outbox</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">1</span><span class="p">])))</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">pusher</span><span class="o">.</span><span class="n">send_multipart</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">push_id</span><span class="p">,</span> <span class="n">push_outbox</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">serialize</span><span class="p">()])</span>
@@ -759,7 +768,7 @@
 
                     <span class="k">else</span><span class="p">:</span>
                         <span class="c1"># if we didn&#39;t just put this message in our outbox</span>
-                        <span class="k">if</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">send_outbox</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">repeat_interval</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">send_outbox</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">repeat_interval</span><span class="o">*</span><span class="mi">2</span><span class="p">:</span>
 
                             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;REPUBLISH </span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">send_outbox</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">1</span><span class="p">])))</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">listener</span><span class="o">.</span><span class="n">send_multipart</span><span class="p">([</span><span class="nb">bytes</span><span class="p">(</span><span class="n">send_outbox</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="n">send_outbox</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">serialize</span><span class="p">()])</span>
@@ -783,12 +792,16 @@
         <span class="c1"># delete message from outbox if we still have it</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_outbox</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_outbox</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_outbox</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
             <span class="k">elif</span> <span class="n">msg</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">push_outbox</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">push_outbox</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">push_outbox</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="c1"># fine, already deleted</span>
-            <span class="k">pass</span></div>
+            <span class="k">pass</span>
+
+        <span class="c1"># if this is a message to our internal net_node, make sure it gets the memo that shit was confirmed too</span>
+        <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">to</span> <span class="o">==</span> <span class="s2">&quot;_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="s1">&#39;CONFIRM&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 
 
         <span class="c1">#self.logger.info(&#39;CONFIRMED MESSAGE {}&#39;.format(msg.value))</span>
@@ -866,6 +879,9 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1">#if we know who they are or not, try to send it through router anyway.</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">listener</span><span class="o">.</span><span class="n">send_multipart</span><span class="p">([</span><span class="n">unserialized_to</span><span class="p">,</span> <span class="n">unserialized_to</span><span class="p">,</span> <span class="n">msg</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+
+                <span class="c1"># self.logger.debug(&#39;FORWARDING: to - {}, {}&#39;.format(unserialized_to, msg[-1][:100] if len(msg[-1])&gt;100 else msg[-1]))</span>
+
                 <span class="k">return</span>
 
             <span class="c1">#msg = json.loads(msg[-1])</span>
@@ -930,7 +946,7 @@
             <span class="c1"># don&#39;t confirm confirmations</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;CONFIRM&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;NOREPEAT&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">msg</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
                 <span class="k">if</span> <span class="n">send_type</span> <span class="o">==</span> <span class="s1">&#39;router&#39;</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="s1">&#39;CONFIRM&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="s1">&#39;CONFIRM&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">send_type</span> <span class="o">==</span> <span class="s1">&#39;dealer&#39;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="s1">&#39;CONFIRM&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
             <span class="k">return</span>
@@ -1349,7 +1365,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">push_id</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;T&#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">push_port</span> <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">PUSHPORT</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">push_ip</span> <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">TERMINALIP</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">child</span> <span class="o">-</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># Store some prefs values</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">listen_port</span> <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">MSGPORT</span>
@@ -1462,23 +1478,7 @@
                 <span class="n">f_sounds</span> <span class="o">=</span> <span class="p">[]</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">f_sounds</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
-                <span class="c1"># check to see if we have these files, if not</span>
-                <span class="c1">#     def update(self, data):</span>
-                <span class="c1">#         &quot;&quot;&quot;</span>
-                <span class="c1">#         Args:</span>
-                <span class="c1">#             data (:class:`numpy.ndarray`): an x_width x 2 array where</span>
-                <span class="c1">#                 column 0 is trial number and column 1 is the value.</span>
-                <span class="c1">#         &quot;&quot;&quot;</span>
-                <span class="c1">#         # data should come in as an n x 2 array,</span>
-                <span class="c1">#         # 0th column - trial number (x), 1st - (y) value</span>
-                <span class="c1">#         data = data.astype(np.float)</span>
-                <span class="c1">#</span>
-                <span class="c1">#         self.series = pd.Series(data[...,1])</span>
-                <span class="c1">#         ys = self.series.rolling(self.winsize, min_periods=0).mean().as_matrix()</span>
-                <span class="c1">#</span>
-                <span class="c1">#         #print(ys)</span>
-                <span class="c1">#</span>
-                <span class="c1">#         self.curve.setData(data[...,0], ys, fillLevel=0.5), request them</span>
+                <span class="c1"># check to see if we have these files, if not, request them</span>
                 <span class="k">for</span> <span class="n">sound</span> <span class="ow">in</span> <span class="n">f_sounds</span><span class="p">:</span>
                     <span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">SOUNDDIR</span><span class="p">,</span> <span class="n">sound</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">full_path</span><span class="p">):</span>
@@ -1584,8 +1584,11 @@
 <span class="sd">        Returns:</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="n">prefs</span><span class="o">.</span><span class="n">CHILDID</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;START&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="s1">&#39;KEY&#39;</span> <span class="ow">in</span> <span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">KEY</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;keys&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">KEY</span> <span class="o">=</span> <span class="s1">&#39;START&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="n">prefs</span><span class="o">.</span><span class="n">CHILDID</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">KEY</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Pilot_Station.l_forward"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Pilot_Station.l_forward">[docs]</a>    <span class="k">def</span> <span class="nf">l_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1658,7 +1661,7 @@
     <span class="n">repeat_interval</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1"># how many seconds to wait before trying to repeat a message</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">upstream</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">listens</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">upstream_ip</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
-                 <span class="n">route_port</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">expand_on_receive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                 <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">expand_on_receive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1675,7 +1678,7 @@
         <span class="c1"># we have a few builtin listens</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">listens</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;CONFIRM&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_confirm</span><span class="p">,</span>
-            <span class="s1">&#39;STREAM&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_stream</span>
+            <span class="c1">#&#39;STREAM&#39; : self.l_stream</span>
         <span class="p">}</span>
         <span class="c1"># then add the rest</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">listens</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">listens</span><span class="p">)</span>
@@ -1690,7 +1693,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg_counter</span> <span class="o">=</span> <span class="n">count</span><span class="p">()</span>
 
         <span class="c1"># try to get a logger</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">init_logging</span><span class="p">()</span>
 
         <span class="c1"># If we were given an explicit IP to connect to, stash it</span>
@@ -1744,12 +1746,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">loop_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">threaded_loop</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">daemon</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loop_thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loop_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">repeat_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">repeat</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">daemon</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">repeat_thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">repeat_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+        <span class="c1"># self.repeat_thread = threading.Thread(target=self.repeat)</span>
+        <span class="c1"># if self.daemon:</span>
+        <span class="c1">#     self.repeat_thread.daemon = True</span>
+        <span class="c1"># self.repeat_thread.start()</span>
 
         <span class="c1">#self.connected = True</span>
 
@@ -1795,12 +1797,6 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Message failed to validate:</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)))</span>
             <span class="k">return</span>
 
-        <span class="n">log_this</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="s1">&#39;NOLOG&#39;</span> <span class="ow">in</span> <span class="n">msg</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">log_this</span> <span class="o">=</span> <span class="kc">False</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="ow">and</span> <span class="n">log_this</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> - RECEIVED: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)))</span>
 
         <span class="c1"># if msg.key == &#39;CONFIRM&#39;:</span>
         <span class="c1">#     if msg.value in self.outbox.keys():</span>
@@ -1829,12 +1825,26 @@
             <span class="n">listen_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">listen_funk</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">,))</span>
             <span class="n">listen_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">key</span><span class="o">==</span><span class="s2">&quot;STREAM&quot;</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">listen_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">l_stream</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">msg</span><span class="p">,))</span>
+                    <span class="n">listen_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;MSG ID </span><span class="si">{}</span><span class="s1"> - No listen function found for key: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;CONFIRM&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;NOREPEAT&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">msg</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="p">:</span>
             <span class="c1"># send confirmation</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="s1">&#39;CONFIRM&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="s1">&#39;CONFIRM&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="n">log_this</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="s1">&#39;NOLOG&#39;</span> <span class="ow">in</span> <span class="n">msg</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">log_this</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="ow">and</span> <span class="n">log_this</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;RECEIVED: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)))</span></div>
+
 
 <div class="viewcode-block" id="Net_Node.send"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Net_Node.send">[docs]</a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">flags</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">force_to</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1894,7 +1904,6 @@
         <span class="n">msg_enc</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
         <span class="c1">#pdb.set_trace()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">msg_enc</span><span class="p">:</span>
-            <span class="c1">#pdb.set_trace()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Message could not be encoded:</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)))</span>
             <span class="k">return</span>
 
@@ -1934,7 +1943,7 @@
                             <span class="k">pass</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="c1"># if we didn&#39;t just put this message in the outbox...</span>
-                        <span class="k">if</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">outbox</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">repeat_interval</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">outbox</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">repeat_interval</span><span class="o">*</span><span class="mi">2</span><span class="p">):</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;REPUBLISH </span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">outbox</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">1</span><span class="p">])))</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">send_multipart</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">upstream</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span> <span class="n">outbox</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">serialize</span><span class="p">()])</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">outbox</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">ttl</span> <span class="o">-=</span> <span class="mi">1</span>
@@ -1967,10 +1976,31 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;CONFIRMED MESSAGE </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
 
+<div class="viewcode-block" id="Net_Node.l_stream"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Net_Node.l_stream">[docs]</a>    <span class="k">def</span> <span class="nf">l_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reconstitute the original stream of messages and call their handling methods</span>
+
+<span class="sd">        The ``msg`` should contain an ``inner_key`` that indicates the key, and thus the</span>
+<span class="sd">        handling method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            msg (dict): Compressed stream sent by :meth:`Net_Node._stream`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">listen_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">listens</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;inner_key&#39;</span><span class="p">]]</span>
+        <span class="n">old_value</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="nb">delattr</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">old_value</span><span class="p">[</span><span class="s1">&#39;payload&#39;</span><span class="p">]:</span>
+            <span class="c1"># if isinstance(v, dict) and (&#39;headers&#39; in old_value.keys()):</span>
+            <span class="c1">#     v.update(old_value[&#39;headers&#39;])</span>
+            <span class="c1">#msg.value = v</span>
+            <span class="n">listen_fn</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></div>
+    <span class="c1">#</span>
     <span class="c1"># def l_stream(self, value):</span>
     <span class="c1">#     listen_fn = self.listens[value[&#39;inner_key&#39;]]</span>
     <span class="c1">#     for v in value[&#39;payload&#39;]:</span>
     <span class="c1">#         listen_fn(v)</span>
+    <span class="c1">#</span>
+    <span class="c1">#</span>
 
 
 <div class="viewcode-block" id="Net_Node.prepare_message"><a class="viewcode-back" href="../../../autopilot.core.networking.html#autopilot.core.networking.Net_Node.prepare_message">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">repeat</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -2086,7 +2116,7 @@
 
         <span class="n">socket</span> <span class="o">=</span> <span class="n">ZMQStream</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">)</span>
 
-        <span class="n">upstream</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">upstream</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">upstream</span> <span class="o">=</span> <span class="n">upstream</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">subject</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prefs</span><span class="p">,</span> <span class="s1">&#39;SUBJECT&#39;</span><span class="p">):</span>
@@ -2095,47 +2125,60 @@
                 <span class="n">subject</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">prefs</span><span class="o">.</span><span class="n">LINEAGE</span> <span class="o">==</span> <span class="s2">&quot;CHILD&quot;</span><span class="p">:</span>
-            <span class="n">pilot</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">PARENTID</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+            <span class="c1"># pilot = bytes(prefs.PARENTID, encoding=&quot;utf-8&quot;)</span>
+            <span class="n">pilot</span> <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">PARENTID</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">pilot</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+            <span class="c1"># pilot = bytes(prefs.NAME, encoding=&quot;utf-8&quot;)</span>
+            <span class="n">pilot</span> <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span>
 
         <span class="n">msg_counter</span> <span class="o">=</span> <span class="n">count</span><span class="p">()</span>
 
         <span class="n">pending_data</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="s1">&#39;END&#39;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-                <span class="c1"># tuples are immutable, so can&#39;t serialize numpy arrays they contain</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">min_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
 
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-                        <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">serialize_array</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-                        <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">serialize_array</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="n">serialize_array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="s1">&#39;END&#39;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                    <span class="c1"># tuples are immutable, so can&#39;t serialize numpy arrays they contain</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
-            <span class="n">pending_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">pending_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">socket</span><span class="o">.</span><span class="n">sending</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_data</span><span class="p">)</span><span class="o">&gt;=</span><span class="n">min_size</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="n">upstream</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;STREAM&quot;</span><span class="p">,</span>
-                              <span class="n">value</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;inner_key&#39;</span> <span class="p">:</span> <span class="n">msg_key</span><span class="p">,</span>
-                                     <span class="s1">&#39;headers&#39;</span>   <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;subject&#39;</span><span class="p">:</span> <span class="n">subject</span><span class="p">,</span>
-                                                    <span class="s1">&#39;pilot&#39;</span>  <span class="p">:</span> <span class="n">pilot</span><span class="p">,</span>
-                                                    <span class="s1">&#39;continuous&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
-                                     <span class="s1">&#39;payload&#39;</span>   <span class="p">:</span> <span class="n">pending_data</span><span class="p">},</span>
-                              <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span><span class="n">msg_counter</span><span class="p">)),</span>
-                              <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;NOREPEAT&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;MINPRINT&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">},</span>
-                              <span class="n">sender</span><span class="o">=</span><span class="n">socket_id</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
-                <span class="n">last_msg</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_multipart</span><span class="p">((</span><span class="n">upstream</span><span class="p">,</span> <span class="n">upstream</span><span class="p">,</span> <span class="n">msg</span><span class="p">),</span>
-                                                 <span class="n">track</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">socket</span><span class="o">.</span><span class="n">sending</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_data</span><span class="p">)</span><span class="o">&gt;=</span><span class="n">min_size</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="n">upstream</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;STREAM&quot;</span><span class="p">,</span>
+                                  <span class="n">value</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;inner_key&#39;</span> <span class="p">:</span> <span class="n">msg_key</span><span class="p">,</span>
+                                         <span class="s1">&#39;headers&#39;</span>   <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;subject&#39;</span><span class="p">:</span> <span class="n">subject</span><span class="p">,</span>
+                                                        <span class="s1">&#39;pilot&#39;</span>  <span class="p">:</span> <span class="n">pilot</span><span class="p">,</span>
+                                                        <span class="s1">&#39;continuous&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+                                         <span class="s1">&#39;payload&#39;</span>   <span class="p">:</span> <span class="n">pending_data</span><span class="p">},</span>
+                                  <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span><span class="n">msg_counter</span><span class="p">)),</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;NOREPEAT&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;MINPRINT&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">},</span>
+                                  <span class="n">sender</span><span class="o">=</span><span class="n">socket_id</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
+                    <span class="n">last_msg</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_multipart</span><span class="p">((</span><span class="n">upstream</span><span class="p">,</span> <span class="n">upstream</span><span class="p">,</span> <span class="n">msg</span><span class="p">),</span>
+                                                     <span class="n">track</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;STREAM </span><span class="si">{}</span><span class="s2">: Sent </span><span class="si">{}</span><span class="s2"> items&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="nb">id</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_data</span><span class="p">)))</span>
-                <span class="n">pending_data</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;STREAM </span><span class="si">{}</span><span class="s2">: Sent </span><span class="si">{}</span><span class="s2"> items&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="nb">id</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_data</span><span class="p">)))</span>
+                    <span class="n">pending_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># just send like normal messags</span>
+            <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="s1">&#39;END&#39;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                    <span class="c1"># tuples are immutable, so can&#39;t serialize numpy arrays they contain</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">socket</span><span class="o">.</span><span class="n">sending</span><span class="p">():</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="n">upstream</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="n">msg_key</span><span class="p">,</span>
+                                  <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span>
+                                  <span class="n">pilot</span><span class="o">=</span><span class="n">pilot</span><span class="p">,</span>
+                                  <span class="n">continuous</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                  <span class="n">value</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                                  <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;NOREPEAT&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;MINPRINT&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+                                  <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span><span class="n">msg_counter</span><span class="p">)),</span>
+                                  <span class="n">sender</span><span class="o">=</span><span class="n">socket_id</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
+                    <span class="n">last_msg</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_multipart</span><span class="p">((</span><span class="n">upstream</span><span class="p">,</span> <span class="n">upstream</span><span class="p">,</span> <span class="n">msg</span><span class="p">),</span>
+                                                     <span class="n">track</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;STREAM </span><span class="si">{}</span><span class="s2">: Sent 1 item&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">id</span><span class="p">))</span>
 
 
 
@@ -2248,9 +2291,9 @@
         <span class="c1">#     self.DETECTED_MINPRINT = True</span>
         <span class="c1"># TODO: Make verbose/debugging mode, print value in that case.</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;FILE&#39;</span> <span class="ow">or</span> <span class="p">(</span><span class="s1">&#39;MINPRINT&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-            <span class="n">me_string</span> <span class="o">=</span> <span class="s2">&quot;ID: </span><span class="si">{}</span><span class="s2">; TO: </span><span class="si">{}</span><span class="s2">; SENDER: </span><span class="si">{}</span><span class="s2">; KEY: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">me_string</span> <span class="o">=</span> <span class="s2">&quot;ID: </span><span class="si">{}</span><span class="s2">; TO: </span><span class="si">{}</span><span class="s2">; SENDER: </span><span class="si">{}</span><span class="s2">; KEY: </span><span class="si">{}</span><span class="s2">, FLAGS: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">me_string</span> <span class="o">=</span> <span class="s2">&quot;ID: </span><span class="si">{}</span><span class="s2">; TO: </span><span class="si">{}</span><span class="s2">; SENDER: </span><span class="si">{}</span><span class="s2">; KEY: </span><span class="si">{}</span><span class="s2">; VALUE: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">me_string</span> <span class="o">=</span> <span class="s2">&quot;ID: </span><span class="si">{}</span><span class="s2">; TO: </span><span class="si">{}</span><span class="s2">; SENDER: </span><span class="si">{}</span><span class="s2">; KEY: </span><span class="si">{}</span><span class="s2">; FLAGS: </span><span class="si">{}</span><span class="s2">; VALUE: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="c1">#me_string = &quot;ID: {}; TO: {}; SENDER: {}; KEY: {}&quot;.format(self.id, self.to, self.sender, self.key)</span>
 
         <span class="k">return</span> <span class="n">me_string</span>
@@ -2318,8 +2361,7 @@
 <span class="sd">        Returns:</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">compressed</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">blosc</span><span class="o">.</span><span class="n">pack_array</span><span class="p">(</span><span class="n">array</span><span class="p">))</span>
+        <span class="n">compressed</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">blosc</span><span class="o">.</span><span class="n">pack_array</span><span class="p">(</span><span class="n">array</span><span class="p">))</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;NUMPY_ARRAY&#39;</span><span class="p">:</span> <span class="n">compressed</span><span class="p">}</span></div>
 
 
@@ -2434,7 +2476,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: {&#39;NUMPY_ARRAY&#39;: base-64 encoded, blosc-compressed array.}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">compressed</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">blosc</span><span class="o">.</span><span class="n">pack_array</span><span class="p">(</span><span class="n">array</span><span class="p">))</span>
+    <span class="n">compressed</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">blosc</span><span class="o">.</span><span class="n">pack_array</span><span class="p">(</span><span class="n">array</span><span class="p">))</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;NUMPY_ARRAY&#39;</span><span class="p">:</span> <span class="n">compressed</span><span class="p">}</span></div>
 
 
@@ -2493,11 +2535,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2019, Jonny Saunders
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -2508,7 +2558,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

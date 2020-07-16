@@ -239,7 +239,16 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="todo.html#integrations">Integrations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="todo.html#roadmap-deeplabcut-integration">DeepLabCut Integration<span><a href="https://groups.google.com/forum/#!topic/autopilot-users/T-PNfrHDtzA" class="roadmap-dblink">priority: high | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="todo.html#roadmap-open-ephys-integration">Open Ephys Integration<span><a href="https://google.com" class="roadmap-dblink">priority: medium | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="todo.html#roadmap-bonsai-integration">Bonsai Integration<span><a href="https://google.com" class="roadmap-dblink">priority: low | discuss>></a></span></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="todo.html#closed-loop-behavior-processing-pipelines">Closed-Loop Behavior &amp; Processing Pipelines</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="todo.html#improvements">Improvements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="todo.html#bugs">Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="todo.html#completed">Completed</a></li>
@@ -308,7 +317,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="autopilot.setup.html">setup</a> &raquo;</li>
         
@@ -336,7 +345,7 @@
 <p>Run as a module as root.</p>
 <p>Run as a module as root.</p>
 <p>Creates a <code class="xref py py-class docutils literal notranslate"><span class="pre">npyscreen.SplitForm</span></code> to prompt the user in the command line
-for parameters to set up a <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a> .</p>
+for parameters to set up a <code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code> .</p>
 <p>Sets the following prefs:</p>
 <ul class="simple">
 <li><p><strong>BASEDIR</strong> - Base directory for all local autopilot data, typically <cite>/usr/autopilot</cite></p></li>
@@ -381,9 +390,9 @@ for parameters to set up a <a class="reference internal" href="autopilot.core.te
 </tr>
 </tbody>
 </table>
-<dl class="class">
+<dl class="py class">
 <dt id="autopilot.setup.setup_terminal.TerminalSetupForm">
-<em class="property">class </em><code class="sig-name descname">TerminalSetupForm</code><span class="sig-paren">(</span><em class="sig-param">draw_line_at=None</em>, <em class="sig-param">*args</em>, <em class="sig-param">**keywords</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/setup/setup_terminal.html#TerminalSetupForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.setup.setup_terminal.TerminalSetupForm" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">TerminalSetupForm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">draw_line_at</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">keywords</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/setup/setup_terminal.html#TerminalSetupForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.setup.setup_terminal.TerminalSetupForm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">npyscreen.fmForm.SplitForm</span></code></p>
 <p><strong>Methods</strong></p>
 <table class="longtable docutils align-default">
@@ -400,20 +409,20 @@ for parameters to set up a <a class="reference internal" href="autopilot.core.te
 </tr>
 </tbody>
 </table>
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.setup.setup_terminal.TerminalSetupForm.create">
 <code class="sig-name descname">create</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/setup/setup_terminal.html#TerminalSetupForm.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.setup.setup_terminal.TerminalSetupForm.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Programmers should over-ride this in derived classes, creating widgets here</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.setup.setup_terminal.TerminalSetupForm.afterEditing">
 <code class="sig-name descname">afterEditing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/setup/setup_terminal.html#TerminalSetupForm.afterEditing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.setup.setup_terminal.TerminalSetupForm.afterEditing" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="autopilot.setup.setup_terminal.SetupApp">
 <em class="property">class </em><code class="sig-name descname">SetupApp</code><a class="reference internal" href="_modules/autopilot/setup/setup_terminal.html#SetupApp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.setup.setup_terminal.SetupApp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">npyscreen.apNPSApplicationManaged.NPSAppManaged</span></code></p>
@@ -429,7 +438,7 @@ for parameters to set up a <a class="reference internal" href="autopilot.core.te
 </tr>
 </tbody>
 </table>
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.setup.setup_terminal.SetupApp.onStart">
 <code class="sig-name descname">onStart</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/setup/setup_terminal.html#SetupApp.onStart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.setup.setup_terminal.SetupApp.onStart" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override this method to perform any initialisation.</p>
@@ -437,9 +446,9 @@ for parameters to set up a <a class="reference internal" href="autopilot.core.te
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="autopilot.setup.setup_terminal.unfold_values">
-<code class="sig-name descname">unfold_values</code><span class="sig-paren">(</span><em class="sig-param">v</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/setup/setup_terminal.html#unfold_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.setup.setup_terminal.unfold_values" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">unfold_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/setup/setup_terminal.html#unfold_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.setup.setup_terminal.unfold_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unfold nested values from the SetupForm. Called recursively.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -448,9 +457,9 @@ for parameters to set up a <a class="reference internal" href="autopilot.core.te
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="autopilot.setup.setup_terminal.make_dir">
-<code class="sig-name descname">make_dir</code><span class="sig-paren">(</span><em class="sig-param">adir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/setup/setup_terminal.html#make_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.setup.setup_terminal.make_dir" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">make_dir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">adir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/setup/setup_terminal.html#make_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.setup.setup_terminal.make_dir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make a directory if it doesn’t exist and set its permissions to <cite>0777</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -481,11 +490,19 @@ for parameters to set up a <a class="reference internal" href="autopilot.core.te
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2019, Jonny Saunders
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -496,7 +513,6 @@ for parameters to set up a <a class="reference internal" href="autopilot.core.te
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

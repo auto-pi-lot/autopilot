@@ -239,7 +239,16 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="todo.html#integrations">Integrations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="todo.html#roadmap-deeplabcut-integration">DeepLabCut Integration<span><a href="https://groups.google.com/forum/#!topic/autopilot-users/T-PNfrHDtzA" class="roadmap-dblink">priority: high | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="todo.html#roadmap-open-ephys-integration">Open Ephys Integration<span><a href="https://google.com" class="roadmap-dblink">priority: medium | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="todo.html#roadmap-bonsai-integration">Bonsai Integration<span><a href="https://google.com" class="roadmap-dblink">priority: low | discuss>></a></span></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="todo.html#closed-loop-behavior-processing-pipelines">Closed-Loop Behavior &amp; Processing Pipelines</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="todo.html#improvements">Improvements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="todo.html#bugs">Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="todo.html#completed">Completed</a></li>
@@ -308,7 +317,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Writing a Task</li>
     
@@ -368,7 +377,7 @@ and a <code class="docutils literal notranslate"><span class="pre">type</span></
 <li><p><code class="docutils literal notranslate"><span class="pre">int</span></code>: integers</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">bool</span></code>: boolean (checkboxes in GUI)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">list</span></code>: list of possible values in {‘Name’:int} pairs</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sounds</span></code>: a <a class="reference internal" href="autopilot.core.gui.html#autopilot.core.gui.Sound_Widget" title="autopilot.core.gui.Sound_Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.gui.Sound_Widget</span></code></a> to define sounds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sounds</span></code>: a <code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.core.gui.Sound_Widget</span></code> to define sounds.</p></li>
 </ul>
 <p>To maintain order when opened by the GUI we use a <code class="xref py py-class docutils literal notranslate"><span class="pre">odict</span></code> rather than a normal dictionary.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">odict</span>
@@ -449,12 +458,12 @@ which takes a string length in characters.</p>
 </div>
 <div class="section" id="plot">
 <h4>PLOT<a class="headerlink" href="#plot" title="Permalink to this headline">¶</a></h4>
-<p>The <code class="docutils literal notranslate"><span class="pre">PLOT</span></code> dictionary maps the data returned from the task to graphical elements in the <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a>’s <a class="reference internal" href="autopilot.core.plots.html#autopilot.core.plots.Plot" title="autopilot.core.plots.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a>.
-Specifically, when the task is started, the <a class="reference internal" href="autopilot.core.plots.html#autopilot.core.plots.Plot" title="autopilot.core.plots.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a> object creates the graphical element (eg. a <a class="reference internal" href="autopilot.core.plots.html#autopilot.core.plots.Point" title="autopilot.core.plots.Point"><code class="xref py py-class docutils literal notranslate"><span class="pre">Point</span></code></a>)
+<p>The <code class="docutils literal notranslate"><span class="pre">PLOT</span></code> dictionary maps the data returned from the task to graphical elements in the <code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code>’s <code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code>.
+Specifically, when the task is started, the <code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code> object creates the graphical element (eg. a <code class="xref py py-class docutils literal notranslate"><span class="pre">Point</span></code>)
 and then calls its <code class="docutils literal notranslate"><span class="pre">update</span></code> method with any data that is received through its <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code>.</p>
 <p>Data-to-graphical mappings are defined in a <code class="docutils literal notranslate"><span class="pre">data</span></code> subdictionary, and additional parameters can be passed to the plot – in the below example, for example,
 a <code class="docutils literal notranslate"><span class="pre">chance_bar</span></code> is drawn as a horizontal line across the plot. By default it is drawn at 0.5, but its height can be set with an additional parameter <code class="docutils literal notranslate"><span class="pre">chance_level</span></code>.
-Available graphical primitives are registered in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">plots.PLOT_LIST</span></code>, and additional parameters are documented in the <a class="reference internal" href="autopilot.core.plots.html#autopilot.core.plots.Plot" title="autopilot.core.plots.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a> class.</p>
+Available graphical primitives are registered in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">plots.PLOT_LIST</span></code>, and additional parameters are documented in the <code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code> class.</p>
 <p>Data is plotted either by trial (default) or by timestamp (if <code class="docutils literal notranslate"><span class="pre">PLOT['continuous']</span> <span class="pre">!=</span> <span class="pre">True</span></code>). Numerical data is plotted (on the y-axis) as expected, but
 further mappings can be defined by extending the graphical element’s <code class="docutils literal notranslate"><span class="pre">update</span></code> method – eg. ‘L’(eft) maps to 0 and ‘R’(ight) maps to 1 by default.</p>
 <div class="admonition-todo admonition" id="id2">
@@ -580,7 +589,7 @@ correction trial percentage or bias correction are given as separate parameters,
 <p>This task does not call its own stage methods, as we will see in the Wheel task example,
 but allows the <a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a> to control them, and advances through stages using a
 <code class="docutils literal notranslate"><span class="pre">stage_block</span></code> that allows passage whenever a GPIO trigger is activated. Data is returned from each of the stage methods and is then
-returned to the <a class="reference internal" href="autopilot.core.terminal.html#autopilot.core.terminal.Terminal" title="autopilot.core.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a> by the <a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a>.</p>
+returned to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code> by the <a class="reference internal" href="autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a>.</p>
 <div class="section" id="request">
 <h4>Request<a class="headerlink" href="#request" title="Permalink to this headline">¶</a></h4>
 <p>First, the <code class="docutils literal notranslate"><span class="pre">stage_block</span></code> is cleared so that the task will not advance until one of the triggers is called.
@@ -1198,11 +1207,19 @@ functions for the task in a cycle</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2019, Jonny Saunders
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1213,7 +1230,6 @@ functions for the task in a cycle</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

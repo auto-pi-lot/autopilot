@@ -237,7 +237,16 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../todo.html#visions">Visions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../todo.html#integrations">Integrations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../todo.html#roadmap-deeplabcut-integration">DeepLabCut Integration<span><a href="https://groups.google.com/forum/#!topic/autopilot-users/T-PNfrHDtzA" class="roadmap-dblink">priority: high | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../todo.html#roadmap-open-ephys-integration">Open Ephys Integration<span><a href="https://google.com" class="roadmap-dblink">priority: medium | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../todo.html#roadmap-bonsai-integration">Bonsai Integration<span><a href="https://google.com" class="roadmap-dblink">priority: low | discuss>></a></span></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../todo.html#closed-loop-behavior-processing-pipelines">Closed-Loop Behavior &amp; Processing Pipelines</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../../todo.html#improvements">Improvements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../todo.html#bugs">Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../todo.html#completed">Completed</a></li>
@@ -306,7 +315,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
@@ -345,16 +354,13 @@
 <span class="kn">import</span> <span class="nn">socket</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">linregress</span>
 
 <span class="kn">import</span> <span class="nn">tables</span>
 
-<span class="c1"># TODO: This is lazy, make the paths work.</span>
-<span class="kn">import</span> <span class="nn">autopilot.hardware.gpio</span>
-
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))))</span>
 <span class="kn">from</span> <span class="nn">autopilot</span> <span class="kn">import</span> <span class="n">prefs</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
@@ -376,7 +382,6 @@
         <span class="n">prefs_file</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">prefs</span>
 
     <span class="n">prefs</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">prefs_file</span><span class="p">)</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="n">REPODIR</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prefs</span><span class="p">,</span> <span class="s1">&#39;AUDIOSERVER&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;AUDIO&#39;</span> <span class="ow">in</span> <span class="n">prefs</span><span class="o">.</span><span class="n">CONFIG</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">prefs</span><span class="o">.</span><span class="n">AUDIOSERVER</span> <span class="o">==</span> <span class="s1">&#39;pyo&#39;</span><span class="p">:</span>
@@ -385,7 +390,9 @@
             <span class="kn">from</span> <span class="nn">autopilot.stim.sound</span> <span class="kn">import</span> <span class="n">jackclient</span>
 
 <span class="kn">from</span> <span class="nn">autopilot.core.networking</span> <span class="kn">import</span> <span class="n">Pilot_Station</span><span class="p">,</span> <span class="n">Net_Node</span><span class="p">,</span> <span class="n">Message</span>
+<span class="kn">from</span> <span class="nn">autopilot</span> <span class="kn">import</span> <span class="n">external</span>
 <span class="kn">from</span> <span class="nn">autopilot</span> <span class="kn">import</span> <span class="n">tasks</span>
+<span class="kn">from</span> <span class="nn">autopilot.hardware</span> <span class="kn">import</span> <span class="n">gpio</span>
 
 
 <span class="c1">########################################</span>
@@ -472,7 +479,17 @@
     <span class="c1"># audio server</span>
     <span class="n">server</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">splash</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">splash</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s1">&#39;setup&#39;</span><span class="p">,</span> <span class="s1">&#39;welcome_msg.txt&#39;</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">welcome_f</span><span class="p">:</span>
+                <span class="n">welcome</span> <span class="o">=</span> <span class="n">welcome_f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">welcome</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">NAME</span>
         <span class="k">if</span> <span class="n">prefs</span><span class="o">.</span><span class="n">LINEAGE</span> <span class="o">==</span> <span class="s2">&quot;CHILD&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="kc">True</span>
@@ -487,6 +504,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span> <span class="c1"># Are we running a task?</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span> <span class="c1"># Are we waiting on stage triggers?</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_block</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span> <span class="c1"># Are we waiting on file transfer?</span>
+
+        <span class="c1"># init pigpiod process</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_pigpio</span><span class="p">()</span>
 
         <span class="c1"># Init audio server</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prefs</span><span class="p">,</span> <span class="s1">&#39;AUDIOSERVER&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;AUDIO&#39;</span> <span class="ow">in</span> <span class="n">prefs</span><span class="o">.</span><span class="n">CONFIG</span><span class="p">:</span>
@@ -516,10 +536,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pulls</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prefs</span><span class="p">,</span> <span class="s1">&#39;PULLUPS&#39;</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">pin</span> <span class="ow">in</span> <span class="n">prefs</span><span class="o">.</span><span class="n">PULLUPS</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pulls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">Digital_Out</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">),</span> <span class="n">pull</span><span class="o">=</span><span class="s1">&#39;U&#39;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pulls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gpio</span><span class="o">.</span><span class="n">Digital_Out</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">),</span> <span class="n">pull</span><span class="o">=</span><span class="s1">&#39;U&#39;</span><span class="p">))</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prefs</span><span class="p">,</span> <span class="s1">&#39;PULLDOWNS&#39;</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">pin</span> <span class="ow">in</span> <span class="n">prefs</span><span class="o">.</span><span class="n">PULLDOWNS</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pulls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">Digital_Out</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">),</span> <span class="n">pull</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pulls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gpio</span><span class="o">.</span><span class="n">Digital_Out</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pin</span><span class="p">),</span> <span class="n">pull</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">))</span>
 
         <span class="c1"># check if the calibration file needs to be updated</span>
 
@@ -531,6 +551,8 @@
         <span class="c1"># Since we&#39;re starting up, handshake to introduce ourselves</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ip</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">handshake</span><span class="p">()</span>
+
+
 
         <span class="c1">#self.blank_LEDs()</span>
 
@@ -610,11 +632,12 @@
         <span class="c1"># Value should be a dict of protocol params</span>
         <span class="c1"># The networking object should have already checked that we have all the files we need</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;RUNNING&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;RUNNING&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Asked to a run a task when already running&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;RUNNING&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Get the task object by its type</span>
             <span class="k">if</span> <span class="s1">&#39;child&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -623,7 +646,6 @@
                 <span class="n">task_class</span> <span class="o">=</span> <span class="n">tasks</span><span class="o">.</span><span class="n">TASK_LIST</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;task_type&#39;</span><span class="p">]]</span>
             <span class="c1"># Instantiate the task</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="n">task_class</span><span class="p">(</span><span class="n">stage_block</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span><span class="p">,</span> <span class="o">**</span><span class="n">value</span><span class="p">)</span>
 
             <span class="c1"># Make a group for this subject if we don&#39;t already have one</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span>
@@ -632,8 +654,8 @@
 
 
             <span class="c1"># Run the task and tell the terminal we have</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-            <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_task</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="c1"># self.running.set()</span>
+            <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_task</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">task_class</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
 
             <span class="bp">self</span><span class="o">.</span><span class="n">update_state</span><span class="p">()</span>
@@ -723,7 +745,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pin_num</span> <span class="o">=</span> <span class="n">prefs</span><span class="o">.</span><span class="n">HARDWARE</span><span class="p">[</span><span class="s1">&#39;PORTS&#39;</span><span class="p">][</span><span class="n">port_name</span><span class="p">]</span>
-        <span class="n">port</span> <span class="o">=</span> <span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">Solenoid</span><span class="p">(</span><span class="n">pin_num</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">open_dur</span><span class="p">))</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="n">gpio</span><span class="o">.</span><span class="n">Solenoid</span><span class="p">(</span><span class="n">pin_num</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">open_dur</span><span class="p">))</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;click_num&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
                <span class="s1">&#39;pilot&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                <span class="s1">&#39;port&#39;</span><span class="p">:</span> <span class="n">port_name</span>
@@ -783,8 +805,8 @@
         <span class="n">payload</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;payload&#39;</span><span class="p">])</span>
         <span class="n">confirm</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;confirm&#39;</span><span class="p">])</span>
 
-        <span class="n">payload</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">payload</span><span class="o">*</span><span class="mi">1024</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">))</span>
-
+        <span class="n">payload</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">payload</span><span class="o">*</span><span class="mi">1024</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="n">payload_size</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
 
         <span class="n">message</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;pilot&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -797,6 +819,7 @@
         <span class="n">msg_size</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">test_msg</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
 
         <span class="n">message</span><span class="p">[</span><span class="s1">&#39;message_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msg_size</span>
+        <span class="n">message</span><span class="p">[</span><span class="s1">&#39;payload_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">payload_size</span>
 
         <span class="k">if</span> <span class="n">rate</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">spacing</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">rate</span>
@@ -807,20 +830,20 @@
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.25</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">spacing</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">last_message</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">clock</span><span class="p">()</span>
+            <span class="n">last_message</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_msg</span><span class="p">):</span>
                 <span class="n">message</span><span class="p">[</span><span class="s1">&#39;n_msg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
                 <span class="n">message</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s1">&#39;bandwidth&#39;</span><span class="p">,</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;BANDWIDTH_MSG&#39;</span><span class="p">,</span>
                                <span class="n">value</span><span class="o">=</span><span class="n">message</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="n">confirm</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;MINPRINT&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">})</span>
-                <span class="n">this_message</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">clock</span><span class="p">()</span>
+                <span class="n">this_message</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
                 <span class="n">waitfor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">spacing</span><span class="o">-</span><span class="p">(</span><span class="n">this_message</span><span class="o">-</span><span class="n">last_message</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">spacing</span><span class="p">)</span>
 
                 <span class="c1">#time.sleep(np.random.exponential(1.0/rate))</span>
                 <span class="c1"># just do linear spacing lol.</span>
 
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">waitfor</span><span class="p">)</span>
-                <span class="n">last_message</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">clock</span><span class="p">()</span>
+                <span class="n">last_message</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_msg</span><span class="p">):</span>
                 <span class="n">message</span><span class="p">[</span><span class="s1">&#39;n_msg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
@@ -889,6 +912,13 @@
     <span class="c1"># Hardware Init</span>
     <span class="c1">#################################################################</span>
 
+<div class="viewcode-block" id="Pilot.init_pigpio"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.init_pigpio">[docs]</a>    <span class="k">def</span> <span class="nf">init_pigpio</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pigpiod</span> <span class="o">=</span> <span class="n">external</span><span class="o">.</span><span class="n">start_pigpiod</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pigpiod</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="Pilot.init_audio"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.init_audio">[docs]</a>    <span class="k">def</span> <span class="nf">init_audio</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize an audio server depending on the value of</span>
@@ -901,6 +931,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">pyoserver</span><span class="o">.</span><span class="n">pyo_server</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;pyo server started&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">prefs</span><span class="o">.</span><span class="n">AUDIOSERVER</span> <span class="o">==</span> <span class="s1">&#39;jack&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">jackd</span> <span class="o">=</span> <span class="n">external</span><span class="o">.</span><span class="n">start_jackd</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">jackclient</span><span class="o">.</span><span class="n">JackClient</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Started jack audio server&#39;</span><span class="p">)</span></div>
@@ -916,7 +947,7 @@
             <span class="k">return</span>
 
         <span class="k">for</span> <span class="n">position</span><span class="p">,</span> <span class="n">pins</span> <span class="ow">in</span> <span class="n">prefs</span><span class="o">.</span><span class="n">HARDWARE</span><span class="p">[</span><span class="s1">&#39;LEDS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">led</span> <span class="o">=</span> <span class="n">autopilot</span><span class="o">.</span><span class="n">hardware</span><span class="o">.</span><span class="n">gpio</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">(</span><span class="n">pins</span><span class="o">=</span><span class="n">pins</span><span class="p">)</span>
+            <span class="n">led</span> <span class="o">=</span> <span class="n">gpio</span><span class="o">.</span><span class="n">LED_RGB</span><span class="p">(</span><span class="n">pins</span><span class="o">=</span><span class="n">pins</span><span class="p">)</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.</span><span class="p">)</span>
             <span class="n">led</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">led</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
@@ -977,7 +1008,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">h5f</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Pilot.run_task"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Pilot.run_task"><a class="viewcode-back" href="../../../autopilot.core.pilot.html#autopilot.core.pilot.Pilot.run_task">[docs]</a>    <span class="k">def</span> <span class="nf">run_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_class</span><span class="p">,</span> <span class="n">task_params</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called in a new thread, run the task.</span>
 
@@ -990,6 +1021,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO: give a net node to the Task class and let the task run itself.</span>
         <span class="c1"># Run as a separate thread, just keeps calling next() and shoveling data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="n">task_class</span><span class="p">(</span><span class="n">stage_block</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stage_block</span><span class="p">,</span> <span class="o">**</span><span class="n">task_params</span><span class="p">)</span>
 
         <span class="c1"># do we expect TrialData?</span>
         <span class="n">trial_data</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1003,7 +1035,7 @@
 
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="c1"># Calculate next stage data and prep triggers</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">stages</span><span class="o">.</span><span class="n">next</span><span class="p">()()</span> <span class="c1"># Double parens because next just gives us the function, we still have to call it</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">stages</span><span class="p">)()</span> <span class="c1"># Double parens because next just gives us the function, we still have to call it</span>
 
             <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
                 <span class="n">data</span><span class="p">[</span><span class="s1">&#39;pilot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
@@ -1041,6 +1073,7 @@
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
 
+
     <span class="n">a</span> <span class="o">=</span> <span class="n">Pilot</span><span class="p">()</span>
 
 
@@ -1062,11 +1095,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2019, Jonny Saunders
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1077,7 +1118,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

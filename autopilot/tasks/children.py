@@ -185,7 +185,7 @@ class Transformer(object):
             stage_block:
             **kwargs:
         """
-        assert operation in ('trigger', 'stream')
+        assert operation in ('trigger', 'stream', 'debug')
         self.operation = operation
         self._last_result = None
 
@@ -241,6 +241,9 @@ class Transformer(object):
             elif self.operation == 'stream':
                 # print(result)
                 raise NotImplementedError()
+
+            elif self.operation == 'debug':
+                pass
 
 
     def l_process(self, value):

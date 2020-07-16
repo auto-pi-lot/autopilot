@@ -239,7 +239,16 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="todo.html#integrations">Integrations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="todo.html#roadmap-deeplabcut-integration">DeepLabCut Integration<span><a href="https://groups.google.com/forum/#!topic/autopilot-users/T-PNfrHDtzA" class="roadmap-dblink">priority: high | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="todo.html#roadmap-open-ephys-integration">Open Ephys Integration<span><a href="https://google.com" class="roadmap-dblink">priority: medium | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="todo.html#roadmap-bonsai-integration">Bonsai Integration<span><a href="https://google.com" class="roadmap-dblink">priority: low | discuss>></a></span></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="todo.html#closed-loop-behavior-processing-pipelines">Closed-Loop Behavior &amp; Processing Pipelines</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="todo.html#improvements">Improvements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="todo.html#bugs">Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="todo.html#completed">Completed</a></li>
@@ -308,7 +317,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="autopilot.hardware.html">hardware</a> &raquo;</li>
         
@@ -348,9 +357,9 @@
 </tr>
 </tbody>
 </table>
-<dl class="class">
+<dl class="py class">
 <dt id="autopilot.hardware.i2c.I2C_9DOF">
-<em class="property">class </em><code class="sig-name descname">I2C_9DOF</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/i2c.html#I2C_9DOF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">I2C_9DOF</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/i2c.html#I2C_9DOF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="autopilot.hardware.html#autopilot.hardware.Hardware" title="autopilot.hardware.Hardware"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.hardware.Hardware</span></code></a></p>
 <p>A <a href="#id5"><span class="problematic" id="id6">`Sparkfun 9DOF&lt;https://www.sparkfun.com/products/13944&gt;`_</span></a> combined accelerometer, magnetometer, and gyroscope.</p>
 <p>This device uses I2C, so must be connected accordingly:</p>
@@ -425,62 +434,62 @@
 </table>
 <p>This class uses code from the <a class="reference external" href="https://github.com/adafruit/Adafruit_CircuitPython_LSM9DS1">Adafruit Circuitfun</a> library,
 modified to use pigpio</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="autopilot.hardware.i2c.I2C_9DOF.ACCELRANGE_2G">
 <code class="sig-name descname">ACCELRANGE_2G</code><em class="property"> = 0</em><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF.ACCELRANGE_2G" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="autopilot.hardware.i2c.I2C_9DOF.ACCELRANGE_16G">
 <code class="sig-name descname">ACCELRANGE_16G</code><em class="property"> = 8</em><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF.ACCELRANGE_16G" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="autopilot.hardware.i2c.I2C_9DOF.ACCELRANGE_4G">
 <code class="sig-name descname">ACCELRANGE_4G</code><em class="property"> = 16</em><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF.ACCELRANGE_4G" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="autopilot.hardware.i2c.I2C_9DOF.ACCELRANGE_8G">
 <code class="sig-name descname">ACCELRANGE_8G</code><em class="property"> = 24</em><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF.ACCELRANGE_8G" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="autopilot.hardware.i2c.I2C_9DOF.MAGGAIN_4GAUSS">
 <code class="sig-name descname">MAGGAIN_4GAUSS</code><em class="property"> = 0</em><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF.MAGGAIN_4GAUSS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="autopilot.hardware.i2c.I2C_9DOF.MAGGAIN_8GAUSS">
 <code class="sig-name descname">MAGGAIN_8GAUSS</code><em class="property"> = 32</em><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF.MAGGAIN_8GAUSS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="autopilot.hardware.i2c.I2C_9DOF.MAGGAIN_12GAUSS">
 <code class="sig-name descname">MAGGAIN_12GAUSS</code><em class="property"> = 64</em><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF.MAGGAIN_12GAUSS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="autopilot.hardware.i2c.I2C_9DOF.MAGGAIN_16GAUSS">
 <code class="sig-name descname">MAGGAIN_16GAUSS</code><em class="property"> = 96</em><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF.MAGGAIN_16GAUSS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="autopilot.hardware.i2c.I2C_9DOF.GYROSCALE_245DPS">
 <code class="sig-name descname">GYROSCALE_245DPS</code><em class="property"> = 0</em><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF.GYROSCALE_245DPS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="autopilot.hardware.i2c.I2C_9DOF.GYROSCALE_500DPS">
 <code class="sig-name descname">GYROSCALE_500DPS</code><em class="property"> = 8</em><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF.GYROSCALE_500DPS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="autopilot.hardware.i2c.I2C_9DOF.GYROSCALE_2000DPS">
 <code class="sig-name descname">GYROSCALE_2000DPS</code><em class="property"> = 24</em><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF.GYROSCALE_2000DPS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.hardware.i2c.I2C_9DOF.accel_range">
 <em class="property">property </em><code class="sig-name descname">accel_range</code><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF.accel_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>The accelerometer range.  Must be one of:
@@ -490,7 +499,7 @@ modified to use pigpio</p>
 - <a class="reference internal" href="#autopilot.hardware.i2c.I2C_9DOF.ACCELRANGE_16G" title="autopilot.hardware.i2c.I2C_9DOF.ACCELRANGE_16G"><code class="xref py py-attr docutils literal notranslate"><span class="pre">I2C_9DOF.ACCELRANGE_16G</span></code></a></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.hardware.i2c.I2C_9DOF.mag_gain">
 <em class="property">property </em><code class="sig-name descname">mag_gain</code><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF.mag_gain" title="Permalink to this definition">¶</a></dt>
 <dd><p>The magnetometer gain.  Must be a value of:
@@ -500,7 +509,7 @@ modified to use pigpio</p>
 - <a class="reference internal" href="#autopilot.hardware.i2c.I2C_9DOF.MAGGAIN_16GAUSS" title="autopilot.hardware.i2c.I2C_9DOF.MAGGAIN_16GAUSS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">I2C_9DOF.MAGGAIN_16GAUSS</span></code></a></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.hardware.i2c.I2C_9DOF.gyro_scale">
 <em class="property">property </em><code class="sig-name descname">gyro_scale</code><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF.gyro_scale" title="Permalink to this definition">¶</a></dt>
 <dd><p>The gyroscope scale.  Must be a value of:
@@ -509,7 +518,7 @@ modified to use pigpio</p>
 - <a class="reference internal" href="#autopilot.hardware.i2c.I2C_9DOF.GYROSCALE_2000DPS" title="autopilot.hardware.i2c.I2C_9DOF.GYROSCALE_2000DPS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">I2C_9DOF.GYROSCALE_2000DPS</span></code></a></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.hardware.i2c.I2C_9DOF.acceleration">
 <em class="property">property </em><code class="sig-name descname">acceleration</code><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF.acceleration" title="Permalink to this definition">¶</a></dt>
 <dd><p>The calibrated  x, y, z acceleration in m/s^2</p>
@@ -523,7 +532,7 @@ modified to use pigpio</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.hardware.i2c.I2C_9DOF.magnetic">
 <em class="property">property </em><code class="sig-name descname">magnetic</code><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF.magnetic" title="Permalink to this definition">¶</a></dt>
 <dd><p>The magnetometer X, Y, Z axis values as a 3-tuple of gauss values.</p>
@@ -537,14 +546,14 @@ modified to use pigpio</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.hardware.i2c.I2C_9DOF.gyro">
 <em class="property">property </em><code class="sig-name descname">gyro</code><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF.gyro" title="Permalink to this definition">¶</a></dt>
 <dd><p>The gyroscope X, Y, Z axis values as a 3-tuple of
 degrees/second values.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.hardware.i2c.I2C_9DOF.temperature">
 <em class="property">property </em><code class="sig-name descname">temperature</code><a class="headerlink" href="#autopilot.hardware.i2c.I2C_9DOF.temperature" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns:
@@ -553,9 +562,9 @@ float: Temperature in Degrees C</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="autopilot.hardware.i2c.MLX90640">
-<em class="property">class </em><code class="sig-name descname">MLX90640</code><span class="sig-paren">(</span><em class="sig-param">fps=64</em>, <em class="sig-param">integrate_frames=64</em>, <em class="sig-param">interpolate=3</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/i2c.html#MLX90640"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.i2c.MLX90640" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">MLX90640</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fps</span><span class="o">=</span><span class="default_value">64</span></em>, <em class="sig-param"><span class="n">integrate_frames</span><span class="o">=</span><span class="default_value">64</span></em>, <em class="sig-param"><span class="n">interpolate</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/i2c.html#MLX90640"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.i2c.MLX90640" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="autopilot.hardware.cameras.html#autopilot.hardware.cameras.Camera" title="autopilot.hardware.cameras.Camera"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.hardware.cameras.Camera</span></code></a></p>
 <p>A MLX90640 Temperature sensor.</p>
 <dl class="field-list simple">
@@ -654,58 +663,58 @@ be set by the capture thread, and when it is set returns the mean across frames 
 I2C devices. It can be returned to 400kHz (default) by editing <code class="docutils literal notranslate"><span class="pre">/config/boot.txt</span></code> to read
 <code class="docutils literal notranslate"><span class="pre">dtparam=i2c_arm_baudrate=400000</span></code></p>
 </div>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="autopilot.hardware.i2c.MLX90640.type">
 <code class="sig-name descname">type</code><em class="property"> = 'MLX90640'</em><a class="headerlink" href="#autopilot.hardware.i2c.MLX90640.type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="autopilot.hardware.i2c.MLX90640.ALLOWED_FPS">
 <code class="sig-name descname">ALLOWED_FPS</code><em class="property"> = (1, 2, 4, 8, 16, 32, 64)</em><a class="headerlink" href="#autopilot.hardware.i2c.MLX90640.ALLOWED_FPS" title="Permalink to this definition">¶</a></dt>
 <dd><p>FPS must be one of these</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="autopilot.hardware.i2c.MLX90640.SHAPE_SENSOR">
 <code class="sig-name descname">SHAPE_SENSOR</code><em class="property"> = (32, 24)</em><a class="headerlink" href="#autopilot.hardware.i2c.MLX90640.SHAPE_SENSOR" title="Permalink to this definition">¶</a></dt>
 <dd><p>(H, W) Output shape of this sensor is always the same. May differ from <code class="xref py py-attr docutils literal notranslate"><span class="pre">MLX90640.shape</span></code> if interpolate &gt;1</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.hardware.i2c.MLX90640.fps">
 <em class="property">property </em><code class="sig-name descname">fps</code><a class="headerlink" href="#autopilot.hardware.i2c.MLX90640.fps" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.hardware.i2c.MLX90640.integrate_frames">
 <em class="property">property </em><code class="sig-name descname">integrate_frames</code><a class="headerlink" href="#autopilot.hardware.i2c.MLX90640.integrate_frames" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.hardware.i2c.MLX90640.interpolate">
 <em class="property">property </em><code class="sig-name descname">interpolate</code><a class="headerlink" href="#autopilot.hardware.i2c.MLX90640.interpolate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.hardware.i2c.MLX90640.init_cam">
 <code class="sig-name descname">init_cam</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/i2c.html#MLX90640.init_cam"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.i2c.MLX90640.init_cam" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the camera object to use our <a class="reference internal" href="#autopilot.hardware.i2c.MLX90640.fps" title="autopilot.hardware.i2c.MLX90640.fps"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MLX90640.fps</span></code></a></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.hardware.i2c.MLX90640.capture_init">
 <code class="sig-name descname">capture_init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/i2c.html#MLX90640.capture_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.i2c.MLX90640.capture_init" title="Permalink to this definition">¶</a></dt>
 <dd><p>Spawn a <a class="reference internal" href="#autopilot.hardware.i2c.MLX90640._threaded_capture" title="autopilot.hardware.i2c.MLX90640._threaded_capture"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_threaded_capture()</span></code></a> thread</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.hardware.i2c.MLX90640._threaded_capture">
 <code class="sig-name descname">_threaded_capture</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/i2c.html#MLX90640._threaded_capture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.i2c.MLX90640._threaded_capture" title="Permalink to this definition">¶</a></dt>
 <dd><p>Continually capture frames into the <code class="xref py py-attr docutils literal notranslate"><span class="pre">_frames</span></code> ring buffer</p>
 <p>Stops when <code class="xref py py-attr docutils literal notranslate"><span class="pre">stopping</span></code> is set.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.hardware.i2c.MLX90640._grab">
 <code class="sig-name descname">_grab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/i2c.html#MLX90640._grab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.i2c.MLX90640._grab" title="Permalink to this definition">¶</a></dt>
 <dd><p>Await the <code class="xref py py-attr docutils literal notranslate"><span class="pre">_grab_event</span></code> and then average over the frames stored in
@@ -717,9 +726,9 @@ I2C devices. It can be returned to 400kHz (default) by editing <code class="docu
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.hardware.i2c.MLX90640._timestamp">
-<code class="sig-name descname">_timestamp</code><span class="sig-paren">(</span><em class="sig-param">frame=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/i2c.html#MLX90640._timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.i2c.MLX90640._timestamp" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_timestamp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frame</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/i2c.html#MLX90640._timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.i2c.MLX90640._timestamp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Just gets Python timestamps for now…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -731,9 +740,9 @@ I2C devices. It can be returned to 400kHz (default) by editing <code class="docu
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.hardware.i2c.MLX90640.interpolate_frame">
-<code class="sig-name descname">interpolate_frame</code><span class="sig-paren">(</span><em class="sig-param">frame</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/i2c.html#MLX90640.interpolate_frame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.i2c.MLX90640.interpolate_frame" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">interpolate_frame</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frame</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/i2c.html#MLX90640.interpolate_frame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.i2c.MLX90640.interpolate_frame" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interpolate frame according to <a class="reference internal" href="#autopilot.hardware.i2c.MLX90640.interpolate" title="autopilot.hardware.i2c.MLX90640.interpolate"><code class="xref py py-attr docutils literal notranslate"><span class="pre">interpolate</span></code></a> using <code class="xref py py-meth docutils literal notranslate"><span class="pre">scipy.interpolate.griddata()</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -748,7 +757,7 @@ I2C devices. It can be returned to 400kHz (default) by editing <code class="docu
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.hardware.i2c.MLX90640.release">
 <code class="sig-name descname">release</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/hardware/i2c.html#MLX90640.release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.hardware.i2c.MLX90640.release" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stops the capture thread, cleans up the camera, and calls the superclass release method.</p>
@@ -778,11 +787,19 @@ I2C devices. It can be returned to 400kHz (default) by editing <code class="docu
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2019, Jonny Saunders
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -793,7 +810,6 @@ I2C devices. It can be returned to 400kHz (default) by editing <code class="docu
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

@@ -239,7 +239,16 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../todo.html#visions">Visions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../todo.html#integrations">Integrations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../todo.html#roadmap-deeplabcut-integration">DeepLabCut Integration<span><a href="https://groups.google.com/forum/#!topic/autopilot-users/T-PNfrHDtzA" class="roadmap-dblink">priority: high | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../todo.html#roadmap-open-ephys-integration">Open Ephys Integration<span><a href="https://google.com" class="roadmap-dblink">priority: medium | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../todo.html#roadmap-bonsai-integration">Bonsai Integration<span><a href="https://google.com" class="roadmap-dblink">priority: low | discuss>></a></span></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../todo.html#closed-loop-behavior-processing-pipelines">Closed-Loop Behavior &amp; Processing Pipelines</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../todo.html#improvements">Improvements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../todo.html#bugs">Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../todo.html#completed">Completed</a></li>
@@ -308,7 +317,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="index.html">Changelog</a> &raquo;</li>
         
@@ -337,6 +346,7 @@
 <h2>Major Updates<a class="headerlink" href="#major-updates" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><strong>Python 3</strong> - We’ve finally made it to Python 3! Specifically we have brought Autopilot up to compatibility with Python 3.8.
+The Spinnaker SDK is currently only available through Python 3.7, so we have tested Autopilot on 3.6, 3.7, and 3.8.
 I will <em>not attempt to keep Autopilot compatible with Python 2</em>, but no decision has been made about compatibility
 with other versions of Python 3. Until then, expect that Autopilot will attempt to keep up with major version changes.
 The switch also let up update PySide (Qt library used for the GUI) to PySide2, which uses Qt5 and has a whole raft of other improvements.</p></li>
@@ -445,7 +455,7 @@ and averaged over time, substantially reducing noise. I modified the driver libr
 <div><ul class="simple">
 <li><p><a class="reference internal" href="../autopilot.core.networking.html#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net_Node</span></code></a> modules were given a <a class="reference internal" href="../autopilot.core.networking.html#autopilot.core.networking.Net_Node.get_stream" title="autopilot.core.networking.Net_Node.get_stream"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_stream()</span></code></a> method that lets objects, well,
 stream data. Specifically, they are given a <a class="reference external" href="https://docs.python.org/3/library/queue.html#queue.Queue" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">queue.Queue</span></code></a> to shovel data into, which is then picked up by a
-dedicated <a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Socket" title="(in PyZMQ v18.1.0.dev)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Socket</span></code></a> in its own thread, which handles batching, serialization, and load balancing. Streamed
+dedicated <a class="reference external" href="https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Socket" title="(in PyZMQ v19.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">zmq.Socket</span></code></a> in its own thread, which handles batching, serialization, and load balancing. Streamed
 messages are batched (ie. contain multiple messages), but behave like normal message when received – they are split and
 contain an <code class="docutils literal notranslate"><span class="pre">inner_key</span></code> that is used to call the <code class="docutils literal notranslate"><span class="pre">listen</span></code> with each message (see <code class="xref py py-meth docutils literal notranslate"><span class="pre">l_stream()</span></code>).</p></li>
 <li><p><a class="reference internal" href="../autopilot.core.networking.html#module-autopilot.core.networking" title="autopilot.core.networking"><code class="xref py py-mod docutils literal notranslate"><span class="pre">networking</span></code></a> objects also now compress arrays-in-transit with the superfast <a class="reference external" href="http://python-blosc.blosc.org/">blosc</a> compression library.
@@ -458,21 +468,21 @@ See the <a class="reference internal" href="../autopilot.core.networking.html#au
 <li><p><strong>STIMULI</strong> - The <a class="reference internal" href="../autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient" title="autopilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">JackClient</span></code></a> can now play continuous sounds rather than discrete sounds. An example
 can be found in the <a class="reference internal" href="../autopilot.tasks.nafc.html#autopilot.tasks.nafc.Nafc_Gap" title="autopilot.tasks.nafc.Nafc_Gap"><code class="xref py py-class docutils literal notranslate"><span class="pre">Nafc_Gap</span></code></a> task, which plays continuous white noise. All sounds now have a
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">play_continuous()</span></code> method, which continually dumps samples in a cycle into a queue for
-the <a class="reference internal" href="../autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient" title="autopilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">JackClient</span></code></a>. The continuous sound will be interrupted if another sound has its <a class="reference internal" href="../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Jack_Sound.play" title="autopilot.stim.sound.sounds.Jack_Sound.play"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Jack_Sound.play()</span></code></a>
+the <a class="reference internal" href="../autopilot.stim.sound.jackclient.html#autopilot.stim.sound.jackclient.JackClient" title="autopilot.stim.sound.jackclient.JackClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">JackClient</span></code></a>. The continuous sound will be interrupted if another sound has its <code class="xref py py-meth docutils literal notranslate"><span class="pre">Jack_Sound.play()</span></code>
 method called, but the continuous sound will resume seamlessly even if number of samples in the played sound aren’t a
 multiple of the jack buffer size. We use this for gaps in noise (using the new <a class="reference internal" href="../autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.Gap" title="autopilot.stim.sound.sounds.Gap"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gap</span></code></a> class),
 which we have confirmed are sample-accurate.</p></li>
 <li><p><strong>UI &amp; VIZ</strong></p>
 <blockquote>
 <div><ul class="simple">
-<li><p>A <a class="reference internal" href="../autopilot.core.plots.html#autopilot.core.plots.Video" title="autopilot.core.plots.Video"><code class="xref py py-class docutils literal notranslate"><span class="pre">Video</span></code></a> window has been created to display streaming video. The <code class="xref py py-meth docutils literal notranslate"><span class="pre">Terminal_Networking.l_continuous()</span></code> method
+<li><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Video</span></code> window has been created to display streaming video. The <code class="xref py py-meth docutils literal notranslate"><span class="pre">Terminal_Networking.l_continuous()</span></code> method
 meters frames such that even if high-speed video is being acquired, frames are only sent at a rate of <code class="docutils literal notranslate"><span class="pre">prefs.DRAWFPS</span></code>.
-The <a class="reference internal" href="../autopilot.core.plots.html#autopilot.core.plots.Video" title="autopilot.core.plots.Video"><code class="xref py py-class docutils literal notranslate"><span class="pre">Video</span></code></a> class uses the <a class="reference internal" href="../autopilot.core.plots.html#autopilot.core.plots.ImageItem_TimedUpdate" title="autopilot.core.plots.ImageItem_TimedUpdate"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageItem_TimedUpdate</span></code></a> object, a slight modification of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">pyqtgraph.ImageItem</span></code>, that calls its <code class="docutils literal notranslate"><span class="pre">update</span></code> method according to a <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtCore.QTimer</span></code>.</p></li>
-<li><p>A <code class="xref py py-attr docutils literal notranslate"><span class="pre">plots_menu</span></code> menu has been added to the Terminal, and a GUI dialog (<a class="reference internal" href="../autopilot.core.gui.html#autopilot.core.gui.Psychometric" title="autopilot.core.gui.Psychometric"><code class="xref py py-class docutils literal notranslate"><span class="pre">gui.Psychometric</span></code></a>)
+The <code class="xref py py-class docutils literal notranslate"><span class="pre">Video</span></code> class uses the <code class="xref py py-class docutils literal notranslate"><span class="pre">ImageItem_TimedUpdate</span></code> object, a slight modification of
+<a class="reference external" href="https://pyqtgraph.readthedocs.io/en/latest/graphicsItems/imageitem.html#pyqtgraph.ImageItem" title="(in pyqtgraph v0.11.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyqtgraph.ImageItem</span></code></a>, that calls its <code class="docutils literal notranslate"><span class="pre">update</span></code> method according to a <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtCore.QTimer</span></code>.</p></li>
+<li><p>A <code class="xref py py-attr docutils literal notranslate"><span class="pre">plots_menu</span></code> menu has been added to the Terminal, and a GUI dialog (<code class="xref py py-class docutils literal notranslate"><span class="pre">gui.Psychometric</span></code>)
 has been added to create simple psychometric curves with the <a class="reference internal" href="../autopilot.viz.psychometric.html#module-autopilot.viz.psychometric" title="autopilot.viz.psychometric"><code class="xref py py-mod docutils literal notranslate"><span class="pre">viz.psychometric</span></code></a> module, which uses <a class="reference external" href="https://altair-viz.github.io/">altair</a>.
 Plans for developing visualization are described in <a class="reference internal" href="../todo.html#todo"><span class="std std-ref">To-Do</span></a>.</p></li>
-<li><p>A general <a class="reference internal" href="../autopilot.core.gui.html#autopilot.core.gui.pop_dialog" title="autopilot.core.gui.pop_dialog"><code class="xref py py-func docutils literal notranslate"><span class="pre">gui.pop_dialog()</span></code></a> function simplifies displaying messages to the user using the Terminal UI. This was an initial step
+<li><p>A general <code class="xref py py-func docutils literal notranslate"><span class="pre">gui.pop_dialog()</span></code> function simplifies displaying messages to the user using the Terminal UI. This was an initial step
 towards improving status/error reporting from other agents, further detailed in <a class="reference internal" href="../todo.html#todo"><span class="std std-ref">To-Do</span></a>.</p></li>
 </ul>
 </div></blockquote>
@@ -482,17 +492,17 @@ towards improving status/error reporting from other agents, further detailed in 
 <div class="section" id="bugfixes">
 <h2>Bugfixes<a class="headerlink" href="#bugfixes" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Some objects, particularly several <a class="reference internal" href="../autopilot.core.gui.html#module-autopilot.core.gui" title="autopilot.core.gui"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gui</span></code></a> objects, had the old <cite>mouse</cite>/<cite>mice</cite> terminology updated to <cite>subject</cite>/<cite>subjects</cite>.</p></li>
+<li><p>Some objects, particularly several <code class="xref py py-mod docutils literal notranslate"><span class="pre">gui</span></code> objects, had the old <cite>mouse</cite>/<cite>mice</cite> terminology updated to <cite>subject</cite>/<cite>subjects</cite>.</p></li>
 <li><p><a class="reference internal" href="../autopilot.core.networking.html#autopilot.core.networking.Net_Node" title="autopilot.core.networking.Net_Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net_Node</span></code></a> objects were only implicitly destroyed by their <code class="xref py py-attr docutils literal notranslate"><span class="pre">release</span></code> method which ends the threaded loop by setting the <code class="xref py py-attr docutils literal notranslate"><span class="pre">closing</span></code> event.</p></li>
 <li><p>Embarassingly, <a class="reference internal" href="../autopilot.core.pilot.html#autopilot.core.pilot.Pilot" title="autopilot.core.pilot.Pilot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pilot</span></code></a> objects were not prevented from running multiple tasks at a time. This led to some very
 confusing and hard-to-debug problems, as well as frequent conflicts over hardware access and resources. Typically what would
 happen is the Terminal would send a <code class="docutils literal notranslate"><span class="pre">START</span></code> message to begin a task, and if it wouldn’t received a message receipt
 quickly enough would resend it, resulting in two tasks being started – but this would happen whenever two <code class="docutils literal notranslate"><span class="pre">START</span></code> messages were sent
 to a pilot. This was fixed with a simple check of <code class="xref py py-attr docutils literal notranslate"><span class="pre">Pilot.state</span></code> before a task is initialized. Similar bugs were fixed in
-<a class="reference internal" href="../autopilot.core.plots.html#autopilot.core.plots.Plot" title="autopilot.core.plots.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a> objects.</p></li>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code> objects.</p></li>
 <li><p>The <a class="reference internal" href="../autopilot.core.subject.html#autopilot.core.subject.Subject" title="autopilot.core.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> class would sometimes fail to get and increment the trial session. This has been fixed
 by saving the session number as an attribute in the <code class="docutils literal notranslate"><span class="pre">info</span></code> node.</p></li>
-<li><p>The <a class="reference internal" href="../autopilot.core.terminal.html#autopilot.core.terminal.Terminal.update_protocols" title="autopilot.core.terminal.Terminal.update_protocols"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_protocols()</span></code></a> method didn’t report which subjects had their protocols updated, and so if there was some
+<li><p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">update_protocols()</span></code> method didn’t report which subjects had their protocols updated, and so if there was some
 exception when setting new protocols it happened silently, making it so a user would never know their task was never updated.
 This was fixed with a noisier protocol update method for the Subject class and by displaying a list of subjects that were updated
 after the method is called.</p></li>
@@ -573,11 +583,19 @@ timestamp and returns an isoformatted string</p></li>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2019, Jonny Saunders
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -588,7 +606,6 @@ timestamp and returns an isoformatted string</p></li>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

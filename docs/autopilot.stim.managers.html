@@ -239,7 +239,16 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://groups.google.com/forum/#!forum/autopilot-users">Discussion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="todo.html">To-Do</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="todo.html#visions">Visions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="todo.html#integrations">Integrations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="todo.html#roadmap-deeplabcut-integration">DeepLabCut Integration<span><a href="https://groups.google.com/forum/#!topic/autopilot-users/T-PNfrHDtzA" class="roadmap-dblink">priority: high | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="todo.html#roadmap-open-ephys-integration">Open Ephys Integration<span><a href="https://google.com" class="roadmap-dblink">priority: medium | discuss>></a></span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="todo.html#roadmap-bonsai-integration">Bonsai Integration<span><a href="https://google.com" class="roadmap-dblink">priority: low | discuss>></a></span></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="todo.html#closed-loop-behavior-processing-pipelines">Closed-Loop Behavior &amp; Processing Pipelines</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="todo.html#improvements">Improvements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="todo.html#bugs">Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="todo.html#completed">Completed</a></li>
@@ -308,7 +317,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="autopilot.stim.html">stim</a> &raquo;</li>
         
@@ -370,14 +379,14 @@ redefine <cite>next_stim</cite></p>
 </tr>
 </tbody>
 </table>
-<dl class="function">
+<dl class="py function">
 <dt id="autopilot.stim.managers.init_manager">
-<code class="sig-name descname">init_manager</code><span class="sig-paren">(</span><em class="sig-param">stim</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#init_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.init_manager" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">init_manager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">stim</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#init_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.init_manager" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="autopilot.stim.managers.Stim_Manager">
-<em class="property">class </em><code class="sig-name descname">Stim_Manager</code><span class="sig-paren">(</span><em class="sig-param">stim=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Stim_Manager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">stim</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Yield sounds according to some set of rules.</p>
 <p>Currently implemented:</p>
@@ -467,9 +476,9 @@ redefine <cite>next_stim</cite></p>
 </div>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.managers.Stim_Manager.do_correction">
-<code class="sig-name descname">do_correction</code><span class="sig-paren">(</span><em class="sig-param">correction_pct=0.5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager.do_correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.do_correction" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">do_correction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">correction_pct</span><span class="o">=</span><span class="default_value">0.5</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager.do_correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.do_correction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called to set correction trials to True and correction percent.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -478,9 +487,9 @@ redefine <cite>next_stim</cite></p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.managers.Stim_Manager.do_bias">
-<code class="sig-name descname">do_bias</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager.do_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.do_bias" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">do_bias</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager.do_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.do_bias" title="Permalink to this definition">¶</a></dt>
 <dd><p>Instantiate a <a class="reference internal" href="#autopilot.stim.managers.Bias_Correction" title="autopilot.stim.managers.Bias_Correction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bias_Correction</span></code></a> module</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -489,9 +498,9 @@ redefine <cite>next_stim</cite></p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.managers.Stim_Manager.init_sounds">
-<code class="sig-name descname">init_sounds</code><span class="sig-paren">(</span><em class="sig-param">sound_dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager.init_sounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.init_sounds" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">init_sounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sound_dict</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager.init_sounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.init_sounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Instantiate sound objects, using the ‘type’ value to choose an object from
 <a class="reference internal" href="autopilot.stim.sound.sounds.html#autopilot.stim.sound.sounds.SOUND_LIST" title="autopilot.stim.sound.sounds.SOUND_LIST"><code class="xref py py-data docutils literal notranslate"><span class="pre">sounds.SOUND_LIST</span></code></a> .</p>
 <dl class="field-list">
@@ -508,9 +517,9 @@ redefine <cite>next_stim</cite></p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.managers.Stim_Manager.set_triggers">
-<code class="sig-name descname">set_triggers</code><span class="sig-paren">(</span><em class="sig-param">trig_fn</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager.set_triggers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.set_triggers" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_triggers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trig_fn</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager.set_triggers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.set_triggers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Give a callback function to all of our stimuli for when the stimulus ends.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -523,9 +532,9 @@ redefine <cite>next_stim</cite></p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.managers.Stim_Manager.make_punishment">
-<code class="sig-name descname">make_punishment</code><span class="sig-paren">(</span><em class="sig-param">type</em>, <em class="sig-param">duration</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager.make_punishment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.make_punishment" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">make_punishment</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">type</span></em>, <em class="sig-param"><span class="n">duration</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager.make_punishment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.make_punishment" title="Permalink to this definition">¶</a></dt>
 <dd><div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Not Implemented</p>
@@ -540,7 +549,7 @@ redefine <cite>next_stim</cite></p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.managers.Stim_Manager.play_punishment">
 <code class="sig-name descname">play_punishment</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager.play_punishment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.play_punishment" title="Permalink to this definition">¶</a></dt>
 <dd><div class="admonition warning">
@@ -549,7 +558,7 @@ redefine <cite>next_stim</cite></p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.managers.Stim_Manager.next_stim">
 <code class="sig-name descname">next_stim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager.next_stim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.next_stim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute and return the next stimulus</p>
@@ -563,7 +572,7 @@ redefine <cite>next_stim</cite></p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.managers.Stim_Manager.compute_correction">
 <code class="sig-name descname">compute_correction</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager.compute_correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.compute_correction" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <cite>self.correction</cite> is true, compute correction trial logic during
@@ -583,9 +592,9 @@ redefine <cite>next_stim</cite></p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.managers.Stim_Manager.update">
-<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">response</em>, <em class="sig-param">correct</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">response</span></em>, <em class="sig-param"><span class="n">correct</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>At the end of a trial, update the status of our internal variables
 with the outcome of the trial.</p>
 <dl class="field-list simple">
@@ -598,7 +607,7 @@ with the outcome of the trial.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.managers.Stim_Manager.end">
 <code class="sig-name descname">end</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Stim_Manager.end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Stim_Manager.end" title="Permalink to this definition">¶</a></dt>
 <dd><p>End all of our stim. Stim should have an <cite>.end()</cite> method of their own</p>
@@ -606,9 +615,9 @@ with the outcome of the trial.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="autopilot.stim.managers.Proportional">
-<em class="property">class </em><code class="sig-name descname">Proportional</code><span class="sig-paren">(</span><em class="sig-param">stim</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Proportional"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Proportional</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">stim</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Proportional"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">autopilot.stim.managers.Stim_Manager</span></code></a></p>
 <p>Present groups of stimuli with a particular frequency.</p>
 <p>Frequencies do not need to add up to 1, groups will be selected with the frequency
@@ -677,9 +686,9 @@ stim (dict): Dictionary describing sound stimuli, in a format like:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.managers.Proportional.init_sounds_grouped">
-<code class="sig-name descname">init_sounds_grouped</code><span class="sig-paren">(</span><em class="sig-param">sound_stim</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Proportional.init_sounds_grouped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional.init_sounds_grouped" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">init_sounds_grouped</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sound_stim</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Proportional.init_sounds_grouped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional.init_sounds_grouped" title="Permalink to this definition">¶</a></dt>
 <dd><p>Instantiate sound objects similarly to <a class="reference internal" href="#autopilot.stim.managers.Stim_Manager" title="autopilot.stim.managers.Stim_Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stim_Manager</span></code></a>, just organizes them into groups.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
@@ -718,9 +727,9 @@ stim (dict): Dictionary describing sound stimuli, in a format like:</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.managers.Proportional.init_sounds_individual">
-<code class="sig-name descname">init_sounds_individual</code><span class="sig-paren">(</span><em class="sig-param">sound_stim</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Proportional.init_sounds_individual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional.init_sounds_individual" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">init_sounds_individual</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sound_stim</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Proportional.init_sounds_individual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional.init_sounds_individual" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize sounds with individually set presentation frequencies.</p>
 <div class="admonition-todo admonition" id="id2">
 <p class="admonition-title">Todo</p>
@@ -735,15 +744,15 @@ which will be built in a future release of Autopilot.</p>
 <p>Returns:</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.managers.Proportional.store_groups">
-<code class="sig-name descname">store_groups</code><span class="sig-paren">(</span><em class="sig-param">stim</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Proportional.store_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional.store_groups" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">store_groups</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">stim</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Proportional.store_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional.store_groups" title="Permalink to this definition">¶</a></dt>
 <dd><p>store groups and frequencies</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.managers.Proportional.set_triggers">
-<code class="sig-name descname">set_triggers</code><span class="sig-paren">(</span><em class="sig-param">trig_fn</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Proportional.set_triggers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional.set_triggers" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_triggers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trig_fn</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Proportional.set_triggers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional.set_triggers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Give a callback function to all of our stimuli for when the stimulus ends.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -756,7 +765,7 @@ which will be built in a future release of Autopilot.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.managers.Proportional.next_stim">
 <code class="sig-name descname">next_stim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Proportional.next_stim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Proportional.next_stim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute and return the next stimulus</p>
@@ -772,9 +781,9 @@ which will be built in a future release of Autopilot.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="autopilot.stim.managers.Bias_Correction">
-<em class="property">class </em><code class="sig-name descname">Bias_Correction</code><span class="sig-paren">(</span><em class="sig-param">mode='thresholded_linear'</em>, <em class="sig-param">thresh=0.2</em>, <em class="sig-param">window=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Bias_Correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Bias_Correction" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Bias_Correction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'thresholded_linear'</span></em>, <em class="sig-param"><span class="n">thresh</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">window</span><span class="o">=</span><span class="default_value">100</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Bias_Correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Bias_Correction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Basic Bias correction module. Modifies the threshold of random stimulus
 choice based on history of biased responses.</p>
@@ -819,7 +828,7 @@ choice based on history of biased responses.</p>
 </tr>
 </tbody>
 </table>
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.managers.Bias_Correction.next_bias">
 <code class="sig-name descname">next_bias</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Bias_Correction.next_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Bias_Correction.next_bias" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the next bias depending on <cite>self.mode</cite></p>
@@ -833,7 +842,7 @@ choice based on history of biased responses.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.managers.Bias_Correction.thresholded_linear">
 <code class="sig-name descname">thresholded_linear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Bias_Correction.thresholded_linear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Bias_Correction.thresholded_linear" title="Permalink to this definition">¶</a></dt>
 <dd><p>If we are above the threshold, linearly correct the rate of
@@ -849,9 +858,9 @@ presentation to favor the rarely responded side.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="autopilot.stim.managers.Bias_Correction.update">
-<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">response</em>, <em class="sig-param">target</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Bias_Correction.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Bias_Correction.update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">response</span></em>, <em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/autopilot/stim/managers.html#Bias_Correction.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#autopilot.stim.managers.Bias_Correction.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Store some new response and target values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -887,11 +896,19 @@ presentation to favor the rarely responded side.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2019, Jonny Saunders
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -902,7 +919,6 @@ presentation to favor the rarely responded side.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

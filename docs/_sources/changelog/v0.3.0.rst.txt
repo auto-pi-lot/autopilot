@@ -8,6 +8,7 @@ Major Updates
 ~~~~~~~~~~~~~
 
 * **Python 3** - We've finally made it to Python 3! Specifically we have brought Autopilot up to compatibility with Python 3.8.
+  The Spinnaker SDK is currently only available through Python 3.7, so we have tested Autopilot on 3.6, 3.7, and 3.8.
   I will *not attempt to keep Autopilot compatible with Python 2*, but no decision has been made about compatibility
   with other versions of Python 3. Until then, expect that Autopilot will attempt to keep up with major version changes.
   The switch also let up update PySide (Qt library used for the GUI) to PySide2, which uses Qt5 and has a whole raft of other improvements.
