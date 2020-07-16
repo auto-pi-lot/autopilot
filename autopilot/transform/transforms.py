@@ -300,6 +300,7 @@ class T_DLC(T_Image):
         self.export_model()
 
         self.live = DLCLive(self.dlc_paths['export_dir'], *args, **kwargs)
+        self.live.init_inference()
 
 
     def process(self, input: np.ndarray) -> np.ndarray:
