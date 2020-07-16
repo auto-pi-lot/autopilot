@@ -230,7 +230,7 @@ class Transformer(object):
                 continue
             result = self.transform.process(value)
 
-            self.logger.debug(f'Processed frame, result: {result}')
+            self.node.logger.debug(f'Processed frame, result: {result}')
 
 
             if self.operation == "trigger":
@@ -250,7 +250,7 @@ class Transformer(object):
         # get array out of value
 
         # FIXME hack for dlc
-        self.logger.debug('Received and queued processing!')
+        self.node.logger.debug('Received and queued processing!')
         self.input_q.put_nowait(value['MAIN'])
 
 
