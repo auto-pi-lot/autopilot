@@ -8,6 +8,7 @@ from itertools import cycle, count
 import tables
 from datetime import datetime
 from time import sleep
+import threading
 
 from autopilot import prefs
 from autopilot.tasks.task import Task
@@ -202,6 +203,14 @@ class DLC_Latency(Task):
             self.cam.set('OffsetX', self.crop_box[0])
             self.cam.set('OffsetY', self.crop_box[1])
 
+        print(f"""
+        Width: {self.cam.get('Width')}
+        Height: {self.cam.get('Height')}
+        OffsetX: {self.cam.get('OffsetX')}
+        OffsetY: {self.cam.get('OffsetY')}
+        FPS: {self.cam.get('AcquisitionFrameRate')}
+        """)
+
 
         self.cam.stream(to=f"{self.child_id}_TRANSFORMER",
                         ip=prefs.CHILDIP, # FIXME: Hack before network discovery is fixed
@@ -236,11 +245,13 @@ class DLC_Latency(Task):
         }
 
     def wait(self):
-        # self.stage_block.clear()
+        self.stage_block.clear()
         response_time = datetime.now().isoformat()
         self.hardware['LEDS']['C'].set(0.0001)
 
-        sleep(self.delay/1000)
+        # sleep(self.delay/1000)
+        timer = threading.Timer(interval=self.delay/1000, target=self.stage_block.clear)
+        timer.start()
 
         return {
             'response' : response_time,
