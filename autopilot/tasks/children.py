@@ -257,7 +257,7 @@ class Transformer(object):
         # FIXME hack for dlc
         self.node.logger.debug('Received and queued processing!')
         # self.input_q.put_nowait(value['MAIN'])
-        self.input_q.append()
+        self.input_q.append(value['MAIN'])
 
 
 
