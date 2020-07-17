@@ -99,7 +99,7 @@ class DLC_Latency(Task):
                  trigger_limits_x: list,
                  trigger_limits_y: list,
                  trigger_freq: float = 0.5,
-                 trigger_thresh: float = 0.6,
+                 trigger_thresh: float = 0,
                  crop_box: list = None,
                  fps: int = 30,
                  exposure: float = 0.5,
