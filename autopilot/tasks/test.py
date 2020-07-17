@@ -185,7 +185,7 @@ class DLC_Latency(Task):
             'child': {'parent': prefs.NAME, 'subject': kwargs['subject']},
             'task_type': 'Transformer',
             'subject': kwargs['subject'],
-            'operation':'stream',
+            'operation':'trigger',
             'transform':transform_descriptor,
             'return_id': self.node_id
         }
