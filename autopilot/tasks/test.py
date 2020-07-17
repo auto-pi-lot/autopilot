@@ -270,7 +270,7 @@ class DLC_Latency(Task):
     def l_trigger(self, value):
         if value:
             self.handle_trigger(pin="CAMERA")
-            self.hardware['DIGITAL_OUT']['C'].pulse
+            self.hardware['DIGITAL_OUT']['C'].pulse()
 
 
 
