@@ -1829,17 +1829,17 @@ class Net_Node(object):
                     # tuples are immutable, so can't serialize numpy arrays they contain
                     data = list(data)
 
-                # if not socket.sending():
-                msg = Message(to=upstream.decode('utf-8'), key=msg_key,
-                              subject=subject,
-                              pilot=pilot,
-                              continuous=True,
-                              value=data,
-                              flags={'NOREPEAT': True, 'MINPRINT': True},
-                              id="{}_{}".format(id, next(msg_counter)),
-                              sender=socket_id).serialize()
-                last_msg = socket.send_multipart((upstream, upstream, msg),
-                                                 track=True, copy=True)
+                if not socket.sending():
+                    msg = Message(to=upstream.decode('utf-8'), key=msg_key,
+                                  subject=subject,
+                                  pilot=pilot,
+                                  continuous=True,
+                                  value=data,
+                                  flags={'NOREPEAT': True, 'MINPRINT': True},
+                                  id="{}_{}".format(id, next(msg_counter)),
+                                  sender=socket_id).serialize()
+                    last_msg = socket.send_multipart((upstream, upstream, msg),
+                                                     track=True, copy=True)
 
                 self.logger.debug("STREAM {}: Sent 1 item".format(self.id + '_' + id))
 
