@@ -99,7 +99,7 @@ class DLC_Latency(Task):
                  trigger_limits_x: list,
                  trigger_limits_y: list,
                  trigger_freq: float = 0.5,
-                 trigger_thresh: float = 0,
+                 trigger_thresh: float = 0.4,
                  crop_box: list = None,
                  fps: int = 30,
                  exposure: float = 0.5,
@@ -185,7 +185,7 @@ class DLC_Latency(Task):
             'child': {'parent': prefs.NAME, 'subject': kwargs['subject']},
             'task_type': 'Transformer',
             'subject': kwargs['subject'],
-            'operation':'trigger',
+            'operation':'stream',
             'transform':transform_descriptor,
             'return_id': self.node_id
         }

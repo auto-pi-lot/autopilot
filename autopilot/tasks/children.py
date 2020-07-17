@@ -244,8 +244,8 @@ class Transformer(object):
                     self._last_result = result
 
             elif self.operation == 'stream':
-                # print(result)
-                raise NotImplementedError()
+                # FIXME: Another key that's not TRIGGER
+                self.node.send(self.return_id, 'TRIGGER', result)
 
             elif self.operation == 'debug':
                 pass
