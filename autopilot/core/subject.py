@@ -17,8 +17,9 @@ import datetime
 import json
 import pandas as pd
 import warnings
+import typing
 from copy import copy
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from autopilot.tasks import GRAD_LIST, TASK_LIST
 from autopilot import prefs
 from autopilot.stim.sound.sounds import STRING_PARAMS
@@ -32,7 +33,7 @@ import pdb
 import numpy as np
 
 
-class Subject:
+class Subject(object):
     """
     Class for managing one subject's data and protocol.
 
@@ -81,7 +82,8 @@ class Subject:
 
 
 
-    def __init__(self, name=None, dir=None, file=None, new=False, biography=None):
+    def __init__(self, name: str=None, dir: str=None, file: str=None,
+                 new: bool=False, biography: dict=None):
         """
         Args:
             name (str): subject ID
@@ -920,7 +922,9 @@ N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique()))
 
 
 
-    def get_trial_data(self, step=-1, what="data"):
+    def get_trial_data(self,
+                       step: typing.Union[int, list, str] = -1,
+                       what: str ="data"):
         """
         Get trial data from the current task.
 
@@ -930,7 +934,8 @@ N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique()))
                 * -1: most recent step
                 * int: a single step
                 * list of two integers eg. [0, 5], an inclusive range of steps.
-                * anything else, eg. 'all': all steps.
+                * string: the name of a step (excluding S##_)
+                * 'all': all steps.
 
             what (str): What should be returned?
 
@@ -960,7 +965,8 @@ N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique()))
                 ValueError('You provided a step number ({}) greater than the number of steps in the subjects assigned protocol: ()'.format(step, len(step_groups)))
             step_groups = [step_groups[step]]
 
-        elif isinstance(step, str):
+        elif isinstance(step, str) and step != 'all':
+
             # since step names have S##_ prepended in the hdf5 file,
             # but we want to be able to call them by their human readable name,
             # have to make sure we have the right form
@@ -984,19 +990,22 @@ N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique()))
         print('step groups:')
         print(step_groups)
 
+        if what == "variables":
+            return_data = {}
+
         for step_key in step_groups:
             step_n = int(step_key[1:3]) # beginning of keys will be 'S##'
             step_tab = group._v_children[step_key]._v_children['trial_data']
             if what == "data":
                 step_df = pd.DataFrame(step_tab.read())
                 step_df['step'] = step_n
+                step_df['step_name'] = step_key
                 try:
                     return_data = return_data.append(step_df, ignore_index=True)
                 except NameError:
                     return_data = step_df
 
             elif what == "variables":
-                return_data = {}
                 return_data[step_key] = step_tab.coldescrs
 
 

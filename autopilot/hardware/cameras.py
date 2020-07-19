@@ -644,6 +644,13 @@ class Camera_CV(Camera):
         return (self.cam.get(cv2.CAP_PROP_FRAME_WIDTH),
                 self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
+    @shape.setter
+    def shape(self, shape):
+        """
+        Do nothing
+        """
+        pass
+
     def _grab(self):
         """
         Reads a frame with :meth:`.cam.read`
