@@ -436,7 +436,8 @@ class DLC_Hand(Task):
         self.stream.put({
             'angle': angle,
             'distance': distance,
-            'timestamp': datetime.now().isoformat()
+            'timestamp': datetime.now().isoformat(),
+            'subject': self.subject
         })
 
 
