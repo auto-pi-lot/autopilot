@@ -114,10 +114,14 @@ class Camera(Hardware):
     type = "CAMERA" #: (str): what are we anyway?
     trigger = False
 
-    def __init__(self, fps=None, timed=False, **kwargs):
+    def __init__(self, fps=None, timed=False, crop=None, **kwargs):
         """
 
-
+        Args:
+            fps:
+            timed:
+            crop (tuple): (x, y of top left corner, width, height)
+            **kwargs:
         """
         super(Camera, self).__init__(**kwargs)
 
@@ -133,6 +137,7 @@ class Camera(Hardware):
         self.frame = None
         self.shape = None
         self.frame_n = 0
+        self.crop = crop
 
         self.blosc = True
 
@@ -662,6 +667,8 @@ class Camera_CV(Camera):
         if not ret:
             return False, False
         ts = self._timestamp()
+        if self.crop:
+            frame = frame[self.crop[0]:self.crop[2], self.crop[1]:self.crop[3]]
         return (ts, frame)
 
     def _timestamp(self, frame=None):

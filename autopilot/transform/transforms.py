@@ -827,7 +827,7 @@ class Rescale(Transform):
         self.in_diff = self.in_range[1] - self.in_range[0]
         self.out_diff = self.out_range[1] - self.out_range[0]
         self.ratio = self.out_diff / self.in_diff
-        
+
     def process(self, input):
         """
         Subtract input minimum, multiple by output/input size ratio, add output minimum
