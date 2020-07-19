@@ -396,9 +396,9 @@ class DLC_Hand(Task):
         }
 
         # get a stream to send data to terminal with
-        self.stream = self.node.get_stream('T', 'CONTINUOUS',
-                                           upstream='T', ip=prefs.TERMINALIP,port=prefs.PUSHPORT,
-                                           subject=self.subject)
+        # self.stream = self.node.get_stream('T', 'CONTINUOUS',
+        #                                    upstream='T', ip=prefs.TERMINALIP,port=prefs.PUSHPORT,
+        #                                    subject=self.subject)
 
         self.stages = cycle([self.noop])
 
@@ -433,11 +433,18 @@ class DLC_Hand(Task):
 
 
 
-        self.stream.put({
+        # self.stream.put({
+        #     'angle': angle,
+        #     'distance': distance,
+        #     'timestamp': datetime.now().isoformat(),
+        #     'subject': self.subject
+        # })
+        self.node.send('T', 'DATA', {
             'angle': angle,
             'distance': distance,
             'timestamp': datetime.now().isoformat(),
-            'subject': self.subject
+            'subject': self.subject,
+            'pilot': prefs.NAME
         })
 
 

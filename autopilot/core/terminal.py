@@ -162,6 +162,7 @@ class Terminal(QtWidgets.QMainWindow):
             'PING' : self.l_ping,  # Someone wants to know if we're alive
             'DATA' : self.l_data,
             'CONTINUOUS': self.l_data, # handle continuous data same way as other data
+            'STREAM': self.l_data,
             'HANDSHAKE': self.l_handshake # a pi is making first contact, telling us its IP
         }
 
