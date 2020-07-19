@@ -132,10 +132,14 @@ class Transform(object):
 
         ret = False
 
-        if self.format_out['type'] == child.format_in['type']:
-            ret = True
+        if isinstance(child.format_in['type'], (list, tuple)):
+            if self.format_out['type'] in child.format_in['type']:
+                ret = True
         elif child.format_in['type'] == 'any':
             ret = True
+        elif self.format_out['type'] == child.format_in['type']:
+            ret = True
+
 
         # if child has a specific requirement of parent transform class, ensure
         parent_req = child.format_in.get('parent', False)

@@ -490,7 +490,7 @@ class Subject(object):
 
             # The task class *should* have at least one PyTables DataTypes descriptor
             try:
-                if hasattr(task_class, "TrialData"):
+                if task_class.TrialData is not None:
                     trial_descriptor = task_class.TrialData
                     # add a session column, everyone needs a session column
                     if 'session' not in trial_descriptor.columns.keys():
@@ -528,6 +528,8 @@ class Subject(object):
                             trial_descriptor.columns.update(sound_params)
 
                     h5f.create_table(step_group, "trial_data", trial_descriptor)
+                else:
+                    h5f.create_table(step_group, "trial_data", {'session': tables.Int32Col(), 'trial_num': tables.Int32Col()})
             except tables.NodeError:
                 # we already have made this table, that's fine
                 pass
@@ -621,6 +623,7 @@ class Subject(object):
         # file structure is '/data/protocol_name/##_step_name/tables'
         group_name = "/data/{}/S{:02d}_{}".format(self.protocol_name, self.step, step_name)
         #try:
+
         trial_table = h5f.get_node(group_name, 'trial_data')
         #self.trial_row = self.trial_table.row
         #self.trial_keys = self.trial_table.colnames
