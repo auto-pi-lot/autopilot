@@ -3,6 +3,7 @@ Tasks to test different features of autopilot.
 
 Benchmarks, diagnostics, etc.
 """
+import os
 from collections import OrderedDict as odict
 from itertools import cycle, count
 import tables
@@ -10,10 +11,13 @@ from datetime import datetime
 from time import sleep
 import threading
 
+import autopilot.transform.geometry
+import autopilot.transform.units
 from autopilot import prefs
 from autopilot.tasks.task import Task
 from autopilot.hardware import gpio, cameras
-from autopilot.transform import make_transform, transforms
+# from autopilot.transform import make_transform, transforms
+from autopilot import transform as t
 from autopilot.core.networking import Net_Node
 
 
@@ -187,7 +191,8 @@ class DLC_Latency(Task):
             'subject': kwargs['subject'],
             'operation':'stream',
             'transform':transform_descriptor,
-            'return_id': self.node_id
+            'return_id': self.node_id,
+            'value_subset': 'MAIN'
         }
 
         self.node.send(to=prefs.NAME, key='CHILD', value=value)
@@ -271,6 +276,159 @@ class DLC_Latency(Task):
         if value:
             self.handle_trigger(pin="CAMERA")
             self.hardware['DIGITAL_OUT']['C'].pulse()
+
+class DLC_Hand(Task):
+    STAGE_NAMES = ['noop']
+
+    PARAMS = odict()
+    PARAMS['child_id'] = {'tag': 'id of Child to process frames',
+                          'type': 'str'}
+    PARAMS['model_name'] = {'tag': 'name of deeplabcut project (located in <autopilot_dir>/dlc',
+                            'type': 'str'}
+    PARAMS['point_name_1'] = {'tag': 'name of first deeplabcut point to track',
+                              'type': 'str'}
+    PARAMS['point_name_2'] = {'tag': 'name of second deeplabcut point to track',
+                              'type': 'str'}
+    PARAMS['crop_box'] = {'tag': 'Bounding box of image capture for FLIR camera [x_offset, y_offset, x_width, y_height]',
+                          'type': 'str'}
+
+    PLOT = {
+        'data': {
+            'distance': 'line',
+            'angle': 'line'
+        },
+        'continuous': True
+    }
+
+    ContinuousData = {
+        'distance': tables.Float64Col(),
+        'angle': tables.Float64Col(),
+        'timestamp': tables.StringCol(26),
+    }
+
+    HARDWARE = {
+        'LEDS': {
+            'C': gpio.LED_RGB
+        },
+        'CAMERAS': {
+            'WEBCAM': cameras.Camera_CV
+        }
+    }
+
+    CHILDREN = {
+        'DLC': {
+            'task_type': 'Transformer',
+            'transform': []
+        }
+    }
+
+    def __init__(self, child_id: str, model_name: str,
+                 point_name_1: str, point_name_2: str, crop_box: list,
+                 *args, **kwargs):
+
+        super(DLC_Hand, self).__init__(*args, **kwargs)
+
+        self.child_id = child_id
+        self.model_name = model_name
+        self.point_name_1 = point_name_1
+        self.point_name_2 = point_name_2
+        self.crop_box = crop_box
+
+        self.init_hardware()
+
+        # configure the child
+        transform_descriptor = [
+            {'transform': 'T_DLC',
+             'kwargs': {
+                 'model_dir': self.model_name
+             }},
+            {'transform': 'T_DLCSlice',
+             'kwargs': {
+                 'select': [self.point_name_1, self.point_name_2],
+                 'min_probability': 0
+             }}
+        ]
+
+        self.node_id = f"T_{prefs.NAME}"
+        self.node = Net_Node(id=self.node_id,
+                             upstream=prefs.NAME,
+                             port=prefs.MSGPORT,
+                             listens={'STATE':self.l_state,
+                                      'UPDATE':self.l_update},
+                             instance=False)
+
+        self.subject = kwargs['subject']
+        value = {
+            'child': {'parent': prefs.NAME, 'subject': kwargs['subject']},
+            'task_type': 'Transformer',
+            'subject': kwargs['subject'],
+            'operation':'stream',
+            'transform':transform_descriptor,
+            'return_id': self.node_id,
+            'value_subset': 'WEBCAM'
+        }
+
+        self.node.send(to=prefs.NAME, key='CHILD', value=value)
+
+        # configure the camera
+        self.cam = self.hardware['CAMERAS']['WEBCAM']
+        self.cam.crop = crop_box
+
+        self.cam.stream(to=f"{self.child_id}_TRANSFORMER",
+                        ip=prefs.CHILDIP,
+                        port=prefs.CHILDPORT,
+                        min_size=1)
+
+        video_fn = os.path.join(prefs.DATADIR, 'dlc_hand_{}.mp4'.format(datetime.now().isoformat()))
+        self.cam.write(video_fn)
+
+        # setup our own transforms
+        max_dim = max(crop_box[2:4])
+        self.transforms = {
+            'distance': t.geometry.Distance() + \
+                        t.units.Rescale((0, max_dim), (0, 1)),
+            'angle': t.geometry.Angle() + \
+                     t.units.Rescale((0, 180), (0, 1)),
+            'color': t.units.Color(t.units.Colorspaces.HSV, t.units.Colorspaces.RGB) + \
+                     t.units.Rescale((0,1), (0, 255))
+        }
+
+        # get a stream to send data to terminal with
+        self.stream = self.node.get_stream('T')
+
+        self.stages = cycle([self.noop])
+
+
+    def noop(self):
+        if self.stage_block:
+            self.stage_block.clear()
+
+    def l_state(self, value):
+        self.logger.debug(f'STATE from transformer: {value}')
+
+        if value == 'READY':
+            if not self.cam.capturing.is_set():
+                self.cam.capture()
+                self.logger.debug(f"started capture")
+
+    def l_update(self, value):
+        # receive two points, convert to distance, angle, and then to color
+        angle = self.transforms['angle'](value)
+        distance = self.transforms['distance'](value)
+
+        color = self.transforms['color'](angle, 1, distance)
+        self.hardware['LEDS']['C'].set(color)
+
+        self.stream.put({
+            'continuous':True,
+            'angle': angle,
+            'distance': distance,
+            'timestamp': datetime.now().isoformat()
+        })
+
+
+
+
 
 
 

@@ -10,6 +10,8 @@ Sub-tasks that serve as children to other tasks.
 
 from collections import OrderedDict as odict
 from collections import deque
+
+import autopilot.transform
 from autopilot import prefs
 from autopilot.hardware.gpio import Digital_Out
 from autopilot.hardware.usb import Wheel
@@ -171,6 +173,7 @@ class Transformer(object):
                  operation: str ="trigger",
                  return_id = 'T',
                  stage_block = None,
+                 value_subset=None
                  **kwargs):
         """
 
@@ -184,6 +187,7 @@ class Transformer(object):
 
             return_id:
             stage_block:
+            value_subset (str): Optional - subset a value from from a dict/list sent to :meth:`.l_process`
             **kwargs:
         """
         assert operation in ('trigger', 'stream', 'debug')
@@ -195,6 +199,7 @@ class Transformer(object):
         self.stages = cycle([self.noop])
         # self.input_q = LifoQueue()
         self.input_q = deque(maxlen=1)
+        self.value_subset = value_subset
 
         self.logger = logging.getLogger('main')
 
@@ -211,7 +216,7 @@ class Transformer(object):
 
     def _process(self, transform):
 
-        self.transform = transforms.make_transform(transform)
+        self.transform = autopilot.transform.make_transform(transform)
 
         self.node = Net_Node(
             f"{prefs.NAME}_TRANSFORMER",
@@ -257,7 +262,9 @@ class Transformer(object):
         # FIXME hack for dlc
         self.node.logger.debug('Received and queued processing!')
         # self.input_q.put_nowait(value['MAIN'])
-        self.input_q.append(value['MAIN'])
+        if self.value_subset:
+            value = value[self.value_subset]
+        self.input_q.append(value)
 
 
 
