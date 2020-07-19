@@ -15,7 +15,7 @@ class Rescale(Transform):
     Rescale values from one range to another
     """
 
-    format_in = {'type': (np.ndarray, float, int)}
+    format_in = {'type': (np.ndarray, float, int, tuple, list)}
     format_out = {'type': np.ndarray}
 
     def __init__(self,
