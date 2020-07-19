@@ -389,7 +389,7 @@ class DLC_Hand(Task):
             'distance': t.geometry.Distance() + \
                         t.units.Rescale((0, max_dim), (0, 1)),
             'angle': t.geometry.Angle() + \
-                     t.units.Rescale((0, 180), (0, 1)),
+                     t.units.Rescale((0, 360), (0, 1)),
             'color': t.units.Color(t.units.Colorspaces.HSV, t.units.Colorspaces.RGB) + \
                      t.units.Rescale((0,1), (0, 255))
         }
@@ -414,6 +414,9 @@ class DLC_Hand(Task):
 
     def l_update(self, value):
         # receive two points, convert to distance, angle, and then to color
+        if any(value[:,2]<0.2):
+            return
+
         angle = self.transforms['angle'].process(value)
         distance = self.transforms['distance'].process(value)
 
