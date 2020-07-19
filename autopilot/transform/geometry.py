@@ -52,4 +52,23 @@ class Distance(Transform):
 
 
 class Angle(Transform):
+    """
+    Get angle between line formed by two points and horizontal axis
+    """
+
     format_in = {'type': np.ndarray}
+    format_out = {'type': float}
+
+    def __init__(self, abs=True, degrees=True, *args, **kwargs):
+        super(Angle, self).__init__(*args, **kwargs)
+        self.abs = abs
+        self.degrees = degrees
+
+    def process(self, input):
+        angle = np.arctan2(input[1][1]-input[0][1], input[1][0]-input[0][0])
+        if self.abs:
+            if angle < 0:
+                angle += 2*np.pi
+        if self.degrees:
+            angle = angle*(180/np.pi)
+        return angle
