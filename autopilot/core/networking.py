@@ -482,6 +482,7 @@ class Station(multiprocessing.Process):
         listen_fn = self.listens[msg.value['inner_key']]
         old_value = copy(msg.value)
         delattr(msg, 'value')
+        msg.key = old_value['inner_key']
         for v in old_value['payload']:
             if isinstance(v, dict) and ('headers' in old_value.keys()):
                 v.update(old_value['headers'])
