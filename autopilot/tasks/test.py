@@ -334,6 +334,8 @@ class DLC_Hand(Task):
         self.point_name_2 = point_name_2
         self.crop_box = crop_box
 
+        self.led_lock = threading.Lock()
+
         self.init_hardware()
 
         # configure the child
@@ -394,7 +396,8 @@ class DLC_Hand(Task):
         }
 
         # get a stream to send data to terminal with
-        self.stream = self.node.get_stream('T', 'CONTINUOUS')
+        self.stream = self.node.get_stream('T', 'CONTINUOUS',
+                                           upstream='T', ip=prefs.TERMINALIP,port=prefs.PUSHPORT)
 
         self.stages = cycle([self.noop])
 
@@ -420,7 +423,14 @@ class DLC_Hand(Task):
         distance = self.transforms['distance'].process(value)
 
         color = self.transforms['color'].process((angle, 1, distance))
-        self.hardware['LEDS']['C'].set(r=color[0], g=color[1], b=color[2])
+        acquired = self.led_lock.acquire(blocking=False)
+        if acquired:
+            try:
+                self.hardware['LEDS']['C'].set(r=color[0], g=color[1], b=color[2])
+            finally:
+                self.led_lock.release()
+
+
 
         self.stream.put({
             'angle': angle,
