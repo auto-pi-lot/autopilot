@@ -67,8 +67,7 @@ class Angle(Transform):
     def process(self, input):
         angle = np.arctan2(input[1][1]-input[0][1], input[1][0]-input[0][0])
         if self.abs:
-            if angle < 0:
-                angle += 2*np.pi
+            angle += np.pi
         if self.degrees:
             angle = angle*(180/np.pi)
         return angle

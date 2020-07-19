@@ -390,8 +390,7 @@ class DLC_Hand(Task):
                         t.units.Rescale((0, max_dim), (0, 1)),
             'angle': t.geometry.Angle() + \
                      t.units.Rescale((0, 360), (0, 1)),
-            'color': t.units.Color(t.units.Colorspaces.HSV, t.units.Colorspaces.RGB) + \
-                     t.units.Rescale((0,1), (0, 255))
+            'color': t.units.Color(t.units.Colorspaces.HSV, t.units.Colorspaces.RGB)
         }
 
         # get a stream to send data to terminal with
