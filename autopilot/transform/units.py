@@ -82,7 +82,14 @@ class Color(Transform):
         self.convert_to = convert_to
 
         # select processing function based on colors given
-        self.process = self.CONVERSIONS[self.convert_from][self.convert_to]
+        self.process_fn = self.CONVERSIONS[self.convert_from][self.convert_to]
+
+    def process(self, input, *args):
+        if len(args)>0:
+            return self.process_fn(input, args[0], args[1])
+        else:
+            return self.process_fn(*input)
+
 
 
 
