@@ -418,7 +418,7 @@ class DLC_Hand(Task):
         distance = self.transforms['distance'].process(value)
 
         color = self.transforms['color'].process((angle, 1, distance))
-        self.hardware['LEDS']['C'].set(color)
+        self.hardware['LEDS']['C'].set(r=color[0], g=color[1], b=color[2])
 
         self.stream.put({
             'continuous':True,
