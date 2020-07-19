@@ -158,16 +158,16 @@ class DLC_Latency(Task):
 
         # configure the child
         transform_descriptor = [
-            {'transform': 'DLC',
+            {'transform': 'image.DLC',
              'kwargs':{
                  'model_dir': self.model_name
              }},
-            {'transform': 'DLCSlice',
+            {'transform': 'selection.DLCSlice',
              'kwargs':{
                  'select': self.point_name,
                  'min_probability': self.trigger_thresh
              }},
-            {'transform': 'Condition',
+            {'transform': 'logical.Condition',
              'kwargs': {
                  'minimum': [self.trigger_limits_x[0], self.trigger_limits_y[0]],
                  'maximum': [self.trigger_limits_x[1], self.trigger_limits_y[1]],
@@ -338,11 +338,11 @@ class DLC_Hand(Task):
 
         # configure the child
         transform_descriptor = [
-            {'transform': 'DLC',
+            {'transform': 'image.DLC',
              'kwargs': {
                  'model_dir': self.model_name
              }},
-            {'transform': 'DLCSlice',
+            {'transform': 'selection.DLCSlice',
              'kwargs': {
                  'select': [self.point_name_1, self.point_name_2],
                  'min_probability': 0

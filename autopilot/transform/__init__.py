@@ -21,13 +21,8 @@ import types
 import typing
 from enum import Enum, auto
 
-# importing just to make make_transform work easily
-from autopilot.transform.geometry import *
-from autopilot.transform.image import *
-from autopilot.transform.logical import *
-from autopilot.transform.selection import *
-from autopilot.transform.units import *
 
+IMPORTED = False
 
 class TransformRhythm(Enum):
     """
@@ -215,10 +210,13 @@ def make_transform(transforms: typing.List[dict]):
     Returns:
         :class:`Transform`
     """
+
     ret = None
     for t in transforms:
         if isinstance(t['transform'], str):
-            t['transform'] = globals()[t['transform']]
+            module, classname = t['transform'].split('.')
+            mod = __import__(f"autopilot.transform.{module}", fromlist=[classname])
+            t['transform'] = getattr(mod, classname)
         transform = t['transform'](
             *t.get('args', []),
             **t.get('kwargs', {})
