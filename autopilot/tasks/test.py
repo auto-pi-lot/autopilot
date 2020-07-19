@@ -394,7 +394,7 @@ class DLC_Hand(Task):
         }
 
         # get a stream to send data to terminal with
-        self.stream = self.node.get_stream('T')
+        self.stream = self.node.get_stream('T', 'CONTINUOUS')
 
         self.stages = cycle([self.noop])
 
