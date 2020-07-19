@@ -86,9 +86,9 @@ class Color(Transform):
 
     def process(self, input, *args):
         if len(args)>0:
-            return self.process_fn(input, args[0], args[1])
+            return np.array(self.process_fn(input, args[0], args[1]))
         else:
-            return self.process_fn(*input)
+            return np.array(self.process_fn(*input))
 
 
 
