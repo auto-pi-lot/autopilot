@@ -173,7 +173,7 @@ class Transformer(object):
                  operation: str ="trigger",
                  return_id = 'T',
                  stage_block = None,
-                 value_subset=None
+                 value_subset=None,
                  **kwargs):
         """
 
