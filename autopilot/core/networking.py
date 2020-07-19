@@ -1783,9 +1783,11 @@ class Net_Node(object):
 
         if subject is None:
             if hasattr(prefs, 'SUBJECT'):
-                subject = bytes(prefs.SUBJECT, encoding="utf-8")
+                subject = prefs.SUBJECT
             else:
-                subject = b""
+                subject = ""
+        if isinstance(subject, bytes):
+            subject = subject.decode('utf-8')
 
         if prefs.LINEAGE == "CHILD":
             # pilot = bytes(prefs.PARENTID, encoding="utf-8")
