@@ -25,6 +25,9 @@ import pdb
 # import cv2
 import numpy as np
 from enum import Enum, auto
+import warnings
+
+from scipy.spatial import distance
 
 from autopilot import prefs
 
@@ -196,13 +199,13 @@ class Transform(object):
         return self
 
 
-class T_Image(Transform):
+class Image(Transform):
     """
     Metaclass for transformations of images
     """
 
     def __init__(self, shape=None, *args, **kwargs):
-        super(T_Image, self).__init__(*args, **kwargs)
+        super(Image, self).__init__(*args, **kwargs)
         self._shape = shape # type: typing.Tuple[int, int]
 
     @property
@@ -238,7 +241,7 @@ class T_Image(Transform):
         self._shape = (round(shape[0]), round(shape[1]))
 
 
-class T_DLC(T_Image):
+class DLC(Image):
     """
     Do pose estimation with ``DeepLabCut-Live``
 
@@ -261,7 +264,7 @@ class T_DLC(T_Image):
             *args: passed to DLCLive and superclass
             **kwargs: passed to DLCLive and superclass
         """
-        super(T_DLC, self).__init__(*args, **kwargs)
+        super(DLC, self).__init__(*args, **kwargs)
 
         self._model = None
         self._model_dir = None
@@ -527,7 +530,7 @@ class T_DLC(T_Image):
         }
 
 
-class T_Slice(Transform):
+class Slice(Transform):
     """
     Generic selection processor
     """
@@ -543,7 +546,7 @@ class T_Slice(Transform):
             *args:
             **kwargs:
         """
-        super(T_Slice, self).__init__(*args, **kwargs)
+        super(Slice, self).__init__(*args, **kwargs)
 
         self.check_slice(select)
 
@@ -562,38 +565,58 @@ class T_Slice(Transform):
         return input[self.select]
 
 
-class T_DLCSlice(T_Slice):
+class DLCSlice(Slice):
     """
-    like
+    Select x,y coordinates of :class:`.DLC` output based on the name of the tracked parts
+
+    note that min_probability is undefined when a list or tuple of part names are defined:
+    the form of the returned array is ambiguous (how to tell which part is which when some might be excluded?)
+
     """
     format_in = {'type': np.ndarray,
-                 'parent': T_DLC}
+                 'parent': DLC}
     format_out = {'type': np.ndarray}
 
-    def __init__(self, select, min_probability: float = 0,  *args, **kwargs):
-        super(T_DLCSlice, self).__init__(select, *args, **kwargs)
+    def __init__(self, select: typing.Union[str, tuple, list],
+                 min_probability: float = 0,  *args, **kwargs):
+        super(DLCSlice, self).__init__(select, *args, **kwargs)
 
         self.select_index = None
+
+        if isinstance(select, (tuple, list)) and min_probability > 0:
+            warnings.warn('min_probability is undefined when a list or tuple of part names are given, ignoring.')
+
         self.min_probability = np.clip(min_probability, 0, 1)
 
     def check_slice(self, select):
         if self._parent:
             # only check if we've already gotten a parent
-            if select not in self._parent.live.cfg['all_joints_names']:
-                raise ValueError('DLC selections must be names of joints!')
+            if isinstance(select, str):
+                if select not in self._parent.live.cfg['all_joints_names']:
+                    raise ValueError('DLC selections must be names of joints!')
+            elif isinstance(select, (tuple, list)):
+                for s in select:
+                    if s not in self._parent.live.cfg['all_joints_names']:
+                        raise ValueError('DLC selections must be names of joints!')
 
     def process(self, input: np.ndarray):
         if self.select_index is None:
-            self.select_index = self._parent.live.cfg['all_joints_names'].index(self.select)
+            if isinstance(self.select, str):
+                self.select_index = self._parent.live.cfg['all_joints_names'].index(self.select)
+            else:
+                self.select_index = np.array([self._parent.live.cfg['all_joints_names'].index(s) for s in self.select])
 
         point_row = input[self.select_index, :]
-        if point_row[2] > self.min_probability:
-            return point_row[0:2]
+        if isinstance(self.select, str):
+            if point_row[2] > self.min_probability:
+                return point_row[0:2]
+            else:
+                return False
         else:
-            return False
+            return point_row
 
 
-class T_Condition(Transform):
+class Condition(Transform):
     """
     Compare the input against some condition
     """
@@ -613,7 +636,7 @@ class T_Condition(Transform):
         if minimum is None and maximum is None:
             raise ValueError("need either a maximum or minimum!")
 
-        super(T_Condition, self).__init__(*args, **kwargs)
+        super(Condition, self).__init__(*args, **kwargs)
 
         self._minimum = None
         self._maximum = None
@@ -735,6 +758,87 @@ class T_Condition(Transform):
             ret['shape'] = (1,)
 
         return ret
+
+
+class Distance(Transform):
+    """
+    Given an n_samples x n_dimensions array, compute pairwise or mean distances
+    """
+    format_in = {'type': np.ndarray}
+    format_out = {'type': np.ndarray}
+
+    def __init__(self,
+                 pairwise: bool=False,
+                 n_dim: int = 2,
+                 metric='euclidean',
+                 squareform=True,
+                 *args, **kwargs):
+        """
+
+        Args:
+            pairwise (bool): If False (default), return mean distance. if True, return all distances
+            n_dim (int): number of dimensions (input array will be filtered like ``input[:,0:n_dim]``
+            metric (str): any metric acceptable to :func:`scipy.spatial.distance.pdist
+            squareform (bool): if pairwise is True, if True return square distance matrix, otherwise return compressed distance matrix (dist(X[i], X[j] = y[i*j])
+            *args:
+            **kwargs:
+        """
+
+        super(Distance, self).__init__(*args, **kwargs)
+
+        self.pairwise = pairwise
+        self.n_dim = n_dim
+        self.metric = metric
+        self.squareform = squareform
+
+    def process(self, input: np.ndarray):
+
+        # filter to input_dimension
+        input = input[:,0:self.n_dim]
+
+        output = distance.pdist(input, metric=self.metric)
+
+        if self.pairwise:
+            if self.squareform:
+                output = distance.squareform(output)
+        else:
+            output = np.mean(output)
+
+        return output
+
+class Rescale(Transform):
+    """
+    Rescale values from one range to another
+    """
+
+    format_in = {'type': np.ndarray}
+    format_out = {'type': np.ndarray}
+
+    def __init__(self,
+                 in_range: typing.Tuple[float, float] = (0, 1),
+                 out_range: typing.Tuple[float, float] = (0, 1),
+                 *args, **kwargs):
+
+        super(Rescale, self).__init__(*args, **kwargs)
+
+        self.in_range = in_range
+        self.out_range = out_range
+
+        self.in_diff = self.in_range[1] - self.in_range[0]
+        self.out_diff = self.out_range[1] - self.out_range[0]
+        self.ratio = self.out_diff / self.in_diff
+        
+    def process(self, input):
+        """
+        Subtract input minimum, multiple by output/input size ratio, add output minimum
+        """
+
+        return ((input - self.in_range[0]) * self.ratio) + self.out_range[0]
+
+
+
+
+
 
 
 def make_transform(transforms: typing.List[dict]):

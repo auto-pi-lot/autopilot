@@ -608,7 +608,7 @@ class Camera_CV(Camera):
 
 
         """
-        if not OPENCV:
+        if not globals()['OPENCV']:
             ImportError('opencv was not imported, and is required for Camera_CV')
 
         super(Camera_CV, self).__init__(**kwargs)
