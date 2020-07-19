@@ -4,6 +4,7 @@
 from collections import OrderedDict as odict
 import threading
 import logging
+import tables
 # from autopilot.core.networking import Net_Node
 from autopilot.hardware import BCM_TO_BOARD
 from autopilot import prefs
@@ -84,8 +85,9 @@ class Task(object):
     HARDWARE = {} # Hardware needed to run the task
     STAGE_NAMES = [] # list of names of stage methods
     PLOT = {} # dictionary of plotting params
-    TrialData = None # tables.IsDescription class to make data table
-
+    class TrialData(tables.IsDescription):
+        trial_num = tables.Int32Col()
+        session = tables.Int32Col()
 
 
 
