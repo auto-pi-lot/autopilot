@@ -354,7 +354,7 @@ class DLC_Hand(Task):
                              upstream=prefs.NAME,
                              port=prefs.MSGPORT,
                              listens={'STATE':self.l_state,
-                                      'UPDATE':self.l_update},
+                                      'STREAM':self.l_update},
                              instance=False)
 
         self.subject = kwargs['subject']
@@ -365,7 +365,8 @@ class DLC_Hand(Task):
             'operation':'stream',
             'transform':transform_descriptor,
             'return_id': self.node_id,
-            'value_subset': 'WEBCAM'
+            'value_subset': 'WEBCAM',
+            'return_key': 'STREAM'
         }
 
         self.node.send(to=prefs.NAME, key='CHILD', value=value)

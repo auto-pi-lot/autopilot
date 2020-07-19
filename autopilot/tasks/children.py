@@ -172,6 +172,7 @@ class Transformer(object):
     def __init__(self, transform,
                  operation: str ="trigger",
                  return_id = 'T',
+                 return_key = None,
                  stage_block = None,
                  value_subset=None,
                  **kwargs):
@@ -193,6 +194,11 @@ class Transformer(object):
         assert operation in ('trigger', 'stream', 'debug')
         self.operation = operation
         self._last_result = None
+
+        if return_key is None:
+            self.return_key = self.operation.upper()
+        else:
+            self.return_key = return_key
 
         self.return_id = return_id
         self.stage_block = stage_block
@@ -245,12 +251,12 @@ class Transformer(object):
 
             if self.operation == "trigger":
                 if result != self._last_result:
-                    self.node.send(self.return_id, 'TRIGGER', result)
+                    self.node.send(self.return_id, self.return_key, result)
                     self._last_result = result
 
             elif self.operation == 'stream':
                 # FIXME: Another key that's not TRIGGER
-                self.node.send(self.return_id, 'TRIGGER', result)
+                self.node.send(self.return_id, self.return_key, result)
 
             elif self.operation == 'debug':
                 pass
