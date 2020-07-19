@@ -21,6 +21,13 @@ import types
 import typing
 from enum import Enum, auto
 
+# importing just to make make_transform work easily
+from autopilot.transform.geometry import *
+from autopilot.transform.image import *
+from autopilot.transform.logical import *
+from autopilot.transform.selection import *
+from autopilot.transform.units import *
+
 
 class TransformRhythm(Enum):
     """
