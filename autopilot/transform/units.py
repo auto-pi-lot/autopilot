@@ -21,6 +21,7 @@ class Rescale(Transform):
     def __init__(self,
                  in_range: typing.Tuple[float, float] = (0, 1),
                  out_range: typing.Tuple[float, float] = (0, 1),
+                 clip = False,
                  *args, **kwargs):
 
         super(Rescale, self).__init__(*args, **kwargs)
@@ -32,6 +33,8 @@ class Rescale(Transform):
         self.out_diff = self.out_range[1] - self.out_range[0]
         self.ratio = self.out_diff / self.in_diff
 
+        self.clip = clip
+
     def process(self, input):
         """
         Subtract input minimum, multiple by output/input size ratio, add output minimum
@@ -39,7 +42,11 @@ class Rescale(Transform):
         if isinstance(input, (tuple, list)):
             input = np.array(input)
 
-        return ((input - self.in_range[0]) * self.ratio) + self.out_range[0]
+        input = ((input - self.in_range[0]) * self.ratio) + self.out_range[0]
+
+        if self.clip:
+            input = np.clip(input, self.out_range[0], self.out_range[1])
+        return input
 
 class Colorspaces(Enum):
     HSV = auto()

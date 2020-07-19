@@ -389,7 +389,7 @@ class DLC_Hand(Task):
         max_dim = max(crop_box[2:4])
         self.transforms = {
             'distance': t.geometry.Distance() + \
-                        t.units.Rescale((0, max_dim), (0, 1)),
+                        t.units.Rescale((0, 100), (0, 1), clip=True),
             'angle': t.geometry.Angle() + \
                      t.units.Rescale((0, 360), (0, 1)),
             'color': t.units.Color(t.units.Colorspaces.HSV, t.units.Colorspaces.RGB)
@@ -397,7 +397,8 @@ class DLC_Hand(Task):
 
         # get a stream to send data to terminal with
         self.stream = self.node.get_stream('T', 'CONTINUOUS',
-                                           upstream='T', ip=prefs.TERMINALIP,port=prefs.PUSHPORT)
+                                           upstream='T', ip=prefs.TERMINALIP,port=prefs.PUSHPORT,
+                                           subject=self.subject)
 
         self.stages = cycle([self.noop])
 
