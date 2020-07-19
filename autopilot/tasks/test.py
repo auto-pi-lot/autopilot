@@ -414,10 +414,10 @@ class DLC_Hand(Task):
 
     def l_update(self, value):
         # receive two points, convert to distance, angle, and then to color
-        angle = self.transforms['angle'](value)
-        distance = self.transforms['distance'](value)
+        angle = self.transforms['angle'].process(value)
+        distance = self.transforms['distance'].process(value)
 
-        color = self.transforms['color'](angle, 1, distance)
+        color = self.transforms['color'].process(angle, 1, distance)
         self.hardware['LEDS']['C'].set(color)
 
         self.stream.put({
