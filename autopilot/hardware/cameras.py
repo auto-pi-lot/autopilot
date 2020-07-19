@@ -646,8 +646,11 @@ class Camera_CV(Camera):
         Returns:
             tuple: (width, height)
         """
-        return (self.cam.get(cv2.CAP_PROP_FRAME_WIDTH),
-                self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        if self.crop:
+            return (self.crop[2], self.crop[3])
+        else:
+            return (self.cam.get(cv2.CAP_PROP_FRAME_WIDTH),
+                    self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
     @shape.setter
     def shape(self, shape):
@@ -668,7 +671,7 @@ class Camera_CV(Camera):
             return False, False
         ts = self._timestamp()
         if self.crop:
-            frame = frame[self.crop[0]:self.crop[2], self.crop[1]:self.crop[3]]
+            frame = frame[self.crop[1]:self.crop[1]+self.crop[3], self.crop[0]:self.crop[0]+self.crop[2]]
         return (ts, frame)
 
     def _timestamp(self, frame=None):
