@@ -8,7 +8,7 @@ from collections import OrderedDict as odict
 from itertools import cycle, count
 import tables
 from datetime import datetime
-from time import sleep
+from time import sleep, time
 import threading
 
 import autopilot.transform.geometry
@@ -294,8 +294,8 @@ class DLC_Hand(Task):
 
     PLOT = {
         'data': {
-            'distance': 'line',
-            'angle': 'line'
+            'distance': 'point',
+            'angle': 'point'
         },
         'continuous': True
     }
@@ -444,7 +444,9 @@ class DLC_Hand(Task):
             'distance': distance,
             'timestamp': datetime.now().isoformat(),
             'subject': self.subject,
-            'pilot': prefs.NAME
+            'pilot': prefs.NAME,
+            'continuous': True,
+            't':time()
         })
 
 
