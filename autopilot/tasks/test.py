@@ -354,7 +354,7 @@ class DLC_Hand(Task):
                              upstream=prefs.NAME,
                              port=prefs.MSGPORT,
                              listens={'STATE':self.l_state,
-                                      'STREAM':self.l_update},
+                                      'UPDATE':self.l_update},
                              instance=False)
 
         self.subject = kwargs['subject']
@@ -366,7 +366,7 @@ class DLC_Hand(Task):
             'transform':transform_descriptor,
             'return_id': self.node_id,
             'value_subset': 'WEBCAM',
-            'return_key': 'STREAM'
+            'return_key': 'UPDATE'
         }
 
         self.node.send(to=prefs.NAME, key='CHILD', value=value)
@@ -421,7 +421,6 @@ class DLC_Hand(Task):
         self.hardware['LEDS']['C'].set(r=color[0], g=color[1], b=color[2])
 
         self.stream.put({
-            'continuous':True,
             'angle': angle,
             'distance': distance,
             'timestamp': datetime.now().isoformat()
