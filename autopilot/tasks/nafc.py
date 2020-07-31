@@ -4,6 +4,7 @@ import itertools
 import tables
 import threading
 from copy import copy
+import typing
 
 import autopilot.hardware.gpio
 from autopilot.tasks import Task
@@ -476,8 +477,6 @@ class Nafc_Gap(Nafc):
                                   amplitude=self.noise_amplitude)
 
         self.noise.play_continuous()
-        # with open('cont_noise.pck', 'wb') as f:
-        #     pickle.dump(self.noise.chunks, f)
 
 
     def end(self):
@@ -486,6 +485,54 @@ class Nafc_Gap(Nafc):
         """
         self.noise.stop_continuous()
         super(Nafc_Gap, self).end()
+
+
+class Nafc_Gap_Laser(Nafc_Gap):
+    PARAMS = copy(Nafc_GAP.PARAMS)
+    PARAMS['laser_mode'] = {'tag':'Laser Mode',
+        'type':'list',
+        'values':{
+            'L':0,
+            'R':1,
+            'Both':2
+        }}
+    PARAMS['laser_freq'] = {'tag': 'Laser Pulse Frequency (Hz)',
+                            'type': 'float'}
+    PARAMS['laser_duty_cycle'] = {'tag': 'Laser Duty Cycle (0-1)',
+                                  'type': 'float'}
+    PARAMS['laser_durations'] = {'tag': 'Laser durations (ms), list-like [10, 20]. if blank, use durations from stimuli',
+                                 'type': 'str'}
+
+    HARDWARE = copy(Nafc_Gap.HARDWARE)
+
+    HARDWARE['LASERS'] = {
+        'L': gpio.Digital_Out,
+        'R': gpio.Digital_Out
+    }
+
+    HARDWARE['LEDS']['TOP'] = gpio.Digital_Out
+
+    def __init__(self, laser_mode: str, laser_freq: float, laser_duty_cycle: float, laser_durations: typing.Union[str, list], **kwargs):
+        """
+        Gap detection task with ability to control lasers via TTL logic for optogenetics
+
+        .. note::
+
+            Subclasses like these will be made obsolete with the completion of stimulus managers
+
+        Args:
+            laser_mode:
+            laser_freq:
+            laser_duty_cycle:
+            laser_durations:
+        """
+        self.laser_mode = laser_mode
+        self.laser_freq = float(laser_freq)
+        self.laser_duty_cycle = float(laser_duty_cycle)
+        self.laser_durations = laser_durations
+
+
+
 
 
 

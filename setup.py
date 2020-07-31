@@ -25,9 +25,13 @@ REQUIREMENTS = []
 
 
 # detect if on raspberry pi
-ret = subprocess.call(['grep', '-q', 'BCM', '/proc/cpuinfo'])
-if ret == 0:
-    IS_RASPI = True
+try:
+    ret = subprocess.call(['grep', '-q', 'BCM', '/proc/cpuinfo'])
+    if ret == 0:
+        IS_RASPI = True
+except:
+    pass
+
 
 # detect architecture
 _ARCH = platform.uname().machine
@@ -55,7 +59,7 @@ def load_requirements(req_file):
 # configure for raspberry pi
 if IS_RASPI:
     # install raspi dependencies
-    subprocess.call(['autopilot/setup/setup_environment_pi.sh'])
+    # subprocess.call(['autopilot/setup/setup_environment_pi.sh'])
 
 
     CMAKE_ARGS.extend(['-DPIGPIO=ON', '-DJACK=ON'])
@@ -69,7 +73,7 @@ if IS_RASPI:
 elif ARCH == 'x86':
     # is a terminal,
     # install dependencies
-    subprocess.call(['autopilot/setup/setup_environment_terminal.sh'])
+    # subprocess.call(['autopilot/setup/setup_environment_terminal.sh'])
 
     # sys.argv.append('--skip-cmake')
     REQUIREMENTS = load_requirements('requirements_terminal.txt')

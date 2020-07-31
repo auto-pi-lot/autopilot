@@ -286,6 +286,7 @@ class Plot(QtWidgets.QWidget):
         self.plot.getPlotItem().getAxis('bottom').setPen({'color':'k'})
         self.plot.getPlotItem().getAxis('bottom').setTickFont('FreeMono')
         self.plot.setXRange(self.xrange[0], self.xrange[1])
+        self.plot.enableAutoRange(y=True)
         # self.plot
         # self.plot.setYRange(0, 1)
 
