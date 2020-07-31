@@ -531,6 +531,10 @@ class Nafc_Gap_Laser(Nafc_Gap):
         self.laser_duty_cycle = float(laser_duty_cycle)
         self.laser_durations = laser_durations
 
+        super(Nafc_Gap_Laser, self).__init__(**kwargs)
+
+
+
 
 
 

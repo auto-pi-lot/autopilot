@@ -221,7 +221,8 @@ sass_configs = [
 
 # relative to html_static_path
 html_css_files = [
-    'css/autopilot_sass.css'
+    'css/autopilot_sass.css',
+    'css/autopilot_theme.css'
 ]
 
 html_baseurl = 'http://docs.auto-pi-lot.com/'
