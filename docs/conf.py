@@ -162,16 +162,15 @@ pygments_style = None
 # a list of builtin themes.
 #
 
-if try_theme == 'rtd':
-    html_theme = 'sphinx_rtd_theme'
-    html_style = 'css/autopilot_theme.css'
-    html_logo = 'autopilot_logo.svg'
-elif try_theme == 'bootstrap':
-    html_theme = 'bootstrap'
-    html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
-else:
-    html_theme = 'bootstrap'
-    html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+html_theme = 'sphinx_rtd_theme'
+html_style = 'css/autopilot_theme.css'
+html_logo = 'autopilot_logo.svg'
+# elif try_theme == 'bootstrap':
+#     html_theme = 'bootstrap'
+#     html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+# else:
+#     html_theme = 'bootstrap'
+#     html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
 #html_theme = "basicstrap"
 #

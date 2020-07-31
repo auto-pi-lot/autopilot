@@ -208,6 +208,27 @@ def coerce_discrete(df, col, mapping={'L':0, 'R':1}):
     return df
 
 
+def find_recursive(key, dictionary):
+    """
+    Find all instances of a key in a dictionary, recursively.
+
+    Args:
+        key:
+        dictionary:
+
+    Returns:
+        list
+    """
+    for k, v in dictionary.iteritems():
+        if k == key:
+            yield v
+        elif isinstance(v, dict):
+            for result in find_recursive(key, v):
+                yield result
+        elif isinstance(v, list):
+            for d in v:
+                for result in find_recursive(key, d):
+                    yield result
 
 
 
