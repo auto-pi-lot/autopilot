@@ -4,7 +4,7 @@
 # You can set these variables from the command line.
 SPHINXOPTS      = -E
 SPHINXBUILD     = python -m sphinx
-SOURCEDIR       = source
+SOURCEDIR       = ./
 BUILDDIR        = build
 AUTOBUILDDIR    = ./
 SPHINXAUTOBUILD = sphinx-autobuild
@@ -21,7 +21,7 @@ help:
 serve:
 	@$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 # 	@$(SPHINXAUTOBUILD) -b html "$(SOURCEDIR)" "$(AUTOBUILDDIR)" $(SPHINXOPTS) --watch source/changelog --open-browser --delay 1 $(O)
-	rsync -av $(BUILDDIR)/html/* ./ --remove-source-files
+	#rsync -av $(BUILDDIR)/html/* ./ --remove-source-files
 	# open up the simple node http-server
 	http-server
 	# open firefox
@@ -43,5 +43,5 @@ buildapi:
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-	rsync -av $(BUILDDIR)/html/* ./ --remove-source-files
+	#rsync -av $(BUILDDIR)/html/* ./ --remove-source-files
 
