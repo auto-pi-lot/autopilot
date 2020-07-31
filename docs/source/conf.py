@@ -86,7 +86,6 @@ extensions = [
     #'sphinxcontrib.fulltoc',
     #'localext.fulltoc'
     'sphinx_sass',
-    'sphinx_pyreverse',
     'local_directives'
 ]
 
