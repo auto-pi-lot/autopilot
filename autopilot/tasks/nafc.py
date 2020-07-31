@@ -488,7 +488,7 @@ class Nafc_Gap(Nafc):
 
 
 class Nafc_Gap_Laser(Nafc_Gap):
-    PARAMS = copy(Nafc_GAP.PARAMS)
+    PARAMS = copy(Nafc_Gap.PARAMS)
     PARAMS['laser_mode'] = {'tag':'Laser Mode',
         'type':'list',
         'values':{
