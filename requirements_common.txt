@@ -1,0 +1,12 @@
+pyzmq
+npyscreen
+tornado
+inputs
+requests
+blosc
+scikit-video
+tqdm
+numpy
+pandas
+tables
+cffi

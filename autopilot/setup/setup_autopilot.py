@@ -28,6 +28,8 @@ from autopilot import hardware
 parser = argparse.ArgumentParser(description="Setup an Autopilot Agent")
 parser.add_argument('-f', '--prefs', help="Location of .json prefs file (default: ~/autopilot/prefs.json")
 parser.add_argument('-d', '--dir', help="Autopilot directory (default: ~/autopilot)")
+parser.add_argument('-s', '--script', help="Run a setup script without entering a full setup routine. for available scripts see -l")
+parser.add_argument('-l', '--list_scripts', help="list available setup scripts!", action='store_true')
 
 AGENTS = ('TERMINAL', 'PILOT', 'CHILD')
 
@@ -46,8 +48,9 @@ ENV_PILOT = odict({
     'bluetooth' : {'type': 'bool',
                    'text': 'Disable Bluetooth? (recommended unless you\'re using it <3'},
     'systemd'   : {'type': 'bool',
-                   'text': 'Install Autopilot as a systemd service?\nIf you are running this command in a virtual environment it will be used to launch Autopilot'}
-
+                   'text': 'Install Autopilot as a systemd service?\nIf you are running this command in a virtual environment it will be used to launch Autopilot'},
+    'jackd'     : {'type': 'bool',
+                   'text': 'Install jack audio (required if AUDIOSERVER == jack)'}
 })
 
 BASE_PREFS = odict({
@@ -100,6 +103,66 @@ DIRECTORY_STRUCTURE = {
     'VIZDIR': 'viz',
     'PROTOCOLDIR': 'protocols',
 }
+
+PILOT_ENV_CMDS = {
+    'performance':
+        ['sudo systemctl disable raspi-config',
+         'sudo sed -i \'/^exit 0/i echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor\' /etc/rc.local',
+         'sudo sh -c "echo @audio - memlock 256000 >> /etc/security/limits.conf"',
+         'sudo sh -c "echo @audio - rtprio 75 >> /etc/security/limits.conf"',
+         ],
+    'change_pw': ['passwd'],
+    'set_locale': ['sudo dpkg-reconfigure locales',
+                   'sudo dpkg-reconfigure keyboard-configuration'],
+    'hifiberry':
+        [
+            {'command':'sudo adduser pi i2c', 'optional':True},
+            'sudo sed -i \'s/^dtparam=audio=on/#dtparam=audio=on/g\' /boot/config.txt',
+            'sudo sed -i \'$s/$/\\ndtoverlay=hifiberry-dacplus\\ndtoverlay=i2s-mmap\\ndtoverlay=i2c-mmap\\ndtparam=i2c1=on\\ndtparam=i2c_arm=on/\' /boot/config.txt',
+            'echo -e \'pcm.!default {\\n type hw card 0\\n}\\nctl.!default {\\n type hw card 0\\n}\' | sudo tee /etc/asound.conf'
+        ],
+    'viz': [],
+    'bluetooth':
+        [
+            'sudo sed - i \'$s/$/\ndtoverlay=pi3-disable-bt/\' / boot / config.txt',
+            'sudo systemctl disable hciuart.service',
+            'sudo systemctl disable bluealsa.service',
+            'sudo systemctl disable bluetooth.service'
+        ],
+    'jackd':
+        [
+            "git clone git://github.com/jackaudio/jack2 --depth 1",
+            "cd jack2",
+            "./waf configure --alsa=yes --libdir=/usr/lib/arm-linux-gnueabihf/",
+            "./waf build -j6",
+            "sudo ./waf install",
+            "sudo ldconfig",
+            "sudo sh -c \"echo @audio - memlock 256000 >> /etc/security/limits.conf\"",             # giving jack more juice
+            "sudo sh -c \"echo @audio - rtprio 75 >> /etc/security/limits.conf\"",
+            "cd ..",
+            "rm -rf ./jack2"
+        ]
+
+}
+"""
+performance: 
+    * disable startup script that changes cpu governor,
+    * change cpu governor to "performance" on boot
+    * increase memlock and realtime priority limits for audio group
+
+hifiberry:
+    * turn onboard audio off
+    * enable hifiberry stuff in /boot/config.txt
+    * edit alsa config so hifiberry is default sound card
+
+viz:
+
+.. todo::
+
+    Need to find a more elegant way to do this, for now see lines 160-200 in the presetup_pilot.sh legacy script
+
+"""
+
 
 
 class Autopilot_Form(nps.Form):
@@ -397,51 +460,6 @@ class Pilot_Config_Form_2(Autopilot_Form):
         self.parentApp.setNextForm('HARDWARE')
 
 
-PILOT_ENV_CMDS = {
-    'performance':
-        ['sudo systemctl disable raspi-config',
-         'sudo sed -i \'/^exit 0/i echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor\' /etc/rc.local',
-         'sudo sh -c "echo @audio - memlock 256000 >> /etc/security/limits.conf"',
-         'sudo sh -c "echo @audio - rtprio 75 >> /etc/security/limits.conf"',
-                    ],
-    'change_pw': ['passwd'],
-    'set_locale': ['sudo dpkg-reconfigure locales',
-                   'sudo dpkg-reconfigure keyboard-configuration'],
-    'hifiberry':
-    [
-        'sudo adduser pi i2c',
-        'sudo sed -i \'s/^dtparam=audio=on/#dtparam=audio=on/g\' /boot/config.txt',
-        'sudo sed -i \'$s/$/\ndtoverlay=hifiberry-dacplus\ndtoverlay=i2s-mmap\ndtoverlay=i2c-mmap\ndtparam=i2c1=on\ndtparam=i2c_arm=on/\' /boot/config.txt',
-        'echo -e \'pcm.!default {\n type hw card 0\n}\nctl.!default {\n type hw card 0\n}\' | sudo tee /etc/asound.conf'
-    ],
-    'viz': [],
-    'bluetooth':
-    [
-        'sudo sed - i \'$s/$/\ndtoverlay=pi3-disable-bt/\' / boot / config.txt',
-        'sudo systemctl disable hciuart.service',
-        'sudo systemctl disable bluealsa.service',
-        'sudo systemctl disable bluetooth.service'
-    ]
-
-}
-"""
-performance: 
-    * disable startup script that changes cpu governor,
-    * change cpu governor to "performance" on boot
-    * increase memlock and realtime priority limits for audio group
-    
-hifiberry:
-    * turn onboard audio off
-    * enable hifiberry stuff in /boot/config.txt
-    * edit alsa config so hifiberry is default sound card
-
-viz:
-
-.. todo::
-
-    Need to find a more elegant way to do this, for now see lines 160-200 in the presetup_pilot.sh legacy script
-
-"""
 
 class Terminal_Form(Autopilot_Form):
     def create(self):
@@ -512,14 +530,32 @@ def call_series(commands, series_name=None):
     if series_name:
         print('\n\033[1;37;42m Running commands for {}\u001b[0m'.format(series_name))
 
-    status = False
+    # have to just combine them -- can't do multiple calls b/c shell doesn't preserve between them
+    combined_calls = ""
+    last_command = len(commands)-1
+    for i, command in enumerate(commands):
+        join_with = " && "
 
-    for command in commands:
-        result = subprocess.run(command, shell=True)
-        if result.returncode == 0:
-            status = True
-        else:
-            status = False
+        if isinstance(command, str):
+            # just a command, default necessary
+            combined_calls += command
+        elif isinstance(command, dict):
+            combined_calls += command['command']
+
+            if command.get('optional', False):
+                join_with = "; "
+
+        if i < last_command:
+            combined_calls += join_with
+
+
+    print('Executing:\n    {}'.format(combined_calls))
+
+    result = subprocess.run(combined_calls, shell=True, executable='/bin/bash')
+
+    status = False
+    if result.returncode == 0:
+        status = True
 
     if series_name:
         if status:
@@ -528,6 +564,20 @@ def call_series(commands, series_name=None):
             print('\n\033[1;37;41m  {} Failed, check the error message & ur crystal ball\u001b[0m'.format(series_name))
 
     return status
+
+
+def run_script(script_name):
+    if script_name in PILOT_ENV_CMDS.keys():
+        call_series(PILOT_ENV_CMDS[script_name], script_name)
+    else:
+        Exception('No script named {}, must be one of {}'.format(script_name, "\n".join(PILOT_ENV_CMDS.keys())))
+
+
+def list_scripts():
+    print('Available Scripts:')
+    for script_name in sorted(PILOT_ENV_CMDS.keys()):
+        print(f'{script_name}: {PILOT_ENV_CMDS[script_name]["text"]}\n')
+
 
 def make_dir(adir):
     """
@@ -538,7 +588,8 @@ def make_dir(adir):
     """
     if not os.path.exists(adir):
         os.makedirs(adir)
-        os.chmod(adir, 0o774)
+
+    os.chmod(adir, 0o774)
 
 if __name__ == "__main__":
     env = {}
@@ -548,6 +599,13 @@ if __name__ == "__main__":
     config_msgs = []
 
     args = parser.parse_args()
+
+    if args.list_scripts:
+        list_scripts()
+        sys.exit()
+    elif args.script:
+        run_script(args.script)
+        sys.exit()
 
     if args.dir:
         autopilot_dir = args.dir
@@ -561,6 +619,9 @@ if __name__ == "__main__":
                 # autopilot_dir = autopilof_conf['AUTOPILOTDIR']
         else:
             autopilot_dir = os.path.join(os.path.expanduser('~'), 'autopilot', '')
+
+    make_dir(autopilot_dir)
+
 
     # attempt to load .prefs from standard location (~/autopilot/prefs.json)
     if args.prefs:

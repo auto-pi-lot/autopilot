@@ -114,10 +114,14 @@ class Camera(Hardware):
     type = "CAMERA" #: (str): what are we anyway?
     trigger = False
 
-    def __init__(self, fps=None, timed=False, **kwargs):
+    def __init__(self, fps=None, timed=False, crop=None, **kwargs):
         """
 
-
+        Args:
+            fps:
+            timed:
+            crop (tuple): (x, y of top left corner, width, height)
+            **kwargs:
         """
         super(Camera, self).__init__(**kwargs)
 
@@ -133,6 +137,7 @@ class Camera(Hardware):
         self.frame = None
         self.shape = None
         self.frame_n = 0
+        self.crop = crop
 
         self.blosc = True
 
@@ -300,7 +305,7 @@ class Camera(Hardware):
                 self._indicator = tqdm()
             self._indicator.update()
 
-    def stream(self, to='T', ip=None, port=None, **kwargs):
+    def stream(self, to='T', ip=None, port=None, min_size=5, **kwargs):
         """
         Enable streaming frames on capture.
 
@@ -349,7 +354,8 @@ class Camera(Hardware):
 
         self._stream_q = self.node.get_stream(
             'stream', 'CONTINUOUS', upstream=to,
-            ip=ip, port=port, subject=subject
+            ip=ip, port=port, subject=subject,
+            min_size=min_size
         )
 
         self.streaming.set()
@@ -607,7 +613,7 @@ class Camera_CV(Camera):
 
 
         """
-        if not OPENCV:
+        if not globals()['OPENCV']:
             ImportError('opencv was not imported, and is required for Camera_CV')
 
         super(Camera_CV, self).__init__(**kwargs)
@@ -640,8 +646,18 @@ class Camera_CV(Camera):
         Returns:
             tuple: (width, height)
         """
-        return (self.cam.get(cv2.CAP_PROP_FRAME_WIDTH),
-                self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        if self.crop:
+            return (self.crop[2], self.crop[3])
+        else:
+            return (self.cam.get(cv2.CAP_PROP_FRAME_WIDTH),
+                    self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+    @shape.setter
+    def shape(self, shape):
+        """
+        Do nothing
+        """
+        pass
 
     def _grab(self):
         """
@@ -654,6 +670,8 @@ class Camera_CV(Camera):
         if not ret:
             return False, False
         ts = self._timestamp()
+        if self.crop:
+            frame = frame[self.crop[1]:self.crop[1]+self.crop[3], self.crop[0]:self.crop[0]+self.crop[2]]
         return (ts, frame)
 
     def _timestamp(self, frame=None):
@@ -837,16 +855,7 @@ class Camera_Spinnaker(Camera):
         """
 
         if not PYSPIN:
-            ImportError('PySpin was not imported, and is required for Camera_Spinnaker')
-
-        super(Camera_Spinnaker, self).__init__(**kwargs)
-
-        if serial and camera_idx:
-            self.logger.warning("serial and camera_idx were both passed, defaulting to serial")
-            camera_idx = None
-
-        self.serial = serial
-        self.camera_idx = camera_idx
+            raise ImportError('PySpin was not imported, and is required for Camera_Spinnaker')
 
 
 
@@ -871,13 +880,30 @@ class Camera_Spinnaker(Camera):
         self._writable_attributes = {}
         self._timestamps = []
 
+
+        super(Camera_Spinnaker, self).__init__(**kwargs)
+
+        if serial and camera_idx:
+            self.logger.warning("serial and camera_idx were both passed, defaulting to serial")
+            camera_idx = None
+
+        if isinstance(serial, float) or isinstance(serial, int):
+            serial = str(serial)
+        self.serial = serial
+        self.camera_idx = camera_idx
+
+
+
         # set passed parameters
         # has to be done in a specific order, as they are mutually dependent.
         # eg. exposure depends on fps, which depends on bin, etc.
         if 'pixel_format' in kwargs.keys():
             self.set('PixelFormat', kwargs['pixel_format'])
         else:
-            self.set('PixelFormat', PySpin.PixelFormat_Mono8)
+            try:
+                self.set('PixelFormat', PySpin.PixelFormat_Mono8)
+            except:
+                pass
 
         if 'bin' in kwargs.keys():
             self.bin = kwargs['bin']
@@ -1132,8 +1158,15 @@ class Camera_Spinnaker(Camera):
                 # proportional to fps
                 exposure = (1.0 / self.fps) * exposure * 1e6
 
+            try:
+                self.set('GainAuto', 'Off')
+                self.set('Gain', 1)
+            except Exception as e:
+                self.logger.exception(e)
+
+
             self.cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Off)
-            self.cam.ExposureMode.SetValue(PySpin.ExposureMode_Timed)
+            # self.cam.ExposureMode.SetValue(PySpin.ExposureMode_Timed)
             self.cam.ExposureTime.SetValue(exposure)
             self._exposure = exposure
         else:
@@ -1155,8 +1188,12 @@ class Camera_Spinnaker(Camera):
     @fps.setter
     def fps(self, fps):
         if isinstance(fps, int):
-            self.cam.AcquisitionFrameRateEnable.SetValue(True)
-            self.cam.AcquisitionFrameRate.SetValue(fps)
+            #self.cam.AcquisitionFrameRateEnable.SetValue(True)
+            #self.cam.AcquisitionFrameRate.SetValue(fps)
+            self.set('AcquisitionFrameRateAuto', 'Off')
+            self.set('AcquisitionFrameRateEnable',True)
+            self.set('AcquisitionFrameRate',fps)
+
         elif fps is None:
             # initially set to None on superclass init
             pass
@@ -1308,21 +1345,23 @@ class Camera_Spinnaker(Camera):
             attr (str): Name of attribute to be set
             val (str, int, float): Value to set attribute
         """
-        if attr in self._camera_attributes:
+        if self.cam:
+            # checking ensures we have camera initialized
+            if attr in self._camera_attributes:
 
-            prop = self._camera_attributes[attr]
-            if not PySpin.IsWritable(prop):
-                self.logger.exception("Property '%s' is not currently writable!" % attr)
+                prop = self._camera_attributes[attr]
+                if not PySpin.IsWritable(prop):
+                    self.logger.exception("Property '%s' is not currently writable!" % attr)
 
-            if hasattr(prop, 'SetValue'):
-                prop.SetValue(val)
+                if hasattr(prop, 'SetValue'):
+                    prop.SetValue(val)
+                else:
+                    prop.FromString(val)
+
+            elif attr in self._camera_methods:
+                self.logger.exception("Camera method '%s' is a function -- you can't assign it a value!" % attr)
             else:
-                prop.FromString(val)
-
-        elif attr in self._camera_methods:
-            self.logger.exception("Camera method '%s' is a function -- you can't assign it a value!" % attr)
-        else:
-            self.logger.exception('Not sure what to do with attr: {}, value: {}'.format(attr, val))
+                self.logger.exception('Not sure what to do with attr: {}, value: {}'.format(attr, val))
 
         # else:
         #
@@ -1685,7 +1724,7 @@ def list_spinnaker_cameras():
 
         cam_info.append(info_dict)
 
-    del cam
+        del cam
     cam_list.Clear()
     system.ReleaseInstance()
 

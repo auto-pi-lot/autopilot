@@ -4,6 +4,7 @@
 from collections import OrderedDict as odict
 import threading
 import logging
+import tables
 # from autopilot.core.networking import Net_Node
 from autopilot.hardware import BCM_TO_BOARD
 from autopilot import prefs
@@ -84,12 +85,13 @@ class Task(object):
     HARDWARE = {} # Hardware needed to run the task
     STAGE_NAMES = [] # list of names of stage methods
     PLOT = {} # dictionary of plotting params
-    TrialData = None # tables.IsDescription class to make data table
+    class TrialData(tables.IsDescription):
+        trial_num = tables.Int32Col()
+        session = tables.Int32Col()
 
 
 
-
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
 
         # Task management
         self.stage_block = None  # a threading.Event used by the pilot to manage stage transitions
@@ -139,7 +141,7 @@ class Task(object):
                     hw_args = pin_numbers[type][pin]
                     if isinstance(hw_args, dict):
                         if 'name' not in hw_args.keys():
-                            hw_name = "{}_{}".format(type, pin)
+                            hw_args['name'] = "{}_{}".format(type, pin)
                         hw = handler(**hw_args)
                     else:
                         hw_name = "{}_{}".format(type, pin)
@@ -206,7 +208,7 @@ class Task(object):
     # def init_sound(self):
     #     pass
 
-    def handle_trigger(self, pin, level, tick):
+    def handle_trigger(self, pin, level=None, tick=None):
         """
         All GPIO triggers call this function with the pin number, level (high, low),
         and ticks since booting pigpio.
@@ -227,6 +229,7 @@ class Task(object):
             pin = self.pin_id[pin]
 
         if pin not in self.triggers.keys():
+            self.logger.debug(f"No trigger found for {pin}")
             # No trigger assigned, get out without waiting
             return
 

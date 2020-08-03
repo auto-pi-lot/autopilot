@@ -7,13 +7,28 @@ Client that dumps samples directly to the jack client with the :mod:`jack` packa
 
 import multiprocessing as mp
 import queue as queue
-import jack
 import numpy as np
 from copy import copy
 from threading import Thread
 from itertools import cycle
 from queue import Empty
 import sys
+
+# importing configures environment variables necessary for importing jack-client module below
+from autopilot import external
+
+try:
+    import jack
+except OSError as e:
+    print(e)
+    install_jack = input('Try to install jackd? (y/n): ')
+    if install_jack == "y":
+        from autopilot.setup.setup_autopilot import run_script
+        run_script('jackd')
+        import jack
+    else:
+        raise e
+
 
 from autopilot import prefs
 

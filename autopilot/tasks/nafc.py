@@ -4,6 +4,9 @@ import itertools
 import tables
 import threading
 from copy import copy
+import typing
+
+import numpy as np
 
 import autopilot.hardware.gpio
 from autopilot.tasks import Task
@@ -12,6 +15,7 @@ from autopilot.stim.sound import sounds
 from autopilot.hardware import gpio
 from collections import OrderedDict as odict
 from autopilot.core.networking import Net_Node
+from autopilot.core.utils import find_recursive
 
 from autopilot import prefs
 import pdb
@@ -476,8 +480,6 @@ class Nafc_Gap(Nafc):
                                   amplitude=self.noise_amplitude)
 
         self.noise.play_continuous()
-        # with open('cont_noise.pck', 'wb') as f:
-        #     pickle.dump(self.noise.chunks, f)
 
 
     def end(self):
@@ -486,6 +488,150 @@ class Nafc_Gap(Nafc):
         """
         self.noise.stop_continuous()
         super(Nafc_Gap, self).end()
+
+
+class Nafc_Gap_Laser(Nafc_Gap):
+    PARAMS = copy(Nafc_Gap.PARAMS)
+    PARAMS['laser_probability'] = {'tag': 'Probability (of trials whose targets match laser_mode) of laser being turned on (0-1)',
+                                   'type':'float'}
+    PARAMS['laser_mode'] = {'tag':'Laser Mode',
+        'type':'list',
+        'values':{
+            'L':0,
+            'R':1,
+            'Both':2
+        }}
+    PARAMS['laser_freq'] = {'tag': 'Laser Pulse Frequency (Hz)',
+                            'type': 'float'}
+    PARAMS['laser_duty_cycle'] = {'tag': 'Laser Duty Cycle (0-1)',
+                                  'type': 'float'}
+    PARAMS['laser_durations'] = {'tag': 'Laser durations (ms), list-like [10, 20]. if blank, use durations from stimuli',
+                                 'type': 'str'}
+
+    HARDWARE = copy(Nafc_Gap.HARDWARE)
+
+    HARDWARE['LASERS'] = {
+        'L': gpio.Digital_Out,
+        'R': gpio.Digital_Out
+    }
+
+    HARDWARE['LEDS']['TOP'] = gpio.Digital_Out
+
+    TrialData = copy(Nafc_Gap.TrialData)
+    TrialData.laser = tables.Int32Col()
+    TrialData.laser_duration = tables.Float32Col()
+
+
+    def __init__(self, laser_probability: float, laser_mode: str, laser_freq: float, laser_duty_cycle: float, laser_durations: typing.Union[str, list], **kwargs):
+        """
+        Gap detection task with ability to control lasers via TTL logic for optogenetics
+
+        .. note::
+
+            Subclasses like these will be made obsolete with the completion of stimulus managers
+
+        Args:
+            laser_probability (float):
+            laser_mode:
+            laser_freq:
+            laser_duty_cycle:
+            laser_durations:
+        """
+        self.laser_probability = float(laser_probability)
+        self.laser_mode = laser_mode
+        self.laser_freq = float(laser_freq)
+        self.laser_duty_cycle = float(laser_duty_cycle)
+        self.laser_durations = laser_durations
+
+        super(Nafc_Gap_Laser, self).__init__(**kwargs)
+
+        # --------------------------------------
+        # create description of laser pulses
+        # make a pair of lists, values (on/off) and durations (ms)
+        # use them to create pigpio scripts using the Digital_Out.store_series() method
+
+        # get the durations of on and off for a single cycle
+        cycle_duration = (1/self.laser_freq)*1000
+        duty_cycle_on = self.laser_duty_cycle * cycle_duration
+        duty_cycle_off = cycle_duration - duty_cycle_on
+
+        self.duration_ids = []
+
+        if isinstance(self.laser_durations, list):
+            # iterate through durations and create lists for each
+            for duration in self.laser_durations:
+                # get number of repeats to make
+                n_cycles = np.floor(duration/cycle_duration)
+                durations = [duty_cycle_on, duty_cycle_off]*n_cycles
+                values = [1, 0]*n_cycles
+
+                # pad any incomplete cycles
+                dur_remaining = duration-(cycle_duration*n_cycles)
+                if dur_remaining < duty_cycle_on:
+                    durations.append(dur_remaining)
+                    values.append(1)
+                else:
+                    durations.extend([duty_cycle_on, dur_remaining-duty_cycle_on])
+                    values.extend([1, 0])
+
+                # store pulses as pigpio scripts
+                self.hardware['LASERS']['L'].store_series(duration, values=values, durations=durations)
+                self.hardware['LASERS']['R'].store_series(duration, values=values, durations=durations)
+
+
+        else:
+            # use the durations of the stimuli
+            self.logger.exception('reading durations from stimulus manager not implemented')
+            raise NotImplementedError('read durations from the stimulus manager')
+
+        # -----------------------------------
+        # create a pulse for the LED that's equal to the longest stimulus duration
+        # use find_recursive to find all durations
+        # FIXME: implement stimulus managers properly, including API to get attributes of stimuli
+        stim_durations = list(find_recursive('duration', kwargs['stim']))
+        max_duration = np.max(stim_durations)
+        self.hardware['LEDS']['TOP'].store_series('on', values=1, durations=max_duration )
+
+
+    def request(self,*args,**kwargs):
+        # call the super method
+        data = super(Nafc_Gap_Laser, self).request(*args, **kwargs)
+
+        # handle laser logic
+        # if the laser_mode is fulfilled, roll for a laser
+        test_laser = False
+        if self.laser_mode == "L" and self.target == "L":
+            test_laser = True
+        elif self.laser_mode == "R" and self.target == "R":
+            test_laser = True
+        elif self.laser_mode == "Both":
+            test_laser = True
+
+        duration = 0
+        do_laser = False
+        if test_laser:
+            # if we've rolled correctly for a laser...
+            if np.random.rand() <= self.laser_probability:
+                do_laser = True
+                # pick a random duration
+                duration = np.random.choice(self.laser_durations)
+                # insert the laser triggers before the rest of the triggers
+                self.triggers['C'].insert(0, lambda: self.hardware['LASERS']['L'].series(id=duration))
+                self.triggers['C'].insert(0, lambda: self.hardware['LASERS']['R'].series(id=duration))
+
+        # always turn the light on
+        self.triggers['C'].insert(0, lambda: self.hardware['LEDS']['TOP'].series(id='on'))
+
+        # store the data about the laser status
+        data['laser'] = do_laser
+        data['laser_duration'] = duration
+
+        # return the data created by the original task
+        return data
+
+
+
+
 
 
 

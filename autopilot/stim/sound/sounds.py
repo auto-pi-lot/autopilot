@@ -49,7 +49,7 @@ from autopilot import prefs
 
 # switch behavior based on audio server type
 try:
-    server_type = prefs.AUDIOSERVER
+    server_type = prefs.AUDIOSERVER.lower()
 except:
 #    # TODO: The 'attribute don't exist' type - i think NameError?
     server_type = None
@@ -117,7 +117,7 @@ if server_type in ("pyo", "docs"):
             self.trigger = pyo.TrigFunc(self.table['trig'], trig_fn)
 
 
-if server_type in ("jack", "docs"):
+if server_type in ("jack", "docs", True):
     from autopilot.stim.sound import jackclient
 
     class Jack_Sound(object):

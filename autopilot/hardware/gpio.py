@@ -9,6 +9,7 @@ returns isoformatted timestamps rather than tick numbers in callbacks. See the `
 Note:
     This module does not include hardware that uses the GPIO pins over a specific protocol like i2c
 """
+import os
 import sys
 import threading
 import time
@@ -28,6 +29,7 @@ True if pigpio can be imported
 """
 try:
     import pigpio
+
 
     TRIGGER_MAP = {
         'U': pigpio.RISING_EDGE,
@@ -173,6 +175,8 @@ class GPIO(Hardware):
 
     @pin.setter
     def pin(self, pin):
+        if pin is None:
+            return
         assert(int(pin))
 
         self._pin = int(pin)
@@ -286,6 +290,7 @@ class Digital_Out(GPIO):
 
         self._last_script = None
         self.scripts = {}
+        self.script_handles = {}
         self.script_counter = itertools.count()
 
         self.pulse_width = np.clip(pulse_width, 0, 100).astype(np.int)
@@ -364,7 +369,7 @@ class Digital_Out(GPIO):
                                   self.on)
 
         else:
-            RuntimeError('How did we even get here? Pulse value must be an int 1-100')
+            raise RuntimeError('How did we even get here? Pulse value must be an int 1-100')
 
 
     def _series_script(self, values, durations = None, unit="ms", repeat=None, finish_off = True):
@@ -448,17 +453,22 @@ class Digital_Out(GPIO):
 
         """
 
-        # actually might want to overwrite scripts w/ same ids, like a solenoid that changes its 'open' duration
-        # if id in self.scripts.keys():
+        # actually might want to overwrite script_handles w/ same ids, like a solenoid that changes its 'open' duration
+        # if id in self.script_handles.keys():
         #     Exception("Script with id {} already created!".format(id))
 
         series_script = self._series_script(**kwargs)
 
-        script_id = self.pig.store_script(series_script)
+        # check if there is an identical script already and use that instead
+        matches = [script_id for script_id, test_script in self.scripts.items() if test_script == series_script]
+        if len(matches)>0:
+            script_id = self.script_handles[matches[0]]
+        else:
 
-        self.scripts[id] = script_id
+            script_id = self.pig.store_script(series_script)
 
-
+        self.script_handles[id] = script_id
+        self.scripts[id] = series_script
 
     def series(self, id=None, delete=None, **kwargs):
         """
@@ -481,7 +491,7 @@ class Digital_Out(GPIO):
         return_id = False
 
         if id:
-            if id not in self.scripts.keys():
+            if id not in self.script_handles.keys():
                 self.store_series(id, **kwargs)
 
         # if we weren't called with an ID, have to have a list of values/etc to create a script
@@ -496,15 +506,15 @@ class Digital_Out(GPIO):
             # since we've generated a script ID, we should return it
             return_id = True
 
-        script_status = self.pig.script_status(self.scripts[id])
+        script_status = self.pig.script_status(self.script_handles[id])
         if script_status == pigpio.PI_SCRIPT_INITING:
             check_times = 0
-            while self.pig.script_status(self.scripts[id]) == pigpio.PI_SCRIPT_INITING:
+            while self.pig.script_status(self.script_handles[id]) == pigpio.PI_SCRIPT_INITING:
                 time.sleep(0.001)
                 check_times += 1
                 if check_times > 1000:
                     break
-        self.pig.run_script(self.scripts[id])
+        self.pig.run_script(self.script_handles[id])
         self._last_script = id
 
         if delete:
@@ -520,13 +530,16 @@ class Digital_Out(GPIO):
 
     def _delete_script(self, script_id):
         checktimes = 0
-        while self.pig.script_status(self.scripts[script_id]) == pigpio.PI_SCRIPT_RUNNING:
+        while self.pig.script_status(self.script_handles[script_id]) == pigpio.PI_SCRIPT_RUNNING:
             time.sleep(1)
             checktimes += 1
             if checktimes > 10:
                 continue
 
-        self.pig.delete_script(self.scripts[script_id])
+        self.pig.delete_script(self.script_handles[script_id])
+
+        del self.script_handles[script_id]
+        del self.scripts[script_id]
 
     def stop_script(self, id=None):
         """
@@ -545,8 +558,8 @@ class Digital_Out(GPIO):
             return
 
         # if we were passed a keyed, named script id, convert it to the pigio integer script id
-        if id in self.scripts.keys():
-            script_id = self.scripts[id]
+        if id in self.script_handles.keys():
+            script_id = self.script_handles[id]
             status, _ = self.pig.script_status(script_id)
 
             # if the script is still running, stop it and set the pin to off.
@@ -747,7 +760,7 @@ class PWM(Digital_Out):
         Args:
             value (int, float):
                 - if int > 1, sets value (or :attr:`PWM.range`-value if :attr:`PWM.polarity` is inverted).
-                - if 0 < float < 1, transforms to a proportion of :attr:`.range` (inverted  if needed as well).
+                - if 0 <= float <= 1, transforms to a proportion of :attr:`.range` (inverted  if needed as well).
 
         """
         value = self._clean_value(value)
@@ -877,11 +890,13 @@ class LED_RGB(Digital_Out):
 
         super(LED_RGB, self).__init__(**kwargs)
 
+        self.flash_params = None
+
 
 
         if pins and len(pins) == 3:
             for color, pin in zip(('r', 'g', 'b'), pins):
-                self.channels[color] = PWM(pin, polarity=polarity)
+                self.channels[color] = PWM(pin, polarity=polarity, name=f"{self.name}_{color.upper()}")
 
         elif r and g and b:
             self.channels = {'r':PWM(r, polarity=polarity, name="{}_R".format(self.name)),
@@ -898,14 +913,14 @@ class LED_RGB(Digital_Out):
             self.series(id='blink')
 
     @property
-    def range(self):
+    def range(self) -> dict:
         """
         Returns:
             dict: ranges for each of the :attr:`LED_RGB.channels`
         """
-        return {self.channels['r'].range,
-                self.channels['g'].range,
-                self.channels['b'].range}
+        return {'r':self.channels['r'].range,
+                'g':self.channels['g'].range,
+                'b':self.channels['b'].range}
 
     @range.setter
     def range(self, range):
@@ -1053,8 +1068,23 @@ class LED_RGB(Digital_Out):
         # Invert frequency to duration for single flash
         # divide by 2 b/c each 'color' is half the duration
         single_dur = ((1. / frequency) * 1000) / 2.
-        script_id = self.series(colors=flashes, durations=single_dur)
 
+        flash_params = (flashes, single_dur)
+
+        new_flash = True
+        if self.flash_params:
+            if self.flash_params == flash_params:
+                # do nothing
+                new_flash = False
+
+        if new_flash:
+            self.store_series('flash',
+                              colors=flashes,
+                              durations=single_dur)
+            self.flash_params = flash_params
+
+
+        self.series('flash')
 
     #
     # def __getattr__(self, name):
@@ -1107,6 +1137,9 @@ class LED_RGB(Digital_Out):
         """
         Pins don't get set like this for the LED_RGB, ignore.
         """
+        if pin is None:
+            # just remnants of the attempt to set from the GPIO metaclass
+            return
         self.logger.warning('pin cant be set via the attribute')
 
     @property
@@ -1126,6 +1159,9 @@ class LED_RGB(Digital_Out):
         """
         Pins don't get set like this for the LED_RGB, ignore\
         """
+        if pin_bcm is None:
+            return
+
         self.logger.warning('pin_bcm cant be set via the attribute')
 
     @property
@@ -1134,6 +1170,8 @@ class LED_RGB(Digital_Out):
 
     @pull.setter
     def pull(self, direction):
+        if direction is None:
+            return
         self.logger.warning('pull cant be set via the attribute')
 
 

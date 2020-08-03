@@ -286,7 +286,9 @@ class Plot(QtWidgets.QWidget):
         self.plot.getPlotItem().getAxis('bottom').setPen({'color':'k'})
         self.plot.getPlotItem().getAxis('bottom').setTickFont('FreeMono')
         self.plot.setXRange(self.xrange[0], self.xrange[1])
-        self.plot.setYRange(0, 1)
+        self.plot.enableAutoRange(y=True)
+        # self.plot
+        # self.plot.setYRange(0, 1)
 
     @gui_event
     def l_start(self, value):
@@ -534,6 +536,27 @@ class Point(pg.PlotDataItem):
         self.scatter.setData(x=data[...,0], y=data[...,1], size=self.size,
                              brush=self.brush, symbol='o', pen=self.pen)
 
+class Line(pg.PlotDataItem):
+    """
+    A simple line
+    """
+
+    def __init__(self, color=(0,0,0), size=1, **kwargs):
+        super(Line, self).__init__(**kwargs)
+
+        self.brush = pg.mkBrush(color)
+        self.pen = pg.mkPen(color, width=size)
+        self.size = size
+
+    def update(self, data):
+        data[data=="R"] = 1
+        data[data=="L"] = 0
+        data[data=="C"] = 0.5
+        data = data.astype(np.float)
+
+        self.curve.setData(data[...,0], data[...,1])
+
+
 
 class Segment(pg.PlotDataItem):
     """
@@ -541,7 +564,7 @@ class Segment(pg.PlotDataItem):
     """
     def __init__(self, **kwargs):
         # type: () -> None
-        super(Segment, self).__init__()
+        super(Segment, self).__init__(**kwargs)
 
     def update(self, data):
         """
@@ -1112,7 +1135,8 @@ PLOT_LIST = {
     'point':Point,
     'segment':Segment,
     'rollmean':Roll_Mean,
-    'shaded':Shaded
+    'shaded':Shaded,
+    'line': Line
     # 'highlight':Highlight
 }
 """

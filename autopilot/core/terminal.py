@@ -162,6 +162,7 @@ class Terminal(QtWidgets.QMainWindow):
             'PING' : self.l_ping,  # Someone wants to know if we're alive
             'DATA' : self.l_data,
             'CONTINUOUS': self.l_data, # handle continuous data same way as other data
+            'STREAM': self.l_data,
             'HANDSHAKE': self.l_handshake # a pi is making first contact, telling us its IP
         }
 
@@ -191,10 +192,11 @@ class Terminal(QtWidgets.QMainWindow):
         self.node.send('T', 'INIT')
 
         # start beating ur heart
-        self.heartbeat_timer = threading.Timer(self.heartbeat_dur, self.heartbeat)
-        self.heartbeat_timer.daemon = True
-        self.heartbeat_timer.start()
+        # self.heartbeat_timer = threading.Timer(self.heartbeat_dur, self.heartbeat)
+        # self.heartbeat_timer.daemon = True
+        # self.heartbeat_timer.start()
         #self.heartbeat(once=True)
+        self.logger.info('Terminal Initialized')
 
 
     def init_logging(self):
@@ -247,10 +249,12 @@ class Terminal(QtWidgets.QMainWindow):
         # File menu
         # make menu take up 1/10 of the screen
         winsize = app.desktop().availableGeometry()
-        bar_height = (winsize.height()/30)+5
 
-        self.menuBar().setFixedHeight(bar_height)
-        #self.menuBar().setStyleSheet('QMenuBar:item {  }')
+        if sys.platform == 'darwin':
+            bar_height = 0
+        else:
+            bar_height = (winsize.height()/30)+5
+            self.menuBar().setFixedHeight(bar_height)
 
 
         self.file_menu = self.menuBar().addMenu("&File")
@@ -300,29 +304,29 @@ class Terminal(QtWidgets.QMainWindow):
         # Logo goes up top
         # https://stackoverflow.com/questions/25671275/pyside-how-to-set-an-svg-icon-in-qtreewidgets-item-and-change-the-size-of-the
 
+        #
+        # pixmap_path = os.path.join(os.path.dirname(prefs.AUTOPILOT_ROOT), 'graphics', 'autopilot_logo_small.svg')
+        # #svg_renderer = QtSvg.QSvgRenderer(pixmap_path)
+        # #image = QtWidgets.QImage()
+        # #self.logo = QtSvg.QSvgWidget()
+        #
+        #
+        # # set size, preserving aspect ratio
+        # logo_height = round(44.0*((bar_height-5)/44.0))
+        # logo_width = round(139*((bar_height-5)/44.0))
+        #
+        # svg_renderer = QtSvg.QSvgRenderer(pixmap_path)
+        # image = QtGui.QImage(logo_width, logo_height, QtGui.QImage.Format_ARGB32)
+        # # Set the ARGB to 0 to prevent rendering artifacts
+        # image.fill(0x00000000)
+        # svg_renderer.render(QtGui.QPainter(image))
+        # pixmap = QtGui.QPixmap.fromImage(image)
+        # self.logo = QtWidgets.QLabel()
+        # self.logo.setPixmap(pixmap)
 
-        pixmap_path = os.path.join(os.path.dirname(prefs.REPODIR), 'graphics', 'autopilot_logo_small.svg')
-        #svg_renderer = QtSvg.QSvgRenderer(pixmap_path)
-        #image = QtWidgets.QImage()
-        #self.logo = QtSvg.QSvgWidget()
-
-
-        # set size, preserving aspect ratio
-        logo_height = round(44.0*((bar_height-5)/44.0))
-        logo_width = round(139*((bar_height-5)/44.0))
-
-        svg_renderer = QtSvg.QSvgRenderer(pixmap_path)
-        image = QtGui.QImage(logo_width, logo_height, QtGui.QImage.Format_ARGB32)
-        # Set the ARGB to 0 to prevent rendering artifacts
-        image.fill(0x00000000)
-        svg_renderer.render(QtGui.QPainter(image))
-        pixmap = QtGui.QPixmap.fromImage(image)
-        self.logo = QtWidgets.QLabel()
-        self.logo.setPixmap(pixmap)
-
-
-        self.menuBar().setCornerWidget(self.logo, QtCore.Qt.TopRightCorner)
-        self.menuBar().adjustSize()
+        if sys.platform != 'darwin':
+            self.menuBar().setCornerWidget(self.logo, QtCore.Qt.TopRightCorner)
+            self.menuBar().adjustSize()
 
         #self.logo.load(pixmap_path)
         # Combine all in main layout

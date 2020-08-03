@@ -1,3 +1,4 @@
+sphinx>=3.1.2
 sphinx-bootstrap-theme>=0.6.5
 sphinx-automodapi
 numpy>=1.12.1
@@ -25,5 +26,3 @@ blosc
 scikit-video
 sphinx-autobuild
 git+https://github.com/mwibrow/sphinx-sass.git
-
-# also need graphviz available so 'dot' command in env

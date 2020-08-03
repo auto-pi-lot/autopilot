@@ -32,6 +32,7 @@ import itertools
 import threading
 import logging
 from operator import ior
+import pdb
 
 # adding autopilot parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -1094,7 +1095,11 @@ class Protocol_Wizard(QtWidgets.QDialog):
         sender_type = self.steps[current_step][param_name]['type']
 
         if sender_type == 'int' or sender_type == 'str':
-            self.steps[current_step][param_name]['value'] = sender.text()
+            try:
+                sender_text = ast.literal_eval(sender.text())
+            except:
+                sender_text = sender.text()
+            self.steps[current_step][param_name]['value'] = sender_text
         elif sender_type == 'bool':
             self.steps[current_step][param_name]['value'] = sender.isChecked()
         elif sender_type == 'list':
@@ -1706,9 +1711,9 @@ class Bandwidth_Test(QtWidgets.QDialog):
         # combine settings
         self.settings.addRow('N messages per test', self.n_messages)
         self.settings.addRow('Confirm sent messages?', self.receipts)
-        self.settings.addRow('Message Rates per Pilot \n(in Hz, list of integers like "1, 2, 3")',
+        self.settings.addRow('Message Rates per Pilot \n(in Hz, list of integers like "[1, 2, 3]")',
                              self.rates)
-        self.settings.addRow('Payload sizes per message \n(in KB, list of integers like "32, 64, 128")',
+        self.settings.addRow('Payload sizes per message \n(in KB, list of integers like "[32, 64, 128]")',
                              self.payloads)
         self.settings.addRow('Which Pilots to include in test',
                              self.pilot_layout)
@@ -1994,9 +1999,8 @@ class Bandwidth_Test(QtWidgets.QDialog):
         # and then add size of container itself.
         # payload size is distinct from the serialized message size, this is the end size
         # as it ends up on the disk of the receiver
-        payload_size = np.sum([sys.getsizeof(v) for k, v in value.items()]) + sys.getsizeof(value)
-
-
+        # pdb.set_trace()
+        # payload_size = np.sum([sys.getsizeof(v) for k, v in value.items()]) + sys.getsizeof(value)
         if 'test_end' in value.keys():
             self.finished_pilots.append(value['pilot'])
 
@@ -2004,6 +2008,10 @@ class Bandwidth_Test(QtWidgets.QDialog):
                 self.process_test(value['rate'], value['n_msg'], value['confirm'])
 
             return
+
+        payload_size = value['payload_size']
+
+
 
 
         #payload_size = np.frombuffer(base64.b64decode(value['payload']),dtype=np.bool).nbytes
@@ -2039,6 +2047,7 @@ class Bandwidth_Test(QtWidgets.QDialog):
 
 
         """
+        # pdb.set_trace()
         sender = self.sender()
 
         text = sender.text()

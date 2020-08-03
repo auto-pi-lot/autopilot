@@ -143,6 +143,16 @@ class Pilot:
     server = None
 
     def __init__(self, splash=True):
+
+        if splash:
+            with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'setup', 'welcome_msg.txt'), 'r') as welcome_f:
+                welcome = welcome_f.read()
+                print('')
+                for line in welcome.split('\n'):
+                    print(line)
+                print('')
+                sys.stdout.flush()
+
         self.name = prefs.NAME
         if prefs.LINEAGE == "CHILD":
             self.child = True
@@ -205,14 +215,7 @@ class Pilot:
         self.ip = self.get_ip()
         self.handshake()
 
-        if splash:
-            with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'setup', 'welcome_msg.txt'), 'r') as welcome_f:
-                welcome = welcome_f.read()
-                print('')
-                for line in welcome.split('\n'):
-                    print(line)
-                print('')
-                sys.stdout.flush()
+
 
         #self.blank_LEDs()
 
@@ -292,11 +295,12 @@ class Pilot:
         # Value should be a dict of protocol params
         # The networking object should have already checked that we have all the files we need
 
-        if self.state == "RUNNING":
+        if self.state == "RUNNING" or self.running.is_set():
             self.logger.warning("Asked to a run a task when already running")
             return
 
         self.state = 'RUNNING'
+        self.running.set()
         try:
             # Get the task object by its type
             if 'child' in value.keys():
@@ -305,7 +309,6 @@ class Pilot:
                 task_class = tasks.TASK_LIST[value['task_type']]
             # Instantiate the task
             self.stage_block.clear()
-            self.task = task_class(stage_block=self.stage_block, **value)
 
             # Make a group for this subject if we don't already have one
             self.subject = value['subject']
@@ -314,8 +317,8 @@ class Pilot:
 
 
             # Run the task and tell the terminal we have
-            self.running.set()
-            threading.Thread(target=self.run_task).start()
+            # self.running.set()
+            threading.Thread(target=self.run_task, args=(task_class, value)).start()
 
 
             self.update_state()
@@ -465,8 +468,8 @@ class Pilot:
         payload = int(value['payload'])
         confirm = bool(value['confirm'])
 
-        payload = base64.b64encode(np.zeros(payload*1024, dtype=np.bool))
-
+        payload = np.zeros(payload*1024, dtype=np.bool)
+        payload_size = sys.getsizeof(payload)
 
         message = {
             'pilot': self.name,
@@ -479,6 +482,7 @@ class Pilot:
         msg_size = sys.getsizeof(test_msg.serialize())
 
         message['message_size'] = msg_size
+        message['payload_size'] = payload_size
 
         if rate > 0:
             spacing = 1.0/rate
@@ -572,7 +576,11 @@ class Pilot:
     #################################################################
 
     def init_pigpio(self):
-        self.pigpiod = external.start_pigpiod()
+        try:
+            self.pigpiod = external.start_pigpiod()
+        except ImportError as e:
+            self.pigpiod = None
+            self.logger.exception(e)
 
     def init_audio(self):
         """
@@ -663,7 +671,7 @@ class Pilot:
         else:
             return h5f, None, None
 
-    def run_task(self):
+    def run_task(self, task_class, task_params):
         """
         Called in a new thread, run the task.
 
@@ -676,6 +684,7 @@ class Pilot:
         """
         # TODO: give a net node to the Task class and let the task run itself.
         # Run as a separate thread, just keeps calling next() and shoveling data
+        self.task = task_class(stage_block=self.stage_block, **task_params)
 
         # do we expect TrialData?
         trial_data = False
@@ -726,6 +735,7 @@ class Pilot:
 
 
 if __name__ == "__main__":
+
 
     a = Pilot()
 

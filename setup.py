@@ -1,10 +1,12 @@
 # preinstall, check system dependencies
 import subprocess
 subprocess.call('autopilot/setup/setup_environment.sh')
+import platform
 
 from skbuild import setup, constants
 from setuptools import find_packages
 import subprocess
+import sys
 
 # declare defaults
 IS_RASPI = False
@@ -23,9 +25,23 @@ REQUIREMENTS = []
 
 
 # detect if on raspberry pi
-ret = subprocess.call(['grep', '-q', 'BCM', '/proc/cpuinfo'])
-if ret == 0:
-    IS_RASPI = True
+try:
+    ret = subprocess.call(['grep', '-q', 'BCM', '/proc/cpuinfo'])
+    if ret == 0:
+        IS_RASPI = True
+except:
+    pass
+
+
+# detect architecture
+_ARCH = platform.uname().machine
+ARCH = None
+if _ARCH in ('armv7l',):
+    ARCH = "ARM32"
+elif _ARCH in ('aarch64',):
+    ARCH = 'ARM64'
+elif _ARCH in ('x86_64',):
+    ARCH = "x86"
 
 
 def load_requirements(req_file):
@@ -43,7 +59,7 @@ def load_requirements(req_file):
 # configure for raspberry pi
 if IS_RASPI:
     # install raspi dependencies
-    subprocess.call(['autopilot/setup/setup_environment_pi.sh'])
+    # subprocess.call(['autopilot/setup/setup_environment_pi.sh'])
 
 
     CMAKE_ARGS.extend(['-DPIGPIO=ON', '-DJACK=ON'])
@@ -54,15 +70,16 @@ if IS_RASPI:
     PACKAGES.append('autopilot.external.pigpio')
     REQUIREMENTS = load_requirements('requirements_pilot.txt')
 
-else:
+elif ARCH == 'x86':
     # is a terminal,
     # install dependencies
-    subprocess.call(['autopilot/setup/setup_environment_terminal.sh'])
-
+    # subprocess.call(['autopilot/setup/setup_environment_terminal.sh'])
 
     # sys.argv.append('--skip-cmake')
     REQUIREMENTS = load_requirements('requirements_terminal.txt')
 
+else:
+    REQUIREMENTS = load_requirements('requirements_common.txt')
 
 # add external packages that wouldn't get detected normally
 packs = find_packages()

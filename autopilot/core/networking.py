@@ -290,23 +290,14 @@ class Station(multiprocessing.Process):
             return
 
         if manual_to:
-            self.listener.send_multipart([to.encode('utf-8'),
-                                          to.encode('utf-8'),
-                                          msg.id.encode('utf-8'),
-                                          msg_enc])
+            self.listener.send_multipart([to.encode('utf-8'), msg_enc])
         else:
 
             if isinstance(msg.to, list):
 
-                self.listener.send_multipart([msg.to[0].encode('utf-8'),
-                                              msg.to[0].encode('utf-8'),
-                                              msg.id.encode('utf-8'),
-                                              msg_enc])
+                self.listener.send_multipart([msg.to[0].encode('utf-8'), msg_enc])
             else:
-                self.listener.send_multipart([msg.to.encode('utf-8'),
-                                              msg.to.encode('utf-8'),
-                                              msg.id.encode('utf-8'),
-                                              msg_enc])
+                self.listener.send_multipart([msg.to.encode('utf-8'), msg_enc])
 
         # messages can have a flag that says not to log
         # log_this = True
@@ -385,10 +376,7 @@ class Station(multiprocessing.Process):
 
         # Even if the message is not to our upstream node, we still send it
         # upstream because presumably our target is upstream.
-        self.pusher.send_multipart([self.push_id,
-                                    bytes(msg.to, encoding="utf-8"),
-                                    msg.id.encode('utf-8'),
-                                    msg_enc])
+        self.pusher.send_multipart([self.push_id, bytes(msg.to, encoding="utf-8"), msg_enc])
 
         if not (msg.key == "CONFIRM") and log_this:
             self.logger.debug('MESSAGE PUSHED - {}'.format(str(msg)))
@@ -426,10 +414,7 @@ class Station(multiprocessing.Process):
                         if (time.time() - push_outbox[id][0]) > self.repeat_interval*2:
 
                             self.logger.debug('REPUBLISH {} - {}'.format(id, str(push_outbox[id][1])))
-                            self.pusher.send_multipart([self.push_id,
-                                                        push_outbox[id][1].to.encode('utf-8'),
-                                                        push_outbox[id][1].id.encode("utf-8"),
-                                                        push_outbox[id][1].serialize()])
+                            self.pusher.send_multipart([self.push_id, push_outbox[id][1].serialize()])
                             self.push_outbox[id][1].ttl -= 1
 
 
@@ -449,10 +434,7 @@ class Station(multiprocessing.Process):
                         if (time.time() - send_outbox[id][0]) > self.repeat_interval*2:
 
                             self.logger.debug('REPUBLISH {} - {}'.format(id, str(send_outbox[id][1])))
-                            self.listener.send_multipart([bytes(send_outbox[id][1].to, encoding="utf-8"),
-                                                          bytes(send_outbox[id][1].to, encoding="utf-8"),
-                                                          bytes(send_outbox[id][1].id, encoding="utf-8"),
-                                                          send_outbox[id][1].serialize()])
+                            self.listener.send_multipart([bytes(send_outbox[id][1].to, encoding="utf-8"), send_outbox[id][1].serialize()])
                             self.send_outbox[id][1].ttl -= 1
                     
             # wait to do it again
@@ -500,6 +482,7 @@ class Station(multiprocessing.Process):
         listen_fn = self.listens[msg.value['inner_key']]
         old_value = copy(msg.value)
         delattr(msg, 'value')
+        msg.key = old_value['inner_key']
         for v in old_value['payload']:
             if isinstance(v, dict) and ('headers' in old_value.keys()):
                 v.update(old_value['headers'])
@@ -536,8 +519,8 @@ class Station(multiprocessing.Process):
             sender = msg[0]
 
             # if this message was a multihop message, store the route
-            if len(msg)>5:
-                self.routes[sender] = msg[0:-4]
+            if len(msg)>4:
+                self.routes[sender] = msg[0:-3]
 
             # # if this is a new sender, add them to the list
             if sender not in self.senders.keys():
@@ -552,22 +535,16 @@ class Station(multiprocessing.Process):
 
             # if this message wasn't to us, forward without deserializing
             # the second to last should always be the intended recipient
-            unserialized_to = msg[-3]
+            unserialized_to = msg[-2]
             if unserialized_to.decode('utf-8') not in [self.id, "_{}".format(self.id)]:
                 if unserialized_to not in self.senders.keys() and self.pusher:
                     # if we don't know who they are and we have a pusher, try to push it
-                    self.pusher.send_multipart([self.push_id, unserialized_to, msg[-2], msg[-1]])
+                    self.pusher.send_multipart([self.push_id, unserialized_to, msg[-1]])
                 else:
                     #if we know who they are or not, try to send it through router anyway.
-                    self.listener.send_multipart([unserialized_to, unserialized_to, msg[-2],  msg[-1]])
+                    self.listener.send_multipart([unserialized_to, unserialized_to, msg[-1]])
 
-                self.logger.debug('FORWARDING: to - {}, {}'.format(unserialized_to, msg[-1]))
-
-
-                if send_type == 'router':
-                    self.send(sender, 'CONFIRM', msg[-2], repeat=False)
-                elif send_type == 'dealer':
-                    self.push(msg.sender, 'CONFIRM', msg[-2], repeat=False)
+                # self.logger.debug('FORWARDING: to - {}, {}'.format(unserialized_to, msg[-1][:100] if len(msg[-1])>100 else msg[-1]))
 
                 return
 
@@ -1052,7 +1029,7 @@ class Pilot_Station(Station):
             self.push_id = b'T'
             self.push_port = prefs.PUSHPORT
             self.push_ip = prefs.TERMINALIP
-            self.child - False
+            self.child = False
 
         # Store some prefs values
         self.listen_port = prefs.MSGPORT
@@ -1271,8 +1248,11 @@ class Pilot_Station(Station):
         Returns:
 
         """
-
-        self.send(to=prefs.CHILDID, key='START', value=msg.value)
+        if 'KEY' in msg.value.keys():
+            KEY = msg.value['keys']
+        else:
+            KEY = 'START'
+        self.send(to=prefs.CHILDID, key=KEY, value=msg.value)
 
     def l_forward(self, msg):
         """
@@ -1432,10 +1412,10 @@ class Net_Node(object):
             self.loop_thread.daemon = True
         self.loop_thread.start()
 
-        self.repeat_thread = threading.Thread(target=self.repeat)
-        if self.daemon:
-            self.repeat_thread.daemon = True
-        self.repeat_thread.start()
+        # self.repeat_thread = threading.Thread(target=self.repeat)
+        # if self.daemon:
+        #     self.repeat_thread.daemon = True
+        # self.repeat_thread.start()
 
         #self.connected = True
 
@@ -1509,6 +1489,12 @@ class Net_Node(object):
             listen_thread = threading.Thread(target=listen_funk, args=(msg.value,))
             listen_thread.start()
         except KeyError:
+            if msg.key=="STREAM":
+                try:
+                    listen_thread = threading.Thread(target=self.l_stream, args=(msg,))
+                    listen_thread.start()
+                except Exception as e:
+                    self.logger.exception(e)
 
             self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
 
@@ -1521,7 +1507,7 @@ class Net_Node(object):
             log_this = False
 
         if self.logger and log_this:
-            self.logger.debug('RECEIVED: {}'.format(self.id, str(msg)))
+            self.logger.debug('RECEIVED: {}'.format(str(msg)))
 
 
     def send(self, to=None, key=None, value=None, msg=None, repeat=True, flags = None, force_to = False):
@@ -1586,9 +1572,9 @@ class Net_Node(object):
             return
 
         if force_to:
-            self.sock.send_multipart([bytes(msg.to, encoding="utf-8"), bytes(msg.to, encoding="utf-8"), bytes(msg.id, encoding="utf-8"), msg_enc])
+            self.sock.send_multipart([bytes(msg.to, encoding="utf-8"), bytes(msg.to, encoding="utf-8"), msg_enc])
         else:
-            self.sock.send_multipart([self.upstream.encode('utf-8'), bytes(msg.to, encoding="utf-8"), bytes(msg.id, encoding="utf-8"), msg_enc])
+            self.sock.send_multipart([self.upstream.encode('utf-8'), bytes(msg.to, encoding="utf-8"), msg_enc])
         if self.logger and log_this:
             self.logger.debug("MESSAGE SENT - {}".format(str(msg)))
 
@@ -1623,10 +1609,7 @@ class Net_Node(object):
                         # if we didn't just put this message in the outbox...
                         if (time.time() - outbox[id][0]) > (self.repeat_interval*2):
                             self.logger.debug('REPUBLISH {} - {}'.format(id, str(outbox[id][1])))
-                            self.sock.send_multipart([self.upstream.encode('utf-8'),
-                                                      bytes(outbox[id][1].to, encoding="utf-8"),
-                                                      bytes(outbox[id][1].id, encoding="utf-8"),
-                                                      outbox[id][1].serialize()])
+                            self.sock.send_multipart([self.upstream.encode('utf-8'), outbox[id][1].serialize()])
                             self.outbox[id][1].ttl -= 1
 
 
@@ -1656,6 +1639,25 @@ class Net_Node(object):
 
 
         self.logger.debug('CONFIRMED MESSAGE {}'.format(value))
+
+    def l_stream(self, msg):
+        """
+        Reconstitute the original stream of messages and call their handling methods
+
+        The ``msg`` should contain an ``inner_key`` that indicates the key, and thus the
+        handling method.
+
+        Args:
+            msg (dict): Compressed stream sent by :meth:`Net_Node._stream`
+        """
+        listen_fn = self.listens[msg.value['inner_key']]
+        old_value = copy(msg.value)
+        delattr(msg, 'value')
+        for v in old_value['payload']:
+            # if isinstance(v, dict) and ('headers' in old_value.keys()):
+            #     v.update(old_value['headers'])
+            #msg.value = v
+            listen_fn(v)
     #
     # def l_stream(self, value):
     #     listen_fn = self.listens[value['inner_key']]
@@ -1778,56 +1780,71 @@ class Net_Node(object):
 
         socket = ZMQStream(socket, self.loop)
 
-        upstream = bytes(upstream, encoding="utf-8")
+        upstream = upstream.encode('utf-8')
 
         if subject is None:
             if hasattr(prefs, 'SUBJECT'):
-                subject = bytes(prefs.SUBJECT, encoding="utf-8")
+                subject = prefs.SUBJECT
             else:
-                subject = b""
+                subject = ""
+        if isinstance(subject, bytes):
+            subject = subject.decode('utf-8')
 
         if prefs.LINEAGE == "CHILD":
-            pilot = bytes(prefs.PARENTID, encoding="utf-8")
+            # pilot = bytes(prefs.PARENTID, encoding="utf-8")
+            pilot = prefs.PARENTID
         else:
-            pilot = bytes(prefs.NAME, encoding="utf-8")
+            # pilot = bytes(prefs.NAME, encoding="utf-8")
+            pilot = prefs.NAME
 
         msg_counter = count()
 
         pending_data = []
 
-        for data in iter(q.get, 'END'):
-            if isinstance(data, tuple):
-                # tuples are immutable, so can't serialize numpy arrays they contain
-                data = list(data)
+        if min_size > 1:
 
-            if isinstance(data, list):
-                for i, item in enumerate(data):
-                    if isinstance(item, np.ndarray):
-                        data[i] = serialize_array(item)
-            elif isinstance(data, dict):
-                for key, value in data.items():
-                    if isinstance(value, np.ndarray):
-                        data[key] = serialize_array(value)
-            elif isinstance(data, np.ndarray):
-                data = serialize_array(data)
+            for data in iter(q.get, 'END'):
+                if isinstance(data, tuple):
+                    # tuples are immutable, so can't serialize numpy arrays they contain
+                    data = list(data)
 
-            pending_data.append(data)
+                pending_data.append(data)
 
-            if not socket.sending() and len(pending_data)>=min_size:
-                msg = Message(to=upstream, key="STREAM",
-                              value={'inner_key' : msg_key,
-                                     'headers'   : {'subject': subject,
-                                                    'pilot'  : pilot,
-                                                    'continuous': True},
-                                     'payload'   : pending_data},
-                              id="{}_{}".format(id, next(msg_counter)),
-                              flags={'NOREPEAT':True, 'MINPRINT':True},
-                              sender=socket_id).serialize()
-                last_msg = socket.send_multipart((upstream, upstream, msg.id.encode('utf-8'), msg),
-                                                 track=True, copy=True)
+                if not socket.sending() and len(pending_data)>=min_size:
+                    msg = Message(to=upstream.decode('utf-8'), key="STREAM",
+                                  value={'inner_key' : msg_key,
+                                         'headers'   : {'subject': subject,
+                                                        'pilot'  : pilot,
+                                                        'continuous': True},
+                                         'payload'   : pending_data},
+                                  id="{}_{}".format(id, next(msg_counter)),
+                                  flags={'NOREPEAT':True, 'MINPRINT':True},
+                                  sender=socket_id).serialize()
+                    last_msg = socket.send_multipart((upstream, upstream, msg),
+                                                     track=True, copy=True)
 
-                self.logger.debug("STREAM {}: Sent {} items".format(self.id+'_'+id, len(pending_data)))
-                pending_data = []
+                    self.logger.debug("STREAM {}: Sent {} items".format(self.id+'_'+id, len(pending_data)))
+                    pending_data = []
+        else:
+            # just send like normal messags
+            for data in iter(q.get, 'END'):
+                if isinstance(data, tuple):
+                    # tuples are immutable, so can't serialize numpy arrays they contain
+                    data = list(data)
+
+                if not socket.sending():
+                    msg = Message(to=upstream.decode('utf-8'), key=msg_key,
+                                  subject=subject,
+                                  pilot=pilot,
+                                  continuous=True,
+                                  value=data,
+                                  flags={'NOREPEAT': True, 'MINPRINT': True},
+                                  id="{}_{}".format(id, next(msg_counter)),
+                                  sender=socket_id).serialize()
+                    last_msg = socket.send_multipart((upstream, upstream, msg),
+                                                     track=True, copy=True)
+
+                self.logger.debug("STREAM {}: Sent 1 item".format(self.id + '_' + id))
 
 
 
@@ -2010,8 +2027,7 @@ class Message(object):
         Returns:
 
         """
-
-        compressed = base64.b64encode(blosc.pack_array(array))
+        compressed = base64.b64encode(blosc.pack_array(array)).decode('ascii')
         return {'NUMPY_ARRAY': compressed}
 
 
@@ -2126,7 +2142,7 @@ def serialize_array(array):
     Returns:
         dict: {'NUMPY_ARRAY': base-64 encoded, blosc-compressed array.}
     """
-    compressed = base64.b64encode(blosc.pack_array(array))
+    compressed = base64.b64encode(blosc.pack_array(array)).decode('ascii')
     return {'NUMPY_ARRAY': compressed}
 
 
