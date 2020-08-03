@@ -186,7 +186,7 @@ html_logo = 'autopilot_logo.svg'
 #
 if html_theme == 'sphinx_rtd_theme':
     html_theme_options = {
-        'canonical_url': 'rpilot.readthedocs.io',
+        'canonical_url': 'https://docs.auto-pi-lot.com',
         'collapse_navigation': False # keep expanding toc
     }
 
@@ -224,7 +224,7 @@ html_css_files = [
     'css/autopilot_theme.css'
 ]
 
-html_baseurl = 'http://rpilot.readthedocs.io/'
+html_baseurl = 'https://docs.auto-pi-lot.com/'
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
