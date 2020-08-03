@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.spatial import distance
 
-from autopilot.transform import Transform
+from autopilot.transform.transforms import Transform
 
 
 class Distance(Transform):

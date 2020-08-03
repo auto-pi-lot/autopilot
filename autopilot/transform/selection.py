@@ -3,7 +3,7 @@ import warnings
 
 import numpy as np
 
-from autopilot.transform import Transform
+from autopilot.transform.transforms import Transform
 from autopilot.transform.image import DLC
 
 

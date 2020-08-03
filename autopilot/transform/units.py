@@ -7,7 +7,7 @@ from enum import Enum, auto
 import numpy as np
 import colorsys
 
-from autopilot.transform import Transform
+from autopilot.transform.transforms import Transform
 
 
 class Rescale(Transform):

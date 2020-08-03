@@ -1,6 +1,6 @@
 import numpy as np
 
-from autopilot.transform import Transform
+from autopilot.transform.transforms import Transform
 
 
 class Condition(Transform):
