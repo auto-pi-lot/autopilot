@@ -30,7 +30,7 @@ if __name__ == '__main__':
     # Parse arguments - this should have been called with a .json prefs file passed
     # We'll try to look in the default location first
     parser = argparse.ArgumentParser(description="Run an autopilot")
-    parser.add_argument('-f', '--prefs', help="Location of .json prefs file (created during setup_terminal.py)")
+    parser.add_argument('-f', '--prefs', help="Location of .json prefs file (created during setup_autopilot.py)")
     args = parser.parse_args()
 
     if not args.prefs:

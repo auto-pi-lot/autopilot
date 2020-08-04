@@ -20,8 +20,6 @@ import importlib
 import threading
 import shlex
 
-sys.path.append('/home/jonny/git/autopilot')
-
 from autopilot import hardware
 
 # CLI Options
@@ -111,6 +109,13 @@ PILOT_ENV_CMDS = {
          'sudo sh -c "echo @audio - memlock 256000 >> /etc/security/limits.conf"',
          'sudo sh -c "echo @audio - rtprio 75 >> /etc/security/limits.conf"',
          ],
+    'performance_cameras':
+        [
+            "sudo sh -c 'echo options uvcvideo nodrop=1 timeout=10000 quirks=0x80 > /etc/modprobe.d/uvcvideo.conf'",
+            "sudo rmmod uvcvideo",
+            "sudo modprobe uvcvideo",
+            "sudo sed -i \"/^exit 0/i sudo sh -c 'echo ${usbfs_size} > /sys/module/usbcore/parameters/usbfs_memory_mb'\" /etc/rc.local"
+        ],
     'change_pw': ['passwd'],
     'set_locale': ['sudo dpkg-reconfigure locales',
                    'sudo dpkg-reconfigure keyboard-configuration'],
@@ -141,6 +146,52 @@ PILOT_ENV_CMDS = {
             "sudo sh -c \"echo @audio - rtprio 75 >> /etc/security/limits.conf\"",
             "cd ..",
             "rm -rf ./jack2"
+        ],
+    'opencv':
+        [
+            "sudo apt-get install -y build-essential cmake ccache unzip pkg-config libjpeg-dev libpng-dev libtiff-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev ffmpeg libgtk-3-dev libcanberra-gtk* libatlas-base-dev gfortran python2-dev python-numpy",
+            "git clone https://github.com/opencv/opencv.git",
+            "git clone https://github.com/opencv/opencv_contrib",
+            "cd opencv",
+            "mkdir build",
+            "cd build",
+            "cmake -D CMAKE_BUILD_TYPE=RELEASE \
+                -D CMAKE_INSTALL_PREFIX=/usr/local \
+                -D OPENCV_EXTRA_MODULES_PATH=/home/pi/git/opencv_contrib/modules \
+                -D BUILD_TESTS=OFF \
+                -D BUILD_PERF_TESTS=OFF \
+                -D BUILD_DOCS=OFF \
+                -D WITH_TBB=ON \
+                -D CMAKE_CXX_FLAGS=\"-DTBB_USE_GCC_BUILTINS=1 -D__TBB_64BIT_ATOMICS=0\" \
+                -D WITH_OPENMP=ON \
+                -D WITH_IPP=OFF \
+                -D WITH_OPENCL=ON \
+                -D WITH_V4L=ON \
+                -D WITH_LIBV4L=ON \
+                -D ENABLE_NEON=ON \
+                -D ENABLE_VFPV3=ON \
+                -D PYTHON3_EXECUTABLE=/usr/bin/python3 \
+                -D PYTHON_INCLUDE_DIR=/usr/include/python3.7 \
+                -D PYTHON_INCLUDE_DIR2=/usr/include/arm-linux-gnueabihf/python3.7 \
+                -D OPENCV_ENABLE_NONFREE=ON \
+                -D INSTALL_PYTHON_EXAMPLES=OFF \
+                -D WITH_CAROTENE=ON \
+                -D CMAKE_SHARED_LINKER_FLAGS='-latomic' \
+                -D BUILD_EXAMPLES=OFF ..",
+            "sudo sed -i 's/^CONF_SWAPSIZE=100/CONF_SWAPSIZE=2048/g' /etc/dphys-swapfile", # increase size of swapfile so multicore build works
+            "sudo /etc/init.d/dphys-swapfile stop",
+            "sudo /etc/init.d/dphys-swapfile start",
+            "make -j4",
+            "sudo make install",
+            "sudo ldconfig",
+            "sudo sed -i 's/^CONF_SWAPSIZE=2048/CONF_SWAPSIZE=100/g' /etc/dphys-swapfile",
+            "sudo /etc/init.d/dphys-swapfile stop",
+            "sudo /etc/init.d/dphys-swapfile start"
+        ],
+    'env_pilot':
+        [
+            "sudo apt-get update",
+            "sudo apt-get install -y build-essential cmake git python3-dev libatlas-base-dev libsamplerate0-dev libsndfile1-dev libreadline-dev libasound-dev i2c-tools libportmidi-dev liblo-dev libhdf5-dev libzmq-dev libffi-dev",
         ]
 
 }
@@ -190,9 +241,6 @@ class Autopilot_Form(nps.Form):
                     self.depends[depends_on].append((param_name, depend_value))
                 else:
                     self.depends[depends_on] = [(param_name, depend_value)]
-
-
-
 
     def populate_form(self, params):
 
@@ -407,8 +455,7 @@ class Agent_Form(nps.Form):
         if os.path.exists(os.path.join(os.path.dirname(__file__),'welcome_msg.txt')):
             with open(os.path.join(os.path.dirname(__file__),'welcome_msg.txt'), 'r') as welcome_f:
                 welcome = welcome_f.read()
-                for line in welcome.split('\n'):
-                    self.add(nps.FixedText, value=line, editable=False)
+                for line in welcome.split('\n'):self.add(nps.FixedText, value=line, editable=False)
 
         self.input = odict({
             'AGENT': self.add(nps.TitleSelectOne, max_height=len(AGENTS)+1, value=0,

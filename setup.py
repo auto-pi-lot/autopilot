@@ -1,6 +1,6 @@
 # preinstall, check system dependencies
-import subprocess
-subprocess.call('autopilot/setup/setup_environment.sh')
+#import subprocess
+#subprocess.call('autopilot/setup/setup_environment.sh')
 import platform
 
 from skbuild import setup, constants
@@ -86,15 +86,28 @@ packs = find_packages()
 packs.extend(PACKAGES)
 
 setup(
-    name="autopilot",
+    name="auto-pi-lot",
     version="0.3.0",
     description="Distributed behavioral experiments",
     author="Jonny Saunders",
-    author_email="JLSaunders987@gmail.com",
+    author_email="sneakers-the-rat@protonmail.com",
     url="https://auto-pi-lot.com",
     license="MPL-2.0",
     scripts = SCRIPTS,
     packages=packs,
     cmake_args=CMAKE_ARGS,
-    install_requires = REQUIREMENTS
+    install_requires = REQUIREMENTS,
+    classifiers=[
+        "Programming Language :: Python :: 3.7",
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Education",
+        "Intended Audience :: End Users/Desktop",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+        "Natural Language :: English",
+        "Operating System :: POSIX :: Linux",
+        "Operating System :: MacOS",
+        "Topic :: Scientific/Engineering"
+    ],
 )
