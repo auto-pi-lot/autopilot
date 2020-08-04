@@ -16,7 +16,11 @@
 | [![Read the Docs](docs/_images/docs_link.png)](https://docs.auto-pi-lot.com) | [![Paper](docs/_images/paper_link.png)](https://www.biorxiv.org/content/10.1101/807693v1)  | [![Forum](docs/_images/discussion_link.png)](https://groups.google.com/forum/#!forum/autopilot-users) | [![Hardware (Coming Soon!)](docs/_images/hardware_link_construction.png)](https://auto-pi-lot.com/hardware)
 
 Autopilot is a Python framework for performing complex, hardware-intensive behavioral experiments with swarms of networked Raspberry Pis. 
-It is designed to unify experiments 
+As a tool, it provides researchers with a toolkit of flexible modules to design experiments without rigid programming & API limitations. 
+As a vision, it dreams of bridging the chaotic hacky creativity of scientific programmers with a standardized, 
+communally developed library of reproducible experiment prototypes.
+
+Autopilot was developed with three primary design principles:
 
 * **Flexibility** - Autopilot was designed for any hardware and any experiment -- 
   its hardware API is designed to give a structured wrapper around the code you already use, and its task design is
@@ -45,6 +49,24 @@ Users can use and misuse Autopilot's flexible modules to make whatever agent top
 
 ![Autopilot System Diagram](docs/_images/whole_system_black.png)
 
+# Module Overview
+
+Autopilot divides the logical structure of experiments into independent<sup>1</sup> modules:
+
+| | Module |
+| :-: | --- |
+| ![Hardware](docs/_images/icon_agent.png) | **Agents - Pilot & Terminal** (formalizing the Agent framework is Autopilot's next major development goal!) |
+| ![Hardware](docs/_images/icon_hardware.png) | **Hardware** |
+| ![Hardware](docs/_images/icon_stim.png) | **Stimuli** |
+| ![Hardware](docs/_images/icon_task.png) | **Tasks** |
+| ![Hardware](docs/_images/icon_data.png) | **Subject** - data management |
+| ![Hardware](docs/_images/icon_transform.png)| **Transforms** |
+| ![Hardware](docs/_images/icon_gui.png)| **UI** |
+| ![Hardware](docs/_images/icon_viz.png)| **Visualization** |
+
+
+
+<sup>1</sup> a continual work in progress!
 # Getting Started
 
 [**All documentation is hosted at https://docs.auto-pi-lot.com**](https://docs.auto-pi-lot.com)
