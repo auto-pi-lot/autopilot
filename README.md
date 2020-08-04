@@ -1,7 +1,7 @@
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](code_of_conduct.md) 
 [![Documentation Status](https://readthedocs.org/projects/auto-pi-lot/badge/?version=latest)](https://docs.auto-pi-lot.com/en/latest/?badge=latest)
  [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
- [![PyPI pyversions](https://img.shields.io/pypi/pyversions/ansicolortags.svg)](https://pypi.org/project/auto-pi-lot/)
+ [![PyPI pyversions](https://img.shields.io/pypi/pyversions/auto-pi-lot)](https://pypi.org/project/auto-pi-lot/)
 
 # Autopilot
 
@@ -9,9 +9,9 @@ Distributed behavioral experiments with lots of Raspberry Pis
 
 ![Autopilot Banner Logo](docs/_images/autopilot_logo_banner.png)
 
-Read the Docs                                                                | 
-:---------------------------------------------------------------------------:|:--------------:
-[![Read the Docs](docs/_images/docs_link.png)](https://docs.auto-pi-lot.com) | 
+| [Docs](https://docs.auto-pi-lot.com) | [Paper](https://www.biorxiv.org/content/10.1101/807693v1) | [Forum](https://groups.google.com/forum/#!forum/autopilot-users) | [Hardware](https://auto-pi-lot.com/hardware/) |
+| :-: | :-: | :-: | :-: |
+| [![Read the Docs](docs/_images/docs_link.png)](https://docs.auto-pi-lot.com) | [![Paper](docs/_images/paper_link.png)](https://www.biorxiv.org/content/10.1101/807693v1)  | [![Forum](docs/_images/discussion_link.png)](https://groups.google.com/forum/#!forum/autopilot-users) | [![Hardware (Coming Soon!)](docs/_images/hardware_link_construction.png)](https://auto-pi-lot.com/hardware)
 
 (links to docs, homepage, paper, discussion board, hardware (coming soon))
 
