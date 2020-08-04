@@ -68,7 +68,7 @@ if IS_RASPI:
     # CMAKE_ARGS = ['-DPIGPIO=ON']
     #SCRIPTS.append('autopilot/external/pigpio/pigpiod')
     PACKAGES.append('autopilot.external.pigpio')
-    REQUIREMENTS = load_requirements('requirements_pilot.txt')
+    REQUIREMENTS = load_requirements('requirements/requirements_pilot.txt')
 
 elif ARCH == 'x86':
     # is a terminal,
@@ -76,10 +76,10 @@ elif ARCH == 'x86':
     # subprocess.call(['autopilot/setup/setup_environment_terminal.sh'])
 
     # sys.argv.append('--skip-cmake')
-    REQUIREMENTS = load_requirements('requirements_terminal.txt')
+    REQUIREMENTS = load_requirements('requirements/requirements_terminal.txt')
 
 else:
-    REQUIREMENTS = load_requirements('requirements_common.txt')
+    REQUIREMENTS = load_requirements('requirements.txt')
 
 # add external packages that wouldn't get detected normally
 packs = find_packages()

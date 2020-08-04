@@ -1,15 +1,17 @@
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](code_of_conduct.md) 
 [![Documentation Status](https://readthedocs.org/projects/auto-pi-lot/badge/?version=latest)](https://docs.auto-pi-lot.com/en/latest/?badge=latest)
  [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
- 
-
-(python version badge, ubuntu version badge)
+ [![PyPI pyversions](https://img.shields.io/pypi/pyversions/ansicolortags.svg)](https://pypi.org/project/auto-pi-lot/)
 
 # Autopilot
 
 Distributed behavioral experiments with lots of Raspberry Pis
 
-(logo)
+![Autopilot Banner Logo](docs/_images/autopilot_logo_banner.png)
+
+Read the Docs                                                                | 
+:---------------------------------------------------------------------------:|:--------------:
+[![Read the Docs](docs/_images/docs_link.png)](https://docs.auto-pi-lot.com) | 
 
 (links to docs, homepage, paper, discussion board, hardware (coming soon))
 
