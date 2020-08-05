@@ -16,19 +16,9 @@ Integrations
 Make autopilot work with...
 
 .. roadmap::
-   :title: DeepLabCut Integration
-   :priority: high
-   :dblink: https://groups.google.com/forum/#!topic/autopilot-users/T-PNfrHDtzA
-
-   * collaborate w/ DLC crew to write a realtime mode for DLC that analyzes frames as they are acquired,
-   * develop a analysis pipelining framework that lets the results of the analysis be operated on (eg x, y coordinates ->
-     labeled regions in an arena) and used to control task operation.
-
-.. roadmap::
     :title: Open Ephys Integration
-    :priority: medium
-    :dblink: https://google.com
-
+    :priority: high
+    :dblink: https://groups.google.com/forum/#!topic/autopilot-users/FzcyTWVqRwU
 
     * write a C extension to the Rhythm API similar to that used by the OpenEphys
       `Rhythm Node <https://github.com/open-ephys/plugin-GUI/tree/master/Plugins/RhythmNode>`_.
@@ -36,9 +26,18 @@ Make autopilot work with...
       so ephys data can be collected natively alongside behavioral data.
 
 .. roadmap::
+    :title: Multiphoton & High-performance Image Integration
+    :priority: high
+    :dblink: https://groups.google.com/forum/#!topic/autopilot-users/1kdhNHMp-DI
+
+    * Integrate the Thorlabs multiphoton imaging SDK to allow 2p image acquisition during behavior
+    * Integrate the Aravis camera drivers to get away from the closed-source spinnaker SDK
+
+
+.. roadmap::
     :title: Bonsai Integration
     :priority: low
-    :dblink: https://google.com
+    :dblink: https://groups.google.com/forum/#!topic/autopilot-users/4DlE9ot9S2Q
 
     * Write source and sink modules so `Bonsai <https://bonsai-rx.org/>`_ pipelines can be
       used within Autopilot for image processing, acquisition etc.
@@ -108,20 +107,6 @@ Closed-Loop Behavior & Processing Pipelines
     * Setup routines should include both the ability to install necessary resources and the ability to check if those
       resources have been installed so that hardware objects can be instantiated freely without setup and configuration
       becoming cumbersome.
-    * We need to make a unified setup interface with a ``setup.py`` file. To manage the multiple sets of dependencies
-      for different agents, we should implement a routine like::
-
-        setup(
-            # ...
-            packages = find_packages(),
-            # ...
-        )
-
-      that is able to yield different sets of packages for different install types.
-
-        * The ``setup.py`` file can also handle all the setup routines that are currently bash scripts by using setuptools,
-          specifically by subclassing :class:`setuptools.command.build_py.build_py` like in `this example <https://jichu4n.com/posts/how-to-add-custom-build-steps-and-commands-to-setuppy/>`_
-
     * Currently, Autopilot creates a crude bash script with ``setup_pilot.sh`` to start external processes before Autopilot.
       This makes handling multiple environment types difficult -- ie. one needs to close the program entirely, edit
       the startup script, and restart in order to switch from a primarily auditory to primarily visual experiment.
@@ -329,6 +314,8 @@ Completed
 
 *good god we did it*
 
+* :ref:`changelog_v030` - Integrate DeepLabCut
+* :ref:`changelog_v030` - Unify installation
 * :ref:`changelog_v030` - Upgrade to Python 3
 * :ref:`changelog_v030` - Upgrade to PySide 2 & Qt5
 * :ref:`changelog_v030` - Generate full timestamps from pigpio rather than ticks
