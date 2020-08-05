@@ -16,7 +16,7 @@ Setting up a pilot then just requires you run those two scripts, which will prom
 
 The ``setup_pilot`` script produces the ``prefs.json`` file (see :mod:`~autopilot.prefs`) and uses `npyscreen <https://npyscreen.readthedocs.io/>`_ to enable graphical parameter setup on headless machines and over SSH. The ``prefs.json`` file can be manually edited to add any additional configuration options needed by your system.
 
-.. image:: ../_images/npyscreen_setup.png
+.. image:: _images/npyscreen_setup.png
 
 **Basic Configuration**
 
@@ -50,7 +50,7 @@ If the ``CONFIG`` is set to ``VISUAL``, these options are ignored. We will make 
 
 The next menu screen sets the hardware options:
 
-.. image:: ../_images/npyscreen_hardware.png
+.. image:: _images/npyscreen_hardware.png
 
 These settings create a ``HARDWARE`` dictionary that maps hardware objects based on their type and name to a GPIO pin number. These names are the same as those used by tasks to parameterize hardware requirements.
 

@@ -13,7 +13,7 @@ Overview
 Program Structure
 =================
 
-.. image:: ../_images/whole_system_black.svg
+.. image:: _images/whole_system_black.svg
     :alt: Graphical Overview of Autopilot Modules
     :width: 100%
 
@@ -32,7 +32,7 @@ use effectively arbitrary numbers and combinations of hardware.
 Tasks
 =====
 
-.. image:: ../_images/figure_protocol.png
+.. image:: _images/figure_protocol.png
     :width: 50%
     :align: center
     :alt: Protocol Structure
