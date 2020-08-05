@@ -2,6 +2,7 @@
 #import subprocess
 #subprocess.call('autopilot/setup/setup_environment.sh')
 import platform
+import os
 
 from skbuild import setup, constants
 from setuptools import find_packages
@@ -85,10 +86,18 @@ else:
 packs = find_packages()
 packs.extend(PACKAGES)
 
+# load readme
+with open(os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'README.md'), 'r') as readme_f:
+    readme = readme_f.read()
+
 setup(
     name="auto-pi-lot",
     version="0.3.0",
     description="Distributed behavioral experiments",
+    long_description = readme,
+    long_description_content_type='text/markdown',
     author="Jonny Saunders",
     author_email="sneakers-the-rat@protonmail.com",
     url="https://auto-pi-lot.com",
