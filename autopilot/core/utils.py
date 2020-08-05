@@ -1,7 +1,13 @@
 # import numpy as np
 from autopilot import prefs
-if prefs.AGENT in ("TERMINAL", "DOCS"):
+# if prefs.AGENT in ("TERMINAL", "DOCS"):
+HAVE_PYSIDE = False
+try:
     from PySide2 import QtCore
+    HAVE_PYSIDE = True
+except ImportError:
+    pass
+
 import json
 import pandas as pd
 from scipy.stats import linregress
@@ -74,7 +80,7 @@ class Param(object):
 
 
 
-if prefs.AGENT in ["TERMINAL", "DOCS"]:
+if HAVE_PYSIDE:
     class InvokeEvent(QtCore.QEvent):
         """
         Sends signals to the main QT thread from spawned message threads

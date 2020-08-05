@@ -20,14 +20,15 @@ from autopilot import external
 try:
     import jack
 except OSError as e:
-    print(e)
-    install_jack = input('Try to install jackd? (y/n): ')
-    if install_jack == "y":
-        from autopilot.setup.setup_autopilot import run_script
-        run_script('jackd')
-        import jack
-    else:
-        raise e
+    print('jack library not found! sounds unavailable')
+    # print(e)
+    # install_jack = input('Try to install jackd? (y/n): ')
+    # if install_jack == "y":
+    #     from autopilot.setup.setup_autopilot import run_script
+    #     run_script('jackd')
+    #     import jack
+    # else:
+    #     raise e
 
 
 from autopilot import prefs
