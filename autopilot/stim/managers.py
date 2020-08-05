@@ -8,12 +8,14 @@ TODO:
 """
 
 import os
+import pdb
 from collections import deque
 import numpy as np
 from autopilot import prefs
-if prefs.AGENT == 'pilot':
-    if prefs.CONFIG == 'AUDIO':
+if prefs.AGENT.upper() == 'PILOT':
+    if 'AUDIO' in prefs.CONFIG:
         from autopilot.stim.sound import sounds
+        # TODO be loud about trying to init sounds when not in config
 
 def init_manager(stim):
     if 'manager' in stim.keys():
@@ -74,6 +76,7 @@ class Stim_Manager(object):
         self.last_stim = None  # What was the last stim?
 
         # Correction trials
+
         self.correction = False  # Are we doing correction trials
         self.correction_trial = False  # Is this a correction trial?
         self.last_was_correction = False  # Was the last trial a correction trial?
@@ -163,7 +166,7 @@ class Stim_Manager(object):
         # If we want a punishment sound...
         # if self.punish_sound:
         #     self.stimuli['punish'] = sounds.Noise(self.punish_dur)
-        #     #change_to_green = lambda: self.pins['LEDS']['C'].set_color([0, 255, 0])
+        #     #change_to_green = lambda: self.hardware['LEDS']['C'].set_color([0, 255, 0])
         #     #self.stimuli['punish'].set_trigger(change_to_green)
         pass
 
@@ -237,14 +240,16 @@ class Stim_Manager(object):
 
         # if the last trial was a correction trial and we didn't get it correct,
         # then this is a correction trial too
-        if self.correction_trial and not self.correct:
+        if (self.correction_trial or self.last_was_correction) and not self.correct:
             return True
         # if the last trial was a correction trial and we just corrected, no correction trial this time
-        elif self.correction_trial and self.correct:
+        elif (self.correction_trial or self.last_was_correction) and self.correct:
+            self.last_was_correction = False
             return False
-        # if last trial was not a correction trial we spin for one
+        # if last trial was not a correction trial we spin  *to test* for one
         elif np.random.rand() < self.correction_pct:
-            return True
+            self.last_was_correction = True
+            return False
         else:
             return False
 
@@ -313,17 +318,30 @@ class Proportional(Stim_Manager):
     def __init__(self, stim):
         super(Proportional, self).__init__()
 
+        self.stimuli = {}
+
+        self.frequency_type = None
+
         if stim['type'] == 'sounds':
-            self.init_sounds(stim['groups'])
+            if 'groups' in stim.keys():
+                self.frequency_type = "within_groups"
+                # top-level groups, choose group then choose side
+                self.init_sounds_grouped(stim['groups'])
+                self.store_groups(stim)
+            else:
+                self.frequency_type = "within_side"
+                # second-level frequencies, side is chosen and then
+                # probability from within a side
+                self.init_sounds_individual(stim['sounds'])
 
-        self.store_groups(stim)
 
-    def init_sounds(self, sound_stim):
+
+    def init_sounds_grouped(self, sound_stim):
         """
         Instantiate sound objects similarly to :class:`.Stim_Manager`, just organizes them into groups.
 
         Args:
-            sound_dict (tuple, list): an iterator like::
+            sound_stim (tuple, list): an iterator like::
                 (
                  {'name':'group_name',
                   'frequency': 0.2,
@@ -360,6 +378,39 @@ class Proportional(Stim_Manager):
                     else:
                         self.stimuli[group_name][k] = [sounds.SOUND_LIST[v['type']](**v)]
 
+
+    def init_sounds_individual(self, sound_stim):
+        """
+        Initialize sounds with individually set presentation frequencies.
+
+        .. todo::
+
+            This method reflects the need for managers to have a unified schema,
+            which will be built in a future release of Autopilot.
+
+        Args:
+            sound_stim (dict): Dictionary of {'side':[sound_params]} to generate sound stimuli
+
+        Returns:
+
+        """
+        self.stim_freqs = {}
+        for side, sound_params in sound_stim.items():
+            self.stimuli[side] = []
+            self.stim_freqs[side] = []
+            if isinstance(sound_params, list):
+                for sound in sound_params:
+                    self.stimuli[side].append(sounds.SOUND_LIST[sound['type']](**sound))
+                    self.stim_freqs[side].append(float(sound['management']['frequency']))
+            else:
+                self.stimuli[side].append(sounds.SOUND_LIST[sound_params['type']](**sound_params))
+                self.stim_freqs[side].append(float(sound_params['management']['frequency']))
+
+        # normalize frequencies within sides to sum to 1
+        for side, freqs in self.stim_freqs.items():
+            side_sum = np.sum(freqs)
+            self.stim_freqs[side] = tuple([float(f)/side_sum for f in freqs])
+
     def store_groups(self, stim):
         """
         store groups and frequencies
@@ -394,10 +445,19 @@ class Proportional(Stim_Manager):
             trig_fn (callable): A function to be given to stimuli via `set_trigger`
         """
         # set a callback function for when the stimulus ends
-        for _, group in self.stimuli.items():
-            for _, v in group.items():
-                for astim in v:
+
+        if self.frequency_type == "within_group":
+            for _, group in self.stimuli.items():
+                    for _, v in group.items():
+                        for astim in v:
+                            astim.set_trigger(trig_fn)
+        elif self.frequency_type == "within_side":
+            for side, sound_group in self.stimuli.items():
+                for astim in sound_group:
                     astim.set_trigger(trig_fn)
+
+        else:
+            ValueError('Dont know how to set triggers')
 
 
     def next_stim(self):
@@ -439,10 +499,18 @@ class Proportional(Stim_Manager):
         elif self.target == 'R':
             self.distractor = 'L'
 
-        # pick a stimulus based on group frequency
-        group = np.random.choice(self.group_names, p=self.group_freqs)
-        # within that group pick a random stimulus
-        self.last_stim = np.random.choice(self.stimuli[group][self.target])
+        if self.frequency_type == "within_group":
+
+            # pick a stimulus based on group frequency
+            group = np.random.choice(self.group_names, p=self.group_freqs)
+            # within that group pick a random stimulus
+            self.last_stim = np.random.choice(self.stimuli[group][self.target])
+
+        elif self.frequency_type == "within_side":
+            self.last_stim = np.random.choice(self.stimuli[self.target],
+                                              p=self.stim_freqs[self.target])
+        else:
+            ValueError('Dont know what freq type we are')
 
         return self.target, self.distractor, self.last_stim
 
@@ -516,13 +584,13 @@ class Bias_Correction(object):
             response ('R', 'L'): Which side the subject responded to
             target ('R', 'L'): The correct side.
         """
-        if isinstance(response, basestring):
+        if isinstance(response, str):
             if response == "R":
                 response = 1.0
             elif response == "L":
                 response = 0.0
 
-        if isinstance(target, basestring):
+        if isinstance(target, str):
             if target == "R":
                 target = 1.0
             elif target == "L":

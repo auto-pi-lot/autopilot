@@ -138,8 +138,10 @@ def step_viewer(grad_data):
 def trial_viewer(step_data, roll_type = "ewm", roll_span=100, bar=False):
     """
     Args:
+        bar:
+        roll_span:
+        roll_type:
         step_data:
-        grad_data:
     """
     step_data.loc[step_data['response'] == 'L','response'] = 0
     step_data.loc[step_data['response'] == 'R','response'] = 1

@@ -4,11 +4,10 @@
 from collections import OrderedDict as odict
 import threading
 import logging
+import tables
 # from autopilot.core.networking import Net_Node
-from autopilot.core import hardware
+from autopilot.hardware import BCM_TO_BOARD
 from autopilot import prefs
-
-import sys
 
 if hasattr(prefs, "AUDIOSERVER"):
     if prefs.AUDIOSERVER == 'pyo':
@@ -86,12 +85,13 @@ class Task(object):
     HARDWARE = {} # Hardware needed to run the task
     STAGE_NAMES = [] # list of names of stage methods
     PLOT = {} # dictionary of plotting params
-    TrialData = None # tables.IsDescription class to make data table
+    class TrialData(tables.IsDescription):
+        trial_num = tables.Int32Col()
+        session = tables.Int32Col()
 
 
 
-
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
 
         # Task management
         self.stage_block = None  # a threading.Event used by the pilot to manage stage transitions
@@ -104,7 +104,7 @@ class Task(object):
         self.trial_counter = None  # will be init'd by the subtask because will use the current trial
 
         # Hardware
-        self.pins = {}  # dict to store references to hardware
+        self.hardware = {}  # dict to store references to hardware
         self.pin_id = {}  # pin numbers back to pin lettering
 
         self.punish_block = threading.Event()
@@ -120,38 +120,47 @@ class Task(object):
     def init_hardware(self):
         """
         Use the HARDWARE dict that specifies what we need to run the task
-        alongside the PINS subdict in :mod:`prefs` to tell us how
+        alongside the HARDWARE subdict in :mod:`prefs` to tell us how
         they're plugged in to the pi
 
         Instantiate the hardware, assign it :meth:`.Task.handle_trigger`
         as a callback if it is a trigger.
         """
         # We use the HARDWARE dict that specifies what we need to run the task
-        # alongside the PINS subdict in the prefs structure to tell us how they're plugged in to the pi
-        self.pins = {}
+        # alongside the HARDWARE subdict in the prefs structure to tell us how they're plugged in to the pi
+        self.hardware = {}
         self.pin_id = {} # Reverse dict to identify pokes
-        pin_numbers = prefs.PINS
+        pin_numbers = prefs.HARDWARE
 
         # We first iterate through the types of hardware we need
         for type, values in self.HARDWARE.items():
-            self.pins[type] = {}
+            self.hardware[type] = {}
             # then iterate through each pin and handler of this type
             for pin, handler in values.items():
                 try:
-                    hw = handler(pin_numbers[type][pin])
+                    hw_args = pin_numbers[type][pin]
+                    if isinstance(hw_args, dict):
+                        if 'name' not in hw_args.keys():
+                            hw_args['name'] = "{}_{}".format(type, pin)
+                        hw = handler(**hw_args)
+                    else:
+                        hw_name = "{}_{}".format(type, pin)
+                        hw = handler(hw_args, name=hw_name)
 
                     # if a pin is a trigger pin (event-based input), give it the trigger handler
                     if hw.trigger:
                         hw.assign_cb(self.handle_trigger)
 
                     # add to forward and backwards pin dicts
-                    self.pins[type][pin] = hw
-                    back_pins = pin_numbers[type][pin]
-                    if isinstance(back_pins, int) or isinstance(back_pins, basestring):
-                        self.pin_id[back_pins] = pin
-                    elif isinstance(back_pins, list):
-                        for p in back_pins:
+                    self.hardware[type][pin] = hw
+                    if isinstance(hw_args, int) or isinstance(hw_args, str):
+                        self.pin_id[hw_args] = pin
+                    elif isinstance(hw_args, list):
+                        for p in hw_args:
                             self.pin_id[p] = pin
+                    elif isinstance(hw_args, dict):
+                        if 'pin' in hw_args.keys():
+                            self.pin_id[hw_args['pin']] = pin 
 
                 except:
                     self.logger.exception("Pin could not be instantiated - Type: {}, Pin: {}".format(type, pin))
@@ -173,7 +182,7 @@ class Task(object):
             Warning('given both volume and duration, using volume.')
 
         if not port:
-            for k, port in self.pins['PORTS'].items():
+            for k, port in self.hardware['PORTS'].items():
                 if vol:
                     try:
                         port.dur_from_vol(vol)
@@ -186,20 +195,20 @@ class Task(object):
             try:
                 if vol:
                     try:
-                        self.pins['PORTS'][port].dur_from_vol(vol)
+                        self.hardware['PORTS'][port].dur_from_vol(vol)
                     except AttributeError:
                         Warning('No calibration found, using duration = 20ms instead')
                         port.duration = 0.02
 
                 else:
-                    self.pins['PORTS'][port].duration = float(duration)/1000.
+                    self.hardware['PORTS'][port].duration = float(duration) / 1000.
             except KeyError:
                 Exception('No port found named {}'.format(port))
 
     # def init_sound(self):
     #     pass
 
-    def handle_trigger(self, pin, level, tick):
+    def handle_trigger(self, pin, level=None, tick=None):
         """
         All GPIO triggers call this function with the pin number, level (high, low),
         and ticks since booting pigpio.
@@ -214,12 +223,13 @@ class Task(object):
         """
         # All triggers call this function with the pin number, level (high, low), and ticks since booting pigpio
 
-        # We get fed pins as BCM numbers, convert to board number and then back to letters
+        # We get fed hardware as BCM numbers, convert to board number and then back to letters
         if isinstance(pin, int):
-            pin = hardware.BCM_TO_BOARD[pin]
+            pin = BCM_TO_BOARD[pin]
             pin = self.pin_id[pin]
 
         if pin not in self.triggers.keys():
+            self.logger.debug(f"No trigger found for {pin}")
             # No trigger assigned, get out without waiting
             return
 
@@ -266,24 +276,24 @@ class Task(object):
         # All others are turned off
         if not color_dict:
             color_dict = {}
-        for k, v in self.pins['LEDS'].items():
+        for k, v in self.hardware['LEDS'].items():
             if k in color_dict.keys():
-                v.set_color(color_dict[k])
+                v.set(color_dict[k])
             else:
-                v.set_color([0,0,0])
+                v.set([0,0,0])
 
     def flash_leds(self):
         """
         flash lights for punish_dir
         """
-        for k, v in self.pins['LEDS'].items():
+        for k, v in self.hardware['LEDS'].items():
             v.flash(self.punish_dur)
 
     def end(self):
         """
         Release all hardware objects
         """
-        for k, v in self.pins.items():
+        for k, v in self.hardware.items():
             for pin, obj in v.items():
                 obj.release()
 

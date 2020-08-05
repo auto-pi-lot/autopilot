@@ -32,24 +32,42 @@ Examples:
 import json
 import subprocess
 import os
+from collections import OrderedDict as odict
 
 prefdict = {}
 """
 stores a dictionary of preferences that mirrors the global variables.
 """
 
-def init(fn):
+INITIALIZED = False
+
+def init(fn=None):
     """
     Initialize prefs on autopilot start.
 
     Args:
         fn (str, dict): a path to `prefs.json` or a dictionary of preferences
     """
-    if isinstance(fn, basestring):
+    if isinstance(fn, str):
         with open(fn, 'r') as pfile:
             prefs = json.load(pfile)
     elif isinstance(fn, dict):
         prefs = fn
+    elif fn is None:
+        # try to load from default location
+        autopilot_wayfinder = os.path.join(os.path.expanduser('~'), '.autopilot')
+        if os.path.exists(autopilot_wayfinder):
+            with open(autopilot_wayfinder, 'r') as wayfinder_f:
+                fn = os.path.join(wayfinder_f.read(), 'prefs.json')
+        else:
+            fn = os.path.join(os.path.expanduser('~'), 'autopilot', 'prefs.json')
+
+        if not os.path.exists(fn):
+            # tried to load defaults, return quietly
+            return
+
+        with open(fn, 'r') as pfile:
+            prefs = json.load(pfile)
 
     try:
         assert(isinstance(prefs, dict))
@@ -92,6 +110,8 @@ def init(fn):
     # also store as a dictionary so other modules can have one if they want it
     globals()['__dict__'] = prefs
 
+    globals()['INITIALIZED'] = True
+
 def add(param, value):
     """
     Add a pref after init
@@ -122,7 +142,7 @@ def git_version(repo_dir):
         unicode: git commit hash.
     """
     def _minimal_ext_cmd(cmd):
-        # type: (List[str]) -> str
+        # type: (list[str]) -> str
         # construct minimal environment
         env = {}
         for k in ['SYSTEMROOT', 'PATH']:
@@ -146,7 +166,16 @@ def git_version(repo_dir):
 
 
 def compute_calibration(path=None, calibration=None, do_return=False):
+    """
 
+    Args:
+        path:
+        calibration:
+        do_return:
+
+    Returns:
+
+    """
     # FIXME: UGLY HACK - move this function to another module
     import pandas as pd
     from scipy.stats import linregress
@@ -179,7 +208,7 @@ def compute_calibration(path=None, calibration=None, do_return=False):
 
     else:
         # do write
-        lut_fn = os.path.join(prefs.BASEDIR, 'port_calibration_fit.json')
+        lut_fn = os.path.join(globals()['BASEDIR'], 'port_calibration_fit.json')
         with open(lut_fn, 'w') as lutf:
             json.dump(luts, lutf)
 
@@ -193,4 +222,53 @@ def compute_calibration(path=None, calibration=None, do_return=False):
 # null values of params that every agent should have
 if 'AGENT' not in globals().keys():
     add('AGENT', '')
+
+add('AUTOPILOT_ROOT', os.path.dirname(os.path.abspath(__file__)))
+
+if not INITIALIZED:
+    init()
+#
+# HARDWARE_PREFS = odict({
+#             'HARDWARE':{
+#                 'POKES':{
+#                     'L':self.add(nps.TitleText, name="HARDWARE - POKES - L", value="24"),
+#                     'C': self.add(nps.TitleText, name="HARDWARE - POKES - C", value="8"),
+#                     'R': self.add(nps.TitleText, name="HARDWARE - POKES - R", value="10"),
+#                 },
+#                 'LEDS': {
+#                     'L': self.add(nps.TitleText, name="HARDWARE - LEDS - L", value="[11, 13, 15]"),
+#                     'C': self.add(nps.TitleText, name="HARDWARE - LEDS - C", value="[22, 18, 16]"),
+#                     'R': self.add(nps.TitleText, name="HARDWARE - LEDS - R", value="[19, 21, 23]"),
+#                 },
+#                 'PORTS': {
+#                     'L': self.add(nps.TitleText, name="HARDWARE - PORTS - L", value="31"),
+#                     'C': self.add(nps.TitleText, name="HARDWARE - PORTS - C", value="33"),
+#                     'R': self.add(nps.TitleText, name="HARDWARE - PORTS - R", value="37"),
+#                 },
+#                 'FLAGS': {
+#                     'L': self.add(nps.TitleText, name="HARDWARE - FLAGS - L", value=""),
+#                     'R': self.add(nps.TitleText, name="HARDWARE - FLAGS - R", value="")
+#                 }},
+#             'PULLUPS': self.add(nps.TitleText, name="Pins to pull up on boot",
+#                                 value="[7]"),
+#             'PULLDOWNS': self.add(nps.TitleText, name="Pins to pull down on boot",
+#                                   value="[]"),
+#     'AUDIO':{
+#         'AUDIOSERVER': self.add(nps.TitleSelectOne, max_height:4, "default": [0, ], name: "Audio Server:", "default"
+# s: ["jack", "pyo", "none"], scroll_exit: True},
+#
+# 'NCHANNELS'  : {"text": "N Audio Channels", "default": "1"},
+#     'OUTCHANNELS': {"text": "List of output ports for jack audioserver to connect to", "default": "[1]"},
+#     'FS'         : {"text": "Audio Sampling Rate", "default": "192000"},
+#     'JACKDSTRING': {"text"   : "Command used to launch jackd - note that \'fs\' will be replaced with above FS",
+#                     "default": "jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -n3 -s &"},
+#     }
+# })
+#
+# PILOT_PREFS = BASE_PREFS
+# PILOT_PREFS.update(odict({
+#     'PIGPIOMASK' : {"text":"Binary mask to enable pigpio to access pins according to the BCM numbering", "default":"1111110000111111111111110000"},
+#                           }))
+#
+# TERMINAL_PREFS = BASE_PREFS
 

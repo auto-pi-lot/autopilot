@@ -1,6 +1,10 @@
 from autopilot import prefs
 
-import pyo
+try:
+    import pyo
+    PYO = True
+except ImportError:
+    PYO = False
 
 def pyo_server(debug=False):
     """

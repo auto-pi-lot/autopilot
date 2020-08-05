@@ -1,0 +1,46 @@
+.logo-banner {
+  max-width: 750px; }
+
+ul.simple {
+  list-style: disc; }
+  ul.simple li {
+    list-style: disc;
+    margin-left: 24px; }
+
+.icon-hover {
+  box-shadow: 5px 10px #000000;
+  background-color: #ff0000 !important; }
+
+.roadmap-title {
+  width: 100%;
+  padding: 0.1em 0.5em 0.1em 0.5em; }
+  .roadmap-title.roadmap-priority-high {
+    border-top: solid 3px #ff0000;
+    background: #ffeeee;
+    color: #dd0000; }
+    .roadmap-title.roadmap-priority-high .roadmap-dblink {
+      color: #dd0000; }
+      .roadmap-title.roadmap-priority-high .roadmap-dblink:visited {
+        color: #dd0000; }
+  .roadmap-title.roadmap-priority-medium {
+    border-top: solid 3px #f77423;
+    background: rgba(255, 228, 222, 0.9);
+    color: #f77423; }
+    .roadmap-title.roadmap-priority-medium .roadmap-dblink {
+      color: #f77423; }
+      .roadmap-title.roadmap-priority-medium .roadmap-dblink:visited {
+        color: #f77423; }
+  .roadmap-title.roadmap-priority-low {
+    border-top: solid 3px #008000;
+    background: #e1ffde;
+    color: #008000; }
+    .roadmap-title.roadmap-priority-low .roadmap-dblink {
+      color: #008000; }
+      .roadmap-title.roadmap-priority-low .roadmap-dblink:visited {
+        color: #008000; }
+
+.roadmap-dblink {
+  float: right;
+  font-family: 'Cutive Mono', monospace;
+  font-size: 0.6em;
+  line-height: 2; }

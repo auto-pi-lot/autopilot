@@ -2,10 +2,15 @@
 #
 
 # You can set these variables from the command line.
-SPHINXOPTS    =
-SPHINXBUILD   = sphinx-build
-SOURCEDIR     = source
-BUILDDIR      = build
+SPHINXOPTS      = -E
+SPHINXBUILD     = python -m sphinx
+SOURCEDIR       = ./
+BUILDDIR        = build
+AUTOBUILDDIR    = ./
+SPHINXAUTOBUILD = sphinx-autobuild
+
+export PYTHONPATH=${PWD}/../
+# echo $PYTHONPATH
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -15,17 +20,18 @@ help:
 
 serve:
 	@$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-	rsync -av $(BUILDDIR)/html/* ./ --remove-source-files
+# 	@$(SPHINXAUTOBUILD) -b html "$(SOURCEDIR)" "$(AUTOBUILDDIR)" $(SPHINXOPTS) --watch source/changelog --open-browser --delay 1 $(O)
+	#rsync -av $(BUILDDIR)/html/* ./ --remove-source-files
 	# open up the simple node http-server
 	http-server
 	# open firefox
-	UNAME_S := $(shell uname -s)
-	ifeq ($(UNAME_S),Linux)
-		/usr/bin/firefox http://127.0.0.1:8080
-	endif
-	ifeq ($(UNAME_S),Darwin)
-		open -a firefox -g http://127.0.0.1:8080
-	endif
+	#UNAME_S := $(shell uname -s)
+	#ifeq ($(UNAME_S),Linux)
+    #		/usr/bin/firefox http://127.0.0.1:8080#
+	#endif
+	#ifeq ($(UNAME_S),Darwin)
+	#	open -a firefox -g http://127.0.0.1:8080
+	#endif
 
 buildapi:
 	sphinx-apidoc -e -M -d 5 -o source/rst/ ../autopilot/
@@ -37,5 +43,5 @@ buildapi:
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-	rsync -av $(BUILDDIR)/html/* ./ --remove-source-files
+	#rsync -av $(BUILDDIR)/html/* ./ --remove-source-files
 

@@ -1,13 +1,11 @@
 from collections import OrderedDict as odict
 import tables
-import os
-import json
 import itertools
 import random
 import datetime
-from autopilot import prefs
 
-from autopilot.core import hardware
+import autopilot.hardware.gpio
+
 from autopilot.tasks.task import Task
 
 TASK = 'Free_water'
@@ -53,20 +51,20 @@ class Free_Water(Task):
 
     HARDWARE = {
         'POKES':{
-            'L': hardware.Beambreak,
-            'C': hardware.Beambreak,
-            'R': hardware.Beambreak
+            'L': autopilot.hardware.gpio.Digital_In,
+            'C': autopilot.hardware.gpio.Digital_In,
+            'R': autopilot.hardware.gpio.Digital_In
         },
         'LEDS':{
             # TODO: use LEDs, RGB vs. white LED option in init
-            'L': hardware.LED_RGB,
-            'C': hardware.LED_RGB,
-            'R': hardware.LED_RGB
+            'L': autopilot.hardware.gpio.LED_RGB,
+            'C': autopilot.hardware.gpio.LED_RGB,
+            'R': autopilot.hardware.gpio.LED_RGB
         },
         'PORTS':{
-            'L': hardware.Solenoid,
-            'C': hardware.Solenoid,
-            'R': hardware.Solenoid
+            'L': autopilot.hardware.gpio.Solenoid,
+            'C': autopilot.hardware.gpio.Solenoid,
+            'R': autopilot.hardware.gpio.Solenoid
         }
     }
 
@@ -115,7 +113,7 @@ class Free_Water(Task):
         self.stages = itertools.cycle(stage_list)
 
         # Init hardware
-        self.pins = {}
+        self.hardware = {}
         self.pin_id = {} # Inverse pin dictionary
         self.init_hardware()
 
@@ -149,14 +147,14 @@ class Free_Water(Task):
             self.target = random.choice(other_ports)
 
         # Set triggers and set the target LED to green.
-        self.triggers[self.target] = self.pins['PORTS'][self.target].open
+        self.triggers[self.target] = self.hardware['PORTS'][self.target].open
         self.set_leds({self.target: [0, 255, 0]})
 
         # Return data
         data = {
             'target': self.target,
             'timestamp': datetime.datetime.now().isoformat(),
-            'trial_num' : self.trial_counter.next()
+            'trial_num' : next(self.trial_counter)
         }
         return data
 
@@ -179,7 +177,7 @@ class Free_Water(Task):
         """
         When shutting down, release all hardware objects and turn LEDs off.
         """
-        for k, v in self.pins.items():
+        for k, v in self.hardware.items():
             for pin, obj in v.items():
                 if k == "LEDS":
                     obj.set_color([0,0,0])

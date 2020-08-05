@@ -10,10 +10,9 @@ import tables
 import threading
 from random import random
 
-
-from autopilot.core import hardware
+import autopilot.hardware.gpio
 from autopilot.tasks import Task
-from autopilot.stim.visual.visuals import Grating, Grating_Continuous
+from autopilot.stim.visual.visuals import Grating
 from collections import OrderedDict as odict
 from autopilot.core.networking import Net_Node
 
@@ -21,6 +20,17 @@ from autopilot import prefs
 TASK = 'GoNoGo'
 
 class GoNoGo(Task):
+    """
+    A Visual Go/No-Go task using a :class:`.Pilot` and a :class:`.Wheel_Child`.
+
+    .. note::
+
+        This task was written as a proof-of-concept for the Autopilot manuscript,
+        and is thus underdeveloped and underdocumented, submit and issue if you would like to
+        use it yourself :)
+
+    """
+
     STAGE_NAMES = ["request", "discrim", "reinforcement"]
 
     # Class attributes
@@ -38,7 +48,7 @@ class GoNoGo(Task):
     # Set plot params, which data should be plotted, its default shape, etc.
     PLOT = {
         'data': {
-            'x': 'shaded',
+            'y': 'shaded',
             'target': 'point',
             'response': 'segment'
         },
@@ -59,23 +69,23 @@ class GoNoGo(Task):
         angle = tables.Float32Col()
         delay = tables.Float32Col()
 
-    class ContinuousData(tables.IsDescription):
-        x = tables.Float64Col()
-        y = tables.Float64Col()
-        t = tables.Float64Col()
+    # class ContinuousData(tables.IsDescription):
+    #     x = tables.Float64Col()
+    #     y = tables.Float64Col()
+    #     t = tables.Float64Col()
 
     HARDWARE = {
         'POKES': {
-            'C': hardware.Beambreak,
+            'C': autopilot.hardware.gpio.Digital_In,
         },
         'LEDS': {
-            'C': hardware.LED_RGB,
+            'C': autopilot.hardware.gpio.LED_RGB,
         },
         'PORTS': {
-            'C': hardware.Solenoid,
+            'C': autopilot.hardware.gpio.Solenoid,
         },
         'FLAGS': {
-            'F': hardware.Flag
+            'F': autopilot.hardware.gpio.Digital_Out
         }
     }
 
@@ -148,7 +158,7 @@ class GoNoGo(Task):
 
         # Set sound trigger and LEDs
         # We make two triggers to play the sound and change the light color
-        change_to_blue = lambda: self.pins['LEDS']['C'].set_color([0, 0, 255])
+        change_to_blue = lambda: self.hardware['LEDS']['C'].set_color([0, 0, 255])
 
         # set triggers
         self.triggers['F'] = [change_to_blue, lambda: self.stim.play('shift', self.shift )]
@@ -162,7 +172,7 @@ class GoNoGo(Task):
                        value={'mode':'steady',
                               'thresh':100})
 
-        self.current_trial = self.trial_counter.next()
+        self.current_trial = next(self.trial_counter)
         data = {
             'target': self.target,
             'shift': self.shift,
@@ -178,12 +188,12 @@ class GoNoGo(Task):
         # if the subject licks on a good trial, reward.
         # set a trigger to respond false if delay time elapses
         if self.target:
-            self.triggers['C'] = [lambda: self.respond(True), self.pins['PORTS']['C'].open]
+            self.triggers['C'] = [lambda: self.respond(True), self.hardware['PORTS']['C'].open]
             self.triggers['T'] = [lambda: self.respond(False), self.punish]
         # otherwise punish
         else:
             self.triggers['C'] = [lambda: self.respond(True), self.punish]
-            self.triggers['T'] = [lambda: self.respond(False), self.pins['PORTS']['C'].open]
+            self.triggers['T'] = [lambda: self.respond(False), self.hardware['PORTS']['C'].open]
 
         # the stimulus has just started playing, wait a bit and then shift it (if we're gonna
         # choose a random delay

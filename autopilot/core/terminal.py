@@ -1,4 +1,4 @@
-__version__ = '0.2'
+__version__ = '0.3'
 __author__  = 'Jonny Saunders <JLSaunders987@gmail.com>'
 
 import argparse
@@ -6,7 +6,13 @@ import json
 import sys
 import os
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+import datetime
+import logging
+import threading
+from collections import OrderedDict as odict
+import numpy as np
+
+from PySide2 import QtCore, QtGui, QtSvg, QtWidgets
 
 from autopilot import prefs
 from autopilot.core import styles
@@ -15,7 +21,7 @@ if __name__ == '__main__':
     # Parse arguments - this should have been called with a .json prefs file passed
     # We'll try to look in the default location first
     parser = argparse.ArgumentParser(description="Run an autopilot Terminal")
-    parser.add_argument('-f', '--prefs', help="Location of .json prefs file (created during setup_terminal.py)")
+    parser.add_argument('-f', '--prefs', help="Location of .json prefs file (created during setup_autopilot.py)")
     args = parser.parse_args()
 
     if not args.prefs:
@@ -33,18 +39,20 @@ if __name__ == '__main__':
     prefs.init(prefs_file)
 
 
-import datetime
-import logging
-import threading
-from collections import OrderedDict as odict
-import numpy as np
 
-from PySide import QtCore, QtGui, QtSvg
-from subject import Subject
-from plots import Plot_Widget
-from networking import Terminal_Station, Net_Node
-from utils import InvokeEvent, Invoker
-from gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test
+from autopilot.core.subject import Subject
+from autopilot.core.plots import Plot_Widget
+from autopilot.core.networking import Terminal_Station, Net_Node
+from autopilot.core.utils import InvokeEvent, Invoker
+from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test
+
+IMPORTED_VIZ = False
+VIZ_ERROR = None
+try:
+    from autopilot import viz
+    IMPORTED_VIZ = True
+except ImportError as e:
+    VIZ_ERROR = str(e)
 import pdb
 
 
@@ -57,7 +65,7 @@ import pdb
 # https://wiki.qt.io/PySide_Tutorials
 
 
-class Terminal(QtGui.QMainWindow):
+class Terminal(QtWidgets.QMainWindow):
     """
     Central host to a fleet of :class:`.Pilot` s and user-facing
     :mod:`~.core.gui` objects.
@@ -100,10 +108,10 @@ class Terminal(QtGui.QMainWindow):
         networking (:class:`~.networking.Terminal_Station`): Our networking object to communicate with the outside world
         subjects (dict): A dictionary mapping subject ID to :class:`~.subject.Subject` object.
         pilots (dict): A dictionary mapping pilot ID to a list of its subjects, its IP, and any other pilot attributes.
-        layout (:class:`QtGui.QGridLayout`): Layout used to organize widgets
+        layout (:class:`QtWidgets.QGridLayout`): Layout used to organize widgets
         control_panel (:class:`~.gui.Control_Panel`): Control Panel to manage pilots and subjects
         data_panel (:class:`~.plots.Plot_Widget`): Plots for each pilot and subject.
-        logo (:class:`QtGui.QLabel`): Label holding our beautiful logo ;X
+        logo (:class:`QtWidgets.QLabel`): Label holding our beautiful logo ;X
         logger (:class:`logging.Logger`): Used to log messages and network events.
         log_handler (:class:`logging.FileHandler`): Handler for logging
         log_formatter (:class:`logging.Formatter`): Formats log entries as::
@@ -153,6 +161,8 @@ class Terminal(QtGui.QMainWindow):
             'STATE': self.l_state, # A Pi has changed state
             'PING' : self.l_ping,  # Someone wants to know if we're alive
             'DATA' : self.l_data,
+            'CONTINUOUS': self.l_data, # handle continuous data same way as other data
+            'STREAM': self.l_data,
             'HANDSHAKE': self.l_handshake # a pi is making first contact, telling us its IP
         }
 
@@ -182,10 +192,11 @@ class Terminal(QtGui.QMainWindow):
         self.node.send('T', 'INIT')
 
         # start beating ur heart
-        self.heartbeat_timer = threading.Timer(self.heartbeat_dur, self.heartbeat)
-        self.heartbeat_timer.daemon = True
-        self.heartbeat_timer.start()
+        # self.heartbeat_timer = threading.Timer(self.heartbeat_dur, self.heartbeat)
+        # self.heartbeat_timer.daemon = True
+        # self.heartbeat_timer.start()
         #self.heartbeat(once=True)
+        self.logger.info('Terminal Initialized')
 
 
     def init_logging(self):
@@ -217,13 +228,13 @@ class Terminal(QtGui.QMainWindow):
 
 
         # set central widget
-        self.widget = QtGui.QWidget()
+        self.widget = QtWidgets.QWidget()
         self.setCentralWidget(self.widget)
 
 
 
         # Start GUI
-        self.layout = QtGui.QGridLayout()
+        self.layout = QtWidgets.QGridLayout()
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0,0,0,0)
         self.widget.setLayout(self.layout)
@@ -238,17 +249,19 @@ class Terminal(QtGui.QMainWindow):
         # File menu
         # make menu take up 1/10 of the screen
         winsize = app.desktop().availableGeometry()
-        bar_height = (winsize.height()/25)+5
 
-        self.menuBar().setFixedHeight(bar_height)
-        #self.menuBar().setStyleSheet('QMenuBar:item {  }')
+        if sys.platform == 'darwin':
+            bar_height = 0
+        else:
+            bar_height = (winsize.height()/30)+5
+            self.menuBar().setFixedHeight(bar_height)
 
 
         self.file_menu = self.menuBar().addMenu("&File")
         self.file_menu.setObjectName("file")
-        new_pilot_act = QtGui.QAction("New &Pilot", self, triggered=self.new_pilot)
-        new_prot_act  = QtGui.QAction("New Pro&tocol", self, triggered=self.new_protocol)
-        #batch_create_subjects = QtGui.QAction("Batch &Create subjects", self, triggered=self.batch_subjects)
+        new_pilot_act = QtWidgets.QAction("New &Pilot", self, triggered=self.new_pilot)
+        new_prot_act  = QtWidgets.QAction("New Pro&tocol", self, triggered=self.new_protocol)
+        #batch_create_subjects = QtWidgets.QAction("Batch &Create subjects", self, triggered=self.batch_subjects)
         # TODO: Update pis
         self.file_menu.addAction(new_pilot_act)
         self.file_menu.addAction(new_prot_act)
@@ -256,18 +269,23 @@ class Terminal(QtGui.QMainWindow):
 
         # Tools menu
         self.tool_menu = self.menuBar().addMenu("&Tools")
-        subject_weights_act = QtGui.QAction("View Subject &Weights", self, triggered=self.subject_weights)
-        update_protocol_act = QtGui.QAction("Update Protocols", self, triggered=self.update_protocols)
-        reassign_act = QtGui.QAction("Batch Reassign Protocols", self, triggered=self.reassign_protocols)
-        calibrate_act = QtGui.QAction("Calibrate &Water Ports", self, triggered=self.calibrate_ports)
+        subject_weights_act = QtWidgets.QAction("View Subject &Weights", self, triggered=self.subject_weights)
+        update_protocol_act = QtWidgets.QAction("Update Protocols", self, triggered=self.update_protocols)
+        reassign_act = QtWidgets.QAction("Batch Reassign Protocols", self, triggered=self.reassign_protocols)
+        calibrate_act = QtWidgets.QAction("Calibrate &Water Ports", self, triggered=self.calibrate_ports)
         self.tool_menu.addAction(subject_weights_act)
         self.tool_menu.addAction(update_protocol_act)
         self.tool_menu.addAction(reassign_act)
         self.tool_menu.addAction(calibrate_act)
 
+        # Plots menu
+        self.plots_menu = self.menuBar().addMenu("&Plots")
+        psychometric = QtGui.QAction("Psychometric Curve", self, triggered=self.plot_psychometric)
+        self.plots_menu.addAction(psychometric)
+
         # Tests menu
         self.tests_menu = self.menuBar().addMenu("Test&s")
-        bandwidth_test_act = QtGui.QAction("Test Bandwidth", self, triggered=self.test_bandwidth)
+        bandwidth_test_act = QtWidgets.QAction("Test Bandwidth", self, triggered=self.test_bandwidth)
         self.tests_menu.addAction(bandwidth_test_act)
 
 
@@ -286,29 +304,29 @@ class Terminal(QtGui.QMainWindow):
         # Logo goes up top
         # https://stackoverflow.com/questions/25671275/pyside-how-to-set-an-svg-icon-in-qtreewidgets-item-and-change-the-size-of-the
 
+        #
+        # pixmap_path = os.path.join(os.path.dirname(prefs.AUTOPILOT_ROOT), 'graphics', 'autopilot_logo_small.svg')
+        # #svg_renderer = QtSvg.QSvgRenderer(pixmap_path)
+        # #image = QtWidgets.QImage()
+        # #self.logo = QtSvg.QSvgWidget()
+        #
+        #
+        # # set size, preserving aspect ratio
+        # logo_height = round(44.0*((bar_height-5)/44.0))
+        # logo_width = round(139*((bar_height-5)/44.0))
+        #
+        # svg_renderer = QtSvg.QSvgRenderer(pixmap_path)
+        # image = QtGui.QImage(logo_width, logo_height, QtGui.QImage.Format_ARGB32)
+        # # Set the ARGB to 0 to prevent rendering artifacts
+        # image.fill(0x00000000)
+        # svg_renderer.render(QtGui.QPainter(image))
+        # pixmap = QtGui.QPixmap.fromImage(image)
+        # self.logo = QtWidgets.QLabel()
+        # self.logo.setPixmap(pixmap)
 
-        pixmap_path = os.path.join(os.path.dirname(prefs.REPODIR), 'graphics', 'autopilot_logo_small.svg')
-        #svg_renderer = QtSvg.QSvgRenderer(pixmap_path)
-        #image = QtGui.QImage()
-        #self.logo = QtSvg.QSvgWidget()
-
-
-        # set size, preserving aspect ratio
-        logo_height = round(44.0*((bar_height-5)/44.0))
-        logo_width = round(139*((bar_height-5)/44.0))
-
-        svg_renderer = QtSvg.QSvgRenderer(pixmap_path)
-        image = QtGui.QImage(logo_width, logo_height, QtGui.QImage.Format_ARGB32)
-        # Set the ARGB to 0 to prevent rendering artifacts
-        image.fill(0x00000000)
-        svg_renderer.render(QtGui.QPainter(image))
-        pixmap = QtGui.QPixmap.fromImage(image)
-        self.logo = QtGui.QLabel()
-        self.logo.setPixmap(pixmap)
-
-
-        self.menuBar().setCornerWidget(self.logo, QtCore.Qt.TopRightCorner)
-        self.menuBar().adjustSize()
+        if sys.platform != 'darwin':
+            self.menuBar().setCornerWidget(self.logo, QtCore.Qt.TopRightCorner)
+            self.menuBar().adjustSize()
 
         #self.logo.load(pixmap_path)
         # Combine all in main layout
@@ -331,8 +349,8 @@ class Terminal(QtGui.QMainWindow):
         # Then our tilebar
         # multiply by three to get the inner (file, etc.) bar, the top bar (min, maximize, etc)
         # and then the very top system tray bar in ubuntu
-        #titleBarHeight = self.style().pixelMetric(QtGui.QStyle.PM_TitleBarHeight,
-        #                                          QtGui.QStyleOptionTitleBar(), self) * 3
+        #titleBarHeight = self.style().pixelMetric(QtWidgets.QStyle.PM_TitleBarHeight,
+        #                                          QtWidgets.QStyleOptionTitleBar(), self) * 3
         title_bar_height = screensize.height()-winsize.height()
 
         #titleBarHeight = bar_height*2
@@ -345,7 +363,7 @@ class Terminal(QtGui.QMainWindow):
         winsize.setHeight(winheight)
         self.max_height = winheight
         self.setGeometry(winsize)
-        self.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
 
         # Set heights on control panel and data panel
 
@@ -373,7 +391,7 @@ class Terminal(QtGui.QMainWindow):
         """
 
         # type: () -> None
-        self.layout = QtGui.QGridLayout()
+        self.layout = QtWidgets.QGridLayout()
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0,0,0,0)
         self.widget.setLayout(self.layout)
@@ -385,6 +403,15 @@ class Terminal(QtGui.QMainWindow):
     # Listens & inter-object methods
 
     def heartbeat(self, once=False):
+        """
+        Perioducally send an ``INIT`` message that checks the status of connected pilots
+
+        sent with frequency according to :attr:`.Terminal.heartbeat_dur`
+
+        Args:
+            once (bool): if True, do a single heartbeat but don't start a thread to do more.
+
+        """
         self.node.send('T', 'INIT', repeat=False, flags={'NOREPEAT': True})
 
         if not once:
@@ -410,7 +437,7 @@ class Terminal(QtGui.QMainWindow):
         # stopping is the enemy of starting so we put them in the same function to learn about each other
         if starting is True:
             # Get Weights
-            start_weight, ok = QtGui.QInputDialog.getDouble(self, "Set Starting Weight",
+            start_weight, ok = QtWidgets.QInputDialog.getDouble(self, "Set Starting Weight",
                                                             "Starting Weight:")
             if ok:
                 # Ope'nr up if she aint
@@ -421,9 +448,9 @@ class Terminal(QtGui.QMainWindow):
                 task['pilot'] = pilot
                 self.subjects[subject].update_weights(start=float(start_weight))
 
-                self.node.send(to=bytes(pilot), key="START", value=task)
+                self.node.send(to=pilot, key="START", value=task)
                 # also let the plot know to start
-                self.node.send(to=bytes("P_{}".format(pilot)), key="START", value=task)
+                self.node.send(to="P_{}".format(pilot), key="START", value=task)
 
             else:
                 # pressed cancel, don't start
@@ -431,7 +458,7 @@ class Terminal(QtGui.QMainWindow):
 
         else:
             # Get Weights
-            stop_weight, ok = QtGui.QInputDialog.getDouble(self, "Set Stopping Weight",
+            stop_weight, ok = QtWidgets.QInputDialog.getDouble(self, "Set Stopping Weight",
                                                            "Stopping Weight:")
             
             if ok:
@@ -439,9 +466,9 @@ class Terminal(QtGui.QMainWindow):
                 # it should initiate a coherence checking routine to make sure
                 # its data matches what the Terminal got,
                 # so the terminal will handle closing the subject object
-                self.node.send(to=bytes(pilot), key="STOP")
+                self.node.send(to=pilot, key="STOP")
                 # also let the plot know to start
-                self.node.send(to=bytes("P_{}".format(pilot)), key="STOP")
+                self.node.send(to="P_{}".format(pilot), key="STOP")
                 # TODO: Start coherence checking ritual
                 # TODO: Auto-select the next subject in the list.
 
@@ -517,9 +544,9 @@ class Terminal(QtGui.QMainWindow):
         if value['pilot'] in self.pilots.keys():
             if 'state' not in self.pilots[value['pilot']].keys():
                 self.pilots[value['pilot']]['state'] = value['state']
-                self.control_panel.panels[value['pilot']].button.set_state(value['state'])
+                #self.control_panel.panels[value['pilot']].button.set_state(value['state'])
             elif value['state'] != self.pilots[value['pilot']]['state']:
-                self.control_panel.panels[value['pilot']].button.set_state(value['state'])
+                #self.control_panel.panels[value['pilot']].button.set_state(value['state'])
                 self.pilots[value['pilot']]['state'] = value['state']
 
             
@@ -566,7 +593,7 @@ class Terminal(QtGui.QMainWindow):
             name (str): If None, prompted for a name, otherwise used for entry in pilot DB.
         """
         if name is None:
-            name, ok = QtGui.QInputDialog.getText(self, "Pilot ID", "Pilot ID:")
+            name, ok = QtWidgets.QInputDialog.getText(self, "Pilot ID", "Pilot ID:")
 
         # make sure we won't overwrite ourself
         if name in self.pilots.keys():
@@ -608,7 +635,7 @@ class Terminal(QtGui.QMainWindow):
                 save_steps.append(param_values)
 
             # Name the protocol
-            name, ok = QtGui.QInputDialog.getText(self, "Name Protocol", "Protocol Name:")
+            name, ok = QtWidgets.QInputDialog.getText(self, "Name Protocol", "Protocol Name:")
             if ok and name != '':
                 protocol_file = os.path.join(prefs.PROTOCOLDIR, name + '.json')
                 with open(protocol_file, 'w') as pfile_open:
@@ -619,7 +646,8 @@ class Terminal(QtGui.QMainWindow):
                 with open(protocol_file, 'w') as pfile_open:
                     json.dump(save_steps, pfile_open, indent=4, separators=(',', ': '), sort_keys=True)
 
-    def list_subjects(self):
+    @property
+    def subject_list(self):
         """
         Get a list of all subject IDs
 
@@ -629,6 +657,10 @@ class Terminal(QtGui.QMainWindow):
         subjects = []
         for pilot, vals in self.pilots.items():
             subjects.extend(vals['subjects'])
+
+        # use sets to get a unique list
+        subjects = list(set(subjects))
+
         return subjects
 
     def subject_weights(self):
@@ -636,7 +668,7 @@ class Terminal(QtGui.QMainWindow):
         Gets recent weights from all :attr:`~.Terminal.subjects` and
         open a :class:`.gui.Weights` window to view or set weights.
         """
-        subjects = self.list_subjects()
+        subjects = self.subject_list
 
         # open objects if not already
         for subject in subjects:
@@ -662,21 +694,53 @@ class Terminal(QtGui.QMainWindow):
         protocols = os.listdir(prefs.PROTOCOLDIR)
         protocols = [p for p in protocols if p.endswith('.json')]
 
-
-        subjects = self.list_subjects()
+        updated_subjects = []
+        subjects = self.subject_list
         for subject in subjects:
             if subject not in self.subjects.keys():
                 self.subjects[subject] = Subject(subject)
 
-            protocol_bool = [self.subjects[subject].protocol_name == p.rstrip('.json') for p in protocols]
+            protocol_bool = [self.subjects[subject].protocol_name == os.path.splitext(p)[0] for p in protocols]
             if any(protocol_bool):
                 which_prot = np.where(protocol_bool)[0][0]
                 protocol = protocols[which_prot]
                 self.subjects[subject].assign_protocol(os.path.join(prefs.PROTOCOLDIR, protocol), step_n=self.subjects[subject].step)
+                updated_subjects.append(subject)
 
-        msgbox = QtGui.QMessageBox()
-        msgbox.setText("Subject Protocols Updated")
+        msgbox = QtWidgets.QMessageBox()
+        msgbox.setText("Subject Protocols Updated for:")
+        msgbox.setDetailedText("\n".join(sorted(updated_subjects)))
         msgbox.exec_()
+
+    @property
+    def protocols(self):
+        """
+        Returns:
+            list: list of protocol files in ``prefs.PROTOCOLDIR``
+        """
+        # get list of protocol files
+        protocols = os.listdir(prefs.PROTOCOLDIR)
+        protocols = [os.path.splitext(p)[0] for p in protocols if p.endswith('.json')]
+        return protocols
+
+    @property
+    def subject_protocols(self):
+        """
+
+        Returns:
+            subject_protocols (dict): a dictionary of subjects: [protocol, step]
+        """
+        # get subjects and current protocols
+        subjects = self.subject_list
+        subjects_protocols = {}
+        for subject in subjects:
+            if subject not in self.subjects.keys():
+                self.subjects[subject] = Subject(subject)
+
+            subjects_protocols[subject] = [self.subjects[subject].protocol_name, self.subjects[subject].step]
+
+        return subjects_protocols
+
 
     def reassign_protocols(self):
         """
@@ -685,20 +749,9 @@ class Terminal(QtGui.QMainWindow):
         Opens a :class:`.gui.Reassign` window after getting protocol data,
         and applies any changes made in the window.
         """
-        # get list of protocol files
-        protocols = os.listdir(prefs.PROTOCOLDIR)
-        protocols = [os.path.splitext(p)[0] for p in protocols if p.endswith('.json')]
 
-        # get subjects and current protocols
-        subjects = self.list_subjects()
-        subjects_protocols = {}
-        for subject in subjects:
-            if subject not in self.subjects.keys():
-                self.subjects[subject] = Subject(subject)
 
-            subjects_protocols[subject] = [self.subjects[subject].protocol_name, self.subjects[subject].step]
-
-        reassign_window = Reassign(subjects_protocols, protocols)
+        reassign_window = Reassign(self.subject_protocols, self.protocols)
         reassign_window.exec_()
 
         if reassign_window.result() == 1:
@@ -725,6 +778,13 @@ class Terminal(QtGui.QMainWindow):
                     self.subjects[subject].update_history('step', step_name, step)
 
     def calibrate_ports(self):
+        """
+        Calibrate :class:`.hardware.gpio.Solenoid` objects.
+
+        See :class:`.gui.Calibrate_Water`.
+
+        After calibration routine, send results to pilot for storage.
+        """
 
         calibrate_window = Calibrate_Water(self.pilots)
         calibrate_window.exec_()
@@ -746,20 +806,72 @@ class Terminal(QtGui.QMainWindow):
                 self.node.send(to=pilot, key="CALIBRATE_RESULT",
                                value = unnested_results)
 
-            msgbox = QtGui.QMessageBox()
+            msgbox = QtWidgets.QMessageBox()
             msgbox.setText("Calibration results sent!")
             msgbox.exec_()
 
     def test_bandwidth(self):
+        """
+        Test bandwidth of Pilot connection with variable sized arrays as paylods
+
+        See :class:`.gui.Bandwidth_Test`
+
+        """
         # turn off logging while we run
-        self.networking.set_logging(False)
-        self.node.do_logging.clear()
+        prev_networking_loglevel = self.networking.logger.level
+        prev_node_loglevel = self.node.logger.level
+        self.networking.logger.setLevel(logging.ERROR)
+        self.node.logger.setLevel(logging.ERROR)
 
         bandwidth_test = Bandwidth_Test(self.pilots)
         bandwidth_test.exec_()
 
-        self.networking.set_logging(True)
-        self.node.do_logging.set()
+        self.networking.logger.setLevel(prev_networking_loglevel)
+        self.node.logger.setLevel(prev_node_loglevel)
+
+    def plot_psychometric(self):
+        """
+        Select subject, step, and variables to plot a psychometric curve
+
+        """
+
+        if not IMPORTED_VIZ:
+            _ = pop_dialog("Vizualisation function couldn't be imported!", "error", VIZ_ERROR)
+            return
+
+        psychometric_dialog = Psychometric(self.subject_protocols)
+        psychometric_dialog.exec_()
+
+        # if user cancels, return
+        if psychometric_dialog.result() != 1:
+            return
+
+
+
+        chart = viz.plot_psychometric(psychometric_dialog.plot_params)
+
+        text, ok = QtGui.QInputDialog.getText(self, 'save plot?', 'what to call this thing')
+        if ok:
+            chart.save(text)
+
+
+        #chart.serve()
+
+
+
+
+
+            #viz.plot_psychometric(self.subjects_protocols)
+        #result = psychometric_dialog.exec_()
+
+
+
+
+
+
+
+
+
 
 
 
@@ -786,15 +898,16 @@ class Terminal(QtGui.QMainWindow):
         # send message to kill networking process
         self.node.send(key="KILL")
 
-if __name__ == "__main__":
+        event.accept()
 
-    sys.path.append(prefs.REPODIR)
+if __name__ == "__main__":
 
     #with open(prefs_file) as prefs_file_open:
     #    prefs = json.load(prefs_file_open)
 
-    app = QtGui.QApplication(sys.argv)
-    #app.setStyle('plastique') # Keeps some GTK errors at bay
+    app = QtWidgets.QApplication(sys.argv)
+    #app.setGraphicsSystem("opengl")
+    app.setStyle('GTK+') # Keeps some GTK errors at bay
     ex = Terminal()
     sys.exit(app.exec_())
 

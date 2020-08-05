@@ -1,13 +1,20 @@
 # import numpy as np
 from autopilot import prefs
-if prefs.AGENT in ("terminal", "docs"):
-    from PySide import QtCore
+# if prefs.AGENT in ("TERMINAL", "DOCS"):
+HAVE_PYSIDE = False
+try:
+    from PySide2 import QtCore
+    HAVE_PYSIDE = True
+except ImportError:
+    pass
+
 import json
 import pandas as pd
 from scipy.stats import linregress
 # from subprocess import call
 from threading import Thread
 import os
+import numpy as np
 
 class Param(object):
     """
@@ -73,7 +80,7 @@ class Param(object):
 
 
 
-if prefs.AGENT in ["terminal", "docs"]:
+if HAVE_PYSIDE:
     class InvokeEvent(QtCore.QEvent):
         """
         Sends signals to the main QT thread from spawned message threads
@@ -154,6 +161,7 @@ def load_pilotdb(file_name=None, reverse=False):
     Try to load the file_db
 
     Args:
+        reverse:
         file_name:
 
     Returns:
@@ -177,7 +185,56 @@ def load_pilotdb(file_name=None, reverse=False):
 
     return pilot_db
 
+def coerce_discrete(df, col, mapping={'L':0, 'R':1}):
+    """
+    Coerce a discrete/string column of a pandas dataframe into numeric values
 
+    Default is to map 'L' to 0 and 'R' to 1 as in the case of Left/Right 2AFC tasks
+
+    Args:
+        df (:class:`pandas.DataFrame`) : dataframe with the column to transform
+        col (str):  name of column
+        mapping (dict): mapping of strings to numbers
+
+    Returns:
+        df (:class:`pandas.DataFrame`) : transformed dataframe
+
+    """
+
+    for key, val in mapping.items():
+        df.loc[df[col]==key,col] = val
+
+    # if blanks, warn and remove
+    if '' in df[col].unique():
+        n_blanks = sum(df[col]=='')
+        Warning('{} blank rows detected, removing.'.format(n_blanks))
+        df.drop(df.index[df[col]==''], axis=0, inplace=True)
+
+    df = df.astype({col:float})
+    return df
+
+
+def find_recursive(key, dictionary):
+    """
+    Find all instances of a key in a dictionary, recursively.
+
+    Args:
+        key:
+        dictionary:
+
+    Returns:
+        list
+    """
+    for k, v in dictionary.iteritems():
+        if k == key:
+            yield v
+        elif isinstance(v, dict):
+            for result in find_recursive(key, v):
+                yield result
+        elif isinstance(v, list):
+            for d in v:
+                for result in find_recursive(key, d):
+                    yield result
 
 
 

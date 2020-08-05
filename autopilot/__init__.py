@@ -1,5 +1,6 @@
-#import core
-#import setup
-#import stim
-#import tasks
-#import viz
+__version__ = '0.3'
+__author__  = 'Jonny Saunders <JLSaunders987@gmail.com>'
+
+from autopilot import core
+from autopilot.tasks import Task
+from autopilot.setup import setup_autopilot

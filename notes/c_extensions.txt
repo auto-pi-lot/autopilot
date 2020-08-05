@@ -1,0 +1,3 @@
+- https://scipy-cookbook.readthedocs.io/items/C_Extensions_NumPy_arrays.html
+- https://python-packaging.readthedocs.io/en/latest/command-line-scripts.html#the-scripts-keyword-argument
+- how to install binary using data https://github.com/pypa/setuptools/issues/210#issuecomment-449696043

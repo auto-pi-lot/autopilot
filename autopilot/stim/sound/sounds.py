@@ -38,17 +38,18 @@ from scipy.signal import resample
 import numpy as np
 import threading
 import logging
+from itertools import cycle
 if sys.version_info >= (3,0):
-    from queue import Empty
+    from queue import Empty, Full
 else:
-    from Queue import Empty
+    from Queue import Empty, Full
 
 
 from autopilot import prefs
 
 # switch behavior based on audio server type
 try:
-    server_type = prefs.AUDIOSERVER
+    server_type = prefs.AUDIOSERVER.lower()
 except:
 #    # TODO: The 'attribute don't exist' type - i think NameError?
     server_type = None
@@ -56,7 +57,10 @@ except:
 
 
 if server_type in ("pyo", "docs"):
-    import pyo
+    try:
+        import pyo
+    except ImportError:
+        pass
 
     class Pyo_Sound(object):
         """
@@ -113,7 +117,7 @@ if server_type in ("pyo", "docs"):
             self.trigger = pyo.TrigFunc(self.table['trig'], trig_fn)
 
 
-if server_type in ("jack", "docs"):
+if server_type in ("jack", "docs", True):
     from autopilot.stim.sound import jackclient
 
     class Jack_Sound(object):
@@ -130,15 +134,16 @@ if server_type in ("jack", "docs"):
             chunks (list): :attr:`~.Jack_Sound.table` split up into chunks of :data:`~.jackclient.BLOCKSIZE`
             trigger (callable): A function that is called when the sound completes
             nsamples (int): Number of samples in the sound
+            padded (bool): Whether the sound had to be padded with zeros when split into chunks (ie. sound duration was not a multiple of BLOCKSIZE).
             fs (int): sampling rate of client from :data:`.jackclient.FS`
-            blocksize (int): blocksize of clietn from :data:`.jackclient.BLOCKSIZE`
+            blocksize (int): blocksize of client from :data:`.jackclient.BLOCKSIZE`
             server (:class:`~.jackclient.Jack_Client`): Current Jack Client
             q (:class:`multiprocessing.Queue`): Audio Buffer queue from :data:`.jackclient.QUEUE`
             q_lock (:class:`multiprocessing.Lock`): Audio Buffer lock from :data:`.jackclient.Q_LOCK`
             play_evt (:class:`multiprocessing.Event`): play event from :data:`.jackclient.PLAY`
             stop_evt (:class:`multiprocessing.Event`): stop event from :data:`.jackclient.STOP`
             buffered (bool): has this sound been dumped into the :attr:`~.Jack_Sound.q` ?
-
+            buffered_continuous (bool): Has the sound been dumped into the :attr:`~.Jack_Sound.continuous_q`?
 
         """
 
@@ -164,6 +169,8 @@ if server_type in ("jack", "docs"):
             self.chunks = None  # table split into a list of chunks
             self.trigger = None
             self.nsamples = None
+            self.padded = False # whether or not the sound was padded with zeros when chunked
+            self.continuous = False
 
 
             self.fs = jackclient.FS
@@ -173,26 +180,39 @@ if server_type in ("jack", "docs"):
             self.q_lock = jackclient.Q_LOCK
             self.play_evt = jackclient.PLAY
             self.stop_evt = jackclient.STOP
+            self.continuous_flag = jackclient.CONTINUOUS
+            self.continuous_q = jackclient.CONTINUOUS_QUEUE
+            self.continuous_loop = jackclient.CONTINUOUS_LOOP
+            self.quitting = threading.Event()
 
             self.initialized = False
             self.buffered = False
+            self.buffered_continuous = False
 
             # FIXME: debugging sound file playback by logging which sounds loaded before crash
             self.logger = logging.getLogger('main')
 
 
-        def chunk(self):
+        def chunk(self, pad=True):
             """
             Split our `table` up into a list of :attr:`.Jack_Sound.blocksize` chunks.
+
+            Args:
+                pad (bool): If the sound is not evenly divisible into chunks, pad with zeros (True, default), otherwise jackclient will pad with its continuous sound
             """
             # break sound into chunks
 
             sound = self.table.astype(np.float32)
             sound_list = [sound[i:i+self.blocksize] for i in range(0, sound.shape[0], self.blocksize)]
-            if sound_list[-1].shape[0] < self.blocksize:
+
+            if (sound_list[-1].shape[0] < self.blocksize) and pad:
                 sound_list[-1] = np.pad(sound_list[-1],
                                         (0, self.blocksize-sound_list[-1].shape[0]),
                                         'constant')
+                self.padded = True
+            else:
+                self.padded = False
+
             self.chunks = sound_list
 
         def set_trigger(self, trig_fn):
@@ -231,6 +251,38 @@ if server_type in ("jack", "docs"):
             """
             self.nsamples = np.ceil((self.duration/1000.)*self.fs).astype(np.int)
 
+        def quantize_duration(self, ceiling=True):
+            """
+            Extend or shorten a sound so that it is a multiple of :data:`.jackclient.BLOCKSIZE`
+
+            Args:
+                ceiling (bool): If true, extend duration, otherwise decrease duration.
+            """
+
+            # get remainder of samples
+            self.get_nsamples()
+            remainder = self.nsamples % self.blocksize
+
+            if remainder == 0:
+                return
+
+            # get target number of samples
+            # get target n blocks and multiply by blocksize
+            if ceiling:
+                target_samples = np.ceil(float(self.nsamples)/self.blocksize)*self.blocksize
+            else:
+                target_samples = np.floor(float(self.nsamples)/self.blocksize)*self.blocksize
+
+            # get new duration
+            self.duration = (target_samples/self.fs)*1000.
+
+            # refresh nsamples
+            self.get_nsamples()
+
+
+
+
+
         def buffer(self):
             """
             Dump chunks into the sound queue.
@@ -253,21 +305,76 @@ if server_type in ("jack", "docs"):
             with self.q_lock:
                 # empty queue
                 # FIXME: Testing whether this is where we get held up on the 'fail after sound play' bug
-                n_gets = 0
+                # n_gets = 0
                 while not self.q.empty():
                     try:
                         _ = self.q.get_nowait()
                     except Empty:
                         # normal, get until it's empty
                         break
-                    n_gets += 1
-                    if n_gets > 100000:
-                        break
+                    # n_gets += 1
+                    # if n_gets > 100000:
+                    #     break
                 for frame in self.chunks:
                     self.q.put_nowait(frame)
                 # The jack server looks for a None object to clear the play flag
                 self.q.put_nowait(None)
                 self.buffered = True
+
+        def buffer_continuous(self):
+            """
+            Dump chunks into the continuous sound queue for looping.
+
+            Continuous shoulds should always have full frames -
+            ie. the number of samples in a sound should be a multiple of :data:`.jackclient.BLOCKSIZE`.
+
+            This method will call :meth:`.quantize_duration` to force duration such that the sound has full frames.
+
+            An exception will be raised if the sound has been padded.
+
+
+
+            Returns:
+
+            """
+
+            # FIXME: Initialized should be more flexible,
+            # for now just deleting whatever init happened because
+            # continuous sounds are in development
+            self.table = None
+            self.initialized = False
+
+            if not self.initialized and not self.table:
+                # try:
+                self.quantize_duration()
+                self.init_sound()
+                self.initialized = True
+                # except:
+                #     pass
+                    #TODO: Log this, better error handling here
+
+            if not self.chunks:
+                self.chunk()
+
+            # continous sounds should not have any padding - see docstring
+            if self.padded:
+                raise Exception("Continuous sounds cannot have padded chunks - sounds need to have n_samples % blocksize == 0")
+
+            # empty queue
+            while not self.continuous_q.empty():
+                try:
+                    _ = self.continuous_q.get_nowait()
+                except Empty:
+                    # normal, get until it's empty
+                    break
+
+            # load frames into continuous queue
+            for frame in self.chunks:
+                self.continuous_q.put_nowait(frame)
+            # The jack server looks for a None object to clear the play flag
+            # self.continuous_q.put_nowait(None)
+            self.buffered_continuous = True
+
 
         def play(self):
             """
@@ -292,6 +399,106 @@ if server_type in ("jack", "docs"):
             if callable(self.trigger):
                 threading.Thread(target=self.wait_trigger).start()
 
+        def play_continuous(self, loop=True):
+            """
+            Play the sound continuously.
+
+            Sound will be paused if another sound has its 'play' method called.
+
+            Currently - only looping is implemented: the full sound is loaded by the jack client and repeated indefinitely.
+
+            In the future, sound generation methods will be refactored as python generators so sounds can be continuously generated and played.
+
+            Args:
+                loop (bool): whether the sound will be stored by the jack client and looped (True), or whether the sound will be continuously streamed (False, not implemented)
+
+            Returns:
+
+            todo::
+
+                merge into single play method that changes behavior if continuous or not
+
+            """
+
+            if not loop:
+                raise NotImplementedError('Continuous, unlooped streaming has not been implemented yet!')
+
+            # FIXME: Initialized should be more flexible,
+            # for now just deleting whatever init happened because
+            # continuous sounds are in development
+            self.table = None
+            self.initialized = False
+
+            self.quantize_duration()
+            self.init_sound()
+            self.initialized = True
+            self.chunk()
+
+            # if not self.buffered_continuous:
+            #     self.buffer_continuous()
+            self.continuous_cycle = cycle(self.chunks)
+
+            # start the buffering thread
+            self.cont_thread = threading.Thread(target=self._buffer_continuous)
+            self.cont_thread.setDaemon(True)
+            self.cont_thread.start()
+
+            if loop:
+                self.continuous_loop.set()
+            else:
+                self.continuous_loop.clear()
+
+
+            # tell the sound server that it has a continuous sound now
+            self.continuous_flag.set()
+            self.continuous = True
+
+        def _buffer_continuous(self):
+
+            # empty queue
+            while not self.continuous_q.empty():
+                try:
+                    _ = self.continuous_q.get_nowait()
+                except Empty:
+                    # normal, get until it's empty
+                    break
+
+            # want to be able to quit if queue remains full for, say, 20 periods
+            #wait_time = (self.blocksize/float(self.fs))*20
+
+            while not self.quitting.is_set():
+                try:
+                    #self.continuous_q.put(self.continuous_cycle.next(), timeout=wait_time)
+                    self.continuous_q.put_nowait(self.continuous_cycle.next())
+                except Full:
+                    pass
+            # for chunk in self.chunks:
+            #     self.continuous_q.put_nowait(chunk)
+
+
+
+
+
+
+        def stop_continuous(self):
+            """
+            Stop playing a continuous sound
+
+            Should be merged into a general stop method
+            """
+            if not self.continuous:
+                Warning("Not a continous sound!")
+                return
+
+            self.quitting.set()
+            self.continuous_flag.clear()
+            self.continuous_loop.clear()
+
+
+
+
+
+
         def end(self):
             """
             Release any resources held by this sound
@@ -304,7 +511,21 @@ if server_type in ("jack", "docs"):
             if not self.stop_evt.is_set():
                 self.stop_evt.set()
 
+            if self.continuous:
+                while not self.continuous_q.empty():
+                    try:
+                        _ = self.continuous_q.get_nowait()
+                    except Empty:
+                        # normal, get until it's empty
+                        break
+                self.buffered_continuous = False
+                self.continuous_flag.clear()
+
             self.table = None
+            self.initialized = False
+
+        def __del__(self):
+            self.end()
 
 
 
@@ -395,7 +616,9 @@ class Noise(BASE_CLASS):
             self.table = self.table_wrap(noiser)
         elif self.server_type == 'jack':
             self.get_nsamples()
-            self.table = self.amplitude * np.random.rand(self.nsamples)
+            # rand generates from 0 to 1, so subtract 0.5, double to get -1 to 1,
+            # then multiply by amplitude.
+            self.table = (self.amplitude * np.random.uniform(-1,1,self.nsamples)).astype(np.float32)
             self.chunk()
 
         self.initialized = True
@@ -499,6 +722,86 @@ class Speech(File):
 
         # sound is init'd in the superclass
 
+class Gap(BASE_CLASS):
+    """
+    A silent sound that does not pad its final chunk -- used for creating precise silent
+    gaps in a continuous noise.
+
+    """
+
+    type = "Gap"
+    PARAMS = ['duration']
+
+    def __init__(self, duration, **kwargs):
+        """
+        Args:
+            duration (float): duration of gap in ms
+
+        Attributes:
+            gap_zero (bool): True if duration is zero, effectively do nothing on play.
+        """
+        super(Gap, self).__init__()
+
+        self.duration = float(duration)
+        self.gap_zero = False
+
+        if self.duration == 0:
+            self.gap_zero = True
+            self.get_nsamples()
+            self.chunks = []
+            self.table = np.ndarray((0,),dtype=np.float32)
+            self.initialized = True
+        else:
+
+            self.init_sound()
+
+    def init_sound(self):
+        """
+        Create and chunk an array of zeros according to :attr:`.Gap.duration`
+        """
+        if self.server_type == "pyo":
+            raise NotImplementedError("This sound has not been implemented for pyo sound server -- pyo is deprecated, and kept as a skeleton in the case interested programmers want to revive its use")
+
+        # get the number of samples for the sound given our self.duration
+        self.get_nsamples()
+        self.table = np.zeros((self.nsamples,), dtype=np.float32)
+
+        # chunk without padding -- jackclient will pad with ongoing continuous noise (or silence if none)
+        self.chunk(pad=False)
+
+        self.initialized = True
+
+    def chunk(self, pad=False):
+        """
+        If gap is not duration == 0, call parent ``chunk``.
+        Args:
+            pad (bool): unused, passed to parent ``chunk``
+        """
+        if not self.gap_zero:
+            super(Gap, self).chunk(pad)
+        else:
+            self.padded=False
+
+
+    def buffer(self):
+        if not self.gap_zero:
+            super(Gap, self).buffer()
+        else:
+            self.buffered = True
+
+    def play(self):
+        if not self.gap_zero:
+            super(Gap, self).play()
+        else:
+            if callable(self.trigger):
+                threading.Thread(target=self.wait_trigger).start()
+
+
+
+
+
+
+
 
 
 
@@ -512,7 +815,8 @@ SOUND_LIST = {
     'Noise':Noise,
     'File':File,
     'Speech':Speech,
-    'speech':Speech
+    'speech':Speech,
+    'Gap': Gap
 }
 """
 Sounds must be added to this SOUND_LIST so they can be indexed by the string keys used elsewhere. 

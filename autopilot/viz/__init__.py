@@ -1,0 +1,1 @@
+from autopilot.viz.psychometric import plot_psychometric

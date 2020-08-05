@@ -17,21 +17,20 @@ import time
 import socket
 import json
 import base64
+import subprocess
 import numpy as np
 import pandas as pd
 from scipy.stats import linregress
 
 import tables
 
-# TODO: This is lazy, make the paths work.
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from autopilot import prefs
 
 if __name__ == '__main__':
     # Parse arguments - this should have been called with a .json prefs file passed
     # We'll try to look in the default location first
     parser = argparse.ArgumentParser(description="Run an autopilot")
-    parser.add_argument('-f', '--prefs', help="Location of .json prefs file (created during setup_terminal.py)")
+    parser.add_argument('-f', '--prefs', help="Location of .json prefs file (created during setup_autopilot.py)")
     args = parser.parse_args()
 
     if not args.prefs:
@@ -46,22 +45,22 @@ if __name__ == '__main__':
         prefs_file = args.prefs
 
     prefs.init(prefs_file)
-    sys.path.append(os.path.dirname(prefs.REPODIR))
 
-    if hasattr(prefs, 'AUDIOSERVER') and prefs.CONFIG == 'AUDIO':
+    if hasattr(prefs, 'AUDIOSERVER') and 'AUDIO' in prefs.CONFIG:
         if prefs.AUDIOSERVER == 'pyo':
             from autopilot.stim.sound import pyoserver
         elif prefs.AUDIOSERVER == 'jack':
             from autopilot.stim.sound import jackclient
 
-from networking import Pilot_Station, Net_Node, Message
+from autopilot.core.networking import Pilot_Station, Net_Node, Message
+from autopilot import external
 from autopilot import tasks
-import hardware
+from autopilot.hardware import gpio
 
 
 ########################################
 
-class autopilot:
+class Pilot:
     """
     Drives the Raspberry Pi
 
@@ -86,7 +85,7 @@ class autopilot:
     * **PUSHPORT** - Router port used by the Terminal we connect to.
     * **TERMINALIP** - IP Address of our upstream Terminal.
     * **MSGPORT** - Port used by our own networking object
-    * **PINS** - Any hardware and its mapping to GPIO pins. No pins are required to be set, instead each
+    * **HARDWARE** - Any hardware and its mapping to GPIO pins. No pins are required to be set, instead each
       task defines which pins it needs. Currently the default configuration asks for
 
         * POKES - :class:`.hardware.Beambreak`
@@ -143,7 +142,17 @@ class autopilot:
     # audio server
     server = None
 
-    def __init__(self):
+    def __init__(self, splash=True):
+
+        if splash:
+            with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'setup', 'welcome_msg.txt'), 'r') as welcome_f:
+                welcome = welcome_f.read()
+                print('')
+                for line in welcome.split('\n'):
+                    print(line)
+                print('')
+                sys.stdout.flush()
+
         self.name = prefs.NAME
         if prefs.LINEAGE == "CHILD":
             self.child = True
@@ -159,8 +168,11 @@ class autopilot:
         self.stage_block = threading.Event() # Are we waiting on stage triggers?
         self.file_block = threading.Event() # Are we waiting on file transfer?
 
+        # init pigpiod process
+        self.init_pigpio()
+
         # Init audio server
-        if hasattr(prefs, 'AUDIOSERVER') and prefs.CONFIG == 'AUDIO':
+        if hasattr(prefs, 'AUDIOSERVER') and 'AUDIO' in prefs.CONFIG:
             self.init_audio()
 
         # Init Station
@@ -187,10 +199,10 @@ class autopilot:
         self.pulls = []
         if hasattr(prefs, 'PULLUPS'):
             for pin in prefs.PULLUPS:
-                self.pulls.append(hardware.Pull(int(pin), pud='U'))
+                self.pulls.append(gpio.Digital_Out(int(pin), pull='U'))
         if hasattr(prefs, 'PULLDOWNS'):
             for pin in prefs.PULLDOWNS:
-                self.pulls.append(hardware.Pull(int(pin), pud='D'))
+                self.pulls.append(gpio.Digital_Out(int(pin), pull='D'))
 
         # check if the calibration file needs to be updated
 
@@ -202,6 +214,8 @@ class autopilot:
         # Since we're starting up, handshake to introduce ourselves
         self.ip = self.get_ip()
         self.handshake()
+
+
 
         #self.blank_LEDs()
 
@@ -281,24 +295,36 @@ class autopilot:
         # Value should be a dict of protocol params
         # The networking object should have already checked that we have all the files we need
 
-        # Get the task object by its type
-        if 'child' in value.keys():
-            task_class = tasks.CHILDREN_LIST[value['task_type']]
-        else:
-            task_class = tasks.TASK_LIST[value['task_type']]
-        # Instantiate the task
-        self.stage_block.clear()
-        self.task = task_class(stage_block=self.stage_block, **value)
-
-        # Make a group for this subject if we don't already have one
-        self.subject = value['subject']
-
-        # Run the task and tell the terminal we have
-        self.running.set()
-        threading.Thread(target=self.run_task).start()
+        if self.state == "RUNNING" or self.running.is_set():
+            self.logger.warning("Asked to a run a task when already running")
+            return
 
         self.state = 'RUNNING'
-        self.update_state()
+        self.running.set()
+        try:
+            # Get the task object by its type
+            if 'child' in value.keys():
+                task_class = tasks.CHILDREN_LIST[value['task_type']]
+            else:
+                task_class = tasks.TASK_LIST[value['task_type']]
+            # Instantiate the task
+            self.stage_block.clear()
+
+            # Make a group for this subject if we don't already have one
+            self.subject = value['subject']
+            prefs.add('SUBJECT', self.subject)
+
+
+
+            # Run the task and tell the terminal we have
+            # self.running.set()
+            threading.Thread(target=self.run_task, args=(task_class, value)).start()
+
+
+            self.update_state()
+        except Exception as e:
+            self.state = "IDLE"
+            self.logger.exception("couldn't start task: {}".format(e))
 
         # TODO: Send a message back to the terminal with the runtime if there is one so it can handle timed stops
 
@@ -325,6 +351,7 @@ class autopilot:
         self.stage_block.set()
 
 
+
         # TODO: Cohere here before closing file
         if hasattr(self, 'h5f'):
             self.h5f.close()
@@ -345,6 +372,17 @@ class autopilot:
         pass
 
     def l_cal_port(self, value):
+        """
+        Initiate the :meth:`.calibrate_port` routine.
+
+        Args:
+            value (dict): Dictionary of values defining the port calibration to be run, including
+                - ``port`` - which port to calibrate
+                - ``n_clicks`` - how many openings should be performed
+                - ``open_dur`` - how long the valve should be open
+                - ``iti`` - 'inter-trial interval`, or how long should we wait between valve openings.
+
+        """
         port = value['port']
         n_clicks = value['n_clicks']
         open_dur = value['dur']
@@ -353,8 +391,24 @@ class autopilot:
         threading.Thread(target=self.calibrate_port,args=(port, n_clicks, open_dur, iti)).start()
 
     def calibrate_port(self, port_name, n_clicks, open_dur, iti):
-        pin_num = prefs.PINS['PORTS'][port_name]
-        port = hardware.Solenoid(pin_num, duration=int(open_dur))
+        """
+        Run port calibration routine
+
+        Open a :class:`.hardware.gpio.Solenoid` repeatedly,
+        measure volume of water dispersed, compute lookup table mapping
+        valve open times to volume.
+
+        Continuously sends progress of test with ``CAL_PROGRESS`` messages
+
+        Args:
+            port_name (str): Port name as specified in ``prefs``
+            n_clicks (int): number of times the valve should be opened
+            open_dur (int, float): how long the valve should be opened for in ms
+            iti (int, float): how long we should :func:`~time.sleep` between openings
+
+        """
+        pin_num = prefs.HARDWARE['PORTS'][port_name]
+        port = gpio.Solenoid(pin_num, duration=int(open_dur))
         msg = {'click_num': 0,
                'pilot': self.name,
                'port': port_name
@@ -406,16 +460,16 @@ class autopilot:
         Send messages with a poissonian process according to the settings in value
         """
         #turn off logging for now
-        self.networking.set_logging(False)
-        self.node.do_logging.clear()
+        self.networking.logger.setLevel(logging.ERROR)
+        self.node.logger.setLevel(logging.ERROR)
 
         n_msg = int(value['n_msg'])
         rate = float(value['rate'])
         payload = int(value['payload'])
         confirm = bool(value['confirm'])
 
-        payload = base64.b64encode(np.zeros(payload*1024, dtype=np.bool))
-
+        payload = np.zeros(payload*1024, dtype=np.bool)
+        payload_size = sys.getsizeof(payload)
 
         message = {
             'pilot': self.name,
@@ -428,6 +482,7 @@ class autopilot:
         msg_size = sys.getsizeof(test_msg.serialize())
 
         message['message_size'] = msg_size
+        message['payload_size'] = payload_size
 
         if rate > 0:
             spacing = 1.0/rate
@@ -438,20 +493,20 @@ class autopilot:
         time.sleep(0.25)
 
         if spacing > 0:
-            last_message = time.clock()
+            last_message = time.perf_counter()
             for i in range(n_msg):
                 message['n_msg'] = i
                 message['timestamp'] = datetime.datetime.now().isoformat()
                 self.node.send(to='bandwidth',key='BANDWIDTH_MSG',
                                value=message, repeat=confirm, flags={'MINPRINT':True})
-                this_message = time.clock()
+                this_message = time.perf_counter()
                 waitfor = np.clip(spacing-(this_message-last_message), 0, spacing)
 
                 #time.sleep(np.random.exponential(1.0/rate))
                 # just do linear spacing lol.
 
                 time.sleep(waitfor)
-                last_message = time.clock()
+                last_message = time.perf_counter()
         else:
             for i in range(n_msg):
                 message['n_msg'] = i
@@ -474,6 +529,7 @@ class autopilot:
         # compute curve to compute duration from desired volume
 
         Args:
+            calibration:
             path: If present, use calibration file specified, otherwise use default.
         """
 
@@ -519,6 +575,13 @@ class autopilot:
     # Hardware Init
     #################################################################
 
+    def init_pigpio(self):
+        try:
+            self.pigpiod = external.start_pigpiod()
+        except ImportError as e:
+            self.pigpiod = None
+            self.logger.exception(e)
+
     def init_audio(self):
         """
         Initialize an audio server depending on the value of
@@ -531,20 +594,23 @@ class autopilot:
             self.server = pyoserver.pyo_server()
             self.logger.info("pyo server started")
         elif prefs.AUDIOSERVER == 'jack':
+            self.jackd = external.start_jackd()
             self.server = jackclient.JackClient()
             self.server.start()
+            self.logger.info('Started jack audio server')
+
 
     def blank_LEDs(self):
         """
-        If any 'LEDS' are defined in `prefs.PINS` ,
+        If any 'LEDS' are defined in `prefs.HARDWARE` ,
         instantiate them, set their color to [0,0,0],
         and then release them.
         """
-        if 'LEDS' not in prefs.PINS.keys():
+        if 'LEDS' not in prefs.HARDWARE.keys():
             return
 
-        for position, pins in prefs.PINS['LEDS'].items():
-            led = hardware.LED_RGB(pins=pins)
+        for position, pins in prefs.HARDWARE['LEDS'].items():
+            led = gpio.LED_RGB(pins=pins)
             time.sleep(1.)
             led.set_color(col=[0,0,0])
             led.release()
@@ -571,7 +637,7 @@ class autopilot:
             self.logger.warning(e)
             os.remove(local_file)
             h5f = tables.open_file(local_file, mode='w')
-            os.chmod(local_file, 0777)
+            os.chmod(local_file, 0o777)
 
 
         try:
@@ -605,7 +671,7 @@ class autopilot:
         else:
             return h5f, None, None
 
-    def run_task(self):
+    def run_task(self, task_class, task_params):
         """
         Called in a new thread, run the task.
 
@@ -618,6 +684,7 @@ class autopilot:
         """
         # TODO: give a net node to the Task class and let the task run itself.
         # Run as a separate thread, just keeps calling next() and shoveling data
+        self.task = task_class(stage_block=self.stage_block, **task_params)
 
         # do we expect TrialData?
         trial_data = False
@@ -631,7 +698,7 @@ class autopilot:
 
         while True:
             # Calculate next stage data and prep triggers
-            data = self.task.stages.next()() # Double parens because next just gives us the function, we still have to call it
+            data = next(self.task.stages)() # Double parens because next just gives us the function, we still have to call it
 
             if data:
                 data['pilot'] = self.name
@@ -669,7 +736,8 @@ class autopilot:
 
 if __name__ == "__main__":
 
-    a = autopilot()
+
+    a = Pilot()
 
 
 

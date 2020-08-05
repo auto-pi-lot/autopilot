@@ -102,3 +102,7 @@ venv3/
 
 # viz renders
 /*/viz/*.html
+venv38
+venv*
+transform_scratch.py
+

@@ -8,7 +8,7 @@ Note:
 
 These classes implement the GUI used by the Terminal.
 
-The GUI is built using `PySide <https://pypi.org/project/PySide/>`_, a Python wrapper around Qt4.
+The GUI is built using `PySide2 <https://doc.qt.io/qtforpython/>`_, a Python wrapper around Qt5.
 
 These classes are all currently used only by the :class:`~.autopilot.core.terminal.Terminal`.
 
@@ -25,11 +25,14 @@ from collections import OrderedDict as odict
 import numpy as np
 import ast
 import base64
-from PySide import QtGui, QtCore
+from PySide2 import QtGui, QtCore, QtWidgets
 import pyqtgraph as pg
 import pandas as pd
 import itertools
 import threading
+import logging
+from operator import ior
+import pdb
 
 # adding autopilot parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -67,16 +70,15 @@ def gui_event(fn):
     return wrapper_gui_event
 
 
-class Control_Panel(QtGui.QWidget):
-    """A :class:`QtGui.QWidget` that contains the controls for all pilots.
+class Control_Panel(QtWidgets.QWidget):
+    """A :class:`QtWidgets.QWidget` that contains the controls for all pilots.
 
-    Specifically, for each pilot, it contains
-
-    * one :class:`subject_List`: A list of the subjects that run in each pilot.
-    * one :class:`Pilot_Panel`: A set of button controls for starting/stopping behavior
-
-    This class should not be instantiated outside the context of a
-    :py:class:`~.terminal.Terminal` object, as they share the :py:attr:`.subjects` dictionary.
+    Args:
+        subjects (dict): See :py:attr:`.Control_Panel.subjects`
+        start_fn (:py:meth:`~autopilot.core.terminal.Terminal.toggle_start`): the Terminal's
+            toggle_start function, propagated down to each :class:`~core.gui.Pilot_Button`
+        pilots: Usually the Terminal's :py:attr:`~.Terminal.pilots` dict. If not passed,
+            will try to load :py:attr:`.params.PILOT_DB`
 
     Attributes:
         subjects (dict): A dictionary with subject ID's as keys and
@@ -86,8 +88,16 @@ class Control_Panel(QtGui.QWidget):
         pilots (dict): A dictionary with pilot ID's as keys and nested dictionaries
                     containing subjects, IP, etc. as values
         subject_lists (dict): A dict mapping subject ID to :py:class:`.subject_List`
-        layout (:py:class:`~QtGui.QGridLayout`): Layout grid for widget
+        layout (:py:class:`~QtWidgets.QGridLayout`): Layout grid for widget
         panels (dict): A dict mapping pilot name to the relevant :py:class:`.Pilot_Panel`
+
+    Specifically, for each pilot, it contains
+
+    * one :class:`subject_List`: A list of the subjects that run in each pilot.
+    * one :class:`Pilot_Panel`: A set of button controls for starting/stopping behavior
+
+    This class should not be instantiated outside the context of a
+    :py:class:`~.terminal.Terminal` object, as they share the :py:attr:`.subjects` dictionary.
 
     """
     # Hosts two nested tab widgets to select pilot and subject,
@@ -95,12 +105,7 @@ class Control_Panel(QtGui.QWidget):
 
     def __init__(self, subjects, start_fn, pilots=None):
         """
-        Args:
-            subjects (dict): See :py:attr:`.Control_Panel.subjects`
-            start_fn (:py:meth:`~autopilot.core.terminal.Terminal.toggle_start`): the Terminal's
-                toggle_start function, propagated down to each :class:`~core.gui.Pilot_Button`
-            pilots: Usually the Terminal's :py:attr:`~.Terminal.pilots` dict. If not passed,
-                will try to load :py:attr:`.params.PILOT_DB`
+
         """
         super(Control_Panel, self).__init__()
 
@@ -128,7 +133,7 @@ class Control_Panel(QtGui.QWidget):
         self.subject_lists = {}
 
         # Set layout for whole widget
-        self.layout = QtGui.QGridLayout()
+        self.layout = QtWidgets.QGridLayout()
         self.layout.setContentsMargins(0,0,0,0)
         self.layout.setSpacing(0)
         self.setLayout(self.layout)
@@ -137,7 +142,7 @@ class Control_Panel(QtGui.QWidget):
 
         self.init_ui()
 
-        self.setSizePolicy(QtGui.QSizePolicy.Maximum,QtGui.QSizePolicy.Maximum)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Maximum,QtWidgets.QSizePolicy.Maximum)
         self.setStyleSheet(styles.CONTROL_PANEL)
 
     def init_ui(self):
@@ -157,7 +162,7 @@ class Control_Panel(QtGui.QWidget):
             subjects = subjects['subjects']
             # Make a list of subjects
             subject_list = Subject_List(subjects, drop_fn = self.update_db)
-            subject_list.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+            subject_list.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
             #subject_list.itemDoubleClicked.connect(self.edit_params)
             self.subject_lists[pilot] = subject_list
 
@@ -285,9 +290,9 @@ class Control_Panel(QtGui.QWidget):
 # Control Panel Widgets
 ###################################
 
-class Subject_List(QtGui.QListWidget):
+class Subject_List(QtWidgets.QListWidget):
     """
-    A trivial modification of :class:`~.QtGui.QListWidget` that updates
+    A trivial modification of :class:`~.QtWidgets.QListWidget` that updates
     :py:attr:`~.Terminal.pilots` when an item in the list is dragged to another location.
 
     Should not be initialized except by :class:`.Control_Panel` .
@@ -309,9 +314,11 @@ class Subject_List(QtGui.QListWidget):
         if subjects:
             self.subjects = subjects
             self.populate_list()
+        else:
+            self.subjects = []
 
         # make draggable
-        self.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
+        self.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
         self.setDragDropOverwriteMode(False)
         self.setAcceptDrops(True)
 
@@ -327,7 +334,7 @@ class Subject_List(QtGui.QListWidget):
 
     def dropEvent(self, event):
         """
-        A trivial redefinition of :py:meth:`.QtGui.QListWidget.dropEvent`
+        A trivial redefinition of :py:meth:`.QtWidgets.QListWidget.dropEvent`
         that calls the parent `dropEvent` and then calls :py:attr:`~.Subject_List.drop_fn`
 
         Args:
@@ -339,7 +346,7 @@ class Subject_List(QtGui.QListWidget):
         self.drop_fn()
 
 
-class Pilot_Panel(QtGui.QWidget):
+class Pilot_Panel(QtWidgets.QWidget):
     """
     A little panel with
 
@@ -350,21 +357,23 @@ class Pilot_Panel(QtGui.QWidget):
     Note:
         This class should not be instantiated except by :class:`Control_Panel`
 
+    Args:
+        pilot (str): The name of the pilot this panel controls
+        subject_list (:py:class:`.Subject_List`): The :py:class:`.Subject_List` we control
+        start_fn (:py:meth:`~autopilot.core.terminal.Terminal.toggle_start`): Passed by :class:`Control_Panel`
+        create_fn (:py:meth:`Control_Panel.create_subject`): Passed by :class:`Control_Panel`
+
     Attributes:
-        layout (:py:class:`QtGui.QGridLayout`): Layout for UI elements
+        layout (:py:class:`QtWidgets.QGridLayout`): Layout for UI elements
         button (:class:`.Pilot_Button`): button used to control a pilot
     """
     def __init__(self, pilot=None, subject_list=None, start_fn=None, create_fn=None):
         """
-        Args:
-            pilot (str): The name of the pilot this panel controls
-            subject_list (:py:class:`.Subject_List`): The :py:class:`.Subject_List` we control
-            start_fn (:py:meth:`~autopilot.core.terminal.Terminal.toggle_start`): Passed by :class:`Control_Panel`
-            create_fn (:py:meth:`Control_Panel.create_subject`): Passed by :class:`Control_Panel`
+
         """
         super(Pilot_Panel, self).__init__()
 
-        self.layout = QtGui.QGridLayout()
+        self.layout = QtWidgets.QGridLayout()
         self.layout.setContentsMargins(0,0,0,0)
         self.layout.setSpacing(0)
         self.setLayout(self.layout)
@@ -383,16 +392,16 @@ class Pilot_Panel(QtGui.QWidget):
         Called on init.
         """
         # type: () -> None
-        label = QtGui.QLabel(self.pilot)
+        label = QtWidgets.QLabel(self.pilot)
         label.setStyleSheet("font: bold 14pt; text-align:right")
         label.setAlignment(QtCore.Qt.AlignVCenter)
         self.button = Pilot_Button(self.pilot, self.subject_list, self.start_fn)
-        add_button = QtGui.QPushButton("+")
+        add_button = QtWidgets.QPushButton("+")
         add_button.clicked.connect(self.create_subject)
-        add_button.setSizePolicy(QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding)
-        remove_button = QtGui.QPushButton("-")
+        add_button.setSizePolicy(QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding)
+        remove_button = QtWidgets.QPushButton("-")
         remove_button.clicked.connect(self.remove_subject)
-        remove_button.setSizePolicy(QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding)
+        remove_button.setSizePolicy(QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding)
 
         self.layout.addWidget(label, 0, 0, 1, 2)
         self.layout.addWidget(self.button, 1, 0, 1, 2)
@@ -410,17 +419,17 @@ class Pilot_Panel(QtGui.QWidget):
         """
 
         current_subject = self.subject_list.currentItem().text()
-        msgbox = QtGui.QMessageBox()
+        msgbox = QtWidgets.QMessageBox()
         msgbox.setText("\n(only removes from pilot_db.json, data will not be deleted)".format(current_subject))
 
-        msgBox = QtGui.QMessageBox()
+        msgBox = QtWidgets.QMessageBox()
         msgBox.setText("Are you sure you would like to remove {}?".format(current_subject))
         msgBox.setInformativeText("'Yes' only removes from pilot_db.json, data will not be deleted")
-        msgBox.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
-        msgBox.setDefaultButton(QtGui.QMessageBox.No)
+        msgBox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        msgBox.setDefaultButton(QtWidgets.QMessageBox.No)
         ret = msgBox.exec_()
 
-        if ret == QtGui.QMessageBox.Yes:
+        if ret == QtWidgets.QMessageBox.Yes:
 
             self.subject_list.takeItem(self.subject_list.currentRow())
             # the drop fn updates the db
@@ -433,10 +442,10 @@ class Pilot_Panel(QtGui.QWidget):
         self.create_fn(self.pilot)
 
 
-class Pilot_Button(QtGui.QPushButton):
+class Pilot_Button(QtWidgets.QPushButton):
     def __init__(self, pilot=None, subject_list=None, start_fn=None):
         """
-        A subclass of (toggled) :class:`QtGui.QPushButton` that incorporates the style logic of a
+        A subclass of (toggled) :class:`QtWidgets.QPushButton` that incorporates the style logic of a
         start/stop button - ie. color, text.
 
         Starts grayed out, turns green if contact with a pilot is made.
@@ -470,7 +479,7 @@ class Pilot_Button(QtGui.QPushButton):
         self.state = "DISCONNECTED"
 
         # Normally buttons only expand horizontally, but these big ole ones....
-        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
 
         # What's yr name anyway?
         self.pilot = pilot
@@ -494,8 +503,6 @@ class Pilot_Button(QtGui.QPushButton):
         Minor window dressing to call the :py:meth:`~.Pilot_Button.start_fn` with the
         appropriate pilot, subject, and whether the task is starting or stopping
 
-        Args:
-            toggled (bool): T/F this button is now toggled down (starting the task) or vice versa.
         """
         # If we're stopped, start, and vice versa...
         current_subject = self.subject_list.currentItem().text()
@@ -517,6 +524,21 @@ class Pilot_Button(QtGui.QPushButton):
 
     @gui_event
     def set_state(self, state):
+        """
+        Set the button's appearance and state
+
+        Args:
+            state (str): one of ``('IDLE', 'RUNNING', 'STOPPING', 'DISCONNECTED')
+
+        .. todo::
+
+            There is some logic duplication in this class, ie. if the button state is changed
+            it also emits a start/stop signal to the pi, which is undesirable. This class needs
+            to be reworked.
+
+        Returns:
+
+        """
         # if we're good, do nothing.
         if state == self.state:
             return
@@ -557,7 +579,7 @@ class Pilot_Button(QtGui.QPushButton):
 
 # TODO: Change these classes to use the update params windows
 
-class New_Subject_Wizard(QtGui.QDialog):
+class New_Subject_Wizard(QtWidgets.QDialog):
     """
     A popup that prompts you to define variables for a new :class:`.subject.Subject` object
 
@@ -576,11 +598,11 @@ class New_Subject_Wizard(QtGui.QDialog):
     """
 
     def __init__(self):
-        QtGui.QDialog.__init__(self)
+        QtWidgets.QDialog.__init__(self)
 
         self.protocol_dir = prefs.PROTOCOLDIR
 
-        tabWidget = QtGui.QTabWidget()
+        tabWidget = QtWidgets.QTabWidget()
 
         self.bio_tab = self.Biography_Tab()
         tabWidget.addTab(self.bio_tab, "Biography")
@@ -589,18 +611,18 @@ class New_Subject_Wizard(QtGui.QDialog):
             self.task_tab = self.Task_Tab()
             tabWidget.addTab(self.task_tab, "Protocol")
 
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
 
-        mainLayout = QtGui.QVBoxLayout()
+        mainLayout = QtWidgets.QVBoxLayout()
         mainLayout.addWidget(tabWidget)
         mainLayout.addWidget(buttonBox)
         self.setLayout(mainLayout)
 
         self.setWindowTitle("Setup New Subject")
 
-    class Biography_Tab(QtGui.QWidget):
+    class Biography_Tab(QtWidgets.QWidget):
         """
         A widget that allows defining basic biographical attributes about a subject
 
@@ -621,31 +643,31 @@ class New_Subject_Wizard(QtGui.QDialog):
             expt (str): A tag to describe what experiment this subject is a part of
         """
         def __init__(self):
-            QtGui.QWidget.__init__(self)
+            QtWidgets.QWidget.__init__(self)
 
             # Input Labels
-            ID_label = QtGui.QLabel("ID:")
-            start_label = QtGui.QLabel("Start Date:")
-            blmass_label = QtGui.QLabel("Baseline Mass:")
-            minmasspct_label = QtGui.QLabel("% of Baseline Mass:")
-            minmass_label = QtGui.QLabel("Minimum Mass:")
-            genotype_label = QtGui.QLabel("Genotype:")
-            expt_label = QtGui.QLabel("Experiment Tag:")
+            ID_label = QtWidgets.QLabel("ID:")
+            start_label = QtWidgets.QLabel("Start Date:")
+            blmass_label = QtWidgets.QLabel("Baseline Mass:")
+            minmasspct_label = QtWidgets.QLabel("% of Baseline Mass:")
+            minmass_label = QtWidgets.QLabel("Minimum Mass:")
+            genotype_label = QtWidgets.QLabel("Genotype:")
+            expt_label = QtWidgets.QLabel("Experiment Tag:")
 
             # Input widgets
-            self.id = QtGui.QLineEdit()
-            self.start_date = QtGui.QLineEdit(datetime.date.today().isoformat())
-            self.blmass = QtGui.QLineEdit()
+            self.id = QtWidgets.QLineEdit()
+            self.start_date = QtWidgets.QLineEdit(datetime.date.today().isoformat())
+            self.blmass = QtWidgets.QLineEdit()
             self.blmass.setValidator(QtGui.QDoubleValidator(0.0, 30.0, 1, self.blmass))
-            self.minmass_pct = QtGui.QSpinBox()
+            self.minmass_pct = QtWidgets.QSpinBox()
             self.minmass_pct.setRange(0,100)
             self.minmass_pct.setSingleStep(5)
             self.minmass_pct.setSuffix('%')
             self.minmass_pct.setValue(80)
-            self.minmass = QtGui.QLineEdit()
+            self.minmass = QtWidgets.QLineEdit()
             self.minmass.setValidator(QtGui.QDoubleValidator(0.0, 30.0, 1, self.minmass))
-            self.genotype = QtGui.QLineEdit()
-            self.expt     = QtGui.QLineEdit()
+            self.genotype = QtWidgets.QLineEdit()
+            self.expt     = QtWidgets.QLineEdit()
 
             # Set return dictionary signals
             self.id.editingFinished.connect(lambda: self.update_return_dict('id', self.id.text()))
@@ -660,7 +682,7 @@ class New_Subject_Wizard(QtGui.QDialog):
             self.minmass_pct.valueChanged.connect(self.calc_minmass)
 
             # Setup Layout
-            mainLayout = QtGui.QVBoxLayout()
+            mainLayout = QtWidgets.QVBoxLayout()
             mainLayout.addWidget(ID_label)
             mainLayout.addWidget(self.id)
             mainLayout.addWidget(start_label)
@@ -705,7 +727,7 @@ class New_Subject_Wizard(QtGui.QDialog):
             pct = float(self.minmass_pct.text()[:-1])/100
             self.minmass.setText(str(baseline*pct))
 
-    class Task_Tab(QtGui.QWidget):
+    class Task_Tab(QtWidgets.QWidget):
         """
         A tab for selecting a task and step to assign to the subject.
 
@@ -721,25 +743,25 @@ class New_Subject_Wizard(QtGui.QDialog):
             step (int): current step to assign.
         """
         def __init__(self):
-            QtGui.QWidget.__init__(self)
+            QtWidgets.QWidget.__init__(self)
 
             self.protocol_dir = prefs.PROTOCOLDIR
 
-            topLabel = QtGui.QLabel("Protocols:")
+            topLabel = QtWidgets.QLabel("Protocols:")
 
             # List available protocols
             protocol_list = os.listdir(self.protocol_dir)
             protocol_list = [os.path.splitext(p)[0] for p in protocol_list]
 
-            self.protocol_listbox = QtGui.QListWidget()
+            self.protocol_listbox = QtWidgets.QListWidget()
             self.protocol_listbox.insertItems(0, protocol_list)
             self.protocol_listbox.currentItemChanged.connect(self.protocol_changed)
 
             # Make Step combobox
-            self.step_selection = QtGui.QComboBox()
+            self.step_selection = QtWidgets.QComboBox()
             self.step_selection.currentIndexChanged.connect(self.step_changed)
 
-            layout = QtGui.QVBoxLayout()
+            layout = QtWidgets.QVBoxLayout()
             layout.addWidget(topLabel)
             layout.addWidget(self.protocol_listbox)
             layout.addWidget(self.step_selection)
@@ -786,11 +808,11 @@ class New_Subject_Wizard(QtGui.QDialog):
             """
             current_step = self.step_selection.currentText()
             # Check that we have selected a step...
-            if current_step is not u'':
+            if current_step != '':
                 self.values['step'] = self.step_ind[current_step]
 
 
-class Protocol_Wizard(QtGui.QDialog):
+class Protocol_Wizard(QtWidgets.QDialog):
     """
     A dialog window to create a new protocol.
 
@@ -829,76 +851,77 @@ class Protocol_Wizard(QtGui.QDialog):
     The available types include:
 
     * **int** - integer
+    * **float** - floating point number
     * **bool** - boolean boolbox
     * **list** - a list of `values` to choose from
     * **sounds** - a :class:`.Sound_Widget` that allows sounds to be defined.
     * **graduation** - a :class:`.Graduation_Widget` that allows graduation criteria to be defined
 
     Attributes:
-        task_list (:class:`QtGui.QListWidget`): The leftmost window, lists available tasks
-        step_list (:class:`QtGui.QListWidget`): The center window, lists tasks currently in protocol
-        param_layout (:class:`QtGui.QFormLayout`): The right window, allows changing available
+        task_list (:class:`QtWidgets.QListWidget`): The leftmost window, lists available tasks
+        step_list (:class:`QtWidgets.QListWidget`): The center window, lists tasks currently in protocol
+        param_layout (:class:`QtWidgets.QFormLayout`): The right window, allows changing available
             parameters for currently selected step.
         steps (list): A list of dictionaries defining the protocol.
 
     """
     def __init__(self):
-        QtGui.QDialog.__init__(self)
+        QtWidgets.QDialog.__init__(self)
 
         # Left Task List/Add Step Box
-        addstep_label = QtGui.QLabel("Add Step")
+        addstep_label = QtWidgets.QLabel("Add Step")
         addstep_label.setFixedHeight(40)
-        self.task_list = QtGui.QListWidget()
+        self.task_list = QtWidgets.QListWidget()
         self.task_list.insertItems(0, tasks.TASK_LIST.keys())
-        self.add_button = QtGui.QPushButton("+")
+        self.add_button = QtWidgets.QPushButton("+")
         self.add_button.setFixedHeight(40)
         self.add_button.clicked.connect(self.add_step)
 
-        addstep_layout = QtGui.QVBoxLayout()
+        addstep_layout = QtWidgets.QVBoxLayout()
         addstep_layout.addWidget(addstep_label)
         addstep_layout.addWidget(self.task_list)
         addstep_layout.addWidget(self.add_button)
 
         # Center Step List Box
-        steplist_label = QtGui.QLabel("Step List")
+        steplist_label = QtWidgets.QLabel("Step List")
         steplist_label.setFixedHeight(40)
-        self.step_list = QtGui.QListWidget()
-        self.step_list.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
-        self.step_list.selectionMode = QtGui.QAbstractItemView.SingleSelection
+        self.step_list = QtWidgets.QListWidget()
+        self.step_list.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
+        self.step_list.selectionMode = QtWidgets.QAbstractItemView.SingleSelection
         self.step_list.itemSelectionChanged.connect(self.populate_params)
         self.list_model = self.step_list.model()
         self.list_model.rowsMoved.connect(self.reorder_steps)
-        self.remove_step_button = QtGui.QPushButton('-')
+        self.remove_step_button = QtWidgets.QPushButton('-')
         self.remove_step_button.setFixedHeight(40)
         self.remove_step_button.clicked.connect(self.remove_step)
 
-        steplist_layout = QtGui.QVBoxLayout()
+        steplist_layout = QtWidgets.QVBoxLayout()
         steplist_layout.addWidget(steplist_label)
         steplist_layout.addWidget(self.step_list)
         steplist_layout.addWidget(self.remove_step_button)
 
         # Right Parameter Definition Window
-        param_label = QtGui.QLabel("Step Parameters")
+        param_label = QtWidgets.QLabel("Step Parameters")
         param_label.setFixedHeight(40)
-        self.param_layout = QtGui.QFormLayout()
-        param_frame = QtGui.QFrame()
+        self.param_layout = QtWidgets.QFormLayout()
+        param_frame = QtWidgets.QFrame()
         param_frame.setLayout(self.param_layout)
 
-        param_box_layout = QtGui.QVBoxLayout()
+        param_box_layout = QtWidgets.QVBoxLayout()
         param_box_layout.addWidget(param_label)
         param_box_layout.addWidget(param_frame)
 
         # Main Layout
-        frame_layout = QtGui.QHBoxLayout()
+        frame_layout = QtWidgets.QHBoxLayout()
         frame_layout.addLayout(addstep_layout, stretch=1)
         frame_layout.addLayout(steplist_layout, stretch=1)
         frame_layout.addLayout(param_box_layout, stretch=3)
 
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
 
-        main_layout = QtGui.QVBoxLayout()
+        main_layout = QtWidgets.QVBoxLayout()
         main_layout.addLayout(frame_layout)
         main_layout.addWidget(buttonBox)
 
@@ -913,7 +936,7 @@ class Protocol_Wizard(QtGui.QDialog):
         Loads `PARAMS` from task object, adds base parameters to :py:attr:`.steps` list
         """
         task_type = self.task_list.currentItem().text()
-        new_item = QtGui.QListWidgetItem()
+        new_item = QtWidgets.QListWidgetItem()
         new_item.setText(task_type)
         task_params = copy.deepcopy(tasks.TASK_LIST[task_type].PARAMS)
 
@@ -970,12 +993,14 @@ class Protocol_Wizard(QtGui.QDialog):
             # Make Input Widget depending on type
             # Each Input type needs a different widget type,
             # and each widget type has different methods to get/change values, so we have to do this ugly
-            if v['type'] == 'int' or v['type'] == 'str':
-                rowtag = QtGui.QLabel(v['tag'])
-                input_widget = QtGui.QLineEdit()
+            if v['type'] == 'int' or v['type'] == 'str' or v['type'] == 'float':
+                rowtag = QtWidgets.QLabel(v['tag'])
+                input_widget = QtWidgets.QLineEdit()
                 input_widget.setObjectName(k)
                 if v['type'] == 'int':
                     input_widget.setValidator(QtGui.QIntValidator())
+                elif v['type'] == 'float':
+                    input_widget.setValidator(QtGui.QDoubleValidator())
                 input_widget.editingFinished.connect(self.set_param)
                 if 'value' in v.keys():
                     input_widget.setText(v['value'])
@@ -984,8 +1009,8 @@ class Protocol_Wizard(QtGui.QDialog):
                 self.param_layout.addRow(rowtag,input_widget)
 
             elif v['type'] == 'bool':
-                rowtag = QtGui.QLabel(v['tag'])
-                input_widget = QtGui.QCheckBox()
+                rowtag = QtWidgets.QLabel(v['tag'])
+                input_widget = QtWidgets.QCheckBox()
                 input_widget.setObjectName(k)
                 input_widget.stateChanged.connect(self.set_param)
                 if 'value' in v.keys():
@@ -995,8 +1020,8 @@ class Protocol_Wizard(QtGui.QDialog):
                 self.param_layout.addRow(rowtag, input_widget)
 
             elif v['type'] == 'list':
-                rowtag = QtGui.QLabel(v['tag'])
-                input_widget = QtGui.QListWidget()
+                rowtag = QtWidgets.QLabel(v['tag'])
+                input_widget = QtWidgets.QListWidget()
                 input_widget.setObjectName(k)
                 sorted_values = sorted(v['values'], key=v['values'].get)
                 input_widget.insertItems(0, sorted_values)
@@ -1050,7 +1075,7 @@ class Protocol_Wizard(QtGui.QDialog):
         When steps are dragged into a different order, update the step dictionary
 
         Args:
-            *args: Input from our :py:attr:`.step_list` 's :class:`.QtGui.QListModel` 's reorder signal.
+            *args: Input from our :py:attr:`.step_list` 's :class:`.QtWidgets.QListModel` 's reorder signal.
         """
         # arg positions 1 and 4 are starting and ending positions in the list, respectively
         # We reorder our step list so the params line up.
@@ -1070,7 +1095,11 @@ class Protocol_Wizard(QtGui.QDialog):
         sender_type = self.steps[current_step][param_name]['type']
 
         if sender_type == 'int' or sender_type == 'str':
-            self.steps[current_step][param_name]['value'] = sender.text()
+            try:
+                sender_text = ast.literal_eval(sender.text())
+            except:
+                sender_text = sender.text()
+            self.steps[current_step][param_name]['value'] = sender_text
         elif sender_type == 'bool':
             self.steps[current_step][param_name]['value'] = sender.isChecked()
         elif sender_type == 'list':
@@ -1118,7 +1147,7 @@ class Protocol_Wizard(QtGui.QDialog):
         # I mean if it really matters
         pass
 
-class Graduation_Widget(QtGui.QWidget):
+class Graduation_Widget(QtWidgets.QWidget):
     """
     A widget used in :class:`.Protocol_Wizard` to define graduation parameters.
 
@@ -1131,7 +1160,7 @@ class Graduation_Widget(QtGui.QWidget):
     75% accuracy over the last 500 trials.
 
     Attributes:
-        type_selection (:class:`QtGui.QComboBox`): A box to select from the available
+        type_selection (:class:`QtWidgets.QComboBox`): A box to select from the available
             graduation types listed in :py:data:`.tasks.GRAD_LIST` . Has its `currentIndexChanged`
             signal connected to :py:meth:`.Graduation_Widget.populate_params`
         param_dict (dict): Stores the type of graduation and the relevant params,
@@ -1143,15 +1172,15 @@ class Graduation_Widget(QtGui.QWidget):
         super(Graduation_Widget, self).__init__()
 
         # Grad type dropdown
-        type_label = QtGui.QLabel("Graduation Criterion:")
-        self.type_selection = QtGui.QComboBox()
+        type_label = QtWidgets.QLabel("Graduation Criterion:")
+        self.type_selection = QtWidgets.QComboBox()
         self.type_selection.insertItems(0, tasks.GRAD_LIST.keys())
         self.type_selection.currentIndexChanged.connect(self.populate_params)
 
         # Param form
-        self.param_layout = QtGui.QFormLayout()
+        self.param_layout = QtWidgets.QFormLayout()
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(type_label)
         layout.addWidget(self.type_selection)
         layout.addLayout(self.param_layout)
@@ -1171,13 +1200,13 @@ class Graduation_Widget(QtGui.QWidget):
         Repopulate the widget with fields to edit graduation parameters, fill fields
         if we are passed `params`.
 
-        Each :class:`QtGui.QLineEdit` 's :py:meth:`.QLineEdit.editingFinished` signal is connected
+        Each :class:`QtWidgets.QLineEdit` 's :py:meth:`.QLineEdit.editingFinished` signal is connected
         to :py:meth:`.Graduation_Widget.store_param` .
 
         TODO:
             For now we assume all parameters are defined with a text edit box, so it's not
             clear how we'd do boolean parameters for example. This will be fixed with refactoring
-            the parameter scheme, the first order of business for v0.3.
+            the parameter scheme.
 
         Args:
             params (dict): In the case that :class:`.Protocol_Wizard` switches us back to
@@ -1189,13 +1218,13 @@ class Graduation_Widget(QtGui.QWidget):
         self.param_dict['type'] = self.type
 
         for k in tasks.GRAD_LIST[self.type].PARAMS:
-            edit_box = QtGui.QLineEdit()
+            edit_box = QtWidgets.QLineEdit()
             edit_box.setObjectName(k)
             edit_box.editingFinished.connect(self.store_param)
             if isinstance(params, dict):
                 if k in params.keys():
                     edit_box.setText(params[k])
-            self.param_layout.addRow(QtGui.QLabel(k), edit_box)
+            self.param_layout.addRow(QtWidgets.QLabel(k), edit_box)
 
     def clear_params(self):
         """
@@ -1224,9 +1253,9 @@ class Graduation_Widget(QtGui.QWidget):
 
         self.set_graduation()
 
-class Drag_List(QtGui.QListWidget):
+class Drag_List(QtWidgets.QListWidget):
     """
-    A :class:`QtGui.QListWidget` that is capable of having files dragged & dropped.
+    A :class:`QtWidgets.QListWidget` that is capable of having files dragged & dropped.
 
     copied with much gratitude from `stackoverflow <https://stackoverflow.com/a/25614674>`_
 
@@ -1291,7 +1320,7 @@ class Drag_List(QtGui.QListWidget):
             event.ignore()
 
 
-class Sound_Widget(QtGui.QWidget):
+class Sound_Widget(QtWidgets.QWidget):
     """
     A widget that allows sounds to be parameterized.
 
@@ -1319,27 +1348,27 @@ class Sound_Widget(QtGui.QWidget):
     """
     def __init__(self):
         # type: () -> None
-        QtGui.QWidget.__init__(self)
+        QtWidgets.QWidget.__init__(self)
 
         self.sounddir = prefs.SOUNDDIR
 
         self.set_sounds = None
 
         # Left sounds
-        left_label = QtGui.QLabel("Left Sounds")
+        left_label = QtWidgets.QLabel("Left Sounds")
         left_label.setFixedHeight(30)
         self.left_list = Drag_List()
         self.left_list.fileDropped.connect(self.files_dropped)
         self.left_list.setObjectName("L")
-        self.add_left_button = QtGui.QPushButton("+")
+        self.add_left_button = QtWidgets.QPushButton("+")
         self.add_left_button.setFixedHeight(30)
         self.add_left_button.clicked.connect(lambda: self.add_sound('L'))
-        self.remove_left_button = QtGui.QPushButton("-")
+        self.remove_left_button = QtWidgets.QPushButton("-")
         self.remove_left_button.setFixedHeight(30)
         self.remove_left_button.clicked.connect(lambda: self.remove_sound('L'))
 
-        left_layout = QtGui.QVBoxLayout()
-        left_button_layout = QtGui.QHBoxLayout()
+        left_layout = QtWidgets.QVBoxLayout()
+        left_button_layout = QtWidgets.QHBoxLayout()
         left_button_layout.addWidget(self.add_left_button)
         left_button_layout.addWidget(self.remove_left_button)
         left_layout.addWidget(left_label)
@@ -1347,20 +1376,20 @@ class Sound_Widget(QtGui.QWidget):
         left_layout.addLayout(left_button_layout)
 
         # Right sounds
-        right_label = QtGui.QLabel("Right Sounds")
+        right_label = QtWidgets.QLabel("Right Sounds")
         right_label.setFixedHeight(30)
         self.right_list = Drag_List()
         self.right_list.fileDropped.connect(self.files_dropped)
         self.right_list.setObjectName("R")
-        self.add_right_button = QtGui.QPushButton("+")
+        self.add_right_button = QtWidgets.QPushButton("+")
         self.add_right_button.setFixedHeight(30)
         self.add_right_button.clicked.connect(lambda: self.add_sound('R'))
-        self.remove_right_button = QtGui.QPushButton("-")
+        self.remove_right_button = QtWidgets.QPushButton("-")
         self.remove_right_button.setFixedHeight(30)
         self.remove_right_button.clicked.connect(lambda: self.remove_sound('R'))
 
-        right_layout = QtGui.QVBoxLayout()
-        right_button_layout = QtGui.QHBoxLayout()
+        right_layout = QtWidgets.QVBoxLayout()
+        right_button_layout = QtWidgets.QHBoxLayout()
         right_button_layout.addWidget(self.add_right_button)
         right_button_layout.addWidget(self.remove_right_button)
         right_layout.addWidget(right_label)
@@ -1369,7 +1398,7 @@ class Sound_Widget(QtGui.QWidget):
 
         self.sound_dict = {'L': [], 'R': []}
 
-        main_layout = QtGui.QHBoxLayout()
+        main_layout = QtWidgets.QHBoxLayout()
         main_layout.addLayout(left_layout)
         main_layout.addLayout(right_layout)
         self.setLayout(main_layout)
@@ -1455,15 +1484,15 @@ class Sound_Widget(QtGui.QWidget):
             files (list): List of absolute paths.
         """
         # TODO: Make this more general...
-        msg = QtGui.QMessageBox()
+        msg = QtWidgets.QMessageBox()
         msg.setText("Are these Speech sounds in the format '/speaker/cv/cv_#.wav'?")
-        msg.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+        msg.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         ret = msg.exec_()
 
         sender = self.sender()
         side = sender.objectName()
 
-        if ret == QtGui.QMessageBox.No:
+        if ret == QtWidgets.QMessageBox.No:
             for f in files:
                 f = f.strip(self.sounddir)
 
@@ -1474,7 +1503,7 @@ class Sound_Widget(QtGui.QWidget):
                     self.right_list.addItem(f)
 
 
-        elif ret == QtGui.QMessageBox.Yes:
+        elif ret == QtWidgets.QMessageBox.Yes:
             for f in files:
                 f = f.strip(self.sounddir)
                 f_split = f.split(os.sep)
@@ -1494,7 +1523,7 @@ class Sound_Widget(QtGui.QWidget):
 
         self.set_sounds()
 
-    class Add_Sound_Dialog(QtGui.QDialog):
+    class Add_Sound_Dialog(QtWidgets.QDialog):
         """
         Presents a dialog to define a new sound.
 
@@ -1503,30 +1532,30 @@ class Sound_Widget(QtGui.QWidget):
         so we can fill in its `PARAMS` .
 
         Attributes:
-            type_selection (:class:`QtGui.QComboBox`): Select from a list of available sounds
+            type_selection (:class:`QtWidgets.QComboBox`): Select from a list of available sounds
             param_dict (dict): Parameters that are retreived by the calling :class:`.Sound_Widget`.
 
         """
         def __init__(self):
             # type: () -> None
-            QtGui.QDialog.__init__(self)
+            QtWidgets.QDialog.__init__(self)
 
             # Sound type dropdown
-            type_label = QtGui.QLabel("Sound Type:")
-            self.type_selection = QtGui.QComboBox()
+            type_label = QtWidgets.QLabel("Sound Type:")
+            self.type_selection = QtWidgets.QComboBox()
             self.type_selection.insertItems(0, sounds.SOUND_LIST.keys())
             self.type_selection.currentIndexChanged.connect(self.populate_params)
 
             # Param form
-            self.param_layout = QtGui.QFormLayout()
+            self.param_layout = QtWidgets.QFormLayout()
 
             # Button box
-            buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+            buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
             buttonBox.accepted.connect(self.accept)
             buttonBox.rejected.connect(self.reject)
 
             # Layout
-            layout = QtGui.QVBoxLayout()
+            layout = QtWidgets.QVBoxLayout()
             layout.addWidget(type_label)
             layout.addWidget(self.type_selection)
             layout.addLayout(self.param_layout)
@@ -1534,12 +1563,16 @@ class Sound_Widget(QtGui.QWidget):
 
             self.setLayout(layout)
 
+
             # dict for storing params
             self.param_dict = {}
 
+            # do initial population
+            self.populate_params()
+
         def populate_params(self):
             """
-            When a sound type is selected, make a :class:`.QtGui.QLineEdit` for each
+            When a sound type is selected, make a :class:`.QtWidgets.QLineEdit` for each
             `PARAM` in its definition.
             """
             self.clear_params()
@@ -1548,10 +1581,10 @@ class Sound_Widget(QtGui.QWidget):
             self.param_dict['type'] = self.type
 
             for k in sounds.SOUND_LIST[self.type].PARAMS:
-                edit_box = QtGui.QLineEdit()
+                edit_box = QtWidgets.QLineEdit()
                 edit_box.setObjectName(k)
                 edit_box.editingFinished.connect(self.store_param)
-                self.param_layout.addRow(QtGui.QLabel(k), edit_box)
+                self.param_layout.addRow(QtWidgets.QLabel(k), edit_box)
 
         def clear_params(self):
             """
@@ -1575,7 +1608,7 @@ class Sound_Widget(QtGui.QWidget):
 # Tools
 ######################################
 
-class Bandwidth_Test(QtGui.QDialog):
+class Bandwidth_Test(QtWidgets.QDialog):
     """
     Test the limits of the rate of messaging from the connected Pilots.
 
@@ -1618,8 +1651,7 @@ class Bandwidth_Test(QtGui.QDialog):
         self.node = Net_Node(id="bandwidth",
                              upstream='T',
                              port = prefs.MSGPORT,
-                             listens=self.listens,
-                             do_logging = False)
+                             listens=self.listens)
 
         self.init_ui()
 
@@ -1632,46 +1664,46 @@ class Bandwidth_Test(QtGui.QDialog):
         # right plots outcomes
 
         # main layout l/r
-        self.layout = QtGui.QHBoxLayout()
+        self.layout = QtWidgets.QHBoxLayout()
 
         # left layout for settings
-        self.settings = QtGui.QFormLayout()
+        self.settings = QtWidgets.QFormLayout()
 
-        self.n_messages = QtGui.QLineEdit('1000')
+        self.n_messages = QtWidgets.QLineEdit('1000')
         self.n_messages.setValidator(QtGui.QIntValidator())
 
-        self.receipts = QtGui.QCheckBox('Get receipts?')
+        self.receipts = QtWidgets.QCheckBox('Get receipts?')
         self.receipts.setChecked(True)
 
-        self.rates = QtGui.QLineEdit('50')
+        self.rates = QtWidgets.QLineEdit('50')
         self.rates.setObjectName('rates')
         self.rates.editingFinished.connect(self.validate_list)
         self.rate_list = [50]
 
-        self.payloads = QtGui.QLineEdit('0')
+        self.payloads = QtWidgets.QLineEdit('0')
         self.payloads.setObjectName('payloads')
         self.payloads.editingFinished.connect(self.validate_list)
         self.payload_list = [0]
 
         # checkboxes for which pis to include in test
-        self.pilot_box = QtGui.QGroupBox('Pilots')
+        self.pilot_box = QtWidgets.QGroupBox('Pilots')
         self.pilot_checks = {}
-        self.pilot_layout = QtGui.QVBoxLayout()
+        self.pilot_layout = QtWidgets.QVBoxLayout()
 
         for p in self.pilots.keys():
-            cb = QtGui.QCheckBox(p)
+            cb = QtWidgets.QCheckBox(p)
             cb.setChecked(True)
             self.pilot_checks[p] = cb
             self.pilot_layout.addWidget(cb)
 
         # gotta have progress bars
-        self.all_pbar = QtGui.QProgressBar()
-        self.this_pbar = QtGui.QProgressBar()
+        self.all_pbar = QtWidgets.QProgressBar()
+        self.this_pbar = QtWidgets.QProgressBar()
 
         # buttons to start test/save results
-        self.start_btn = QtGui.QPushButton('Start Test')
+        self.start_btn = QtWidgets.QPushButton('Start Test')
         self.start_btn.clicked.connect(self.start)
-        self.save_btn = QtGui.QPushButton('Save Results')
+        self.save_btn = QtWidgets.QPushButton('Save Results')
         self.save_btn.setEnabled(False)
         self.save_btn.clicked.connect(self.save)
 
@@ -1679,9 +1711,9 @@ class Bandwidth_Test(QtGui.QDialog):
         # combine settings
         self.settings.addRow('N messages per test', self.n_messages)
         self.settings.addRow('Confirm sent messages?', self.receipts)
-        self.settings.addRow('Message Rates per Pilot \n(in Hz, list of integers like "1, 2, 3")',
+        self.settings.addRow('Message Rates per Pilot \n(in Hz, list of integers like "[1, 2, 3]")',
                              self.rates)
-        self.settings.addRow('Payload sizes per message \n(in KB, list of integers like "32, 64, 128")',
+        self.settings.addRow('Payload sizes per message \n(in KB, list of integers like "[32, 64, 128]")',
                              self.payloads)
         self.settings.addRow('Which Pilots to include in test',
                              self.pilot_layout)
@@ -1707,7 +1739,7 @@ class Bandwidth_Test(QtGui.QDialog):
 
 
 
-        self.plot_layout = QtGui.QVBoxLayout()
+        self.plot_layout = QtWidgets.QVBoxLayout()
         self.plot_layout.addWidget(self.drop_plot)
         self.plot_layout.addWidget(self.delay_plot)
         self.plot_layout.addWidget(self.speed_plot)
@@ -1734,13 +1766,13 @@ class Bandwidth_Test(QtGui.QDialog):
 
         # first make sure we got everything we need
         if len(self.rate_list) == 0:
-            warning_msg = QtGui.QMessageBox(QtGui.QMessageBox.Warning,
+            warning_msg = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning,
                                             "No rates to test!",
                                             "Couldn't find a list of rates to test, did you enter one?")
             warning_msg.exec_()
             return
         if len(self.payload_list) ==0 :
-            warning_msg = QtGui.QMessageBox(QtGui.QMessageBox.Warning,
+            warning_msg = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning,
                                             "No payloads to test!",
                                             "Couldn't find a list of payloads to test, did you enter one?")
             warning_msg.exec_()
@@ -1800,6 +1832,18 @@ class Bandwidth_Test(QtGui.QDialog):
 
 
     def send_test(self, rate, payload, n_msg, confirm):
+        """
+        Send a message describing the test to each of the pilots in :attr:`Bandwidth_Test.test_pilots`
+
+        Args:
+            rate (int): Rate of message sending in Hz
+            payload (int): Size of message payload in bytes
+            n_msg (int): Number of messages to send
+            confirm (bool): If True, use message confirmation, if False no confirmation.
+
+        Returns:
+
+        """
         self.finished_pilots = []
         self.messages = []
 
@@ -1818,6 +1862,17 @@ class Bandwidth_Test(QtGui.QDialog):
 
     @gui_event
     def process_test(self, rate, n_msg, confirm):
+        """
+        Process the results of the test and update the plot window.
+
+        Reads message results from :attr:`~Bandwidth_Test.messages`, appends computed results to
+        :attr:`~Bandwidth_Test.results`, and starts the next test if any remain.
+
+        Args:
+            rate (int): Rate of current test in Hz
+            n_msg (int): Number of expected messages in this test
+            confirm (bool): Whether message confirmations were enabled for this test.
+        """
 
         # start a timer that continues the test if messages are dropped
         try:
@@ -1877,7 +1932,7 @@ class Bandwidth_Test(QtGui.QDialog):
         #                           padding=(np.max(self.delays) - np.min(self.delays)) * .1)
         # self.speed_plot.setYRange(np.min(self.speeds), np.max(self.speeds))
 
-        self.all_pbar.setValue(self.test_counter.next() + 1)
+        self.all_pbar.setValue(next(self.test_counter) + 1)
 
 
 
@@ -1904,7 +1959,7 @@ class Bandwidth_Test(QtGui.QDialog):
 
         """
 
-        fileName, filtr = QtGui.QFileDialog.getSaveFileName(self,
+        fileName, filtr = QtWidgets.QFileDialog.getSaveFileName(self,
                 "Where should we save these results?",
                 prefs.DATADIR,
                 "CSV files (*.csv)", "")
@@ -1917,11 +1972,11 @@ class Bandwidth_Test(QtGui.QDialog):
                                                         'actual_rate', 'send_jitter', 'delay_jitter'])
 
             res_df.to_csv(fileName)
-            reply = QtGui.QMessageBox.information(self,
+            reply = QtWidgets.QMessageBox.information(self,
                                                   "Results saved!", "Results saved to {}".format(fileName))
 
         except Exception as e:
-            reply = QtGui.QMessageBox.critical(self, "Error saving",
+            reply = QtWidgets.QMessageBox.critical(self, "Error saving",
                                                "Error while saving your results:\n{}".format(e))
 
 
@@ -1944,9 +1999,8 @@ class Bandwidth_Test(QtGui.QDialog):
         # and then add size of container itself.
         # payload size is distinct from the serialized message size, this is the end size
         # as it ends up on the disk of the receiver
-        payload_size = np.sum([sys.getsizeof(v) for k, v in value.items()]) + sys.getsizeof(value)
-
-
+        # pdb.set_trace()
+        # payload_size = np.sum([sys.getsizeof(v) for k, v in value.items()]) + sys.getsizeof(value)
         if 'test_end' in value.keys():
             self.finished_pilots.append(value['pilot'])
 
@@ -1954,6 +2008,10 @@ class Bandwidth_Test(QtGui.QDialog):
                 self.process_test(value['rate'], value['n_msg'], value['confirm'])
 
             return
+
+        payload_size = value['payload_size']
+
+
 
 
         #payload_size = np.frombuffer(base64.b64decode(value['payload']),dtype=np.bool).nbytes
@@ -1965,7 +2023,7 @@ class Bandwidth_Test(QtGui.QDialog):
                               payload_size,
                               value['message_size']))
 
-        msgs_rcvd = self.msg_counter.next()
+        msgs_rcvd = next(self.msg_counter)
         if msgs_rcvd % float(round(self.n_messages_test/100.0)) < 1.0:
              self.update_pbar(msgs_rcvd+1)
 
@@ -1989,6 +2047,7 @@ class Bandwidth_Test(QtGui.QDialog):
 
 
         """
+        # pdb.set_trace()
         sender = self.sender()
 
         text = sender.text()
@@ -2003,7 +2062,7 @@ class Bandwidth_Test(QtGui.QDialog):
         try:
             a_list = ast.literal_eval(text)
         except SyntaxError:
-            warning_msg = QtGui.QMessageBox(QtGui.QMessageBox.Warning,
+            warning_msg = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning,
                                             "Improperly formatted list!",
                                             "The input received wasn't a properly formatted list of integers. Make sure your input is of the form '1, 2, 3' or '[ 1, 2, 3 ]'\ninstead got : {}".format(text))
             sender.setText('')
@@ -2014,7 +2073,7 @@ class Bandwidth_Test(QtGui.QDialog):
         # validate integers
         for i in a_list:
             if not isinstance (i, int):
-                warning_msg = QtGui.QMessageBox(QtGui.QMessageBox.Warning,
+                warning_msg = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning,
                                                 "Improperly formatted list!",
                                                 "The input received wasn't a properly formatted list of integers. Make sure your input is of the form '1, 2, 3' or '[ 1, 2, 3 ]'\ninstead got : {}".format(
                                                     text))
@@ -2041,12 +2100,9 @@ class Bandwidth_Test(QtGui.QDialog):
 
 
 
-class Calibrate_Water(QtGui.QDialog):
+class Calibrate_Water(QtWidgets.QDialog):
     """
     A window to calibrate the volume of water dispensed per ms.
-
-    Warning:
-        Not Implemented
     """
     def __init__(self, pilots):
         """
@@ -2062,17 +2118,17 @@ class Calibrate_Water(QtGui.QDialog):
         self.init_ui()
 
     def init_ui(self):
-        self.layout = QtGui.QVBoxLayout()
+        self.layout = QtWidgets.QVBoxLayout()
 
         # Container Widget
-        self.container = QtGui.QWidget()
+        self.container = QtWidgets.QWidget()
         # Layout of Container Widget
-        self.container_layout = QtGui.QVBoxLayout(self)
+        self.container_layout = QtWidgets.QVBoxLayout(self)
 
         self.container.setLayout(self.container_layout)
 
 
-        screen_geom = QtGui.QDesktopWidget().availableGeometry()
+        screen_geom = QtWidgets.QDesktopWidget().availableGeometry()
         # get max pixel value for each subwidget
         widget_height = np.floor(screen_geom.height()-50/float(len(self.pilots)))
 
@@ -2081,17 +2137,17 @@ class Calibrate_Water(QtGui.QDialog):
             self.pilot_widgets[p] = Pilot_Ports(p)
             self.pilot_widgets[p].setMaximumHeight(widget_height)
             self.pilot_widgets[p].setMaximumWidth(screen_geom.width())
-            self.pilot_widgets[p].setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+            self.pilot_widgets[p].setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
             self.container_layout.addWidget(self.pilot_widgets[p])
 
         # Scroll Area Properties
-        self.scroll = QtGui.QScrollArea()
+        self.scroll = QtWidgets.QScrollArea()
         self.scroll.setWidgetResizable(False)
         self.scroll.setWidget(self.container)
         self.layout.addWidget(self.scroll)
 
         # ok/cancel buttons
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
         self.layout.addWidget(buttonBox)
@@ -2105,24 +2161,24 @@ class Calibrate_Water(QtGui.QDialog):
 
         self.setMaximumHeight(screen_geom.height())
         self.setMaximumWidth(screen_geom.width())
-        self.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
 
-        self.scrollArea = QtGui.QScrollArea(self)
+        self.scrollArea = QtWidgets.QScrollArea(self)
         self.scrollArea.setWidgetResizable(True)
 
 
 
-class Pilot_Ports(QtGui.QWidget):
+class Pilot_Ports(QtWidgets.QWidget):
     """
-    Each pilot's ports and buttons to control repeated release.
+    Created by :class:`.Calibrate_Water`, Each pilot's ports and buttons to control repeated release.
     """
+
     def __init__(self, pilot, n_clicks=1000, click_dur=30):
         """
         Args:
-            pilot:
-            message_fn:
-            n_clicks:
-            click_dur:
+            pilot (str): name of pilot to calibrate
+            n_clicks (int): number of times to open the port during calibration
+            click_dur (int): how long to open the port (in ms)
         """
         super(Pilot_Ports, self).__init__()
 
@@ -2152,17 +2208,13 @@ class Pilot_Ports(QtGui.QWidget):
         * pilot name
         * port buttons
         * 3 times and vol dispersed
-        *
-
-        TODO:
-            Don't assume L/C/R, ask the pilot what it has
 
         :return:
         """
 
-        layout = QtGui.QHBoxLayout()
-        pilot_lab = QtGui.QLabel(self.pilot)
-        pilot_font = QtGui.QFont()
+        layout = QtWidgets.QHBoxLayout()
+        pilot_lab = QtWidgets.QLabel(self.pilot)
+        pilot_font = QtWidgets.QFont()
         pilot_font.setBold(True)
         pilot_font.setPointSize(14)
         pilot_lab.setFont(pilot_font)
@@ -2170,12 +2222,12 @@ class Pilot_Ports(QtGui.QWidget):
         layout.addWidget(pilot_lab)
 
         # make param setting boxes
-        param_layout = QtGui.QFormLayout()
-        self.n_clicks = QtGui.QLineEdit(str(1000))
-        self.n_clicks.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
+        param_layout = QtWidgets.QFormLayout()
+        self.n_clicks = QtWidgets.QLineEdit(str(1000))
+        self.n_clicks.setSizePolicy(QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed)
         self.n_clicks.setValidator(QtGui.QIntValidator())
-        self.interclick_interval = QtGui.QLineEdit(str(50))
-        self.interclick_interval.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
+        self.interclick_interval = QtWidgets.QLineEdit(str(50))
+        self.interclick_interval.setSizePolicy(QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed)
         self.interclick_interval.setValidator(QtGui.QIntValidator())
 
         param_layout.addRow("n clicks", self.n_clicks)
@@ -2185,8 +2237,8 @@ class Pilot_Ports(QtGui.QWidget):
 
         # buttons and fields for each port
 
-        #button_layout = QtGui.QVBoxLayout()
-        vol_layout = QtGui.QGridLayout()
+        #button_layout = QtWidgets.QVBoxLayout()
+        vol_layout = QtWidgets.QGridLayout()
 
         self.dur_boxes = {}
         self.vol_boxes = {}
@@ -2198,41 +2250,41 @@ class Pilot_Ports(QtGui.QWidget):
             self.volumes[port] = {}
 
             # button to start calibration
-            port_button = QtGui.QPushButton(port)
+            port_button = QtWidgets.QPushButton(port)
             port_button.setObjectName(port)
             port_button.clicked.connect(self.start_calibration)
             vol_layout.addWidget(port_button, i, 0)
 
             # set click duration
-            dur_label = QtGui.QLabel("Click dur (ms)")
-            self.dur_boxes[port] = QtGui.QLineEdit(str(20))
-            self.dur_boxes[port].setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+            dur_label = QtWidgets.QLabel("Click dur (ms)")
+            self.dur_boxes[port] = QtWidgets.QLineEdit(str(20))
+            self.dur_boxes[port].setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
             self.dur_boxes[port].setValidator(QtGui.QIntValidator())
             vol_layout.addWidget(dur_label, i, 1)
             vol_layout.addWidget(self.dur_boxes[port], i, 2)
 
             # Divider
-            divider = QtGui.QFrame()
-            divider.setFrameShape(QtGui.QFrame.VLine)
+            divider = QtWidgets.QFrame()
+            divider.setFrameShape(QtWidgets.QFrame.VLine)
             vol_layout.addWidget(divider, i, 3)
 
             # input dispensed volume
-            vol_label = QtGui.QLabel("Dispensed volume (mL)")
-            self.vol_boxes[port] = QtGui.QLineEdit()
-            self.vol_boxes[port].setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+            vol_label = QtWidgets.QLabel("Dispensed volume (mL)")
+            self.vol_boxes[port] = QtWidgets.QLineEdit()
+            self.vol_boxes[port].setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
             self.vol_boxes[port].setObjectName(port)
             self.vol_boxes[port].setValidator(QtGui.QDoubleValidator())
             self.vol_boxes[port].textEdited.connect(self.update_volumes)
             vol_layout.addWidget(vol_label, i, 4)
             vol_layout.addWidget(self.vol_boxes[port], i, 5)
 
-            self.pbars[port] = QtGui.QProgressBar()
+            self.pbars[port] = QtWidgets.QProgressBar()
             vol_layout.addWidget(self.pbars[port], i, 6)
 
             # display flow rate
 
-            #self.flowrates[port] = QtGui.QLabel('?uL/ms')
-            #self.flowrates[port].setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+            #self.flowrates[port] = QtWidgets.QLabel('?uL/ms')
+            #self.flowrates[port].setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
             #vol_layout.addWidget(self.flowrates[port], i, 7)
 
         layout.addLayout(vol_layout)
@@ -2244,6 +2296,9 @@ class Pilot_Ports(QtGui.QWidget):
 
 
     def update_volumes(self):
+        """
+        Store the result of a volume calibration test in :attr:`~Pilot_Ports.volumes`
+        """
         port = self.sender().objectName()
 
         if port in self.open_params.keys():
@@ -2272,6 +2327,12 @@ class Pilot_Ports(QtGui.QWidget):
         #self.flowrates[port].setText("{} uL/ms".format(flowrate))
 
     def start_calibration(self):
+        """
+        Send the calibration test parameters to the :class:`.Pilot`
+
+        Sends a message with a ``'CALIBRATE_PORT'`` key, which is handled by
+        :meth:`.Pilot.l_cal_port`
+        """
         port = self.sender().objectName()
 
         # stash params at the time of starting calibration
@@ -2308,14 +2369,14 @@ class Pilot_Ports(QtGui.QWidget):
 
 
 
-class Reassign(QtGui.QDialog):
+class Reassign(QtWidgets.QDialog):
     """
     A dialog that lets subjects be batch reassigned to new protocols or steps.
     """
     def __init__(self, subjects, protocols):
         """
         Args:
-            mice (dict): A dictionary that contains each subject's protocol and step, ie.::
+            subjects (dict): A dictionary that contains each subject's protocol and step, ie.::
 
                     {'subject_id':['protocol_name', step_int], ... }
 
@@ -2324,7 +2385,7 @@ class Reassign(QtGui.QDialog):
         """
         super(Reassign, self).__init__()
 
-        self.mice = mice
+        self.subjects = subjects
         self.protocols = protocols
         self.protocol_dir = prefs.PROTOCOLDIR
         self.init_ui()
@@ -2335,19 +2396,19 @@ class Reassign(QtGui.QDialog):
 
         Makes a row for each subject where its protocol and step can be changed.
         """
-        self.grid = QtGui.QGridLayout()
+        self.grid = QtWidgets.QGridLayout()
 
         self.subject_objects = {}
 
-        for i, (subject, protocol) in zip(xrange(len(self.mice)), self.mice.items()):
+        for i, (subject, protocol) in zip(range(len(self.subjects)), self.subjects.items()):
             subject_name = copy.deepcopy(subject)
             step = protocol[1]
             protocol = protocol[0]
 
             # subject label
-            subject_lab = QtGui.QLabel(subject)
+            subject_lab = QtWidgets.QLabel(subject)
 
-            self.subject_objects[subject] = [QtGui.QComboBox(), QtGui.QComboBox()]
+            self.subject_objects[subject] = [QtWidgets.QComboBox(), QtWidgets.QComboBox()]
             protocol_box = self.subject_objects[subject][0]
             protocol_box.setObjectName(subject_name)
             protocol_box.insertItems(0, self.protocols)
@@ -2373,10 +2434,10 @@ class Reassign(QtGui.QDialog):
 
 
 
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
-        main_layout = QtGui.QVBoxLayout()
+        main_layout = QtWidgets.QVBoxLayout()
         main_layout.addLayout(self.grid)
         main_layout.addWidget(buttonBox)
 
@@ -2417,8 +2478,8 @@ class Reassign(QtGui.QDialog):
         protocol_box = self.subject_objects[subject][0]
         step_box = self.subject_objects[subject][1]
 
-        self.mice[subject][0] = protocol_box.currentText()
-        self.mice[subject][1] = 0
+        self.subjects[subject][0] = protocol_box.currentText()
+        self.subjects[subject][1] = 0
 
         self.populate_steps(subject)
 
@@ -2431,27 +2492,27 @@ class Reassign(QtGui.QDialog):
         protocol_box = self.subject_objects[subject][0]
         step_box = self.subject_objects[subject][1]
 
-        self.mice[subject][1] = step_box.currentIndex()
+        self.subjects[subject][1] = step_box.currentIndex()
 
 
 
 
 
-class Weights(QtGui.QTableWidget):
+class Weights(QtWidgets.QTableWidget):
     """
     A table for viewing and editing the most recent subject weights.
     """
-    def __init__(self, mice_weights, mice):
+    def __init__(self, subject_weights, subjects):
         """
         Args:
-            mice_weights (list): a list of weights of the format returned by
+            subject_weights (list): a list of weights of the format returned by
                 :py:meth:`.Subject.get_weight(baseline=True)`.
-            mice (dict): the Terminal's :py:attr:`.Terminal.subjects` dictionary of :class:`.Subject` objects.
+            subjects (dict): the Terminal's :py:attr:`.Terminal.subjects` dictionary of :class:`.Subject` objects.
         """
         super(Weights, self).__init__()
 
-        self.mice_weights = mice_weights
-        self.mice = mice # subject objects from terminal
+        self.subject_weights = subject_weights
+        self.subjects = subjects # subject objects from terminal
 
         self.colnames = odict()
         self.colnames['subject'] = "Subject"
@@ -2461,7 +2522,7 @@ class Weights(QtGui.QTableWidget):
         self.colnames['start'] = 'Starting Mass'
         self.colnames['stop'] = 'Stopping Mass'
 
-        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
 
         self.init_ui()
 
@@ -2474,7 +2535,7 @@ class Weights(QtGui.QTableWidget):
         Initialized graphical elements. Literally just filling a table.
         """
         # set shape (rows by cols
-        self.shape = (len(self.mice_weights), len(self.colnames.keys()))
+        self.shape = (len(self.subject_weights), len(self.colnames.keys()))
         self.setRowCount(self.shape[0])
         self.setColumnCount(self.shape[1])
 
@@ -2483,20 +2544,20 @@ class Weights(QtGui.QTableWidget):
             for j, col in enumerate(self.colnames.keys()):
                 try:
                     if col == "date":
-                        format_date = datetime.datetime.strptime(self.mice_weights[row][col], '%y%m%d-%H%M%S')
+                        format_date = datetime.datetime.strptime(self.subject_weights[row][col], '%y%m%d-%H%M%S')
                         format_date = format_date.strftime('%b %d')
-                        item = QtGui.QTableWidgetItem(format_date)
+                        item = QtWidgets.QTableWidgetItem(format_date)
                     elif col == "stop":
-                        stop_wt = str(self.mice_weights[row][col])
-                        minimum = float(self.mice_weights[row]['minimum_mass'])
-                        item = QtGui.QTableWidgetItem(stop_wt)
+                        stop_wt = str(self.subject_weights[row][col])
+                        minimum = float(self.subject_weights[row]['minimum_mass'])
+                        item = QtWidgets.QTableWidgetItem(stop_wt)
                         if float(stop_wt) < minimum:
-                            item.setBackground(QtGui.QColor(255,0,0))
+                            item.setBackground(QtWidgets.QColor(255,0,0))
 
                     else:
-                        item = QtGui.QTableWidgetItem(str(self.mice_weights[row][col]))
+                        item = QtWidgets.QTableWidgetItem(str(self.subject_weights[row][col]))
                 except:
-                    item = QtGui.QTableWidgetItem(str(self.mice_weights[row][col]))
+                    item = QtWidgets.QTableWidgetItem(str(self.subject_weights[row][col]))
                 self.setItem(row, j, item)
 
         # make headers
@@ -2529,18 +2590,293 @@ class Weights(QtGui.QTableWidget):
 
             # get subject, date and column name
             subject_name = self.item(row, 0).text()
-            date = self.mice_weights[row]['date']
+            date = self.subject_weights[row]['date']
             column_name = self.colnames.keys()[column] # recall colnames is an ordered dictionary
-            self.mice[subject_name].set_weight(date, column_name, new_val)
+            self.subjects[subject_name].set_weight(date, column_name, new_val)
 
 
 #####################################################
 # Custom Autopilot Qt Style
+#
+# class Autopilot_Style(QtGui.QPlastiqueStyle):
+#
+#     def __init__(self):
+#         super(Autopilot_Style, self).__init__()
 
-class Autopilot_Style(QtGui.QPlastiqueStyle):
+class Psychometric(QtGui.QDialog):
+    """
+    A Dialog to select subjects, steps, and variables to use in a psychometric curve plot.
 
-    def __init__(self):
-        super(Autopilot_Style, self).__init__()
+    See :meth:`.Terminal.plot_psychometric`
+
+    Args:
+        subjects_protocols (dict): The Terminals :attr:`.Terminal.subjects_protocols` dict
+
+    Attributes:
+        plot_params (list): A list of tuples, each consisting of (subject_id, step, variable) to be given to :func:`.viz.plot_psychometric`
+    """
+
+    def __init__(self, subjects_protocols):
+        super(Psychometric, self).__init__()
+
+        self.subjects = subjects_protocols
+        # self.protocols = protocols
+        # self.protocol_dir = prefs.PROTOCOLDIR
+        self.subject_objects = {}
+
+        self.init_ui()
+
+
+    def init_ui(self):
+        self.grid = QtGui.QGridLayout()
+
+        # top row just has checkbox for select all
+        check_all = QtGui.QCheckBox()
+        check_all.stateChanged.connect(self.check_all)
+
+        self.grid.addWidget(check_all, 0,0)
+        self.grid.addWidget(QtGui.QLabel('Check All'), 0, 1)
+
+        # identical to Reassign, above
+        for i, (subject, protocol) in zip(xrange(len(self.subjects)), self.subjects.items()):
+            subject_name = copy.deepcopy(subject)
+            step = protocol[1]
+
+            # container for each subject's GUI object
+            # checkbox, step, variable
+            self.subject_objects[subject] = [QtGui.QCheckBox(),  QtGui.QComboBox(), QtGui.QComboBox(), QtGui.QLineEdit()]
+
+            # include checkbox
+            checkbox = self.subject_objects[subject][0]
+            checkbox.setObjectName(subject_name)
+            # checkbox.stateChanged.connect(self.select_subject)
+            # self.checks.append(this_checkbox)
+
+            # subject label
+            subject_lab = QtGui.QLabel(subject_name)
+
+            # protocol_box = self.subject_objects[subject][0]
+            # protocol_box.setObjectName(subject_name)
+            # protocol_box.insertItems(0, self.protocols)
+            # # set current item if subject has matching protocol
+            # protocol_bool = [protocol == p for p in self.protocols]
+            # if any(protocol_bool):
+            #     protocol_ind = np.where(protocol_bool)[0][0]
+            #     protocol_box.setCurrentIndex(protocol_ind)
+            # protocol_box.currentIndexChanged.connect(self.set_protocol)
+            self.populate_steps(subject_name)
+            step_box = self.subject_objects[subject][1]
+            step_box.setObjectName(subject_name)
+            step_box.currentIndexChanged.connect(self.populate_variables)
+
+
+
+            # variable box
+            var_box = self.subject_objects[subject][2]
+            var_box.setObjectName(subject_name)
+
+            # n most recent trials
+            n_trials_box = self.subject_objects[subject][3]
+            # verify that an int is given
+            n_trials_box.setValidator(QtGui.QIntValidator())
+            n_trials_box.setText("-1")
+
+            # set index of current step to populate variables
+            step_box.setCurrentIndex(step)
+
+            # add layout
+            self.grid.addWidget(checkbox, i+1, 0)
+            self.grid.addWidget(subject_lab, i+1, 1)
+            self.grid.addWidget(step_box, i+1, 2)
+            self.grid.addWidget(var_box, i+1, 3)
+            self.grid.addWidget(n_trials_box, i+1, 4)
+
+        # finish layout
+        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+        main_layout = QtGui.QVBoxLayout()
+        main_layout.addLayout(self.grid)
+        main_layout.addWidget(buttonBox)
+
+        self.setLayout(main_layout)
+
+
+
+
+
+    def populate_steps(self, subject):
+        """
+        When a protocol is selected, populate the selection box with the steps that can be chosen.
+
+        Args:
+            subject (str): ID of subject whose steps are being populated
+        """
+        # protocol_str = self.subjects[subject][0]
+        step_box = self.subject_objects[subject][1]
+
+        while step_box.count():
+            step_box.removeItem(0)
+
+        # open the subject file and use 'current' to get step names
+        asub = Subject(subject)
+
+        step_list = []
+        for s in asub.current:
+            step_list.append(s['step_name'])
+
+        step_box.insertItems(0, step_list)
+
+    def populate_variables(self):
+        """
+        Fill selection boxes with step and variable names
+        """
+        # get step number from step box
+
+        subject = self.sender().objectName()
+        step_ind = self.subject_objects[subject][1].currentIndex()
+
+        # the variables box
+        var_box = self.subject_objects[subject][2]
+        while var_box.count():
+            var_box.removeItem(0)
+
+        # open the subjet's file and get a description of the data for this
+        this_subject = Subject(subject)
+        step_data = this_subject.get_trial_data(step=step_ind, what="variables")
+        # should only have one step, so denest
+        step_data = step_data[step_data.keys()[0]]
+
+        # iterate through variables, only keeping numerics
+        add_vars = []
+        for col_name, col_type in step_data.items():
+            if issubclass(col_type.dtype.type, np.integer) or issubclass(col_type.dtype.type, np.floating):
+                add_vars.append(col_name)
+
+        var_box.insertItems(0, add_vars)
+
+
+
+    def check_all(self):
+        """
+        Toggle all checkboxes on or off
+        """
+        # check states to know if we're toggling everything on or off
+        check_states = [objs[0].checkState() for objs in self.subject_objects.values()]
+
+        toggle_on = True
+        if all(check_states):
+            toggle_on = False
+
+
+        for objs in self.subject_objects.values():
+            if toggle_on:
+                objs[0].setCheckState(True)
+            else:
+                objs[0].setCheckState(False)
+
+    @property
+    def plot_params(self):
+        """
+        Generate parameters for plot to be passed to :func:`.viz.plot_psychometric`
+
+        Returns:
+            tuple: (subject_name, step_name, x_var_name, n_trials_back)
+        """
+        _plot_params = []
+
+        for sub_name, objs in self.subject_objects.items():
+            if objs[0].checkState():
+                _plot_params.append((
+                    sub_name,
+                    objs[1].currentText(),
+                    objs[2].currentText(),
+                    int(objs[3].text())
+                ))
+        return _plot_params
+
+
+
+
+
+
+
+def pop_dialog(message, msg_type="info", details="", buttons=['Ok']):
+    """Convenience function to pop a :class:`.QtGui.QDialog window to display a message.
+
+    Args:
+        details:
+        message (str): message to be displayed
+        msg_type (str): "info" (default), "question", "warning", or "error" to use :meth:`.QtGui.QMessageBox.information`, :meth:`.QtGui.QMessageBox.question`, :meth:`.QtGui.QMessageBox.warning`, or :meth:`.QtGui.QMessageBox.error`, respectively
+        buttons (list): A list specifying which :class:`.QtGui.QMessageBox.StandardButton` s to display. Use a string matching the button name, eg. "Ok" gives :class:`.QtGui.QMessageBox.Ok`
+
+
+    Returns:
+        result (bool, str): The result of the dialog. If Ok/Cancel, boolean True/False, otherwise a string matching the button type
+    """
+
+    msgBox = QtGui.QMessageBox()
+
+    # set text
+    msgBox.setText(message)
+    if details:
+        msgBox.setInformativeText(details)
+
+    # add buttons
+    button_objs = [getattr(QtGui.QMessageBox, button) for button in buttons]
+    # bitwise or to add them to the dialog box
+    # https://www.geeksforgeeks.org/python-bitwise-or-among-list-elements/
+    bitwise_buttons = reduce(ior, button_objs)
+    msgBox.setStandardButtons(bitwise_buttons)
+
+    if 'Ok' in buttons:
+        msgBox.setDefaultButton(QtGui.QMessageBox.Ok)
+
+    icon = None
+    if msg_type == "info":
+        icon = QtGui.QMessageBox.Information
+    elif msg_type == "question" or msg_type.startswith('q'):
+        icon = QtGui.QMessageBox.Question
+    elif msg_type == "warning":
+        icon = QtGui.QMessageBox.Warning
+    elif msg_type == "error":
+        icon = QtGui.QMessageBox.Critical
+
+    if icon:
+        msgBox.setIcon(icon)
+
+    ret = msgBox.exec_()
+
+    # pdb.set_trace()
+
+    # get message box name
+    # for but in QtGui.QMessageBox.StandardButton
+
+    for but in button_objs:
+        print(but.name)
+        if ret == but:
+            ret = but.name
+
+    if ret in ("Ok", "Yes"):
+        ret = True
+    elif ret in ('Cancel', 'No'):
+        ret = False
+
+    return ret
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2552,15 +2888,15 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 # Parameter setting widgets
 ######################################
 #
-# class Parameters(QtGui.QWidget):
+# class Parameters(QtWidgets.QWidget):
 #     """
-#     A :class:`QtGui.QWidget` used to display and edit task parameters.
+#     A :class:`QtWidgets.QWidget` used to display and edit task parameters.
 #
 #     This class is typically instantiated by :class:`Protocol_Parameters`
 #     as a display window for a single step's parameters.
 #
 #     Attributes:
-#         param_layout (:class:`QtGui.QFormLayout`): Holds param tags and values
+#         param_layout (:class:`QtWidgets.QFormLayout`): Holds param tags and values
 #         param_changes (dict): Stores any changes made to protocol parameters,
 #             used to update the protocol stored in the :class:`~.subject.Subject` object.
 #     """
@@ -2601,13 +2937,13 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #         super(Parameters, self).__init__()
 #
 #         # We're just a simple label and a populateable form layout
-#         self.layout = QtGui.QVBoxLayout()
+#         self.layout = QtWidgets.QVBoxLayout()
 #         self.setLayout(self.layout)
 #
-#         label = QtGui.QLabel("Parameters")
+#         label = QtWidgets.QLabel("Parameters")
 #         label.setFixedHeight(40)
 #
-#         self.param_layout = QtGui.QFormLayout()
+#         self.param_layout = QtWidgets.QFormLayout()
 #
 #         self.layout.addWidget(label)
 #         self.layout.addLayout(self.param_layout)
@@ -2646,7 +2982,7 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #             self.params = params
 #             task_type = params['task_type']
 #
-#         self.param_layout.addRow("Task Type:", QtGui.QLabel(task_type))
+#         self.param_layout.addRow("Task Type:", QtWidgets.QLabel(task_type))
 #
 #         # we need to load the task class to get the types of our parameters,
 #         self.task_params = copy.deepcopy(tasks.TASK_LIST[task_type].PARAMS)
@@ -2654,8 +2990,8 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #         # Make parameter widgets depending on type and populate with current values
 #         for k, v in self.task_params.items():
 #             if v['type'] == 'int' or v['type'] == 'str':
-#                 rowtag = QtGui.QLabel(v['tag'])
-#                 input_widget = QtGui.QLineEdit()
+#                 rowtag = QtWidgets.QLabel(v['tag'])
+#                 input_widget = QtWidgets.QLineEdit()
 #                 input_widget.setObjectName(k)
 #                 if v['type'] == 'int':
 #                     input_widget.setValidator(QtGui.QIntValidator())
@@ -2664,16 +3000,16 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #                     input_widget.setText(self.params[k])
 #                 self.param_layout.addRow(rowtag,input_widget)
 #             elif v['type'] == 'bool':
-#                 rowtag = QtGui.QLabel(v['tag'])
-#                 input_widget = QtGui.QCheckBox()
+#                 rowtag = QtWidgets.QLabel(v['tag'])
+#                 input_widget = QtWidgets.QCheckBox()
 #                 input_widget.setObjectName(k)
 #                 input_widget.stateChanged.connect(self.set_param)
 #                 if k in self.params.keys():
 #                     input_widget.setChecked(self.params[k])
 #                 self.param_layout.addRow(rowtag, input_widget)
 #             elif v['type'] == 'list':
-#                 rowtag = QtGui.QLabel(v['tag'])
-#                 input_widget = QtGui.QListWidget()
+#                 rowtag = QtWidgets.QLabel(v['tag'])
+#                 input_widget = QtWidgets.QListWidget()
 #                 input_widget.setObjectName(k)
 #                 input_widget.insertItems(0, sorted(v['values'], key=v['values'].get))
 #                 input_widget.itemSelectionChanged.connect(self.set_param)
@@ -2697,7 +3033,7 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #         Clears widgets from current layout
 #
 #         Args:
-#             layout (:class:`QtGui.QLayout`): optional. if `None`, clears `param_layout`,
+#             layout (:class:`QtWidgets.QLayout`): optional. if `None`, clears `param_layout`,
 #             otherwise clears the passed layout.
 #         """
 #         if not layout:
@@ -2745,7 +3081,7 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #         self.params[self.step]['sounds'] = self.sound_widget.sound_dict
 
 #
-# class Protocol_Parameters(QtGui.QWidget):
+# class Protocol_Parameters(QtWidgets.QWidget):
 #     """
 #     Allows the creation of multi-step protocols.
 #
@@ -2771,18 +3107,18 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #         self.step = step
 #
 #         # We're just a Parameters window with a combobox that lets us change step
-#         self.layout = QtGui.QVBoxLayout()
+#         self.layout = QtWidgets.QVBoxLayout()
 #         self.setLayout(self.layout)
 #
 #         if protocol_name:
-#             label = QtGui.QLabel(protocol_name)
+#             label = QtWidgets.QLabel(protocol_name)
 #         else:
-#             label = QtGui.QLabel('Protocol Parameters')
+#             label = QtWidgets.QLabel('Protocol Parameters')
 #
 #         label.setFixedHeight(20)
 #
 #         # Make a combobox, we'll populate it in a second.
-#         self.step_selection = QtGui.QComboBox()
+#         self.step_selection = QtWidgets.QComboBox()
 #         self.step_selection.currentIndexChanged.connect(self.step_changed)
 #
 #         # And the rest of our body is the params window
@@ -2856,7 +3192,7 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #         self.params_widget.populate_params(self.protocol[self.step])
 #
 #
-# class Protocol_Parameters_Dialogue(QtGui.QDialog):
+# class Protocol_Parameters_Dialogue(QtWidgets.QDialog):
 #     def __init__(self, protocol, step):
 #         """
 #         Args:
@@ -2877,11 +3213,11 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 #         self.step_changes = None
 #
 #         # ok/cancel buttons
-#         buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+#         buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
 #         buttonBox.accepted.connect(self.accept)
 #         buttonBox.rejected.connect(self.reject)
 #
-#         self.layout = QtGui.QVBoxLayout()
+#         self.layout = QtWidgets.QVBoxLayout()
 #         self.layout.addWidget(self.protocol_widget)
 #         self.layout.addWidget(buttonBox)
 #         self.setLayout(self.layout)
@@ -2899,14 +3235,14 @@ class Autopilot_Style(QtGui.QPlastiqueStyle):
 
 #
 #
-# class Popup(QtGui.QDialog):
+# class Popup(QtWidgets.QDialog):
 #     def __init__(self, message):
 #         """
 #         Args:
 #             message:
 #         """
 #         super(Popup, self,).__init__()
-#         self.layout = QtGui.QVBoxLayout()
-#         self.text = QtGui.QLabel(message)
+#         self.layout = QtWidgets.QVBoxLayout()
+#         self.text = QtWidgets.QLabel(message)
 #         self.layout.addWidget(self.text)
 #         self.setLayout(self.layout)

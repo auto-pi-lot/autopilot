@@ -1,0 +1,8 @@
+<map id="inheritance7cef6cb666" name="inheritance7cef6cb666">
+<area shape="rect" id="node1" href="autopilot.hardware.html#autopilot.hardware.Hardware" target="_top" title="Generic class inherited by all hardware. Should not be instantiated" alt="" coords="43,83,201,103"/>
+<area shape="rect" id="node2" href="#autopilot.hardware.cameras.Camera" target="_top" title="Metaclass for Camera objects. Should not be instantiated on its own." alt="" coords="279,83,474,103"/>
+<area shape="rect" id="node3" href="#autopilot.hardware.cameras.Camera_CV" target="_top" title="autopilot.hardware.cameras.Camera_CV" alt="" coords="530,44,747,64"/>
+<area shape="rect" id="node4" href="#autopilot.hardware.cameras.Camera_Spinnaker" target="_top" title="autopilot.hardware.cameras.Camera_Spinnaker" alt="" coords="513,83,764,103"/>
+<area shape="rect" id="node6" href="#autopilot.hardware.cameras.Video_Writer" target="_top" title="autopilot.hardware.cameras.Video_Writer" alt="" coords="529,4,748,24"/>
+<area shape="rect" id="node8" title="Process objects represent activity that is run in a separate process" alt="" coords="20,4,223,24"/>
+</map>

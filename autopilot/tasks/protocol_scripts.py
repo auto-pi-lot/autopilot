@@ -20,8 +20,8 @@ def manystep_speech(token_dir, out_fn):
         * many steps that introduce new tokens pairwise.
 
     Args:
+        out_fn (str): where to write the task .json file
         token_dir (str): where the speech tokens are
-        write_dir (str): where to write the task .json file
 
     """
 
@@ -157,7 +157,7 @@ def manystep_speech(token_dir, out_fn):
         step_dict['stim']['groups'][1]['sounds']['L'] = g_gens
 
         # change step name
-        step_dict['step_name'] = 'speech_' + str(step_num.next())
+        step_dict['step_name'] = 'speech_' + str(next(step_num))
 
 
         steps.append(step_dict)
