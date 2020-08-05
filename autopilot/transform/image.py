@@ -53,15 +53,16 @@ class Image(Transform):
 
 class DLC(Image):
     """
-    Do pose estimation with ``DeepLabCut-Live``
+    Do pose estimation with ``DeepLabCut-Live``!!!!!
 
-    All args and kwargs are passed on to :class:`dlclive.DLCLive`,
+    Specify a ``model_dir`` (relative to ``<BASEDIR>/dlc`` or absolute) or a model name from the DLC model zoo.
+
+    All other args and kwargs are passed on to :class:`dlclive.DLCLive`,
     see its documentation for details: https://github.com/DeepLabCut/DeepLabCut-live
 
     Attributes:
-        model (str): name of model
-        model_dir (str): directory of model
-        model_type (str): 'local' - a local directory, or 'zoo' a DLC modelzoo model.
+        model_type (str, 'local' or 'zoo'): whether a directory (local) or a modelzoo name (zoo) was passed
+        live (:class:`dlclive.DLCLive`): the DLCLive object
     """
 
     def __init__(self, model_dir: str = None, model_zoo: str = None, *args, **kwargs):
@@ -69,8 +70,9 @@ class DLC(Image):
         Must give either ``model_dir`` or ``model_zoo``
 
         Args:
-            model_dir (str): Path of model directory, either an absolute path or a path relative to ``prefs.DLC_DIR``
-            model_zoo (str): Name of DLC model zoo model to use
+            model_dir (str): directory of model, either absolute or relative to ``<BASEDIR>/dlc``. if ``None``, use ``model_zoo``
+            model_zoo (str): name of modelzoo model. if ``None``, use ``model_dir``
+
             *args: passed to DLCLive and superclass
             **kwargs: passed to DLCLive and superclass
         """
