@@ -1,6 +1,3 @@
-# preinstall, check system dependencies
-#import subprocess
-#subprocess.call('autopilot/setup/setup_environment.sh')
 import platform
 import os
 
