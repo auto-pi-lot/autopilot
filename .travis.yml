@@ -28,5 +28,5 @@ deploy:
     tags: false
     branch: 2to3
     skip_cleanup: true
-  distributions: "sdist bdist_wheel"
+  distributions: "sdist"
 
