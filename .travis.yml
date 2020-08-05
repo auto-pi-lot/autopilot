@@ -13,8 +13,8 @@ os:
 script:
   - echo "One day we will have actual tests I swear!"
 
-#before_deploy:
-#  - pip install scikit-build
+before_deploy:
+  - pip install scikit-build
 
 deploy:
   provider: pypi
