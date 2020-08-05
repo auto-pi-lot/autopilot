@@ -94,7 +94,7 @@ with open(os.path.join(
 
 setup(
     name="auto-pi-lot",
-    version="0.3.0",
+    version="0.3.1",
     description="Distributed behavioral experiments",
     long_description = readme,
     long_description_content_type='text/markdown',
