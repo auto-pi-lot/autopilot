@@ -6,8 +6,10 @@ Installation
 Autopilot is able to configure your system packages and environment after installation,
 but if you want to manually install system dependencies there are dependency lists near the bottom of this page.
 
+
+
 Installation with pip
-=======================
+=====================
 
 If you're just taking a look at Autopilot, the easiest way to get started is to install with pip!::
 
@@ -19,7 +21,7 @@ If you're just taking a look at Autopilot, the easiest way to get started is to 
     if the pip install isn't working!
 
 Installation from git
-======================
+=====================
 
 If you want to start writing your own experiments and tinkering with Autopilot,
 we strongly recommend forking `the repository <https://github.com/wehr-lab/autopilot/>`_
@@ -31,7 +33,7 @@ and developing directly in the library so your gorgeous insights can be integrat
     pip3 install -e ./
 
 Configuration
-**************
+==============
 
 After installation, set Autopilot up!
 
@@ -48,7 +50,7 @@ The setup routine will
     python3 -m autopilot.setup.setup_autopilot
 
 Select agent
-=============
+-------------
 Each runtime of Autopilot is called an "Agent,"
 each of which performs different roles within a system,
 and thus have different requirements.
@@ -59,7 +61,7 @@ and thus have different requirements.
     :width: 100%
 
 Select scripts
-===============
+---------------
 
 To configure the environment of your agent, autopilot can run a set of scripts (see :func:`.setup_autopilot.run_script` and :func:`.setup_autopilot.list_scripts`)
 
@@ -68,7 +70,7 @@ To configure the environment of your agent, autopilot can run a set of scripts (
     :width: 100%
 
 Configure Agent
-================
+----------------
 
 Each agent has a set of systemwide preferences stored in ``<AUTOPILOT_DIR>/prefs.json`` and accessible from :mod:`autopilot.prefs`.
 
@@ -77,7 +79,7 @@ Each agent has a set of systemwide preferences stored in ``<AUTOPILOT_DIR>/prefs
     :width: 100%
 
 Configure Hardware
-===================
+-------------------
 
 If configuring a Pilot, you'll be asked to configure your hardware.
 
@@ -89,7 +91,7 @@ Press ``ctrl+x`` to add Hardware, and fill in the relevant parameters (most are 
 
 
 Supported Systems
-******************
+===================
 
 Autopilot is **linux/mac** only, and supports **Python 3.7**. Some parts might accidentally work in Windows but we make no guarantees.
 
@@ -99,10 +101,10 @@ We have tried to take care to make certain platform-specific dependencies not br
 so if you have some difficulty installing autopilot on a non-raspberry-pi linux machine please submit an issue!
 
 Requirements
-*************
+=============
 
 Pilot Requirements
-========================
+--------------------
 
  ::
 

@@ -1,20 +1,34 @@
 """
 Data transformations.
 
-Experimental module.
+Composable transformations from one representation of data to another.
+Used as the lubricant and glue between hardware objects. Some hardware objects
+disagree about the way information should be represented -- eg. cameras are very
+partial to letting position information remain latent in a frame of a video, but
+some other object might want the actual ``[x,y]`` coordinates. Transformations help
+negotiate (but don't resolve their irreparably different worldviews :( )
 
-Reusable transformations from one representation of data to another.
-eg. converting frames of a video to locations of objects,
-or locations of objects to area labels
+Transformations are organized by modality, but this API is quite immature.
+
+Transformations have a ``process`` method that accepts and returns a single object.
+They must also define the format of their inputs and outputs (``format_in``
+and ``format_out``). That API is also a sketch.
+
+The :meth:`~.Transform.__add__` method allows transforms to be combined, eg.::
+
+    from autopilot import transform as t
+    transform_me = t.Image.DLC('model_directory')
+    transform_me += t.selection.DLCSlice('point')
+    transform_me.process(frame)
+    # ... etcetera
 
 .. todo::
 
-    This is a preliminary module and it purely synchronous at the moment. It will be expanded to ...
+    This is a first draft of this module and it purely synchronous at the moment. It will be expanded to ...
     * support multiple asynchronous processing rhythms
     * support automatic value coercion
-
-    The following design features need to be added
-    * recursion checks -- make sure a child hasn't already been added to a processing chain.
+    * make recursion checks -- make sure a child hasn't already been added to a processing chain.
+    * idk participate at home! list your own shortcomings of this module, don't be shy it likes it.
 """
 
 import typing
