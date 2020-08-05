@@ -125,7 +125,4 @@ Pilot Requirements
 
 
 
-.. toctree::
 
-   Pilot Setup <guide.installation.pilot>
-   Terminal Setup <guide.installation.terminal>
