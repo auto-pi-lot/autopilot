@@ -15,6 +15,10 @@ script:
   - touch foo
 
 
+before_deploy:
+  - pip install scikit-build
+
+
 deploy:
   provider: pypi
   username: __token__
@@ -23,5 +27,6 @@ deploy:
   on:
     tags: false
     branch: 2to3
+    skip_cleanup: true
   distributions: "sdist bdist_wheel"
 
