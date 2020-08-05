@@ -6,7 +6,6 @@
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](code_of_conduct.md) 
 
-
 # Autopilot
 
 ![Autopilot Banner Logo](docs/_images/autopilot_logo_banner.png)
