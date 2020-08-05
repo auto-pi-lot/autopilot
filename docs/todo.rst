@@ -296,6 +296,15 @@ Improvements
       file for the module to avoid awkward imports and extra files like :class:`autopilot.tasks.task.Task`
     * Use :class:`enum.Enum` s all over! eg. things like :data:`autopilot.hardware.gpio.TRIGGER_MAP` etc.
 
+* **Concurrency**
+
+    * Autopilot could be a lot smarter about the way it manages threads and processes!
+      It should have a centralized registry of threads and processes to keep track on their status
+    * Networking modules and other thread-creating modules should probably create thread pools to avoid
+      the overhead of constantly spawning them
+
+
+
 Bugs
 ----
 

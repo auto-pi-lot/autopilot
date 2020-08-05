@@ -115,7 +115,6 @@ class DLC(Image):
         self.live = DLCLive(self.dlc_paths['export_dir'], *args, **kwargs)
         self.live.init_inference()
 
-
     def process(self, input: np.ndarray) -> np.ndarray:
         if not self.live.is_initialized:
             output = self.live.init_inference(input)
@@ -123,9 +122,6 @@ class DLC(Image):
             output = self.live.get_pose(input)
 
         return output
-
-
-
 
     @property
     def model(self) -> str:
