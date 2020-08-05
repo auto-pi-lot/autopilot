@@ -6,6 +6,7 @@ from setuptools import find_packages
 import subprocess
 import sys
 
+
 # declare defaults
 IS_RASPI = False
 SCRIPTS = []
