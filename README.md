@@ -55,22 +55,12 @@ Autopilot divides the logical structure of experiments into independent<sup>1</s
 
 | | Module |
 | :-: | --- |
-| ![Hardware](docs/_images/icon_agent.png) | 
-    **Agents - [Pilot](https://docs.auto-pi-lot.com/en/latest/autopilot.core.pilot.html) & [Terminal](https://docs.auto-pi-lot.com/en/latest/autopilot.core.terminal.html)** 
-    Runtime classes that encapsulate a computer/Pi's role in the swarm. Terminals provide the user interface and coordinate subjects and tasks, Pilots do the experiments. 
-    Formalizing the Agent API to allow additional agents like Compute or Surveillance agents is a major short-term development goal! |
-| ![Hardware](docs/_images/icon_hardware.png) | 
-    **[Hardware](https://docs.auto-pi-lot.com/en/latest/autopilot.hardware.html)** - 
-    Control your tools! Extensible classes to control whatever hardware you've got. |
-| ![Hardware](docs/_images/icon_stim.png) | 
-    **[Stimuli](https://docs.auto-pi-lot.com/en/latest/autopilot.stim.html)** - 
-    Stimulus management and presentation. Parametric sound generation with a realtime audio server built on Jackd. Stubs are present for future development of visual stimuli using Psychopy. |
-| ![Hardware](docs/_images/icon_task.png) | 
-    **[Tasks](https://docs.auto-pi-lot.com/en/latest/autopilot.tasks.html)** - Build experiments! Write some basic metadata to describe data, plots, and hardware and the rest is up to you :)  |
-| ![Hardware](docs/_images/icon_data.png) | 
-    **[Subject](https://docs.auto-pi-lot.com/en/latest/autopilot.core.subject.html)** - Data management with hdf5 and pyTables. Abstraction layer for keeping obsessive records of subject history and system configuration |
-| ![Hardware](docs/_images/icon_transform.png) | 
-    **[Transforms](https://docs.auto-pi-lot.com/en/latest/autopilot.transform.html)** - Composable data transformations. Need to control the pitch of a sound with a video? build a transformation pipeline to connect your objects |
+| ![Hardware](docs/_images/icon_agent.png) | **Agents - [Pilot](https://docs.auto-pi-lot.com/en/latest/autopilot.core.pilot.html) & [Terminal](https://docs.auto-pi-lot.com/en/latest/autopilot.core.terminal.html)** Runtime classes that encapsulate a computer/Pi's role in the swarm. Terminals provide the user interface and coordinate subjects and tasks, Pilots do the experiments. Formalizing the Agent API to allow additional agents like Compute or Surveillance agents is a major short-term development goal! |
+| ![Hardware](docs/_images/icon_hardware.png) | **[Hardware](https://docs.auto-pi-lot.com/en/latest/autopilot.hardware.html)** - Control your tools! Extensible classes to control whatever hardware you've got. |
+| ![Hardware](docs/_images/icon_stim.png) | **[Stimuli](https://docs.auto-pi-lot.com/en/latest/autopilot.stim.html)** - Stimulus management and presentation. Parametric sound generation with a realtime audio server built on Jackd. Stubs are present for future development of visual stimuli using Psychopy. |
+| ![Hardware](docs/_images/icon_task.png) | **[Tasks](https://docs.auto-pi-lot.com/en/latest/autopilot.tasks.html)** - Build experiments! Write some basic metadata to describe data, plots, and hardware and the rest is up to you :)  |
+| ![Hardware](docs/_images/icon_data.png) | **[Subject](https://docs.auto-pi-lot.com/en/latest/autopilot.core.subject.html)** - Data management with hdf5 and pyTables. Abstraction layer for keeping obsessive records of subject history and system configuration |
+| ![Hardware](docs/_images/icon_transform.png) | **[Transforms](https://docs.auto-pi-lot.com/en/latest/autopilot.transform.html)** - Composable data transformations. Need to control the pitch of a sound with a video? build a transformation pipeline to connect your objects |
 | ![Hardware](docs/_images/icon_gui.png) | **[UI](https://docs.auto-pi-lot.com/en/latest/autopilot.core.gui.html)** - UI for controlling swarms of Pilots using Qt5/PySide2 |
 | ![Hardware](docs/_images/icon_viz.png) | **[Visualization](https://docs.auto-pi-lot.com/en/latest/autopilot.viz.html)** - (Mostly Prototypes) to do common visualizations |
 
