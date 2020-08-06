@@ -1,7 +1,7 @@
 .. _changelog_v030:
 
 
-v0.3.0 (March 3rd, 2020)
+v0.3.0 (August 4, 2020)
 -----------------------------
 
 Major Updates
