@@ -106,3 +106,4 @@ venv38
 venv*
 transform_scratch.py
 
+_skbuild
