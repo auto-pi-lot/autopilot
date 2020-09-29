@@ -748,6 +748,8 @@ if __name__ == "__main__":
         # virtualenv and pyenv populate these system attrs
         venv_path = sys.prefix
         prefs['VENV'] = venv_path
+    else:
+        prefs['VENV'] = False
 
     # get repo directory
     file_loc = os.path.realpath(__file__)

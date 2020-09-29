@@ -127,31 +127,6 @@ In particular, the Terminal was designed for Ubuntu, and the Pilot was designed 
 We have tried to take care to make certain platform-specific dependencies not break the entire package,
 so if you have some difficulty installing autopilot on a non-raspberry-pi linux machine please submit an issue!
 
-Requirements
-=============
-
-Pilot Requirements
---------------------
-
- ::
-
-    sudo apt-get install -y \
-        build-essential \
-        cmake \
-        git \
-        python3-dev \
-        libatlas-base-dev \
-        libsamplerate0-dev \
-        libsndfile1-dev \
-        libreadline-dev \
-        libasound-dev \
-        i2c-tools \
-        libportmidi-dev \
-        liblo-dev \
-        libhdf5-dev \
-        libzmq-dev \
-        libffi-dev
-
 
 
 
