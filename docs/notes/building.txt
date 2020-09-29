@@ -5,3 +5,7 @@ deployment
 - write docs
 - write changelog
 - bump version in setup.py
+- create git tag with "git tag -a <tagname> -m <tagmessage>"
+- push tag with "git push origin <tagname>"
+- push tagged commit
+- create new github release
