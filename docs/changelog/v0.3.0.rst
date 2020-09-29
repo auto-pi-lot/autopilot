@@ -21,6 +21,11 @@ Cleanup
 * added installation of system libraries to the pilot configuration menu
 
 
+v0.3.1 (August 4, 2020)
+------------------------
+
+Practice version!!! still figuring out pypi
+
 v0.3.0 (August 4, 2020)
 -----------------------------
 

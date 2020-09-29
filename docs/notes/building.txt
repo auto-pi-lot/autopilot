@@ -1,0 +1,7 @@
+
+
+
+deployment
+- write docs
+- write changelog
+- bump version in setup.py
