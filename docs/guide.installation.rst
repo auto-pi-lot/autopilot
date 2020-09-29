@@ -57,7 +57,11 @@ and developing directly in the library so your gorgeous insights can be integrat
  ::
 
     git clone https://github.com/wehr-lab/autopilot.git
-    pip3 install -e ./
+    pip3 install -e ./autopilot/
+
+.. note::
+
+    Depending on your permissions, eg. if you are not installing to a virtual environment, you may get a permissions error and need to install with the ``--user`` flag
 
 Configuration
 ==============
