@@ -33,6 +33,8 @@ AGENTS = ('TERMINAL', 'PILOT', 'CHILD')
 
 
 ENV_PILOT = odict({
+    'env_pilot'   : {'type': 'bool',
+                     'text': 'install system packages necessary for autopilot? (required if they arent already)'},
     'performance' : {'type': 'bool',
                      'text': 'Do performance enhancements? (recommended, change cpu governor and give more memory to audio)'},
     'change_pw': {'type': 'bool',
@@ -135,6 +137,8 @@ PILOT_ENV_CMDS = {
             'sudo systemctl disable bluetooth.service'
         ],
     'jackd':
+        ['sudo apt update && sudo apt install -y jackd2'],
+    'jackd_source':
         [
             "git clone git://github.com/jackaudio/jack2 --depth 1",
             "cd jack2",
@@ -746,6 +750,8 @@ if __name__ == "__main__":
         # virtualenv and pyenv populate these system attrs
         venv_path = sys.prefix
         prefs['VENV'] = venv_path
+    else:
+        prefs['VENV'] = False
 
     # get repo directory
     file_loc = os.path.realpath(__file__)

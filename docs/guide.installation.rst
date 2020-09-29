@@ -6,6 +6,33 @@ Installation
 Autopilot is able to configure your system packages and environment after installation,
 but if you want to manually install system dependencies there are dependency lists near the bottom of this page.
 
+Environment Preparation
+=======================
+
+Raspberry Pi
+------------
+
+For Pilots, we recommend starting with a fresh `Raspbian Lite <https://downloads.raspberrypi.org/raspios_lite_armhf_latest.torrent>`_ image  (see `the raspi installation documentation <https://www.raspberrypi.org/documentation/installation/installing-images/README.md>`_
+
+Then you'll need to update and install the necessary system packages (also available as a setup script in the guided installation phase)::
+
+    sudo apt update && sudo apt upgrade -y
+    sudo apt install -y \
+        python3-dev \
+        python3-pip \
+        git \
+        libatlas-base-dev \
+        libsamplerate0-dev \
+        libsndfile1-dev \
+        libreadline-dev \
+        libasound-dev \
+        i2c-tools \
+        libportmidi-dev \
+        liblo-dev \
+        libhdf5-dev \
+        libzmq-dev \
+        libffi-dev
+
 
 
 Installation with pip
@@ -30,7 +57,11 @@ and developing directly in the library so your gorgeous insights can be integrat
  ::
 
     git clone https://github.com/wehr-lab/autopilot.git
-    pip3 install -e ./
+    pip3 install -e ./autopilot/
+
+.. note::
+
+    Depending on your permissions, eg. if you are not installing to a virtual environment, you may get a permissions error and need to install with the ``--user`` flag
 
 Configuration
 ==============
@@ -99,31 +130,6 @@ In particular, the Terminal was designed for Ubuntu, and the Pilot was designed 
 
 We have tried to take care to make certain platform-specific dependencies not break the entire package,
 so if you have some difficulty installing autopilot on a non-raspberry-pi linux machine please submit an issue!
-
-Requirements
-=============
-
-Pilot Requirements
---------------------
-
- ::
-
-    sudo apt-get install -y \
-        build-essential \
-        cmake \
-        git \
-        python3-dev \
-        libatlas-base-dev \
-        libsamplerate0-dev \
-        libsndfile1-dev \
-        libreadline-dev \
-        libasound-dev \
-        i2c-tools \
-        libportmidi-dev \
-        liblo-dev \
-        libhdf5-dev \
-        libzmq-dev \
-        libffi-dev
 
 
 

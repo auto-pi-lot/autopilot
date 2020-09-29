@@ -1,8 +1,8 @@
 import platform
 import os
 
-from skbuild import setup, constants
-from setuptools import find_packages
+#from skbuild import setup, constants
+from setuptools import find_packages, setup
 import subprocess
 import sys
 
@@ -11,13 +11,13 @@ import sys
 IS_RASPI = False
 SCRIPTS = []
 PACKAGES = []
-CMAKE_ARGS = ['-DCMAKE_BUILD_DIR={}'.format(constants.CMAKE_BUILD_DIR()),
-              '-DCMAKE_INSTALL_DIR={}'.format(constants.CMAKE_INSTALL_DIR()),
-              '-DSETUPTOOLS_INSTALL_DIR={}'.format(constants.SETUPTOOLS_INSTALL_DIR()),
-              '-DSKBUILD_DIR={}'.format(constants.SKBUILD_DIR()),
-              '-DCMAKE_BUILD_RPATH_USE_ORIGIN=1', # use relative paths in Rpaths
-              '-DCMAKE_INSTALL_RPATH=$ORIGIN/lib;$ORIGIN/../lib'
-              ]
+# CMAKE_ARGS = ['-DCMAKE_BUILD_DIR={}'.format(constants.CMAKE_BUILD_DIR()),
+#               '-DCMAKE_INSTALL_DIR={}'.format(constants.CMAKE_INSTALL_DIR()),
+#               '-DSETUPTOOLS_INSTALL_DIR={}'.format(constants.SETUPTOOLS_INSTALL_DIR()),
+#               '-DSKBUILD_DIR={}'.format(constants.SKBUILD_DIR()),
+#               '-DCMAKE_BUILD_RPATH_USE_ORIGIN=1', # use relative paths in Rpaths
+#               '-DCMAKE_INSTALL_RPATH=$ORIGIN/lib;$ORIGIN/../lib'
+#               ]
 
 REQUIREMENTS = []
 
@@ -61,12 +61,12 @@ if IS_RASPI:
     # subprocess.call(['autopilot/setup/setup_environment_pi.sh'])
 
 
-    CMAKE_ARGS.extend(['-DPIGPIO=ON', '-DJACK=ON'])
+    #CMAKE_ARGS.extend(['-DPIGPIO=ON', '-DJACK=ON'])
     # FIXME: Need to get jack build in egg working, continue the CMakelists work on integrating during build. for now just adding to env dependencies
 
     # CMAKE_ARGS = ['-DPIGPIO=ON']
     #SCRIPTS.append('autopilot/external/pigpio/pigpiod')
-    PACKAGES.append('autopilot.external.pigpio')
+    #PACKAGES.append('autopilot.external.pigpio')
     REQUIREMENTS = load_requirements('requirements/requirements_pilot.txt')
 
 elif ARCH == 'x86':
@@ -102,7 +102,7 @@ setup(
     license="MPL-2.0",
     scripts = SCRIPTS,
     packages=packs,
-    cmake_args=CMAKE_ARGS,
+    #cmake_args=CMAKE_ARGS,
     install_requires = REQUIREMENTS,
     classifiers=[
         "Programming Language :: Python :: 3.7",
