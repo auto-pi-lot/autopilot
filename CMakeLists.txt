@@ -25,8 +25,6 @@ endif()
 
 if(JACK)
     include(cmake/jack.cmake)
-
-
 endif()
 
 

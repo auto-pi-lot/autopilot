@@ -15,3 +15,4 @@ numpy
 pandas
 tables
 cffi
+git+https://github.com/sneakers-the-rat/pigpio
