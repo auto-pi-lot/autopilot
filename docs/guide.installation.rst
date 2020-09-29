@@ -6,6 +6,11 @@ Installation
 Autopilot is able to configure your system packages and environment after installation,
 but if you want to manually install system dependencies there are dependency lists near the bottom of this page.
 
+Environment Preparation
+=======================
+
+For Pilots, we recommend starting with a fresh `Raspbian Lite <https://downloads.raspberrypi.org/raspios_lite_armhf_latest.torrent>`_ image  (see `the raspi installation documentation <https://www.raspberrypi.org/documentation/installation/installing-images/README.md>`_
+
 
 
 Installation with pip
