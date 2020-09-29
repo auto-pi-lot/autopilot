@@ -137,6 +137,8 @@ PILOT_ENV_CMDS = {
             'sudo systemctl disable bluetooth.service'
         ],
     'jackd':
+        ['sudo apt update && sudo apt install -y jackd2'],
+    'jackd_source':
         [
             "git clone git://github.com/jackaudio/jack2 --depth 1",
             "cd jack2",
