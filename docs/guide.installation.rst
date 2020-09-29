@@ -11,6 +11,13 @@ Environment Preparation
 
 For Pilots, we recommend starting with a fresh `Raspbian Lite <https://downloads.raspberrypi.org/raspios_lite_armhf_latest.torrent>`_ image  (see `the raspi installation documentation <https://www.raspberrypi.org/documentation/installation/installing-images/README.md>`_
 
+When you start, you'll need to update and install system packages necessary for installing autopilot::
+
+    sudo apt update && sudo apt upgrade -y && \
+    sudo apt install \
+        python3-dev
+        python3-pip
+        git
 
 
 Installation with pip
