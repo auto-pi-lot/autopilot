@@ -9,15 +9,30 @@ but if you want to manually install system dependencies there are dependency lis
 Environment Preparation
 =======================
 
+Raspberry Pi
+------------
+
 For Pilots, we recommend starting with a fresh `Raspbian Lite <https://downloads.raspberrypi.org/raspios_lite_armhf_latest.torrent>`_ image  (see `the raspi installation documentation <https://www.raspberrypi.org/documentation/installation/installing-images/README.md>`_
 
-When you start, you'll need to update and install system packages necessary for installing autopilot::
+Then you'll need to update and install the necessary system packages (also available as a setup script in the guided installation phase)::
 
-    sudo apt update && sudo apt upgrade -y && \
-    sudo apt install \
-        python3-dev
-        python3-pip
-        git
+    sudo apt update && sudo apt upgrade -y
+    sudo apt install -y \
+        python3-dev \
+        python3-pip \
+        git \
+        libatlas-base-dev \
+        libsamplerate0-dev \
+        libsndfile1-dev \
+        libreadline-dev \
+        libasound-dev \
+        i2c-tools \
+        libportmidi-dev \
+        liblo-dev \
+        libhdf5-dev \
+        libzmq-dev \
+        libffi-dev
+
 
 
 Installation with pip

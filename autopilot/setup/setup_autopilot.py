@@ -33,6 +33,8 @@ AGENTS = ('TERMINAL', 'PILOT', 'CHILD')
 
 
 ENV_PILOT = odict({
+    'env_pilot'   : {'type': 'bool',
+                     'text': 'install system packages necessary for autopilot? (required if they arent already)'},
     'performance' : {'type': 'bool',
                      'text': 'Do performance enhancements? (recommended, change cpu governor and give more memory to audio)'},
     'change_pw': {'type': 'bool',
