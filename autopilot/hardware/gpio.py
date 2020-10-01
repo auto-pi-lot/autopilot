@@ -20,6 +20,7 @@ import itertools
 
 from autopilot import prefs
 from autopilot.hardware import Hardware, BOARD_TO_BCM
+from autopilot import external
 
 ENABLED = False
 """
@@ -103,6 +104,7 @@ class GPIO(Hardware):
     Attributes:
         pig (:class:`pigpio.pi`): An object that manages connection to the pigpio daemon. See docs at http://abyz.me.uk/rpi/pigpio/python.html
         CONNECTED (bool): Whether the connection to pigpio was successful
+        pigpiod: Reference to the pigpiod process launched by :func:`.external.start_pigpiod`
         pin (int): The Board-numbered GPIO pin of this object.
         pin_bcm (int): The BCM number of the connected pin -- used by pigpio. Converted from pin passed as argument on initialization,
             which is assumed to be the board number.
@@ -135,6 +137,7 @@ class GPIO(Hardware):
             self.logger.warning('pin_bcm is defined as a property without a setter so cant be set')
 
         self.pig = None
+        self.pigpiod = None
 
         # init pigpio
         self.CONNECTED = False
@@ -158,6 +161,7 @@ class GPIO(Hardware):
         Returns:
             bool: True if connection was successful, False otherwise
         """
+        self.pigpiod = external.start_pigpiod()
         self.pig = pigpio.pi()
         if self.pig.connected:
             return True

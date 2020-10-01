@@ -6,6 +6,7 @@ import atexit
 from time import sleep
 
 PIGPIO = False
+PIGPIO_DAEMON = None
 try:
     from autopilot.external import pigpio
     PIGPIO = True
@@ -57,6 +58,10 @@ except (ImportError, OSError):
 def start_pigpiod():
     if not PIGPIO:
         raise ImportError('pigpio was not found in autopilot.external')
+
+    if globals()['PIGPIO_DAEMON']:
+        return globals()['PIGPIO_DAEMON']
+
     launch_pigpiod = os.path.join(pigpio.__path__._path[0], 'pigpiod')
     if hasattr(prefs, 'PIGPIOARGS'):
         launch_pigpiod += ' ' + prefs.PIGPIOARGS
@@ -68,6 +73,7 @@ def start_pigpiod():
         launch_pigpiod += ' -x ' + prefs.PIGPIOMASK
 
     proc = subprocess.Popen('sudo ' + launch_pigpiod, shell=True)
+    globals()['PIGPIO_DAEMON'] = proc
 
     # kill process when session ends
     atexit.register(lambda pigpio_proc=proc: pigpio_proc.kill())
