@@ -14,7 +14,7 @@ Run scripts to setup system dependencies and autopilot plugins
 
 """
 import subprocess
-from autopilot.setup.setup_autopilot import PILOT_ENV_CMDS
+from autopilot.setup.scripts import PILOT_ENV_CMDS
 import argparse
 import sys
 
