@@ -10,7 +10,7 @@ PIGPIO = False
 PIGPIO_DAEMON = None
 PIGPIO_LOCK = threading.Lock()
 try:
-    from autopilot.external import pigpio
+    import pigpio
     PIGPIO = True
 
 except ImportError:
@@ -77,7 +77,7 @@ def start_pigpiod():
 
         proc = subprocess.Popen('sudo ' + launch_pigpiod, shell=True)
         globals()['PIGPIO_DAEMON'] = proc
-    
+
         # kill process when session ends
         atexit.register(lambda pigpio_proc=proc: pigpio_proc.kill())
 
