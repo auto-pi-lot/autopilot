@@ -79,7 +79,7 @@ def run_script(script_name):
 def list_scripts():
     print('Available Scripts:')
     for script_name in sorted(ENV_PILOT.keys()):
-        print(f'{script_name}: {ENV_PILOT[script_name]["text"]}\n')
+        print(f'\033[1;37;42m {script_name}\u001b[0m : {ENV_PILOT[script_name]["text"]}')
 
 if __name__ == "__main__":
     args = parser.parse_args()
