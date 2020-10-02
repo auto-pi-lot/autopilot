@@ -75,6 +75,27 @@ def run_script(script_name):
     else:
         Exception('No script named {}, must be one of {}'.format(script_name, "\n".join(PILOT_ENV_CMDS.keys())))
 
+def run_scripts(scripts):
+    env_results = {}
+    for script_name in scripts:
+        commands = PILOT_ENV_CMDS[script_name]
+        env_results[script_name] = call_series(commands, script_name)
+
+    # make results string
+    env_result = "\033[0;32;40m\n--------------------------------\nScript Results:\n"
+    for config, result in env_results.items():
+        if result:
+            env_result += "  [ SUCCESS ] "
+        else:
+            env_result += "  [ FAILURE ] "
+
+        env_result += config
+        env_result += '\n'
+
+    env_result += '--------------------------------\u001b[0m'
+
+    print(env_result)
+
 
 def list_scripts():
     print('\nAvailable Scripts:\n----------------------------')
@@ -97,7 +118,7 @@ if __name__ == "__main__":
         list_scripts()
         sys.exit()
     elif args.scripts:
-        call_series(args.scripts)
+        run_scripts(args.scripts)
         sys.exit()
     else:
         raise RuntimeError('Need to give name of one or multiple scripts, ')
