@@ -4,9 +4,11 @@ import sys
 from autopilot import prefs
 import atexit
 from time import sleep
+import threading
 
 PIGPIO = False
 PIGPIO_DAEMON = None
+PIGPIO_LOCK = threading.Lock()
 try:
     from autopilot.external import pigpio
     PIGPIO = True
@@ -59,29 +61,30 @@ def start_pigpiod():
     if not PIGPIO:
         raise ImportError('pigpio was not found in autopilot.external')
 
-    if globals()['PIGPIO_DAEMON']:
-        return globals()['PIGPIO_DAEMON']
+    with globals()['PIGPIO_LOCK']:
+        if globals()['PIGPIO_DAEMON']:
+            return globals()['PIGPIO_DAEMON']
 
-    launch_pigpiod = os.path.join(pigpio.__path__._path[0], 'pigpiod')
-    if hasattr(prefs, 'PIGPIOARGS'):
-        launch_pigpiod += ' ' + prefs.PIGPIOARGS
+        launch_pigpiod = os.path.join(pigpio.__path__._path[0], 'pigpiod')
+        if hasattr(prefs, 'PIGPIOARGS'):
+            launch_pigpiod += ' ' + prefs.PIGPIOARGS
 
-    if hasattr(prefs, 'PIGPIOMASK'):
-        # if it's been converted to an integer, convert back to a string and zfill any leading zeros that were lost
-        if isinstance(prefs.PIGPIOMASK, int):
-            prefs.PIGPIOMASK = str(prefs.PIGPIOMASK).zfill(28)
-        launch_pigpiod += ' -x ' + prefs.PIGPIOMASK
+        if hasattr(prefs, 'PIGPIOMASK'):
+            # if it's been converted to an integer, convert back to a string and zfill any leading zeros that were lost
+            if isinstance(prefs.PIGPIOMASK, int):
+                prefs.PIGPIOMASK = str(prefs.PIGPIOMASK).zfill(28)
+            launch_pigpiod += ' -x ' + prefs.PIGPIOMASK
 
-    proc = subprocess.Popen('sudo ' + launch_pigpiod, shell=True)
-    globals()['PIGPIO_DAEMON'] = proc
+        proc = subprocess.Popen('sudo ' + launch_pigpiod, shell=True)
+        globals()['PIGPIO_DAEMON'] = proc
+    
+        # kill process when session ends
+        atexit.register(lambda pigpio_proc=proc: pigpio_proc.kill())
 
-    # kill process when session ends
-    atexit.register(lambda pigpio_proc=proc: pigpio_proc.kill())
+        # sleep to let it boot up
+        sleep(1)
 
-    # sleep to let it boot up
-    sleep(1)
-
-    return proc
+        return proc
 
 def start_jackd():
     if not JACKD:
