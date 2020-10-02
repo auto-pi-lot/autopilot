@@ -20,7 +20,9 @@ ENV_PILOT = odict({
     'systemd'   : {'type': 'bool',
                    'text': 'Install Autopilot as a systemd service?\nIf you are running this command in a virtual environment it will be used to launch Autopilot'},
     'jackd'     : {'type': 'bool',
-                   'text': 'Install jack audio (required if AUDIOSERVER == jack)'}
+                   'text': 'Install jack audio (required if AUDIOSERVER == jack)'},
+    'pigpiod'   : {'type': 'bool',
+                   'text': 'Install pigpio daemon'}
 })
 PILOT_ENV_CMDS = {
     'performance':
@@ -114,6 +116,16 @@ PILOT_ENV_CMDS = {
         [
             "sudo apt-get update",
             "sudo apt-get install -y build-essential cmake git python3-dev libatlas-base-dev libsamplerate0-dev libsndfile1-dev libreadline-dev libasound-dev i2c-tools libportmidi-dev liblo-dev libhdf5-dev libzmq-dev libffi-dev",
-        ]
+        ],
+    'pigpiod':[
+        'wget https://github.com/sneakers-the-rat/pigpio/archive/master.zip',
+        'unzip master.zip',
+        'cd pigpio-master',
+        'make -j4',
+        'sudo make install',
+        'cd ..',
+        'rm -rf ./pigpio-master',
+        'rm ./master.zip'
+    ]
 
 }
