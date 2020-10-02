@@ -5,13 +5,14 @@ from autopilot import prefs
 import atexit
 from time import sleep
 import threading
+import shutil
 
 PIGPIO = False
 PIGPIO_DAEMON = None
 PIGPIO_LOCK = threading.Lock()
 try:
-    import pigpio
-    PIGPIO = True
+    if shutil.which('pigpiod') is not None:
+        PIGPIO = True
 
 except ImportError:
     pass
@@ -65,7 +66,10 @@ def start_pigpiod():
         if globals()['PIGPIO_DAEMON']:
             return globals()['PIGPIO_DAEMON']
 
-        launch_pigpiod = os.path.join(pigpio.__path__._path[0], 'pigpiod')
+        launch_pigpiod = shutil.which('pigpiod')
+        if launch_pigpiod is None:
+            raise RuntimeError('the pigpiod binary was not found!')
+        
         if hasattr(prefs, 'PIGPIOARGS'):
             launch_pigpiod += ' ' + prefs.PIGPIOARGS
 
