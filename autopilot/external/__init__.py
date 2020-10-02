@@ -63,7 +63,7 @@ def start_pigpiod():
         raise ImportError('the pigpiod daemon was not found! use autopilot.setup.')
 
     with globals()['PIGPIO_LOCK']:
-        if globals()['PIGPIO_DAEMON']:
+        if globals()['PIGPIO_DAEMON'] is not None:
             return globals()['PIGPIO_DAEMON']
 
         launch_pigpiod = shutil.which('pigpiod')
