@@ -17,7 +17,7 @@ import ast
 import importlib
 
 from autopilot import hardware
-from autopilot.setup.run_script import call_series, run_script, list_scripts=
+from autopilot.setup.run_script import call_series, run_script, list_scripts
 
 # CLI Options
 

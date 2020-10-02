@@ -4,13 +4,13 @@ Run scripts to setup system dependencies and autopilot plugins
 .. example::
 
     > # to list scripts
-    > autopilot.setup.run_script --list
+    > python3 -m autopilot.setup.run_script --list
 
     > # to execute one script (setup hifiberry soundcard)
-    > autopilot.setup.run_script hifiberry
+    > python3 -m autopilot.setup.run_script hifiberry
 
     > # to execute multiple scripts
-    > autopilot.setup.run_script hifiberry jackd
+    > python3 -m autopilot.setup.run_script hifiberry jackd
 
 """
 import subprocess
