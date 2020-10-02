@@ -1,5 +1,7 @@
 from collections import OrderedDict as odict
 
+# TODO: merge these into one...
+
 ENV_PILOT = odict({
     'env_pilot'   : {'type': 'bool',
                      'text': 'install system packages necessary for autopilot? (required if they arent already)'},

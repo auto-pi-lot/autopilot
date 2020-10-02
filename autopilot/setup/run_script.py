@@ -14,7 +14,7 @@ Run scripts to setup system dependencies and autopilot plugins
 
 """
 import subprocess
-from autopilot.setup.scripts import PILOT_ENV_CMDS
+from autopilot.setup.scripts import PILOT_ENV_CMDS, ENV_PILOT
 import argparse
 import sys
 
@@ -78,8 +78,8 @@ def run_script(script_name):
 
 def list_scripts():
     print('Available Scripts:')
-    for script_name in sorted(PILOT_ENV_CMDS.keys()):
-        print(f'{script_name}: {PILOT_ENV_CMDS[script_name]["text"]}\n')
+    for script_name in sorted(ENV_PILOT.keys()):
+        print(f'{script_name}: {ENV_PILOT[script_name]["text"]}\n')
 
 if __name__ == "__main__":
     args = parser.parse_args()
