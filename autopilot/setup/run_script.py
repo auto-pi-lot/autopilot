@@ -77,9 +77,18 @@ def run_script(script_name):
 
 
 def list_scripts():
-    print('Available Scripts:')
+    print('\nAvailable Scripts:\n----------------------------')
+
+    # find longest script name
+    longest_name = 0
+    for script_name in ENV_PILOT.keys():
+        if len(script_name) > longest_name:
+            longest_name = len(script_name)
+
+
     for script_name in sorted(ENV_PILOT.keys()):
-        print(f'\033[1;37;42m {script_name}\u001b[0m : {ENV_PILOT[script_name]["text"]}')
+        pad = " " * (longest_name - len(script_name))
+        print(f'\033[1;37;42m{script_name}{pad}\u001b[0m : {ENV_PILOT[script_name]["text"]}')
 
 if __name__ == "__main__":
     args = parser.parse_args()
