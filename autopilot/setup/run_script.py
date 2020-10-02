@@ -19,8 +19,8 @@ import argparse
 import sys
 
 parser = argparse.ArgumentParser(description="Run autopilot setup script(s)")
-parser.add_argument('scripts', nargs='+', type=str)
-parser.add_argument('-l', '--list', help="list available setup scripts!", action='store_true')
+parser.add_argument('scripts', nargs='*', type=str)
+parser.add_argument('--list', help="list available setup scripts!", action='store_true')
 
 
 def call_series(commands, series_name=None):
