@@ -11,18 +11,16 @@ import os
 import subprocess
 import argparse
 import sys
-import pdb
-from copy import copy
 import inspect
 import pkgutil
 import ast
 import importlib
-import threading
-import shlex
 
 from autopilot import hardware
+from autopilot.setup.run_script import call_series, run_script, list_scripts=
 
 # CLI Options
+
 parser = argparse.ArgumentParser(description="Setup an Autopilot Agent")
 parser.add_argument('-f', '--prefs', help="Location of .json prefs file (default: ~/autopilot/prefs.json")
 parser.add_argument('-d', '--dir', help="Autopilot directory (default: ~/autopilot)")
@@ -570,64 +568,6 @@ def unfold_values(v):
             # fine, just a string that can't be evaluated into another type
             pass
     return v
-
-def call_series(commands, series_name=None):
-    """
-    Call a series of commands, giving a single return code on completion or failure
-
-    :param commands:
-    :return:
-    """
-    if series_name:
-        print('\n\033[1;37;42m Running commands for {}\u001b[0m'.format(series_name))
-
-    # have to just combine them -- can't do multiple calls b/c shell doesn't preserve between them
-    combined_calls = ""
-    last_command = len(commands)-1
-    for i, command in enumerate(commands):
-        join_with = " && "
-
-        if isinstance(command, str):
-            # just a command, default necessary
-            combined_calls += command
-        elif isinstance(command, dict):
-            combined_calls += command['command']
-
-            if command.get('optional', False):
-                join_with = "; "
-
-        if i < last_command:
-            combined_calls += join_with
-
-
-    print('Executing:\n    {}'.format(combined_calls))
-
-    result = subprocess.run(combined_calls, shell=True, executable='/bin/bash')
-
-    status = False
-    if result.returncode == 0:
-        status = True
-
-    if series_name:
-        if status:
-            print('\n\033[1;37;42m  {} Successful, you lucky duck\u001b[0m'.format(series_name))
-        else:
-            print('\n\033[1;37;41m  {} Failed, check the error message & ur crystal ball\u001b[0m'.format(series_name))
-
-    return status
-
-
-def run_script(script_name):
-    if script_name in PILOT_ENV_CMDS.keys():
-        call_series(PILOT_ENV_CMDS[script_name], script_name)
-    else:
-        Exception('No script named {}, must be one of {}'.format(script_name, "\n".join(PILOT_ENV_CMDS.keys())))
-
-
-def list_scripts():
-    print('Available Scripts:')
-    for script_name in sorted(PILOT_ENV_CMDS.keys()):
-        print(f'{script_name}: {PILOT_ENV_CMDS[script_name]["text"]}\n')
 
 
 def make_dir(adir):

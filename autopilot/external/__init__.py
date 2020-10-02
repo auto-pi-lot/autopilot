@@ -60,7 +60,7 @@ except (ImportError, OSError):
 
 def start_pigpiod():
     if not PIGPIO:
-        raise ImportError('pigpio was not found in autopilot.external')
+        raise ImportError('the pigpiod daemon was not found! use autopilot.setup.')
 
     with globals()['PIGPIO_LOCK']:
         if globals()['PIGPIO_DAEMON']:
@@ -69,7 +69,7 @@ def start_pigpiod():
         launch_pigpiod = shutil.which('pigpiod')
         if launch_pigpiod is None:
             raise RuntimeError('the pigpiod binary was not found!')
-        
+
         if hasattr(prefs, 'PIGPIOARGS'):
             launch_pigpiod += ' ' + prefs.PIGPIOARGS
 
