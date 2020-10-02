@@ -124,8 +124,8 @@ PILOT_ENV_CMDS = {
         'make -j4',
         'sudo make install',
         'cd ..',
-        'rm -rf ./pigpio-master',
-        'rm ./master.zip'
+        'sudo rm -rf ./pigpio-master',
+        'sudo rm ./master.zip'
     ]
 
 }
