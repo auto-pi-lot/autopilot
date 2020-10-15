@@ -51,7 +51,7 @@ PILOT_ENV_CMDS = {
     'viz': [],
     'bluetooth':
         [
-            'sudo sed - i \'$s/$/\ndtoverlay=pi3-disable-bt/\' / boot / config.txt',
+            'sudo sed - i \'$s/$/\ndtoverlay=pi3-disable-bt/\' /boot/config.txt',
             'sudo systemctl disable hciuart.service',
             'sudo systemctl disable bluealsa.service',
             'sudo systemctl disable bluetooth.service'
