@@ -97,7 +97,7 @@ setup(
     long_description = readme,
     long_description_content_type='text/markdown',
     author="Jonny Saunders",
-    author_email="sneakers-the-rat@protonmail.com",
+    author_email="j@nny.fyi",
     url="https://auto-pi-lot.com",
     license="MPL-2.0",
     scripts = SCRIPTS,
