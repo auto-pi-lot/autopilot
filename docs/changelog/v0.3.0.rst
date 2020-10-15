@@ -1,5 +1,30 @@
 .. _changelog_v030:
 
+v0.3.2 (September 28, 2020)
+-----------------------------
+
+Bugfixes
+~~~~~~~~
+
+* https://github.com/wehr-lab/autopilot/issues/19 - previously, I attempted to package binaries for the lightly modified pigpio and for jackd (the apt binary used to not work), but after realizing that was the worst possible way of going about it I changed install strategies, but didn't entirely remove the vestiges of the prior attempt. The installation expected certain directories to exist (in autopilot/external) that didn't, which crashed and choked install. Still need to formalize a configuration and plugin system, but getting there.
+* https://github.com/wehr-lab/autopilot/issues/20 - the jackd binary in the apt repos for the raspi used to not work, so i was in the habit of compiling jackd audio from source. I had build that into the install routine, but something about that now causes the JACK-Client python interface to throw segfaults. Somewhere along the line someone fixed the apt repo version of jackd so we use that now.
+* previously I had only tested in a virtual environment, but now the installation routine properly handles not being in a venv.
+
+Cleanup
+~~~~~~~
+
+* remove bulky static files like fonts and css from /docs/ where they were never needed and god knows how they got there
+* use a forked sphinx-sass when building docs that doesn't specify a required sphinx version (which breaks sphinx)
+* removed skbuild requirements from install
+* fixed pigpio install requirement in requirements_pilot.txt
+* included various previously missed files in MANIFEST.in
+* added installation of system libraries to the pilot configuration menu
+
+
+v0.3.1 (August 4, 2020)
+------------------------
+
+Practice version!!! still figuring out pypi
 
 v0.3.0 (August 4, 2020)
 -----------------------------
