@@ -583,10 +583,16 @@ class Digital_Out(GPIO):
         """
         Stops last running script, sets to :attr:`~.Digital_Out.off`, and calls :meth:`.GPIO.release`
         """
-        self.stop_script()
-        self.set(self.off)
-        time.sleep(0.1)
-        super(Digital_Out, self).release()
+        try:
+            self.stop_script()
+            self.set(self.off)
+            time.sleep(0.1)
+        except AttributeError:
+            # self.pig has already been deleted (release has already been called)
+            # so self.pig has no attribute 'send' because it is None
+            pass
+        finally:
+            super(Digital_Out, self).release()
 
 
 class Digital_In(GPIO):

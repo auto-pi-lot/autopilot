@@ -632,7 +632,7 @@ class Pilot:
         local_file = os.path.join(prefs.DATADIR, 'local.h5')
         try:
             h5f = tables.open_file(local_file, mode='a')
-        except IOError as e:
+        except (IOError, tables.HDF5ExtError) as e:
             self.logger.warning("local file was broken, making new")
             self.logger.warning(e)
             os.remove(local_file)
