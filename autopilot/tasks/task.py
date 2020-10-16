@@ -113,6 +113,7 @@ class Task(object):
 
         # try to get logger
         self.logger = logging.getLogger('main')
+        self.logger.debug('Task Metaclass initialized')
 
 
 

@@ -198,6 +198,7 @@ class Nafc(Task):
 
         # Initialize hardware
         self.init_hardware()
+        self.logger.debug('Hardware initialized')
 
         # Set reward values for solenoids
         # TODO: Super inelegant, implement better with reward manager
@@ -221,6 +222,7 @@ class Nafc(Task):
         if bias_mode:
             self.stim_manager.do_bias(mode=self.bias_mode,
                                       thresh=self.bias_threshold)
+        self.logger.debug('Stimulus manager initialized')
 
         # If we aren't passed an event handler
         # (used to signal that a trigger has been tripped),
@@ -556,6 +558,7 @@ class Nafc_Gap_Laser(Nafc_Gap):
 
         self.duration_ids = []
 
+        self.logger.debug('Creating laser and LED series')
         if isinstance(self.laser_durations, list):
             # iterate through durations and create lists for each
             for duration in self.laser_durations:
@@ -582,7 +585,7 @@ class Nafc_Gap_Laser(Nafc_Gap):
             # use the durations of the stimuli
             self.logger.exception('reading durations from stimulus manager not implemented')
             raise NotImplementedError('read durations from the stimulus manager')
-
+        self.logger.debug('Laser series created')
         # -----------------------------------
         # create a pulse for the LED that's equal to the longest stimulus duration
         # use find_recursive to find all durations
@@ -590,7 +593,7 @@ class Nafc_Gap_Laser(Nafc_Gap):
         stim_durations = list(find_recursive('duration', kwargs['stim']))
         max_duration = np.max(stim_durations)
         self.hardware['LEDS']['TOP'].store_series('on', values=1, durations=max_duration )
-
+        self.logger.debug('LED series created')
 
     def request(self,*args,**kwargs):
         # call the super method
