@@ -3,7 +3,7 @@
 #!/usr/bin/python2.7
 from collections import OrderedDict as odict
 import threading
-import datetime
+from datetime import datetime
 import os
 import logging
 import tables
