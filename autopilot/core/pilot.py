@@ -234,7 +234,11 @@ class Pilot:
         self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
         self.log_handler.setFormatter(self.log_formatter)
         self.logger.addHandler(self.log_handler)
-        self.logger.setLevel(logging.INFO)
+        if hasattr(prefs, 'LOGLEVEL'):
+            loglevel = getattr(logging, prefs.LOGLEVEL)
+        else:
+            loglevel = logging.WARNING
+        self.logger.setLevel(loglevel)
         self.logger.info('Pilot Logging Initiated')
 
     #################################################################
