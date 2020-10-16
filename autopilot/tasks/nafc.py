@@ -476,12 +476,14 @@ class Nafc_Gap(Nafc):
         kwargs['stim_light'] = False
         super(Nafc_Gap, self).__init__(**kwargs)
 
+        self.logger.debug('starting background sound')
         self.noise_amplitude = noise_amplitude
         self.noise_duration = 10*1000 # 10 seconds
         self.noise = sounds.Noise(duration=self.noise_duration,
                                   amplitude=self.noise_amplitude)
 
         self.noise.play_continuous()
+        self.logger.debug('background sound started')
 
 
     def end(self):

@@ -695,10 +695,11 @@ class Pilot:
         h5f, table, row = self.open_file()
 
         # TODO: Init sending continuous data here
-
+        self.logger.debug('Starting task loop')
         while True:
             # Calculate next stage data and prep triggers
             data = next(self.task.stages)() # Double parens because next just gives us the function, we still have to call it
+            self.logger.debug('called stage method')
 
             if data:
                 data['pilot'] = self.name
@@ -718,9 +719,12 @@ class Pilot:
                 if 'TRIAL_END' in data.keys():
                     row.append()
                     table.flush()
+                self.logger.debug('sent data')
+
 
             # Wait on the stage lock to clear
             self.stage_block.wait()
+            self.logger.debug('stage lock passed')
 
             # If the running flag gets set, we're closing.
             if not self.running.is_set():
@@ -728,6 +732,7 @@ class Pilot:
                 self.task = None
                 row.append()
                 table.flush()
+                self.logger.debug('stopping task')
                 break
 
         h5f.flush()
