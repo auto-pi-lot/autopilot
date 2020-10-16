@@ -121,6 +121,8 @@ if server_type in ("pyo", "docs"):
 
 
 if server_type in ("jack", "docs", True):
+    if server_type is True:
+        server_type = "jack"
     from autopilot.stim.sound import jackclient
 
     class Jack_Sound(object):
