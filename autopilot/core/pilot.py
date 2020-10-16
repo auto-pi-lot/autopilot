@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
     prefs.init(prefs_file)
 
-    if hasattr(prefs, 'AUDIOSERVER') and 'AUDIO' in prefs.CONFIG:
+    if hasattr(prefs, 'AUDIOSERVER') or 'AUDIO' in prefs.CONFIG:
         if prefs.AUDIOSERVER == 'pyo':
             from autopilot.stim.sound import pyoserver
         elif prefs.AUDIOSERVER in ('jack', True):
