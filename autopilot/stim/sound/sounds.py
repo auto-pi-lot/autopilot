@@ -474,7 +474,7 @@ if server_type in ("jack", "docs", True):
             while not self.quitting.is_set():
                 try:
                     #self.continuous_q.put(self.continuous_cycle.next(), timeout=wait_time)
-                    self.continuous_q.put_nowait(self.continuous_cycle.next())
+                    self.continuous_q.put_nowait(next(self.continuous_cycle))
                 except Full:
                     pass
             # for chunk in self.chunks:
