@@ -593,7 +593,7 @@ class Pilot:
         if prefs.AUDIOSERVER == 'pyo':
             self.server = pyoserver.pyo_server()
             self.logger.info("pyo server started")
-        elif prefs.AUDIOSERVER == 'jack':
+        elif prefs.AUDIOSERVER in ('jack', True):
             self.jackd = external.start_jackd()
             self.server = jackclient.JackClient()
             self.server.start()
