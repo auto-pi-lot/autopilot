@@ -49,7 +49,7 @@ if __name__ == '__main__':
     if hasattr(prefs, 'AUDIOSERVER') and 'AUDIO' in prefs.CONFIG:
         if prefs.AUDIOSERVER == 'pyo':
             from autopilot.stim.sound import pyoserver
-        elif prefs.AUDIOSERVER == 'jack':
+        elif prefs.AUDIOSERVER in ('jack', True):
             from autopilot.stim.sound import jackclient
 
 from autopilot.core.networking import Pilot_Station, Net_Node, Message
