@@ -511,8 +511,7 @@ class Nafc_Gap_Laser(Nafc_Gap):
     HARDWARE = copy(Nafc_Gap.HARDWARE)
 
     HARDWARE['LASERS'] = {
-        'L': gpio.Digital_Out,
-        'R': gpio.Digital_Out
+        'LR': gpio.Digital_Out
     }
 
     HARDWARE['LEDS']['TOP'] = gpio.Digital_Out
