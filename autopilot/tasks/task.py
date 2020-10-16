@@ -281,7 +281,7 @@ class Task(object):
             if k in color_dict.keys():
                 v.set(color_dict[k])
             else:
-                v.set([0,0,0])
+                v.set(0)
 
     def flash_leds(self):
         """
