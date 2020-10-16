@@ -3,6 +3,8 @@
 #!/usr/bin/python2.7
 from collections import OrderedDict as odict
 import threading
+import datetime
+import os
 import logging
 import tables
 # from autopilot.core.networking import Net_Node
@@ -112,7 +114,7 @@ class Task(object):
         #self.running = threading.Event()
 
         # try to get logger
-        self.logger = logging.getLogger('main')
+        self.init_logging()
         self.logger.debug('Task Metaclass initialized')
 
 
@@ -166,6 +168,27 @@ class Task(object):
                 except:
                     self.logger.exception("Pin could not be instantiated - Type: {}, Pin: {}".format(type, pin))
 
+    def init_logging(self):
+        """
+        Initialize logging to a timestamped file in `prefs.LOGDIR` .
+
+        The logger name will be `'node.{id}'` .
+        """
+        #FIXME: Just copying and pasting from net node, should implement logging uniformly across hw objects
+        timestr = datetime.now().strftime('%y%m%d_%H%M%S')
+        log_file = os.path.join(prefs.LOGDIR, '{}_{}.log'.format(self.__class__, timestr))
+
+        self.logger = logging.getLogger('task.{}'.format(self.__class__))
+        self.log_handler = logging.FileHandler(log_file)
+        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
+        self.log_handler.setFormatter(self.log_formatter)
+        self.logger.addHandler(self.log_handler)
+        if hasattr(prefs, 'LOGLEVEL'):
+            loglevel = getattr(logging, prefs.LOGLEVEL)
+        else:
+            loglevel = logging.WARNING
+        self.logger.setLevel(loglevel)
+        self.logger.info('{} Logging Initiated'.format(self.__class__))
 
     def set_reward(self, vol=None, duration=None, port=None):
         """
