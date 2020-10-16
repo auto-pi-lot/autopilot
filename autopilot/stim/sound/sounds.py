@@ -49,7 +49,10 @@ from autopilot import prefs
 
 # switch behavior based on audio server type
 try:
-    server_type = prefs.AUDIOSERVER.lower()
+    if isinstance(prefs.AUDIOSERVER, str):
+        server_type = prefs.AUDIOSERVER.lower()
+    else:
+        server_type = prefs.AUDIOSERVER
 except:
 #    # TODO: The 'attribute don't exist' type - i think NameError?
     server_type = None
