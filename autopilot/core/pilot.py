@@ -199,10 +199,10 @@ class Pilot:
         self.pulls = []
         if hasattr(prefs, 'PULLUPS'):
             for pin in prefs.PULLUPS:
-                self.pulls.append(gpio.Digital_Out(int(pin), pull='U'))
+                self.pulls.append(gpio.Digital_Out(int(pin), pull='U', polarity=0))
         if hasattr(prefs, 'PULLDOWNS'):
             for pin in prefs.PULLDOWNS:
-                self.pulls.append(gpio.Digital_Out(int(pin), pull='D'))
+                self.pulls.append(gpio.Digital_Out(int(pin), pull='D', polarity=1))
 
         # check if the calibration file needs to be updated
 

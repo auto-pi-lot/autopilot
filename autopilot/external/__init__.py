@@ -138,7 +138,7 @@ def start_jackd():
     atexit.register(lambda jackd_proc=proc: jackd_proc.kill())
 
     # sleep to let it boot
-    sleep(5)
+    sleep(2)
 
     return proc
 
