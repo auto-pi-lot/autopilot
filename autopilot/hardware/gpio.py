@@ -960,7 +960,7 @@ class LED_RGB(Digital_Out):
         self.stop_script()
 
         # if we were given a value, ignore other arguments
-        if value:
+        if value is not None:
             if isinstance(value, int) or isinstance(value, float):
                 for channel in self.channels.values():
                     channel.set(value)
@@ -968,7 +968,7 @@ class LED_RGB(Digital_Out):
                 for channel_key, color_val in zip(('r','g','b'), value):
                     self.channels[channel_key].set(color_val)
             else:
-                ValueError('Value must either be a single value or a tuple of (r,g,b)')
+                raise ValueError('Value must either be a single value or a tuple of (r,g,b)')
         else:
             if r:
                 self.channels['r'].set(r)
