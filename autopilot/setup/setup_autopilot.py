@@ -515,8 +515,17 @@ if __name__ == "__main__":
     try:
         setup = Autopilot_Setup(prefs)
         setup.run()
-    except _curses.error as e:
-        print(f'Problem opening the Setup GUI!\nThis is most likely due to the window you are running the setup command in not being wide enough.\n\nError thrown:\n{e}')
+    except (_curses.error, nps.wgwidget.NotEnoughSpaceForWidget) as e:
+        # get minimum column count
+        try:
+            min_cols = setup.getForm(setup.STARTING_FORM).min_c
+            print(f'Problem opening the Setup GUI!\nThis is most likely due to this window not being wide enough\n' + \
+                  'The minimum width for the setup GUI is:\n\033[0;32;40m' + \
+                  "-"*min_cols + '\u001b[0m\n\n' + f'Got error:\n{e}')
+
+        except:
+            print(f'Problem opening the Setup GUI!\nThis is most likely due to this window not being wide enough\n\nGot Error:\n{e}')
+
         sys.exit()
 
     ####################################
