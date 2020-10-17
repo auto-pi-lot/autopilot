@@ -287,7 +287,12 @@ class Nafc(Task):
             change_to_blue = lambda: self.hardware['LEDS']['C'].set([0, 0, 255])
             self.triggers['C'].append(change_to_blue)
         else:
-            turn_off = lambda: self.hardware['LEDS']['C'].set([0,0,0])
+            # just turn the center light off and side lights on immediately.
+            turn_off = lambda: self.set_leds({
+                'L': [0,255,0],
+                'R': [0,255,0]
+            })
+            #turn_off = lambda: self.hardware['LEDS']['C'].set([0,0,0])
             self.triggers['C'].append(turn_off)
 
         if self.req_reward:
