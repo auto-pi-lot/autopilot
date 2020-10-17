@@ -101,6 +101,10 @@ def start_jackd():
     else:
         jackd_string = ""
 
+    # replace string fs with number
+    if hasattr(prefs, 'FS'):
+        jackd_string.replace('-rfs', f'-r{prefs.FS}')
+
     # construct rest of launch string!
     # if JACKD_MODULE:
     #     jackd_path = os.path.join(autopilot_jack.__path__._path[0])
