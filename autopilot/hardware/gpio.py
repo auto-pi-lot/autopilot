@@ -1269,7 +1269,7 @@ class Solenoid(Digital_Out):
             self.calibration = prefs.PORT_CALIBRATION[self.name]
         except KeyError:
             # try using name prepended with PORTS_, which happens for hardware objects with implicit names
-            self.calibration = prefs.PORT_CALIBRATION[self.name.lstrip('PORTS_')]
+            self.calibration = prefs.PORT_CALIBRATION[self.name.replace('PORTS_', '')]
 
         # compute duration from slope and intercept
         duration = round(float(self.calibration['intercept']) + (float(self.calibration['slope']) * float(vol)))
