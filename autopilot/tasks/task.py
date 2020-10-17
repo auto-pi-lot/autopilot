@@ -151,7 +151,7 @@ class Task(object):
                         hw = handler(hw_args, name=hw_name)
 
                     # if a pin is a trigger pin (event-based input), give it the trigger handler
-                    if hw.trigger:
+                    if hw.is_trigger:
                         hw.assign_cb(self.handle_trigger)
 
                     # add to forward and backwards pin dicts

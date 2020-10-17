@@ -698,7 +698,7 @@ class Digital_In(GPIO):
             cb = self.pig.callback(self.pin_bcm, trigger_ud, self.event.set)
             self.callbacks.append(cb)
         elif evented and not self.event:
-            Exception('We have no internal event to set!')
+            raise Exception('We have no internal event to set!')
 
         cb = self.pig.callback(self.pin_bcm, trigger_ud, callback_fn)
         self.callbacks.append(cb)
