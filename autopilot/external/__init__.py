@@ -119,7 +119,9 @@ def start_jackd():
     #     # launch_jackd = " ".join([lib_string, driver_string, jackd_bin, jackd_string])
     #
     # else:
-    jackd_bin = 'jackd'
+    jackd_bin = shutil.which('jackd')
+
+    #jackd_bin = 'jackd'
 
         # launch_jackd = " ".join([jackd_bin, jackd_string])
 
@@ -132,7 +134,7 @@ def start_jackd():
     atexit.register(lambda jackd_proc=proc: jackd_proc.kill())
 
     # sleep to let it boot
-    sleep(1)
+    sleep(5)
 
     return proc
 
