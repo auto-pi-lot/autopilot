@@ -103,7 +103,7 @@ def start_jackd():
 
     # replace string fs with number
     if hasattr(prefs, 'FS'):
-        jackd_string.replace('-rfs', f'-r{prefs.FS}')
+        jackd_string = jackd_string.replace('-rfs', f'-r{prefs.FS}')
 
     # construct rest of launch string!
     # if JACKD_MODULE:
