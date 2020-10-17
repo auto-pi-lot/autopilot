@@ -4,6 +4,7 @@ After initial setup, configure autopilot: create an autopilot directory and a pr
 """
 
 import npyscreen as nps
+import _curses
 from collections import OrderedDict as odict
 import pprint
 import json
@@ -511,8 +512,12 @@ if __name__ == "__main__":
     ###################################3
     # Run the npyscreen prompt
 
-    setup = Autopilot_Setup(prefs)
-    setup.run()
+    try:
+        setup = Autopilot_Setup(prefs)
+        setup.run()
+    except _curses.error as e:
+        print(f'Problem opening the Setup GUI!\nThis is most likely due to the window you are running the setup command in not being wide enough.\n\nError thrown:\n{e}')
+        sys.exit()
 
     ####################################
     # Collect values

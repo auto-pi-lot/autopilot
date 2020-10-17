@@ -201,9 +201,9 @@ class Task(object):
                 only set `port`
         """
         if not vol and not duration:
-            Exception("Need to have duration or volume!!")
+            raise Exception("Need to have duration or volume!!")
         if vol and duration:
-            Warning('given both volume and duration, using volume.')
+            self.logger.warning('given both volume and duration, using volume.')
 
         if not port:
             for k, port in self.hardware['PORTS'].items():
@@ -211,7 +211,7 @@ class Task(object):
                     try:
                         port.dur_from_vol(vol)
                     except AttributeError:
-                        Warning('No calibration found, using duration = 20ms instead')
+                        self.logger.warning('No calibration found, using duration = 20ms instead')
                         port.duration = 0.02
                 else:
                     port.duration = float(duration)/1000.
@@ -221,13 +221,13 @@ class Task(object):
                     try:
                         self.hardware['PORTS'][port].dur_from_vol(vol)
                     except AttributeError:
-                        Warning('No calibration found, using duration = 20ms instead')
+                        self.logger.warning('No calibration found, using duration = 20ms instead')
                         port.duration = 0.02
 
                 else:
                     self.hardware['PORTS'][port].duration = float(duration) / 1000.
             except KeyError:
-                Exception('No port found named {}'.format(port))
+                raise Exception('No port found named {}'.format(port))
 
     # def init_sound(self):
     #     pass
