@@ -106,7 +106,7 @@ PILOT_ENV_CMDS = {
             "sudo /etc/init.d/dphys-swapfile stop",
             "sudo /etc/init.d/dphys-swapfile start",
             "make -j4",
-            "sudo make install",
+            "sudo --preserve-env=PATH make install",
             "sudo ldconfig",
             "sudo sed -i 's/^CONF_SWAPSIZE=2048/CONF_SWAPSIZE=100/g' /etc/dphys-swapfile",
             "sudo /etc/init.d/dphys-swapfile stop",
@@ -122,7 +122,7 @@ PILOT_ENV_CMDS = {
         'unzip master.zip',
         'cd pigpio-master',
         'make -j4',
-        'sudo make install',
+        'sudo --preserve-env=PATH make install',
         'cd ..',
         'sudo rm -rf ./pigpio-master',
         'sudo rm ./master.zip'
