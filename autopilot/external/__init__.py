@@ -6,6 +6,7 @@ import atexit
 from time import sleep
 import threading
 import shutil
+import signal
 
 PIGPIO = False
 PIGPIO_DAEMON = None
@@ -83,7 +84,10 @@ def start_pigpiod():
         globals()['PIGPIO_DAEMON'] = proc
 
         # kill process when session ends
-        atexit.register(lambda pigpio_proc=proc: pigpio_proc.kill())
+        def kill_proc():
+            proc.kill()
+        atexit.register(kill_proc)
+        signal.signal(signal.SIGTERM, kill_proc)
 
         # sleep to let it boot up
         sleep(1)
@@ -135,7 +139,10 @@ def start_jackd():
     globals()['JACKD_PROCESS'] = proc
 
     # kill process when session ends
-    atexit.register(lambda jackd_proc=proc: jackd_proc.kill())
+    def kill_proc():
+        proc.kill()
+    atexit.register(kill_proc)
+    signal.signal(signal.SIGTERM, kill_proc)
 
     # sleep to let it boot
     sleep(2)
