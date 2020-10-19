@@ -18,11 +18,13 @@ import socket
 import json
 import base64
 import subprocess
+import warnings
 import numpy as np
 import pandas as pd
 from scipy.stats import linregress
 
 import tables
+warnings.simplefilter('ignore', category=tables.NaturalNameWarning)
 
 from autopilot import prefs
 
@@ -628,6 +630,10 @@ class Pilot:
 
         Opens `prefs.DATADIR/local.h5`, creates a group for the current subject,
         a new table for the current day.
+
+        .. todo::
+
+            This needs to be unified with a general file constructor abstracted from :class:`.Subject` so it doesn't reimplement file creation!!
 
         Returns:
             (:class:`tables.File`, :class:`tables.Table`,

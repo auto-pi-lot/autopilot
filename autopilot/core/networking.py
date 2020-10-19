@@ -162,35 +162,41 @@ class Station(multiprocessing.Process):
 
         The process is kept open by the :class:`tornado.IOLoop` .
         """
-        # init zmq objects
-        self.context = zmq.Context()
-        self.loop = IOLoop()
+        try:
+            # init zmq objects
+            self.context = zmq.Context()
+            self.loop = IOLoop()
 
-        # Our networking topology is treelike:
-        # each Station object binds one Router to
-        # send and receive messages from its descendants
-        # each Station object may have one Dealer that
-        # connects it with its antecedents.
-        self.listener  = self.context.socket(zmq.ROUTER)
-        #self.listener.identity = self.id.encode('utf-8')
-        #self.listener.identity = self.id
-        self.listener.setsockopt_string(zmq.IDENTITY, self.id)
-        self.listener.bind('tcp://*:{}'.format(self.listen_port))
-        self.listener = ZMQStream(self.listener, self.loop)
-        self.listener.on_recv(self.handle_listen)
+            # Our networking topology is treelike:
+            # each Station object binds one Router to
+            # send and receive messages from its descendants
+            # each Station object may have one Dealer that
+            # connects it with its antecedents.
+            self.listener  = self.context.socket(zmq.ROUTER)
+            #self.listener.identity = self.id.encode('utf-8')
+            #self.listener.identity = self.id
+            self.listener.setsockopt_string(zmq.IDENTITY, self.id)
+            self.listener.bind('tcp://*:{}'.format(self.listen_port))
+            self.listener = ZMQStream(self.listener, self.loop)
+            self.listener.on_recv(self.handle_listen)
 
-        if self.pusher is True:
-            self.pusher = self.context.socket(zmq.DEALER)
-            #self.pusher.identity = self.id.encode('utf-8')
-            #self.pusher.identity = self.id
-            self.pusher.setsockopt_string(zmq.IDENTITY, self.id)
-            self.pusher.connect('tcp://{}:{}'.format(self.push_ip, self.push_port))
-            self.pusher = ZMQStream(self.pusher, self.loop)
-            self.pusher.on_recv(self.handle_listen)
-            # TODO: Make sure handle_listen knows how to handle ID-less messages
+            if self.pusher is True:
+                self.pusher = self.context.socket(zmq.DEALER)
+                #self.pusher.identity = self.id.encode('utf-8')
+                #self.pusher.identity = self.id
+                self.pusher.setsockopt_string(zmq.IDENTITY, self.id)
+                self.pusher.connect('tcp://{}:{}'.format(self.push_ip, self.push_port))
+                self.pusher = ZMQStream(self.pusher, self.loop)
+                self.pusher.on_recv(self.handle_listen)
+                # TODO: Make sure handle_listen knows how to handle ID-less messages
 
-        self.logger.info('Starting IOLoop')
-        self.loop.start()
+            self.logger.info('Starting IOLoop')
+            self.loop.start()
+        except KeyboardInterrupt:
+            # normal quitting behavior
+            pass
+        finally:
+            self.release()
 
     def prepare_message(self, to, key, value, repeat=True, flags=None):
         """
@@ -689,8 +695,12 @@ class Station(multiprocessing.Process):
         return unwrap2
 
     def release(self):
-        self.closing.set()
-        self.terminate()
+        try:
+            self.closing.set()
+            self.terminate()
+        except AttributeError:
+            # already been called, NoneTypes have no attribute terminate
+            pass
 
         # Stopping the loop should kill the process, as it's what's holding us in run()
         #self.loop.stop()

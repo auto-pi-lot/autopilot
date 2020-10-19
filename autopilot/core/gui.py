@@ -2428,9 +2428,9 @@ class Reassign(QtWidgets.QDialog):
             step_box.currentIndexChanged.connect(self.set_step)
 
             # add to layout
-            self.grid.addWidget(subject_lab, i%25, 0+(i/25)*3)
-            self.grid.addWidget(protocol_box, i%25, 1+(i/25)*3)
-            self.grid.addWidget(step_box, i%25, 2+(i/25)*3)
+            self.grid.addWidget(subject_lab, i%25, 0+(np.floor(i/25))*3)
+            self.grid.addWidget(protocol_box, i%25, 1+(np.floor(i/25))*3)
+            self.grid.addWidget(step_box, i%25, 2+(np.floor(i/25))*3)
 
 
 
