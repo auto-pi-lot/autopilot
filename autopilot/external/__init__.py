@@ -86,6 +86,7 @@ def start_pigpiod():
         # kill process when session ends
         def kill_proc():
             proc.kill()
+            sys.exit(1)
         atexit.register(kill_proc)
         signal.signal(signal.SIGTERM, kill_proc)
 
@@ -141,6 +142,7 @@ def start_jackd():
     # kill process when session ends
     def kill_proc():
         proc.kill()
+        sys.exit(1)
     atexit.register(kill_proc)
     signal.signal(signal.SIGTERM, kill_proc)
 
