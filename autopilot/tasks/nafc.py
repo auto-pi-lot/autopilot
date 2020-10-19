@@ -458,7 +458,8 @@ class Nafc(Task):
         flash lights for punish_dir
         """
         for k, v in self.hardware['LEDS'].items():
-            v.flash(self.punish_dur)
+            if isinstance(v, gpio.LED_RGB):
+                v.flash(self.punish_dur)
 
 class Nafc_Gap(Nafc):
     PARAMS = copy(Nafc.PARAMS)

@@ -863,9 +863,14 @@ class PWM(Digital_Out):
         Returns:
 
         """
-        self.set(self.off)
-        time.sleep(0.1)
-        super(PWM, self).release()
+        try:
+            self.set(self.off)
+            time.sleep(0.1)
+        except AttributeError:
+            # has already been called, pig already destroyed
+            pass
+        finally:
+            super(PWM, self).release()
 
 
 class LED_RGB(Digital_Out):

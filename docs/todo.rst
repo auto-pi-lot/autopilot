@@ -288,6 +288,9 @@ Improvements
     * Networking modules and other thread-creating modules should probably create thread pools to avoid
       the overhead of constantly spawning them
 
+* **Decorators** - specific improvements to make autopilot objects magic!
+
+    * :mod:`.hardware.gpio` - try/catch release decorator so don't have to check for attribute error in every subclass!
 
 
 Bugs

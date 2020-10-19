@@ -311,7 +311,8 @@ class Task(object):
         flash lights for punish_dir
         """
         for k, v in self.hardware['LEDS'].items():
-            v.flash(self.punish_dur)
+            if v.__module__ == "autopilot.hardware.gpio" and type(v).__name__ == "LED_RGB":
+                v.flash(self.punish_dur)
 
     def end(self):
         """
