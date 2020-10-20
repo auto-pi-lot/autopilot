@@ -307,7 +307,7 @@ class Digital_Out(GPIO):
             self.pig.set_mode(self.pin_bcm, pigpio.OUTPUT)
             self.set(self.off)
 
-    def set(self, value):
+    def set(self, value: bool):
         """
         Set pin logic level.
 
@@ -863,14 +863,15 @@ class PWM(Digital_Out):
         Returns:
 
         """
+        # FIXME: reimplementing parent release method here because of inconsistent use of self.off -- unify API and fix!!
         try:
-            self.set(self.off)
+            self.stop_script()
+            self.set(0) # clean values should handle inversion, don't use self.off
             time.sleep(0.1)
+            self.pig.stop()
         except AttributeError:
             # has already been called, pig already destroyed
             pass
-        finally:
-            super(PWM, self).release()
 
 
 class LED_RGB(Digital_Out):
