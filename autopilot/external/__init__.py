@@ -80,12 +80,15 @@ def start_pigpiod():
                 prefs.PIGPIOMASK = str(prefs.PIGPIOMASK).zfill(28)
             launch_pigpiod += ' -x ' + prefs.PIGPIOMASK
 
-        proc = subprocess.Popen('sudo ' + launch_pigpiod, shell=True)
+        proc = subprocess.Popen('sudo ' + launch_pigpiod, shell=True,
+                                preexec_fn=os.setsid())
         globals()['PIGPIO_DAEMON'] = proc
 
         # kill process when session ends
         def kill_proc():
-            proc.kill()
+            # https: // stackoverflow.com / a / 4791612
+            # proc.kill()
+            os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
             sys.exit(1)
         atexit.register(kill_proc)
         signal.signal(signal.SIGTERM, kill_proc)
