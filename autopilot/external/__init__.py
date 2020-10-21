@@ -84,7 +84,7 @@ def start_pigpiod():
         globals()['PIGPIO_DAEMON'] = proc
 
         # kill process when session ends
-        def kill_proc():
+        def kill_proc(*args):
             proc.kill()
             sys.exit(1)
         atexit.register(kill_proc)
@@ -140,7 +140,7 @@ def start_jackd():
     globals()['JACKD_PROCESS'] = proc
 
     # kill process when session ends
-    def kill_proc():
+    def kill_proc(*args):
         proc.kill()
         sys.exit(1)
     atexit.register(kill_proc)
