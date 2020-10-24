@@ -1,7 +1,7 @@
-gpio
+esoteric
 ======================
 
-.. inheritance-diagram:: autopilot.hardware.gpio
+.. inheritance-diagram:: autopilot.hardware.esoteric
 
 .. automodule:: autopilot.hardware.esoteric
     :members:
