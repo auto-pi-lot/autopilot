@@ -14,4 +14,5 @@ hardware
    autopilot.hardware.gpio
    autopilot.hardware.i2c
    autopilot.hardware.usb
+   autopilot.hardware.esoteric
 
