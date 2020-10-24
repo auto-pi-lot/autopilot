@@ -14,18 +14,24 @@ class Parallax_Platform(Digital_Out):
     """
     Transcription of Cliff Dax's BASIC program
 
-    * One column, but all rows can be controlled at once?
+    * One column, but all rows can be controlled at once --
+
+        * loop through columns, set outputs corresponding to rows, flip 22 at each 'row' setting
+
     * wait for some undefined small time between each flip of 23
     * to reset/rehome, some hardcoded offset from zero that needs to be stepped for each column.
+
 
     Pins:
 
     Column Control:
+
         * 8 = col & 1
         * 9 = col & 2
         * 10 = col & 4
 
     Row control:
+
         * 0 = word & 1
         * 1 = word & 2
         * 2 = word & 4
@@ -34,7 +40,8 @@ class Parallax_Platform(Digital_Out):
         * 5 = word & 32
 
     Others:
-        * 22 - flipped on and off at every loop, light control?
+
+        * 22 - flipped on and off to store status of row "word" for a given column
         * 23 - flipped on and off to execute a movement command
         * 24 - if 0, go down, if 1, go up
 
