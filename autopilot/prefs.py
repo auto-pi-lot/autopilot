@@ -11,7 +11,7 @@ Before importing any other autopilot module,
 Examples:
 
     from autopilot import prefs
-    prefs_file = '/usr/autopilot/prefs.json' # or some .json prefs file
+    prefs_file = '~/autopilot/prefs.json' # or some .json prefs file
     prefs.init(prefs_file)
 
 And to add a pref

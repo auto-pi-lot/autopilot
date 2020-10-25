@@ -1,6 +1,3 @@
-__version__ = '0.3'
-__author__  = 'Jonny Saunders <JLSaunders987@gmail.com>'
-
 import argparse
 import json
 import sys

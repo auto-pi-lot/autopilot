@@ -17,7 +17,6 @@ import logging
 import os
 import numpy as np
 import PySide2 # have to import to tell pyqtgraph to use it
-#import PySide
 import pandas as pd
 from PySide2 import QtGui
 from PySide2 import QtCore
@@ -35,7 +34,6 @@ from queue import Queue, Empty, Full
 pg.setConfigOptions(antialias=True)
 # from pyqtgraph.widgets.RawImageWidget import RawImageWidget, RawImageGLWidget
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from autopilot import tasks, prefs
 from autopilot.core import styles
 from .utils import InvokeEvent, Invoker

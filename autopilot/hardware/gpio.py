@@ -20,6 +20,7 @@ import itertools
 
 from autopilot import prefs
 from autopilot.hardware import Hardware, BOARD_TO_BCM
+from autopilot import external
 
 ENABLED = False
 """
@@ -103,6 +104,7 @@ class GPIO(Hardware):
     Attributes:
         pig (:class:`pigpio.pi`): An object that manages connection to the pigpio daemon. See docs at http://abyz.me.uk/rpi/pigpio/python.html
         CONNECTED (bool): Whether the connection to pigpio was successful
+        pigpiod: Reference to the pigpiod process launched by :func:`.external.start_pigpiod`
         pin (int): The Board-numbered GPIO pin of this object.
         pin_bcm (int): The BCM number of the connected pin -- used by pigpio. Converted from pin passed as argument on initialization,
             which is assumed to be the board number.
@@ -135,6 +137,7 @@ class GPIO(Hardware):
             self.logger.warning('pin_bcm is defined as a property without a setter so cant be set')
 
         self.pig = None
+        self.pigpiod = None
 
         # init pigpio
         self.CONNECTED = False
@@ -158,6 +161,7 @@ class GPIO(Hardware):
         Returns:
             bool: True if connection was successful, False otherwise
         """
+        self.pigpiod = external.start_pigpiod()
         self.pig = pigpio.pi()
         if self.pig.connected:
             return True
@@ -303,7 +307,7 @@ class Digital_Out(GPIO):
             self.pig.set_mode(self.pin_bcm, pigpio.OUTPUT)
             self.set(self.off)
 
-    def set(self, value):
+    def set(self, value: bool):
         """
         Set pin logic level.
 
@@ -579,10 +583,16 @@ class Digital_Out(GPIO):
         """
         Stops last running script, sets to :attr:`~.Digital_Out.off`, and calls :meth:`.GPIO.release`
         """
-        self.stop_script()
-        self.set(self.off)
-        time.sleep(0.1)
-        super(Digital_Out, self).release()
+        try:
+            self.stop_script()
+            self.set(self.off)
+            time.sleep(0.1)
+        except AttributeError:
+            # self.pig has already been deleted (release has already been called)
+            # so self.pig has no attribute 'send' because it is None
+            pass
+        finally:
+            super(Digital_Out, self).release()
 
 
 class Digital_In(GPIO):
@@ -688,7 +698,7 @@ class Digital_In(GPIO):
             cb = self.pig.callback(self.pin_bcm, trigger_ud, self.event.set)
             self.callbacks.append(cb)
         elif evented and not self.event:
-            Exception('We have no internal event to set!')
+            raise Exception('We have no internal event to set!')
 
         cb = self.pig.callback(self.pin_bcm, trigger_ud, callback_fn)
         self.callbacks.append(cb)
@@ -853,9 +863,15 @@ class PWM(Digital_Out):
         Returns:
 
         """
-        self.set(self.off)
-        time.sleep(0.1)
-        super(PWM, self).release()
+        # FIXME: reimplementing parent release method here because of inconsistent use of self.off -- unify API and fix!!
+        try:
+            self.stop_script()
+            self.set(0) # clean values should handle inversion, don't use self.off
+            time.sleep(0.1)
+            self.pig.stop()
+        except AttributeError:
+            # has already been called, pig already destroyed
+            pass
 
 
 class LED_RGB(Digital_Out):
@@ -950,7 +966,7 @@ class LED_RGB(Digital_Out):
         self.stop_script()
 
         # if we were given a value, ignore other arguments
-        if value:
+        if value is not None:
             if isinstance(value, int) or isinstance(value, float):
                 for channel in self.channels.values():
                     channel.set(value)
@@ -958,7 +974,7 @@ class LED_RGB(Digital_Out):
                 for channel_key, color_val in zip(('r','g','b'), value):
                     self.channels[channel_key].set(color_val)
             else:
-                ValueError('Value must either be a single value or a tuple of (r,g,b)')
+                raise ValueError('Value must either be a single value or a tuple of (r,g,b)')
         else:
             if r:
                 self.channels['r'].set(r)
@@ -1255,7 +1271,11 @@ class Solenoid(Digital_Out):
             self.name = self.get_name()
 
         # prefs should have loaded any calibration
-        self.calibration = prefs.PORT_CALIBRATION[self.name]
+        try:
+            self.calibration = prefs.PORT_CALIBRATION[self.name]
+        except KeyError:
+            # try using name prepended with PORTS_, which happens for hardware objects with implicit names
+            self.calibration = prefs.PORT_CALIBRATION[self.name.replace('PORTS_', '')]
 
         # compute duration from slope and intercept
         duration = round(float(self.calibration['intercept']) + (float(self.calibration['slope']) * float(vol)))

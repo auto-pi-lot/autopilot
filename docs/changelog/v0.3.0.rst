@@ -1,5 +1,40 @@
 .. _changelog_v030:
 
+v0.3.3 (October 25, 2020)
+--------------------------
+
+Bugfixes
+~~~~~~~~
+
+* Fix layout in batch reassign gui widget from python 3 float division
+* Cleaner close by catching KeyboardInterrupt in networking modules
+* Fixing audioserver boot options -- if 'AUDIOSERVER' is set even if 'AUDIO' isn't set in prefs, should still start server. Not full fixed, need to make single plugin handler, single point of enabling/disabling optional services like audio server
+* Fix conflict between polarity and pull in initializing `pulls` in pilot
+* Catch ``tables.HDF5ExtError`` if local .h5 file corrupt in pilot
+* For some reason 'fs' wasn't being replaced in the jackd string, reinstated.
+* Fix comparison in LED_RGB that caused '0' to turn on full becuse 'value' was being checked for its truth value (0 is false) rather than checking if value is None.
+* ``obj.next()`` to ``next(obj)``` in jackdserver
+
+Improvements
+~~~~~~~~~~~~~
+
+* Better internal handling of pigpiod -- you're now able to import and use hardware modules without needing to explicitly start pigpiod!!
+* Hopefully better killing of processes on exit, though still should work into unified process manager so don't need to reimplement everything (eg. as is done with launching pigpiod and jackd)
+* Environment scripts have been split out into ``setup/scripts.py`` and you can now run them with ``python -m autopilot.setup.run_script`` (use ``--help`` to see how!)
+* Informative error when setup is run with too narrow terminal: https://github.com/wehr-lab/autopilot/issues/23
+* More loggers, but increased need to unify logger creation!!!
+
+
+Cleanup
+~~~~~~~~
+
+* remove unused imports in main ``__init__.py`` that made cyclical imports happen more frequently than necessary
+* single-sourcing version number from ``__init__.py``
+* more cleanup of unnecessary meta and header stuff left from early days
+* more debugging flags
+* filter ``NaturalNameWarning`` from pytables
+* quieter cleanups for hardware objects
+
 v0.3.2 (September 28, 2020)
 -----------------------------
 

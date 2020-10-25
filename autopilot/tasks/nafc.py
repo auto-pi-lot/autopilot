@@ -198,6 +198,7 @@ class Nafc(Task):
 
         # Initialize hardware
         self.init_hardware()
+        self.logger.debug('Hardware initialized')
 
         # Set reward values for solenoids
         # TODO: Super inelegant, implement better with reward manager
@@ -221,6 +222,7 @@ class Nafc(Task):
         if bias_mode:
             self.stim_manager.do_bias(mode=self.bias_mode,
                                       thresh=self.bias_threshold)
+        self.logger.debug('Stimulus manager initialized')
 
         # If we aren't passed an event handler
         # (used to signal that a trigger has been tripped),
@@ -285,7 +287,12 @@ class Nafc(Task):
             change_to_blue = lambda: self.hardware['LEDS']['C'].set([0, 0, 255])
             self.triggers['C'].append(change_to_blue)
         else:
-            turn_off = lambda: self.hardware['LEDS']['C'].set([0,0,0])
+            # just turn the center light off and side lights on immediately.
+            turn_off = lambda: self.set_leds({
+                'L': [0,255,0],
+                'R': [0,255,0]
+            })
+            #turn_off = lambda: self.hardware['LEDS']['C'].set([0,0,0])
             self.triggers['C'].append(turn_off)
 
         if self.req_reward:
@@ -451,7 +458,8 @@ class Nafc(Task):
         flash lights for punish_dir
         """
         for k, v in self.hardware['LEDS'].items():
-            v.flash(self.punish_dur)
+            if isinstance(v, gpio.LED_RGB):
+                v.flash(self.punish_dur)
 
 class Nafc_Gap(Nafc):
     PARAMS = copy(Nafc.PARAMS)
@@ -474,12 +482,14 @@ class Nafc_Gap(Nafc):
         kwargs['stim_light'] = False
         super(Nafc_Gap, self).__init__(**kwargs)
 
+        self.logger.debug('starting background sound')
         self.noise_amplitude = noise_amplitude
         self.noise_duration = 10*1000 # 10 seconds
         self.noise = sounds.Noise(duration=self.noise_duration,
                                   amplitude=self.noise_amplitude)
 
         self.noise.play_continuous()
+        self.logger.debug('background sound started')
 
 
     def end(self):
@@ -511,8 +521,7 @@ class Nafc_Gap_Laser(Nafc_Gap):
     HARDWARE = copy(Nafc_Gap.HARDWARE)
 
     HARDWARE['LASERS'] = {
-        'L': gpio.Digital_Out,
-        'R': gpio.Digital_Out
+        'LR': gpio.Digital_Out
     }
 
     HARDWARE['LEDS']['TOP'] = gpio.Digital_Out
@@ -557,6 +566,7 @@ class Nafc_Gap_Laser(Nafc_Gap):
 
         self.duration_ids = []
 
+        self.logger.debug('Creating laser and LED series')
         if isinstance(self.laser_durations, list):
             # iterate through durations and create lists for each
             for duration in self.laser_durations:
@@ -583,7 +593,7 @@ class Nafc_Gap_Laser(Nafc_Gap):
             # use the durations of the stimuli
             self.logger.exception('reading durations from stimulus manager not implemented')
             raise NotImplementedError('read durations from the stimulus manager')
-
+        self.logger.debug('Laser series created')
         # -----------------------------------
         # create a pulse for the LED that's equal to the longest stimulus duration
         # use find_recursive to find all durations
@@ -591,7 +601,7 @@ class Nafc_Gap_Laser(Nafc_Gap):
         stim_durations = list(find_recursive('duration', kwargs['stim']))
         max_duration = np.max(stim_durations)
         self.hardware['LEDS']['TOP'].store_series('on', values=1, durations=max_duration )
-
+        self.logger.debug('LED series created')
 
     def request(self,*args,**kwargs):
         # call the super method

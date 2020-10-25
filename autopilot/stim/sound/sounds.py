@@ -49,7 +49,10 @@ from autopilot import prefs
 
 # switch behavior based on audio server type
 try:
-    server_type = prefs.AUDIOSERVER.lower()
+    if isinstance(prefs.AUDIOSERVER, str):
+        server_type = prefs.AUDIOSERVER.lower()
+    else:
+        server_type = prefs.AUDIOSERVER
 except:
 #    # TODO: The 'attribute don't exist' type - i think NameError?
     server_type = None
@@ -118,6 +121,8 @@ if server_type in ("pyo", "docs"):
 
 
 if server_type in ("jack", "docs", True):
+    if server_type is True:
+        server_type = "jack"
     from autopilot.stim.sound import jackclient
 
     class Jack_Sound(object):
@@ -289,7 +294,7 @@ if server_type in ("jack", "docs", True):
             """
 
             if hasattr(self, 'path'):
-                self.logger.info('BUFFERING SOUND {}'.format(self.path))
+                self.logger.debug('BUFFERING SOUND {}'.format(self.path))
 
             if not self.initialized and not self.table:
                 try:
@@ -390,7 +395,7 @@ if server_type in ("jack", "docs", True):
                 self.buffer()
 
             if hasattr(self, 'path'):
-                self.logger.info('PLAYING SOUND {}'.format(self.path))
+                self.logger.debug('PLAYING SOUND {}'.format(self.path))
 
             self.play_evt.set()
             self.stop_evt.clear()
@@ -469,16 +474,11 @@ if server_type in ("jack", "docs", True):
             while not self.quitting.is_set():
                 try:
                     #self.continuous_q.put(self.continuous_cycle.next(), timeout=wait_time)
-                    self.continuous_q.put_nowait(self.continuous_cycle.next())
+                    self.continuous_q.put_nowait(next(self.continuous_cycle))
                 except Full:
                     pass
             # for chunk in self.chunks:
             #     self.continuous_q.put_nowait(chunk)
-
-
-
-
-
 
         def stop_continuous(self):
             """
@@ -487,7 +487,7 @@ if server_type in ("jack", "docs", True):
             Should be merged into a general stop method
             """
             if not self.continuous:
-                Warning("Not a continous sound!")
+                self.logger.warning("stop_continuous called but not a continuous sound!")
                 return
 
             self.quitting.set()

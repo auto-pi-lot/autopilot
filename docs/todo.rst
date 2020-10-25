@@ -288,6 +288,9 @@ Improvements
     * Networking modules and other thread-creating modules should probably create thread pools to avoid
       the overhead of constantly spawning them
 
+* **Decorators** - specific improvements to make autopilot objects magic!
+
+    * :mod:`.hardware.gpio` - try/catch release decorator so don't have to check for attribute error in every subclass!
 
 
 Bugs
@@ -307,6 +310,11 @@ Bugs
 * Network connectivity can be lost if the network hardware is disturbed (in our case the router gets kicked
   from the network it is connected to) and is only reliably recovered by restarting the system. Network connections
   should be able to recover disturbance.
+* The use of `off` and `on` is inconsistent between :class:`.Digital_Out` and :class:`.PWM` -- since the PWM
+  cleans values (inverts logic, expands range),
+* There is ambiguity in setting PWM ranges: using :meth:`.PWM.set` with 0-1 uses the whole range off to on, but
+  numbers from 0-:attr:`.PWM.range` can be used as well -- 0-1 is the preferred behavior, but should using
+  0-range still be supported as well?
 
 
 Completed

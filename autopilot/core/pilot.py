@@ -1,11 +1,6 @@
-#!/usr/bin/python2.7
-
 """
 
 """
-
-__version__ = '0.2'
-__author__ = 'Jonny Saunders <jsaunder@uoregon.edu>'
 
 import os
 import sys
@@ -18,11 +13,13 @@ import socket
 import json
 import base64
 import subprocess
+import warnings
 import numpy as np
 import pandas as pd
 from scipy.stats import linregress
 
 import tables
+warnings.simplefilter('ignore', category=tables.NaturalNameWarning)
 
 from autopilot import prefs
 
@@ -46,10 +43,10 @@ if __name__ == '__main__':
 
     prefs.init(prefs_file)
 
-    if hasattr(prefs, 'AUDIOSERVER') and 'AUDIO' in prefs.CONFIG:
+    if hasattr(prefs, 'AUDIOSERVER') or 'AUDIO' in prefs.CONFIG:
         if prefs.AUDIOSERVER == 'pyo':
             from autopilot.stim.sound import pyoserver
-        elif prefs.AUDIOSERVER == 'jack':
+        elif prefs.AUDIOSERVER in ('jack', True):
             from autopilot.stim.sound import jackclient
 
 from autopilot.core.networking import Pilot_Station, Net_Node, Message
@@ -172,7 +169,7 @@ class Pilot:
         self.init_pigpio()
 
         # Init audio server
-        if hasattr(prefs, 'AUDIOSERVER') and 'AUDIO' in prefs.CONFIG:
+        if hasattr(prefs, 'AUDIOSERVER') or 'AUDIO' in prefs.CONFIG:
             self.init_audio()
 
         # Init Station
@@ -199,10 +196,10 @@ class Pilot:
         self.pulls = []
         if hasattr(prefs, 'PULLUPS'):
             for pin in prefs.PULLUPS:
-                self.pulls.append(gpio.Digital_Out(int(pin), pull='U'))
+                self.pulls.append(gpio.Digital_Out(int(pin), pull='U', polarity=0))
         if hasattr(prefs, 'PULLDOWNS'):
             for pin in prefs.PULLDOWNS:
-                self.pulls.append(gpio.Digital_Out(int(pin), pull='D'))
+                self.pulls.append(gpio.Digital_Out(int(pin), pull='D', polarity=1))
 
         # check if the calibration file needs to be updated
 
@@ -234,7 +231,11 @@ class Pilot:
         self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
         self.log_handler.setFormatter(self.log_formatter)
         self.logger.addHandler(self.log_handler)
-        self.logger.setLevel(logging.INFO)
+        if hasattr(prefs, 'LOGLEVEL'):
+            loglevel = getattr(logging, prefs.LOGLEVEL)
+        else:
+            loglevel = logging.WARNING
+        self.logger.setLevel(loglevel)
         self.logger.info('Pilot Logging Initiated')
 
     #################################################################
@@ -593,7 +594,7 @@ class Pilot:
         if prefs.AUDIOSERVER == 'pyo':
             self.server = pyoserver.pyo_server()
             self.logger.info("pyo server started")
-        elif prefs.AUDIOSERVER == 'jack':
+        elif prefs.AUDIOSERVER in ('jack', True):
             self.jackd = external.start_jackd()
             self.server = jackclient.JackClient()
             self.server.start()
@@ -625,6 +626,10 @@ class Pilot:
         Opens `prefs.DATADIR/local.h5`, creates a group for the current subject,
         a new table for the current day.
 
+        .. todo::
+
+            This needs to be unified with a general file constructor abstracted from :class:`.Subject` so it doesn't reimplement file creation!!
+
         Returns:
             (:class:`tables.File`, :class:`tables.Table`,
             :class:`tables.tableextension.Row`): The file, table, and row for the local data table
@@ -632,7 +637,7 @@ class Pilot:
         local_file = os.path.join(prefs.DATADIR, 'local.h5')
         try:
             h5f = tables.open_file(local_file, mode='a')
-        except IOError as e:
+        except (IOError, tables.HDF5ExtError) as e:
             self.logger.warning("local file was broken, making new")
             self.logger.warning(e)
             os.remove(local_file)
@@ -695,10 +700,11 @@ class Pilot:
         h5f, table, row = self.open_file()
 
         # TODO: Init sending continuous data here
-
+        self.logger.debug('Starting task loop')
         while True:
             # Calculate next stage data and prep triggers
             data = next(self.task.stages)() # Double parens because next just gives us the function, we still have to call it
+            self.logger.debug('called stage method')
 
             if data:
                 data['pilot'] = self.name
@@ -718,9 +724,12 @@ class Pilot:
                 if 'TRIAL_END' in data.keys():
                     row.append()
                     table.flush()
+                self.logger.debug('sent data')
+
 
             # Wait on the stage lock to clear
             self.stage_block.wait()
+            self.logger.debug('stage lock passed')
 
             # If the running flag gets set, we're closing.
             if not self.running.is_set():
@@ -728,6 +737,7 @@ class Pilot:
                 self.task = None
                 row.append()
                 table.flush()
+                self.logger.debug('stopping task')
                 break
 
         h5f.flush()

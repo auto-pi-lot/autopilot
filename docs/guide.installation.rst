@@ -66,6 +66,12 @@ and developing directly in the library so your gorgeous insights can be integrat
 Configuration
 ==============
 
+.. note::
+
+    If you didn't install the system dependencies yet, you can do so now with ::
+
+        python3 -m autopilot.setup.run_script env_pilot
+
 After installation, set Autopilot up!
 
 The setup routine will

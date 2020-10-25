@@ -1,8 +1,8 @@
 # Base class for tasks
-
-#!/usr/bin/python2.7
 from collections import OrderedDict as odict
 import threading
+from datetime import datetime
+import os
 import logging
 import tables
 # from autopilot.core.networking import Net_Node
@@ -112,7 +112,8 @@ class Task(object):
         #self.running = threading.Event()
 
         # try to get logger
-        self.logger = logging.getLogger('main')
+        self.init_logging()
+        self.logger.debug('Task Metaclass initialized')
 
 
 
@@ -148,7 +149,7 @@ class Task(object):
                         hw = handler(hw_args, name=hw_name)
 
                     # if a pin is a trigger pin (event-based input), give it the trigger handler
-                    if hw.trigger:
+                    if hw.is_trigger:
                         hw.assign_cb(self.handle_trigger)
 
                     # add to forward and backwards pin dicts
@@ -165,6 +166,27 @@ class Task(object):
                 except:
                     self.logger.exception("Pin could not be instantiated - Type: {}, Pin: {}".format(type, pin))
 
+    def init_logging(self):
+        """
+        Initialize logging to a timestamped file in `prefs.LOGDIR` .
+
+        The logger name will be `'node.{id}'` .
+        """
+        #FIXME: Just copying and pasting from net node, should implement logging uniformly across hw objects
+        timestr = datetime.now().strftime('%y%m%d_%H%M%S')
+        log_file = os.path.join(prefs.LOGDIR, '{}_{}.log'.format(self.__class__, timestr))
+
+        self.logger = logging.getLogger('task.{}'.format(self.__class__))
+        self.log_handler = logging.FileHandler(log_file)
+        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
+        self.log_handler.setFormatter(self.log_formatter)
+        self.logger.addHandler(self.log_handler)
+        if hasattr(prefs, 'LOGLEVEL'):
+            loglevel = getattr(logging, prefs.LOGLEVEL)
+        else:
+            loglevel = logging.WARNING
+        self.logger.setLevel(loglevel)
+        self.logger.info('{} Logging Initiated'.format(self.__class__))
 
     def set_reward(self, vol=None, duration=None, port=None):
         """
@@ -177,9 +199,9 @@ class Task(object):
                 only set `port`
         """
         if not vol and not duration:
-            Exception("Need to have duration or volume!!")
+            raise Exception("Need to have duration or volume!!")
         if vol and duration:
-            Warning('given both volume and duration, using volume.')
+            self.logger.warning('given both volume and duration, using volume.')
 
         if not port:
             for k, port in self.hardware['PORTS'].items():
@@ -187,7 +209,7 @@ class Task(object):
                     try:
                         port.dur_from_vol(vol)
                     except AttributeError:
-                        Warning('No calibration found, using duration = 20ms instead')
+                        self.logger.warning('No calibration found, using duration = 20ms instead')
                         port.duration = 0.02
                 else:
                     port.duration = float(duration)/1000.
@@ -197,13 +219,13 @@ class Task(object):
                     try:
                         self.hardware['PORTS'][port].dur_from_vol(vol)
                     except AttributeError:
-                        Warning('No calibration found, using duration = 20ms instead')
+                        self.logger.warning('No calibration found, using duration = 20ms instead')
                         port.duration = 0.02
 
                 else:
                     self.hardware['PORTS'][port].duration = float(duration) / 1000.
             except KeyError:
-                Exception('No port found named {}'.format(port))
+                raise Exception('No port found named {}'.format(port))
 
     # def init_sound(self):
     #     pass
@@ -280,14 +302,15 @@ class Task(object):
             if k in color_dict.keys():
                 v.set(color_dict[k])
             else:
-                v.set([0,0,0])
+                v.set(0)
 
     def flash_leds(self):
         """
         flash lights for punish_dir
         """
         for k, v in self.hardware['LEDS'].items():
-            v.flash(self.punish_dur)
+            if v.__module__ == "autopilot.hardware.gpio" and type(v).__name__ == "LED_RGB":
+                v.flash(self.punish_dur)
 
     def end(self):
         """

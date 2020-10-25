@@ -18,8 +18,8 @@ import json
 import pandas as pd
 import warnings
 import typing
+import warnings
 from copy import copy
-# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from autopilot.tasks import GRAD_LIST, TASK_LIST
 from autopilot import prefs
 from autopilot.stim.sound.sounds import STRING_PARAMS
@@ -28,6 +28,9 @@ if sys.version_info >= (3,0):
     import queue
 else:
     import Queue as queue
+
+# suppress pytables natural name warnings
+warnings.simplefilter('ignore', category=tables.NaturalNameWarning)
 
 import pdb
 import numpy as np
@@ -501,7 +504,7 @@ class Subject(object):
                     # if this task has sounds, make columns for them
                     # TODO: Make stim managers return a list of properties for their sounds
                     if 'stim' in step.keys():
-                        if 'manager' in step['stim'].keys():
+                        if 'groups' in step['stim'].keys():
                             # managers have stim nested within groups, but this is still really ugly
                             sound_params = {}
                             for g in step['stim']['groups']:
