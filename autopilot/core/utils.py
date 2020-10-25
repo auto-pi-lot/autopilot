@@ -1,4 +1,3 @@
-# import numpy as np
 from autopilot import prefs
 # if prefs.AGENT in ("TERMINAL", "DOCS"):
 HAVE_PYSIDE = False

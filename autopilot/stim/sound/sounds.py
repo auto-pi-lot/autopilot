@@ -294,7 +294,7 @@ if server_type in ("jack", "docs", True):
             """
 
             if hasattr(self, 'path'):
-                self.logger.info('BUFFERING SOUND {}'.format(self.path))
+                self.logger.debug('BUFFERING SOUND {}'.format(self.path))
 
             if not self.initialized and not self.table:
                 try:
@@ -395,7 +395,7 @@ if server_type in ("jack", "docs", True):
                 self.buffer()
 
             if hasattr(self, 'path'):
-                self.logger.info('PLAYING SOUND {}'.format(self.path))
+                self.logger.debug('PLAYING SOUND {}'.format(self.path))
 
             self.play_evt.set()
             self.stop_evt.clear()
@@ -480,11 +480,6 @@ if server_type in ("jack", "docs", True):
             # for chunk in self.chunks:
             #     self.continuous_q.put_nowait(chunk)
 
-
-
-
-
-
         def stop_continuous(self):
             """
             Stop playing a continuous sound
@@ -492,7 +487,7 @@ if server_type in ("jack", "docs", True):
             Should be merged into a general stop method
             """
             if not self.continuous:
-                Warning("Not a continous sound!")
+                self.logger.warning("stop_continuous called but not a continuous sound!")
                 return
 
             self.quitting.set()

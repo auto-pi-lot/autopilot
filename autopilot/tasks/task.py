@@ -1,6 +1,4 @@
 # Base class for tasks
-
-#!/usr/bin/python2.7
 from collections import OrderedDict as odict
 import threading
 from datetime import datetime

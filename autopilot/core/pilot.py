@@ -1,11 +1,6 @@
-#!/usr/bin/python2.7
-
 """
 
 """
-
-__version__ = '0.2'
-__author__ = 'Jonny Saunders <jsaunder@uoregon.edu>'
 
 import os
 import sys

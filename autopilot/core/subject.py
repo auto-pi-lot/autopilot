@@ -20,7 +20,6 @@ import warnings
 import typing
 import warnings
 from copy import copy
-# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from autopilot.tasks import GRAD_LIST, TASK_LIST
 from autopilot import prefs
 from autopilot.stim.sound.sounds import STRING_PARAMS

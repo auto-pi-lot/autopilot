@@ -21,6 +21,7 @@ import os
 import json
 import copy
 import datetime
+import time
 from collections import OrderedDict as odict
 import numpy as np
 import ast
@@ -32,21 +33,17 @@ import itertools
 import threading
 import logging
 from operator import ior
-import pdb
 
 # adding autopilot parent directory to path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from autopilot.core.subject import Subject
 from autopilot import tasks, prefs
 from autopilot.stim.sound import sounds
 from autopilot.core.networking import Net_Node
 from functools import wraps
 from autopilot.core.utils import InvokeEvent
-#from autopilot.core.plots import gui_event
 from autopilot.core import styles
 
-import pdb
-import time
+
 
 
 def gui_event(fn):
