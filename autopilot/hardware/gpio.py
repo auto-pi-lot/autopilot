@@ -514,15 +514,19 @@ class Digital_Out(GPIO):
         if script_status == pigpio.PI_SCRIPT_INITING:
             check_times = 0
             while self.pig.script_status(self.script_handles[id]) == pigpio.PI_SCRIPT_INITING:
-                time.sleep(0.001)
+                time.sleep(0.005)
                 check_times += 1
-                if check_times > 1000:
+                if check_times > 200:
                     break
-        self.pig.run_script(self.script_handles[id])
-        self._last_script = id
 
-        if delete:
-            self.delete_script(id)
+        try:
+            self.pig.run_script(self.script_handles[id])
+            self._last_script = id
+        except pigpio.error as e:
+            self.logger.exception(f'Couldnt run script: {e}')
+        finally:
+            if delete:
+                self.delete_script(id)
 
 
         if return_id:
