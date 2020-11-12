@@ -10,6 +10,7 @@ from autopilot.tasks.test import DLC_Latency, DLC_Hand
 
 TASK_LIST = {'2AFC':Nafc,
              '2AFC_Gap':Nafc_Gap,
+             '2AFC_Gap_Laser':Nafc_Gap_Laser,
              'Free Water':Free_Water,
              'GoNoGo': GoNoGo,
              'Parallax': Parallax,
