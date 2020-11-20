@@ -105,3 +105,18 @@ After much ado, we're releasing Autopilot's first major upgrade. Cameras, Contin
 # What's next?
 
 [Autopilot Development Todo](https://docs.auto-pi-lot.com/en/latest/todo.html)
+
+# Supported Systems
+
+**OS**
+
+- Ubuntu >=16.04
+- raspiOS >=Buster
+
+**Python Versions**
+
+- Python==3.7.*
+
+**Raspberry Pi Versions**
+
+- Raspi>=3b (Raspi 4 strongly recommended!)

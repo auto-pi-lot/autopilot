@@ -130,9 +130,17 @@ Press ``ctrl+x`` to add Hardware, and fill in the relevant parameters (most are 
 Supported Systems
 ===================
 
-Autopilot is **linux/mac** only, and supports **Python 3.7**. Some parts might accidentally work in Windows but we make no guarantees.
++----------------+----------------------------+
+| OS             | * Pilot: raspiOS >=Buster  |
+|                | * Terminal: Ubuntu >=16.04 |
++----------------+----------------------------+
+| Python Version | 3.7                        |
++----------------+----------------------------+
+| Raspberry Pi   | >=3b                       |
++----------------+----------------------------+
 
-In particular, the Terminal was designed for Ubuntu, and the Pilot was designed for the Raspberry Pi OS.
+Autopilot is **linux/mac** only, and supports **Python 3.7**. In particular, the Terminal was designed for Ubuntu, and the Pilot was designed for the Raspberry Pi OS.
+Some parts might accidentally work in Windows but we make no guarantees.
 
 We have tried to take care to make certain platform-specific dependencies not break the entire package,
 so if you have some difficulty installing autopilot on a non-raspberry-pi linux machine please submit an issue!
