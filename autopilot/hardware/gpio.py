@@ -412,7 +412,7 @@ class Digital_Out(GPIO):
             if len(durations) == 1:
                 iter_series = itertools.product(values, durations)
             else:
-                ValueError("length of  values and durations must be equal, or length of durations must be 1. got len(values)={}, len(durations)={}".format(len(values), len(durations)))
+                raise ValueError("length of  values and durations must be equal, or length of durations must be 1. got len(values)={}, len(durations)={}".format(len(values), len(durations)))
         else:
             iter_series = values.__iter__()
 
@@ -422,7 +422,7 @@ class Digital_Out(GPIO):
         elif unit == "us":
             wait_fn = "mics"
         else:
-            ValueError("Unit for durations must be ms (milliseconds) or us (microseconds)")
+            raise ValueError("Unit for durations must be ms (milliseconds) or us (microseconds)")
 
         string_pieces = [b" ".join((self.pigs_function, str(self.pin_bcm).encode('utf-8'), str(val).encode('utf-8'), bytes(wait_fn, 'utf-8'), str(dur).encode('utf-8'))) for val, dur in iter_series]
         script_str = b" ".join(string_pieces)
@@ -431,7 +431,7 @@ class Digital_Out(GPIO):
             try:
                 repeat = int(repeat)
             except:
-                ValueError('Repeat must be coerceable to an integer, got {}'.format(repeat))
+                raise ValueError('Repeat must be coerceable to an integer, got {}'.format(repeat))
 
             script_str = b" ".join(("LD v0", str(repeat-1), # "LD (load) variable 0 with number of repeats"
                                     "tag 999",            # create a tag that can be returned to
@@ -514,6 +514,7 @@ class Digital_Out(GPIO):
         if script_status == pigpio.PI_SCRIPT_INITING:
             check_times = 0
             while self.pig.script_status(self.script_handles[id]) == pigpio.PI_SCRIPT_INITING:
+                # TODO: Expose this as a parameter -- how long to try and init scripts before skipping, mebs some general 'timeout' variable for all blocking ops.
                 time.sleep(0.005)
                 check_times += 1
                 if check_times > 200:
@@ -533,6 +534,17 @@ class Digital_Out(GPIO):
             return id
 
     def delete_script(self, script_id):
+        """
+        spawn a thread to delete a script with id ``script_id``
+
+        This is a 'soft' deletion -- it checks if the script is running, and waits for up to 10 seconds
+        before actually deleting it.
+
+        The script is deleted from the pigpio daemon, from ``script_handles`` and from ``scripts``
+
+        Args:
+            script_id (str): a script ID in :attr:`.Digital_Out.script_handles`
+        """
         delete_script = threading.Thread(target=self._delete_script, args=(script_id,))
         delete_script.start()
 
@@ -546,8 +558,32 @@ class Digital_Out(GPIO):
 
         self.pig.delete_script(self.script_handles[script_id])
 
+        del self.scripts[self.script_handles[script_id]]
         del self.script_handles[script_id]
-        del self.scripts[script_id]
+
+
+    def delete_all_scripts(self):
+        """
+        Stop and delete all scripts
+
+        This is a "hard" deletion -- the script will be immediately stopped if it's running.
+        """
+
+        for script_handle, script_id in self.script_handles.items():
+            try:
+                self.stop_script(script_handle)
+            except Exception as e:
+                self.logger.exception(e)
+
+            try:
+                self.pig.delete_script(script_id)
+            except Exception as e:
+                self.logger.exception(e)
+
+            del self.scripts[self.script_handles[script_id]]
+            del self.script_handles[script_id]
+
+
 
     def stop_script(self, id=None):
         """
@@ -585,12 +621,16 @@ class Digital_Out(GPIO):
 
     def release(self):
         """
-        Stops last running script, sets to :attr:`~.Digital_Out.off`, and calls :meth:`.GPIO.release`
+        Stops and deletes all scripts, sets to :attr:`~.Digital_Out.off`, and calls :meth:`.GPIO.release`
         """
         try:
-            self.stop_script()
+
+            self.delete_all_scripts()
+
+            #self.stop_script()
             self.set(self.off)
             time.sleep(0.1)
+
         except AttributeError:
             # self.pig has already been deleted (release has already been called)
             # so self.pig has no attribute 'send' because it is None
@@ -649,6 +689,7 @@ class Digital_In(GPIO):
         self.callbacks = []
 
         # List to store logic transition events
+        # FIXME: Should be a deque
         self.events = []
 
         self.record = record
@@ -869,7 +910,7 @@ class PWM(Digital_Out):
         """
         # FIXME: reimplementing parent release method here because of inconsistent use of self.off -- unify API and fix!!
         try:
-            self.stop_script()
+            self.delete_all_scripts()
             self.set(0) # clean values should handle inversion, don't use self.off
             time.sleep(0.1)
             self.pig.stop()
