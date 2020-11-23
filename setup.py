@@ -7,6 +7,9 @@ from setuptools import find_packages, setup
 import subprocess
 import sys
 
+# fix user install issue
+import site
+site.ENABLE_USER_SITE = "--user" in sys.argv[1:]
 
 # declare defaults
 IS_RASPI = False
