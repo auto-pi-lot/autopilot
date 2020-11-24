@@ -665,6 +665,13 @@ class Nafc_Gap_Laser(Nafc_Gap):
 
 
     def request(self,*args,**kwargs):
+        """
+        Call the superclass request method, and then compute laser presentation logic.
+
+        If :attr:`.target` == :attr:`.laser_mode`, spin for a laser trial depending on :attr:`.laser_probability`.
+
+        If we present a laser on this trial, we randomly draw from :attr:`.laser_conditions` and call the appropriate script.
+        """
         # call the super method
         data = super(Nafc_Gap_Laser, self).request(*args, **kwargs)
 
