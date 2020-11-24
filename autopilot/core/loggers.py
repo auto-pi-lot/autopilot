@@ -1,5 +1,6 @@
 import os
 import logging
+from logging.handlers import RotatingFileHandler
 from threading import Lock
 
 from autopilot import prefs
@@ -82,7 +83,7 @@ def init_logger(instance) -> logging.Logger:
             ## file handler
             # base filename is the module + '.log
             base_filename = os.path.join(prefs.LOGDIR, module_name + '.log')
-            fh = logging.RotatingFileHandler(
+            fh = RotatingFileHandler(
                 base_filename,
                 mode='a',
                 maxBytes=int(prefs.LOGSIZE),
