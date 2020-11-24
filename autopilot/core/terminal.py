@@ -42,6 +42,8 @@ from autopilot.core.plots import Plot_Widget
 from autopilot.core.networking import Terminal_Station, Net_Node
 from autopilot.core.utils import InvokeEvent, Invoker
 from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test
+from autopilot.core.loggers import init_logger
+
 
 IMPORTED_VIZ = False
 VIZ_ERROR = None
@@ -110,11 +112,6 @@ class Terminal(QtWidgets.QMainWindow):
         data_panel (:class:`~.plots.Plot_Widget`): Plots for each pilot and subject.
         logo (:class:`QtWidgets.QLabel`): Label holding our beautiful logo ;X
         logger (:class:`logging.Logger`): Used to log messages and network events.
-        log_handler (:class:`logging.FileHandler`): Handler for logging
-        log_formatter (:class:`logging.Formatter`): Formats log entries as::
-
-            "%(asctime)s %(levelname)s : %(message)s"
-
     """
 
     def __init__(self):
@@ -139,18 +136,12 @@ class Terminal(QtWidgets.QMainWindow):
         self.data_panel = None
         self.logo = None
 
-
         # logging
-        self.logger        = None
-        self.log_handler   = None
-        self.log_formatter = None
+        self.logger = init_logger(self)
 
         # Load pilots db as ordered dictionary
         with open(prefs.PILOT_DB) as pilot_file:
             self.pilots = json.load(pilot_file, object_pairs_hook=odict)
-
-        # Start Logging
-        self.init_logging()
 
         # Listen dictionary - which methods to call for different messages
         # Methods are spawned in new threads using handle_message
@@ -196,21 +187,7 @@ class Terminal(QtWidgets.QMainWindow):
         self.logger.info('Terminal Initialized')
 
 
-    def init_logging(self):
-        """
-        Start logging to a timestamped file in `prefs.LOGDIR`
-        """
 
-        timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(prefs.LOGDIR, 'Terminal_Log_{}.log'.format(timestr))
-
-        self.logger        = logging.getLogger('main')
-        self.log_handler   = logging.FileHandler(log_file)
-        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
-        self.log_handler.setFormatter(self.log_formatter)
-        self.logger.addHandler(self.log_handler)
-        self.logger.setLevel(logging.INFO)
-        self.logger.info('Terminal Logging Initiated')
 
     def initUI(self):
         """

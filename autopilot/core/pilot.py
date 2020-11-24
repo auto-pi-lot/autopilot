@@ -22,6 +22,9 @@ import tables
 warnings.simplefilter('ignore', category=tables.NaturalNameWarning)
 
 from autopilot import prefs
+from autopilot.core.loggers import init_logger
+
+
 
 if __name__ == '__main__':
     # Parse arguments - this should have been called with a .json prefs file passed
@@ -117,15 +120,10 @@ class Pilot:
         ip (str): Our IPv4 address
         listens (dict): Dictionary mapping message keys to methods used to process them.
         logger (:class:`logging.Logger`): Used to log messages and network events.
-        log_handler (:class:`logging.FileHandler`): Handler for logging
-        log_formatter (:class:`logging.Formatter`): Formats log entries as::
-
-            "%(asctime)s %(levelname)s : %(message)s"
     """
 
     logger = None
-    log_handler = None
-    log_formatter = None
+
 
     # Events for thread handling
     running = None
@@ -158,7 +156,7 @@ class Pilot:
             self.child = False
             self.parentid = 'T'
 
-        self.init_logging()
+        self.logger = init_logger(self)
 
         # Locks, etc. for threading
         self.running = threading.Event() # Are we running a task?
@@ -218,25 +216,7 @@ class Pilot:
 
         # TODO Synchronize system clock w/ time from terminal.
 
-    def init_logging(self):
-        """
-        Start logging to a timestamped file in `prefs.LOGDIR`
-        """
 
-        timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(prefs.LOGDIR, 'Pilots_Log_{}.log'.format(timestr))
-
-        self.logger = logging.getLogger('main')
-        self.log_handler = logging.FileHandler(log_file)
-        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
-        self.log_handler.setFormatter(self.log_formatter)
-        self.logger.addHandler(self.log_handler)
-        if hasattr(prefs, 'LOGLEVEL'):
-            loglevel = getattr(logging, prefs.LOGLEVEL)
-        else:
-            loglevel = logging.WARNING
-        self.logger.setLevel(loglevel)
-        self.logger.info('Pilot Logging Initiated')
 
     #################################################################
     # Station

@@ -19,6 +19,7 @@ from datetime import datetime
 
 # importing configures environment variables necessary for importing jack-client module below
 from autopilot import external
+from autopilot.core.loggers import init_logger
 
 try:
     import jack
@@ -161,30 +162,9 @@ class JackClient(mp.Process):
         globals()['CONTINUOUS_QUEUE'] = self.continuous_q
         globals()['CONTINUOUS_LOOP'] = self.continuous_loop
 
-        self.init_logging()
-        self.logger.info('Jack Client Booted')
+        self.logger = init_logger(self)
 
-    def init_logging(self):
-        """
-        Initialize logging to a timestamped file in `prefs.LOGDIR` .
 
-        The logger name will be `'node.{id}'` .
-        """
-        #FIXME: Just copying and pasting from net node, should implement logging uniformly across hw objects
-        timestr = datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(prefs.LOGDIR, '{}_{}.log'.format('jack', timestr))
-
-        self.logger = logging.getLogger('jack'.format(self.name))
-        self.log_handler = logging.FileHandler(log_file)
-        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
-        self.log_handler.setFormatter(self.log_formatter)
-        self.logger.addHandler(self.log_handler)
-        if hasattr(prefs, 'LOGLEVEL'):
-            loglevel = getattr(logging, prefs.LOGLEVEL)
-        else:
-            loglevel = logging.WARNING
-        self.logger.setLevel(loglevel)
-        self.logger.info('{} Logging Initiated'.format(self.name))
 
     def boot_server(self):
         """

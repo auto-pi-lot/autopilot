@@ -46,6 +46,7 @@ else:
 
 
 from autopilot import prefs
+from autopilot.core.loggers import init_logger
 
 # switch behavior based on audio server type
 try:
@@ -194,8 +195,7 @@ if server_type in ("jack", "docs", True):
             self.buffered = False
             self.buffered_continuous = False
 
-            # FIXME: debugging sound file playback by logging which sounds loaded before crash
-            self.logger = logging.getLogger('main')
+            self.logger = init_logger(self)
 
 
         def chunk(self, pad=True):

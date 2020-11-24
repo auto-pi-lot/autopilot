@@ -54,9 +54,14 @@ If you want to start writing your own experiments and tinkering with Autopilot,
 we strongly recommend forking `the repository <https://github.com/wehr-lab/autopilot/>`_
 and developing directly in the library so your gorgeous insights can be integrated later.
 
+You can work from the main branch, or you can checkout the ``dev`` branch, which is the primary development branch and
+runs ahead of the main branch, but is certainly less stable and likely contains in-progress work.
+
  ::
 
     git clone https://github.com/wehr-lab/autopilot.git
+    # optionally
+    # git -C ./autopilot checkout dev
     pip3 install -e ./autopilot/
 
 .. note::
@@ -130,14 +135,14 @@ Press ``ctrl+x`` to add Hardware, and fill in the relevant parameters (most are 
 Supported Systems
 ===================
 
-+----------------+----------------------------+
-| OS             | * Pilot: raspiOS >=Buster  |
-|                | * Terminal: Ubuntu >=16.04 |
-+----------------+----------------------------+
-| Python Version | 3.7                        |
-+----------------+----------------------------+
-| Raspberry Pi   | >=3b                       |
-+----------------+----------------------------+
++----------------+-----------------------------------------------+
+| OS             | * Pilot: raspiOS >=Buster (lite recommended)  |
+|                | * Terminal: Ubuntu >=16.04                    |
++----------------+-----------------------------------------------+
+| Python Version | 3.7                                           |
++----------------+-----------------------------------------------+
+| Raspberry Pi   | >=3b                                          |
++----------------+-----------------------------------------------+
 
 Autopilot is **linux/mac** only, and supports **Python 3.7**. In particular, the Terminal was designed for Ubuntu, and the Pilot was designed for the Raspberry Pi OS.
 Some parts might accidentally work in Windows but we make no guarantees.

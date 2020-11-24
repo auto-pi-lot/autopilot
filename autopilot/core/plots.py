@@ -38,6 +38,7 @@ from autopilot import tasks, prefs
 from autopilot.core import styles
 from .utils import InvokeEvent, Invoker
 from autopilot.core.networking import Net_Node
+from autopilot.core.loggers import init_logger
 
 
 ############
@@ -81,7 +82,7 @@ class Plot_Widget(QtWidgets.QWidget):
         # type: () -> None
         QtWidgets.QWidget.__init__(self)
 
-        self.logger = logging.getLogger('main')
+        self.logger = init_logger(self)
 
 
         # We should get passed a list of pilots to keep ourselves in order after initing
@@ -187,7 +188,7 @@ class Plot(QtWidgets.QWidget):
         #super(Plot, self).__init__(QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers), parent)
         super(Plot, self).__init__()
 
-        self.logger = logging.getLogger('main')
+        self.logger = init_logger(self)
 
         self.parent = parent
         self.layout = None

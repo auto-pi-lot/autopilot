@@ -38,6 +38,8 @@ BASE_PREFS = odict({
     'MSGPORT'    : {'type': 'int', "text":"Message Port - Router port used by this agent to receive messages:", "default":"5565"},
     'TERMINALIP' : {'type': 'str', "text":"Terminal IP:", "default":"192.168.0.100"},
     'LOGLEVEL'   : {'type': 'choice', "text": "Log Level:", "choices":("DEBUG", "INFO", "WARNING", "ERROR"), "default": "WARNING"},
+    'LOGSIZE'    : {'type': 'int', "text": "Size of individual log file (in bytes)", "default": str(5*(2**20))},  # 50MB
+    'LOGNUM'     : {'type': 'int', "text": "Number of logging backups to keep of LOGSIZE", "default": str(4)},  # 4 * 5MB = 20MB per module
     'CONFIG'     : {'type': 'list', "text": "System Configuration", 'hidden': True}
 })
 

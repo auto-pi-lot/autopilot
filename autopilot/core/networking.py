@@ -38,8 +38,7 @@ else:
     import Queue as queue
 
 from autopilot import prefs
-
-from pprint import pprint
+from autopilot.core.loggers import init_logger
 
 # TODO: Periodically ping pis to check that they are still responsive
 
@@ -76,11 +75,6 @@ class Station(multiprocessing.Process):
         listener (:class:`zmq.Socket`): The main router socket to send/recv messages
         listen_port (str): Port our router listens on
         logger (:class:`logging.Logger`): Used to log messages and network events.
-        log_handler (:class:`logging.FileHandler`): Handler for logging
-        log_formatter (:class:`logging.Formatter`): Formats log entries as::
-
-            "%(asctime)s %(levelname)s : %(message)s"
-
         id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
         ip (str): Device IP
         listens (dict): Dictionary of functions to call for different types of messages. keys match the :attr:`.Message.key`.
@@ -101,8 +95,6 @@ class Station(multiprocessing.Process):
     pusher       = None    # pusher socket - a dealer socket that connects to other routers
     listener     = None    # Listener socket - a router socket to send/recv messages
     logger       = None    # Logger....
-    log_handler  = None
-    log_formatter = None
     id           = None    # What are we known as?
     ip           = None    # whatismy
     listens      = {}    # Dictionary of functions to call for different types of messages
@@ -126,6 +118,7 @@ class Station(multiprocessing.Process):
 
 
         # Setup logging
+        self.logger = init_logger(self)
         self.init_logging()
 
         self.file_block = threading.Event() # to wait for file transfer
@@ -652,26 +645,6 @@ class Station(multiprocessing.Process):
                 self.send(sender, 'CONFIRM', msg.id)
             elif send_type == 'dealer':
                 self.push(msg.sender, 'CONFIRM', msg.id)
-
-    def init_logging(self):
-        """
-        Initialize logging to a timestamped file in `prefs.LOGDIR` .
-        """
-        # Setup logging
-        timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(prefs.LOGDIR, 'Networking_Log_{}.log'.format(timestr))
-
-        self.logger = logging.getLogger('networking')
-        self.log_handler = logging.FileHandler(log_file)
-        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
-        self.log_handler.setFormatter(self.log_formatter)
-        self.logger.addHandler(self.log_handler)
-        if hasattr(prefs, 'LOGLEVEL'):
-            loglevel = getattr(logging, prefs.LOGLEVEL)
-        else:
-            loglevel = logging.WARNING
-        self.logger.setLevel(loglevel)
-        self.logger.info('Station Logging Initiated')
 
     def get_ip(self):
         """
@@ -1310,11 +1283,6 @@ class Net_Node(object):
         outbox (dict): Messages that have been sent but have not been confirmed
         timers (dict): dict of :class:`threading.Timer` s that will check in on outbox messages
         logger (:class:`logging.Logger`): Used to log messages and network events.
-        log_handler (:class:`logging.FileHandler`): Handler for logging
-        log_formatter (:class:`logging.Formatter`): Formats log entries as::
-
-            "%(asctime)s %(levelname)s : %(message)s"
-
         msg_counter (:class:`itertools.count`): counter to index our sent messages
         loop_thread (:class:`threading.Thread`): Thread that holds our loop. initialized with `daemon=True`
     """
@@ -1328,8 +1296,6 @@ class Net_Node(object):
     timers = {}
     #connected = False
     logger = None
-    log_handler = None
-    log_formatter = None
     sock = None
     loop_thread = None
     repeat_interval = 5 # how many seconds to wait before trying to repeat a message
@@ -1367,7 +1333,7 @@ class Net_Node(object):
         self.msg_counter = count()
 
         # try to get a logger
-        self.init_logging()
+        self.logger = init_logger(self)
 
         # If we were given an explicit IP to connect to, stash it
         self.upstream_ip = upstream_ip
@@ -1856,31 +1822,6 @@ class Net_Node(object):
 
                 self.logger.debug("STREAM {}: Sent 1 item".format(self.id + '_' + id))
 
-
-
-
-
-
-    def init_logging(self):
-        """
-        Initialize logging to a timestamped file in `prefs.LOGDIR` .
-
-        The logger name will be `'node.{id}'` .
-        """
-        timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(prefs.LOGDIR, 'NetNode_{}_{}.log'.format(self.id, timestr))
-
-        self.logger = logging.getLogger('node.{}'.format(self.id))
-        self.log_handler = logging.FileHandler(log_file)
-        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
-        self.log_handler.setFormatter(self.log_formatter)
-        self.logger.addHandler(self.log_handler)
-        if hasattr(prefs, 'LOGLEVEL'):
-            loglevel = getattr(logging, prefs.LOGLEVEL)
-        else:
-            loglevel = logging.WARNING
-        self.logger.setLevel(loglevel)
-        self.logger.info('{} Logging Initiated'.format(self.id))
 
     def release(self):
         self.closing.set()

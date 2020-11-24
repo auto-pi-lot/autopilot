@@ -1,5 +1,5 @@
 from autopilot.tasks.task import Task
-from autopilot.tasks.nafc import Nafc, Nafc_Gap
+from autopilot.tasks.nafc import Nafc, Nafc_Gap, Nafc_Gap_Laser
 from autopilot.tasks.gonogo import GoNoGo
 from autopilot.tasks.parallax import Parallax
 from autopilot.tasks.free_water import Free_Water

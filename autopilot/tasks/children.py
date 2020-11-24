@@ -17,6 +17,7 @@ from autopilot.hardware.gpio import Digital_Out
 from autopilot.hardware.usb import Wheel
 from autopilot.hardware import cameras
 from autopilot.core.networking import Net_Node
+from autopilot.core.loggers import init_logger
 from autopilot.transform import transforms
 from itertools import cycle
 from queue import Empty, LifoQueue
@@ -207,7 +208,7 @@ class Transformer(object):
         self.input_q = deque(maxlen=1)
         self.value_subset = value_subset
 
-        self.logger = logging.getLogger('main')
+        self.logger = init_logger(self)
 
         self.process_thread = threading.Thread(target=self._process, args=(transform,))
         self.process_thread.daemon = True
