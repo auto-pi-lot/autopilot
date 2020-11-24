@@ -138,11 +138,17 @@ Closed-Loop Behavior & Processing Pipelines
       eg. there should be a generalized callback api for triggering events. the existing :meth:`~.Task.handle_trigger` is
       quite limited. There should be an obvious way for users to implement saving/reporting data from
       their tasks.
+
+        * Relatedly, the creation of triggers is pretty awkward and not strictly threadsafe, it should be possible to identify
+          triggers in subclasses (eg. a superclass creates some trigger, a subclass should be able to unambiguously identify it
+          without having to parse method names, etc)
+
     * It's possible already to use a python generator to have more complex ordering of task stages,
       eg. instead of using an :class:`itertools.cycle` one could write a generator function that yields task
       stages based on some parameters of the task. There should be an additional manager type, the ``Trial_Manager``, that
       implements some common stage schemes -- cycles, yes, but also DAGs, timed switches, etc. This way tasks could blend
       some intuitive features of finite-state machines while also not being beholden by them.
+
 
 * **Mesh Networking**
 
