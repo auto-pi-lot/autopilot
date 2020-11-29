@@ -43,7 +43,7 @@ before_script:
   - "herbstluftwm &"
   - sleep 1
   - mkdir -p /home/travis/autopilot # make directories for logs
-  - pylint autopilot
+  # - pylint autopilot
 
 script:
   - pytest --cov=autopilot --cov-report term-missing tests
