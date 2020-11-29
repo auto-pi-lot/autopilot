@@ -253,7 +253,7 @@ class DLC(Image):
         Returns:
             str
         """
-        if 'DLCDIR' in prefs.prefdict.keys():
+        if 'DLCDIR' in prefs._PREFS.keys():
             dlc_dir = prefs.DLCDIR
         else:
             dlc_dir = os.path.join(prefs.BASEDIR, 'dlc')

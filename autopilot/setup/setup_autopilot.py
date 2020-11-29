@@ -20,6 +20,7 @@ import importlib
 from autopilot import hardware
 from autopilot.setup.run_script import call_series, run_script, list_scripts
 from autopilot.setup.scripts import ENV_PILOT, PILOT_ENV_CMDS
+from autopilot.prefs import _DEFAULTS, Scopes
 
 # CLI Options
 
@@ -32,76 +33,28 @@ parser.add_argument('-l', '--list_scripts', help="list available setup scripts!"
 AGENTS = ('TERMINAL', 'PILOT', 'CHILD')
 
 BASE_PREFS = odict({
-    'NAME'       : {'type': 'str', "text": "Agent Name:"},
-    'BASEDIR'    : {'type': 'str', "text":"Base Directory:", "default":os.path.join(os.path.expanduser("~"),"autopilot")},
-    'PUSHPORT'   : {'type': 'int',"text":"Push Port - Router port used by the Terminal or upstream agent:", "default":"5560"},
-    'MSGPORT'    : {'type': 'int', "text":"Message Port - Router port used by this agent to receive messages:", "default":"5565"},
-    'TERMINALIP' : {'type': 'str', "text":"Terminal IP:", "default":"192.168.0.100"},
-    'LOGLEVEL'   : {'type': 'choice', "text": "Log Level:", "choices":("DEBUG", "INFO", "WARNING", "ERROR"), "default": "WARNING"},
-    'LOGSIZE'    : {'type': 'int', "text": "Size of individual log file (in bytes)", "default": str(5*(2**20))},  # 50MB
-    'LOGNUM'     : {'type': 'int', "text": "Number of logging backups to keep of LOGSIZE", "default": str(4)},  # 4 * 5MB = 20MB per module
-    'CONFIG'     : {'type': 'list', "text": "System Configuration", 'hidden': True}
+    k:v for k, v in _DEFAULTS.items() if v["scope"] == Scopes.COMMON
 })
 
 PILOT_PREFS = odict({
-    'PIGPIOMASK': {'type': 'str', 'text': 'Binary mask controlling which pins pigpio controls according to their BCM numbering, see the -x parameter of pigpiod',
-                   'default': "1111110000111111111111110000"},
-    'PIGPIOARGS': {'type': 'str', 'text': 'Arguments to pass to pigpiod on startup',
-                   'default': '-t 0 -l'},
-    'PULLUPS'   : {'type': 'list', 'text': 'Pins to pull up on system startup? (list of form [1, 2]'},
-    'PULLDOWNS'   : {'type': 'list', 'text': 'Pins to pull down on system startup? (list of form [1, 2]'}
+    k:v for k, v in _DEFAULTS.items() if v["scope"] == Scopes.PILOT
 })
 
 LINEAGE_PREFS = odict({
-    'LINEAGE':     {'type': 'choice', "text": "Are we a parent or a child?", "choices": ("NONE", "PARENT", "CHILD")},
-    'CHILDID'    : {'type': 'str', "text":"Child ID:", "depends":("LINEAGE", "PARENT")},
-    'PARENTID'   : {'type': 'str', "text":"Parent ID:", "depends":("LINEAGE", "CHILD")},
-    'PARENTIP'   : {'type': 'str', "text":"Parent IP:", "depends":("LINEAGE","CHILD")},
-    'PARENTPORT' : {'type': 'str', "text":"Parent Port:", "depends":("LINEAGE", "CHILD")},
+    k:v for k, v in _DEFAULTS.items() if v["scope"] == Scopes.LINEAGE
 })
 
 AUDIO_PREFS = odict({
-    'AUDIOSERVER': {'type': 'bool', 'text':'Enable jack audio server?'},
-    'NCHANNELS': {'type': 'int', 'text': "Number of Audio channels", 'default':1, 'depends': 'AUDIOSERVER'},
-    'OUTCHANNELS': {'type': 'list', 'text': 'List of Audio channel indexes to connect to', 'default': '[1]', 'depends': 'AUDIOSERVER'},
-    'FS': {'type': 'int', 'text': 'Audio Sampling Rate', 'default': 192000, 'depends': 'AUDIOSERVER'},
-    'JACKDSTRING': {'type': 'str', 'text': 'Arguments to pass to jackd, see the jackd manpage',
-                    'default': 'jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -n3 -s &', 'depends': 'AUDIOSERVER'},
+    k:v for k, v in _DEFAULTS.items() if v["scope"] == Scopes.AUDIO
 })
 
 TERMINAL_PREFS = odict({
-    'DRAWFPS': {'type': 'int', "text": "FPS to draw videos displayed during acquisition",
-                "default": "20"},
-    'PILOT_DB': {'type': 'str', 'text': "filename to use for the .json pilot_db that maps pilots to subjects (relative to BASEDIR)",
-                 "default": "pilot_db.json"}
+    k:v for k, v in _DEFAULTS.items() if v["scope"] == Scopes.TERMINAL
 })
 
-DIRECTORY_STRUCTURE = {
-    'DATADIR': 'data',
-    'SOUNDDIR': 'sounds',
-    'LOGDIR': 'logs',
-    'VIZDIR': 'viz',
-    'PROTOCOLDIR': 'protocols',
-}
-
-"""
-performance: 
-    * disable startup script that changes cpu governor,
-    * change cpu governor to "performance" on boot
-    * increase memlock and realtime priority limits for audio group
-
-hifiberry:
-    * turn onboard audio off
-    * enable hifiberry stuff in /boot/config.txt
-    * edit alsa config so hifiberry is default sound card
-
-viz:
-
-.. todo::
-
-    Need to find a more elegant way to do this, for now see lines 160-200 in the presetup_pilot.sh legacy script
-
-"""
+DIRECTORY_STRUCTURE = odict({
+    k:v for k, v in _DEFAULTS.items() if v["scope"] == Scopes.DIRECTORY
+})
 
 
 

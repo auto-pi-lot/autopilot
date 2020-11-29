@@ -1,8 +1,13 @@
 """
 Module to hold module-global variables as preferences.
 
-Warning:
-    DO NOT hardcode prefs here.
+todo::
+
+    JONNY THIS NEEDS TO BE TOTALLY REWRITTEN
+
+    Should different scopes get different handlers, eg. directories can ensure they exist and handle creation of
+    subsequent files? or is that one foot into overengineering hell?
+
 
 A prefs.json file should be generated with an appropriate :mod:`autopilot.setup` routine
 
@@ -18,6 +23,11 @@ And to add a pref
 
 Examples:
     prefs.add('PARAM', 'VALUE")
+
+Warning:
+    These are **not** hard coded prefs. :data:`_DEFAULTS` populates the *default* values for prefs, but local prefs are
+    always restored from and saved to ``prefs.json`` . If you're editing this file and things aren't changing,
+    you're in the wrong place!
 """
 
 # this is strictly a placeholder module to
@@ -29,17 +39,295 @@ Examples:
 # (see setup dir)
 # then you should call prefs.init(prefs.json) if the if __name__=="__main__" block
 
+# Prefs is a top-level module! It shouldn't depend on anything else in Autopilot,
+# and if it does, it should carefully import it where it is needed!
+# (prefs needs to be possible to import everywhere, including eg. in setup_autopilot)
+
 import json
 import subprocess
+import multiprocessing as mp
 import os
+import logging
+import typing
+from pathlib import Path
+from ctypes import c_bool
+from enum import Enum, auto
+
+#from autopilot.core.loggers import init_logger
 from collections import OrderedDict as odict
 
-prefdict = {}
+class Scopes(Enum):
+    """
+    Enum that lists available scopes and groups for prefs
+
+    Scope can be an agent type, common (for everyone), or specify some
+    subgroup of prefs that should be presented together (like directories)
+
+    COMMON = All Agents
+    DIRECTORY = Prefs group for specifying directory structure
+    TERMINAL = prefs for Terminal Agents
+    Pilot = Prefs for Pilot agents
+    LINEAGE = prefs for networking lineage (until networking becomes more elegant ;)
+    AUDIO = Prefs for configuring the Jackd audio server
+
+
+    """
+    COMMON = auto()
+    TERMINAL = auto()
+    PILOT = auto()
+    DIRECTORY = auto()
+    LINEAGE = auto()
+    AUDIO = auto()
+
+
+
+
+_PREF_MANAGER = mp.Manager() # type: mp.Manager
+"""
+The :class:`multiprocessing.Manager` that stores prefs during system operation and makes them available
+and consistent across processes.
+"""
+
+_PREFS = _PREF_MANAGER.dict() # type: dict
 """
 stores a dictionary of preferences that mirrors the global variables.
 """
 
-INITIALIZED = False
+_LOGGER = None # type: typing.Union[logging.Logger, None]
+"""
+Logger used by prefs initialized by :func:`.core.loggers.init_logger`
+
+Initially None, created once prefs are populated because init_logger requires some prefs to be set (uh the logdir and level and stuff)
+"""
+
+_INITIALIZED = mp.Value(c_bool, False) # type: mp.Value
+"""
+Boolean flag to indicate whether prefs have been initialzied from ``prefs.json``
+"""
+
+_LOCK = mp.Lock()
+"""
+:class:`multiprocessing.Lock` to control access to ``prefs.json``
+"""
+
+# not documenting, just so that the full function doesn't need to be put in for each directory
+# lol at this literal reanimated fossil halfway evolved between os.path and pathlib
+_basedir = Path(os.path.join(os.path.expanduser("~"), "autopilot"))
+
+
+_DEFAULTS = odict({
+    'NAME': {
+        'type': 'str',
+        "text": "Agent Name:",
+        "scope": Scopes.COMMON
+    },
+    'PUSHPORT': {
+        'type': 'int',
+        "text": "Push Port - Router port used by the Terminal or upstream agent:",
+        "default": "5560",
+        "scope": Scopes.COMMON
+    },
+    'MSGPORT': {
+        'type': 'int',
+        "text": "Message Port - Router port used by this agent to receive messages:",
+        "default": "5565",
+        "scope": Scopes.COMMON
+    },
+    'TERMINALIP': {
+        'type': 'str',
+        "text": "Terminal IP:",
+        "default": "192.168.0.100",
+        "scope": Scopes.COMMON
+    },
+    'LOGLEVEL': {
+        'type': 'choice',
+        "text": "Log Level:",
+        "choices": ("DEBUG", "INFO", "WARNING", "ERROR"),
+        "default": "WARNING",
+        "scope": Scopes.COMMON
+    },
+    'LOGSIZE': {
+        'type': 'int',
+        "text": "Size of individual log file (in bytes)",
+        "default": 5 * (2 ** 20),  # 50MB
+        "scope": Scopes.COMMON
+    },
+    'LOGNUM': {
+        'type': 'int',
+        "text": "Number of logging backups to keep of LOGSIZE",
+        "default": 4,
+        "scope": Scopes.COMMON
+    },
+    # 4 * 5MB = 20MB per module
+    'CONFIG': {
+        'type': 'list',
+        "text": "System Configuration",
+        'hidden': True,
+        "scope": Scopes.COMMON
+    },
+    'BASEDIR': {
+        'type': 'str',
+        "text": "Base Directory",
+        "default": str(_basedir),
+        "scope": Scopes.DIRECTORY
+    },
+    'DATADIR': {
+        'type': 'str',
+        "text": "Data Directory",
+        "default": str(_basedir / 'data'),
+        "scope": Scopes.DIRECTORY
+    },
+    'SOUNDDIR': {
+        'type': 'str',
+        "text": "Sound file directory",
+        "default": str(_basedir / 'sounds'),
+        "scope": Scopes.DIRECTORY
+    },
+    'LOGDIR': {
+        'type': 'str',
+        "text": "Log Directory",
+        "default": str(_basedir / 'logs'),
+        "scope": Scopes.DIRECTORY
+    },
+    'VIZDIR': {
+        'type': 'str',
+        "text": "Directory to store Visualization results",
+        "default": str(_basedir / 'viz'),
+        "scope": Scopes.DIRECTORY
+    },
+    'PROTOCOLDIR': {
+        'type': 'str',
+        "text": "Protocol Directory",
+        "default": str(_basedir / 'protocols'),
+        "scope": Scopes.DIRECTORY
+    },
+    'PLUGINDIR': {
+        'type': 'str',
+        "text": "Directory to import ",
+        "default": os.path.join(os.path.expanduser("~"), "autopilot"),
+        "scope": Scopes.DIRECTORY
+    },
+    'PIGPIOMASK': {
+        'type': 'str',
+        'text': 'Binary mask controlling which pins pigpio controls according to their BCM numbering, see the -x parameter of pigpiod',
+        'default': "1111110000111111111111110000",
+        "scope": Scopes.PILOT
+    },
+    'PIGPIOARGS': {
+        'type': 'str',
+        'text': 'Arguments to pass to pigpiod on startup',
+        'default': '-t 0 -l',
+        "scope": Scopes.PILOT
+    },
+    'PULLUPS': {
+        'type': 'list',
+        'text': 'Pins to pull up on system startup? (list of form [1, 2])',
+        "scope": Scopes.PILOT
+    },
+    'PULLDOWNS': {
+        'type': 'list',
+        'text': 'Pins to pull down on system startup? (list of form [1, 2])',
+        "scope": Scopes.PILOT
+    },
+    'DRAWFPS': {
+        'type': 'int',
+        "text": "FPS to draw videos displayed during acquisition",
+        "default": "20",
+        "scope": Scopes.TERMINAL
+    },
+    'PILOT_DB': {
+        'type': 'str',
+        'text': "filename to use for the .json pilot_db that maps pilots to subjects (relative to BASEDIR)",
+        "default": str(_basedir / "pilot_db.json"),
+        "scope": Scopes.TERMINAL
+    },
+    'LINEAGE': {
+        'type': 'choice',
+        "text": "Are we a parent or a child?",
+        "choices": ("NONE", "PARENT", "CHILD"),
+        "scope": Scopes.LINEAGE
+    },
+    'CHILDID': {
+        'type': 'str',
+        "text": "Child ID:",
+        "depends": ("LINEAGE", "PARENT"),
+        "scope": Scopes.LINEAGE
+    },
+    'PARENTID': {
+        'type': 'str',
+        "text": "Parent ID:",
+        "depends": ("LINEAGE", "CHILD"),
+        "scope": Scopes.LINEAGE
+    },
+    'PARENTIP': {
+        'type': 'str',
+        "text": "Parent IP:",
+        "depends": ("LINEAGE", "CHILD"),
+        "scope": Scopes.LINEAGE
+    },
+    'PARENTPORT': {
+        'type': 'str',
+        "text": "Parent Port:",
+        "depends": ("LINEAGE", "CHILD"),
+        "scope": Scopes.LINEAGE
+    },
+    'AUDIOSERVER': {
+        'type': 'bool',
+        'text': 'Enable jack audio server?',
+        "scope": Scopes.AUDIO
+    },
+    'NCHANNELS': {
+        'type': 'int',
+        'text': "Number of Audio channels",
+        'default': 1,
+        'depends': 'AUDIOSERVER',
+        "scope": Scopes.AUDIO
+    },
+    'OUTCHANNELS': {
+        'type': 'list',
+        'text': 'List of Audio channel indexes to connect to',
+        'default': '[1]',
+        'depends': 'AUDIOSERVER',
+        "scope": Scopes.AUDIO
+    },
+    'FS': {
+        'type': 'int',
+        'text': 'Audio Sampling Rate',
+        'default': 192000,
+        'depends': 'AUDIOSERVER',
+        "scope": Scopes.AUDIO
+    },
+    'JACKDSTRING': {
+        'type': 'str',
+        'text': 'Arguments to pass to jackd, see the jackd manpage',
+        'default': 'jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -n3 -s &',
+        'depends': 'AUDIOSERVER',
+        "scope": Scopes.AUDIO
+    },
+
+})
+"""
+Ordered Dictionary containing default values for prefs.
+
+An Ordered Dictionary lets the prefs be displayed in gui elements in a predictable order, but prefs are stored in ``prefs.json`` in
+alphabetical order and the 'live' prefs used during runtime are stored in :data:`._PREFS`
+
+Each entry should be a dict with the following structure::
+
+    "PREF_NAME": {
+        "type": (str, int, bool, choice, list) # specify the appropriate GUI input, str or int are validators, 
+        choices are a 
+            # dropdown box, and lists allow users to specify lists of values like "[0, 1]"
+        "default": If possible, assign default value, otherwise None
+        "text": human-readable text that described the pref
+        "scope": to whom does this pref apply? see :class:`.Scopes`
+        "depends": name of another pref that needs to be supplied/enabled for this one to be enabled (eg. don't set sampling rate of audio server if audio server disabled)
+            can also be specified as a tuple like ("LINEAGE", "CHILD") that enables the option when prefs[depends[0]] == depends[1]
+        "choices": If type=="choice", a tuple of available choices.
+    }
+"""
+
+
 
 def init(fn=None):
     """
@@ -100,17 +388,17 @@ def init(fn=None):
 
     ###########################
 
-    global prefdict
+    global _PREFS
 
     # assign key values to module globals so can access with prefs.pref1
     for k, v in prefs.items():
         globals()[k] = v
-        prefdict[k] = v
+        _PREFS[k] = v
 
     # also store as a dictionary so other modules can have one if they want it
     globals()['__dict__'] = prefs
 
-    globals()['INITIALIZED'] = True
+    globals()['_INITIALIZED'] = True
 
 def add(param, value):
     """
@@ -122,8 +410,8 @@ def add(param, value):
     """
     globals()[param] = value
 
-    global prefdict
-    prefdict[param] = value
+    global _PREFS
+    _PREFS[param] = value
 
 # Return the git revision as a string
 def git_version(repo_dir):
@@ -225,7 +513,7 @@ if 'AGENT' not in globals().keys():
 
 add('AUTOPILOT_ROOT', os.path.dirname(os.path.abspath(__file__)))
 
-if not INITIALIZED:
+if not _INITIALIZED:
     init()
 #
 # HARDWARE_PREFS = odict({

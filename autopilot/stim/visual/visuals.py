@@ -15,7 +15,7 @@ if sys.version_info >= (3,0):
 else:
     from queue import Queue, Empty
 
-#print(prefs.prefdict.items())
+#print(prefs._PREFS.items())
 if hasattr(prefs, 'CONFIG'):
     if 'VISUAL' in prefs.CONFIG:
         from psychopy import visual, core
