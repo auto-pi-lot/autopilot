@@ -119,7 +119,6 @@ class Station(multiprocessing.Process):
 
         # Setup logging
         self.logger = init_logger(self)
-        self.init_logging()
 
         self.file_block = threading.Event() # to wait for file transfer
 
