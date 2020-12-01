@@ -770,14 +770,14 @@ class Nafc_Gap_Laser(Nafc_Gap):
 #         # TODO: Update PARAMS with wheel params
 #     def init_networking(self, kwargs):
 #
-#         self.node = Net_Node(id="T_{}".format(prefs.NAME),
-#                              upstream=prefs.NAME,
-#                              port=prefs.MSGPORT,
+#         self.node = Net_Node(id="T_{}".format(prefs.get('NAME')),
+#                              upstream=prefs.get('NAME'),
+#                              port=prefs.get('MSGPORT'),
 #                              listens = {},
 #                              instance=True)
 #
 #         value = {
-#             'child': {'parent':prefs.NAME, 'subject':kwargs['subject']},
+#             'child': {'parent':prefs.get('NAME'), 'subject':kwargs['subject']},
 #             'task_type': 'Wheel Child',
 #             'subject': kwargs['subject']
 #         }

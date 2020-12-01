@@ -1253,7 +1253,7 @@ class Solenoid(Digital_Out):
 
     Attributes:
         calibration (dict): Dict with with line coefficients fitting volume to open duration, see :meth:`~.Terminal.calibrate_ports`.
-            Retrieved from prefs, specifically ``prefs.PORT_CALIBRATION[name]``
+            Retrieved from prefs, specifically ``prefs.get('PORT_CALIBRATION')[name]``
         mode ('DURATION', 'VOLUME'): Whether open duration is given in ms, or computed from calibration
         duration (int, float): Duration of valve opening, in ms. When set, creates a script 'open' that is used to open the valve for a precise amount of time
     """
@@ -1317,10 +1317,10 @@ class Solenoid(Digital_Out):
 
         # prefs should have loaded any calibration
         try:
-            self.calibration = prefs.PORT_CALIBRATION[self.name]
+            self.calibration = prefs.get('PORT_CALIBRATION')[self.name]
         except KeyError:
             # try using name prepended with PORTS_, which happens for hardware objects with implicit names
-            self.calibration = prefs.PORT_CALIBRATION[self.name.replace('PORTS_', '')]
+            self.calibration = prefs.get('PORT_CALIBRATION')[self.name.replace('PORTS_', '')]
 
         # compute duration from slope and intercept
         duration = round(float(self.calibration['intercept']) + (float(self.calibration['slope']) * float(vol)))

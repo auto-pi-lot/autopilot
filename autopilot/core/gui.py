@@ -42,6 +42,7 @@ from autopilot.core.networking import Net_Node
 from functools import wraps
 from autopilot.core.utils import InvokeEvent
 from autopilot.core import styles
+from autopilot.core.terminal import get_invoker
 
 
 
@@ -63,7 +64,7 @@ def gui_event(fn):
             *args ():
             **kwargs ():
         """
-        QtCore.QCoreApplication.postEvent(prefs.INVOKER, InvokeEvent(fn, *args, **kwargs))
+        QtCore.QCoreApplication.postEvent(get_invoker(), InvokeEvent(fn, *args, **kwargs))
     return wrapper_gui_event
 
 
@@ -117,7 +118,7 @@ class Control_Panel(QtWidgets.QWidget):
         else:
             try:
                 # Try finding prefs in the encapsulating namespaces
-                with open(prefs.PILOT_DB) as pilot_file:
+                with open(prefs.get('PILOT_DB')) as pilot_file:
                     self.pilots = json.load(pilot_file, object_pairs_hook=odict)
             except NameError:
                 try:
@@ -199,7 +200,7 @@ class Control_Panel(QtWidgets.QWidget):
             try:
                 protocol_vals = new_subject_wizard.task_tab.values
                 if 'protocol' in protocol_vals.keys() and 'step' in protocol_vals.keys():
-                    protocol_file = os.path.join(prefs.PROTOCOLDIR, protocol_vals['protocol'] + '.json')
+                    protocol_file = os.path.join(prefs.get('PROTOCOLDIR'), protocol_vals['protocol'] + '.json')
                     subject_obj.assign_protocol(protocol_file, int(protocol_vals['step']))
             except:
                 # the wizard couldn't find the protocol dir, so no task tab was made
@@ -245,7 +246,7 @@ class Control_Panel(QtWidgets.QWidget):
 
     def update_db(self, **kwargs):
         """
-        Gathers any changes in :class:`Subject_List` s and dumps :py:attr:`.pilots` to :py:attr:`.prefs.PILOT_DB`
+        Gathers any changes in :class:`Subject_List` s and dumps :py:attr:`.pilots` to :py:attr:`.prefs.get('PILOT_DB')`
 
         Args:
             kwargs: Create new pilots by passing a dictionary with the structure
@@ -274,7 +275,7 @@ class Control_Panel(QtWidgets.QWidget):
                 del val['state']
 
         try:
-            with open(prefs.PILOT_DB, 'w') as pilot_file:
+            with open(prefs.get('PILOT_DB'), 'w') as pilot_file:
                 json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
         except NameError:
             try:
@@ -589,7 +590,7 @@ class New_Subject_Wizard(QtWidgets.QDialog):
 
     Attributes:
         protocol_dir (str): A full path to where protocols are stored,
-            received from :py:const:`.prefs.PROTOCOLDIR`
+            received from :py:const:`.prefs.get('PROTOCOLDIR')`
         bio_tab (:class:`~.New_Subject_Wizard.Biography_Tab`): Sub-object to set and store biographical variables
         task_tab (:class:`~.New_Subject_Wizard.Task_Tab`): Sub-object to set and store protocol and step assignment
     """
@@ -597,7 +598,7 @@ class New_Subject_Wizard(QtWidgets.QDialog):
     def __init__(self):
         QtWidgets.QDialog.__init__(self)
 
-        self.protocol_dir = prefs.PROTOCOLDIR
+        self.protocol_dir = prefs.get('PROTOCOLDIR')
 
         tabWidget = QtWidgets.QTabWidget()
 
@@ -728,7 +729,7 @@ class New_Subject_Wizard(QtWidgets.QDialog):
         """
         A tab for selecting a task and step to assign to the subject.
 
-        Reads available tasks from `prefs.PROTOCOLDIR` , lists them, and
+        Reads available tasks from `prefs.get('PROTOCOLDIR')` , lists them, and
         creates a spinbox to select from the available steps.
 
         Warning:
@@ -742,7 +743,7 @@ class New_Subject_Wizard(QtWidgets.QDialog):
         def __init__(self):
             QtWidgets.QWidget.__init__(self)
 
-            self.protocol_dir = prefs.PROTOCOLDIR
+            self.protocol_dir = prefs.get('PROTOCOLDIR')
 
             topLabel = QtWidgets.QLabel("Protocols:")
 
@@ -1347,7 +1348,7 @@ class Sound_Widget(QtWidgets.QWidget):
         # type: () -> None
         QtWidgets.QWidget.__init__(self)
 
-        self.sounddir = prefs.SOUNDDIR
+        self.sounddir = prefs.get('SOUNDDIR')
 
         self.set_sounds = None
 
@@ -1472,9 +1473,9 @@ class Sound_Widget(QtWidgets.QWidget):
             To be made more general in v0.3
 
         Note:
-            Sounds must be in the folder specified in `prefs.SOUNDDIR`.
+            Sounds must be in the folder specified in `prefs.get('SOUNDDIR')`.
 
-        When files are dropped on the lists, strips `prefs.SOUNDDIR` from them to make them
+        When files are dropped on the lists, strips `prefs.get('SOUNDDIR')` from them to make them
         relative paths, adds them to the `sound_dict`
 
         Args:
@@ -1647,7 +1648,7 @@ class Bandwidth_Test(QtWidgets.QDialog):
 
         self.node = Net_Node(id="bandwidth",
                              upstream='T',
-                             port = prefs.MSGPORT,
+                             port = prefs.get('MSGPORT'),
                              listens=self.listens)
 
         self.init_ui()
@@ -1958,7 +1959,7 @@ class Bandwidth_Test(QtWidgets.QDialog):
 
         fileName, filtr = QtWidgets.QFileDialog.getSaveFileName(self,
                 "Where should we save these results?",
-                prefs.DATADIR,
+                prefs.get('DATADIR'),
                 "CSV files (*.csv)", "")
 
         # make and save results df
@@ -2193,7 +2194,7 @@ class Pilot_Ports(QtWidgets.QWidget):
 
         self.node = Net_Node(id="Cal_{}".format(self.pilot),
                              upstream="T",
-                             port=prefs.MSGPORT,
+                             port=prefs.get('MSGPORT'),
                              listens=self.listens)
 
         self.init_ui()
@@ -2377,14 +2378,14 @@ class Reassign(QtWidgets.QDialog):
 
                     {'subject_id':['protocol_name', step_int], ... }
 
-            protocols (list): list of protocol files in the `prefs.PROTOCOLDIR`.
+            protocols (list): list of protocol files in the `prefs.get('PROTOCOLDIR')`.
                 Not entirely sure why we don't just list them ourselves here.
         """
         super(Reassign, self).__init__()
 
         self.subjects = subjects
         self.protocols = protocols
-        self.protocol_dir = prefs.PROTOCOLDIR
+        self.protocol_dir = prefs.get('PROTOCOLDIR')
         self.init_ui()
 
     def init_ui(self):
@@ -2618,7 +2619,7 @@ class Psychometric(QtGui.QDialog):
 
         self.subjects = subjects_protocols
         # self.protocols = protocols
-        # self.protocol_dir = prefs.PROTOCOLDIR
+        # self.protocol_dir = prefs.get('PROTOCOLDIR')
         self.subject_objects = {}
 
         self.init_ui()

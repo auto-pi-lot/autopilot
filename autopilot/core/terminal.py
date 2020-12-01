@@ -63,6 +63,16 @@ import pdb
 # http://zetcode.com/gui/pysidetutorial/layoutmanagement/
 # https://wiki.qt.io/PySide_Tutorials
 
+_TERMINAL = None
+
+def get_invoker():
+    """
+    Get the :class:`.Invoker` from the current Terminal instance
+
+    Returns:
+    """
+    return globals()['_TERMINAL'].invoker
+
 
 class Terminal(QtWidgets.QMainWindow):
     """
@@ -118,6 +128,9 @@ class Terminal(QtWidgets.QMainWindow):
         # type: () -> None
         super(Terminal, self).__init__()
 
+        # store instance
+        globals()['_TERMINAL'] = self
+
         # networking
         self.node = None
         self.networking = None
@@ -140,7 +153,7 @@ class Terminal(QtWidgets.QMainWindow):
         self.logger = init_logger(self)
 
         # Load pilots db as ordered dictionary
-        with open(prefs.PILOT_DB) as pilot_file:
+        with open(prefs.get('PILOT_DB')) as pilot_file:
             self.pilots = json.load(pilot_file, object_pairs_hook=odict)
 
         # Listen dictionary - which methods to call for different messages
@@ -156,7 +169,7 @@ class Terminal(QtWidgets.QMainWindow):
 
         # Make invoker object to send GUI events back to the main thread
         self.invoker = Invoker()
-        prefs.add('INVOKER', self.invoker)
+        # prefs.add('INVOKER', self.invoker)
 
         self.initUI()
 
@@ -167,7 +180,7 @@ class Terminal(QtWidgets.QMainWindow):
         # The split is so the external networking can run in another process, do potentially time-consuming tasks
         # like resending & confirming message delivery without blocking or missing messages
 
-        self.node = Net_Node(id="_T", upstream='T', port=prefs.MSGPORT, listens=self.listens)
+        self.node = Net_Node(id="_T", upstream='T', port=prefs.get('MSGPORT'), listens=self.listens)
         self.logger.info("Net Node Initialized")
 
         # Start external communications in own process
@@ -279,7 +292,7 @@ class Terminal(QtWidgets.QMainWindow):
         # https://stackoverflow.com/questions/25671275/pyside-how-to-set-an-svg-icon-in-qtreewidgets-item-and-change-the-size-of-the
 
         #
-        # pixmap_path = os.path.join(os.path.dirname(prefs.AUTOPILOT_ROOT), 'graphics', 'autopilot_logo_small.svg')
+        # pixmap_path = os.path.join(os.path.dirname(prefs.get('AUTOPILOT_ROOT')), 'graphics', 'autopilot_logo_small.svg')
         # #svg_renderer = QtSvg.QSvgRenderer(pixmap_path)
         # #image = QtWidgets.QImage()
         # #self.logo = QtSvg.QSvgWidget()
@@ -586,7 +599,7 @@ class Terminal(QtWidgets.QMainWindow):
         """
         Open a :class:`.gui.Protocol_Wizard` to create a new protocol.
 
-        Prompts for name of protocol, then saves in `prefs.PROTOCOLDIR`
+        Prompts for name of protocol, then saves in `prefs.get('PROTOCOLDIR')`
         """
         self.new_protocol_window = Protocol_Wizard()
         self.new_protocol_window.exec_()
@@ -611,12 +624,12 @@ class Terminal(QtWidgets.QMainWindow):
             # Name the protocol
             name, ok = QtWidgets.QInputDialog.getText(self, "Name Protocol", "Protocol Name:")
             if ok and name != '':
-                protocol_file = os.path.join(prefs.PROTOCOLDIR, name + '.json')
+                protocol_file = os.path.join(prefs.get('PROTOCOLDIR'), name + '.json')
                 with open(protocol_file, 'w') as pfile_open:
                     json.dump(save_steps, pfile_open, indent=4, separators=(',', ': '), sort_keys=True)
             elif name == '' or not ok:
                 placeholder_name = 'protocol_created_{}'.format(datetime.date.today().isoformat())
-                protocol_file = os.path.join(prefs.PROTOCOLDIR, placeholder_name + '.json')
+                protocol_file = os.path.join(prefs.get('PROTOCOLDIR'), placeholder_name + '.json')
                 with open(protocol_file, 'w') as pfile_open:
                     json.dump(save_steps, pfile_open, indent=4, separators=(',', ': '), sort_keys=True)
 
@@ -665,7 +678,7 @@ class Terminal(QtWidgets.QMainWindow):
         """
         #
         # get list of protocol files
-        protocols = os.listdir(prefs.PROTOCOLDIR)
+        protocols = os.listdir(prefs.get('PROTOCOLDIR'))
         protocols = [p for p in protocols if p.endswith('.json')]
 
         updated_subjects = []
@@ -678,7 +691,7 @@ class Terminal(QtWidgets.QMainWindow):
             if any(protocol_bool):
                 which_prot = np.where(protocol_bool)[0][0]
                 protocol = protocols[which_prot]
-                self.subjects[subject].assign_protocol(os.path.join(prefs.PROTOCOLDIR, protocol), step_n=self.subjects[subject].step)
+                self.subjects[subject].assign_protocol(os.path.join(prefs.get('PROTOCOLDIR'), protocol), step_n=self.subjects[subject].step)
                 updated_subjects.append(subject)
 
         msgbox = QtWidgets.QMessageBox()
@@ -690,10 +703,10 @@ class Terminal(QtWidgets.QMainWindow):
     def protocols(self):
         """
         Returns:
-            list: list of protocol files in ``prefs.PROTOCOLDIR``
+            list: list of protocol files in ``prefs.get('PROTOCOLDIR')``
         """
         # get list of protocol files
-        protocols = os.listdir(prefs.PROTOCOLDIR)
+        protocols = os.listdir(prefs.get('PROTOCOLDIR'))
         protocols = [os.path.splitext(p)[0] for p in protocols if p.endswith('.json')]
         return protocols
 
@@ -742,7 +755,7 @@ class Terminal(QtWidgets.QMainWindow):
 
                 if self.subjects[subject].protocol_name != protocol:
                     self.logger.info('Setting {} protocol from {} to {}'.format(subject, self.subjects[subject].protocol_name, protocol))
-                    protocol_file = os.path.join(prefs.PROTOCOLDIR, protocol + '.json')
+                    protocol_file = os.path.join(prefs.get('PROTOCOLDIR'), protocol + '.json')
                     self.subjects[subject].assign_protocol(protocol_file, step)
 
                 if subject_orig_step != step:

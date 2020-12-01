@@ -14,7 +14,7 @@ Run scripts to setup system dependencies and autopilot plugins
 
 """
 import subprocess
-from autopilot.setup.scripts import PILOT_ENV_CMDS, ENV_PILOT
+from autopilot.setup.scripts import SCRIPTS
 import argparse
 import sys
 
@@ -70,15 +70,15 @@ def call_series(commands, series_name=None):
 
 
 def run_script(script_name):
-    if script_name in PILOT_ENV_CMDS.keys():
-        call_series(PILOT_ENV_CMDS[script_name], script_name)
+    if script_name in SCRIPTS.keys():
+        call_series(SCRIPTS[script_name]['commands'], script_name)
     else:
-        Exception('No script named {}, must be one of {}'.format(script_name, "\n".join(PILOT_ENV_CMDS.keys())))
+        Exception('No script named {}, must be one of {}'.format(script_name, "\n".join(SCRIPTS.keys())))
 
 def run_scripts(scripts):
     env_results = {}
     for script_name in scripts:
-        commands = PILOT_ENV_CMDS[script_name]
+        commands = SCRIPTS[script_name]['commands']
         env_results[script_name] = call_series(commands, script_name)
 
     # make results string
@@ -102,14 +102,14 @@ def list_scripts():
 
     # find longest script name
     longest_name = 0
-    for script_name in ENV_PILOT.keys():
+    for script_name in SCRIPTS.keys():
         if len(script_name) > longest_name:
             longest_name = len(script_name)
 
 
-    for script_name in sorted(ENV_PILOT.keys()):
+    for script_name in sorted(SCRIPTS.keys()):
         pad = " " * (longest_name - len(script_name))
-        print(f'\033[1;37;42m{script_name}{pad}\u001b[0m : {ENV_PILOT[script_name]["text"]}')
+        print(f'\033[1;37;42m{script_name}{pad}\u001b[0m : {SCRIPTS[script_name]["text"]}')
 
 if __name__ == "__main__":
     args = parser.parse_args()

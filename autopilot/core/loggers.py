@@ -21,10 +21,10 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
 
     * There is one logger per module (eg. all gpio objects will log to hardware.gpio)
     * If the passed object has a ``name`` attribute, that name will be prefixed to its log messages in the file
-    * The loglevel for the file handler and the stdout is determined by ``prefs.LOGLEVEL``, and if none is provided ``WARNING`` is used by default
-    * logs are rotated according to ``prefs.LOGSIZE`` (in bytes) and ``prefs.LOGNUM`` (number of backups of ``prefs.LOGSIZE`` to cycle through)
+    * The loglevel for the file handler and the stdout is determined by ``prefs.get('LOGLEVEL')``, and if none is provided ``WARNING`` is used by default
+    * logs are rotated according to ``prefs.get('LOGSIZE')`` (in bytes) and ``prefs.get('LOGNUM')`` (number of backups of ``prefs.get('LOGSIZE')`` to cycle through)
 
-    Logs are stored in ``prefs.LOGDIR``, and are formatted like::
+    Logs are stored in ``prefs.get('LOGDIR')``, and are formatted like::
 
         "%(asctime)s - %(name)s - %(levelname)s : %(message)s"
 
@@ -91,18 +91,18 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
 
             ## file handler
             # base filename is the module_name + '.log
-            base_filename = os.path.join(prefs.LOGDIR, module_name + '.log')
+            base_filename = os.path.join(prefs.get('LOGDIR'), module_name + '.log')
             fh = RotatingFileHandler(
                 base_filename,
                 mode='a',
-                maxBytes=int(prefs.LOGSIZE),
-                backupCount=int(prefs.LOGNUM)
+                maxBytes=int(prefs.get('LOGSIZE')),
+                backupCount=int(prefs.get('LOGNUM'))
             )
             fh.setFormatter(log_formatter)
             logger.addHandler(fh)
 
             if hasattr(prefs, 'LOGLEVEL'):
-                loglevel = getattr(logging, prefs.LOGLEVEL)
+                loglevel = getattr(logging, prefs.get('LOGLEVEL'))
             else:
                 loglevel = logging.WARNING
             logger.setLevel(loglevel)

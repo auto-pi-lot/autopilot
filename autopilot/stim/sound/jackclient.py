@@ -171,7 +171,7 @@ class JackClient(mp.Process):
         Called by :meth:`.JackClient.run` to boot the server upon starting the process.
 
         Activates the client and connects it to the number of outports
-        determined by `prefs.NCHANNELS`
+        determined by `prefs.get('NCHANNELS')`
 
         :class:`jack.Client` s can't be kept alive, so this must be called just before
         processing sample starts.
@@ -190,21 +190,21 @@ class JackClient(mp.Process):
         target_ports = self.client.get_ports(is_physical=True, is_input=True, is_audio=True)
 
         if hasattr(prefs, 'OUTCHANNELS'):
-            if isinstance(prefs.OUTCHANNELS, list):
-                for outchan in prefs.OUTCHANNELS:
+            if isinstance(prefs.get('OUTCHANNELS'), list):
+                for outchan in prefs.get('OUTCHANNELS'):
 
                     self.client.outports[0].connect(target_ports[int(outchan)])
-            elif isinstance(prefs.OUTCHANNELS, int):
-                self.client.outports[0].connect(target_ports[prefs.OUTCHANNELS])
-            elif isinstance(prefs.OUTCHANNELS, str):
+            elif isinstance(prefs.get('OUTCHANNELS'), int):
+                self.client.outports[0].connect(target_ports[prefs.get('OUTCHANNELS')])
+            elif isinstance(prefs.get('OUTCHANNELS'), str):
                 try:
-                    self.client.outports[0].connect(target_ports[int(prefs.OUTCHANNELS)])
+                    self.client.outports[0].connect(target_ports[int(prefs.get('OUTCHANNELS'))])
                 except TypeError:
-                    Exception('Could not coerce prefs.OUTCHANNELS to an integer or list of ints. Connecting to port 0. got {}'.format(prefs.OUTCHANNELS))
+                    Exception('Could not coerce prefs.get('OUTCHANNELS') to an integer or list of ints. Connecting to port 0. got {}'.format(prefs.get('OUTCHANNELS')))
                     self.client.outports[0].connect(target_ports[0])
         else:
             self.client.outports[0].connect(target_ports[0])
-            if prefs.NCHANNELS == 2:
+            if prefs.get('NCHANNELS') == 2:
                 # TODO: Limited, obvs. want to handle arbitrary output arrangements.
                 self.client.outports[0].connect(target_ports[1])
 

@@ -249,21 +249,21 @@ class DLC(Image):
     @property
     def dlc_dir(self) -> str:
         """
-        ``{prefs.BASE_DIR}/dlc``
+        ``{prefs.get('BASE_DIR')}/dlc``
         Returns:
             str
         """
         if 'DLCDIR' in prefs._PREFS.keys():
-            dlc_dir = prefs.DLCDIR
+            dlc_dir = prefs.get('DLCDIR')
         else:
-            dlc_dir = os.path.join(prefs.BASEDIR, 'dlc')
+            dlc_dir = os.path.join(prefs.get('BASEDIR'), 'dlc')
             if not os.path.exists(dlc_dir):
                 try:
                     os.mkdir(dlc_dir)
 
                 except OSError as e:
                     raise OSError(f'No DLC dir found and one could not be created!\n{e}')
-            prefs.add('DLC_DIR', dlc_dir)
+            prefs.set('DLC_DIR', dlc_dir)
 
         return dlc_dir
 

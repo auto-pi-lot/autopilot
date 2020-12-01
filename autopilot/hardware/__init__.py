@@ -140,9 +140,9 @@ class Hardware(object):
 
         # TODO: Unify identification of hardware types across prefs and hardware objects
         try:
-            our_type = prefs.HARDWARE[self.type]
+            our_type = prefs.get('HARDWARE')[self.type]
         except KeyError:
-            our_type = prefs.HARDWARE[self.__class__.__name__]
+            our_type = prefs.get('HARDWARE')[self.__class__.__name__]
 
         for name, pin in our_type.items():
             if self.pin == pin:
@@ -168,12 +168,12 @@ class Hardware(object):
 
         self.node = Net_Node(
             self.name,
-            upstream=prefs.NAME,
-            port=prefs.MSGPORT,
+            upstream=prefs.get('NAME'),
+            port=prefs.get('MSGPORT'),
             listens=listens,
             instance=False,
             **kwargs
-            #upstream_ip=prefs.TERMINALIP,
+            #upstream_ip=prefs.get('TERMINALIP'),
             #daemon=False
         )
 

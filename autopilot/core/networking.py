@@ -729,7 +729,7 @@ class Terminal_Station(Station):
         self.pusher = False
 
         # Store some prefs values
-        self.listen_port = prefs.MSGPORT
+        self.listen_port = prefs.get('MSGPORT')
         self.id = 'T'
 
         # Message dictionary - What method to call for each type of message received by the terminal class
@@ -751,7 +751,7 @@ class Terminal_Station(Station):
 
         # start a timer at the draw FPS of the terminal -- only send
         if hasattr(prefs, 'DRAWFPS'):
-            self.data_fps = float(prefs.DRAWFPS)
+            self.data_fps = float(prefs.get('DRAWFPS'))
         else:
             self.data_fps = 20
         self.data_ifps = 1.0/self.data_fps
@@ -879,7 +879,7 @@ class Terminal_Station(Station):
         Handle the storage of continuous data
 
         Forwards all data on to the Terminal's internal :class:`Net_Node`,
-        send to :class:`.Plot` according to update rate in ``prefs.DRAWFPS``
+        send to :class:`.Plot` according to update rate in ``prefs.get('DRAWFPS')``
 
         Args:
             msg (dict): A continuous data message
@@ -961,13 +961,13 @@ class Terminal_Station(Station):
 
         Args:
             msg (:class:`.Message`): The value field of the message should contain some
-                relative path to a file contained within `prefs.SOUNDDIR` . eg.
-                `'/songs/sadone.wav'` would return `'os.path.join(prefs.SOUNDDIR/songs.sadone.wav'`
+                relative path to a file contained within `prefs.get('SOUNDDIR')` . eg.
+                `'/songs/sadone.wav'` would return `'os.path.join(prefs.get('SOUNDDIR')/songs.sadone.wav'`
         """
         # The <target> pi has requested some file <value> from us, let's send it back
         # This assumes the file is small, if this starts crashing we'll have to split the message...
 
-        full_path = os.path.join(prefs.SOUNDDIR, msg.value)
+        full_path = os.path.join(prefs.get('SOUNDDIR'), msg.value)
         with open(full_path, 'rb') as open_file:
             # encode in base64 so json doesn't complain
             file_contents = base64.b64encode(open_file.read())
@@ -1002,23 +1002,23 @@ class Pilot_Station(Station):
     def __init__(self):
         # Pilot has a pusher - connects back to terminal
         self.pusher = True
-        if prefs.LINEAGE == 'CHILD':
-            self.push_id = prefs.PARENTID.encode('utf-8')
-            self.push_port = prefs.PARENTPORT
-            self.push_ip = prefs.PARENTIP
+        if prefs.get('LINEAGE') == 'CHILD':
+            self.push_id = prefs.get('PARENTID').encode('utf-8')
+            self.push_port = prefs.get('PARENTPORT')
+            self.push_ip = prefs.get('PARENTIP')
             self.child = True
 
         else:
             self.push_id = b'T'
-            self.push_port = prefs.PUSHPORT
-            self.push_ip = prefs.TERMINALIP
+            self.push_port = prefs.get('PUSHPORT')
+            self.push_ip = prefs.get('TERMINALIP')
             self.child = False
 
         # Store some prefs values
-        self.listen_port = prefs.MSGPORT
+        self.listen_port = prefs.get('MSGPORT')
 
-        #self.id = prefs.NAME.encode('utf-8')
-        self.id = prefs.NAME
+        #self.id = prefs.get('NAME').encode('utf-8')
+        self.id = prefs.get('NAME')
         self.pi_id = "_{}".format(self.id)
         self.subject = None # Store current subject ID
         self.state = None # store current pi state
@@ -1127,7 +1127,7 @@ class Pilot_Station(Station):
             if len(f_sounds)>0:
                 # check to see if we have these files, if not, request them
                 for sound in f_sounds:
-                    full_path = os.path.join(prefs.SOUNDDIR, sound['path'])
+                    full_path = os.path.join(prefs.get('SOUNDDIR'), sound['path'])
                     if not os.path.exists(full_path):
                         # We ask the terminal to send us the file and then wait.
                         self.logger.info('REQUESTING SOUND {}'.format(sound['path']))
@@ -1180,12 +1180,12 @@ class Pilot_Station(Station):
 
         Args:
             msg (:class:`.Message`): value will have 'path' and 'file',
-                where the path determines where in `prefs.SOUNDDIR` the
+                where the path determines where in `prefs.get('SOUNDDIR')` the
                 b64 encoded 'file' will be saved.
         """
         # The file should be of the structure {'path':path, 'file':contents}
 
-        full_path = os.path.join(prefs.SOUNDDIR, msg.value['path'])
+        full_path = os.path.join(prefs.get('SOUNDDIR'), msg.value['path'])
         # TODO: give Message full deserialization capabilities including this one
         file_data = base64.b64decode(msg.value['file'])
         try:
@@ -1235,7 +1235,7 @@ class Pilot_Station(Station):
             KEY = msg.value['keys']
         else:
             KEY = 'START'
-        self.send(to=prefs.CHILDID, key=KEY, value=msg.value)
+        self.send(to=prefs.get('CHILDID'), key=KEY, value=msg.value)
 
     def l_forward(self, msg):
         """
@@ -1348,7 +1348,7 @@ class Net_Node(object):
         self.expand = expand_on_receive
 
         if hasattr(prefs, 'SUBJECT'):
-            self.subject = prefs.SUBJECT.encode('utf-8')
+            self.subject = prefs.get('SUBJECT').encode('utf-8')
         else:
             self.subject = None
 
@@ -1714,7 +1714,7 @@ class Net_Node(object):
             if self.subject:
                 subject = self.subject
             elif hasattr(prefs, 'SUBJECT'):
-                subject = prefs.SUBJECT
+                subject = prefs.get('SUBJECT')
 
         # make a queue
         q = queue.Queue()
@@ -1760,18 +1760,18 @@ class Net_Node(object):
 
         if subject is None:
             if hasattr(prefs, 'SUBJECT'):
-                subject = prefs.SUBJECT
+                subject = prefs.get('SUBJECT')
             else:
                 subject = ""
         if isinstance(subject, bytes):
             subject = subject.decode('utf-8')
 
-        if prefs.LINEAGE == "CHILD":
-            # pilot = bytes(prefs.PARENTID, encoding="utf-8")
-            pilot = prefs.PARENTID
+        if prefs.get('LINEAGE') == "CHILD":
+            # pilot = bytes(prefs.get('PARENTID'), encoding="utf-8")
+            pilot = prefs.get('PARENTID')
         else:
-            # pilot = bytes(prefs.NAME, encoding="utf-8")
-            pilot = prefs.NAME
+            # pilot = bytes(prefs.get('NAME'), encoding="utf-8")
+            pilot = prefs.get('NAME')
 
         msg_counter = count()
 

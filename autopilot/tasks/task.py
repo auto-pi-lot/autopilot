@@ -11,9 +11,9 @@ from autopilot import prefs
 from autopilot.core.loggers import init_logger
 
 if hasattr(prefs, "AUDIOSERVER"):
-    if prefs.AUDIOSERVER == 'pyo':
+    if prefs.get('AUDIOSERVER') == 'pyo':
         pass
-    elif prefs.AUDIOSERVER == 'jack':
+    elif prefs.get('AUDIOSERVER') == 'jack':
         pass
 
 
@@ -125,7 +125,7 @@ class Task(object):
         # alongside the HARDWARE subdict in the prefs structure to tell us how they're plugged in to the pi
         self.hardware = {}
         self.pin_id = {} # Reverse dict to identify pokes
-        pin_numbers = prefs.HARDWARE
+        pin_numbers = prefs.get('HARDWARE')
 
         # We first iterate through the types of hardware we need
         for type, values in self.HARDWARE.items():

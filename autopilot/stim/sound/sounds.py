@@ -1,10 +1,10 @@
 """
 Classes to play sounds.
 
-Each sound inherits a base type depending on `prefs.AUDIOSERVER`
+Each sound inherits a base type depending on `prefs.get('AUDIOSERVER')`
 
-* `prefs.AUDIOSERVER == 'jack'` : :class:`.Jack_Sound`
-* `prefs.AUDIOSERVER == 'pyo'` : :class:`.Pyo_Sound`
+* `prefs.get('AUDIOSERVER') == 'jack'` : :class:`.Jack_Sound`
+* `prefs.get('AUDIOSERVER') == 'pyo'` : :class:`.Pyo_Sound`
 
 To avoid unnecessary dependencies, `Jack_Sound` is not defined if AUDIOSERVER is `'pyo'`
 and vice versa.
@@ -50,10 +50,10 @@ from autopilot.core.loggers import init_logger
 
 # switch behavior based on audio server type
 try:
-    if isinstance(prefs.AUDIOSERVER, str):
-        server_type = prefs.AUDIOSERVER.lower()
+    if isinstance(prefs.get('AUDIOSERVER'), str):
+        server_type = prefs.get('AUDIOSERVER').lower()
     else:
-        server_type = prefs.AUDIOSERVER
+        server_type = prefs.get('AUDIOSERVER')
 except:
 #    # TODO: The 'attribute don't exist' type - i think NameError?
     server_type = None
@@ -107,7 +107,7 @@ if server_type in ("pyo", "docs"):
             # See https://groups.google.com/forum/#!topic/pyo-discuss/N-pan7wPF-o
             # TODO: Get chnls to be responsive to NCHANNELS in prefs. hardcoded for now
             tab = pyo.NewTable(length=(float(duration) / 1000),
-                               chnls=prefs.NCHANNELS)  # Prefs should always be declared in the global namespace
+                               chnls=prefs.get('NCHANNELS'))  # Prefs should always be declared in the global namespace
             tabrec = pyo.TableRec(audio, table=tab, fadetime=0.005).play()
             sleep((float(duration) / 1000))
             self.table = pyo.TableRead(tab, freq=tab.getRate(), loop=0)
@@ -637,7 +637,7 @@ class File(BASE_CLASS):
     def __init__(self, path, amplitude=0.01, **kwargs):
         """
         Args:
-            path (str): Path to a .wav file relative to the `prefs.SOUNDDIR`
+            path (str): Path to a .wav file relative to the `prefs.get('SOUNDDIR')`
             amplitude (float): amplitude of the sound as a proportion of 1.
             **kwargs: extraneous parameters that might come along with instantiating us
         """
@@ -645,8 +645,8 @@ class File(BASE_CLASS):
 
         if os.path.exists(path):
             self.path = path
-        elif os.path.exists(os.path.join(prefs.SOUNDDIR, path)):
-            self.path = os.path.join(prefs.SOUNDDIR, path)
+        elif os.path.exists(os.path.join(prefs.get('SOUNDDIR'), path)):
+            self.path = os.path.join(prefs.get('SOUNDDIR'), path)
         else:
             Exception('Could not find {} in current directory or sound directory'.format(path))
 
@@ -674,7 +674,7 @@ class File(BASE_CLASS):
 
         # load file to sound table
         if self.server_type == 'pyo':
-            self.dtable = pyo.DataTable(size=audio.shape[0], chnls=prefs.NCHANNELS, init=audio.tolist())
+            self.dtable = pyo.DataTable(size=audio.shape[0], chnls=prefs.get('NCHANNELS'), init=audio.tolist())
 
             # get server to determine sampling rate modification and duration
             server_fs = self.dtable.getServer().getSamplingRate()

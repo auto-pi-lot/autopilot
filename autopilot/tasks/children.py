@@ -46,7 +46,7 @@ class Wheel_Child(object):
         self.thresh = thresh
 
         self.hardware = {}
-        self.hardware['OUTPUT'] = Digital_Out(prefs.HARDWARE['OUTPUT'])
+        self.hardware['OUTPUT'] = Digital_Out(prefs.get('HARDWARE')['OUTPUT'])
         self.hardware['WHEEL'] = Wheel(digi_out = self.hardware['OUTPUT'],
                                        fs       = self.fs,
                                        thresh   = self.thresh,
@@ -135,8 +135,8 @@ class Video_Child(object):
     def _stream(self):
         self.node = Net_Node(
             "T_CHILD",
-            upstream=prefs.NAME,
-            port=prefs.MSGPORT,
+            upstream=prefs.get('NAME'),
+            port=prefs.get('MSGPORT'),
             listens = {},
             instance=True
         )
@@ -226,9 +226,9 @@ class Transformer(object):
         self.transform = autopilot.transform.make_transform(transform)
 
         self.node = Net_Node(
-            f"{prefs.NAME}_TRANSFORMER",
-            upstream=prefs.NAME,
-            port=prefs.MSGPORT,
+            f"{prefs.get('NAME')}_TRANSFORMER",
+            upstream=prefs.get('NAME'),
+            port=prefs.get('MSGPORT'),
             listens = {
                 'CONTINUOUS': self.l_process
             },

@@ -46,10 +46,10 @@ if __name__ == '__main__':
 
     prefs.init(prefs_file)
 
-    if hasattr(prefs, 'AUDIOSERVER') or 'AUDIO' in prefs.CONFIG:
-        if prefs.AUDIOSERVER == 'pyo':
+    if hasattr(prefs, 'AUDIOSERVER') or 'AUDIO' in prefs.get('CONFIG'):
+        if prefs.get('AUDIOSERVER') == 'pyo':
             from autopilot.stim.sound import pyoserver
-        elif prefs.AUDIOSERVER in ('jack', True):
+        elif prefs.get('AUDIOSERVER') in ('jack', True):
             from autopilot.stim.sound import jackclient
 
 from autopilot.core.networking import Pilot_Station, Net_Node, Message
@@ -148,10 +148,10 @@ class Pilot:
                 print('')
                 sys.stdout.flush()
 
-        self.name = prefs.NAME
-        if prefs.LINEAGE == "CHILD":
+        self.name = prefs.get('NAME')
+        if prefs.get('LINEAGE') == "CHILD":
             self.child = True
-            self.parentid = prefs.PARENTID
+            self.parentid = prefs.get('PARENTID')
         else:
             self.child = False
             self.parentid = 'T'
@@ -167,7 +167,7 @@ class Pilot:
         self.init_pigpio()
 
         # Init audio server
-        if hasattr(prefs, 'AUDIOSERVER') or 'AUDIO' in prefs.CONFIG:
+        if hasattr(prefs, 'AUDIOSERVER') or 'AUDIO' in prefs.get('CONFIG'):
             self.init_audio()
 
         # Init Station
@@ -186,17 +186,17 @@ class Pilot:
         self.networking.start()
         self.node = Net_Node(id = "_{}".format(self.name),
                              upstream = self.name,
-                             port = prefs.MSGPORT,
+                             port = prefs.get('MSGPORT'),
                              listens = self.listens,
                              instance=False)
 
         # if we need to set pins pulled up or down, do that now
         self.pulls = []
         if hasattr(prefs, 'PULLUPS'):
-            for pin in prefs.PULLUPS:
+            for pin in prefs.get('PULLUPS'):
                 self.pulls.append(gpio.Digital_Out(int(pin), pull='U', polarity=0))
         if hasattr(prefs, 'PULLDOWNS'):
-            for pin in prefs.PULLDOWNS:
+            for pin in prefs.get('PULLDOWNS'):
                 self.pulls.append(gpio.Digital_Out(int(pin), pull='D', polarity=1))
 
         # check if the calibration file needs to be updated
@@ -293,7 +293,7 @@ class Pilot:
 
             # Make a group for this subject if we don't already have one
             self.subject = value['subject']
-            prefs.add('SUBJECT', self.subject)
+            prefs.set('SUBJECT', self.subject)
 
 
 
@@ -388,7 +388,7 @@ class Pilot:
             iti (int, float): how long we should :func:`~time.sleep` between openings
 
         """
-        pin_num = prefs.HARDWARE['PORTS'][port_name]
+        pin_num = prefs.get('HARDWARE')['PORTS'][port_name]
         port = gpio.Solenoid(pin_num, duration=int(open_dur))
         msg = {'click_num': 0,
                'pilot': self.name,
@@ -415,7 +415,7 @@ class Pilot:
         """
 
         # files for storing raw and fit calibration results
-        cal_fn = os.path.join(prefs.BASEDIR, 'port_calibration.json')
+        cal_fn = os.path.join(prefs.get('BASEDIR'), 'port_calibration.json')
 
         if os.path.exists(cal_fn):
             try:
@@ -514,14 +514,14 @@ class Pilot:
             path: If present, use calibration file specified, otherwise use default.
         """
 
-        lut_fn = os.path.join(prefs.BASEDIR, 'port_calibration_fit.json')
+        lut_fn = os.path.join(prefs.get('BASEDIR'), 'port_calibration_fit.json')
 
         if not calibration:
             # if we weren't given calibration results, load them
             if path:
                 open_fn = path
             else:
-                open_fn = os.path.join(prefs.BASEDIR, "port_calibration.json")
+                open_fn = os.path.join(prefs.get('BASEDIR'), "port_calibration.json")
 
             with open(open_fn, 'r') as open_f:
                 calibration = json.load(open_f)
@@ -566,15 +566,15 @@ class Pilot:
     def init_audio(self):
         """
         Initialize an audio server depending on the value of
-        `prefs.AUDIOSERVER`
+        `prefs.get('AUDIOSERVER')`
 
         * 'pyo' = :func:`.pyoserver.pyo_server`
         * 'jack' = :class:`.jackclient.JackClient`
         """
-        if prefs.AUDIOSERVER == 'pyo':
+        if prefs.get('AUDIOSERVER') == 'pyo':
             self.server = pyoserver.pyo_server()
             self.logger.info("pyo server started")
-        elif prefs.AUDIOSERVER in ('jack', True):
+        elif prefs.get('AUDIOSERVER') in ('jack', True):
             self.jackd = external.start_jackd()
             self.server = jackclient.JackClient()
             self.server.start()
@@ -583,14 +583,14 @@ class Pilot:
 
     def blank_LEDs(self):
         """
-        If any 'LEDS' are defined in `prefs.HARDWARE` ,
+        If any 'LEDS' are defined in `prefs.get('HARDWARE')` ,
         instantiate them, set their color to [0,0,0],
         and then release them.
         """
-        if 'LEDS' not in prefs.HARDWARE.keys():
+        if 'LEDS' not in prefs.get('HARDWARE').keys():
             return
 
-        for position, pins in prefs.HARDWARE['LEDS'].items():
+        for position, pins in prefs.get('HARDWARE')['LEDS'].items():
             led = gpio.LED_RGB(pins=pins)
             time.sleep(1.)
             led.set_color(col=[0,0,0])
@@ -603,7 +603,7 @@ class Pilot:
         """
         Setup a table to store data locally.
 
-        Opens `prefs.DATADIR/local.h5`, creates a group for the current subject,
+        Opens `prefs.get('DATADIR')/local.h5`, creates a group for the current subject,
         a new table for the current day.
 
         .. todo::
@@ -614,7 +614,7 @@ class Pilot:
             (:class:`tables.File`, :class:`tables.Table`,
             :class:`tables.tableextension.Row`): The file, table, and row for the local data table
         """
-        local_file = os.path.join(prefs.DATADIR, 'local.h5')
+        local_file = os.path.join(prefs.get('DATADIR'), 'local.h5')
         try:
             h5f = tables.open_file(local_file, mode='a')
         except (IOError, tables.HDF5ExtError) as e:
