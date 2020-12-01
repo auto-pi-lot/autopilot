@@ -69,12 +69,12 @@ class Scopes(Enum):
 
 
     """
-    COMMON = auto()
-    TERMINAL = auto()
-    PILOT = auto()
-    DIRECTORY = auto()
-    LINEAGE = auto()
-    AUDIO = auto()
+    COMMON = auto() #: All agents
+    TERMINAL = auto() #: Prefs specific to Terminal Agents
+    PILOT = auto() #: Prefs specific to Pilot Agents
+    DIRECTORY = auto() #: Directory structure
+    LINEAGE = auto() #: Prefs for coordinating network between pilots and children
+    AUDIO = auto() #: Audio prefs...
 
 
 

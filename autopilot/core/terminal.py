@@ -40,7 +40,7 @@ if __name__ == '__main__':
 from autopilot.core.subject import Subject
 from autopilot.core.plots import Plot_Widget
 from autopilot.core.networking import Terminal_Station, Net_Node
-from autopilot.core.utils import InvokeEvent, Invoker
+from autopilot.core.utils import InvokeEvent, Invoker, get_invoker
 from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test
 from autopilot.core.loggers import init_logger
 
@@ -64,14 +64,6 @@ import pdb
 # https://wiki.qt.io/PySide_Tutorials
 
 _TERMINAL = None
-
-def get_invoker():
-    """
-    Get the :class:`.Invoker` from the current Terminal instance
-
-    Returns:
-    """
-    return globals()['_TERMINAL'].invoker
 
 
 class Terminal(QtWidgets.QMainWindow):
@@ -168,7 +160,8 @@ class Terminal(QtWidgets.QMainWindow):
         }
 
         # Make invoker object to send GUI events back to the main thread
-        self.invoker = Invoker()
+        # self.invoker = Invoker()
+        self.invoker = get_invoker()
         # prefs.add('INVOKER', self.invoker)
 
         self.initUI()

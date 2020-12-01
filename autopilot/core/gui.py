@@ -42,7 +42,7 @@ from autopilot.core.networking import Net_Node
 from functools import wraps
 from autopilot.core.utils import InvokeEvent
 from autopilot.core import styles
-from autopilot.core.terminal import get_invoker
+from autopilot.core.utils import get_invoker
 
 
 

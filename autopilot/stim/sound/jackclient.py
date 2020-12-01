@@ -9,13 +9,8 @@ import multiprocessing as mp
 import queue as queue
 import numpy as np
 from copy import copy
-from threading import Thread
-from itertools import cycle
 from queue import Empty
-import sys
-import logging
-import os
-from datetime import datetime
+
 
 # importing configures environment variables necessary for importing jack-client module below
 from autopilot import external
@@ -25,15 +20,6 @@ try:
     import jack
 except OSError as e:
     print('jack library not found! sounds unavailable')
-    # print(e)
-    # install_jack = input('Try to install jackd? (y/n): ')
-    # if install_jack == "y":
-    #     from autopilot.setup.setup_autopilot import run_script
-    #     run_script('jackd')
-    #     import jack
-    # else:
-    #     raise e
-
 
 from autopilot import prefs
 
@@ -200,7 +186,7 @@ class JackClient(mp.Process):
                 try:
                     self.client.outports[0].connect(target_ports[int(prefs.get('OUTCHANNELS'))])
                 except TypeError:
-                    Exception('Could not coerce prefs.get('OUTCHANNELS') to an integer or list of ints. Connecting to port 0. got {}'.format(prefs.get('OUTCHANNELS')))
+                    Exception('Could not coerce prefs.get(\'OUTCHANNELS\') to an integer or list of ints. Connecting to port 0. got {}'.format(prefs.get('OUTCHANNELS')))
                     self.client.outports[0].connect(target_ports[0])
         else:
             self.client.outports[0].connect(target_ports[0])
