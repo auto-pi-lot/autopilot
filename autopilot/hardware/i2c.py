@@ -42,6 +42,10 @@ class I2C_9DOF(Hardware):
 
     This class uses code from the `Adafruit Circuitfun <https://github.com/adafruit/Adafruit_CircuitPython_LSM9DS1>`_ library,
     modified to use pigpio
+
+    .. note::
+
+        use this for processing?? https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6111698/
     """
 
     # Internal constants and register values:
