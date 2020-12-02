@@ -93,6 +93,10 @@ SCRIPTS = odict({
         'type': 'bool',
         'text': 'Install Autopilot as a systemd service?\nIf you are running this command in a virtual environment it will be used to launch Autopilot'
     },
+    'alias': {
+        'type': 'bool',
+        'text': 'Create an alias to launch with "autopilot" (must be run from setup_autopilot, calls make_alias)'
+    },
     'jackd_apt': {
         'type': 'bool',
         'text': 'Install jack audio from apt repository (required if AUDIOSERVER == jack)',
