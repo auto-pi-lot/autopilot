@@ -1092,13 +1092,7 @@ class Protocol_Wizard(QtWidgets.QDialog):
         current_step = self.step_list.currentRow()
         sender_type = self.steps[current_step][param_name]['type']
 
-        if sender_type == 'int' or sender_type == 'str':
-            try:
-                sender_text = ast.literal_eval(sender.text())
-            except:
-                sender_text = sender.text()
-            self.steps[current_step][param_name]['value'] = sender_text
-        elif sender_type == 'bool':
+        if sender_type == 'bool':
             self.steps[current_step][param_name]['value'] = sender.isChecked()
         elif sender_type == 'list':
             list_text = sender.currentItem().text()
@@ -1106,6 +1100,12 @@ class Protocol_Wizard(QtWidgets.QDialog):
             self.steps[current_step][param_name]['value'] = list_value
         elif sender_type == 'sounds':
             self.steps[current_step][param_name]['value'] = self.sound_widget.sound_dict
+        else:
+            try:
+                sender_text = ast.literal_eval(sender.text())
+            except:
+                sender_text = sender.text()
+            self.steps[current_step][param_name]['value'] = sender_text
 
     def set_sounds(self):
         """
