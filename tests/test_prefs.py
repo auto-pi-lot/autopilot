@@ -14,8 +14,8 @@ def test_prefs_defaults(default_pref):
         return
 
     if 'default' in default_pref[1].keys():
-        assert prefs.get(default_pref[0]) == default_pref[1]['default']
-    else:
         with pytest.warns(UserWarning):
-            assert prefs.get(default_pref[0]) is None
+            assert prefs.get(default_pref[0]) == default_pref[1]['default']
+    else:
+        assert prefs.get(default_pref[0]) is None
 
