@@ -1,6 +1,18 @@
+import itertools
+import typing
+
 from autopilot.hardware import Hardware, BOARD_TO_BCM
 from autopilot.hardware.gpio import GPIO, Digital_Out
+
 import numpy as np
+
+ENABLED = False
+try:
+    import pigpio
+    ENABLED = True
+except ImportError:
+    pass
+
 
 DEFAULT_OFFSET = np.array((
     (26, 25, 25, 22, 26, 24),
@@ -90,7 +102,7 @@ class Parallax_Platform(Hardware):
     def __init__(self, *args, **kwargs):
         super(Parallax_Platform, self).__init__(*args, **kwargs)
 
-        self.pig = None
+        self.pig = None # type: typing.Optional[pigpio.pi]
         self.pigpiod = None
         self.CONNECTED = False
         self.CONNECTED = self.init_pigpio()
@@ -98,7 +110,9 @@ class Parallax_Platform(Hardware):
         self._direction = False # false for down, true for up
         self._mask = np.zeros((len(self.PINS['ROW']), len(self.PINS['COL'])),
                               dtype=np.bool) # current binary mask
-
+        self._hardware = {} # container for :class:`.Digital_Out` objects (for move, direction, etc)
+        self._cmd_mask = np.zeros((32), dtype=np.bool) # type: np.ndarray
+        """32-bit boolean array to store the binary mask to the gpio pinsv"""
 
 
     def init_pins(self):
@@ -112,26 +126,79 @@ class Parallax_Platform(Hardware):
         Returns:
 
         """
-        pass
+
+        for pin in self.BCM['COL'] + self.BCM['ROW']:
+            self.pig.set_mode(pin, pigpio.OUTPUT)
+            self.pig.set_pull_up_down(pin, pigpio.PUD_DOWN)
+
+        for pin_name in ('ROW_LATCH', 'MOVE', 'DIRECTION'):
+            pin = self.BCM[pin_name]
+            self._hardware[pin_name] = Digital_Out(pin=pin, pull=0, name=pin_name)
+
+    @property
+    def mask(self) -> np.ndarray:
+        """
+        Control the mask of active columns
+        Returns:
+            np.ndarray: boolean array of active/inactive columns
+        """
+        return self._mask
+
+    @mask.setter
+    def mask(self, mask: np.ndarray):
+        # check that, for rows and columns that are active,
+        # all permutations of those rows and columns are active.
+        # (aka for now assume that there is no control logic that happens between movement steps)
+        row_inds, col_inds = np.nonzero(mask)
+
+        # make full product of all row and columns to test against
+        test_product = tuple(itertools.product(np.unique(row_inds), np.unique(col_inds)))
+        coords = tuple((row, col) for row, col in zip(row_inds, col_inds))
+        if test_product != coords:
+            raise NotImplementedError('Dynamic masks not supported -- all masks need to be the product of active rows * active columns')
+
+        # check if need to flip row mask bit
+        FLIP_LATCH = False
+        if row_inds != np.nonzero(self._mask)[0]:
+            FLIP_LATCH = True
+
+        # construct rest of binary mask
+        #self._cmd_mask[self.BCM['ROW']] =
 
 
+        # TODO: ACTUALLY I THINK IT FLIPS FOR EVERY ROW COLUMN COMBINATION
+
+
+
+
+        self._mask = mask
 
 
 
 
     @property
-    def pin(self):
+    def direction(self) -> bool:
+        return bool(self.pig.read(self.BCM['DIRECTION']))
+
+    @direction.setter
+    def direction(self, direction: bool):
+        self._hardware['DIRECTION'].set(direction)
+        self._cmd_mask[self.BCM['DIRECTION']] = direction
+
+
+
+
+
+
+
+    def _write_bank(self, binary_string):
         pass
 
-    @pin.setter
-    def pin(self, pin):
-        pass
 
-    @property
-    def pull(self):
-        pass
 
-    @pull.setter
-    def pull(self, pull):
-        pass
 
+
+
+
+
+test_mask = np.zeros((6,3),dtype=np.bool)

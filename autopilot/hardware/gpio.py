@@ -16,6 +16,7 @@ import time
 import numpy as np
 from datetime import datetime
 import itertools
+import typing
 
 
 from autopilot import prefs
@@ -136,7 +137,7 @@ class GPIO(Hardware):
             # if a subclass has made this a property, don't fail here
             self.logger.warning('pin_bcm is defined as a property without a setter so cant be set')
 
-        self.pig = None
+        self.pig = None # type: typing.Optional[pigpio.pi]
         self.pigpiod = None
 
         # init pigpio
