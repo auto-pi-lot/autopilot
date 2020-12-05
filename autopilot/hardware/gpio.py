@@ -153,8 +153,7 @@ class GPIO(Hardware):
         if not self.CONNECTED:
             RuntimeError('No connection could be made to the pigpio daemon')
 
-
-    def init_pigpio(self):
+    def init_pigpio(self) -> bool:
         """
         Create a socket connection to the pigpio daemon and set as :attr:`GPIO.pig`
 
