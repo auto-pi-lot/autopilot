@@ -60,9 +60,9 @@ class Parallax_Platform(Hardware):
 
     """
 
-    output = True
-    type="PARALLAX_PLATFORM"
-    pigs_function = b"w"
+    output = True # type: bool
+    type="PARALLAX_PLATFORM" # type: str
+    pigs_function = b"w" # type: bytes
 
     PINS = {
     "COL" : [3, 5, 24],
@@ -92,7 +92,7 @@ class Parallax_Platform(Hardware):
         group: [BOARD_TO_BCM[pin] for pin in pins] if isinstance(pins, list) else
                 BOARD_TO_BCM[pins]
                 for group, pins in PINS.items()
-    }
+    } # type: typing.Dict[str, typing.Union[typing.List[int], int]]
     """
     :attr:`.PINS` but in BCM numbering system for pigpio
     """
@@ -105,7 +105,7 @@ class Parallax_Platform(Hardware):
         self.pig = None # type: typing.Optional[pigpio.pi]
         self.pigpiod = None
         self.CONNECTED = False
-        self.CONNECTED = self.init_pigpio()
+        self.CONNECTED = self.init_pigpio() # type: typing.Union[bool, pigpio.pi]
 
         self._direction = False # false for down, true for up
         self._mask = np.zeros((len(self.PINS['ROW']), len(self.PINS['COL'])),
@@ -127,10 +127,6 @@ class Parallax_Platform(Hardware):
 
         * init :attr:`.COL_PINS` and :attr:`.ROW_PINS` as output, they will be controlled with ``set_bank``
         * init :attr:`.WORD_LATCH`, :attr:`.MOVE_PIN`, and :attr:`DIRECTION_PIN` as :class:`.hardware.gpio.Digital_Out` objects
-        *
-
-        Returns:
-
         """
 
         for pin in self.BCM['COL'] + self.BCM['ROW']:
@@ -144,6 +140,11 @@ class Parallax_Platform(Hardware):
 
     @property
     def direction(self) -> bool:
+        """Direction of movement of platforms
+
+        Property reads pin state directly, setter changes pin state and updates :attr:`._cmd_mask`
+
+        When ``PINS['DIRECTION'] == True`` move up, otherwise move down."""
         return bool(self.pig.read(self.BCM['DIRECTION']))
 
     @direction.setter
@@ -155,13 +156,26 @@ class Parallax_Platform(Hardware):
     def mask(self) -> np.ndarray:
         """
         Control the mask of active columns
+
         Returns:
-            np.ndarray: boolean array of active/inactive columns
+            :class:`numpy.ndarray` : boolean array of active/inactive columns
         """
         return self._mask
 
     @mask.setter
     def mask(self, mask: np.ndarray):
+        """
+        Set new mask of active platforms.
+
+        Checks if any cells have been changed, then iterates through changed columns and
+        sets row bits with :meth:`._latch_col`
+
+        Args:
+            mask (:class:`numpy.ndarray`):  New boolean ``[rows x columns]`` array to set
+
+        Returns:
+
+        """
 
         if mask.shape != self._mask.shape:
             self.logger.exception(f"Mask cannot change shape! old mask: {self._mask.shape}, new mask: {mask.shape}")
@@ -196,10 +210,12 @@ class Parallax_Platform(Hardware):
 
         Write the current :attr:`._cmd_mask` to the pins and then flip ``PINS['ROW_LATCH']`` to store
 
-        thanks https://stackoverflow.com/a/42058173/13113166 for the fast base conversion
+        Create an integer representation of :attr:`._cmd_mask` by taking the dot product of it and :attr:`._powers` and sending to
+        :meth:`pigpio.pi.set_bank_1` .
 
-        Returns:
+        If permission error for GPIO pins raised, log and return quietly. Otherwise raise exception from :meth:`pigpio.pi.set_bank_1`
 
+        thanks https://stackoverflow.com/a/42058173/13113166 for the like omg how didn't i think of this idea for base conversion with dot products.
         """
 
         # create 32-bit int from _cmd_mask by multiplying by powers
@@ -215,31 +231,5 @@ class Parallax_Platform(Hardware):
             else:
                 raise e
 
+        # latch the rows
         self._hardware['ROW_LATCH'].pulse()
-
-
-
-
-
-        # latch the rows!
-
-
-
-
-
-
-
-
-
-
-    def _write_bank(self, binary_string):
-        pass
-
-
-
-
-
-
-
-
-test_mask = np.zeros((6,3),dtype=np.bool)

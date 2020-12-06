@@ -112,6 +112,7 @@ autodoc_default_options = {
     'members': True,
     'member-order': 'bysource',
     # 'exclude-members': '__doc__',
+    'private-members': True,
     'undoc-members': False,
     'show-inheritance': True,
     'autosummary': True
