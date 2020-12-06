@@ -70,7 +70,7 @@ class Parallax_Platform(Hardware):
     "ROW_LATCH" : 31,
     "MOVE" : 33,
     "DIRECTION" : 35
-    }
+    } # type: typing.Dict[str, typing.Union[typing.List[int], int]]
     """
     Default Pin Numbers for Parallax Machine
     
@@ -110,9 +110,15 @@ class Parallax_Platform(Hardware):
         self._direction = False # false for down, true for up
         self._mask = np.zeros((len(self.PINS['ROW']), len(self.PINS['COL'])),
                               dtype=np.bool) # current binary mask
-        self._hardware = {} # container for :class:`.Digital_Out` objects (for move, direction, etc)
+        self._hardware = {} # type: typing.Dict[str, Digital_Out]
+        """
+        container for :class:`.Digital_Out` objects (for move, direction, etc)
+        """
         self._cmd_mask = np.zeros((32), dtype=np.bool) # type: np.ndarray
         """32-bit boolean array to store the binary mask to the gpio pinsv"""
+        #self._powers = 2**np.arange(32)[::-1]
+        self._powers = 2 ** np.arange(32)
+        """powers to take dot product of _cmd_mask to get integer from bool array"""
 
 
     def init_pins(self):
@@ -135,6 +141,16 @@ class Parallax_Platform(Hardware):
             pin = self.BCM[pin_name]
             self._hardware[pin_name] = Digital_Out(pin=pin, pull=0, name=pin_name)
 
+
+    @property
+    def direction(self) -> bool:
+        return bool(self.pig.read(self.BCM['DIRECTION']))
+
+    @direction.setter
+    def direction(self, direction: bool):
+        self._hardware['DIRECTION'].set(direction)
+        self._cmd_mask[self.BCM['DIRECTION']] = direction
+
     @property
     def mask(self) -> np.ndarray:
         """
@@ -146,44 +162,69 @@ class Parallax_Platform(Hardware):
 
     @mask.setter
     def mask(self, mask: np.ndarray):
-        # check that, for rows and columns that are active,
-        # all permutations of those rows and columns are active.
-        # (aka for now assume that there is no control logic that happens between movement steps)
-        row_inds, col_inds = np.nonzero(mask)
 
-        # make full product of all row and columns to test against
-        test_product = tuple(itertools.product(np.unique(row_inds), np.unique(col_inds)))
-        coords = tuple((row, col) for row, col in zip(row_inds, col_inds))
-        if test_product != coords:
-            raise NotImplementedError('Dynamic masks not supported -- all masks need to be the product of active rows * active columns')
+        if mask.shape != self._mask.shape:
+            self.logger.exception(f"Mask cannot change shape! old mask: {self._mask.shape}, new mask: {mask.shape}")
+            return
 
-        # check if need to flip row mask bit
-        FLIP_LATCH = False
-        if row_inds != np.nonzero(self._mask)[0]:
-            FLIP_LATCH = True
+        # find columns that have changed, if any
+        changed_cols = np.unique(np.nonzero(self._mask != mask)[1])
 
-        # construct rest of binary mask
-        #self._cmd_mask[self.BCM['ROW']] =
+        # if nothing has changed, just return
+        if len(changed_cols) == 0:
+            return
 
+        # iterate through changed columns, setting row pins, then latch
+        for col in changed_cols:
+            # set the column pins according to the base-two representation of the col
+            self._cmd_mask[self.PINS['COL']] = np.fromiter(
+                map(int, np.binary_repr(col, width=3)),
+                dtype=np.bool
+            )
 
-        # TODO: ACTUALLY I THINK IT FLIPS FOR EVERY ROW COLUMN COMBINATION
+            # row pins are just binary
+            self._cmd_mask[self.PINS['ROW']] = mask[:, col]
 
-
-
+            # flush column
+            self._latch_col()
 
         self._mask = mask
 
+    def _latch_col(self):
+        """
+        Latch the current active ``rows`` for the current active ``col``
+
+        Write the current :attr:`._cmd_mask` to the pins and then flip ``PINS['ROW_LATCH']`` to store
+
+        thanks https://stackoverflow.com/a/42058173/13113166 for the fast base conversion
+
+        Returns:
+
+        """
+
+        # create 32-bit int from _cmd_mask by multiplying by powers
+        cmd_int = np.dot(self._cmd_mask, self._powers)
+        try:
+            self.pig.set_bank_1(cmd_int)
+        except Exception as e:
+            # unhelpfully pigpio doesn't actually make error subtypes, so have to string detect
+            # if it's the permission thing, just log it and return without raising exception
+            if "no permission to update one or more GPIO" == str(e):
+                self.logger.exception(str(e) + "in _latch_col")
+                return
+            else:
+                raise e
+
+        self._hardware['ROW_LATCH'].pulse()
 
 
 
-    @property
-    def direction(self) -> bool:
-        return bool(self.pig.read(self.BCM['DIRECTION']))
 
-    @direction.setter
-    def direction(self, direction: bool):
-        self._hardware['DIRECTION'].set(direction)
-        self._cmd_mask[self.BCM['DIRECTION']] = direction
+
+        # latch the rows!
+
+
+
 
 
 
