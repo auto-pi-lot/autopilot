@@ -157,6 +157,12 @@ class Parallax_Platform(Hardware):
         """
         Control the mask of active columns
 
+        On Assignment, checks if any cells have been changed, then iterates through changed columns and
+        sets row bits with :meth:`._latch_col`
+
+        Args:
+            mask (:class:`numpy.ndarray`):  New boolean ``[rows x columns]`` array to set
+
         Returns:
             :class:`numpy.ndarray` : boolean array of active/inactive columns
         """
@@ -164,18 +170,6 @@ class Parallax_Platform(Hardware):
 
     @mask.setter
     def mask(self, mask: np.ndarray):
-        """
-        Set new mask of active platforms.
-
-        Checks if any cells have been changed, then iterates through changed columns and
-        sets row bits with :meth:`._latch_col`
-
-        Args:
-            mask (:class:`numpy.ndarray`):  New boolean ``[rows x columns]`` array to set
-
-        Returns:
-
-        """
 
         if mask.shape != self._mask.shape:
             self.logger.exception(f"Mask cannot change shape! old mask: {self._mask.shape}, new mask: {mask.shape}")
