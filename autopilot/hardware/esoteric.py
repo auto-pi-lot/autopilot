@@ -104,10 +104,10 @@ class Parallax_Platform(Hardware):
 
         self.pig = None # type: typing.Optional[pigpio.pi]
         self.pigpiod = None
-        self.CONNECTED = False
-        self.CONNECTED = self.init_pigpio() # type: typing.Union[bool, pigpio.pi]
+        self.CONNECTED = False # type: bool
+        self.CONNECTED = self.init_pigpio()
 
-        self._direction = False # false for down, true for up
+        self._direction = False # type: bool
         self._mask = np.zeros((len(self.PINS['ROW']), len(self.PINS['COL'])),
                               dtype=np.bool) # current binary mask
         self._hardware = {} # type: typing.Dict[str, Digital_Out]
@@ -143,8 +143,10 @@ class Parallax_Platform(Hardware):
         """Direction of movement of platforms
 
         Property reads pin state directly, setter changes pin state and updates :attr:`._cmd_mask`
-
-        When ``PINS['DIRECTION'] == True`` move up, otherwise move down."""
+         
+        Returns:
+            bool: ``True`` = Up, ``False`` = Down
+        """
         return bool(self.pig.read(self.BCM['DIRECTION']))
 
     @direction.setter
