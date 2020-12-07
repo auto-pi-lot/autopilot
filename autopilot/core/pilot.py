@@ -129,6 +129,8 @@ class Pilot:
     running = None
     stage_block = None
     file_block = None
+    quitting = None
+    """mp.Event to signal when process is quitting"""
 
     # networking - our internal and external messengers
     node = None
@@ -163,6 +165,8 @@ class Pilot:
         self.running = threading.Event() # Are we running a task?
         self.stage_block = threading.Event() # Are we waiting on stage triggers?
         self.file_block = threading.Event() # Are we waiting on file transfer?
+        self.quitting = threading.Event()
+        self.quitting.clear()
 
         # init pigpiod process
         self.init_pigpio()
@@ -733,8 +737,12 @@ class Pilot:
 if __name__ == "__main__":
 
 
-    a = Pilot()
-
+    try:
+        a = Pilot()
+        a.quitting.wait()
+    except KeyboardInterrupt:
+        a.quitting.set()
+        sys.exit()
 
 
 

@@ -68,7 +68,7 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
                         p_num += 1
 
             module_name += f"_{str(p_num).zfill(2)}"
-            
+
 
 
         # get name of object if it has one

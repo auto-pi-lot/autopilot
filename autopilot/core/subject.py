@@ -440,6 +440,8 @@ class Subject(object):
         with open(protocol) as protocol_file:
             prot_dict = json.load(protocol_file)
 
+        # pdb.set_trace()
+
         # Check if there is an existing protocol, archive it if there is.
         if "/current" in h5f:
             _ = self.close_hdf(h5f)
