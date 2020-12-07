@@ -409,7 +409,7 @@ class Digital_Out(GPIO):
 
             if len(values) == len(durations):
                 iter_series = zip(values, durations)
-            if len(durations) == 1:
+            elif len(durations) == 1:
                 iter_series = itertools.product(values, durations)
             else:
                 raise ValueError("length of  values and durations must be equal, or length of durations must be 1. got len(values)={}, len(durations)={}".format(len(values), len(durations)))
