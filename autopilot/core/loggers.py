@@ -1,6 +1,7 @@
 import os
 import logging
 import re
+import multiprocessing as mp
 from pathlib import Path
 from logging.handlers import RotatingFileHandler
 from threading import Lock
@@ -55,6 +56,20 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
         # filtering leading 'autopilot' from string
         module_name = instance.__module__.lstrip('autopilot.')
         class_name = instance.__class__.__name__
+
+        # if object is running in separate process, give it its own file
+        if issubclass(instance.__class__, mp.Process):
+            # it should be at least 2 (in case its first spawned in its module)
+            # but otherwise nocollide
+            p_num = 2
+            if module_name in globals()['_LOGGERS']:
+                for existing_mod in globals()['_LOGGERS']:
+                    if module_name in existing_mod and re.match('\d$', existing_mod):
+                        p_num += 1
+
+            module_name += f"_{str(p_num).zfill(2)}"
+            
+
 
         # get name of object if it has one
         if hasattr(instance, 'name'):
@@ -139,8 +154,8 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
 
 
             ## log creation
-            logger.info(f'logger created: {logger_name}')
             globals()['_LOGGERS'].append(module_name)
+            logger.info(f'logger created: {logger_name}')
 
         else:
             logger.info(f'logger reconstituted: {logger_name}')
