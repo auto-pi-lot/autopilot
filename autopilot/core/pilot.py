@@ -157,6 +157,7 @@ class Pilot:
             self.parentid = 'T'
 
         self.logger = init_logger(self)
+        self.logger.debug('pilot logger initialized')
 
         # Locks, etc. for threading
         self.running = threading.Event() # Are we running a task?
