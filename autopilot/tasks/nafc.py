@@ -630,7 +630,7 @@ class Nafc_Gap_Laser(Nafc_Gap):
             duty_cycle_off = cycle_duration - duty_cycle_on
 
             # get number of repeats to make
-            n_cycles = np.floor(duration/cycle_duration)
+            n_cycles = int(np.floor(duration/cycle_duration))
             durations = [duty_cycle_on, duty_cycle_off]*n_cycles
             values = [1, 0]*n_cycles
 
