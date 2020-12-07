@@ -2,6 +2,7 @@ import os
 import logging
 import re
 import multiprocessing as mp
+import inspect
 from pathlib import Path
 from logging.handlers import RotatingFileHandler
 from threading import Lock
@@ -54,7 +55,18 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
         # get name of module_name without prefixed autopilot
         # eg passed autopilot.hardware.gpio.Digital_In -> hardware.gpio
         # filtering leading 'autopilot' from string
-        module_name = instance.__module__.lstrip('autopilot.')
+
+        if module_name == "__main__":
+            # awkward workaround to get module name of __main__ run objects
+            mod_obj = inspect.getmodule(instance)
+            mod_suffix  = inspect.getmodulename(inspect.getmodule(instance).__file__)
+            module_name = '.'.join([mod_obj.__package__, mod_suffix])
+
+        else:
+            module_name = instance.__module__
+
+        module_name = re.sub('^autopilot.', '', module_name)
+
         class_name = instance.__class__.__name__
 
         # if object is running in separate process, give it its own file
