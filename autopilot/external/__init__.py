@@ -100,7 +100,7 @@ def start_jackd():
         raise ImportError('jackd was not found in autopilot.external or as a system install')
 
     # get specific launch string from prefs
-    if hasattr(prefs, "JACKDSTRING"):
+    if prefs.get("JACKDSTRING"):
         jackd_string = prefs.get('JACKDSTRING').lstrip('jackd')
 
     else:
