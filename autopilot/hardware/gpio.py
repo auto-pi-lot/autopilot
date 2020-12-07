@@ -424,7 +424,11 @@ class Digital_Out(GPIO):
         else:
             raise ValueError("Unit for durations must be ms (milliseconds) or us (microseconds)")
 
-        string_pieces = [b" ".join((self.pigs_function, str(self.pin_bcm).encode('utf-8'), str(val).encode('utf-8'), bytes(wait_fn, 'utf-8'), str(dur).encode('utf-8'))) for val, dur in iter_series]
+        string_pieces = [b" ".join((self.pigs_function,
+                                    str(self.pin_bcm).encode('utf-8'),
+                                    str(val).encode('utf-8'),
+                                    bytes(wait_fn, 'utf-8'),
+                                    str(round(dur)).encode('utf-8'))) for val, dur in iter_series]
         script_str = b" ".join(string_pieces)
 
         if repeat:
