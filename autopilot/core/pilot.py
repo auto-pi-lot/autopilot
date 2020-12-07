@@ -172,7 +172,7 @@ class Pilot:
         self.init_pigpio()
 
         # Init audio server
-        if hasattr(prefs, 'AUDIOSERVER') or 'AUDIO' in prefs.get('CONFIG'):
+        if prefs.get('AUDIOSERVER') or 'AUDIO' in prefs.get('CONFIG'):
             self.init_audio()
 
 
