@@ -127,7 +127,7 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
             fh.setLevel(loglevel)
             fh.setFormatter(log_formatter)
             logger.addHandler(fh)
-            
+
             # console stream handler with same loglevel
             ch = logging.StreamHandler()
             ch.setLevel(loglevel)

@@ -171,6 +171,7 @@ class Pilot:
         if hasattr(prefs, 'AUDIOSERVER') or 'AUDIO' in prefs.get('CONFIG'):
             self.init_audio()
 
+
         # Init Station
         # Listen dictionary - what do we do when we receive different messages?
         self.listens = {
@@ -190,6 +191,7 @@ class Pilot:
                              port = prefs.get('MSGPORT'),
                              listens = self.listens,
                              instance=False)
+        self.logger.debug('pilot networking initialized')
 
         # if we need to set pins pulled up or down, do that now
         self.pulls = []
@@ -200,6 +202,7 @@ class Pilot:
             for pin in prefs.get('PULLDOWNS'):
                 self.pulls.append(gpio.Digital_Out(int(pin), pull='D', polarity=1))
 
+        self.logger.debug('pullups and pulldowns set')
         # check if the calibration file needs to be updated
 
 
@@ -210,6 +213,7 @@ class Pilot:
         # Since we're starting up, handshake to introduce ourselves
         self.ip = self.get_ip()
         self.handshake()
+        self.logger.debug('handshake sent')
 
 
 
@@ -560,6 +564,7 @@ class Pilot:
     def init_pigpio(self):
         try:
             self.pigpiod = external.start_pigpiod()
+            self.logger.debug('pigpio daemon started')
         except ImportError as e:
             self.pigpiod = None
             self.logger.exception(e)
