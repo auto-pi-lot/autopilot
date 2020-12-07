@@ -471,11 +471,11 @@ class Digital_Out(GPIO):
             try:
                 script_id = self.pig.store_script(series_script)
             except Exception as e:
-                if 'illegal script command' in e:
+                if 'illegal script command' in str(e):
                     raise Exception(f'got pigpio exception: {e} from attempted script {series_script}')
                 else:
                     raise e
-                
+
         self.script_handles[id] = script_id
         self.scripts[id] = series_script
 
