@@ -7,6 +7,12 @@ Autopilot uses a custom version of pigpio (`<https://github.com/sneakers-the-rat
 returns isoformatted timestamps rather than tick numbers in callbacks. See the ``setup_pilot.sh`` script.
 
 Note:
+    Autopilot uses the "Board" rather than "Broadcom" numbering system, see :ref:`the numbering note.<numbering_note>`
+    :class:`.GPIO` objects convert internally between board and bcm numbers using :attr:`.GPIO.pin` ,
+    :attr:`.GPIO.pin_bcm` , :data:`.BOARD_TO_BCM` , and :data:`.BCM_TO_BOARD` .
+
+
+Note:
     This module does not include hardware that uses the GPIO pins over a specific protocol like i2c
 """
 import os
@@ -94,7 +100,7 @@ class GPIO(Hardware):
     Handles initializing pigpio and wraps some of its commonly used methods
 
     Args:
-        pin (int): The Board-numbered GPIO pin of this object.
+        pin (int): The `Board-numbered <https://raspberrypi.stackexchange.com/a/12967>`_ GPIO pin of this object.
         polarity (int): Logic direction. if 1: on=High=1, off=Low=0; if 0: off=Low=0, on=High=1
         pull (str, int): state of pullup/down resistor. Can be set as 'U'/'D' or 1/0 to pull up/down. See :data:`.PULL_MAP`
         trigger (str, int, bool): whether callbacks are triggered on rising ('U', 1, True), falling ('D', 0, False),
@@ -105,7 +111,7 @@ class GPIO(Hardware):
         pig (:class:`pigpio.pi`): An object that manages connection to the pigpio daemon. See docs at http://abyz.me.uk/rpi/pigpio/python.html
         CONNECTED (bool): Whether the connection to pigpio was successful
         pigpiod: Reference to the pigpiod process launched by :func:`.external.start_pigpiod`
-        pin (int): The Board-numbered GPIO pin of this object.
+        pin (int): The `Board-numbered <https://raspberrypi.stackexchange.com/a/12967>`_ GPIO pin of this object.
         pin_bcm (int): The BCM number of the connected pin -- used by pigpio. Converted from pin passed as argument on initialization,
             which is assumed to be the board number.
         pull (str, int): state of pullup/down resistor. Can be set as 'U'/'D' or 1/0 to pull up/down
@@ -171,7 +177,7 @@ class GPIO(Hardware):
     @property
     def pin(self):
         """
-        Board-numbered GPIO pin.
+        `Board-numbered <https://raspberrypi.stackexchange.com/a/12967>`_ GPIO pin.
 
         When assigned, also updates :attr:`.pin_bcm` with the BCM-numbered pin.
         """
@@ -270,7 +276,7 @@ class Digital_Out(GPIO):
     TTL/Digital logic out through a GPIO pin.
 
     Args:
-        pin (int): The Board-numbered GPIO pin of this object
+        pin (int): The `Board-numbered <https://raspberrypi.stackexchange.com/a/12967>`_ GPIO pin of this object
         pulse_width (int): Width of digital output :meth:`~.Digital_Out.pulse` (us). range: 1-100
         polarity (bool): Whether 'on' is High (1, default) and pulses bring the voltage High, or vice versa (0)
 
@@ -589,9 +595,15 @@ class Digital_Out(GPIO):
             except Exception as e:
                 self.logger.exception(e)
 
-            del self.scripts[self.script_handles[script_id]]
-            del self.script_handles[script_id]
+            try:
+                del self.scripts[self.script_handles[script_id]]
+            except KeyError:
+                pass
 
+            try:
+                del self.script_handles[script_id]
+            except KeyError:
+                pass
 
 
     def stop_script(self, id=None):
@@ -653,7 +665,7 @@ class Digital_In(GPIO):
     Record digital input and call one or more callbacks on logic transition.
 
     Args:
-        pin (int): Board-numbered GPIO pin.
+        pin (int): `Board-numbered <https://raspberrypi.stackexchange.com/a/12967>`_ GPIO pin.
         event (:class:`threading.Event`): For callbacks assigned with :meth:`.assign_cb` with ``evented = True``,
             set this event whenever the callback is triggered. Can be used to handle
             stage transition logic here instead of the :class:`.Task` object, as is typical.
