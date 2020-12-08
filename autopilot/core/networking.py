@@ -749,7 +749,7 @@ class Terminal_Station(Station):
         self.pilots = pilots
 
         # start a timer at the draw FPS of the terminal -- only send
-        if hasattr(prefs, 'DRAWFPS'):
+        if prefs.get( 'DRAWFPS'):
             self.data_fps = float(prefs.get('DRAWFPS'))
         else:
             self.data_fps = 20
@@ -1346,7 +1346,7 @@ class Net_Node(object):
 
         self.expand = expand_on_receive
 
-        if hasattr(prefs, 'SUBJECT'):
+        if prefs.get( 'SUBJECT'):
             self.subject = prefs.get('SUBJECT').encode('utf-8')
         else:
             self.subject = None
@@ -1712,7 +1712,7 @@ class Net_Node(object):
         if subject is None:
             if self.subject:
                 subject = self.subject
-            elif hasattr(prefs, 'SUBJECT'):
+            elif prefs.get( 'SUBJECT'):
                 subject = prefs.get('SUBJECT')
 
         # make a queue
@@ -1758,7 +1758,7 @@ class Net_Node(object):
         upstream = upstream.encode('utf-8')
 
         if subject is None:
-            if hasattr(prefs, 'SUBJECT'):
+            if prefs.get( 'SUBJECT'):
                 subject = prefs.get('SUBJECT')
             else:
                 subject = ""

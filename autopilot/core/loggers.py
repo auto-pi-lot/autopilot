@@ -155,10 +155,10 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
             logger.addHandler(fh)
 
             # console stream handler with same loglevel
-            ch = logging.StreamHandler()
-            ch.setLevel(loglevel)
-            ch.setFormatter(log_formatter)
-            logger.addHandler(ch)
+            # ch = logging.StreamHandler()
+            # ch.setLevel(loglevel)
+            # ch.setFormatter(log_formatter)
+            # logger.addHandler(ch)
 
 
 

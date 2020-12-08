@@ -16,7 +16,7 @@ else:
     from queue import Queue, Empty
 
 #print(prefs._PREFS.items())
-if hasattr(prefs, 'CONFIG'):
+if prefs.get( 'CONFIG'):
     if 'VISUAL' in prefs.get('CONFIG'):
         from psychopy import visual, core
 else:

@@ -10,7 +10,7 @@ from autopilot.hardware import BCM_TO_BOARD
 from autopilot import prefs
 from autopilot.core.loggers import init_logger
 
-if hasattr(prefs, "AUDIOSERVER"):
+if prefs.get( "AUDIOSERVER"):
     if prefs.get('AUDIOSERVER') == 'pyo':
         pass
     elif prefs.get('AUDIOSERVER') == 'jack':

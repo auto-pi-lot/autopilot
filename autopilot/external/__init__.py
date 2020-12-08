@@ -71,10 +71,10 @@ def start_pigpiod():
         if launch_pigpiod is None:
             raise RuntimeError('the pigpiod binary was not found!')
 
-        if hasattr(prefs, 'PIGPIOARGS'):
+        if prefs.get( 'PIGPIOARGS'):
             launch_pigpiod += ' ' + prefs.get('PIGPIOARGS')
 
-        if hasattr(prefs, 'PIGPIOMASK'):
+        if prefs.get( 'PIGPIOMASK'):
             # if it's been converted to an integer, convert back to a string and zfill any leading zeros that were lost
             if isinstance(prefs.get('PIGPIOMASK'), int):
                 prefs.set('PIGPIOMASK', str(prefs.get('PIGPIOMASK')).zfill(28))

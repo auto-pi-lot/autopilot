@@ -738,7 +738,7 @@ class Video(QtWidgets.QWidget):
         self.videos = videos
 
         if fps is None:
-            if hasattr(prefs, 'DRAWFPS'):
+            if prefs.get( 'DRAWFPS'):
                 self.fps = prefs.get('DRAWFPS')
             else:
                 self.fps = 10
@@ -1028,7 +1028,7 @@ class ImageItem_TimedUpdate(pg.ImageItem):
         self.timer = globals()['VIDEO_TIMER']
         self.timer.stop()
         self.timer.timeout.connect(self.update_img)
-        if hasattr(prefs, 'DRAWFPS'):
+        if prefs.get( 'DRAWFPS'):
             self.fps = prefs.get('DRAWFPS')
         else:
             self.fps = 10.

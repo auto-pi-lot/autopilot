@@ -199,10 +199,10 @@ class Pilot:
 
         # if we need to set pins pulled up or down, do that now
         self.pulls = []
-        if hasattr(prefs, 'PULLUPS'):
+        if prefs.get( 'PULLUPS'):
             for pin in prefs.get('PULLUPS'):
                 self.pulls.append(gpio.Digital_Out(int(pin), pull='U', polarity=0))
-        if hasattr(prefs, 'PULLDOWNS'):
+        if prefs.get( 'PULLDOWNS'):
             for pin in prefs.get('PULLDOWNS'):
                 self.pulls.append(gpio.Digital_Out(int(pin), pull='D', polarity=1))
 
