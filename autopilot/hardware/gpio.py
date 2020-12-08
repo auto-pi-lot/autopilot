@@ -1342,7 +1342,9 @@ class Solenoid(Digital_Out):
         except KeyError:
             # try using name prepended with PORTS_, which happens for hardware objects with implicit names
             self.calibration = prefs.get('PORT_CALIBRATION')[self.name.replace('PORTS_', '')]
-
+        except Exception as e:
+            self.logger.exception(f'couldnt get calibration, using default LUT y = 3.5 + 2. got error {e}')
+            self.calibration = {'slope': 3.5, 'intercept': 2}
         # compute duration from slope and intercept
         duration = round(float(self.calibration['intercept']) + (float(self.calibration['slope']) * float(vol)))
 
