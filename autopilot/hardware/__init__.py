@@ -13,7 +13,7 @@ very few design requirements:
 * Hardware methods are typically called in their own threads, so care should
   be taken to make any long-running operations internally threadsafe.
 
-.. _numbering_note
+.. _numbering-note:
 
 Note:
     This software was primarily developed for the Raspberry Pi, which

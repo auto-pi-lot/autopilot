@@ -7,7 +7,7 @@ Autopilot uses a custom version of pigpio (`<https://github.com/sneakers-the-rat
 returns isoformatted timestamps rather than tick numbers in callbacks. See the ``setup_pilot.sh`` script.
 
 Note:
-    Autopilot uses the "Board" rather than "Broadcom" numbering system, see :ref:`the numbering note.<numbering_note>`
+    Autopilot uses the "Board" rather than "Broadcom" numbering system, see :ref:`the numbering note. <numbering-note>`
     :class:`.GPIO` objects convert internally between board and bcm numbers using :attr:`.GPIO.pin` ,
     :attr:`.GPIO.pin_bcm` , :data:`.BOARD_TO_BCM` , and :data:`.BCM_TO_BOARD` .
 
