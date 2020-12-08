@@ -1096,8 +1096,8 @@ class Protocol_Wizard(QtWidgets.QDialog):
             self.steps[current_step][param_name]['value'] = sender.isChecked()
         elif sender_type == 'list':
             list_text = sender.currentItem().text()
-            list_value = self.steps[current_step][param_name]['values'][list_text]
-            self.steps[current_step][param_name]['value'] = list_value
+            #list_value = self.steps[current_step][param_name]['values'][list_text]
+            self.steps[current_step][param_name]['value'] = list_text
         elif sender_type == 'sounds':
             self.steps[current_step][param_name]['value'] = self.sound_widget.sound_dict
         else:

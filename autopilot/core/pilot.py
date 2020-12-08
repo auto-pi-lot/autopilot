@@ -46,10 +46,10 @@ if __name__ == '__main__':
 
     prefs.init(prefs_file)
 
-    if hasattr(prefs, 'AUDIOSERVER') or 'AUDIO' in prefs.get('CONFIG'):
+    if prefs.get('AUDIOSERVER') or 'AUDIO' in prefs.get('CONFIG'):
         if prefs.get('AUDIOSERVER') == 'pyo':
             from autopilot.stim.sound import pyoserver
-        elif prefs.get('AUDIOSERVER') in ('jack', True):
+        else:
             from autopilot.stim.sound import jackclient
 
 from autopilot.core.networking import Pilot_Station, Net_Node, Message
@@ -129,6 +129,8 @@ class Pilot:
     running = None
     stage_block = None
     file_block = None
+    quitting = None
+    """mp.Event to signal when process is quitting"""
 
     # networking - our internal and external messengers
     node = None
@@ -157,18 +159,22 @@ class Pilot:
             self.parentid = 'T'
 
         self.logger = init_logger(self)
+        self.logger.debug('pilot logger initialized')
 
         # Locks, etc. for threading
         self.running = threading.Event() # Are we running a task?
         self.stage_block = threading.Event() # Are we waiting on stage triggers?
         self.file_block = threading.Event() # Are we waiting on file transfer?
+        self.quitting = threading.Event()
+        self.quitting.clear()
 
         # init pigpiod process
         self.init_pigpio()
 
         # Init audio server
-        if hasattr(prefs, 'AUDIOSERVER') or 'AUDIO' in prefs.get('CONFIG'):
+        if prefs.get('AUDIOSERVER') or 'AUDIO' in prefs.get('CONFIG'):
             self.init_audio()
+
 
         # Init Station
         # Listen dictionary - what do we do when we receive different messages?
@@ -189,16 +195,18 @@ class Pilot:
                              port = prefs.get('MSGPORT'),
                              listens = self.listens,
                              instance=False)
+        self.logger.debug('pilot networking initialized')
 
         # if we need to set pins pulled up or down, do that now
         self.pulls = []
-        if hasattr(prefs, 'PULLUPS'):
+        if prefs.get( 'PULLUPS'):
             for pin in prefs.get('PULLUPS'):
                 self.pulls.append(gpio.Digital_Out(int(pin), pull='U', polarity=0))
-        if hasattr(prefs, 'PULLDOWNS'):
+        if prefs.get( 'PULLDOWNS'):
             for pin in prefs.get('PULLDOWNS'):
                 self.pulls.append(gpio.Digital_Out(int(pin), pull='D', polarity=1))
 
+        self.logger.debug('pullups and pulldowns set')
         # check if the calibration file needs to be updated
 
 
@@ -209,6 +217,7 @@ class Pilot:
         # Since we're starting up, handshake to introduce ourselves
         self.ip = self.get_ip()
         self.handshake()
+        self.logger.debug('handshake sent')
 
 
 
@@ -559,6 +568,7 @@ class Pilot:
     def init_pigpio(self):
         try:
             self.pigpiod = external.start_pigpiod()
+            self.logger.debug('pigpio daemon started')
         except ImportError as e:
             self.pigpiod = None
             self.logger.exception(e)
@@ -727,8 +737,12 @@ class Pilot:
 if __name__ == "__main__":
 
 
-    a = Pilot()
-
+    try:
+        a = Pilot()
+        a.quitting.wait()
+    except KeyboardInterrupt:
+        a.quitting.set()
+        sys.exit()
 
 
 

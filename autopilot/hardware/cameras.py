@@ -346,7 +346,7 @@ class Camera(Hardware):
 
         self.init_networking(listens=self.listens, **kwargs)
 
-        if hasattr(prefs, 'SUBJECT'):
+        if prefs.get( 'SUBJECT'):
             subject = prefs.get('SUBJECT')
         else:
             self.logger.warning('nothing found for prefs.get(\'SUBJECT\'), probably running outside of task context')

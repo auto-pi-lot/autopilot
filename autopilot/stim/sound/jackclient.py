@@ -175,7 +175,7 @@ class JackClient(mp.Process):
         self.client.activate()
         target_ports = self.client.get_ports(is_physical=True, is_input=True, is_audio=True)
 
-        if hasattr(prefs, 'OUTCHANNELS'):
+        if prefs.get( 'OUTCHANNELS'):
             if isinstance(prefs.get('OUTCHANNELS'), list):
                 for outchan in prefs.get('OUTCHANNELS'):
 

@@ -39,6 +39,7 @@ import numpy as np
 import threading
 import logging
 from itertools import cycle
+import warnings
 if sys.version_info >= (3,0):
     from queue import Empty, Full
 else:
@@ -546,6 +547,7 @@ elif server_type == "jack":
 else:
     # just importing to query parameters, not play sounds.
     BASE_CLASS = object
+    warnings.warn('No Base Sound class specified! sounds will probably not work!!!')
 
 
 class Tone(BASE_CLASS):

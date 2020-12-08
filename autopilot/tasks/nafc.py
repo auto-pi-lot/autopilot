@@ -11,7 +11,7 @@ import numpy as np
 import autopilot.hardware.gpio
 from autopilot.tasks import Task
 from autopilot.stim import init_manager
-from autopilot.stim.sound import sounds
+from autopilot.stim.sound import sounds as stim_sounds
 from autopilot.hardware import gpio
 from collections import OrderedDict as odict
 from autopilot.core.networking import Net_Node
@@ -485,7 +485,7 @@ class Nafc_Gap(Nafc):
         self.logger.debug('starting background sound')
         self.noise_amplitude = noise_amplitude
         self.noise_duration = 10*1000 # 10 seconds
-        self.noise = sounds.Noise(duration=self.noise_duration,
+        self.noise = stim_sounds.Noise(duration=self.noise_duration,
                                   amplitude=self.noise_amplitude)
 
         self.noise.play_continuous()
@@ -630,7 +630,7 @@ class Nafc_Gap_Laser(Nafc_Gap):
             duty_cycle_off = cycle_duration - duty_cycle_on
 
             # get number of repeats to make
-            n_cycles = np.floor(duration/cycle_duration)
+            n_cycles = int(np.floor(duration/cycle_duration))
             durations = [duty_cycle_on, duty_cycle_off]*n_cycles
             values = [1, 0]*n_cycles
 
@@ -719,6 +719,31 @@ class Nafc_Gap_Laser(Nafc_Gap):
         # return the data created by the original task
         return data
 
+    def set_leds(self, color_dict=None):
+        """
+        Set the color of all LEDs at once.
+
+        Override base method to exclude TOP led
+
+        Args:
+            color_dict (dict): If None, turn LEDs off, otherwise like:
+
+                {'pin': [R,G,B],
+                'pin2: [R,G,B]}
+
+
+        """
+        # We are passed a dict of ['pin']:[R, G, B] to set multiple colors
+        # All others are turned off
+        if not color_dict:
+            color_dict = {}
+        for k, v in self.hardware['LEDS'].items():
+            if k == "TOP":
+                continue
+            if k in color_dict.keys():
+                v.set(color_dict[k])
+            else:
+                v.set(0)
 
 
 

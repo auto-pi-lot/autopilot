@@ -503,17 +503,18 @@ def unfold_values(v):
     return v
 
 
-def make_dir(adir):
+def make_dir(adir, permissions:int=0o777):
     """
     Make a directory if it doesn't exist and set its permissions to `0777`
 
     Args:
         adir (str): Path to the directory
+        permissions (int): an octal integer used to set directory permissions (default ``0o777``)
     """
     if not os.path.exists(adir):
         os.makedirs(adir)
 
-    os.chmod(adir, 0o774)
+    os.chmod(adir, permissions)
 
 def make_alias(launch_script: str, bash_profile: typing.Optional[str]=None):
     """
