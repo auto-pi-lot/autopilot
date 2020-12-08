@@ -571,6 +571,7 @@ class Digital_Out(GPIO):
             if checktimes > 10:
                 continue
 
+
         self.pig.delete_script(self.script_handles[script_id])
 
         del self.scripts[self.script_handles[script_id]]
@@ -592,8 +593,13 @@ class Digital_Out(GPIO):
 
             try:
                 self.pig.delete_script(script_id)
+            except AttributeError:
+                pass
             except Exception as e:
-                self.logger.exception(e)
+                if 'unknown script id' in str(e):
+                    pass
+                else:
+                    self.logger.exception(e)
 
             try:
                 del self.scripts[self.script_handles[script_id]]
