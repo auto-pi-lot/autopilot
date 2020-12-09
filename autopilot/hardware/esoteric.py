@@ -319,6 +319,6 @@ class Parallax_Platform(Hardware):
             self._update_script(steps)
         else:
             self.direction = False
-            self._update_script(steps)
+            self._update_script(abs(steps))
 
         self._height = height
