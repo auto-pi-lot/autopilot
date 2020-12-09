@@ -179,7 +179,7 @@ class Parallax_Platform(Hardware):
         """
 
         # script explained in docstring
-        SCRIPT = f"tag 999 mics p{self.DELAY_VAR} cmp {self.STEPS_VAR} jz 999 w {self.BCM['MOVE']} 1 mics {self.PULSE_VAR} w {self.BCM['MOVE']} 0 dcr {self.STEPS_VAR} jmp 999".encode('utf-8')
+        SCRIPT = f"tag 999 mics p{self.DELAY_VAR} cmp p{self.STEPS_VAR} jz 999 w {self.BCM['MOVE']} 1 mics p{self.PULSE_VAR} w {self.BCM['MOVE']} 0 dcr p{self.STEPS_VAR} jmp 999".encode('utf-8')
         self._move_script_id = self.pig.store_script(SCRIPT)
         self.pig.run_script(self._move_script_id, (self.PULSE_DUR, self.DELAY_DUR, 0))
 
