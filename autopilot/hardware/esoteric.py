@@ -99,6 +99,17 @@ class Parallax_Platform(Hardware):
 
     init_pigpio = GPIO.init_pigpio
 
+    # --------------------------------------------------
+    # control of height
+    # --------------------------------------------------
+    STEPS_VAR = 2 #: Variable for storing remaining steps in pigpio
+    PULSE_VAR = 0 #: Variable for storing pulse duration in pigpio (in microseconds)
+    DELAY_VAR = 1 #: Variable for storing duration between pulses in pigpio (in microseconds)
+    PULSE_DUR = 100 #: Duration of step pulse (in microseconds)
+    DELAY_DUR = 100 #: Duration of delay between pulses (in microseconds)
+
+
+
     def __init__(self, *args, **kwargs):
         super(Parallax_Platform, self).__init__(*args, **kwargs)
 
@@ -120,6 +131,11 @@ class Parallax_Platform(Hardware):
         self._powers = 2 ** np.arange(32)
         """powers to take dot product of _cmd_mask to get integer from bool array"""
 
+        self._height = 0 # type: typing.Optional[int]
+        self._move_script_id = None # type: typing.Optional[int]
+        self.start_move_script()
+
+
 
     def init_pins(self):
         """
@@ -137,6 +153,52 @@ class Parallax_Platform(Hardware):
             pin = self.BCM[pin_name]
             self._hardware[pin_name] = Digital_Out(pin=pin, pull=0, name=pin_name)
 
+    def start_move_script(self):
+        """
+        Create and start a pigpio script to control pulses to the movement pin
+
+        * Create tag 999 to jump back to beginning of script
+        * wait for :attr:`.DELAY_VAR` microseconds
+        * compare :attr:`.STEPS_VAR` to accumulator (always left at zero)
+        * if :attr:`.STEPS_VAR` is zero, jump back to ``999``
+        * otherwise flip ``BCM['MOVE']`` on and off for :attr:`.PULSE_VAR` microseconds
+        * decrement :attr:`.STEPS_VAR` and jumpy back to ``999``
+
+        Movement parameters can be changed with calls to `pig.update_script <http://abyz.me.uk/rpi/pigpio/python.html#update_script>`_
+        for example::
+
+            PULSE_DUR = 50
+            DELAY_DUR = 100
+            N_STEPS = 100
+
+            self.pig.update_script(script_id, (N_STEPS, PULSE_DUR, DELAY_DUR))
+        """
+
+        # script explained in docstring
+        SCRIPT = f"tag 999 mics p{self.DELAY_VAR} cmp {self.STEPS_VAR} jz 999 w {self.BCM['MOVE']} 1 mics {self.PULSE_VAR} w {self.BCM['MOVE']} 0 dcr {self.STEPS_VAR} jmp 999".encode('utf-8')
+        self._move_script_id = self.pig.store_script(SCRIPT)
+        self.pig.run_script(self._move_script_id, (self.PULSE_DUR, self.DELAY_DUR, 0))
+
+    def _update_script(self, steps=None):
+        """update the running movement script
+        if steps is None, don't fuck with them, just update the other params"""
+        if self._move_script_id is None:
+            self.logger.warning('attempted to update script, but script not initialized')
+            return
+
+        if steps is None:
+            cmd = [0, 0]
+            for cmd_ind, cmd_val in zip((self.PULSE_VAR, self.DELAY_VAR),
+                                        (self.PULSE_DUR, self.DELAY_DUR)):
+                cmd[cmd_ind] = cmd_val
+
+        else:
+            cmd = [0, 0, 0]
+            for cmd_ind, cmd_val in zip((self.STEPS_VAR, self.PULSE_VAR, self.DELAY_VAR),
+                                        (steps, self.PULSE_DUR, self.DELAY_DUR)):
+                cmd[cmd_ind] = cmd_val
+
+        self.pig.update_script(self._move_script_id, cmd)
 
     @property
     def direction(self) -> bool:
@@ -229,3 +291,30 @@ class Parallax_Platform(Hardware):
 
         # latch the rows
         self._hardware['ROW_LATCH'].pulse()
+
+    @property
+    def height(self) -> int:
+        """
+        Set the height!
+
+        Returns:
+
+        """
+        return self._height
+
+    @height.setter
+    def height(self, height: int):
+        if height < 0:
+            height = 0
+
+        steps = height - self._height
+        if steps == 0:
+            return
+        elif steps > 0:
+            self.direction = True
+            self._update_script(steps)
+        else:
+            self.direction = False
+            self._update_script(steps)
+        
+        self._height = height
