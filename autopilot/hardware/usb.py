@@ -101,8 +101,8 @@ class Wheel(Hardware):
                         'CLEAR':self.l_clear,
                         'STOP':self.l_stop}
         self.node = Net_Node('wheel_{}'.format(mouse_idx),
-                             upstream=prefs.NAME,
-                             port=prefs.MSGPORT,
+                             upstream=prefs.get('NAME'),
+                             port=prefs.get('MSGPORT'),
                              listens=self.listens,
                              )
 

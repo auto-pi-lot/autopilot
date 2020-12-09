@@ -15,11 +15,15 @@ import sys
 import inspect
 import pkgutil
 import ast
+import typing
 import importlib
+import re
+from pathlib import Path
 
 from autopilot import hardware
 from autopilot.setup.run_script import call_series, run_script, list_scripts
-from autopilot.setup.scripts import ENV_PILOT, PILOT_ENV_CMDS
+from autopilot.setup.scripts import SCRIPTS
+from autopilot.prefs import _DEFAULTS, Scopes
 
 # CLI Options
 
@@ -32,78 +36,43 @@ parser.add_argument('-l', '--list_scripts', help="list available setup scripts!"
 AGENTS = ('TERMINAL', 'PILOT', 'CHILD')
 
 BASE_PREFS = odict({
-    'NAME'       : {'type': 'str', "text": "Agent Name:"},
-    'BASEDIR'    : {'type': 'str', "text":"Base Directory:", "default":os.path.join(os.path.expanduser("~"),"autopilot")},
-    'PUSHPORT'   : {'type': 'int',"text":"Push Port - Router port used by the Terminal or upstream agent:", "default":"5560"},
-    'MSGPORT'    : {'type': 'int', "text":"Message Port - Router port used by this agent to receive messages:", "default":"5565"},
-    'TERMINALIP' : {'type': 'str', "text":"Terminal IP:", "default":"192.168.0.100"},
-    'LOGLEVEL'   : {'type': 'choice', "text": "Log Level:", "choices":("DEBUG", "INFO", "WARNING", "ERROR"), "default": "WARNING"},
-    'CONFIG'     : {'type': 'list', "text": "System Configuration", 'hidden': True}
+    k:v for k, v in _DEFAULTS.items() if v["scope"] == Scopes.COMMON
 })
 
 PILOT_PREFS = odict({
-    'PIGPIOMASK': {'type': 'str', 'text': 'Binary mask controlling which pins pigpio controls according to their BCM numbering, see the -x parameter of pigpiod',
-                   'default': "1111110000111111111111110000"},
-    'PIGPIOARGS': {'type': 'str', 'text': 'Arguments to pass to pigpiod on startup',
-                   'default': '-t 0 -l'},
-    'PULLUPS'   : {'type': 'list', 'text': 'Pins to pull up on system startup? (list of form [1, 2]'},
-    'PULLDOWNS'   : {'type': 'list', 'text': 'Pins to pull down on system startup? (list of form [1, 2]'}
+    k:v for k, v in _DEFAULTS.items() if v["scope"] == Scopes.PILOT
 })
 
 LINEAGE_PREFS = odict({
-    'LINEAGE':     {'type': 'choice', "text": "Are we a parent or a child?", "choices": ("NONE", "PARENT", "CHILD")},
-    'CHILDID'    : {'type': 'str', "text":"Child ID:", "depends":("LINEAGE", "PARENT")},
-    'PARENTID'   : {'type': 'str', "text":"Parent ID:", "depends":("LINEAGE", "CHILD")},
-    'PARENTIP'   : {'type': 'str', "text":"Parent IP:", "depends":("LINEAGE","CHILD")},
-    'PARENTPORT' : {'type': 'str', "text":"Parent Port:", "depends":("LINEAGE", "CHILD")},
+    k:v for k, v in _DEFAULTS.items() if v["scope"] == Scopes.LINEAGE
 })
 
 AUDIO_PREFS = odict({
-    'AUDIOSERVER': {'type': 'bool', 'text':'Enable jack audio server?'},
-    'NCHANNELS': {'type': 'int', 'text': "Number of Audio channels", 'default':1, 'depends': 'AUDIOSERVER'},
-    'OUTCHANNELS': {'type': 'list', 'text': 'List of Audio channel indexes to connect to', 'default': '[1]', 'depends': 'AUDIOSERVER'},
-    'FS': {'type': 'int', 'text': 'Audio Sampling Rate', 'default': 192000, 'depends': 'AUDIOSERVER'},
-    'JACKDSTRING': {'type': 'str', 'text': 'Arguments to pass to jackd, see the jackd manpage',
-                    'default': 'jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -n3 -s &', 'depends': 'AUDIOSERVER'},
+    k:v for k, v in _DEFAULTS.items() if v["scope"] == Scopes.AUDIO
 })
 
 TERMINAL_PREFS = odict({
-    'DRAWFPS': {'type': 'int', "text": "FPS to draw videos displayed during acquisition",
-                "default": "20"},
-    'PILOT_DB': {'type': 'str', 'text': "filename to use for the .json pilot_db that maps pilots to subjects (relative to BASEDIR)",
-                 "default": "pilot_db.json"}
+    k:v for k, v in _DEFAULTS.items() if v["scope"] == Scopes.TERMINAL
 })
 
-DIRECTORY_STRUCTURE = {
-    'DATADIR': 'data',
-    'SOUNDDIR': 'sounds',
-    'LOGDIR': 'logs',
-    'VIZDIR': 'viz',
-    'PROTOCOLDIR': 'protocols',
-}
+DIRECTORY_STRUCTURE = odict({
+    k:v for k, v in _DEFAULTS.items() if v["scope"] == Scopes.DIRECTORY
+})
 
-"""
-performance: 
-    * disable startup script that changes cpu governor,
-    * change cpu governor to "performance" on boot
-    * increase memlock and realtime priority limits for audio group
-
-hifiberry:
-    * turn onboard audio off
-    * enable hifiberry stuff in /boot/config.txt
-    * edit alsa config so hifiberry is default sound card
-
-viz:
-
-.. todo::
-
-    Need to find a more elegant way to do this, for now see lines 160-200 in the presetup_pilot.sh legacy script
-
-"""
 
 
 
 class Autopilot_Form(nps.Form):
+    """
+    Base class for Autopilot setup forms
+
+    Each subclass needs to override the :meth:`.create` method to add the graphical elements for the form,
+    typically by using :meth:`.populate_form` with a standardized description from :mod:`autopilot.prefs` , and
+    the NAME attribute. The DESCRIPTION attribute provides title text for the form
+    """
+
+    NAME = "" # type: str
+    DESCRIPTION = "" # type: str
 
     def __init__(self, *args, **kwargs):
         self.input = odict()
@@ -206,8 +175,14 @@ class Autopilot_Form(nps.Form):
                     self.input[dependent[0]].color = 'NO_EDIT'
                     self.input[dependent[0]].labelColor = 'NO_EDIT'
 
+    def afterEditing(self):
+        self.parentApp.next_form_in_path(self)
 
-class Hardware_Form(nps.FormWithMenus):
+
+class Hardware_Form(nps.FormWithMenus, Autopilot_Form):
+    NAME = "HARDWARE"
+    DESCRIPTION = "Configure Hardware Objects"
+
     def __init__(self, *args, **kwargs):
         self.input = odict()
         self.altrely = 4
@@ -234,7 +209,6 @@ class Hardware_Form(nps.FormWithMenus):
     # def add_hardware_widget(self, sigs):
     #
 
-
     def list_hardware(self):
         # start at the top of the autopilot hardware package and work down
         # get all classes that are defined within the hardware module
@@ -259,9 +233,6 @@ class Hardware_Form(nps.FormWithMenus):
             hardware_objs[submod_name] = submod_classes
 
         return hardware_objs
-
-
-
 
     def add_hardware(self, module, class_name):
         #self.nextrely = 1
@@ -322,17 +293,11 @@ class Hardware_Form(nps.FormWithMenus):
 
         self.input[MODULE].append(hw_widgets)
 
-    def afterEditing(self):
-        self.parentApp.setNextForm(None)
-
-
-
-
-
-
-
 
 class Agent_Form(nps.Form):
+    NAME="AGENT"
+    DESCRIPTION = "Select an Agent"
+
     def create(self):
         # self.input = odict({
         #     'AGENT': self.add(nps.TitleSelectOne, max_height=len(AGENTS)+1, value=[0,],
@@ -354,71 +319,154 @@ class Agent_Form(nps.Form):
         global prefs
 
         if self.input['AGENT'].value[0] == 0:
-            prefs['AGENT'] = 'TERMINAL'
-            self.parentApp.setNextForm('TERMINAL')
+            agent_name = "TERMINAL"
         elif self.input['AGENT'].value[0] == 1:
-            prefs['AGENT'] = 'PILOT'
-            self.parentApp.setNextForm('ENV_PILOT')
+            agent_name = 'PILOT'
         elif self.input['AGENT'].value[0] == 2:
-            prefs['AGENT'] = 'CHILD'
-            self.parentApp.setNextForm('CHILD')
+            agent_name = 'CHILD'
         else:
             self.parentApp.setNextForm(None)
+            return
 
+        prefs['AGENT'] = agent_name
+        self.parentApp.agent = agent_name
+        self.parentApp.path = self.parentApp.PATHS[agent_name]
+        self.parentApp.next_form_in_path(self)
 
-class Pilot_Env_Form(Autopilot_Form):
+class Directory_Form(Autopilot_Form):
+    NAME='DIRECTORIES'
+    DESCRIPTION = "Configure directory structure"
+
     def create(self):
-        self.populate_form(ENV_PILOT)
+        self.add(nps.FixedText, value="Directory Structure", editable=False, color="VERYGOOD")
+        self.populate_form(DIRECTORY_STRUCTURE)
 
-    def afterEditing(self):
-        self.parentApp.setNextForm('CONFIG_PILOT_1')
+class Common_Form(Autopilot_Form):
+    NAME="COMMON"
+    DESCRIPTION = "Configure common prefs"
+    def create(self):
+        self.add(nps.FixedText, value="Common Prefs", editable=False, color="VERYGOOD")
+        self.populate_form(BASE_PREFS)
+
+class Scripts_Form(Autopilot_Form):
+    NAME="SCRIPTS"
+    DESCRIPTION = "Choose environment configuration scripts to run"
+    def create(self):
+        self.populate_form(SCRIPTS)
 
 class Pilot_Config_Form_1(Autopilot_Form):
+    NAME="PILOT"
+    DESCRIPTION = "Configure Pilot-specific prefs"
     def create(self):
-        self.add(nps.FixedText, value='Base Prefs', editable=False, color="VERYGOOD")
-        self.populate_form(BASE_PREFS)
         self.add(nps.FixedText, value='Pilot Prefs', editable=False, color="VERYGOOD")
         self.populate_form(PILOT_PREFS)
-
-    def afterEditing(self):
-        self.parentApp.setNextForm('CONFIG_PILOT_2')
-
-class Pilot_Config_Form_2(Autopilot_Form):
-    def create(self):
         self.add(nps.FixedText, value='Lineage Prefs', editable=False, color="VERYGOOD")
         self.populate_form(LINEAGE_PREFS)
         self.add(nps.FixedText, value='Audio Prefs', editable=False, color="VERYGOOD")
         self.populate_form(AUDIO_PREFS)
 
-    def afterEditing(self):
-        self.parentApp.setNextForm('HARDWARE')
+
+# class Pilot_Config_Form_2(Autopilot_Form):
+#     def create(self):
+#
+#
+#     def afterEditing(self):
+#         self.parentApp.setNextForm('HARDWARE')
 
 
 
 class Terminal_Form(Autopilot_Form):
+    NAME="TERMINAL"
+    DESCRIPTION = "Configure Terminal-specific prefs"
     def create(self):
-        self.add(nps.FixedText, value='Base Prefs', editable=False, color="VERYGOOD")
-        self.populate_form(BASE_PREFS)
         self.add(nps.FixedText, value='Terminal Prefs', editable=False, color="VERYGOOD")
         self.populate_form(TERMINAL_PREFS)
 
-    def afterEditing(self):
-        self.parentApp.setNextForm(None)
-
-
-
 class Autopilot_Setup(nps.NPSAppManaged):
+    PATHS = {
+        'TERMINAL': ['AGENT', 'DIRECTORIES', 'COMMON', 'TERMINAL', 'SCRIPTS'],
+        'PILOT': ['AGENT', 'DIRECTORIES', 'COMMON', 'PILOT', 'HARDWARE', 'SCRIPTS']
+    }
+    """
+    Allow different agents to have different paths through setup
+    """
+
     def __init__(self, prefs):
         super(Autopilot_Setup, self).__init__()
         self.prefs = prefs
+        self.agent = "" # type: str
+        self.forms = {} # type: typing.Dict[str, Autopilot_Form]
+        self.path = []
+
+
 
     def onStart(self):
-        self.agent = self.addForm('MAIN', Agent_Form, name="Select Agent")
-        self.env_pilot = self.addForm('ENV_PILOT', Pilot_Env_Form, name="Configure Pilot Environment")
-        self.pilot_1 = self.addForm('CONFIG_PILOT_1', Pilot_Config_Form_1, name="Setup Pilot Agent - 1/2")
-        self.pilot_2 = self.addForm('CONFIG_PILOT_2', Pilot_Config_Form_2, name="Setup Pilot Agent - 2/2")
-        self.hardware = self.addForm('HARDWARE', Hardware_Form, name="Hardware Configuration")
-        self.terminal = self.addForm('TERMINAL', Terminal_Form, name="Terminal Configuration")
+        """
+        Add forms by gathering subclasses of :class:`.Autopilot_Form`
+        """
+        self.forms['AGENT'] = self.addForm('MAIN', Agent_Form, name="Select Agent")
+
+        # then iterate through subclasses and add
+        for form_class in Autopilot_Form.__subclasses__():
+            self.forms[form_class.NAME] = self.addForm(form_class.NAME, form_class, name=form_class.DESCRIPTION)
+
+    def next_form_in_path(self, calling_form: Autopilot_Form):
+        # path = self.PATHS[self.agent]
+        next_ind = self.path.index(calling_form.NAME) + 1
+        if next_ind >= len(self.path):
+            self.setNextForm(None)
+        else:
+            self.setNextForm(self.path[next_ind])
+
+    def unpack_prefs(self):
+        """
+        Unpack the prefs from the forms and return them complete
+
+        Returns:
+            dict - your prefs!
+        """
+
+        out_prefs = odict()
+        for form_name in self.path:
+            # skip scripts, it's not exactly prefs
+            if form_name == 'SCRIPTS':
+                continue
+
+            new_prefs = odict({k: unfold_values(v) for k, v in self.forms[form_name].input.items()})
+
+            # hardware needs a little extra unpacking
+            if form_name == "HARDWARE":
+                hardware = {}
+                for hardware_group, hardware_list in new_prefs.items():
+                    hardware[hardware_group] = {}
+                    for hardware_config in hardware_list:
+                        hardware[hardware_group][hardware_config['name']] = hardware_config
+                out_prefs['HARDWARE'] = hardware
+            else:
+                out_prefs.update(new_prefs)
+
+        return out_prefs
+
+    @property
+    def active_scripts(self):
+        """
+        Get dict of active scripts
+
+        Returns:
+            dict - script_name: script_commands
+        """
+        out_scripts = odict()
+
+        script_names = odict({k: unfold_values(v) for k, v in self.forms['SCRIPTS'].input.items()})
+        for script_name, result in script_names.items():
+            if script_name in SCRIPTS.keys() and result == 1:
+                try:
+                    out_scripts[script_name] = SCRIPTS[script_name]['commands']
+                except KeyError:
+                    out_scripts[script_name] = True
+
+        return out_scripts
+
 
 def unfold_values(v):
     """
@@ -455,21 +503,58 @@ def unfold_values(v):
     return v
 
 
-def make_dir(adir):
+def make_dir(adir, permissions:int=0o777):
     """
     Make a directory if it doesn't exist and set its permissions to `0777`
 
     Args:
         adir (str): Path to the directory
+        permissions (int): an octal integer used to set directory permissions (default ``0o777``)
     """
     if not os.path.exists(adir):
         os.makedirs(adir)
 
-    os.chmod(adir, 0o774)
+    os.chmod(adir, permissions)
+
+def make_alias(launch_script: str, bash_profile: typing.Optional[str]=None):
+    """
+    Make an alias so that calling ``autopilot`` calls ``autopilot_dir/launch_autopilot.sh``
+
+    Arguments:
+        launch_script (str): the path to the autopilot launch script to be aliased
+        bash_profile (str, None): Optional, location of shell profile to edit. if None, use ``.bashrc`` then ``.bash_profile`` if they exist
+    """
+
+    # find bash file
+    if bash_profile is None:
+        if (Path.home() / '.bashrc').exists():
+            bash_profile = Path.home() / '.bashrc'
+        elif  (Path.home() / '.bash_profile').exists():
+            bash_profile = Path.home() / '.bash_profile'
+        else:
+            raise ValueError('No bash_profile provided and cant find in default locations! couldnt make alias')
+
+
+    with open(bash_profile, 'r') as pfile:
+        profile = pfile.read()
+
+    # remove any previously set autopilot alias
+    re.sub('\n# autopilot alias generated by setup_autopilot.py.*\nalias autopilot.*', '', profile)
+
+    # make and append alias to profile
+
+    profile = profile + f"\n# autopilot alias generated by setup_autopilot.py\nalias autopilot={Path(launch_script).resolve()}\n"
+    with open(bash_profile, 'w') as pfile:
+        pfile.write(profile)
+
+
+
+
+
+
 
 if __name__ == "__main__":
     env = {}
-    env_params = {}
     prefs = {}
     error_msgs = []
     config_msgs = []
@@ -506,8 +591,11 @@ if __name__ == "__main__":
         prefs_fn = os.path.join(autopilot_dir, 'prefs.json')
 
     if os.path.exists(prefs_fn):
+        print(f'Existing prefs found, loading from {prefs_fn}')
         with open(prefs_fn, 'r') as prefs_f:
             prefs = json.load(prefs_f)
+    else:
+        print('No existing prefs found, starting from defaults')
 
     ###################################3
     # Run the npyscreen prompt
@@ -531,81 +619,33 @@ if __name__ == "__main__":
     ####################################
     # Collect values
 
-    agent = {k:unfold_values(v) for k, v in setup.agent.input.items()}
-    prefs['AGENT'] = agent['AGENT']
-    if agent['AGENT'] in ('PILOT', 'CHILD'):
-        pilot = odict({k: unfold_values(v) for k, v in setup.pilot_1.input.items()})
-        pilot.update(odict({k: unfold_values(v) for k, v in setup.pilot_2.input.items()}))
-        hardware_flat = odict({k: unfold_values(v) for k, v in setup.hardware.input.items()})
+    # agent = {k:unfold_values(v) for k, v in setup.forms['AGENT'].input.items()}
+    # prefs['AGENT'] = agent['AGENT']
 
-        # have to un-nest hardware a bit
-        # currently is hardware['CAMERAS'] = [{config 1}, {config 2]
-        # want         hardware['CAMERAS']['cam_name_1'] = {config}
-        hardware = {}
-        for hardware_group, hardware_list in hardware_flat.items():
-            hardware[hardware_group] = {}
-            for hardware_config in hardware_list:
-                hardware[hardware_group][hardware_config['name']] = hardware_config
-
-        # get env commands to run
-        env_params = odict({k: unfold_values(v) for k, v in setup.env_pilot.input.items()})
-        for env_param, result in env_params.items():
-            if env_param in PILOT_ENV_CMDS.keys() and result == 1:
-                env[env_param] = PILOT_ENV_CMDS[env_param]
-
-        # merge with any existing prefs
-        prefs.update(pilot)
-        if 'HARDWARE' not in prefs.keys():
-            prefs['HARDWARE'] = hardware
-        else:
-            prefs['HARDWARE'].update(hardware)
-    elif agent['AGENT'] == 'TERMINAL':
-        # unpack prefs
-
-        terminal = odict({k: unfold_values(v) for k, v in setup.terminal.input.items()})
-
-
-        # create the pilot_db if it doesn't exist
-        terminal['PILOT_DB'] = os.path.join(terminal['BASEDIR'], terminal['PILOT_DB'])
-        if not os.path.exists(terminal['PILOT_DB']):
-            with open(terminal['PILOT_DB'], 'w') as pilot_db_file:
-                json.dump({}, pilot_db_file)
-
-        os.chmod(terminal['PILOT_DB'], 0o775)
-
-        # merge with any existing prefs
-        prefs.update(terminal)
-
-
+    # iterate through forms and unpack prefs, merge with any existing
+    new_prefs = setup.unpack_prefs()
+    prefs.update(new_prefs)
 
 
     ####################################
     # Configure Environment
 
-    # detect if we are in a virtual environment
-    venv_path = ''
-    if hasattr(sys, 'real_prefix') or (sys.base_prefix != sys.prefix):
-        # virtualenv and pyenv populate these system attrs
-        venv_path = sys.prefix
-        prefs['VENV'] = venv_path
-    else:
-        prefs['VENV'] = False
-
-    # get repo directory
-    file_loc = os.path.realpath(__file__)
-    file_loc = file_loc.split(os.sep)[:-3]
-    prefs['REPODIR'] = os.path.join(os.sep, *file_loc)
+    # gather scripts to run
+    env.update(setup.active_scripts)
 
     # run any environment configuration commands
     env_results = {}
     for env_config, env_command in env.items():
-        env_results[env_config] = call_series(env_command, env_config)
+        if isinstance(env_command, list):
+            env_results[env_config] = call_series(env_command, env_config)
 
     # Create directory structure if needed
     #pdb.set_trace()
-    for dir_name, dir_path in DIRECTORY_STRUCTURE.items():
-        prefs[dir_name] = os.path.join(prefs['BASEDIR'], dir_path)
-        make_dir(prefs[dir_name])
+    dirs_to_make = [path for dir_name, path in prefs.items() if dir_name in DIRECTORY_STRUCTURE.keys()]
+    print('Creating Directories: \n' + '\n'.join(dirs_to_make))
+
+    for make_this_dir in dirs_to_make:
+        make_dir(make_this_dir)
 
     # Create a launch script
     prefs_fn = os.path.join(prefs['BASEDIR'], 'prefs.json')
@@ -633,8 +673,8 @@ if __name__ == "__main__":
     os.chmod(launch_file, 0o775)
 
     # install as systemd service if requested
-    if 'systemd' in env_params.keys():
-        if env_params['systemd'] in (1, True):
+    if 'systemd' in env.keys():
+        if env['systemd'] in (1, True):
             systemd_string = '''
 [Unit]
 Description=autopilot
@@ -668,7 +708,15 @@ WantedBy=multi-user.target'''.format(launch_pi=launch_file)
                                   "create a unit file containing the following at {}\n\n{}".format(unit_loc, systemd_string))
                 env_results['systemd'] = False
 
-
+    if env.get('alias', False):
+        # make an alias for autopilot!
+        try:
+            make_alias(launch_file)
+            env_results['alias'] = True
+            config_msgs.append('alias for autopilot successfully created, open autopilot by calling upon it by its name like an old friend ;)')
+        except Exception as e:
+            error_msgs.append(f'alias could not be created, got error: {e}')
+            env_results['alias'] = False
 
     ####################################
     # save prefs and finalize environment
@@ -686,10 +734,6 @@ WantedBy=multi-user.target'''.format(launch_pi=launch_file)
     with open(os.path.join(os.path.expanduser('~'), '.autopilot'), 'w') as autopilot_f:
         autopilot_f.write(prefs['BASEDIR'])
 
-
-
-
-
     #####################################3
     # User feedback
 
@@ -703,8 +747,8 @@ WantedBy=multi-user.target'''.format(launch_pi=launch_file)
         env_result += config
         env_result += '\n'
 
-    if venv_path:
-        env_result += "  [ SUCCESS ] virtualenv detected, path: {}\n".format(venv_path)
+    if prefs['VENV']:
+        env_result += "  [ SUCCESS ] virtualenv detected, path: {}\n".format(prefs['VENV'])
     else:
         env_result += "  [ CMONDOG ] no virtualenv detected, running autopilot outside a venv is not recommended but it might work who knows\n"
 

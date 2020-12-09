@@ -18,7 +18,7 @@ if sys.version_info >= (3,0):
 else:
     from Queue import Queue, Empty
 
-if prefs.AGENT in ['pilot']:
+if prefs.get('AGENT') in ['pilot']:
     import pigpio
 
 try:

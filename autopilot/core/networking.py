@@ -38,8 +38,7 @@ else:
     import Queue as queue
 
 from autopilot import prefs
-
-from pprint import pprint
+from autopilot.core.loggers import init_logger
 
 # TODO: Periodically ping pis to check that they are still responsive
 
@@ -76,11 +75,6 @@ class Station(multiprocessing.Process):
         listener (:class:`zmq.Socket`): The main router socket to send/recv messages
         listen_port (str): Port our router listens on
         logger (:class:`logging.Logger`): Used to log messages and network events.
-        log_handler (:class:`logging.FileHandler`): Handler for logging
-        log_formatter (:class:`logging.Formatter`): Formats log entries as::
-
-            "%(asctime)s %(levelname)s : %(message)s"
-
         id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
         ip (str): Device IP
         listens (dict): Dictionary of functions to call for different types of messages. keys match the :attr:`.Message.key`.
@@ -101,8 +95,6 @@ class Station(multiprocessing.Process):
     pusher       = None    # pusher socket - a dealer socket that connects to other routers
     listener     = None    # Listener socket - a router socket to send/recv messages
     logger       = None    # Logger....
-    log_handler  = None
-    log_formatter = None
     id           = None    # What are we known as?
     ip           = None    # whatismy
     listens      = {}    # Dictionary of functions to call for different types of messages
@@ -126,7 +118,7 @@ class Station(multiprocessing.Process):
 
 
         # Setup logging
-        self.init_logging()
+        self.logger = init_logger(self)
 
         self.file_block = threading.Event() # to wait for file transfer
 
@@ -653,26 +645,6 @@ class Station(multiprocessing.Process):
             elif send_type == 'dealer':
                 self.push(msg.sender, 'CONFIRM', msg.id)
 
-    def init_logging(self):
-        """
-        Initialize logging to a timestamped file in `prefs.LOGDIR` .
-        """
-        # Setup logging
-        timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(prefs.LOGDIR, 'Networking_Log_{}.log'.format(timestr))
-
-        self.logger = logging.getLogger('networking')
-        self.log_handler = logging.FileHandler(log_file)
-        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
-        self.log_handler.setFormatter(self.log_formatter)
-        self.logger.addHandler(self.log_handler)
-        if hasattr(prefs, 'LOGLEVEL'):
-            loglevel = getattr(logging, prefs.LOGLEVEL)
-        else:
-            loglevel = logging.WARNING
-        self.logger.setLevel(loglevel)
-        self.logger.info('Station Logging Initiated')
-
     def get_ip(self):
         """
         Find our IP address
@@ -756,7 +728,7 @@ class Terminal_Station(Station):
         self.pusher = False
 
         # Store some prefs values
-        self.listen_port = prefs.MSGPORT
+        self.listen_port = prefs.get('MSGPORT')
         self.id = 'T'
 
         # Message dictionary - What method to call for each type of message received by the terminal class
@@ -777,8 +749,8 @@ class Terminal_Station(Station):
         self.pilots = pilots
 
         # start a timer at the draw FPS of the terminal -- only send
-        if hasattr(prefs, 'DRAWFPS'):
-            self.data_fps = float(prefs.DRAWFPS)
+        if prefs.get( 'DRAWFPS'):
+            self.data_fps = float(prefs.get('DRAWFPS'))
         else:
             self.data_fps = 20
         self.data_ifps = 1.0/self.data_fps
@@ -906,7 +878,7 @@ class Terminal_Station(Station):
         Handle the storage of continuous data
 
         Forwards all data on to the Terminal's internal :class:`Net_Node`,
-        send to :class:`.Plot` according to update rate in ``prefs.DRAWFPS``
+        send to :class:`.Plot` according to update rate in ``prefs.get('DRAWFPS')``
 
         Args:
             msg (dict): A continuous data message
@@ -988,13 +960,13 @@ class Terminal_Station(Station):
 
         Args:
             msg (:class:`.Message`): The value field of the message should contain some
-                relative path to a file contained within `prefs.SOUNDDIR` . eg.
-                `'/songs/sadone.wav'` would return `'os.path.join(prefs.SOUNDDIR/songs.sadone.wav'`
+                relative path to a file contained within `prefs.get('SOUNDDIR')` . eg.
+                `'/songs/sadone.wav'` would return `'os.path.join(prefs.get('SOUNDDIR')/songs.sadone.wav'`
         """
         # The <target> pi has requested some file <value> from us, let's send it back
         # This assumes the file is small, if this starts crashing we'll have to split the message...
 
-        full_path = os.path.join(prefs.SOUNDDIR, msg.value)
+        full_path = os.path.join(prefs.get('SOUNDDIR'), msg.value)
         with open(full_path, 'rb') as open_file:
             # encode in base64 so json doesn't complain
             file_contents = base64.b64encode(open_file.read())
@@ -1029,23 +1001,23 @@ class Pilot_Station(Station):
     def __init__(self):
         # Pilot has a pusher - connects back to terminal
         self.pusher = True
-        if prefs.LINEAGE == 'CHILD':
-            self.push_id = prefs.PARENTID.encode('utf-8')
-            self.push_port = prefs.PARENTPORT
-            self.push_ip = prefs.PARENTIP
+        if prefs.get('LINEAGE') == 'CHILD':
+            self.push_id = prefs.get('PARENTID').encode('utf-8')
+            self.push_port = prefs.get('PARENTPORT')
+            self.push_ip = prefs.get('PARENTIP')
             self.child = True
 
         else:
             self.push_id = b'T'
-            self.push_port = prefs.PUSHPORT
-            self.push_ip = prefs.TERMINALIP
+            self.push_port = prefs.get('PUSHPORT')
+            self.push_ip = prefs.get('TERMINALIP')
             self.child = False
 
         # Store some prefs values
-        self.listen_port = prefs.MSGPORT
+        self.listen_port = prefs.get('MSGPORT')
 
-        #self.id = prefs.NAME.encode('utf-8')
-        self.id = prefs.NAME
+        #self.id = prefs.get('NAME').encode('utf-8')
+        self.id = prefs.get('NAME')
         self.pi_id = "_{}".format(self.id)
         self.subject = None # Store current subject ID
         self.state = None # store current pi state
@@ -1154,7 +1126,7 @@ class Pilot_Station(Station):
             if len(f_sounds)>0:
                 # check to see if we have these files, if not, request them
                 for sound in f_sounds:
-                    full_path = os.path.join(prefs.SOUNDDIR, sound['path'])
+                    full_path = os.path.join(prefs.get('SOUNDDIR'), sound['path'])
                     if not os.path.exists(full_path):
                         # We ask the terminal to send us the file and then wait.
                         self.logger.info('REQUESTING SOUND {}'.format(sound['path']))
@@ -1207,12 +1179,12 @@ class Pilot_Station(Station):
 
         Args:
             msg (:class:`.Message`): value will have 'path' and 'file',
-                where the path determines where in `prefs.SOUNDDIR` the
+                where the path determines where in `prefs.get('SOUNDDIR')` the
                 b64 encoded 'file' will be saved.
         """
         # The file should be of the structure {'path':path, 'file':contents}
 
-        full_path = os.path.join(prefs.SOUNDDIR, msg.value['path'])
+        full_path = os.path.join(prefs.get('SOUNDDIR'), msg.value['path'])
         # TODO: give Message full deserialization capabilities including this one
         file_data = base64.b64decode(msg.value['file'])
         try:
@@ -1262,7 +1234,7 @@ class Pilot_Station(Station):
             KEY = msg.value['keys']
         else:
             KEY = 'START'
-        self.send(to=prefs.CHILDID, key=KEY, value=msg.value)
+        self.send(to=prefs.get('CHILDID'), key=KEY, value=msg.value)
 
     def l_forward(self, msg):
         """
@@ -1310,11 +1282,6 @@ class Net_Node(object):
         outbox (dict): Messages that have been sent but have not been confirmed
         timers (dict): dict of :class:`threading.Timer` s that will check in on outbox messages
         logger (:class:`logging.Logger`): Used to log messages and network events.
-        log_handler (:class:`logging.FileHandler`): Handler for logging
-        log_formatter (:class:`logging.Formatter`): Formats log entries as::
-
-            "%(asctime)s %(levelname)s : %(message)s"
-
         msg_counter (:class:`itertools.count`): counter to index our sent messages
         loop_thread (:class:`threading.Thread`): Thread that holds our loop. initialized with `daemon=True`
     """
@@ -1328,8 +1295,6 @@ class Net_Node(object):
     timers = {}
     #connected = False
     logger = None
-    log_handler = None
-    log_formatter = None
     sock = None
     loop_thread = None
     repeat_interval = 5 # how many seconds to wait before trying to repeat a message
@@ -1367,7 +1332,7 @@ class Net_Node(object):
         self.msg_counter = count()
 
         # try to get a logger
-        self.init_logging()
+        self.logger = init_logger(self)
 
         # If we were given an explicit IP to connect to, stash it
         self.upstream_ip = upstream_ip
@@ -1381,8 +1346,8 @@ class Net_Node(object):
 
         self.expand = expand_on_receive
 
-        if hasattr(prefs, 'SUBJECT'):
-            self.subject = prefs.SUBJECT.encode('utf-8')
+        if prefs.get( 'SUBJECT'):
+            self.subject = prefs.get('SUBJECT').encode('utf-8')
         else:
             self.subject = None
 
@@ -1747,8 +1712,8 @@ class Net_Node(object):
         if subject is None:
             if self.subject:
                 subject = self.subject
-            elif hasattr(prefs, 'SUBJECT'):
-                subject = prefs.SUBJECT
+            elif prefs.get( 'SUBJECT'):
+                subject = prefs.get('SUBJECT')
 
         # make a queue
         q = queue.Queue()
@@ -1793,19 +1758,19 @@ class Net_Node(object):
         upstream = upstream.encode('utf-8')
 
         if subject is None:
-            if hasattr(prefs, 'SUBJECT'):
-                subject = prefs.SUBJECT
+            if prefs.get( 'SUBJECT'):
+                subject = prefs.get('SUBJECT')
             else:
                 subject = ""
         if isinstance(subject, bytes):
             subject = subject.decode('utf-8')
 
-        if prefs.LINEAGE == "CHILD":
-            # pilot = bytes(prefs.PARENTID, encoding="utf-8")
-            pilot = prefs.PARENTID
+        if prefs.get('LINEAGE') == "CHILD":
+            # pilot = bytes(prefs.get('PARENTID'), encoding="utf-8")
+            pilot = prefs.get('PARENTID')
         else:
-            # pilot = bytes(prefs.NAME, encoding="utf-8")
-            pilot = prefs.NAME
+            # pilot = bytes(prefs.get('NAME'), encoding="utf-8")
+            pilot = prefs.get('NAME')
 
         msg_counter = count()
 
@@ -1856,31 +1821,6 @@ class Net_Node(object):
 
                 self.logger.debug("STREAM {}: Sent 1 item".format(self.id + '_' + id))
 
-
-
-
-
-
-    def init_logging(self):
-        """
-        Initialize logging to a timestamped file in `prefs.LOGDIR` .
-
-        The logger name will be `'node.{id}'` .
-        """
-        timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(prefs.LOGDIR, 'NetNode_{}_{}.log'.format(self.id, timestr))
-
-        self.logger = logging.getLogger('node.{}'.format(self.id))
-        self.log_handler = logging.FileHandler(log_file)
-        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
-        self.log_handler.setFormatter(self.log_formatter)
-        self.logger.addHandler(self.log_handler)
-        if hasattr(prefs, 'LOGLEVEL'):
-            loglevel = getattr(logging, prefs.LOGLEVEL)
-        else:
-            loglevel = logging.WARNING
-        self.logger.setLevel(loglevel)
-        self.logger.info('{} Logging Initiated'.format(self.id))
 
     def release(self):
         self.closing.set()

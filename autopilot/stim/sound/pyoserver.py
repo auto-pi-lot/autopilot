@@ -18,7 +18,7 @@ def pyo_server(debug=False):
         debug (bool): If true, setVerbosity of pyo server to 8.
     """
     # Jackd should already be running from the launch script created by setup_pilot, we we just
-    pyo_server = pyo.Server(audio='jack', nchnls=int(prefs.NCHANNELS),
+    pyo_server = pyo.Server(audio='jack', nchnls=int(prefs.get('NCHANNELS')),
                             duplex=0, buffersize=4096, sr=192000, ichnls=0)
 
     # Deactivate MIDI because we don't use it and it's expensive

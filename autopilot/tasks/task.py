@@ -1,6 +1,4 @@
 # Base class for tasks
-
-#!/usr/bin/python2.7
 from collections import OrderedDict as odict
 import threading
 from datetime import datetime
@@ -10,11 +8,12 @@ import tables
 # from autopilot.core.networking import Net_Node
 from autopilot.hardware import BCM_TO_BOARD
 from autopilot import prefs
+from autopilot.core.loggers import init_logger
 
-if hasattr(prefs, "AUDIOSERVER"):
-    if prefs.AUDIOSERVER == 'pyo':
+if prefs.get( "AUDIOSERVER"):
+    if prefs.get('AUDIOSERVER') == 'pyo':
         pass
-    elif prefs.AUDIOSERVER == 'jack':
+    elif prefs.get('AUDIOSERVER') == 'jack':
         pass
 
 
@@ -75,9 +74,6 @@ class Task(object):
         pin_id (dict): Reverse dictionary, pin numbers back to pin letters.
         punish_block (:class:`threading.Event`): Event to mark when punishment is occuring
         logger (:class:`logging.Logger`): gets the 'main' logger for now.
-
-
-
     """
     # dictionary of Params needed to define task,
     # these should correspond to argument names for the task
@@ -114,11 +110,7 @@ class Task(object):
         #self.running = threading.Event()
 
         # try to get logger
-        self.init_logging()
-        self.logger.debug('Task Metaclass initialized')
-
-
-
+        self.logger = init_logger(self)
 
     def init_hardware(self):
         """
@@ -133,7 +125,7 @@ class Task(object):
         # alongside the HARDWARE subdict in the prefs structure to tell us how they're plugged in to the pi
         self.hardware = {}
         self.pin_id = {} # Reverse dict to identify pokes
-        pin_numbers = prefs.HARDWARE
+        pin_numbers = prefs.get('HARDWARE')
 
         # We first iterate through the types of hardware we need
         for type, values in self.HARDWARE.items():
@@ -167,28 +159,6 @@ class Task(object):
 
                 except:
                     self.logger.exception("Pin could not be instantiated - Type: {}, Pin: {}".format(type, pin))
-
-    def init_logging(self):
-        """
-        Initialize logging to a timestamped file in `prefs.LOGDIR` .
-
-        The logger name will be `'node.{id}'` .
-        """
-        #FIXME: Just copying and pasting from net node, should implement logging uniformly across hw objects
-        timestr = datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(prefs.LOGDIR, '{}_{}.log'.format(self.__class__, timestr))
-
-        self.logger = logging.getLogger('task.{}'.format(self.__class__))
-        self.log_handler = logging.FileHandler(log_file)
-        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
-        self.log_handler.setFormatter(self.log_formatter)
-        self.logger.addHandler(self.log_handler)
-        if hasattr(prefs, 'LOGLEVEL'):
-            loglevel = getattr(logging, prefs.LOGLEVEL)
-        else:
-            loglevel = logging.WARNING
-        self.logger.setLevel(loglevel)
-        self.logger.info('{} Logging Initiated'.format(self.__class__))
 
     def set_reward(self, vol=None, duration=None, port=None):
         """
@@ -228,9 +198,6 @@ class Task(object):
                     self.hardware['PORTS'][port].duration = float(duration) / 1000.
             except KeyError:
                 raise Exception('No port found named {}'.format(port))
-
-    # def init_sound(self):
-    #     pass
 
     def handle_trigger(self, pin, level=None, tick=None):
         """
@@ -282,7 +249,6 @@ class Task(object):
 
         # Set the stage block so the pilot calls the next stage
         self.stage_block.set()
-
 
     def set_leds(self, color_dict=None):
         """

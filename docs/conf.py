@@ -435,12 +435,27 @@ def css_class_role(name, rawtext, text, lineno, inliner, options={}, content={})
 #         return sections
 #
 
+import re
+memory_address_re = re.compile(r' at 0x[0-9a-f]{8,16}(?=>)', re.IGNORECASE)
+from pprint import pformat
+def object_description(object) -> str:
+    return pformat(object, indent=4)
+
+
+from sphinx.util import inspect
+inspect.object_description = object_description
+
+
+def catch_signature(app, what, name, obj, options, lines):
+    if "_DEFAULTS" in name:
+        pdb.set_trace()
 
 
 def setup(app):
     # if try_theme == 'bootstrap':
     app.add_css_file("restyle.css")
 
+    # app.connect('autodoc-process-docstring', catch_signature)
     # app.add_node(RoadmapNode, html=(visit_roadmap_node, depart_roadmap_node))
     # app.add_directive('roadmap', RoadmapDirective)
     # app.add_directive('uml', UMLGenerateDirective)

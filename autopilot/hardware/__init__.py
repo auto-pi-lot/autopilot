@@ -13,6 +13,8 @@ very few design requirements:
 * Hardware methods are typically called in their own threads, so care should
   be taken to make any long-running operations internally threadsafe.
 
+.. _numbering-note:
+
 Note:
     This software was primarily developed for the Raspberry Pi, which
     has `two types of numbering schemes <https://pinout.xyz/#>`_ ,
@@ -38,9 +40,7 @@ import typing
 
 from autopilot import prefs
 from autopilot.core.networking import Net_Node
-from datetime import datetime
-import os
-import logging
+from autopilot.core.loggers import init_logger
 
 # FIXME: Hardcoding names of metaclasses, should have some better system of denoting which classes can be instantiated
 # directly for setup and prefs management.
@@ -108,12 +108,9 @@ class Hardware(object):
                 Warning('wasnt passed name and couldnt find from prefs for object: {}'.format(self.__str__))
                 self.name = None
 
-        self.logger = None # type: typing.Optional[logging.Logger]
-        self.log_handler = None
-        self.log_formatter = None
+        self.logger = init_logger(self) # type: logging.Logger
         self.listens = {}
         self.node = None
-        self.init_logging()
 
     def release(self):
         """
@@ -145,9 +142,9 @@ class Hardware(object):
 
         # TODO: Unify identification of hardware types across prefs and hardware objects
         try:
-            our_type = prefs.HARDWARE[self.type]
+            our_type = prefs.get('HARDWARE')[self.type]
         except KeyError:
-            our_type = prefs.HARDWARE[self.__class__.__name__]
+            our_type = prefs.get('HARDWARE')[self.__class__.__name__]
 
         for name, pin in our_type.items():
             if self.pin == pin:
@@ -155,28 +152,6 @@ class Hardware(object):
             elif isinstance(pin, dict):
                 if self.pin == pin['pin']:
                     return name
-
-    def init_logging(self):
-        """
-        Initialize logging to a timestamped file in `prefs.LOGDIR` .
-
-        The logger name will be `'node.{id}'` .
-        """
-        #FIXME: Just copying and pasting from net node, should implement logging uniformly across hw objects
-        timestr = datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(prefs.LOGDIR, '{}_{}.log'.format(self.name, timestr))
-
-        self.logger = logging.getLogger('hardware.{}'.format(self.name))
-        self.log_handler = logging.FileHandler(log_file)
-        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
-        self.log_handler.setFormatter(self.log_formatter)
-        self.logger.addHandler(self.log_handler)
-        if hasattr(prefs, 'LOGLEVEL'):
-            loglevel = getattr(logging, prefs.LOGLEVEL)
-        else:
-            loglevel = logging.WARNING
-        self.logger.setLevel(loglevel)
-        self.logger.info('{} Logging Initiated'.format(self.name))
 
     def init_networking(self, listens=None, **kwargs):
         """
@@ -195,12 +170,12 @@ class Hardware(object):
 
         self.node = Net_Node(
             self.name,
-            upstream=prefs.NAME,
-            port=prefs.MSGPORT,
+            upstream=prefs.get('NAME'),
+            port=prefs.get('MSGPORT'),
             listens=listens,
             instance=False,
             **kwargs
-            #upstream_ip=prefs.TERMINALIP,
+            #upstream_ip=prefs.get('TERMINALIP'),
             #daemon=False
         )
 

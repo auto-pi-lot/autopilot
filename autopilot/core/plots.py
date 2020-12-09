@@ -17,7 +17,6 @@ import logging
 import os
 import numpy as np
 import PySide2 # have to import to tell pyqtgraph to use it
-#import PySide
 import pandas as pd
 from PySide2 import QtGui
 from PySide2 import QtCore
@@ -35,11 +34,12 @@ from queue import Queue, Empty, Full
 pg.setConfigOptions(antialias=True)
 # from pyqtgraph.widgets.RawImageWidget import RawImageWidget, RawImageGLWidget
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from autopilot import tasks, prefs
 from autopilot.core import styles
+from autopilot.core.utils import get_invoker
 from .utils import InvokeEvent, Invoker
 from autopilot.core.networking import Net_Node
+from autopilot.core.loggers import init_logger
 
 
 ############
@@ -63,7 +63,7 @@ def gui_event(fn):
             *args (): 
             **kwargs (): 
         """
-        QtCore.QCoreApplication.postEvent(prefs.INVOKER, InvokeEvent(fn, *args, **kwargs))
+        QtCore.QCoreApplication.postEvent(get_invoker(), InvokeEvent(fn, *args, **kwargs))
     return wrapper_gui_event
 
 
@@ -83,7 +83,7 @@ class Plot_Widget(QtWidgets.QWidget):
         # type: () -> None
         QtWidgets.QWidget.__init__(self)
 
-        self.logger = logging.getLogger('main')
+        self.logger = init_logger(self)
 
 
         # We should get passed a list of pilots to keep ourselves in order after initing
@@ -189,7 +189,7 @@ class Plot(QtWidgets.QWidget):
         #super(Plot, self).__init__(QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers), parent)
         super(Plot, self).__init__()
 
-        self.logger = logging.getLogger('main')
+        self.logger = init_logger(self)
 
         self.parent = parent
         self.layout = None
@@ -208,7 +208,7 @@ class Plot(QtWidgets.QWidget):
         self.video = None
         self.videos = []
 
-        self.invoker = prefs.INVOKER
+        self.invoker = get_invoker()
 
         # The name of our pilot, used to listen for events
         self.pilot = pilot
@@ -233,7 +233,7 @@ class Plot(QtWidgets.QWidget):
 
         self.node = Net_Node(id='P_{}'.format(self.pilot),
                              upstream="T",
-                             port=prefs.MSGPORT,
+                             port=prefs.get('MSGPORT'),
                              listens=self.listens,
                              instance=True)
 
@@ -721,11 +721,11 @@ class Video(QtWidgets.QWidget):
 
         Args:
             videos (list, tuple): Names of video streams that will be displayed
-            fps (int): if None, draw according to ``prefs.DRAWFPS``. Otherwise frequency of widget update
+            fps (int): if None, draw according to ``prefs.get('DRAWFPS')``. Otherwise frequency of widget update
 
         Attributes:
             videos (list, tuple): Names of video streams that will be displayed
-            fps (int): if None, draw according to ``prefs.DRAWFPS``. Otherwise frequency of widget update
+            fps (int): if None, draw according to ``prefs.get('DRAWFPS')``. Otherwise frequency of widget update
             ifps (int): 1/fps, duration of frame in s
             qs (dict): Dictionary of :class:`~queue.Queue`s in which frames will be dumped
             quitting (:class:`threading.Event`): Signal to quit drawing
@@ -738,8 +738,8 @@ class Video(QtWidgets.QWidget):
         self.videos = videos
 
         if fps is None:
-            if hasattr(prefs, 'DRAWFPS'):
-                self.fps = prefs.DRAWFPS
+            if prefs.get( 'DRAWFPS'):
+                self.fps = prefs.get('DRAWFPS')
             else:
                 self.fps = 10
         else:
@@ -1009,7 +1009,7 @@ class ImageItem_TimedUpdate(pg.ImageItem):
     Rather than calling :meth:`~pyqtgraph.ImageItem.update` every time a frame is updated,
     call it according to the timer.
 
-    fps is set according to ``prefs.DRAWFPS``, if not available, draw at 10fps
+    fps is set according to ``prefs.get('DRAWFPS')``, if not available, draw at 10fps
 
     Attributes:
         timer (:class:`~PySide2.QtCore.QTimer`): Timer held in ``globals()`` that synchronizes frame updates across
@@ -1028,8 +1028,8 @@ class ImageItem_TimedUpdate(pg.ImageItem):
         self.timer = globals()['VIDEO_TIMER']
         self.timer.stop()
         self.timer.timeout.connect(self.update_img)
-        if hasattr(prefs, 'DRAWFPS'):
-            self.fps = prefs.DRAWFPS
+        if prefs.get( 'DRAWFPS'):
+            self.fps = prefs.get('DRAWFPS')
         else:
             self.fps = 10.
         self.timer.start(1./self.fps)

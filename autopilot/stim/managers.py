@@ -12,8 +12,8 @@ import pdb
 from collections import deque
 import numpy as np
 from autopilot import prefs
-if prefs.AGENT.upper() == 'PILOT':
-    if 'AUDIO' in prefs.CONFIG or prefs.AUDIOSERVER is not None:
+if prefs.get('AGENT').upper() == 'PILOT':
+    if 'AUDIO' in prefs.get('CONFIG') or prefs.get('AUDIOSERVER') is not None:
         from autopilot.stim.sound import sounds
         # TODO be loud about trying to init sounds when not in config
 

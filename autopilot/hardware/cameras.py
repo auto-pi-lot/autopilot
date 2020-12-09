@@ -316,8 +316,8 @@ class Camera(Hardware):
 
         Args:
             to (str): ID of the recipient. Default 'T' for Terminal.
-            ip (str): IP of recipient. If None (default), 'localhost'. If None and ``to`` is 'T', ``prefs.TERMINALIP``
-            port (int, str): Port of recipient socket. If None (default), ``prefs.MSGPORT``. If None and ``to`` is 'T', ``prefs.TERMINALPORT``.
+            ip (str): IP of recipient. If None (default), 'localhost'. If None and ``to`` is 'T', ``prefs.get('TERMINALIP')``
+            port (int, str): Port of recipient socket. If None (default), ``prefs.get('MSGPORT')``. If None and ``to`` is 'T', ``prefs.get('TERMINALPORT')``.
             **kwargs: passed to :meth:`.Hardware.init_networking` and thus to :class:`.Net_Node`
 
         """
@@ -325,9 +325,9 @@ class Camera(Hardware):
 
         if to=='T':
             if not ip:
-                ip = prefs.TERMINALIP
+                ip = prefs.get('TERMINALIP')
             if not port:
-                port = prefs.TERMINALPORT
+                port = prefs.get('TERMINALPORT')
 
         else:
 
@@ -335,8 +335,8 @@ class Camera(Hardware):
                 self.logger.warning('ip not passed, using localhost as default')
                 ip = 'localhost'
             if not port:
-                self.logger.warning('port not passed, using prefs.MSGPORT')
-                port = prefs.MSGPORT
+                self.logger.warning('port not passed, using prefs.get(\'MSGPORT\')')
+                port = prefs.get('MSGPORT')
 
 
         self.listens = {
@@ -346,10 +346,10 @@ class Camera(Hardware):
 
         self.init_networking(listens=self.listens, **kwargs)
 
-        if hasattr(prefs, 'SUBJECT'):
-            subject = prefs.SUBJECT
+        if prefs.get( 'SUBJECT'):
+            subject = prefs.get('SUBJECT')
         else:
-            self.logger.warning('nothing found for prefs.SUBJECT, probably running outside of task context')
+            self.logger.warning('nothing found for prefs.get(\'SUBJECT\'), probably running outside of task context')
             subject = None
 
         self._stream_q = self.node.get_stream(

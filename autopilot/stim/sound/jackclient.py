@@ -9,30 +9,17 @@ import multiprocessing as mp
 import queue as queue
 import numpy as np
 from copy import copy
-from threading import Thread
-from itertools import cycle
 from queue import Empty
-import sys
-import logging
-import os
-from datetime import datetime
+
 
 # importing configures environment variables necessary for importing jack-client module below
 from autopilot import external
+from autopilot.core.loggers import init_logger
 
 try:
     import jack
 except OSError as e:
     print('jack library not found! sounds unavailable')
-    # print(e)
-    # install_jack = input('Try to install jackd? (y/n): ')
-    # if install_jack == "y":
-    #     from autopilot.setup.setup_autopilot import run_script
-    #     run_script('jackd')
-    #     import jack
-    # else:
-    #     raise e
-
 
 from autopilot import prefs
 
@@ -161,37 +148,16 @@ class JackClient(mp.Process):
         globals()['CONTINUOUS_QUEUE'] = self.continuous_q
         globals()['CONTINUOUS_LOOP'] = self.continuous_loop
 
-        self.init_logging()
-        self.logger.info('Jack Client Booted')
+        self.logger = init_logger(self)
 
-    def init_logging(self):
-        """
-        Initialize logging to a timestamped file in `prefs.LOGDIR` .
 
-        The logger name will be `'node.{id}'` .
-        """
-        #FIXME: Just copying and pasting from net node, should implement logging uniformly across hw objects
-        timestr = datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(prefs.LOGDIR, '{}_{}.log'.format('jack', timestr))
-
-        self.logger = logging.getLogger('jack'.format(self.name))
-        self.log_handler = logging.FileHandler(log_file)
-        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
-        self.log_handler.setFormatter(self.log_formatter)
-        self.logger.addHandler(self.log_handler)
-        if hasattr(prefs, 'LOGLEVEL'):
-            loglevel = getattr(logging, prefs.LOGLEVEL)
-        else:
-            loglevel = logging.WARNING
-        self.logger.setLevel(loglevel)
-        self.logger.info('{} Logging Initiated'.format(self.name))
 
     def boot_server(self):
         """
         Called by :meth:`.JackClient.run` to boot the server upon starting the process.
 
         Activates the client and connects it to the number of outports
-        determined by `prefs.NCHANNELS`
+        determined by `prefs.get('NCHANNELS')`
 
         :class:`jack.Client` s can't be kept alive, so this must be called just before
         processing sample starts.
@@ -209,22 +175,22 @@ class JackClient(mp.Process):
         self.client.activate()
         target_ports = self.client.get_ports(is_physical=True, is_input=True, is_audio=True)
 
-        if hasattr(prefs, 'OUTCHANNELS'):
-            if isinstance(prefs.OUTCHANNELS, list):
-                for outchan in prefs.OUTCHANNELS:
+        if prefs.get( 'OUTCHANNELS'):
+            if isinstance(prefs.get('OUTCHANNELS'), list):
+                for outchan in prefs.get('OUTCHANNELS'):
 
                     self.client.outports[0].connect(target_ports[int(outchan)])
-            elif isinstance(prefs.OUTCHANNELS, int):
-                self.client.outports[0].connect(target_ports[prefs.OUTCHANNELS])
-            elif isinstance(prefs.OUTCHANNELS, str):
+            elif isinstance(prefs.get('OUTCHANNELS'), int):
+                self.client.outports[0].connect(target_ports[prefs.get('OUTCHANNELS')])
+            elif isinstance(prefs.get('OUTCHANNELS'), str):
                 try:
-                    self.client.outports[0].connect(target_ports[int(prefs.OUTCHANNELS)])
+                    self.client.outports[0].connect(target_ports[int(prefs.get('OUTCHANNELS'))])
                 except TypeError:
-                    Exception('Could not coerce prefs.OUTCHANNELS to an integer or list of ints. Connecting to port 0. got {}'.format(prefs.OUTCHANNELS))
+                    Exception('Could not coerce prefs.get(\'OUTCHANNELS\') to an integer or list of ints. Connecting to port 0. got {}'.format(prefs.get('OUTCHANNELS')))
                     self.client.outports[0].connect(target_ports[0])
         else:
             self.client.outports[0].connect(target_ports[0])
-            if prefs.NCHANNELS == 2:
+            if prefs.get('NCHANNELS') == 2:
                 # TODO: Limited, obvs. want to handle arbitrary output arrangements.
                 self.client.outports[0].connect(target_ports[1])
 
