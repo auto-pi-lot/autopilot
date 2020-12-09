@@ -97,6 +97,8 @@ class Parallax_Platform(Hardware):
     :attr:`.PINS` but in BCM numbering system for pigpio
     """
 
+    GRID_DIM = (6, 6)
+
     init_pigpio = GPIO.init_pigpio
 
     # --------------------------------------------------
@@ -119,7 +121,7 @@ class Parallax_Platform(Hardware):
         self.CONNECTED = self.init_pigpio()
 
         self._direction = False # type: bool
-        self._mask = np.zeros((len(self.PINS['ROW']), len(self.PINS['COL'])),
+        self._mask = np.zeros(self.GRID_DIM,
                               dtype=np.bool) # current binary mask
         self._hardware = {} # type: typing.Dict[str, Digital_Out]
         """
@@ -130,6 +132,8 @@ class Parallax_Platform(Hardware):
         #self._powers = 2**np.arange(32)[::-1]
         self._powers = 2 ** np.arange(32)
         """powers to take dot product of _cmd_mask to get integer from bool array"""
+
+        self.init_pins()
 
         self._height = 0 # type: typing.Optional[int]
         self._move_script_id = None # type: typing.Optional[int]
@@ -150,7 +154,7 @@ class Parallax_Platform(Hardware):
             self.pig.set_pull_up_down(pin, pigpio.PUD_DOWN)
 
         for pin_name in ('ROW_LATCH', 'MOVE', 'DIRECTION'):
-            pin = self.BCM[pin_name]
+            pin = self.PINS[pin_name] # use board pin bc digital out automatically changes
             self._hardware[pin_name] = Digital_Out(pin=pin, pull=0, name=pin_name)
 
     def start_move_script(self):
@@ -249,13 +253,13 @@ class Parallax_Platform(Hardware):
         # iterate through changed columns, setting row pins, then latch
         for col in changed_cols:
             # set the column pins according to the base-two representation of the col
-            self._cmd_mask[self.PINS['COL']] = np.fromiter(
+            self._cmd_mask[self.BCM['COL']] = np.fromiter(
                 map(int, np.binary_repr(col, width=3)),
                 dtype=np.bool
             )
 
             # row pins are just binary
-            self._cmd_mask[self.PINS['ROW']] = mask[:, col]
+            self._cmd_mask[self.BCM['ROW']] = mask[:, col]
 
             # flush column
             self._latch_col()
@@ -316,5 +320,5 @@ class Parallax_Platform(Hardware):
         else:
             self.direction = False
             self._update_script(steps)
-        
+
         self._height = height
