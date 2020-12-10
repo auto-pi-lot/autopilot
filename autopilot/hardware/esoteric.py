@@ -156,6 +156,7 @@ class Parallax_Platform(Hardware):
         for pin in self.BCM['COL'] + self.BCM['ROW']:
             self.pig.set_mode(pin, pigpio.OUTPUT)
             self.pig.set_pull_up_down(pin, pigpio.PUD_DOWN)
+            self.pig.write(pin, 0)
 
         for pin_name in ('ROW_LATCH', 'MOVE', 'DIRECTION'):
             pin = self.PINS[pin_name] # use board pin bc digital out automatically changes
@@ -285,23 +286,27 @@ class Parallax_Platform(Hardware):
         """
 
         # ensure that the latch bit is currently low
-        self._cmd_mask[self.BCM['ROW_LATCH']] = False
+        # self._cmd_mask[self.BCM['ROW_LATCH']] = False
 
         # create 32-bit int from _cmd_mask by multiplying by powers
-        cmd_int = np.dot(self._cmd_mask, self._powers)
-        try:
-            self.pig.set_bank_1(cmd_int)
-        except Exception as e:
-            # unhelpfully pigpio doesn't actually make error subtypes, so have to string detect
-            # if it's the permission thing, just log it and return without raising exception
-            if "no permission to update one or more GPIO" == str(e):
-                self.logger.exception(str(e) + "in _latch_col")
-                return
-            else:
-                raise e
+        # cmd_int = np.dot(self._cmd_mask, self._powers)
+        # try:
+        #     self.pig.set_bank_1(cmd_int)
+        # except Exception as e:
+        #     # unhelpfully pigpio doesn't actually make error subtypes, so have to string detect
+        #     # if it's the permission thing, just log it and return without raising exception
+        #     if "no permission to update one or more GPIO" == str(e):
+        #         self.logger.exception(str(e) + "in _latch_col")
+        #         return
+        #     else:
+        #         raise e
+        for pin in self.BCM['ROW'] + self.BCM['COL']:
+            self.pig.write(pin, self._cmd_mask[pin])
 
         # latch the rows
-        self._hardware['ROW_LATCH'].pulse()
+        # self._hardware['ROW_LATCH'].pulse()
+        self.pig.write(self.BCM['ROW_LATCH'], 1)
+        self.pig.write(self.BCM['ROW_LATCH'], 0)
 
     @property
     def height(self) -> int:
