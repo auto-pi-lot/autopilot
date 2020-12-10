@@ -260,7 +260,7 @@ class Parallax_Platform(Hardware):
             self._cmd_mask[self.BCM['COL']] = np.fromiter(
                 map(int, np.binary_repr(col, width=3)),
                 dtype=np.bool
-            )
+            )[::-1]
 
             # row pins are just binary
             self._cmd_mask[self.BCM['ROW']] = mask[:, col]
@@ -283,6 +283,9 @@ class Parallax_Platform(Hardware):
 
         thanks https://stackoverflow.com/a/42058173/13113166 for the like omg how didn't i think of this idea for base conversion with dot products.
         """
+
+        # ensure that the latch bit is currently low
+        self._cmd_mask[self.BCM['ROW_LATCH']] = False
 
         # create 32-bit int from _cmd_mask by multiplying by powers
         cmd_int = np.dot(self._cmd_mask, self._powers)
