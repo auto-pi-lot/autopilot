@@ -139,6 +139,10 @@ class Parallax_Platform(Hardware):
         self._move_script_id = None # type: typing.Optional[int]
         self.start_move_script()
 
+        # flip mask to initialize all columns as zero
+        self.mask = np.ones(self.GRID_DIM, dtype=np.bool)
+        self.mask = np.zeros(self.GRID_DIM, dtype=np.bool)
+
 
 
     def init_pins(self):
