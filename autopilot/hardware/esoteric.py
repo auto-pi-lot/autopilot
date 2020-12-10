@@ -269,7 +269,7 @@ class Parallax_Platform(Hardware):
             # flush column
             self._latch_col()
 
-        self._mask = mask
+        np.copyto(self._mask, mask)
 
     def _latch_col(self):
         """
