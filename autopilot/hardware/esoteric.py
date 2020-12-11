@@ -112,7 +112,7 @@ class Parallax_Platform(Hardware):
 
 
 
-    def __init__(self, pulse_dur: int = 10, delay_dur: int = 90, *args, **kwargs):
+    def __init__(self, pulse_dur: int = 10, delay_dur: int = 190, *args, **kwargs):
         super(Parallax_Platform, self).__init__(*args, **kwargs)
 
         self.pig = None # type: typing.Optional[pigpio.pi]
@@ -375,3 +375,16 @@ class Parallax_Platform(Hardware):
                 return True
             else:
                 return False
+
+    def release(self):
+        if self.movement_started:
+            self.pig.stop_script(self._move_script_id)
+            self.pig.delete_script(self._move_script_id)
+
+        for pin in self.BCM['ROW'] + self.BCM['COL'] + [self.BCM['MOVE'], self.BCM['ROW_LATCH'], self.BCM['DIRECTION']]:
+            self.pig.write(pin, 0)
+
+        self.pig.stop()
+
+
+
