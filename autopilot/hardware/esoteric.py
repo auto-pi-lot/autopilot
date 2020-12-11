@@ -1,5 +1,6 @@
 import itertools
 import typing
+from time import sleep, time
 
 from autopilot.hardware import Hardware, BOARD_TO_BCM
 from autopilot.hardware.gpio import GPIO, Digital_Out
@@ -370,11 +371,37 @@ class Parallax_Platform(Hardware):
         if self._move_script_id is None:
             return False
         else:
-            status = self.pig.script_status(self._move_script_id)
+            status, _ = self.pig.script_status(self._move_script_id)
             if status == pigpio.PI_SCRIPT_RUNNING:
                 return True
             else:
                 return False
+
+    def join(self, timeout=10):
+        """
+        Block until movement is completed
+        """
+        if not self.movement_started:
+            return
+
+        start_wait = time()
+
+
+        _, pars = self.pig.script_status(self._move_script_id)
+        steps = pars[self.STEPS_VAR]
+        while steps > 0:
+            sleep(0.001)
+            _, pars = self.pig.script_status(self._move_script_id)
+            steps = pars[self.STEPS_VAR]
+
+            if time()-start_wait > timeout:
+                break
+
+        
+
+
+
+
 
     def release(self):
         if self.movement_started:
