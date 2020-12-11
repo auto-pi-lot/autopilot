@@ -107,12 +107,12 @@ class Parallax_Platform(Hardware):
     STEPS_VAR = 2 #: Variable for storing remaining steps in pigpio
     PULSE_VAR = 0 #: Variable for storing pulse duration in pigpio (in microseconds)
     DELAY_VAR = 1 #: Variable for storing duration between pulses in pigpio (in microseconds)
-    PULSE_DUR = 100 #: Duration of step pulse (in microseconds)
-    DELAY_DUR = 100 #: Duration of delay between pulses (in microseconds)
+    # pulse_dur = 100 #: Duration of step pulse (in microseconds)
+    # delay_dur = 100 #: Duration of delay between pulses (in microseconds)
 
 
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, pulse_dur: int = 10, delay_dur: int = 90, *args, **kwargs):
         super(Parallax_Platform, self).__init__(*args, **kwargs)
 
         self.pig = None # type: typing.Optional[pigpio.pi]
@@ -134,6 +134,9 @@ class Parallax_Platform(Hardware):
         """powers to take dot product of _cmd_mask to get integer from bool array"""
 
         self.init_pins()
+        
+        self._pulse_dur = int(pulse_dur) # type: int
+        self._delay_dur = int(delay_dur) # type: int
 
         self._height = 0 # type: typing.Optional[int]
         self._move_script_id = None # type: typing.Optional[int]
@@ -176,17 +179,17 @@ class Parallax_Platform(Hardware):
         Movement parameters can be changed with calls to `pig.update_script <http://abyz.me.uk/rpi/pigpio/python.html#update_script>`_
         for example::
 
-            PULSE_DUR = 50
-            DELAY_DUR = 100
+            pulse_dur = 50
+            delay_dur = 100
             N_STEPS = 100
 
-            self.pig.update_script(script_id, (N_STEPS, PULSE_DUR, DELAY_DUR))
+            self.pig.update_script(script_id, (N_STEPS, pulse_dur, delay_dur))
         """
 
         # script explained in docstring
         SCRIPT = f"tag 999 mics p{self.DELAY_VAR} cmp p{self.STEPS_VAR} jz 999 w {self.BCM['MOVE']} 1 mics p{self.PULSE_VAR} w {self.BCM['MOVE']} 0 dcr p{self.STEPS_VAR} jmp 999".encode('utf-8')
         self._move_script_id = self.pig.store_script(SCRIPT)
-        self.pig.run_script(self._move_script_id, (self.PULSE_DUR, self.DELAY_DUR, 0))
+        self.pig.run_script(self._move_script_id, (self.pulse_dur, self.delay_dur, 0))
 
     def _update_script(self, steps=None):
         """update the running movement script
@@ -198,13 +201,13 @@ class Parallax_Platform(Hardware):
         if steps is None:
             cmd = [0, 0]
             for cmd_ind, cmd_val in zip((self.PULSE_VAR, self.DELAY_VAR),
-                                        (self.PULSE_DUR, self.DELAY_DUR)):
+                                        (self.pulse_dur, self.delay_dur)):
                 cmd[cmd_ind] = cmd_val
 
         else:
             cmd = [0, 0, 0]
             for cmd_ind, cmd_val in zip((self.STEPS_VAR, self.PULSE_VAR, self.DELAY_VAR),
-                                        (steps, self.PULSE_DUR, self.DELAY_DUR)):
+                                        (steps, self.pulse_dur, self.delay_dur)):
                 cmd[cmd_ind] = cmd_val
 
         self.pig.update_script(self._move_script_id, cmd)
@@ -334,3 +337,41 @@ class Parallax_Platform(Hardware):
             self._update_script(abs(steps))
 
         self._height = height
+        
+    @property
+    def pulse_dur(self):
+        return self._pulse_dur
+    
+    @pulse_dur.setter
+    def pulse_dur(self, pulse_dur):
+        self._pulse_dur = pulse_dur
+        if self.movement_started:
+            self._update_script()
+        
+    @property
+    def delay_dur(self):
+        return self._delay_dur
+    
+    @delay_dur.setter
+    def delay_dur(self, delay_dur):
+        self._delay_dur = delay_dur
+        if self.movement_started:
+            self._update_script()
+        
+    @property
+    def movement_started(self) -> bool:
+        """
+        Whether the movement script has been started
+        
+        Returns:
+            bool
+        """
+
+        if self._move_script_id is None:
+            return False
+        else:
+            status = self.pig.script_status(self._move_script_id)
+            if status == pigpio.PI_SCRIPT_RUNNING:
+                return True
+            else:
+                return False
