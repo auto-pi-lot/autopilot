@@ -90,7 +90,7 @@ class Parallax_Platform(Hardware):
     """
 
     GRID_DIM = (6, 6)
-    MAX_HEIGHT = 20000 # type: int
+    MAX_HEIGHT = 10000 # type: int
     """max height of pillars, in steps"""
 
     init_pigpio = GPIO.init_pigpio
