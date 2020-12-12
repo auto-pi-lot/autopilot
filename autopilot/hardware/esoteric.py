@@ -1,6 +1,7 @@
 import itertools
 import typing
 from time import sleep, time
+from enum import IntEnum
 
 from autopilot.hardware import Hardware, BOARD_TO_BCM
 from autopilot.hardware.gpio import GPIO, Digital_Out
@@ -99,28 +100,42 @@ class Parallax_Platform(Hardware):
     """
 
     GRID_DIM = (6, 6)
+    MAX_HEIGHT = 20000 # type: int
+    """max height of pillars, in steps"""
 
     init_pigpio = GPIO.init_pigpio
 
     # --------------------------------------------------
-    # control of height
+    # Movement Script Parameterization
     # --------------------------------------------------
-    STEPS_VAR = 2 #: Variable for storing remaining steps in pigpio
+    HEIGHT_VAR = 2 #: Variable for storing height for POSITION mode
     PULSE_VAR = 0 #: Variable for storing pulse duration in pigpio (in microseconds)
     DELAY_VAR = 1 #: Variable for storing duration between pulses in pigpio (in microseconds)
     # pulse_dur = 100 #: Duration of step pulse (in microseconds)
     # delay_dur = 100 #: Duration of delay between pulses (in microseconds)
+    MOVE_MODE_VAR = 3 #: Variable to set movement mode
+    STEPS_VAR = 4 #: Variable to store cumulative steps taken (the "real" height tracked during position or velocity mode)
 
+
+
+    class Move_Modes(IntEnum):
+        POSITION = 1 #: Move to a specified position at velocity determined by :attr:`pulse_dur` + :attr:`.delay_dur`
+        VELOCITY = -1 #: Move continuously at at velocity determined by :attr:`pulse_dur` + :attr:`.delay_dur`
+        
+    
+    
 
 
     def __init__(self, pulse_dur: int = 10, delay_dur: int = 190, *args, **kwargs):
         super(Parallax_Platform, self).__init__(*args, **kwargs)
 
+        # --------------------------------------------------
+        # attribute init
+        # --------------------------------------------------
+
         self.pig = None # type: typing.Optional[pigpio.pi]
         self.pigpiod = None
-        self.CONNECTED = False # type: bool
-        self.CONNECTED = self.init_pigpio()
-
+        
         self._direction = False # type: bool
         self._mask = np.zeros(self.GRID_DIM,
                               dtype=np.bool) # current binary mask
@@ -130,19 +145,40 @@ class Parallax_Platform(Hardware):
         """
         self._cmd_mask = np.zeros((32), dtype=np.bool) # type: np.ndarray
         """32-bit boolean array to store the binary mask to the gpio pinsv"""
-        #self._powers = 2**np.arange(32)[::-1]
         self._powers = 2 ** np.arange(32)
-        """powers to take dot product of _cmd_mask to get integer from bool array"""
-
-        self.init_pins()
+        """powers to take dot product of _cmd_mask to get integer from bool array
+        
+        Examples:
+            self.pi.set_bank_1(np.dot(self._cmd_mask, self._powers))"""
         
         self._pulse_dur = int(pulse_dur) # type: int
         self._delay_dur = int(delay_dur) # type: int
 
+        # _height used for controlling stepper motor, but
+        # _height_arr stores heights of all columns
         self._height = 0 # type: typing.Optional[int]
+        self._height_arr = np.zeros(self.GRID_DIM, dtype=np.int32) # type: np.ndarray
         self._move_script_id = None # type: typing.Optional[int]
-        self.start_move_script()
+        self._move_mode = self.Move_Modes.POSITION # type: Parallax_Platform.Move_Modes
+        
 
+        # --------------------------------------------------
+        # gpio initialization
+        # --------------------------------------------------
+        self.CONNECTED = False # type: bool
+        self.CONNECTED = self.init_pigpio()
+
+        self.init_pins()
+
+        # --------------------------------------------------
+        # movement init
+        # --------------------------------------------------
+        self.start_move_script()
+        
+        
+        # --------------------------------------------------
+        # zeroing
+        # --------------------------------------------------
         # flip mask to initialize all columns as zero
         self.mask = np.ones(self.GRID_DIM, dtype=np.bool)
         self.mask = np.zeros(self.GRID_DIM, dtype=np.bool)
@@ -172,10 +208,10 @@ class Parallax_Platform(Hardware):
 
         * Create tag 999 to jump back to beginning of script
         * wait for :attr:`.DELAY_VAR` microseconds
-        * compare :attr:`.STEPS_VAR` to accumulator (always left at zero)
-        * if :attr:`.STEPS_VAR` is zero, jump back to ``999``
+        * compare :attr:`.HEIGHT_VAR` to accumulator (always left at zero)
+        * if :attr:`.HEIGHT_VAR` is zero, jump back to ``999``
         * otherwise flip ``BCM['MOVE']`` on and off for :attr:`.PULSE_VAR` microseconds
-        * decrement :attr:`.STEPS_VAR` and jumpy back to ``999``
+        * decrement :attr:`.HEIGHT_VAR` and jumpy back to ``999``
 
         Movement parameters can be changed with calls to `pig.update_script <http://abyz.me.uk/rpi/pigpio/python.html#update_script>`_
         for example::
@@ -187,10 +223,51 @@ class Parallax_Platform(Hardware):
             self.pig.update_script(script_id, (N_STEPS, pulse_dur, delay_dur))
         """
 
+        tags = {
+            'init': '999',
+            'mode_velocity': '998',
+            'mode_position': '997',
+            'move': '996',
+            'increment_steps': '995',
+            'decrement_steps': '994'
+        }
+
         # script explained in docstring
-        SCRIPT = f"tag 999 mics p{self.DELAY_VAR} cmp p{self.STEPS_VAR} jz 999 w {self.BCM['MOVE']} 1 mics p{self.PULSE_VAR} w {self.BCM['MOVE']} 0 dcr p{self.STEPS_VAR} jmp 999".encode('utf-8')
-        self._move_script_id = self.pig.store_script(SCRIPT)
-        self.pig.run_script(self._move_script_id, (self.pulse_dur, self.delay_dur, 0))
+        init = f"ld p{self.STEPS_VAR} 0 tag {tags['init']}" # load variable 0 with 0, used as position storage
+        # do the delay we promise to control velocity
+        # if DELAY_VAR is 0, continue to wait (special case -- for velocity == 0)
+        wait = f"mics p{self.DELAY_VAR} lda 0 cmp p{self.DELAY_VAR} jz {tags['init']}"
+        # load the accumulator with 0, compare the move mode variable
+        # jump to step tag if in velocity mode (always move), or to position check
+        # if in position mode
+        # NOTE -- while POSITION == 1 and VELOCITY == -1, the test for moving to velocity mode is
+        # positive because cmp does accumulator-variable, so 0--1==1.
+        # if u know of a better way of 'loading' a parameter for use with script
+        select_mode = f"lda 0 cmp p{self.MOVE_MODE_VAR} jp {tags['move']}"
+        # compare the set height to the current steps
+        # if they're the same, then jump back to wait
+        # for now assume direction has been set correctly
+        check_position = f"lda p{self.STEPS_VAR} cmp p{self.HEIGHT_VAR} jz {tags['init']}"
+        move_steppers = f"tag {tags['move']} w {self.BCM['MOVE']} 1 mics p{self.PULSE_VAR} w {self.BCM['MOVE']}"
+        increment_steps = f"r {self.BCM['DIRECTION']} jz tag {tags['decrement_steps']} inr p{self.STEPS_VAR} jmp {tags['init']}"
+        decrement_steps = f"tag {tags['decrement_steps']} dcr p{self.STEPS_VAR} jmp {tags['init']}"
+
+        script = ' '.join((init, wait, select_mode, check_position, move_steppers, increment_steps, decrement_steps))
+        script = script.encode('utf-8')
+
+        # gather params and default in order given by class attrs
+        params = {
+            self.PULSE_VAR: self.pulse_dur,
+            self.DELAY_VAR: self.delay_dur,
+            self.HEIGHT_VAR: 0,
+            self.MOVE_MODE_VAR: int(self.move_mode),
+            self.STEPS_VAR: 0
+        }
+        param_tup = tuple(param for ind, param in sorted(params.items()))
+
+        # initialize and run script
+        self._move_script_id = self.pig.store_script(script)
+        self.pig.run_script(self._move_script_id, param_tup)
 
     def _update_script(self, steps=None):
         """update the running movement script
@@ -200,32 +277,41 @@ class Parallax_Platform(Hardware):
             return
 
         if steps is None:
-            cmd = [0, 0]
-            for cmd_ind, cmd_val in zip((self.PULSE_VAR, self.DELAY_VAR),
-                                        (self.pulse_dur, self.delay_dur)):
-                cmd[cmd_ind] = cmd_val
-
+            params = {
+                self.PULSE_VAR: self.pulse_dur,
+                self.DELAY_VAR: self.delay_dur,
+                self.HEIGHT_VAR: self.height,
+                self.MOVE_MODE_VAR: int(self.move_mode)
+            }
         else:
-            cmd = [0, 0, 0]
-            for cmd_ind, cmd_val in zip((self.STEPS_VAR, self.PULSE_VAR, self.DELAY_VAR),
-                                        (steps, self.pulse_dur, self.delay_dur)):
-                cmd[cmd_ind] = cmd_val
+            params = {
+                self.PULSE_VAR: self.pulse_dur,
+                self.DELAY_VAR: self.delay_dur,
+                self.HEIGHT_VAR: self.height,
+                self.MOVE_MODE_VAR: int(self.move_mode),
+                self.STEPS_VAR: steps
+            }
 
-        self.pig.update_script(self._move_script_id, cmd)
+        param_tup = tuple(param for ind, param in sorted(params.items()))
+        self.pig.update_script(self._move_script_id, param_tup)
 
     @property
     def direction(self) -> bool:
         """Direction of movement of platforms
 
         Property reads pin state directly, setter changes pin state and updates :attr:`._cmd_mask`
-         
+
+        direction is stored in ``_direction`` for fast, internal access.
+
         Returns:
             bool: ``True`` = Up, ``False`` = Down
         """
-        return bool(self.pig.read(self.BCM['DIRECTION']))
+        self._direction = bool(self.pig.read(self.BCM['DIRECTION']))
+        return self._direction
 
     @direction.setter
     def direction(self, direction: bool):
+        self._direction = direction
         self._hardware['DIRECTION'].set(direction)
         self._cmd_mask[self.BCM['DIRECTION']] = direction
 
@@ -314,30 +400,86 @@ class Parallax_Platform(Hardware):
 
     @property
     def height(self) -> int:
-        """
-        Set the height!
-
-        Returns:
-
-        """
         return self._height
 
     @height.setter
-    def height(self, height: int):
-        if height < 0:
-            height = 0
+    def height(self, height: typing.Union[int, np.ndarray]):
+        """
+        Set the height!
 
-        steps = height - self._height
-        if steps == 0:
-            return
-        elif steps > 0:
-            self.direction = True
-            self._update_script(steps)
-        else:
-            self.direction = False
-            self._update_script(abs(steps))
+        Note:
+            Passing an array will always block, as the method has to coordinate each column flip
 
-        self._height = height
+        Args:
+            height (int, :class:`numpy.ndarray`): If given an ``int`` , move all active pillars to that height
+                if given a :class:`numpy.ndarray` of dimensions :attr:`.GRID_DIM` , set every pillar to the specified height
+
+        Returns:
+            int: the internal :attr:`._height` counter used with the pigpio script
+        """
+
+        if self.move_mode is not self.Move_Modes.POSITION:
+            self.move_mode = self.Move_Modes.POSITION
+
+        if isinstance(height, int):
+            height = np.full(self.GRID_DIM, height, dtype=np.int32)
+
+            # if all platforms active are same height, do quick move without blocking
+            if np.all(self.height_arr[self.mask] == self.height_arr[self.mask][0]):
+
+                self.direction = (height[0] - self.height)>0
+                self._height = int(height[0])
+                self._height_arr = height
+                self._update_script()
+                return
+
+        # clip array
+        height = np.clip(height, 0, self.MAX_HEIGHT)
+
+        # keep a copy of the mask to restore it afterwards
+        _mask = np.copy(self.mask)
+
+        # first move pillars up that need to go up
+        moveme = height-self.height_arr
+        self.direction = True
+        while (moveme > 0).any():
+            moveme_mask = moveme>0
+            self.mask = moveme_mask
+            # move up by the minimum difference
+            steps = np.min(moveme[moveme_mask])
+            self._height_arr[moveme_mask] += steps
+            self._height += steps
+            self._update_script()
+            self.join()
+            moveme = height - self.height_arr
+
+        self.direction = False
+        while (moveme < 0).any():
+            moveme_mask = moveme < 0
+            self.mask = moveme_mask
+
+            steps = np.max(moveme[moveme_mask])
+            self._height_arr[moveme_mask] += steps
+            self._height += steps
+            self._update_script()
+            self.join()
+            moveme = height - self.height_arr
+
+        # restore mask
+        self.mask = _mask
+
+    @property
+    def height_arr(self) -> np.ndarray:
+        """
+        Array of all pillar heights
+
+        Notes:
+            Don't set height here! use :attr:`.height`
+
+        Returns:
+            np.ndarray: heights of each pillar (in steps)
+        """
+        return self._height_arr
         
     @property
     def pulse_dur(self):
@@ -345,9 +487,10 @@ class Parallax_Platform(Hardware):
     
     @pulse_dur.setter
     def pulse_dur(self, pulse_dur):
-        self._pulse_dur = pulse_dur
-        if self.movement_started:
-            self._update_script()
+        if self._pulse_dur != pulse_dur:
+            self._pulse_dur = pulse_dur
+            if self.movement_started:
+                self._update_script()
         
     @property
     def delay_dur(self):
@@ -355,7 +498,18 @@ class Parallax_Platform(Hardware):
     
     @delay_dur.setter
     def delay_dur(self, delay_dur):
-        self._delay_dur = delay_dur
+        if self._delay_dur != delay_dur:
+            self._delay_dur = delay_dur
+            if self.movement_started:
+                self._update_script()
+            
+    @property
+    def move_mode(self):
+        return self._move_mode
+    
+    @move_mode.setter
+    def move_mode(self, move_mode):
+        self._move_mode = move_mode
         if self.movement_started:
             self._update_script()
         
@@ -380,24 +534,25 @@ class Parallax_Platform(Hardware):
     def join(self, timeout=10):
         """
         Block until movement is completed
+
+        Note:
+            Only relevant in ``POSITION`` mode.
         """
-        if not self.movement_started:
+        if not self.movement_started or self.move_mode is not self.Move_Modes.POSITION:
             return
 
         start_wait = time()
 
-
         _, pars = self.pig.script_status(self._move_script_id)
-        steps = pars[self.STEPS_VAR]
-        while steps > 0:
+        # steps = pars[self.HEIGHT_VAR]
+        while pars[self.HEIGHT_VAR] != pars[self.STEPS_VAR]:
             sleep(0.001)
             _, pars = self.pig.script_status(self._move_script_id)
-            steps = pars[self.STEPS_VAR]
 
             if time()-start_wait > timeout:
                 break
 
-        
+
 
 
 
