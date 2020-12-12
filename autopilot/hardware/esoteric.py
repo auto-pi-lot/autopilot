@@ -233,7 +233,7 @@ class Parallax_Platform(Hardware):
         }
 
         # script explained in docstring
-        init = f"ld p{self.STEPS_VAR} 0 tag {tags['init']}" # load variable 0 with 0, used as position storage
+        init = f"tag {tags['init']}" # load variable 0 with 0, used as position storage
         # do the delay we promise to control velocity
         # if DELAY_VAR is 0, continue to wait (special case -- for velocity == 0)
         wait = f"mics p{self.DELAY_VAR} lda 0 cmp p{self.DELAY_VAR} jz {tags['init']}"
@@ -289,7 +289,7 @@ class Parallax_Platform(Hardware):
                 self.DELAY_VAR: self.delay_dur,
                 self.HEIGHT_VAR: self.height,
                 self.MOVE_MODE_VAR: int(self.move_mode),
-                self.STEPS_VAR: steps
+                self.STEPS_VAR: int(steps)
             }
 
         param_tup = tuple(param for ind, param in sorted(params.items()))
@@ -544,6 +544,7 @@ class Parallax_Platform(Hardware):
         self.mask = np.ones(self.GRID_DIM, dtype=np.bool)
         self._height = 0
         self._move_mode = self.Move_Modes.POSITION
+        self.direction = False
         self._update_script(steps=self.MAX_HEIGHT)
         self.join()
 
