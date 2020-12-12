@@ -427,7 +427,7 @@ class Parallax_Platform(Hardware):
             # if all platforms active are same height, do quick move without blocking
             if np.all(self.height_arr[self.mask] == self.height_arr[self.mask][0]):
 
-                self.direction = (height[0] - self.height)>0
+                self.direction = bool((height[0] - self.height)>0)
                 self._height = int(height[0])
                 self._height_arr = height
                 self._update_script()
