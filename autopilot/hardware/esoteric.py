@@ -248,8 +248,8 @@ class Parallax_Platform(Hardware):
         # if they're the same, then jump back to wait
         # for now assume direction has been set correctly
         check_position = f"lda p{self.STEPS_VAR} cmp p{self.HEIGHT_VAR} jz {tags['init']}"
-        move_steppers = f"tag {tags['move']} w {self.BCM['MOVE']} 1 mics p{self.PULSE_VAR} w {self.BCM['MOVE']}"
-        increment_steps = f"r {self.BCM['DIRECTION']} jz tag {tags['decrement_steps']} inr p{self.STEPS_VAR} jmp {tags['init']}"
+        move_steppers = f"tag {tags['move']} w {self.BCM['MOVE']} 1 mics p{self.PULSE_VAR} w {self.BCM['MOVE']} 0"
+        increment_steps = f"r {self.BCM['DIRECTION']} jz {tags['decrement_steps']} inr p{self.STEPS_VAR} jmp {tags['init']}"
         decrement_steps = f"tag {tags['decrement_steps']} dcr p{self.STEPS_VAR} jmp {tags['init']}"
 
         script = ' '.join((init, wait, select_mode, check_position, move_steppers, increment_steps, decrement_steps))
