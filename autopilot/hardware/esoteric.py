@@ -112,14 +112,22 @@ class Parallax_Platform(Hardware):
         POSITION = 1 #: Move to a specified position at velocity determined by :attr:`pulse_dur` + :attr:`.delay_dur`
         VELOCITY = -1 #: Move continuously at at velocity determined by :attr:`pulse_dur` + :attr:`.delay_dur`
 
-    DEFAULT_OFFSET = np.array((
-        (26, 25, 25, 22, 26, 24),
-        (26, 29, 27, 25, 25, 26),
-        (24, 25, 25, 30, 25, 26),
-        (27, 26, 27, 24, 29, 28),
-        (26, 26, 28, 27, 26, 29),
-        (26, 27, 28, 27, 20, 19)
-    )) # type: np.ndarray
+    # DEFAULT_OFFSET = np.array((
+    #     (26, 25, 25, 22, 26, 24),
+    #     (26, 29, 27, 25, 25, 26),
+    #     (24, 25, 25, 30, 25, 26),
+    #     (27, 26, 27, 24, 29, 28),
+    #     (26, 26, 28, 27, 26, 29),
+    #     (26, 27, 28, 27, 20, 19)
+    # ))*20 # type: np.ndarray
+    DEFAULT_OFFSET = np.array([
+       [250, 250, 200, 250, 250, 250],
+       [250, 300, 300, 300, 250, 250],
+       [250, 250, 200, 250, 250, 250],
+       [250, 250, 300, 250, 250, 350],
+       [250, 250, 200, 350, 200,   0],
+       [100, 250, 250, 250, 300,   0]]
+    )
     """
     Offset for each pillar for use with :meth:`.level`
     """
