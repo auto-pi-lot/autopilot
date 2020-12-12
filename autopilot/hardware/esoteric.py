@@ -354,7 +354,7 @@ class Parallax_Platform(Hardware):
             )[::-1]
 
             # row pins are just binary
-            self._cmd_mask[self.BCM['ROW']] = mask[:, col]
+            self._cmd_mask[self.BCM['ROW']] = np.invert(mask[:, col])
 
             # flush column
             self._latch_col()
