@@ -543,9 +543,13 @@ class Parallax_Platform(Hardware):
     # methods
     # --------------------------------------------------
 
-    def level(self):
+    def level(self, amount:int=MAX_HEIGHT):
         """
         Lower all the platforms down by :attr:`.MAX_HEIGHT` steps, then raises each by :attr:`.DEFAULT_OFFSET`
+
+        Args:
+            amount (int): amount to lower platforms (default is :attr:`.MAX_HEIGHT`)
+
         """
 
         # tell the movement script that all the pillars at MAX_HEIGHT and to bring them to zero
@@ -553,7 +557,7 @@ class Parallax_Platform(Hardware):
         self._height = 0
         self._move_mode = self.Move_Modes.POSITION
         self.direction = False
-        self._update_script(steps=self.MAX_HEIGHT)
+        self._update_script(steps=amount)
         self.join()
 
         # now use height to raise them
