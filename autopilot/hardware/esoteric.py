@@ -15,16 +15,6 @@ try:
 except ImportError:
     pass
 
-
-DEFAULT_OFFSET = np.array((
-    (26, 25, 25, 22, 26, 24),
-    (26, 29, 27, 25, 25, 26),
-    (24, 25, 25, 30, 25, 26),
-    (27, 26, 27, 24, 29, 28),
-    (26, 26, 28, 27, 26, 29),
-    (26, 27, 28, 27, 20, 19)
-))
-
 class Parallax_Platform(Hardware):
     """
     Transcription of Cliff Dax's BASIC program
@@ -121,8 +111,18 @@ class Parallax_Platform(Hardware):
     class Move_Modes(IntEnum):
         POSITION = 1 #: Move to a specified position at velocity determined by :attr:`pulse_dur` + :attr:`.delay_dur`
         VELOCITY = -1 #: Move continuously at at velocity determined by :attr:`pulse_dur` + :attr:`.delay_dur`
-        
-    
+
+    DEFAULT_OFFSET = np.array((
+        (26, 25, 25, 22, 26, 24),
+        (26, 29, 27, 25, 25, 26),
+        (24, 25, 25, 30, 25, 26),
+        (27, 26, 27, 24, 29, 28),
+        (26, 26, 28, 27, 26, 29),
+        (26, 27, 28, 27, 20, 19)
+    )) # type: np.ndarray
+    """
+    Offset for each pillar for use with :meth:`.level`
+    """
     
 
 
@@ -530,6 +530,33 @@ class Parallax_Platform(Hardware):
                 return True
             else:
                 return False
+
+    # --------------------------------------------------
+    # methods
+    # --------------------------------------------------
+
+    def level(self):
+        """
+        Lower all the platforms down by :attr:`.MAX_HEIGHT` steps, then raises each by :attr:`.DEFAULT_OFFSET`
+        """
+
+        # tell the movement script that all the pillars at MAX_HEIGHT and to bring them to zero
+        self.mask = np.ones(self.GRID_DIM, dtype=np.bool)
+        self._height = 0
+        self._move_mode = self.Move_Modes.POSITION
+        self._update_script(steps=self.MAX_HEIGHT)
+        self.join()
+
+        # now use height to raise them
+        self._height_arr = np.zeros(self.GRID_DIM, dtype=np.int32)
+        self.height = self.DEFAULT_OFFSET
+
+        # then reset attrs
+        self._height = 0
+        self._height_arr = np.zeros(self.GRID_DIM, dtype=np.int32)
+        self._update_script(steps = 0)
+
+
 
     def join(self, timeout=10):
         """
