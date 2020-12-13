@@ -17,43 +17,84 @@ except ImportError:
 
 class Parallax_Platform(Hardware):
     """
-    Transcription of Cliff Dax's BASIC program
+    Control an array of stepper motors
 
-    * One column, but all rows can be controlled at once --
+    Pinout is detailed in :attr:`.PINS` - for this array, individual motors are controlled with a latch system, so
+    all active rows within a specified column are specified by a pattern of GPIO pin logic, and then the ``ROW_LATCH`` pin
+    is flipped to store them. 2d patterns are virtualized in software in :attr:`.mask` and :attr:`.height` .
 
-        * loop through columns, set outputs corresponding to rows, flip 22 at each 'row' setting
+    Height can be set in 3 ways:
 
-    * wait for some undefined small time between each flip of 23
-    * to reset/rehome, some hardcoded offset from zero that needs to be stepped for each column.
+    1. By setting a :attr:`.mask` of active columns and passing an integer to :attr:`.height` -- this doesn't require manipulating the latching
+    logic, and so is non-blocking.
+    2. By passing an array of heights to :attr:`.height` - this must manipulate the latching logic for every different
+    height and so blocks out of necessity
+    3. By slicing and assigning to the object -- this also blocks
 
+    Examples:
 
-    Pins:
+        >>> import numpy as np
+        >>> from autopilot.hardware.esoteric import Parallax_Platform
 
-    Column Control:
+        instantiate the platform
+        >>> plat = Parallax_Platform()
 
-        * 8 = col & 1
-        * 9 = col & 2
-        * 10 = col & 4
+        ---------------------------------------------------
+        1) Control pillars with a mask and an integer
+        ---------------------------------------------------
 
-    Row control:
+        set all columns in row 2 to be active
+        >>> mask = np.zeros((6,6), dtype=np.bool)
+        >>> mask[2,:] = True
+        >>> mask
+        array([[False, False, False, False, False, False],
+               [False, False, False, False, False, False],
+               [ True,  True,  True,  True,  True,  True],
+               [False, False, False, False, False, False],
+               [False, False, False, False, False, False],
+               [False, False, False, False, False, False]])
+        >>> plat.mask = mask
 
-        * 0 = word & 1
-        * 1 = word & 2
-        * 2 = word & 4
-        * 3 = word & 8
-        * 4 = word & 16
-        * 5 = word & 32
+        set height with an integer (number of steps) -- all activated pillars move to same height
+        >>> plat.height = 1000
 
-    Others:
+        ---------------------------------------------------
+        2) set height with an array of heights for each pillar
+        ---------------------------------------------------
 
-        * 22 - flipped on and off to store status of row "word" for a given column
-        * 23 - flipped on and off to execute a movement command
-        * 24 - if 0, go down, if 1, go up
+        eg. a sine wave
+        >>> height = np.round((np.sin(np.linspace(-np.pi, np.pi, 6))+1)*5000).astype(np.int32)
+        >>> height = np.repeat(height[np.newaxis,:], 6, axis=0)
+        >>> height
+        array([[5000,  245, 2061, 7939, 9755, 5000],
+               [5000,  245, 2061, 7939, 9755, 5000],
+               [5000,  245, 2061, 7939, 9755, 5000],
+               [5000,  245, 2061, 7939, 9755, 5000],
+               [5000,  245, 2061, 7939, 9755, 5000],
+               [5000,  245, 2061, 7939, 9755, 5000]], dtype=int32)
+
+        >>> plat.height = height
+
+        ---------------------------------------------------
+        3) Set height by slicing the object
+        ---------------------------------------------------
+        all slices compatible with np.array should work :)
+
+        >>> plat[0,1] = 500
+        >>> plat[:,2] = 1000
+
 
     Todo:
 
-        use this for letters! https://fontstruct.com/fontstructions/show/821131/6x6_pixel_font
+        The platform is intended to have two modes -- position and velocity (see :attr:`.Move_Modes` and
+        :attr:`.move_mode`), where the user can either set a position or set a velocity. The velocity mode has been
+        implemented in :meth:`.start_move_script` but has not yet been exposed to the object.
 
+    Args:
+        pulse_dur (int): duration of stepper pulse used while in 'position' mode (see :attr:`.move_mode`) in  microseconds
+        delay_dur (int): duration of delay between stepper pulses used while in 'position' mode in microseconds, so frequency of stepper
+            pulses is ``1/(pulse_dur+delay_dur)``
+        join_delay (float): duration (in ms) to wait between checking the status of the movement script when using :meth:`.join`
     """
 
     output = True # type: bool
@@ -70,15 +111,20 @@ class Parallax_Platform(Hardware):
     """
     Default Pin Numbers for Parallax Machine
     
-    ``COL`` and ``ROW`` are bitwise-anded with powers of 2 to select pins, ie.::
+    ``COL`` is 
+        
     
-        on_rows = '0b010' # the center, or first row is on
-        col[0] = '0b010' && 1
-        col[1] = '0b010' && 2
-        col[2] = '0b010' && 4 
+    * ``COL`` : bitwise-anded with powers of 2 to select pins, ie.::
     
-    * ``COL`` : Pins to control active columns
-    * ``ROW`` : Pins to control active rows
+        on_rows = 0b010 # the center, or first row is on
+        col[0] =  on_rows & 0b001 # 1
+        col[1] =  on_rows & 0b010 # 2
+        col[2] =  on_rows & 0b100 # 4
+        
+    * ``ROW`` : binary flags for each row in the specified ``COL``, ie.::
+    
+        PINS['ROW'] = np.array([0,0,1,0,0,1], dtype=np.bool)
+        
     * ``ROW_LATCH`` : To set active rows, power appropriate ``ROW`` pins and flip ``ROW_LATCH`` on and off
     * ``MOVE`` : Pulse to make active columns move in active ``DIRECTION``
     * ``DIRECTION`` : When high, move up. when low, move down.
@@ -135,10 +181,8 @@ class Parallax_Platform(Hardware):
     """
     Offset for each pillar for use with :meth:`.level`
     """
-    
 
-
-    def __init__(self, pulse_dur: int = 10, delay_dur: int = 190, *args, **kwargs):
+    def __init__(self, pulse_dur: int = 10, delay_dur: int = 190, join_delay: float = .001, *args, **kwargs):
         super(Parallax_Platform, self).__init__(*args, **kwargs)
 
         # --------------------------------------------------
@@ -165,6 +209,7 @@ class Parallax_Platform(Hardware):
         
         self._pulse_dur = int(pulse_dur) # type: int
         self._delay_dur = int(delay_dur) # type: int
+        self.join_delay = int(join_delay) # type: float
 
         # _height used for controlling stepper motor, but
         # _height_arr stores heights of all columns
@@ -601,9 +646,14 @@ class Parallax_Platform(Hardware):
 
 
 
-    def join(self, timeout=10):
+    def join(self, join_delay: typing.Optional[float] = None, timeout: float = 10):
         """
-        Block until movement is completed
+        Block until movement is completed.
+
+        Args:
+            join_delay (None, float): duration between checks of movement script in seconds.
+                if None, use :attr:`.join_delay` .
+            timeout (float): maximum number of seconds to block
 
         Note:
             Only relevant in ``POSITION`` mode.
@@ -616,7 +666,7 @@ class Parallax_Platform(Hardware):
         _, pars = self.pig.script_status(self._move_script_id)
         # steps = pars[self.HEIGHT_VAR]
         while pars[self.HEIGHT_VAR] != pars[self.STEPS_VAR]:
-            sleep(0.001)
+            sleep(self.join_delay)
             _, pars = self.pig.script_status(self._move_script_id)
 
             if time()-start_wait > timeout:
