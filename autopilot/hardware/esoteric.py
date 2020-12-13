@@ -50,6 +50,10 @@ class Parallax_Platform(Hardware):
         * 23 - flipped on and off to execute a movement command
         * 24 - if 0, go down, if 1, go up
 
+    Todo:
+
+        use this for letters! https://fontstruct.com/fontstructions/show/821131/6x6_pixel_font
+
     """
 
     output = True # type: bool
@@ -430,16 +434,27 @@ class Parallax_Platform(Hardware):
             self.move_mode = self.Move_Modes.POSITION
 
         if isinstance(height, int):
+
+
             height = np.full(self.GRID_DIM, height, dtype=np.int32)
 
-            # if all platforms active are same height, do quick move without blocking
-            if np.all(self.height_arr[self.mask] == self.height_arr[self.mask][0]):
+            try:
+                # if all platforms active are same height, do quick move without blocking
+                if np.all(self.height_arr[self.mask] == self.height_arr[self.mask][0]):
 
-                self.direction = bool((height[0] - self.height)>0)
-                self._height = int(height[0])
-                self._height_arr = height
-                self._update_script()
-                return
+                    self.direction = bool((height[0] - self.height)>0)
+                    self._height = int(height[0])
+                    self._height_arr = height
+                    self._update_script()
+                    return
+            except IndexError as e:
+                # if mask is all off, return with a warning
+                if not np.any(self.mask):
+                    self.logger.warning('attempted to set height with integer, but no pillars are activated. make sure some pillars are activated in .mask, or set height with an array')
+                    return
+                else:
+                    # otherwise it's some other exception and we should raise it
+                    raise e
 
         # clip array
         height = np.clip(height, 0, self.MAX_HEIGHT)
@@ -488,6 +503,21 @@ class Parallax_Platform(Hardware):
             np.ndarray: heights of each pillar (in steps)
         """
         return self._height_arr
+
+    def __getitem__(self, key) -> int:
+        """
+        Control pillar height like a numpy array
+
+        Returns:
+            (int, :class:`numpy.ndarray`): Current height of single or sliced pillar
+        """
+        return self.height_arr[key]
+
+    def __setitem__(self, key, value):
+        height = np.copy(self.height_arr)
+        height[key] = value
+        self.height = height
+
         
     @property
     def pulse_dur(self):
