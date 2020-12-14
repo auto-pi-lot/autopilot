@@ -25,11 +25,13 @@ class Parallax_Platform(Hardware):
 
     Height can be set in 3 ways:
 
-    #. By setting a :attr:`.mask` of active columns and passing an integer to :attr:`.height` -- this doesn't require manipulating the latching
+    1. By setting a :attr:`.mask` of active columns and passing an integer to :attr:`.height` -- this doesn't require manipulating the latching
     logic, and so is non-blocking.
-    #. By passing an array of heights to :attr:`.height` - this must manipulate the latching logic for every different
+
+    2. By passing an array of heights to :attr:`.height` - this must manipulate the latching logic for every different
     height and so blocks out of necessity
-    #. By slicing and assigning to the object -- this also blocks
+
+    3. By slicing and assigning to the object -- this also blocks
 
     Examples:
 
@@ -109,9 +111,6 @@ class Parallax_Platform(Hardware):
     } # type: typing.Dict[str, typing.Union[typing.List[int], int]]
     """
     Default Pin Numbers for Parallax Machine
-    
-    ``COL`` is 
-        
     
     * ``COL`` : bitwise-anded with powers of 2 to select pins, ie.::
     
