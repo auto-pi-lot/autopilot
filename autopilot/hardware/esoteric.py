@@ -37,11 +37,13 @@ class Parallax_Platform(Hardware):
         >>> from autopilot.hardware.esoteric import Parallax_Platform
 
         instantiate the platform
+
         >>> plat = Parallax_Platform()
 
         **1) Control pillars with a mask and an integer**
 
         set all columns in row 2 to be active
+
         >>> mask = np.zeros((6,6), dtype=np.bool)
         >>> mask[2,:] = True
         >>> mask
@@ -54,11 +56,13 @@ class Parallax_Platform(Hardware):
         >>> plat.mask = mask
 
         set height with an integer (number of steps) -- all activated pillars move to same height
+
         >>> plat.height = 1000
 
         **2) set height with an array of heights for each pillar**
 
         eg. a sine wave
+
         >>> height = np.round((np.sin(np.linspace(-np.pi, np.pi, 6))+1)*5000).astype(np.int32)
         >>> height = np.repeat(height[np.newaxis,:], 6, axis=0)
         >>> height
@@ -536,7 +540,7 @@ class Parallax_Platform(Hardware):
         """
         Array of all pillar heights
 
-        Notes:
+        Note:
             Don't set height here! use :attr:`.height`
 
         Returns:
