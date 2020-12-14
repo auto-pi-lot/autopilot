@@ -1,5 +1,35 @@
 .. _changelog_v030:
 
+v0.3.4 (December 13, 2020)
+---------------------------
+
+Improvements
+~~~~~~~~~~~~
+* Unify the creation of loggers!!!! See the docs ;) :mod:`autopilot.core.loggers` : https://github.com/wehr-lab/autopilot/pull/52/commits/d55638f985ab38044fc95ffeff5945021c2e198e https://github.com/wehr-lab/autopilot/issues/38
+* Unify prefs, including sensible defaults, refactoring of scripts into a reasonable format, multiprocess-safety, and just generally a big weight off my mind. Note that this is a **breaking change** to the way prefs are accessed. Previously one would do `prefs.PREF_NAME`, but that made it very difficult to provide default values or handle missing prefs. the new syntax is `prefs.get('PREF_NAME')` which returns defaults with a warning and `None` if the pref is not set: https://github.com/wehr-lab/autopilot/pull/52/commits/c40a212bcaf5f184f2a6a606027fe15b1b4df59c https://github.com/wehr-lab/autopilot/issues/38
+* completely clean up scripts, and together that opened the path to clean up setup as well. so all things configuration got a major promotion
+* We're on the board with CI and automated testing with a positively massive 3% code coverage!!! https://github.com/wehr-lab/autopilot/pull/52/commits/743bb8fe67a69fcc556fa76e81f72f97f510dff7
+* new scripts to eg. create autopilot alias: https://github.com/wehr-lab/autopilot/pull/52/commits/211919b05922e18a85d8ef6216973f4000fd32c5
+
+Bugfixes
+~~~~~~~~~
+* cleanup scripts on object deletion: https://github.com/wehr-lab/autopilot/pull/52/commits/e8218304bd7ef2e13d2adfc236f3e781abea5f78 https://github.com/wehr-lab/autopilot/issues/41
+* don't drop 'floats' from gui when we say we can use them...: https://github.com/wehr-lab/autopilot/pull/52/commits/743bb8fe67a69fcc556fa76e81f72f97f510dff7
+* pigpio scripts dont like floats: https://github.com/wehr-lab/autopilot/pull/52/commits/9f939cd78a5296db3bf318115bee0213bcd1afc0
+
+Docs
+~~~~
+* Clarification of supported systems: https://github.com/wehr-lab/autopilot/pull/52/commits/ce0ddf78b7f59f5487fec2ca7e8fb3c0ad162051
+* Solved an ancient sphinx riddle of how to get data objects/constants to pretty-print: https://github.com/wehr-lab/autopilot/pull/52/commits/ec6d5a75dada05688b6bd3c1a53b3d9e5923870f
+* Clarify hardware prefs https://github.com/wehr-lab/autopilot/pull/52/commits/f3a7609995c84848004891a0f41c7847cb754aae
+* what numbering system do we use: https://github.com/wehr-lab/autopilot/pull/52/commits/64267249d7b1ec1040b522308cd60f928f2b2ee6
+
+Logging
+~~~~~~~
+* catch pigpio script init exception: https://github.com/wehr-lab/autopilot/pull/52/commits/3743f8abde7bbd3ed7766bdd75aee52afedf47e2
+* more of it idk https://github.com/wehr-lab/autopilot/pull/52/commits/b682d088dbad0f206c3630543e96a5a00ceabe25
+
+
 v0.3.3 (October 25, 2020)
 --------------------------
 
