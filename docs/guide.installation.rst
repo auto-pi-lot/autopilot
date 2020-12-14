@@ -3,20 +3,36 @@
 Installation
 ************
 
-Autopilot is able to configure your system packages and environment after installation,
-but if you want to manually install system dependencies there are dependency lists near the bottom of this page.
+Autopilot must be installed on the devices running the Terminal and the Pilot agents. The Pilot runs on a Raspberry Pi (remember: Pi for "Pilot") and the Terminal runs on a regular desktop computer. So Autopilot must be installed on both. This document will show you how to do that.
 
-Environment Preparation
-=======================
+Supported Systems
+===================
 
-Raspberry Pi
-------------
+Autopilot is **linux/mac** only, and supports **Python 3.7**. Some parts might accidentally work in Windows but we make no guarantees.
 
-For Pilots, we recommend starting with a fresh `Raspbian Lite <https://downloads.raspberrypi.org/raspios_lite_armhf_latest.torrent>`_ image  (see `the raspi installation documentation <https://www.raspberrypi.org/documentation/installation/installing-images/README.md>`_
+In particular, the Terminal was designed for Ubuntu, and the Pilot was designed for the Raspberry Pi OS.
 
-Then you'll need to update and install the necessary system packages (also available as a setup script in the guided installation phase)::
+We have tried to take care to make certain platform-specific dependencies not break the entire package,
+so if you have some difficulty installing autopilot on a non-raspberry-pi linux machine please submit an issue!
 
-    sudo apt update && sudo apt upgrade -y
+
+Pre-installation prep
+=====================
+
+On the Pilot device
+-------------------
+
+For Pilots, we recommend starting with a fresh `Raspbian Lite <https://downloads.raspberrypi.org/raspios_lite_armhf_latest.torrent>`_ image  (see `the raspi installation documentation <https://www.raspberrypi.org/documentation/installation/installing-images/README.md>`_). Note that the Lite image doesn't include a desktop environment or GUI, just a command-line interface, but that's all we need for the Pilot. It's easiest to connect a monitor and keyboard directly to the Pi while configuring it. Once it's configured, you won't need to leave the monitor and keyboard attached, and/or you can choose to connect to it with ssh.
+
+After the Pi has been started up for the first time, run `sudo raspi-config` to do things like connect to a wifi network, set the time zone, and so on. It's very important to change the password for the `pi` user account to a new one of your choice so that you don't get hacked, especially if you're opening up ssh access.
+
+It's also best to update the Pi's operating system at this time::
+
+    sudo apt update
+    sudo apt upgrade -y
+
+Now install the system packages that are required by Autopilot. You can do this by running this command, or it's also available as a setup script in the guided installation of Autopilot. ::
+
     sudo apt install -y \
         python3-dev \
         python3-pip \
@@ -32,32 +48,72 @@ Then you'll need to update and install the necessary system packages (also avail
         libhdf5-dev \
         libzmq-dev \
         libffi-dev
+        
+        
+Next, install `virtualenv`, which allows us to create an installation environment for Autopilot.::
+
+    pip3 install virtualenv
+
+You can read more about virtualenv on `their docs <https://virtualenv.pypa.io/en/latest/>`_. For now, let's create a virtual environment for Autopilot, and name it "autopilot". By convention, these virtual environments are stored in the directory `~/.venv`.::
+
+    mkdir ~/.venv
+    virtualenv ~/.venv/autopilot
 
 
+On the Terminal device
+----------------------
 
-Installation with pip
-=====================
+On the computer that will run the Terminal, you also need to install virtualenv and create a virtualenv for Autopilot, but you don't need to install all the system dependencies (the line beginning with "sudo apt install"). 
 
-If you're just taking a look at Autopilot, the easiest way to get started is to install with pip!::
+Note that Python version 3.7 is required on both the Terminal and the Pilot. We have mostly tested Autopilot with virtualenv, but so far it appears that "conda" can be used instead of "virtualenv" on the Terminal if that's easier for you. So something like this should work::
+
+    conda create --name autopilot python=3.7
+    conda activate autopilot
+
+
+Installing Autopilot
+====================
+Now we're ready to install Autopilot on both the Pilot and Terminal devices. Follow the same instructions on both the Pi and the computer.
+
+First, make sure the "autopilot" virtual environment is active.::
+
+    source ~/.venv/autopilot/bin activate
+
+(Or if you are using conda instead)::
+
+    conda activate autopilot
+
+Either way, you should see that the command prompt begins with the string "(autopilot)". If you want to exit the virtual environment at any time, just type `deactivate`, but make sure the environment is activated whenever you're installing software or running Autopilot.
+
+
+Method 1: Installation with pip
+-------------------------------
+
+If you're just taking a look at Autopilot, the easiest way to get started is to install with pip! ::
 
     pip3 install auto-pi-lot
 
 .. note::
 
-    I'm just figuring out python packaging and this is a pretty complicated one to package! please `submit issues <https://github.com/wehr-lab/autopilot/issues>`_
+    I'm just figuring out python packaging and this is a pretty complicated one to package! Please `submit issues <https://github.com/wehr-lab/autopilot/issues>`_
     if the pip install isn't working!
 
-Installation from git
-=====================
+Method 2: Installation from source
+----------------------------------
 
 If you want to start writing your own experiments and tinkering with Autopilot,
 we strongly recommend forking `the repository <https://github.com/wehr-lab/autopilot/>`_
 and developing directly in the library so your gorgeous insights can be integrated later.
 
+In this example, we'll keep the source code in a directory called `~/dev`. You might want to keep other source code there too. (Don't forget to make sure that your virtual env "autopilot" is activated before running the install step!)
+
  ::
 
+    mkdir ~/dev
+    cd ~/dev
     git clone https://github.com/wehr-lab/autopilot.git
-    pip3 install -e ./autopilot/
+    cd autopilot
+    pip3 install -e .
 
 .. note::
 
@@ -68,13 +124,11 @@ Configuration
 
 .. note::
 
-    If you didn't install the system dependencies yet, you can do so now with ::
+    If you didn't install the system dependencies on the Pilot device yet (by running the long line beginning with "sudo apt install" in the first section of this document), you can do so now with ::
 
         python3 -m autopilot.setup.run_script env_pilot
 
-After installation, set Autopilot up!
-
-The setup routine will
+After installation, set Autopilot up! Autopilot comes with a "guided installation" process where you can select the actions you want and they will be run for you. The setup routine will:
 
 * install needed system packages
 * prepare your operating system and environment
@@ -82,15 +136,15 @@ The setup routine will
 * create a user directory (default ``~/autopilot``) to store prefs, logs, data, etc.
 * create a launch script
 
- ::
+This must be run in a sufficiently large terminal window (80x43 is not enough). Otherwise, you'll get an error, in which case simply increase the size of the window.
+
+To start the guided process, run the following line. ::
 
     python3 -m autopilot.setup.setup_autopilot
 
 Select agent
 -------------
-Each runtime of Autopilot is called an "Agent,"
-each of which performs different roles within a system,
-and thus have different requirements.
+Each runtime of Autopilot is called an "Agent", each of which performs different roles within a system, and thus have different requirements. If you're running the setup script on the Pi, select "Pilot". If you're running the setup script on a desktop computer, select "Terminal". If you're configuring multiple Pis, then select "Child" on the child Pis. Then hit "OK". You can navigate this interface with the arrow keys, tab key, and enter key.
 
 
 .. image:: _images/setup_agent_selection.png
@@ -99,8 +153,7 @@ and thus have different requirements.
 
 Select scripts
 ---------------
-
-To configure the environment of your agent, autopilot can run a set of scripts (see :func:`.setup_autopilot.run_script` and :func:`.setup_autopilot.list_scripts`)
+Now you will see a menu of potential scripts that can be run. Select the scripts you want to run, and then hit "OK". Note that even the simplest task ("free water") requires pigpio, so you may want to include that one. You can see the commands that will be run in each of these scripts in :func:`.setup_autopilot.run_script` and :func:`.setup_autopilot.list_scripts`.
 
 .. image:: _images/setup_scripts.png
     :alt: Select scripts to setup environment
@@ -108,12 +161,13 @@ To configure the environment of your agent, autopilot can run a set of scripts (
 
 Configure Agent
 ----------------
-
 Each agent has a set of systemwide preferences stored in ``<AUTOPILOT_DIR>/prefs.json`` and accessible from :mod:`autopilot.prefs`.
 
 .. image:: _images/setup_agent.png
     :alt: Set systemwide prefs
     :width: 100%
+
+You probably want to set the agent name (e.g.: "Pilot 1").
 
 Configure Hardware
 -------------------
@@ -126,17 +180,52 @@ Press ``ctrl+x`` to add Hardware, and fill in the relevant parameters (most are 
     :alt: Configure Hardware
     :width: 100%
 
+After completing this step, the file `prefs.json` will be created if necessary and populated with the information you just provided. If it already exists, it will modified with the new information while preserving the previous preferences. 
 
-Supported Systems
-===================
+You can also manually edit the prefs.json file if you prefer. `A template version for the Pilot is available <https://groups.google.com/g/autopilot-users/c/_MqzLDDq3CE>`_ that defines the ports, LEDs, and solenoids that are necessary for the "free water" task, which may be a useful way to get started.
 
-Autopilot is **linux/mac** only, and supports **Python 3.7**. Some parts might accidentally work in Windows but we make no guarantees.
+Networking
+==========
+The Pilot and Terminal devices must be on the same network and capable of reaching one another. You must first figure out the IP address of each device with this command::
 
-In particular, the Terminal was designed for Ubuntu, and the Pilot was designed for the Raspberry Pi OS.
+    ipconfig
 
-We have tried to take care to make certain platform-specific dependencies not break the entire package,
-so if you have some difficulty installing autopilot on a non-raspberry-pi linux machine please submit an issue!
+Let's say your Terminal is at 192.168.1.42 and your Pilot is at 192.168.1.200. Replace these values with whatever you actually find using `ipconfig`.
+
+Then, you can test that each device can see the other with ping. On the Terminal, run::
+
+    ping 192.168.1.200
+
+And on the Pilot, run::
+
+    ping 192.168.1.42
+
+If that doesn't work, something's up with your router or building network.
+
+You also need to make sure that a port is open on the Terminal device to receive messages from the Pilot. By default, this is port 5560. If you don't have a firewall, your ports are already open. But your version of Ubuntu may have a firewall ("ufw") running. If so, you can open this port on the Terminal by running the following::
+
+    sudo ufw allow from 192.168.1.200 to any port 5560
+
+Make sure that the Pilot knows where the Terminal is by editing the line TERMINALIP in prefs.json on the Pilot to 192.168.1.42 (or whatever the IP address of your Terminal is).
+
+Similarly, tell the Terminal to expect information on port 5560. Do this by editing prefs.json on the Terminal and setting MSGPORT to 5560. Note that MSGPORT/PUSHPORT should be swapped between Terminal and Pilot devices.
 
 
+Testing the Installation
+========================
 
+To test whether this all worked, try to start Autopilot. (Don't forget to activate your virtual environment first!) 
 
+Run this on the Pilot::
+
+    python3 -m autopilot.core.pilot -f ~/autopilot/prefs.json
+
+Alternatively, there is a launch script for the Pilot that includes some other magic, like activating the virtual environment and killing some troublesome daemons.::
+
+    bash ~/autopilot/launch_autopilot.sh
+
+And run this on the Terminal::
+
+    python -m autopilot.core.terminal -f ~/autopilot/prefs.json
+
+Now everything is installed and you are ready to move on to "Training a Subject", the next step in the documentation!
