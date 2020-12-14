@@ -39,9 +39,7 @@ class Parallax_Platform(Hardware):
         instantiate the platform
         >>> plat = Parallax_Platform()
 
-        ---------------------------------------------------
-        1) Control pillars with a mask and an integer
-        ---------------------------------------------------
+        **1) Control pillars with a mask and an integer**
 
         set all columns in row 2 to be active
         >>> mask = np.zeros((6,6), dtype=np.bool)
@@ -58,9 +56,7 @@ class Parallax_Platform(Hardware):
         set height with an integer (number of steps) -- all activated pillars move to same height
         >>> plat.height = 1000
 
-        ---------------------------------------------------
-        2) set height with an array of heights for each pillar
-        ---------------------------------------------------
+        **2) set height with an array of heights for each pillar**
 
         eg. a sine wave
         >>> height = np.round((np.sin(np.linspace(-np.pi, np.pi, 6))+1)*5000).astype(np.int32)
@@ -75,9 +71,8 @@ class Parallax_Platform(Hardware):
 
         >>> plat.height = height
 
-        ---------------------------------------------------
-        3) Set height by slicing the object
-        ---------------------------------------------------
+        **3) Set height by slicing the object**
+
         all slices compatible with np.array should work :)
 
         >>> plat[0,1] = 500
