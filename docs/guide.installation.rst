@@ -61,7 +61,7 @@ Now install the system packages that are required by Autopilot. You can do this 
 On the Terminal device
 ----------------------
 
-On the computer that will run the Terminal, you also need to install virtualenv and create a virtualenv for Autopilot, but you don't need to install all the system dependencies (the line beginning with "sudo apt install"). 
+On the computer that will run the Terminal, you also need to install virtualenv and create a virtualenv for Autopilot, but you don't need to install all the system dependencies (the line beginning with "sudo apt install").
 
 Creating a Virtual Environment
 ------------------------------
