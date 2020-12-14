@@ -25,11 +25,11 @@ class Parallax_Platform(Hardware):
 
     Height can be set in 3 ways:
 
-    1. By setting a :attr:`.mask` of active columns and passing an integer to :attr:`.height` -- this doesn't require manipulating the latching
+    #. By setting a :attr:`.mask` of active columns and passing an integer to :attr:`.height` -- this doesn't require manipulating the latching
     logic, and so is non-blocking.
-    2. By passing an array of heights to :attr:`.height` - this must manipulate the latching logic for every different
+    #. By passing an array of heights to :attr:`.height` - this must manipulate the latching logic for every different
     height and so blocks out of necessity
-    3. By slicing and assigning to the object -- this also blocks
+    #. By slicing and assigning to the object -- this also blocks
 
     Examples:
 
