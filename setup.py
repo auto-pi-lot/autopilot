@@ -81,6 +81,9 @@ elif ARCH == 'x86':
     # sys.argv.append('--skip-cmake')
     REQUIREMENTS = load_requirements('requirements/requirements_terminal.txt')
 
+elif os.environ.get('TRAVIS', False):
+    REQUIREMENTS = load_requirements('requirements/requirements_texts.txt')
+
 else:
     REQUIREMENTS = load_requirements('requirements.txt')
 

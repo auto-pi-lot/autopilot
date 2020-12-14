@@ -40,7 +40,7 @@ class Subject(object):
     """
     Class for managing one subject's data and protocol.
 
-    Creates a :mod:`tables` hdf5 file in `prefs.DATADIR` with the general structure::
+    Creates a :mod:`tables` hdf5 file in `prefs.get('DATADIR')` with the general structure::
 
         / root
         |--- current (tables.filenode) storing the current task as serialized JSON
@@ -62,7 +62,7 @@ class Subject(object):
     Attributes:
         lock (:class:`threading.Lock`): manages access to the hdf5 file
         name (str): Subject ID
-        file (str): Path to hdf5 file - usually `{prefs.DATADIR}/{self.name}.h5`
+        file (str): Path to hdf5 file - usually `{prefs.get('DATADIR')}/{self.name}.h5`
         current (dict): current task parameters. loaded from
             the 'current' :mod:`~tables.filenode` of the h5 file
         step (int): current step
@@ -90,7 +90,7 @@ class Subject(object):
         """
         Args:
             name (str): subject ID
-            dir (str): path where the .h5 file is located, if `None`, `prefs.DATADIR` is used
+            dir (str): path where the .h5 file is located, if `None`, `prefs.get('DATADIR')` is used
             file (str): load a subject from a filename. if `None`, ignored.
             new (bool): if True, a new file is made (a new file is made if one does not exist anyway)
             biography (dict): If making a new subject file, a dictionary with biographical data can be passed
@@ -112,7 +112,7 @@ class Subject(object):
 
         if not dir:
             try:
-                dir = prefs.DATADIR
+                dir = prefs.get('DATADIR')
             except AttributeError:
                 dir = os.path.split(file)[0]
 
@@ -180,7 +180,7 @@ class Subject(object):
         history_row = h5f.root.history.hashes.row
         history_row['time'] = self.get_timestamp()
         try:
-            history_row['hash'] = prefs.HASH
+            history_row['hash'] = prefs.get('HASH')
         except AttributeError:
             history_row['hash'] = ''
         history_row.append()
@@ -406,13 +406,13 @@ class Subject(object):
         Args:
             protocol (str): the protocol to be assigned. Can be one of
 
-                * the name of the protocol (its filename minus .json) if it is in `prefs.PROTOCOLDIR`
-                * filename of the protocol (its filename with .json) if it is in the `prefs.PROTOCOLDIR`
+                * the name of the protocol (its filename minus .json) if it is in `prefs.get('PROTOCOLDIR')`
+                * filename of the protocol (its filename with .json) if it is in the `prefs.get('PROTOCOLDIR')`
                 * the full path and filename of the protocol.
 
             step_n (int): Which step is being assigned?
         """
-        # Protocol will be passed as a .json filename in prefs.PROTOCOLDIR
+        # Protocol will be passed as a .json filename in prefs.get('PROTOCOLDIR')
 
         h5f = self.open_hdf()
 
@@ -422,7 +422,7 @@ class Subject(object):
 
         # try prepending the protocoldir if we were passed just the name
         if not os.path.exists(protocol):
-            fullpath = os.path.join(prefs.PROTOCOLDIR, protocol)
+            fullpath = os.path.join(prefs.get('PROTOCOLDIR'), protocol)
             if not os.path.exists(fullpath):
                 Exception('Could not find either {} or {}'.format(protocol, fullpath))
             protocol = fullpath
@@ -439,6 +439,8 @@ class Subject(object):
         # Load protocol to dict
         with open(protocol) as protocol_file:
             prot_dict = json.load(protocol_file)
+
+        # pdb.set_trace()
 
         # Check if there is an existing protocol, archive it if there is.
         if "/current" in h5f:

@@ -8,9 +8,17 @@ Autopilot must be installed on the devices running the Terminal and the Pilot ag
 Supported Systems
 ===================
 
-Autopilot is **linux/mac** only, and supports **Python 3.7**. Some parts might accidentally work in Windows but we make no guarantees.
++----------------+-----------------------------------------------+
+| OS             | * Pilot: raspiOS >=Buster (lite recommended)  |
+|                | * Terminal: Ubuntu >=16.04                    |
++----------------+-----------------------------------------------+
+| Python Version | 3.7                                           |
++----------------+-----------------------------------------------+
+| Raspberry Pi   | >=3b                                          |
++----------------+-----------------------------------------------+
 
-In particular, the Terminal was designed for Ubuntu, and the Pilot was designed for the Raspberry Pi OS.
+Autopilot is **linux/mac** only, and supports **Python 3.7**.
+Some parts might accidentally work in Windows but we make no guarantees.
 
 We have tried to take care to make certain platform-specific dependencies not break the entire package,
 so if you have some difficulty installing autopilot on a non-raspberry-pi linux machine please submit an issue!
@@ -53,7 +61,7 @@ Now install the system packages that are required by Autopilot. You can do this 
 On the Terminal device
 ----------------------
 
-On the computer that will run the Terminal, you also need to install virtualenv and create a virtualenv for Autopilot, but you don't need to install all the system dependencies (the line beginning with "sudo apt install"). 
+On the computer that will run the Terminal, you also need to install virtualenv and create a virtualenv for Autopilot, but you don't need to install all the system dependencies (the line beginning with "sudo apt install").
 
 Creating a Virtual Environment
 ------------------------------
@@ -267,4 +275,4 @@ To launch autopilot::
 The actual launch call to autopilot resembles::
 
     python3 -m autopilot.core.<AGENT_NAME> -f ~/autopilot/prefs.json
-   
+

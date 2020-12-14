@@ -125,7 +125,7 @@ class DLC_Latency(Task):
 
         # if we have left and right LEDs, init them and turn them off
         HAS_LR_LEDS = False
-        if 'L' in prefs.HARDWARE['LEDS'].keys() and 'R' in prefs.HARDWARE['LEDS'].keys():
+        if 'L' in prefs.get('HARDWARE')['LEDS'].keys() and 'R' in prefs.get('HARDWARE')['LEDS'].keys():
             HAS_LR_LEDS = True
 
             self.HARDWARE['LEDS']['L'] = gpio.LED_RGB
@@ -175,10 +175,10 @@ class DLC_Latency(Task):
              }}
             ]
 
-        self.node_id = f"T_{prefs.NAME}"
+        self.node_id = f"T_{prefs.get('NAME')}"
         self.node = Net_Node(id=self.node_id,
-                             upstream=prefs.NAME,
-                             port=prefs.MSGPORT,
+                             upstream=prefs.get('NAME'),
+                             port=prefs.get('MSGPORT'),
                              listens={'STATE':self.l_state,
                                       'TRIGGER':self.l_trigger},
                              instance=False)
@@ -186,7 +186,7 @@ class DLC_Latency(Task):
         # get our child started
         self.subject = kwargs['subject']
         value = {
-            'child': {'parent': prefs.NAME, 'subject': kwargs['subject']},
+            'child': {'parent': prefs.get('NAME'), 'subject': kwargs['subject']},
             'task_type': 'Transformer',
             'subject': kwargs['subject'],
             'operation':'stream',
@@ -195,7 +195,7 @@ class DLC_Latency(Task):
             'value_subset': 'MAIN'
         }
 
-        self.node.send(to=prefs.NAME, key='CHILD', value=value)
+        self.node.send(to=prefs.get('NAME'), key='CHILD', value=value)
 
         # configure camera
         self.cam = self.hardware['CAMERAS']['MAIN']
@@ -218,8 +218,8 @@ class DLC_Latency(Task):
 
 
         self.cam.stream(to=f"{self.child_id}_TRANSFORMER",
-                        ip=prefs.CHILDIP, # FIXME: Hack before network discovery is fixed
-                        port=prefs.CHILDPORT,
+                        ip=prefs.get('CHILDIP'), # FIXME: Hack before network discovery is fixed
+                        port=prefs.get('CHILDPORT'),
                         min_size=1)
 
         self.stages = cycle([self.trig, self.wait])
@@ -351,17 +351,17 @@ class DLC_Hand(Task):
              }}
         ]
 
-        self.node_id = f"T_{prefs.NAME}"
+        self.node_id = f"T_{prefs.get('NAME')}"
         self.node = Net_Node(id=self.node_id,
-                             upstream=prefs.NAME,
-                             port=prefs.MSGPORT,
+                             upstream=prefs.get('NAME'),
+                             port=prefs.get('MSGPORT'),
                              listens={'STATE':self.l_state,
                                       'UPDATE':self.l_update},
                              instance=False)
 
         self.subject = kwargs['subject']
         value = {
-            'child': {'parent': prefs.NAME, 'subject': kwargs['subject']},
+            'child': {'parent': prefs.get('NAME'), 'subject': kwargs['subject']},
             'task_type': 'Transformer',
             'subject': kwargs['subject'],
             'operation':'stream',
@@ -371,18 +371,18 @@ class DLC_Hand(Task):
             'return_key': 'UPDATE'
         }
 
-        self.node.send(to=prefs.NAME, key='CHILD', value=value)
+        self.node.send(to=prefs.get('NAME'), key='CHILD', value=value)
 
         # configure the camera
         self.cam = self.hardware['CAMERAS']['WEBCAM']
         self.cam.crop = crop_box
 
         self.cam.stream(to=f"{self.child_id}_TRANSFORMER",
-                        ip=prefs.CHILDIP,
-                        port=prefs.CHILDPORT,
+                        ip=prefs.get('CHILDIP'),
+                        port=prefs.get('CHILDPORT'),
                         min_size=1)
 
-        video_fn = os.path.join(prefs.DATADIR, 'dlc_hand_{}.mp4'.format(datetime.now().isoformat()))
+        video_fn = os.path.join(prefs.get('DATADIR'), 'dlc_hand_{}.mp4'.format(datetime.now().isoformat()))
         self.cam.write(video_fn)
 
         # setup our own transforms
@@ -397,7 +397,7 @@ class DLC_Hand(Task):
 
         # get a stream to send data to terminal with
         # self.stream = self.node.get_stream('T', 'CONTINUOUS',
-        #                                    upstream='T', ip=prefs.TERMINALIP,port=prefs.PUSHPORT,
+        #                                    upstream='T', ip=prefs.get('TERMINALIP'),port=prefs.get('PUSHPORT'),
         #                                    subject=self.subject)
 
         self.stages = cycle([self.noop])
@@ -444,7 +444,7 @@ class DLC_Hand(Task):
             'distance': distance,
             'timestamp': datetime.now().isoformat(),
             'subject': self.subject,
-            'pilot': prefs.NAME,
+            'pilot': prefs.get('NAME'),
             'continuous': True,
             't':time()
         })

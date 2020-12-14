@@ -71,14 +71,14 @@ def start_pigpiod():
         if launch_pigpiod is None:
             raise RuntimeError('the pigpiod binary was not found!')
 
-        if hasattr(prefs, 'PIGPIOARGS'):
-            launch_pigpiod += ' ' + prefs.PIGPIOARGS
+        if prefs.get( 'PIGPIOARGS'):
+            launch_pigpiod += ' ' + prefs.get('PIGPIOARGS')
 
-        if hasattr(prefs, 'PIGPIOMASK'):
+        if prefs.get( 'PIGPIOMASK'):
             # if it's been converted to an integer, convert back to a string and zfill any leading zeros that were lost
-            if isinstance(prefs.PIGPIOMASK, int):
-                prefs.PIGPIOMASK = str(prefs.PIGPIOMASK).zfill(28)
-            launch_pigpiod += ' -x ' + prefs.PIGPIOMASK
+            if isinstance(prefs.get('PIGPIOMASK'), int):
+                prefs.set('PIGPIOMASK', str(prefs.get('PIGPIOMASK')).zfill(28))
+            launch_pigpiod += ' -x ' + prefs.get('PIGPIOMASK')
 
         proc = subprocess.Popen('sudo ' + launch_pigpiod, shell=True)
         globals()['PIGPIO_DAEMON'] = proc
@@ -100,15 +100,15 @@ def start_jackd():
         raise ImportError('jackd was not found in autopilot.external or as a system install')
 
     # get specific launch string from prefs
-    if hasattr(prefs, "JACKDSTRING"):
-        jackd_string = prefs.JACKDSTRING.lstrip('jackd')
+    if prefs.get("JACKDSTRING"):
+        jackd_string = prefs.get('JACKDSTRING').lstrip('jackd')
 
     else:
         jackd_string = ""
 
     # replace string fs with number
-    if hasattr(prefs, 'FS'):
-        jackd_string = jackd_string.replace('-rfs', f'-r{prefs.FS}')
+    if prefs.get('FS'):
+        jackd_string = jackd_string.replace('-rfs', f"-r{prefs.get('FS')}")
 
     # construct rest of launch string!
     # if JACKD_MODULE:

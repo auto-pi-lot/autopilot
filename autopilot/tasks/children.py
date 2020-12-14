@@ -17,6 +17,7 @@ from autopilot.hardware.gpio import Digital_Out
 from autopilot.hardware.usb import Wheel
 from autopilot.hardware import cameras
 from autopilot.core.networking import Net_Node
+from autopilot.core.loggers import init_logger
 from autopilot.transform import transforms
 from itertools import cycle
 from queue import Empty, LifoQueue
@@ -45,7 +46,7 @@ class Wheel_Child(object):
         self.thresh = thresh
 
         self.hardware = {}
-        self.hardware['OUTPUT'] = Digital_Out(prefs.HARDWARE['OUTPUT'])
+        self.hardware['OUTPUT'] = Digital_Out(prefs.get('HARDWARE')['OUTPUT'])
         self.hardware['WHEEL'] = Wheel(digi_out = self.hardware['OUTPUT'],
                                        fs       = self.fs,
                                        thresh   = self.thresh,
@@ -134,8 +135,8 @@ class Video_Child(object):
     def _stream(self):
         self.node = Net_Node(
             "T_CHILD",
-            upstream=prefs.NAME,
-            port=prefs.MSGPORT,
+            upstream=prefs.get('NAME'),
+            port=prefs.get('MSGPORT'),
             listens = {},
             instance=True
         )
@@ -207,7 +208,7 @@ class Transformer(object):
         self.input_q = deque(maxlen=1)
         self.value_subset = value_subset
 
-        self.logger = logging.getLogger('main')
+        self.logger = init_logger(self)
 
         self.process_thread = threading.Thread(target=self._process, args=(transform,))
         self.process_thread.daemon = True
@@ -225,9 +226,9 @@ class Transformer(object):
         self.transform = autopilot.transform.make_transform(transform)
 
         self.node = Net_Node(
-            f"{prefs.NAME}_TRANSFORMER",
-            upstream=prefs.NAME,
-            port=prefs.MSGPORT,
+            f"{prefs.get('NAME')}_TRANSFORMER",
+            upstream=prefs.get('NAME'),
+            port=prefs.get('MSGPORT'),
             listens = {
                 'CONTINUOUS': self.l_process
             },

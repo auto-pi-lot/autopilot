@@ -1,5 +1,5 @@
 from autopilot import prefs
-# if prefs.AGENT in ("TERMINAL", "DOCS"):
+# if prefs.get('AGENT') in ("TERMINAL", "DOCS"):
 HAVE_PYSIDE = False
 try:
     from PySide2 import QtCore
@@ -77,7 +77,7 @@ class Param(object):
     #         return False
 
 
-
+_INVOKER = None
 
 if HAVE_PYSIDE:
     class InvokeEvent(QtCore.QEvent):
@@ -113,6 +113,11 @@ if HAVE_PYSIDE:
             """
             event.fn(*event.args, **event.kwargs)
             return True
+
+    def get_invoker():
+        if globals()['_INVOKER'] is None:
+            globals()['_INVOKER'] = Invoker()
+        return globals()['_INVOKER']
 
 
 class ReturnThread(Thread):
