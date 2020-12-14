@@ -210,4 +210,22 @@ Make sure that the Pilot knows where the Terminal is by editing the line TERMINA
 
 Similarly, tell the Terminal to expect information on port 5560. Do this by editing prefs.json on the Terminal and setting MSGPORT to 5560. Note that MSGPORT/PUSHPORT should be swapped between Terminal and Pilot devices.
 
+
+Testing the Installation
+========================
+
+To test whether this all worked, try to start Autopilot. (Don't forget to activate your virtual environment first!) 
+
+Run this on the Pilot::
+
+    python3 -m autopilot.core.pilot -f ~/autopilot/prefs.json
+
+Alternatively, there is a launch script for the Pilot that includes some other magic, like activating the virtual environment and killing some troublesome daemons.::
+
+    bash ~/autopilot/launch_autopilot.sh
+
+And run this on the Terminal::
+
+    python -m autopilot.core.terminal -f ~/autopilot/prefs.json
+
 Now everything is installed and you are ready to move on to "Training a Subject", the next step in the documentation!
