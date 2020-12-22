@@ -207,6 +207,7 @@ class Control_Panel(QtWidgets.QWidget):
                 if 'protocol' in protocol_vals.keys() and 'step' in protocol_vals.keys():
                     protocol_file = os.path.join(prefs.get('PROTOCOLDIR'), protocol_vals['protocol'] + '.json')
                     subject_obj.assign_protocol(protocol_file, int(protocol_vals['step']))
+                    self.logger.debug(f'assigned protocol with {protocol_vals}')
                 else:
                     self.logger.warning(f'protocol couldnt be assigned, no step and protocol keys in protocol_vals.\ngot protocol_vals: {protocol_vals}')
             except Exception as e:
