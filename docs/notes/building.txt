@@ -4,10 +4,11 @@ deployment
 - bump version in setup.py
 
 - do PR
-- merge
 
 - create git tag with "git tag -a <tagname> -m <tagmessage>"
 - push tag with "git push origin <tagname>"
 - push tagged commit
+
+- merge PR
 
 - create new github release

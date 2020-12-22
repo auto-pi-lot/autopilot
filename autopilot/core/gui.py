@@ -43,6 +43,7 @@ from functools import wraps
 from autopilot.core.utils import InvokeEvent
 from autopilot.core import styles
 from autopilot.core.utils import get_invoker
+from autopilot.core.loggers import init_logger
 
 
 
@@ -106,6 +107,8 @@ class Control_Panel(QtWidgets.QWidget):
 
         """
         super(Control_Panel, self).__init__()
+
+        self.logger = init_logger(self)
 
         # We share a dict of subject objects with the main Terminal class to avoid access conflicts
         self.subjects = subjects
@@ -187,7 +190,9 @@ class Control_Panel(QtWidgets.QWidget):
 
         # If the wizard completed successfully, get its values
         if new_subject_wizard.result() == 1:
+
             biography_vals = new_subject_wizard.bio_tab.values
+            self.logger.debug(f'subject wizard exited with 1, got biography vals {biography_vals}')
             # TODO: Make a "session" history table that stashes pilot, git hash, step, etc. for each session - subjects might run on different pilots
             biography_vals['pilot'] = pilot
 
@@ -202,10 +207,12 @@ class Control_Panel(QtWidgets.QWidget):
                 if 'protocol' in protocol_vals.keys() and 'step' in protocol_vals.keys():
                     protocol_file = os.path.join(prefs.get('PROTOCOLDIR'), protocol_vals['protocol'] + '.json')
                     subject_obj.assign_protocol(protocol_file, int(protocol_vals['step']))
-            except:
+                else:
+                    self.logger.warning(f'protocol couldnt be assigned, no step and protocol keys in protocol_vals.\ngot protocol_vals: {protocol_vals}')
+            except Exception as e:
+                self.logger.exception(f'exception when assigning protocol, continuing subject creation. \n{e}')
                 # the wizard couldn't find the protocol dir, so no task tab was made
                 # or no task was assigned
-                pass
 
             # Add subject to pilots dict, update it and our tabs
             self.pilots[pilot]['subjects'].append(biography_vals['id'])
