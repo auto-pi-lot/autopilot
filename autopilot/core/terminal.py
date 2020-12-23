@@ -730,7 +730,6 @@ class Terminal(QtWidgets.QMainWindow):
         and applies any changes made in the window.
         """
 
-
         reassign_window = Reassign(self.subject_protocols, self.protocols)
         reassign_window.exec_()
 
@@ -744,7 +743,10 @@ class Terminal(QtWidgets.QMainWindow):
                 # since assign_protocol also changes the step, stash the step number here to tell if it's changed
                 subject_orig_step = self.subjects[subject].step
 
-
+                # if the protocol is the blank protocol, do nothing
+                if not protocol:
+                    self.logger.info(f'Protocol for {subject} set to blank, not setting')
+                    continue
 
                 if self.subjects[subject].protocol_name != protocol:
                     self.logger.info('Setting {} protocol from {} to {}'.format(subject, self.subjects[subject].protocol_name, protocol))
@@ -756,6 +758,8 @@ class Terminal(QtWidgets.QMainWindow):
                     step_name = self.subjects[subject].current[step]['step_name']
                     #update history also flushes current - aka it also actually changes the step number
                     self.subjects[subject].update_history('step', step_name, step)
+        else:
+            self.logger.debug('reassign cancelled')
 
     def calibrate_ports(self):
         """

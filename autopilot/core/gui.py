@@ -33,6 +33,7 @@ import itertools
 import threading
 import logging
 from operator import ior
+from functools import reduce
 
 # adding autopilot parent directory to path
 from autopilot.core.subject import Subject
@@ -397,7 +398,6 @@ class Pilot_Panel(QtWidgets.QWidget):
         Initializes UI elements - creates widgets and adds to :py:attr:`Pilot_Panel.layout` .
         Called on init.
         """
-        # type: () -> None
         label = QtWidgets.QLabel(self.pilot)
         label.setStyleSheet("font: bold 14pt; text-align:right")
         label.setAlignment(QtCore.Qt.AlignVCenter)
@@ -987,7 +987,6 @@ class Protocol_Wizard(QtWidgets.QDialog):
         Returns:
 
         """
-        # type: () -> None
         self.clear_params()
 
         # Get current item index
@@ -1605,7 +1604,6 @@ class Sound_Widget(QtWidgets.QWidget):
             """
             When one of our edit boxes is edited, stash the parameter in `param_dict`
             """
-            # type: () -> None
             sender = self.sender()
             name = sender.objectName()
             self.param_dict[name] = sender.text()
@@ -2406,7 +2404,7 @@ class Reassign(QtWidgets.QDialog):
 
         self.subject_objects = {}
 
-        for i, (subject, protocol) in zip(range(len(self.subjects)), self.subjects.items()):
+        for i, (subject, protocol) in enumerate(self.subjects.items()):
             subject_name = copy.deepcopy(subject)
             step = protocol[1]
             protocol = protocol[0]
@@ -2418,19 +2416,28 @@ class Reassign(QtWidgets.QDialog):
             protocol_box = self.subject_objects[subject][0]
             protocol_box.setObjectName(subject_name)
             protocol_box.insertItems(0, self.protocols)
+            # add blank at the end
+            protocol_box.addItem(text='')
+
             # set current item if subject has matching protocol
             protocol_bool = [protocol == p for p in self.protocols]
             if any(protocol_bool):
                 protocol_ind = np.where(protocol_bool)[0][0]
                 protocol_box.setCurrentIndex(protocol_ind)
+            else:
+                # set to blank
+                protocol_box.setCurrentIndex(protocol_box.count()-1)
+
             protocol_box.currentIndexChanged.connect(self.set_protocol)
 
+            # create & populate step box
             step_box = self.subject_objects[subject][1]
             step_box.setObjectName(subject_name)
 
             self.populate_steps(subject_name)
 
-            step_box.setCurrentIndex(step)
+            if step:
+                step_box.setCurrentIndex(step)
             step_box.currentIndexChanged.connect(self.set_step)
 
             # add to layout
@@ -2464,15 +2471,21 @@ class Reassign(QtWidgets.QDialog):
 
         # Load the protocol and parse its steps
         protocol_str = protocol_box.currentText()
-        protocol_file = os.path.join(self.protocol_dir, protocol_str + '.json')
-        with open(protocol_file) as protocol_file_open:
-            protocol = json.load(protocol_file_open)
 
-        step_list = []
-        for i, s in enumerate(protocol):
-            step_list.append(s['step_name'])
+        # if unassigned, will be the blank string (which evals False here)
+        # so do nothing in that case
+        if protocol_str:
+            protocol_file = os.path.join(self.protocol_dir, protocol_str + '.json')
+            with open(protocol_file) as protocol_file_open:
+                protocol = json.load(protocol_file_open)
 
-        step_box.insertItems(0, step_list)
+            step_list = []
+            for i, s in enumerate(protocol):
+                step_list.append(s['step_name'])
+
+            step_box.insertItems(0, step_list)
+
+
 
     def set_protocol(self):
         """
@@ -2644,7 +2657,7 @@ class Psychometric(QtGui.QDialog):
         self.grid.addWidget(QtGui.QLabel('Check All'), 0, 1)
 
         # identical to Reassign, above
-        for i, (subject, protocol) in zip(xrange(len(self.subjects)), self.subjects.items()):
+        for i, (subject, protocol) in zip(range(len(self.subjects)), self.subjects.items()):
             subject_name = copy.deepcopy(subject)
             step = protocol[1]
 
