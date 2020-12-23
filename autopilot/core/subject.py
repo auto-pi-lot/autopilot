@@ -630,6 +630,11 @@ class Subject(object):
             Dict: the parameters for the current step, with subject id, step number,
                 current trial, and session number included.
         """
+        if self.current is None:
+            e = RuntimeError('No task assigned to subject, cant prepare_run. use Subject.assign_protocol or protocol reassignment wizard in the terminal GUI')
+            self.logger.exception(f"{e}")
+            raise e
+
 
         trial_table = None
         cont_table = None
