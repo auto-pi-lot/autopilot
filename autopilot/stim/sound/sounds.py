@@ -547,7 +547,7 @@ elif server_type == "jack":
 else:
     # just importing to query parameters, not play sounds.
     BASE_CLASS = object
-    warnings.warn('No Base Sound class specified! sounds will probably not work!!!')
+    # warnings.warn('No Base Sound class specified! sounds will probably not work!!!')
 
 
 class Tone(BASE_CLASS):

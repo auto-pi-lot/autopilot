@@ -681,7 +681,7 @@ class Subject(object):
                 session_group = h5f.get_node(cont_group, "session_{}".format(self.session))
             # don't create arrays for each dtype here, we will create them as we receive data
 
-        if not any([cont_group, trial_table]):
+        if (trial_table is None) and (cont_group is None):
             raise Exception("No data tables exist for step {}! Is there a Trial or Continuous data descriptor in the task class?".format(self.step))
 
         # TODO: Spawn graduation checking object!
