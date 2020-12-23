@@ -318,8 +318,24 @@ class Plot(QtWidgets.QWidget):
 
         self.state = "INITIALIZING"
 
+
+        # set infobox stuff
+        self.n_trials = count()
+        self.session_trials = 0
+        self.info['N Trials'].setText(str(value['current_trial']))
+        self.info['Runtime'].start_timer()
+        self.info['Step'].setText(str(value['step']))
+        self.info['Session'].setText(str(value['session']))
+        self.info['Protocol'].setText(value['step_name'])
+
         # We're sent a task dict, we extract the plot params and send them to the plot object
         self.plot_params = tasks.TASK_LIST[value['task_type']].PLOT
+
+        # if we got no plot params, that's fine, just set as running and return
+        if not self.plot_params:
+            self.logger.warning(f"No plot params for task {value['task_type']}")
+            self.state = "RUNNING"
+            return
 
         if 'continuous' in self.plot_params.keys():
             if self.plot_params['continuous']:
@@ -331,14 +347,6 @@ class Plot(QtWidgets.QWidget):
 
 
 
-        # set infobox stuff
-        self.n_trials = count()
-        self.session_trials = 0
-        self.info['N Trials'].setText(str(value['current_trial']))
-        self.info['Runtime'].start_timer()
-        self.info['Step'].setText(str(value['step']))
-        self.info['Session'].setText(str(value['session']))
-        self.info['Protocol'].setText(value['step_name'])
 
 
         # TODO: Make this more general, make cases for each non-'data' key
