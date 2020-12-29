@@ -10,9 +10,9 @@
 
 ![Autopilot Banner Logo](docs/_images/autopilot_logo_banner.png)
 
-| [Docs](https://docs.auto-pi-lot.com) | [Paper](https://www.biorxiv.org/content/10.1101/807693v1) | [Forum](https://groups.google.com/forum/#!forum/autopilot-users) | [Hardware](https://auto-pi-lot.com/hardware/) |
+| [Docs](https://docs.auto-pi-lot.com) | [Paper](https://www.biorxiv.org/content/10.1101/807693v1) | [Forum](https://github.com/wehr-lab/autopilot/discussions) | [Hardware](https://auto-pi-lot.com/hardware/) |
 | :-: | :-: | :-: | :-: |
-| [![Read the Docs](docs/_images/docs_link.png)](https://docs.auto-pi-lot.com) | [![Paper](docs/_images/paper_link.png)](https://www.biorxiv.org/content/10.1101/807693v1)  | [![Forum](docs/_images/discussion_link.png)](https://groups.google.com/forum/#!forum/autopilot-users) | [![Hardware (Coming Soon!)](docs/_images/hardware_link_construction.png)](https://auto-pi-lot.com/hardware)
+| [![Read the Docs](docs/_images/docs_link.png)](https://docs.auto-pi-lot.com) | [![Paper](docs/_images/paper_link.png)](https://www.biorxiv.org/content/10.1101/807693v1)  | [![Forum](docs/_images/discussion_link.png)](https://github.com/wehr-lab/autopilot/discussions) | [![Hardware (Coming Soon!)](docs/_images/hardware_link_construction.png)](https://auto-pi-lot.com/hardware)
 
 Autopilot is a Python framework for performing complex, hardware-intensive behavioral experiments with swarms of networked Raspberry Pis. 
 As a tool, it provides researchers with a toolkit of flexible modules to design experiments without rigid programming & API limitations. 
@@ -81,7 +81,7 @@ python3 -m autopilot.setup.setup_autopilot
 ![Autopilot Setup Console](docs/_images/installer.png)
 
 All of Autopilot is quite new, so bugs, incomplete documentation, missing features are very much expected! Don't be shy about
-[raising issues](https://github.com/wehr-lab/autopilot/issues) or [asking questions in the forum](https://groups.google.com/forum/#!forum/autopilot-users).
+[raising issues](https://github.com/wehr-lab/autopilot/issues) or [asking questions in the forum](https://github.com/wehr-lab/autopilot/discussions).
 
 
 

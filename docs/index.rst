@@ -67,7 +67,7 @@ This documentation is very young and is very much a work in progress! Please `su
     :maxdepth: 1
     :caption: Meta:
 
-    Discussion <https://groups.google.com/forum/#!forum/autopilot-users>
+    Discussion <https://github.com/wehr-lab/autopilot/discussions>
     To-Do <todo>
     Changelog <changelog/index>
 
