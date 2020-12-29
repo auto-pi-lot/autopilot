@@ -40,7 +40,7 @@ class Blink(Task):
 	        trial_num = tables.Int32Col()
 
 	HARDWARE = {
-	 	'LEDS':{
+	 	'LEDS':{ #dLED has to be inside of a group for some reason
 	       'dLED': gpio.Digital_Out
         }
 	}
@@ -78,7 +78,7 @@ class Blink(Task):
 		self.logger.debug('light on')
 		time.sleep(self.pulse_duration / 1000)
 
-		self.hardware['LEDS']['dLED'].set([0])
+		self.hardware['LEDS']['dLED'].set(0)
 		self.logger.debug('light off')
 		time.sleep(self.pulse_interval / 1000)
 
