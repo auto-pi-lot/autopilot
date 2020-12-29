@@ -40,9 +40,11 @@ class Blink(Task):
 	        trial_num = tables.Int32Col()
 
 	HARDWARE = {
+	 	'LEDS':{
 	       'dLED': gpio.Digital_Out
-
+        }
 	}
+
 
 	def __init__(self, pulse_duration=100, pulse_interval=500, **kwargs):
 		super(Blink, self).__init__()
