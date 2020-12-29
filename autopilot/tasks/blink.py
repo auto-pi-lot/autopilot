@@ -62,7 +62,7 @@ class Blink(Task):
 		self.init_hardware()
 		self.logger.debug('Hardware initialized')
 
-		self.hardware[LEDS]['dLED'].set(1)
+		self.hardware['LEDS']['dLED'].set(1)
 		self.logger.debug('test message')
 
 	##################################################################################
@@ -74,11 +74,11 @@ class Blink(Task):
 		Returns: nothing
 		"""
 
-		self.hardware[LEDS]['dLED'].set(1)
+		self.hardware['LEDS']['dLED'].set(1)
 		self.logger.debug('light on')
 		time.sleep(self.pulse_duration / 1000)
 
-		self.hardware[LEDS]['dLED'].set([0])
+		self.hardware['LEDS']['dLED'].set([0])
 		self.logger.debug('light off')
 		time.sleep(self.pulse_interval / 1000)
 
