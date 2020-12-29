@@ -2218,10 +2218,10 @@ class Pilot_Ports(QtWidgets.QWidget):
 
         layout = QtWidgets.QHBoxLayout()
         pilot_lab = QtWidgets.QLabel(self.pilot)
-        pilot_font = QtWidgets.QFont()
-        pilot_font.setBold(True)
-        pilot_font.setPointSize(14)
-        pilot_lab.setFont(pilot_font)
+        #pilot_font = QtWidgets.QFont()
+        #pilot_font.setBold(True)
+        #pilot_font.setPointSize(14)
+        #pilot_lab.setFont(pilot_font)
         pilot_lab.setStyleSheet('border: 1px solid black')
         layout.addWidget(pilot_lab)
 
