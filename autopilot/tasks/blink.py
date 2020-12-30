@@ -87,10 +87,10 @@ class Blink(Task):
 		self.current_stage = 0
 		self.logger.debug(self.current_trial)
 
+		self.stages.next()
 		data = {'trial_num' : self.current_trial}
 		return data
 
-		self.stages.next()
 
 
 
