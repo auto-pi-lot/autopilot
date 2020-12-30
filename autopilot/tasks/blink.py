@@ -46,7 +46,7 @@ class Blink(Task):
 	}
 
 
-	def __init__(self, pulse_duration=100, pulse_interval=500, **kwargs):
+	def __init__(self, stage_block=None, pulse_duration=100, pulse_interval=500, **kwargs):
 		super(Blink, self).__init__()
 		# explicitly type everything to be safe.
 		self.pulse_duration = int(pulse_duration)
