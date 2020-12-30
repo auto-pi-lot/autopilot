@@ -73,7 +73,6 @@ class Blink(Task):
 		Stage 0: a single pulse and interval.
 		Returns: just the trial number
 		"""
-		self.stage_block.clear()
 
 		self.hardware['LEDS']['dLED'].set(1)
 		self.logger.debug('light on')
@@ -90,7 +89,7 @@ class Blink(Task):
 		data = {'trial_num' : self.current_trial}
 		return data
 
-
+		self.stages.next()
 
 
 
