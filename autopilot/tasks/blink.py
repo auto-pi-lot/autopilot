@@ -71,8 +71,9 @@ class Blink(Task):
 	def pulse(self,*args,**kwargs):
 		"""
 		Stage 0: a single pulse and interval.
-		Returns: nothing
+		Returns: just the trial number
 		"""
+		self.stage_block.clear()
 
 		self.hardware['LEDS']['dLED'].set(1)
 		self.logger.debug('light on')
