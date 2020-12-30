@@ -65,10 +65,7 @@ class Blink(Task):
 		self.hardware['LEDS']['dLED'].set(1)
 		self.logger.debug('test message')
 
-		self.pulse()
-		self.pulse()
-		self.pulse()
-		
+
 	##################################################################################
 	# Stage Functions
 	##################################################################################
@@ -89,9 +86,11 @@ class Blink(Task):
 
 		self.current_trial = next(self.trial_counter)
 		self.current_stage = 0
-		self.logger.debug(self.current_trial)
+		self.logger.debug('trial ', self.current_trial)
 
 		next(self.stages)
+		self.stage_block.set()
+
 		data = {'trial_num' : self.current_trial}
 		return data
 
