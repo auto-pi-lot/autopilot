@@ -65,6 +65,9 @@ class Blink(Task):
 		self.hardware['LEDS']['dLED'].set(1)
 		self.logger.debug('test message')
 
+		self.stage_block = stage_block
+
+
 
 	##################################################################################
 	# Stage Functions
