@@ -19,21 +19,21 @@ from autopilot import prefs
 import pdb
 import pickle
 
-TASK = 'Blink'
+TASK = 'TuningCurve'
 	#Note that when you write a new task, you have to add it to autopilot/autopilot/tasks/__init__.py
 
-class Blink(Task):
+class TuningCurve(Task):
 
-	# Just blink an LED
+	# play an array of tones and/or whitenoise
 
 
-	STAGE_NAMES = ["pulse"] 
+	STAGE_NAMES = ["playtone"] 
 	#there's only one stage, which consists of a single LED flash
 
 
 	PARAMS = odict()
-	PARAMS['pulse_duration']         = {'tag':'LED Pulse Duration (ms)', 'type':'int'}
-	PARAMS['pulse_interval']         = {'tag':'LED Pulse Interval (ms)', 'type':'int'}
+	PARAMS['tone_duration']         = {'tag':'Tone Duration (ms)', 'type':'int'}
+	PARAMS['inter_stimulus_interval']         = {'tag':'Inter Stimulus Interval (ms)', 'type':'int'}
 
 	class TrialData(tables.IsDescription):
 	        """This class allows the Subject object to make a data table with the
@@ -42,13 +42,7 @@ class Blink(Task):
 			to return at least something  """
 	        trial_num = tables.Int32Col()
 
-	"""the only hardware here is a digital out to flash the LED. Here we name it dLED.
-	when you setup autopilot on the raspberry pi, include a GPIO Digital Out and
-	specify the pin #. Then connect your LED (with a current limiting resistor,
-	e.g. 10 ohm) to that pin. For example if you specify pin 40, use the
-	bottom-right pin also known as GPIO#21. Note that we create dLED inside of a
-	group (not sure why) and the prefs.json on the pi has to have the same group
-	structure (dLED inside of LEDS) """
+	"""the only hardware here is a digital out to flash the LED.  """
 	HARDWARE = {
 		'LEDS':{ 
 	       'dLED': gpio.Digital_Out 
@@ -57,13 +51,13 @@ class Blink(Task):
 
 
 	def __init__(self, stage_block=None, pulse_duration=100, pulse_interval=500, **kwargs):
-		super(Blink, self).__init__()
+		super(TuningCurve, self).__init__()
 		# explicitly type everything to be safe.
-		self.pulse_duration = int(pulse_duration)
-		self.pulse_interval = int(pulse_interval)
+		self.tone_duration = int(tone_duration)
+		self.inter_stimulus_interval = int(inter_stimulus_interval)
 
 		# This allows us to cycle through the task by just repeatedly calling self.stages.next()
-		stage_list = [self.pulse] #a list of only one stage, the pulse
+		stage_list = [self.playtone] #a list of only one stage, the pulse
 		self.num_stages = len(stage_list)
 		self.stages = itertools.cycle(stage_list)
 		self.trial_counter = itertools.count()
@@ -80,9 +74,9 @@ class Blink(Task):
 	##################################################################################
 	# Stage Functions
 	##################################################################################
-	def pulse(self,*args,**kwargs):
+	def playtone(self,*args,**kwargs):
 		"""
-		Stage 0: a single pulse and interval.
+		Stage 0: a single tone and interval.
 		Returns: just the trial number
 		"""
 

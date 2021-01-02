@@ -7,6 +7,7 @@ from autopilot.tasks.graduation import GRAD_LIST
 from autopilot.tasks.children import Wheel_Child, Video_Child, Transformer
 from autopilot.tasks.test import DLC_Latency, DLC_Hand
 from autopilot.tasks.blink import Blink
+from autopilot.tasks.tuning_curve import TuningCurve
 
 TASK_LIST = {'2AFC':Nafc,
              '2AFC_Gap':Nafc_Gap,
@@ -16,7 +17,8 @@ TASK_LIST = {'2AFC':Nafc,
              'Parallax': Parallax,
              'Test_DLC_Latency': DLC_Latency,
              'Test_DLC_Hand':DLC_Hand,
-             'Blink':Blink}
+             'Blink':Blink,
+             'TuningCurve':TuningCurve}
 """
 Link between string task names used in protocol descriptions and task classes
 """
