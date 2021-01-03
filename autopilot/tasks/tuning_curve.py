@@ -96,10 +96,10 @@ class TuningCurve(Task):
 
 		self.hardware['LEDS']['dLED'].set(1)
 
-        # get next stim
-        self.target, self.distractor, self.stim = self.stim_manager.next_stim()
-        # buffer it
-        self.stim.buffer()
+		# get next stim
+		self.target, self.distractor, self.stim = self.stim_manager.next_stim()
+		# buffer it
+		self.stim.buffer()
 
 
 		time.sleep(self.tone_duration / 1000)
