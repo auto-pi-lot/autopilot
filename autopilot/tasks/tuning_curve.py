@@ -103,6 +103,7 @@ class TuningCurve(Task):
 		# buffer it
 		self.stim.buffer()
 
+		self.stim.play()
 
 		time.sleep(self.tone_duration / 1000)
 
