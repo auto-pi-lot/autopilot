@@ -15,6 +15,8 @@ from collections import OrderedDict as odict
 from autopilot.core.networking import Net_Node
 from autopilot.core.utils import find_recursive
 from autopilot.stim.sound import sounds
+from autopilot.stim import init_manager
+
 
 from autopilot import prefs
 import pdb
