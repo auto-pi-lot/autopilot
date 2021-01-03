@@ -14,6 +14,7 @@ from autopilot.tasks import Task
 from collections import OrderedDict as odict
 from autopilot.core.networking import Net_Node
 from autopilot.core.utils import find_recursive
+from autopilot.stim.sound import sounds
 
 from autopilot import prefs
 import pdb
@@ -34,6 +35,9 @@ class TuningCurve(Task):
 	PARAMS = odict()
 	PARAMS['tone_duration']         = {'tag':'Tone Duration (ms)', 'type':'int'}
 	PARAMS['inter_stimulus_interval']         = {'tag':'Inter Stimulus Interval (ms)', 'type':'int'}
+	PARAMS['frequency']         = {'tag':'Tone frequency (Hz)', 'type':'int'}
+	PARAMS['amplitude']         = {'tag':'Tone amplitude (0-1)', 'type':'int'}
+
 
 	class TrialData(tables.IsDescription):
 	        """This class allows the Subject object to make a data table with the
@@ -50,11 +54,13 @@ class TuningCurve(Task):
 	}
 
 
-	def __init__(self, stage_block=None, tone_duration=100, inter_stimulus_interval=500, **kwargs):
+	def __init__(self, stage_block=None, tone_duration=100, inter_stimulus_interval=500, frequency, amplitude,  **kwargs):
 		super(TuningCurve, self).__init__()
 		# explicitly type everything to be safe.
 		self.tone_duration = int(tone_duration)
 		self.inter_stimulus_interval = int(inter_stimulus_interval)
+		self.frequency = int(frequency)
+		self.amplitude = int(amplitude)
 
 		# This allows us to cycle through the task by just repeatedly calling self.stages.next()
 		stage_list = [self.playtone] #a list of only one stage, the pulse
@@ -81,7 +87,10 @@ class TuningCurve(Task):
 		"""
 
 		self.hardware['LEDS']['dLED'].set(1)
-		#self.logger.debug('light on')
+		mytone=sounds.tone
+		
+
+
 		time.sleep(self.tone_duration / 1000)
 
 		self.hardware['LEDS']['dLED'].set(0)
