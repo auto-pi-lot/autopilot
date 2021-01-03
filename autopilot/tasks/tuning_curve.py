@@ -54,7 +54,7 @@ class TuningCurve(Task):
 	}
 
 
-	def __init__(self, stage_block=None, tone_duration=100, inter_stimulus_interval=500, frequency, amplitude,  **kwargs):
+	def __init__(self, stage_block=None, tone_duration=100, inter_stimulus_interval=500, frequency=1000, amplitude=.25,  **kwargs):
 		super(TuningCurve, self).__init__()
 		# explicitly type everything to be safe.
 		self.tone_duration = int(tone_duration)
@@ -88,7 +88,7 @@ class TuningCurve(Task):
 
 		self.hardware['LEDS']['dLED'].set(1)
 		mytone=sounds.tone
-		
+
 
 
 		time.sleep(self.tone_duration / 1000)
