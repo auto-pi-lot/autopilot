@@ -77,7 +77,7 @@ class TuningCurve(Task):
 		self.stage_block = stage_block
 		#this is the threading.event object that is used to advance from one stage to the next 
 
- 		# Initialize stim manager
+        # Initialize stim manager
         if not stim:
             raise RuntimeError("Cant instantiate task without stimuli!")
         else:
