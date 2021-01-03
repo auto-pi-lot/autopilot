@@ -37,6 +37,8 @@ class TuningCurve(Task):
 	PARAMS['inter_stimulus_interval']         = {'tag':'Inter Stimulus Interval (ms)', 'type':'int'}
 	PARAMS['frequency']         = {'tag':'Tone frequency (Hz)', 'type':'int'}
 	PARAMS['amplitude']         = {'tag':'Tone amplitude (0-1)', 'type':'int'}
+	PARAMS['stim']           = {'tag':'Sounds',
+                            'type':'sounds'}
 
 
 	class TrialData(tables.IsDescription):
@@ -54,7 +56,7 @@ class TuningCurve(Task):
 	}
 
 
-	def __init__(self, stage_block=None, tone_duration=100, inter_stimulus_interval=500, frequency=1000, amplitude=.25,  **kwargs):
+	def __init__(self, stage_block=None, tone_duration=100, inter_stimulus_interval=500, frequency=1000, amplitude=.25, stim=None **kwargs):
 		super(TuningCurve, self).__init__()
 		# explicitly type everything to be safe.
 		self.tone_duration = int(tone_duration)
