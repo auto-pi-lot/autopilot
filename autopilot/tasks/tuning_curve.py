@@ -119,9 +119,9 @@ class TuningCurve(Task):
 		#this clears the stage block so we advance to the next stage 
 
 		# get stim info and add to data dict
-		sound_info = {k:getattr(self.stim, k) for k in self.stim.PARAMS}
-		data.update(sound_info)
-		data.update({'type':self.stim.type})
+		#sound_info = {k:getattr(self.stim, k) for k in self.stim.PARAMS}
+		#data.update(sound_info)
+		#data.update({'type':self.stim.type})
 
 
 		#return the trial number as data
