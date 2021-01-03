@@ -77,6 +77,12 @@ class TuningCurve(Task):
 		self.stage_block = stage_block
 		#this is the threading.event object that is used to advance from one stage to the next 
 
+ 		# Initialize stim manager
+        if not stim:
+            raise RuntimeError("Cant instantiate task without stimuli!")
+        else:
+            self.stim_manager = init_manager(stim)
+        self.logger.debug('Stimulus manager initialized')
 
 
 	##################################################################################
@@ -89,8 +95,11 @@ class TuningCurve(Task):
 		"""
 
 		self.hardware['LEDS']['dLED'].set(1)
-		mytone=sounds.tone
 
+        # get next stim
+        self.target, self.distractor, self.stim = self.stim_manager.next_stim()
+        # buffer it
+        self.stim.buffer()
 
 
 		time.sleep(self.tone_duration / 1000)
@@ -106,6 +115,12 @@ class TuningCurve(Task):
 
 		self.stage_block.set()
 		#this clears the stage block so we advance to the next stage 
+        
+        # get stim info and add to data dict
+        sound_info = {k:getattr(self.stim, k) for k in self.stim.PARAMS}
+        data.update(sound_info)
+        data.update({'type':self.stim.type})
+
 
 		#return the trial number as data
 		data = {'trial_num' : self.current_trial}
