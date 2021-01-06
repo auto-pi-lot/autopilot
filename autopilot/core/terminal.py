@@ -669,6 +669,7 @@ class Terminal(QtWidgets.QMainWindow):
         """
         If we change the protocol file, update the stored version in subject files
         """
+        self.logger.warning('The Subject class now updates the saved protocol when a change is sensed, this method is now unnecessary and will be removed.')
         #
         # get list of protocol files
         protocols = os.listdir(prefs.get('PROTOCOLDIR'))
