@@ -2389,6 +2389,9 @@ class Reassign(QtWidgets.QDialog):
         """
         super(Reassign, self).__init__()
 
+        # FIXME: get logger in a superclass, good god.
+        self.logger = init_logger(self)
+
         self.subjects = subjects
         self.protocols = protocols
         self.protocol_dir = prefs.get('PROTOCOLDIR')
@@ -2477,8 +2480,16 @@ class Reassign(QtWidgets.QDialog):
         # so do nothing in that case
         if protocol_str:
             protocol_file = os.path.join(self.protocol_dir, protocol_str + '.json')
-            with open(protocol_file) as protocol_file_open:
-                protocol = json.load(protocol_file_open)
+            try:
+                with open(protocol_file) as protocol_file_open:
+                    protocol = json.load(protocol_file_open)
+            except json.decoder.JSONDecodeError:
+                self.logger.exception(f'Steps could not be populated because task could not be loaded due to malformed JSON in protocol file {protocol_file}')
+                return
+            except Exception:
+                self.logger.exception(f'Steps could not be populated due to an unknown error loading {protocol_file}. Catching and continuing to populate window')
+                return
+
 
             step_list = []
             for i, s in enumerate(protocol):
