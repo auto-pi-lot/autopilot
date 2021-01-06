@@ -2417,7 +2417,8 @@ class Reassign(QtWidgets.QDialog):
             protocol_box.setObjectName(subject_name)
             protocol_box.insertItems(0, self.protocols)
             # add blank at the end
-            protocol_box.addItem(text='')
+            #protocol_box.addItem(text='')
+            #commenting out the above line to fix Qt error -mike 1-5-21
 
             # set current item if subject has matching protocol
             protocol_bool = [protocol == p for p in self.protocols]
