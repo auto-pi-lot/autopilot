@@ -100,7 +100,7 @@ class TuningCurve(Task):
 		# buffer it
 		#self.stim.buffer()
 
-		self.stim.play()
+		self.stim.play
 
 		time.sleep(inter_stimulus_interval/1000)
 
@@ -111,7 +111,7 @@ class TuningCurve(Task):
 
 		self.current_trial = next(self.trial_counter)
 		self.current_stage = 0
-		#self.logger.debug(f'trial {self.current_trial}')
+		self.logger.debug(f'trial {self.current_trial}')
 
 		self.stage_block.set()
 		#this clears the stage block so we advance to the next stage 
