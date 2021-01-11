@@ -102,11 +102,11 @@ class TuningCurve(Task):
 
 		self.stim.play()
 
-		time.sleep(inter_stimulus_interval)
+		time.sleep(inter_stimulus_interval/1000)
 
 		self.hardware['LEDS']['dLED'].set(0)
 		#self.logger.debug('light off')
-		time.sleep(inter_stimulus_interval)
+		time.sleep(inter_stimulus_interval/1000)
 
 
 		self.current_trial = next(self.trial_counter)
