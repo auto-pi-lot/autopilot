@@ -35,7 +35,7 @@ class TuningCurve(Task):
 
 
 	PARAMS = odict()
-	PARAMS['tone_duration']         = {'tag':'Tone Duration (ms)', 'type':'int'}
+	PARAMS['duration']         = {'tag':'Tone Duration (ms)', 'type':'int'}
 	PARAMS['inter_stimulus_interval']         = {'tag':'Inter Stimulus Interval (ms)', 'type':'int'}
 	PARAMS['frequency']         = {'tag':'Tone frequency (Hz)', 'type':'int'}
 	PARAMS['amplitude']         = {'tag':'Tone amplitude (0-1)', 'type':'int'}
