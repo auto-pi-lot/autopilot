@@ -31,7 +31,7 @@ class TuningCurve(Task):
 
 
 	STAGE_NAMES = ["playtone"] 
-	#there's only one stage, which consists of a single LED flash
+	#there's only one stage, which consists of a single LED flash and play a tone
 
 
 	PARAMS = odict()
@@ -58,13 +58,14 @@ class TuningCurve(Task):
 	}
 
 
-	def __init__(self, stage_block=None, tone_duration=100, inter_stimulus_interval=500, frequency=1000, amplitude=.25, stim=[{"type": "Tone"}], **kwargs):
+	#def __init__(self, stage_block=None, tone_duration=100, inter_stimulus_interval=500, frequency=1000, amplitude=.25, stim=[{"type": "Tone"}], **kwargs):
+	def __init__(self, stage_block=None, stim=[{"type": "Tone"}], **kwargs):
 		super(TuningCurve, self).__init__()
 		# explicitly type everything to be safe.
-		self.tone_duration = int(tone_duration)
-		self.inter_stimulus_interval = int(inter_stimulus_interval)
-		self.frequency = int(frequency)
-		self.amplitude = int(amplitude)
+#		self.tone_duration = int(tone_duration)
+#		self.inter_stimulus_interval = int(inter_stimulus_interval)
+#		self.frequency = int(frequency)
+#		self.amplitude = int(amplitude)
 
 		# This allows us to cycle through the task by just repeatedly calling self.stages.next()
 		stage_list = [self.playtone] #a list of only one stage, the pulse
@@ -101,6 +102,12 @@ class TuningCurve(Task):
 		# get next stim
 		self.target, self.distractor, self.stim = self.stim_manager.next_stim()
 		self.logger.debug(f'target: {self.target}')
+
+		#get values from stim
+		tone_duration=self.stim.PARAMS.tone_duration
+		inter_stimulus_interval=self.stim.PARAMS.inter_stimulus_interval
+		self.logger.debug(f'tone duration {tone_duration}')
+		self.logger.debug(f'ISI {inter_stimulus_interval}')
 
 		# buffer it
 		#self.stim.buffer()
