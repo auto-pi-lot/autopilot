@@ -121,7 +121,7 @@ class TuningCurve(Task):
 
 		# get stim info and add to data dict
 		sound_info = {k:getattr(self.stim, k) for k in self.stim.PARAMS}
-		self.logger.debug(f' {sound_info}')
+		self.logger.debug(f'playtone: {sound_info}')
 		
 		#data.update(sound_info)
 		#data.update({'type':self.stim.type})
