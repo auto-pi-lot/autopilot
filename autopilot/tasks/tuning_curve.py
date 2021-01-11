@@ -100,7 +100,7 @@ class TuningCurve(Task):
 
 		# get next stim
 		self.target, self.distractor, self.stim = self.stim_manager.next_stim()
-		self.logger.debug(f'target: {target}')
+		self.logger.debug(f'target: {slef.target}')
 
 		# buffer it
 		self.stim.buffer()
