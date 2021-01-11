@@ -103,7 +103,7 @@ class TuningCurve(Task):
 		self.logger.debug(f'target: {self.target}')
 
 		# buffer it
-		self.stim.buffer()
+		#self.stim.buffer()
 
 		self.stim.play()
 
