@@ -104,21 +104,22 @@ class TuningCurve(Task):
 		self.logger.debug(f'target: {self.target}')
 
 		#get values from stim
-		tone_duration=self.stim.PARAMS.duration
-		inter_stimulus_interval=self.stim.PARAMS.inter_stimulus_interval
-		self.logger.debug(f'tone duration {tone_duration}')
-		self.logger.debug(f'ISI {inter_stimulus_interval}')
+		#this doesn't work yet - I don't know how to read values 
+		#tone_duration=self.stim.PARAMS.duration
+		##inter_stimulus_interval=self.stim.PARAMS.inter_stimulus_interval
+		#self.logger.debug(f'tone duration {tone_duration}')
+		#self.logger.debug(f'ISI {inter_stimulus_interval}')
 
 		# buffer it
 		#self.stim.buffer()
 
 		self.stim.play()
 
-		time.sleep(self.tone_duration / 1000)
+		time.sleep(.5)
 
 		self.hardware['LEDS']['dLED'].set(0)
 		#self.logger.debug('light off')
-		time.sleep(self.inter_stimulus_interval / 1000)
+		time.sleep(.5)
 
 
 		self.current_trial = next(self.trial_counter)
