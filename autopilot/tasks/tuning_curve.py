@@ -104,7 +104,7 @@ class TuningCurve(Task):
 		self.logger.debug(f'target: {self.target}')
 
 		#get values from stim
-		tone_duration=self.stim.PARAMS.tone_duration
+		tone_duration=self.stim.PARAMS.duration
 		inter_stimulus_interval=self.stim.PARAMS.inter_stimulus_interval
 		self.logger.debug(f'tone duration {tone_duration}')
 		self.logger.debug(f'ISI {inter_stimulus_interval}')
