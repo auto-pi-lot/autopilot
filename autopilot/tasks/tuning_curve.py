@@ -100,7 +100,7 @@ class TuningCurve(Task):
 		# buffer it
 		#self.stim.buffer()
 
-		self.stim.play
+		self.stim.play()
 
 		time.sleep(inter_stimulus_interval/1000)
 
