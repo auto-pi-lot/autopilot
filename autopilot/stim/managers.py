@@ -137,7 +137,7 @@ class Stim_Manager(object):
             # If not a list, a single sound
             else:
                 self.stimuli[k] = [sounds.SOUND_LIST[v['type']](**v)]
-        self.logger.debug('Stimulus manager sounds instantiated')
+        #self.logger.debug('Stimulus manager sounds instantiated')
 
     def set_triggers(self, trig_fn):
         """
