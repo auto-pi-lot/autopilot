@@ -79,6 +79,9 @@ class TuningCurve(Task):
 			self.stim_manager = init_manager(stim)
 		self.logger.debug('Stimulus manager initialized')
 
+		#self.stim_manager = init_sounds(stim)
+		#self.logger.debug('Stimulus manager initialized')
+		
 
 	##################################################################################
 	# Stage Functions
