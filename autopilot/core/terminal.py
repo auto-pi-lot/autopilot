@@ -311,41 +311,42 @@ class Terminal(QtWidgets.QMainWindow):
 
         
         ## Set window size
-        # Set size of window to be fullscreen without maximization
-        # Until a better solution is found, if not set large enough, the pilot tabs will
-        # expand into infinity. See the Expandable_Tabs class
-        #pdb.set_trace()
+        # This is the pixel resolution of the entire screen 
         screensize = app.primaryScreen().size()
+        
+        # This is the available geometry of the primary screen, excluding
+        # window manager reserved areas such as task bars and system menus.
         winsize = app.primaryScreen().availableGeometry()
 
-        # want to subtract bounding title box, our title bar, and logo height.
-        # our y offset will be the size of the bounding title box
-
-        # Then our titlebar
-        # multiply by three to get the inner (file, etc.) bar, the top bar (min, maximize, etc)
-        # and then the very top system tray bar in ubuntu
-        #titleBarHeight = self.style().pixelMetric(QtWidgets.QStyle.PM_TitleBarHeight,
-        #                                          QtWidgets.QStyleOptionTitleBar(), self) * 3
+        # The difference in height between the two is the vertical height
+        # reserved by the window manager
         title_bar_height = screensize.height()-winsize.height()
 
-        #titleBarHeight = bar_height*2
-        # finally our logo
+        # for some reason logo_height is hardcoded as bar_height, which is 
+        # currently set equal to 0 on Darwin and 1/30 of winheight otherwise
         logo_height = bar_height
 
+        # We will set the width of Terminal to match winsize width.
+        # And we set the height of Terminal to match winsize height, minus 
+        # title_bar_height and logo_height
         winheight = winsize.height() - title_bar_height - logo_height  # also subtract logo height
         winsize.setHeight(winheight)
+        
+        # Save this as max_height
         self.max_height = winheight
+        
+        # Now actually apply winsize to self.setGeometry
         self.setGeometry(winsize)
+        
+        # Set a maximum size policy
         self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
 
-        # Set heights on control panel and data panel
 
-
-        # move to primary display and show maximized
+        ## Move to primary display and show maximized
         primary_display = app.primaryScreen().availableGeometry()
         self.move(primary_display.left(), primary_display.top())
-        # self.resize(primary_display.width(), primary_display.height())
-        #
+
+        # Also set the maximum height of each panel
         self.control_panel.setMaximumHeight(winheight)
         self.data_panel.setMaximumHeight(winheight)
 
