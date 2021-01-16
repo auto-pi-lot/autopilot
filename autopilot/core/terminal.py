@@ -1,16 +1,15 @@
+"""Methods for running the Terminal GUI"""
+
 import argparse
 import json
 import sys
 import os
-
 import datetime
 import logging
 import threading
 from collections import OrderedDict as odict
 import numpy as np
-
 from PySide2 import QtCore, QtGui, QtSvg, QtWidgets
-
 from autopilot import prefs
 from autopilot.core import styles
 
@@ -35,8 +34,6 @@ if __name__ == '__main__':
     # init prefs for module access
     prefs.init(prefs_file)
 
-
-
 from autopilot.core.subject import Subject
 from autopilot.core.plots import Plot_Widget
 from autopilot.core.networking import Terminal_Station, Net_Node
@@ -44,7 +41,7 @@ from autopilot.core.utils import InvokeEvent, Invoker, get_invoker
 from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test
 from autopilot.core.loggers import init_logger
 
-
+# Try to import viz, but continue if that doesn't work
 IMPORTED_VIZ = False
 VIZ_ERROR = None
 try:
@@ -192,9 +189,6 @@ class Terminal(QtWidgets.QMainWindow):
         #self.heartbeat(once=True)
         self.logger.info('Terminal Initialized')
 
-
-
-
     def initUI(self):
         """
         Initializes graphical elements of Terminal.
@@ -205,13 +199,9 @@ class Terminal(QtWidgets.QMainWindow):
         * :class:`.gui.Control_Panel`
         * :class:`.plots.Plot_Widget`
         """
-
-
         # set central widget
         self.widget = QtWidgets.QWidget()
         self.setCentralWidget(self.widget)
-
-
 
         # Start GUI
         self.layout = QtWidgets.QGridLayout()
@@ -279,8 +269,6 @@ class Terminal(QtWidgets.QMainWindow):
         self.data_panel = Plot_Widget()
         self.data_panel.init_plots(self.pilots.keys())
 
-
-
         # Logo goes up top
         # https://stackoverflow.com/questions/25671275/pyside-how-to-set-an-svg-icon-in-qtreewidgets-item-and-change-the-size-of-the
 
@@ -326,7 +314,7 @@ class Terminal(QtWidgets.QMainWindow):
         # want to subtract bounding title box, our title bar, and logo height.
         # our y offset will be the size of the bounding title box
 
-        # Then our tilebar
+        # Then our titlebar
         # multiply by three to get the inner (file, etc.) bar, the top bar (min, maximize, etc)
         # and then the very top system tray bar in ubuntu
         #titleBarHeight = self.style().pixelMetric(QtWidgets.QStyle.PM_TitleBarHeight,
@@ -336,8 +324,6 @@ class Terminal(QtWidgets.QMainWindow):
         #titleBarHeight = bar_height*2
         # finally our logo
         logo_height = bar_height
-
-
 
         winheight = winsize.height() - title_bar_height - logo_height  # also subtract logo height
         winsize.setHeight(winheight)
@@ -398,7 +384,6 @@ class Terminal(QtWidgets.QMainWindow):
             self.heartbeat_timer = threading.Timer(self.heartbeat_dur, self.heartbeat)
             self.heartbeat_timer.daemon = True
             self.heartbeat_timer.start()
-
 
     def toggle_start(self, starting, pilot, subject=None):
         """Start or Stop running the currently selected subject's task. Sends a
@@ -528,11 +513,6 @@ class Terminal(QtWidgets.QMainWindow):
             elif value['state'] != self.pilots[value['pilot']]['state']:
                 #self.control_panel.panels[value['pilot']].button.set_state(value['state'])
                 self.pilots[value['pilot']]['state'] = value['state']
-
-            
-
-
-
 
     def l_handshake(self, value):
         """
@@ -721,7 +701,6 @@ class Terminal(QtWidgets.QMainWindow):
 
         return subjects_protocols
 
-
     def reassign_protocols(self):
         """
         Batch reassign protocols and steps.
@@ -830,8 +809,6 @@ class Terminal(QtWidgets.QMainWindow):
         if psychometric_dialog.result() != 1:
             return
 
-
-
         chart = viz.plot_psychometric(psychometric_dialog.plot_params)
 
         text, ok = QtGui.QInputDialog.getText(self, 'save plot?', 'what to call this thing')
@@ -841,26 +818,8 @@ class Terminal(QtWidgets.QMainWindow):
 
         #chart.serve()
 
-
-
-
-
             #viz.plot_psychometric(self.subjects_protocols)
         #result = psychometric_dialog.exec_()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     def closeEvent(self, event):
         """
@@ -884,15 +843,11 @@ class Terminal(QtWidgets.QMainWindow):
 
         event.accept()
 
+# Create the QApplication and run it
+# Prefs were already loaded at the very top
 if __name__ == "__main__":
-
-    #with open(prefs_file) as prefs_file_open:
-    #    prefs = json.load(prefs_file_open)
-
     app = QtWidgets.QApplication(sys.argv)
     #app.setGraphicsSystem("opengl")
     app.setStyle('GTK+') # Keeps some GTK errors at bay
     ex = Terminal()
     sys.exit(app.exec_())
-
-
