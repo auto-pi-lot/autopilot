@@ -120,6 +120,12 @@ class Terminal(QtWidgets.QMainWindow):
         # store instance
         globals()['_TERMINAL'] = self
 
+        # Load settings
+        # These are stored in ~/.config/Autopilot/Terminal.conf
+        # Currently, the only setting is "geometry", but loading here
+        # in case we start to use other ones in the future
+        self.settings = QtCore.QSettings("Autopilot", "Terminal")        
+
         # networking
         self.node = None
         self.networking = None
@@ -213,9 +219,13 @@ class Terminal(QtWidgets.QMainWindow):
         self.setWindowTitle('Terminal')
         #self.menuBar().setFixedHeight(40)
 
-        # Get the window size
-        winsize = app.primaryScreen().availableGeometry()
-
+        # This is the pixel resolution of the entire screen 
+        screensize = app.primaryScreen().size()
+        
+        # This is the available geometry of the primary screen, excluding
+        # window manager reserved areas such as task bars and system menus.
+        primary_display = app.primaryScreen().availableGeometry()
+        
         
         ## Initalize the menuBar
         # Linux: Set the menuBar to a fixed height
@@ -223,7 +233,7 @@ class Terminal(QtWidgets.QMainWindow):
         if sys.platform == 'darwin':
             bar_height = 0
         else:
-            bar_height = (winsize.height()/30)+5
+            bar_height = (primary_display.height()/30)+5
             self.menuBar().setFixedHeight(bar_height)
 
         # Create a File menu
@@ -287,27 +297,44 @@ class Terminal(QtWidgets.QMainWindow):
 
         
         ## Set window size
-        # This is the pixel resolution of the entire screen 
-        screensize = app.primaryScreen().size()
+        # The window size behavior depends on TERMINAL_WINSIZE_BEHAVIOR pref
+        # If 'remember': restore to the geometry from the last close
+        # If 'maximum': restore to fill the entire screen
+        # If 'moderate': restore to a reasonable size of (1000, 400) pixels
+        terminal_winsize_behavior = prefs.get('TERMINAL_WINSIZE_BEHAVIOR')
         
-        # This is the available geometry of the primary screen, excluding
-        # window manager reserved areas such as task bars and system menus.
-        winsize = app.primaryScreen().availableGeometry()
+        # Set geometry according to pref
+        if terminal_winsize_behavior == 'maximum':
+            # Set geometry to available geometry
+            self.setGeometry(primary_display)
+            
+            # Set SizePolicy to maximum
+            self.setSizePolicy(
+                QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
 
-        # Now actually apply winsize to self.setGeometry
-        self.setGeometry(winsize)
+            # Move to top left corner of primary display
+            self.move(primary_display.left(), primary_display.top())
+
+            # Also set the maximum height of each panel
+            self.control_panel.setMaximumHeight(primary_display.height())
+            self.data_panel.setMaximumHeight(primary_display.height())
+
+        elif terminal_winsize_behavior == 'remember':
+            # Attempt to restore previous geometry
+            if self.settings.value("geometry") is None:
+                # It was never saved, for instance, this is the first time
+                # this app has been run
+                # So default to the moderate size
+                self.move(primary_display.left(), primary_display.top())
+                self.resize(1000, 400)                
+            else:
+                # It was saved, so restore the last geometry
+                self.restoreGeometry(self.settings.value("geometry"))
         
-        # Set SizePolicy to maximum
-        self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
-
-
-        ## Move to primary display and show maximized
-        primary_display = app.primaryScreen().availableGeometry()
-        self.move(primary_display.left(), primary_display.top())
-
-        # Also set the maximum height of each panel
-        self.control_panel.setMaximumHeight(winsize.height())
-        self.data_panel.setMaximumHeight(winsize.height())
+        else:
+            # The moderate size
+            self.move(primary_display.left(), primary_display.top())
+            self.resize(1000, 400)
 
     
         ## Finalize some aesthetics
@@ -801,6 +828,9 @@ class Terminal(QtWidgets.QMainWindow):
         to explicitly kill it.
 
         """
+        # Save the window geometry, to be optionally restored next time
+        self.settings.setValue("geometry", self.saveGeometry())
+        
         # TODO: Check if any subjects are currently running, pop dialog asking if we want to stop
 
         # Close all subjects files
