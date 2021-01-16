@@ -199,36 +199,38 @@ class Terminal(QtWidgets.QMainWindow):
         * :class:`.gui.Control_Panel`
         * :class:`.plots.Plot_Widget`
         """
-        # set central widget
+        # Set central widget
         self.widget = QtWidgets.QWidget()
         self.setCentralWidget(self.widget)
 
-        # Start GUI
+        # Set the layout
         self.layout = QtWidgets.QGridLayout()
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0,0,0,0)
         self.widget.setLayout(self.layout)
 
+        # Set title
         self.setWindowTitle('Terminal')
         #self.menuBar().setFixedHeight(40)
 
-        # Main panel layout
-        #self.panel_layout.setContentsMargins(0,0,0,0)
-
-        # Init toolbar
-        # File menu
-        # make menu take up 1/10 of the screen
+        # Get the window size
         winsize = app.desktop().availableGeometry()
 
+        
+        ## Initalize the menuBar
+        # Linux: Set the menuBar to a fixed height
+        # Darwin: Don't worry about menuBar
         if sys.platform == 'darwin':
             bar_height = 0
         else:
             bar_height = (winsize.height()/30)+5
             self.menuBar().setFixedHeight(bar_height)
 
-
+        # Create a File menu
         self.file_menu = self.menuBar().addMenu("&File")
         self.file_menu.setObjectName("file")
+        
+        # Add "New Pilot" and "New Protocol" actions to File menu
         new_pilot_act = QtWidgets.QAction("New &Pilot", self, triggered=self.new_pilot)
         new_prot_act  = QtWidgets.QAction("New Pro&tocol", self, triggered=self.new_protocol)
         #batch_create_subjects = QtWidgets.QAction("Batch &Create subjects", self, triggered=self.batch_subjects)
@@ -237,8 +239,10 @@ class Terminal(QtWidgets.QMainWindow):
         self.file_menu.addAction(new_prot_act)
         #self.file_menu.addAction(batch_create_subjects)
 
-        # Tools menu
+        # Create a Tools menu
         self.tool_menu = self.menuBar().addMenu("&Tools")
+        
+        # Add actions to Tools menu
         subject_weights_act = QtWidgets.QAction("View Subject &Weights", self, triggered=self.subject_weights)
         update_protocol_act = QtWidgets.QAction("Update Protocols", self, triggered=self.update_protocols)
         reassign_act = QtWidgets.QAction("Batch Reassign Protocols", self, triggered=self.reassign_protocols)
@@ -248,12 +252,12 @@ class Terminal(QtWidgets.QMainWindow):
         self.tool_menu.addAction(reassign_act)
         self.tool_menu.addAction(calibrate_act)
 
-        # Plots menu
+        # Create a Plots menu and add Psychometric Curve action
         self.plots_menu = self.menuBar().addMenu("&Plots")
         psychometric = QtGui.QAction("Psychometric Curve", self, triggered=self.plot_psychometric)
         self.plots_menu.addAction(psychometric)
 
-        # Tests menu
+        # Create a Tests menu and add a Test Bandwidth action
         self.tests_menu = self.menuBar().addMenu("Test&s")
         bandwidth_test_act = QtWidgets.QAction("Test Bandwidth", self, triggered=self.test_bandwidth)
         self.tests_menu.addAction(bandwidth_test_act)
@@ -297,13 +301,16 @@ class Terminal(QtWidgets.QMainWindow):
             self.menuBar().adjustSize()
 
         #self.logo.load(pixmap_path)
-        # Combine all in main layout
+        
+        # Add Control Panel and Data Panel to main layout
         #self.layout.addWidget(self.logo, 0,0,1,2)
         self.layout.addWidget(self.control_panel, 0,0,1,1)
         self.layout.addWidget(self.data_panel, 0,1,1,1)
         self.layout.setColumnStretch(0, 1)
         self.layout.setColumnStretch(1, 3)
 
+        
+        ## Set window size
         # Set size of window to be fullscreen without maximization
         # Until a better solution is found, if not set large enough, the pilot tabs will
         # expand into infinity. See the Expandable_Tabs class
@@ -342,12 +349,16 @@ class Terminal(QtWidgets.QMainWindow):
         self.control_panel.setMaximumHeight(winheight)
         self.data_panel.setMaximumHeight(winheight)
 
+    
+        ## Finalize some aesthetics
         # set stylesheet for main window
         self.setStyleSheet(styles.TERMINAL)
 
         # set fonts to antialias
         self.setFont(self.font().setStyleStrategy(QtGui.QFont.PreferAntialias))
 
+
+        ## Show, and log that initialization is complete
         self.show()
         logging.info('UI Initialized')
 
