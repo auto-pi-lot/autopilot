@@ -294,27 +294,10 @@ class Terminal(QtWidgets.QMainWindow):
         # window manager reserved areas such as task bars and system menus.
         winsize = app.primaryScreen().availableGeometry()
 
-        # The difference in height between the two is the vertical height
-        # reserved by the window manager
-        title_bar_height = screensize.height()-winsize.height()
-
-        # for some reason logo_height is hardcoded as bar_height, which is 
-        # currently set equal to 0 on Darwin and 1/30 of winheight otherwise
-        logo_height = bar_height
-
-        # We will set the width of Terminal to match winsize width.
-        # And we set the height of Terminal to match winsize height, minus 
-        # title_bar_height and logo_height
-        winheight = winsize.height() - title_bar_height - logo_height  # also subtract logo height
-        winsize.setHeight(winheight)
-        
-        # Save this as max_height
-        self.max_height = winheight
-        
         # Now actually apply winsize to self.setGeometry
         self.setGeometry(winsize)
         
-        # Set a maximum size policy
+        # Set SizePolicy to maximum
         self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
 
 
@@ -323,8 +306,8 @@ class Terminal(QtWidgets.QMainWindow):
         self.move(primary_display.left(), primary_display.top())
 
         # Also set the maximum height of each panel
-        self.control_panel.setMaximumHeight(winheight)
-        self.data_panel.setMaximumHeight(winheight)
+        self.control_panel.setMaximumHeight(winsize.height())
+        self.data_panel.setMaximumHeight(winsize.height())
 
     
         ## Finalize some aesthetics
