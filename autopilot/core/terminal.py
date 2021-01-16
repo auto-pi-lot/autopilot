@@ -273,35 +273,11 @@ class Terminal(QtWidgets.QMainWindow):
         self.data_panel = Plot_Widget()
         self.data_panel.init_plots(self.pilots.keys())
 
-        # Logo goes up top
-        # https://stackoverflow.com/questions/25671275/pyside-how-to-set-an-svg-icon-in-qtreewidgets-item-and-change-the-size-of-the
-
-        #
-        # pixmap_path = os.path.join(os.path.dirname(prefs.get('AUTOPILOT_ROOT')), 'graphics', 'autopilot_logo_small.svg')
-        # #svg_renderer = QtSvg.QSvgRenderer(pixmap_path)
-        # #image = QtWidgets.QImage()
-        # #self.logo = QtSvg.QSvgWidget()
-        #
-        #
-        # # set size, preserving aspect ratio
-        # logo_height = round(44.0*((bar_height-5)/44.0))
-        # logo_width = round(139*((bar_height-5)/44.0))
-        #
-        # svg_renderer = QtSvg.QSvgRenderer(pixmap_path)
-        # image = QtGui.QImage(logo_width, logo_height, QtGui.QImage.Format_ARGB32)
-        # # Set the ARGB to 0 to prevent rendering artifacts
-        # image.fill(0x00000000)
-        # svg_renderer.render(QtGui.QPainter(image))
-        # pixmap = QtGui.QPixmap.fromImage(image)
-        # self.logo = QtWidgets.QLabel()
-        # self.logo.setPixmap(pixmap)
-
+        # Set logo to corner widget
         if sys.platform != 'darwin':
             self.menuBar().setCornerWidget(self.logo, QtCore.Qt.TopRightCorner)
             self.menuBar().adjustSize()
 
-        #self.logo.load(pixmap_path)
-        
         # Add Control Panel and Data Panel to main layout
         #self.layout.addWidget(self.logo, 0,0,1,2)
         self.layout.addWidget(self.control_panel, 0,0,1,1)
