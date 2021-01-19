@@ -674,6 +674,8 @@ class Nafc_Gap_Laser(Nafc_Gap):
         """
         # call the super method
         data = super(Nafc_Gap_Laser, self).request(*args, **kwargs)
+        self.logger.debug(f'triggers: {self.triggers} ')
+
 
         # handle laser logic
         # if the laser_mode is fulfilled, roll for a laser
