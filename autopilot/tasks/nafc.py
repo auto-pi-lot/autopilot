@@ -710,6 +710,8 @@ class Nafc_Gap_Laser(Nafc_Gap):
                 # insert the laser triggers before the rest of the triggers
                 # self.triggers['C'].insert(0, lambda: self.hardware['LASERS']['LR'].series(id=condition['script_id']))
                 # this would turn the laser on at gap onset, but instead we want it at gap termination so see stim_end
+        else:
+            self.laser_script = None
 
 
         # always turn the light on
@@ -731,8 +733,9 @@ class Nafc_Gap_Laser(Nafc_Gap):
         called by stimulus callback at the end of the sound
         since this is gap-laser, this is where we deliver laser at gap termination
         """
-        condition=self.laser_script
-        self.hardware['LASERS']['LR'].series(id=condition['script_id'])
+        if self.laser_script is not None
+            condition=self.laser_script
+            self.hardware['LASERS']['LR'].series(id=condition['script_id'])
 
 
     def set_leds(self, color_dict=None):
