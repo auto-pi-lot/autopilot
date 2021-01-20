@@ -697,15 +697,20 @@ class Nafc_Gap_Laser(Nafc_Gap):
                 do_laser = True
 
                 # If we're doing laser, we don't do the stim, so we pop the first two triggers
-                del self.triggers['C'][:2]
+                #del self.triggers['C'][:2]
+                #mike 1.19.21
 
                 # pick a random duration
                 condition = np.random.choice(self.laser_conditions)
                 duration = condition['duration']
                 duty_cycle = condition['duty_cycle']
                 frequency = condition['freq']
+                #store laser condition
+                self.laser_script=condition
                 # insert the laser triggers before the rest of the triggers
-                self.triggers['C'].insert(0, lambda: self.hardware['LASERS']['LR'].series(id=condition['script_id']))
+                # self.triggers['C'].insert(0, lambda: self.hardware['LASERS']['LR'].series(id=condition['script_id']))
+                # this would turn the laser on at gap onset, but instead we want it at gap termination so see stim_end
+
 
         # always turn the light on
         if self.arena_led_mode == "STIM":
@@ -720,6 +725,15 @@ class Nafc_Gap_Laser(Nafc_Gap):
 
         # return the data created by the original task
         return data
+
+    def stim_end(self):
+        """
+        called by stimulus callback at the end of the sound
+        since this is gap-laser, this is where we deliver laser at gap termination
+        """
+        condition=self.laser_script
+        self.hardware['LASERS']['LR'].series(id=condition['script_id'])
+
 
     def set_leds(self, color_dict=None):
         """
