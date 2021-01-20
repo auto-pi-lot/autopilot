@@ -601,6 +601,12 @@ class Nafc_Gap_Laser(Nafc_Gap):
             stim_durations = list(find_recursive('duration', kwargs['stim']))
             max_duration = np.max(stim_durations)
             self.hardware['LEDS']['TOP'].store_series('on', values=1, durations=max_duration )
+        elif self.arena_led_mode == 1:
+            #not sure why it's getting 1, it says stim in the protocol?
+            stim_durations = list(find_recursive('duration', kwargs['stim']))
+            max_duration = np.max(stim_durations)
+            self.hardware['LEDS']['TOP'].store_series('on', values=1, durations=max_duration )
+
         else:
             raise ValueError(f'arena_led_mode must be one of ON or STIM, got {self.arena_led_mode}')
 
