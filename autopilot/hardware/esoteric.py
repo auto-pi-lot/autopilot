@@ -642,6 +642,7 @@ class Parallax_Platform(Hardware):
         # if switching into velocity mode, clear velocity
         if self._move_mode == self.Move_Modes.POSITION and move_mode == self.Move_Modes.VELOCITY:
             self._velocity = 0
+            self._delay_dur = 0
         elif self._move_mode == self.Move_Modes.VELOCITY and move_mode == self.Move_Modes.POSITION:
             self._delay_dur = self._delay_dur_store
             # TODO: Get height from script and update our internal height variable
@@ -701,12 +702,19 @@ class Parallax_Platform(Hardware):
             # 1/(steps/s) = (inter-step interval in s)*1000000 (to micros)
             # delay_dur = (inter-step interval) - (pulse_dur)
             # TODO: clip delay dur for asymptotically slow velocities
-            delay_dur = round(((1/(velocity/self.MM_PER_STEP)*1000000) - self.pulse_dur))
+            delay_dur = round(((1/(abs(velocity)/self.MM_PER_STEP)*1000000) - self.pulse_dur))
             if delay_dur < 0:
                 self.logger.warning(f"Could not set velocity to {velocity}, pulse dur {self.pulse_dur} is too long to go this fast!")
                 return
             self.logger.debug(f"setting delay_dur to {delay_dur} for velocity {velocity}")
+            
+            if velocity < 0:
+                self.direction = False
+            else:
+                self.direction = True
+
             self.delay_dur = delay_dur
+
 
         self._velocity = velocity
 
