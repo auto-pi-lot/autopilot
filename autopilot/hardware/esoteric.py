@@ -180,6 +180,8 @@ class Parallax_Platform(Hardware):
     Offset for each pillar for use with :meth:`.level`
     """
 
+
+
     def __init__(self, pulse_dur: int = 10, delay_dur: int = 190, join_delay: float = .001, *args, **kwargs):
         super(Parallax_Platform, self).__init__(*args, **kwargs)
 
@@ -276,6 +278,9 @@ class Parallax_Platform(Hardware):
             N_STEPS = 100
 
             self.pig.update_script(script_id, (N_STEPS, pulse_dur, delay_dur))
+
+        Which is wrapped in the private method :meth:`.Parallax_Platform._update_script`
+
         """
 
         tags = {
@@ -485,8 +490,8 @@ class Parallax_Platform(Hardware):
                 # if all platforms active are same height, do quick move without blocking
                 if np.all(self.height_arr[self.mask] == self.height_arr[self.mask][0]):
 
-                    self.direction = bool((height[0] - self.height)>0)
-                    self._height = int(height[0])
+                    self.direction = bool((height[0,0] - self.height)>0)
+                    self._height = int(height[0,0])
                     self._height_arr = height
                     self._update_script()
                     return
