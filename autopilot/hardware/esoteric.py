@@ -1,7 +1,7 @@
 import itertools
 import typing
 from time import sleep, time
-from enum import IntEnum
+from enum import IntEnum, Enum, auto
 
 from autopilot.hardware import Hardware, BOARD_TO_BCM
 from autopilot.hardware.gpio import GPIO, Digital_Out
@@ -96,6 +96,7 @@ class Parallax_Platform(Hardware):
         delay_dur (int): duration of delay between stepper pulses used while in 'position' mode in microseconds, so frequency of stepper
             pulses is ``1/(pulse_dur+delay_dur)``
         join_delay (float): duration (in ms) to wait between checking the status of the movement script when using :meth:`.join`
+        unit_mode (:attr:`Parallax_Platform.Unit_Modes`): Whether :attr:`.height` accepts/returns heights in ``STEPS`` or ``MM`` (default)
     """
 
     output = True # type: bool
@@ -160,6 +161,14 @@ class Parallax_Platform(Hardware):
         POSITION = 1 #: Move to a specified position at velocity determined by :attr:`pulse_dur` + :attr:`.delay_dur`
         VELOCITY = -1 #: Move continuously at at velocity determined by :attr:`pulse_dur` + :attr:`.delay_dur`
 
+    class Unit_Modes(Enum):
+        """Whether :attr:`.height` returns/accepts heights in steps or mm"""
+        STEPS = auto()
+        MM = auto()
+
+
+
+
     # DEFAULT_OFFSET = np.array((
     #     (26, 25, 25, 22, 26, 24),
     #     (26, 29, 27, 25, 25, 26),
@@ -175,14 +184,34 @@ class Parallax_Platform(Hardware):
        [250, 250, 300, 250, 250, 350],
        [250, 250, 200, 350, 200,   0],
        [100, 250, 250, 250, 300,   0]]
-    )
+    ) # type: np.ndarray
     """
     Offset for each pillar for use with :meth:`.level`
     """
 
+    STEPS_PER_REV = 800 # type: int
+    """
+    Set by the DIP-switches on the stepper driver, how many steps are there per revolution of the linear actuator rod?
+    """
+
+    REV_HEIGHT = 8.0 # type: float
+    """
+    How much do the platforms move for one revolution of the linear actuator? (in  mm, determined empirically)
+    """
+
+    MM_PER_STEP = REV_HEIGHT/STEPS_PER_REV # type: float
+    """
+    How many mm do the platforms move for every step? (in mm)
+    """
 
 
-    def __init__(self, pulse_dur: int = 10, delay_dur: int = 190, join_delay: float = .001, *args, **kwargs):
+
+    def __init__(self,
+                 pulse_dur: int = 10,
+                 delay_dur: int = 190,
+                 join_delay: float = .001,
+                 unit_mode: Unit_Modes = Unit_Modes.MM,
+                 *args, **kwargs):
         super(Parallax_Platform, self).__init__(*args, **kwargs)
 
         # --------------------------------------------------
@@ -209,7 +238,10 @@ class Parallax_Platform(Hardware):
         
         self._pulse_dur = int(pulse_dur) # type: int
         self._delay_dur = int(delay_dur) # type: int
+        # store the given delay_dur to restore when returning from velocity mode
+        self._delay_dur_store = int(delay_dur) # type: int
         self.join_delay = int(join_delay) # type: float
+        self.unit_mode = unit_mode
 
         # _height used for controlling stepper motor, but
         # _height_arr stores heights of all columns
@@ -217,7 +249,9 @@ class Parallax_Platform(Hardware):
         self._height_arr = np.zeros(self.GRID_DIM, dtype=np.int32) # type: np.ndarray
         self._move_script_id = None # type: typing.Optional[int]
         self._move_mode = self.Move_Modes.POSITION # type: Parallax_Platform.Move_Modes
-        
+
+        # store current velocity when in velocity mode
+        self._velocity = 0 # type: float
 
         # --------------------------------------------------
         # gpio initialization
@@ -583,7 +617,16 @@ class Parallax_Platform(Hardware):
         return self._delay_dur
     
     @delay_dur.setter
-    def delay_dur(self, delay_dur):
+    def delay_dur(self, delay_dur: int):
+        """
+        Delay duration between pulses in microseconds
+
+        Args:
+            delay_dur (int): microseconds
+
+        Returns:
+            int: microseconds
+        """
         if self._delay_dur != delay_dur:
             self._delay_dur = delay_dur
             if self.movement_started:
@@ -595,7 +638,15 @@ class Parallax_Platform(Hardware):
     
     @move_mode.setter
     def move_mode(self, move_mode):
+        # if switching into velocity mode, clear velocity
+        if self._move_mode == self.Move_Modes.POSITION and move_mode == self.Move_Modes.VELOCITY:
+            self._velocity = 0
+        elif self._move_mode == self.Move_Modes.VELOCITY and move_mode == self.Move_Modes.POSITION:
+            self._delay_dur = self._delay_dur_store
+            # TODO: Get height from script and update our internal height variable
+
         self._move_mode = move_mode
+
         if self.movement_started:
             self._update_script()
         
@@ -616,6 +667,49 @@ class Parallax_Platform(Hardware):
                 return True
             else:
                 return False
+
+    @property
+    def velocity(self):
+        return self._velocity
+
+    @velocity.setter
+    def velocity(self, velocity):
+        """
+        Set velocity when in velocity mode
+
+        Converts velocity to a :attr:`.
+
+        Args:
+            Velocity (float): Velocity in mm/s
+
+        Returns:
+            (float) Velocity in mm/s
+        """
+        if self.move_mode != self.Move_Modes.VELOCITY:
+            self.logger.warning('Tried to set velocity but in POSITION mode!')
+            return
+
+        # convert velocity to delay dur
+
+        if velocity == 0:
+            # special case -- rather than an infinite duration,
+            # movement script keeps returning to init tag when delay dur is 0
+            self.delay_dur = 0
+        else:
+            # (mm/s) / (mm/steps) = steps/s
+            # 1/(steps/s) = (inter-step interval in s)*1000000 (to micros)
+            # delay_dur = (inter-step interval) - (pulse_dur)
+            # TODO: clip delay dur for asymptotically slow velocities
+            delay_dur = round(((1/(velocity/self.MM_PER_STEP)*1000000) - self.pulse_dur))
+            if delay_dur < 0:
+                self.logger.warning(f"Could not set velocity to {velocity}, pulse dur {self.pulse_dur} is too long to go this fast!")
+                return
+            self.logger.debug(f"setting delay_dur to {delay_dur} for velocity {velocity}")
+            self.delay_dur = delay_dur
+
+        self._velocity = velocity
+
+        # self._update_script()
 
     # --------------------------------------------------
     # methods
