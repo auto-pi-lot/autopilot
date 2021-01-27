@@ -159,7 +159,7 @@ class Parallax_Platform(Hardware):
 
     class Move_Modes(IntEnum):
         POSITION = 1 #: Move to a specified position at velocity determined by :attr:`pulse_dur` + :attr:`.delay_dur`
-        VELOCITY = -1 #: Move continuously at at velocity determined by :attr:`pulse_dur` + :attr:`.delay_dur`
+        VELOCITY = 0 #: Move continuously at at velocity determined by :attr:`pulse_dur` + :attr:`.delay_dur`
 
     class Unit_Modes(Enum):
         """Whether :attr:`.height` returns/accepts heights in steps or mm"""
@@ -334,10 +334,11 @@ class Parallax_Platform(Hardware):
         # load the accumulator with 0, compare the move mode variable
         # jump to step tag if in velocity mode (always move), or to position check
         # if in position mode
-        # NOTE -- while POSITION == 1 and VELOCITY == -1, the test for moving to velocity mode is
-        # positive because cmp does accumulator-variable, so 0--1==1.
+        # NOTE -- while POSITION == 1 and VELOCITY == 0, the test for moving to position mode is
+        # positive because cmp does accumulator-variable, so 0-1==-1.
+        # otherwise if zero jump to move
         # if u know of a better way of 'loading' a parameter for use with script
-        select_mode = f"lda 0 cmp p{self.MOVE_MODE_VAR} jp {tags['move']}"
+        select_mode = f"lda 0 cmp p{self.MOVE_MODE_VAR} jz {tags['move']}"
         # compare the set height to the current steps
         # if they're the same, then jump back to wait
         # for now assume direction has been set correctly
