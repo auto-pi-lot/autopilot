@@ -5,6 +5,7 @@ from autopilot import prefs
 from autopilot.core.networking import Net_Node
 from autopilot.hardware import Hardware
 from autopilot.hardware.cameras import Camera
+from autopilot import external
 
 import threading
 import time
@@ -154,6 +155,7 @@ class I2C_9DOF(Hardware):
         super(I2C_9DOF, self).__init__(*args, **kwargs)
 
         # Initialize the pigpio connection
+        self.pigpiod = external.start_pigpiod()
         self.pig = pigpio.pi()
 
         # Open I2C buses
