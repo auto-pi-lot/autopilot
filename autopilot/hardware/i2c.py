@@ -1,5 +1,6 @@
 import os
 import sys
+import warnings
 from autopilot import prefs
 from autopilot.core.networking import Net_Node
 from autopilot.hardware import Hardware
@@ -18,8 +19,14 @@ if sys.version_info >= (3,0):
 else:
     from Queue import Queue, Empty
 
-if prefs.get('AGENT') in ['pilot']:
+# if prefs.get('AGENT') in ['pilot']:
+#     import pigpio
+
+try:
     import pigpio
+except ImportError:
+    warnings.warn('pigpio could not be imported, GPIO devices cannot be used!')
+
 
 try:
     import MLX90640 as mlx_cam
@@ -33,6 +40,12 @@ class I2C_9DOF(Hardware):
     """
     A `Sparkfun 9DOF<https://www.sparkfun.com/products/13944>`_ combined accelerometer, magnetometer, and gyroscope.
 
+    **Sensor Datasheet**: https://cdn.sparkfun.com/assets/learn_tutorials/3/7/3/LSM9DS1_Datasheet.pdf
+
+    **Hardware Datasheet**: https://github.com/sparkfun/9DOF_Sensor_Stick
+
+    **Documentation on calculating position values**: https://arxiv.org/pdf/1704.06053.pdf
+
     This device uses I2C, so must be connected accordingly:
 
     - VCC: 3.3V (pin 2)
@@ -42,6 +55,7 @@ class I2C_9DOF(Hardware):
 
     This class uses code from the `Adafruit Circuitfun <https://github.com/adafruit/Adafruit_CircuitPython_LSM9DS1>`_ library,
     modified to use pigpio
+
 
     .. note::
 

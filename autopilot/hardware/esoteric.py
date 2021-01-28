@@ -707,7 +707,7 @@ class Parallax_Platform(Hardware):
                 self.logger.warning(f"Could not set velocity to {velocity}, pulse dur {self.pulse_dur} is too long to go this fast!")
                 return
             self.logger.debug(f"setting delay_dur to {delay_dur} for velocity {velocity}")
-            
+
             if velocity < 0:
                 self.direction = False
             else:
