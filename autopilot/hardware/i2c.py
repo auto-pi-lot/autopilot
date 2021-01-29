@@ -283,7 +283,7 @@ class I2C_9DOF(Hardware):
         # and adapting with the sparkfun code in main docstring
         (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_XL, 6)
         if s >= 0:
-            raw =  struct.unpack('<3h', buffer(b))
+            raw =  struct.unpack('<3h', memoryview(b))
             return map(lambda x: x*self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD, raw)
 
     @property
@@ -298,7 +298,7 @@ class I2C_9DOF(Hardware):
         (s, b) = self.pig.i2c_read_i2c_block_data(self.magnet, 0x80 | self._REGISTER_OUT_X_L_M, 6)
 
         if s >= 0:
-            raw = struct.unpack('<3h', buffer(b))
+            raw = struct.unpack('<3h', memoryview(b))
             return map(lambda x: x * self._mag_mgauss_lsb / 1000.0, raw)
 
     @property
@@ -310,7 +310,7 @@ class I2C_9DOF(Hardware):
         (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_G, 6)
 
         if s>=0:
-            raw = struct.unpack('<3h', buffer(b))
+            raw = struct.unpack('<3h', memoryview(b))
             return map(lambda x: x * self._gyro_dps_digit, raw)
 
     @property
@@ -320,7 +320,7 @@ class I2C_9DOF(Hardware):
             float: Temperature in Degrees C
         """
         (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_TEMP_OUT_L, 2)
-        buf = buffer(b)
+        buf = memoryview(b)
         temp = ((buf[1] << 8) | buf[0]) >> 4
         temp = self._twos_comp(temp, 12)
         return 27.5 + temp/16
