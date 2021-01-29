@@ -1,4 +1,4 @@
-Selection
+Timeseries
 ===========
 
 .. automodule:: autopilot.transform.timeseries
