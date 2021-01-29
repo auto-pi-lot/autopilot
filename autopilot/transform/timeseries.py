@@ -24,9 +24,11 @@ class Filter_IIR(Transform):
             * ``btype`` - type of band: ``['bandpass', 'lowpass', 'highpass', 'bandstop']``
 
     Attributes:
-        b (np.ndarray): b coefficients of filter
-        a (np.ndarray): a coefficients of filter
+        coefs (np.ndarray): filter coefficients, depending on :attr:`.coef_type`
         buffer (collections.deque): buffer of stored values to filter
+        coef_type (str): type of filter coefficients to use (see :func:`scipy.signal.sosfilt` and :func:`scipy.signal.lfilt`)
+        axis (int): which axis to filter over? (default: 0 because when passing arrays to filter, want to filter samples over time)
+        ftype (str): filter type, see ``ftype`` of :func:`scipy.signal.iirfilter` for available filters
     """
 
     def __init__(self, ftype="butter", buffer_size=256, coef_type='sos', axis=0, *args, **kwargs):
