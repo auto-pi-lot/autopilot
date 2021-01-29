@@ -154,6 +154,11 @@ class I2C_9DOF(Hardware):
     def __init__(self, *args, **kwargs):
         super(I2C_9DOF, self).__init__(*args, **kwargs)
 
+        # init private attributes
+        self._accel_mg_lsb = None
+        self._mag_mgauss_lsb = None
+        self._gyro_dps_digit = None
+
         # Initialize the pigpio connection
         self.pigpiod = external.start_pigpiod()
         self.pig = pigpio.pi()
@@ -178,9 +183,7 @@ class I2C_9DOF(Hardware):
         # set default ranges for sensors
         self.accel_range = self.ACCELRANGE_2G
 
-        self._accel_mg_lsb = None
-        self._mag_mgauss_lsb = None
-        self._gyro_dps_digit = None
+
 
     @property
     def accel_range(self):
@@ -283,8 +286,9 @@ class I2C_9DOF(Hardware):
         # and adapting with the sparkfun code in main docstring
         (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_XL, 6)
         if s >= 0:
-            raw =  struct.unpack('<3h', memoryview(b))
-            return map(lambda x: x*self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD, raw)
+            # raw =  struct.unpack('<3h', memoryview(b))
+            # return map(lambda x: x*self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD, raw)
+            return np.frombuffer(b, '<3h') * self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD
 
     @property
     def magnetic(self):
@@ -298,8 +302,9 @@ class I2C_9DOF(Hardware):
         (s, b) = self.pig.i2c_read_i2c_block_data(self.magnet, 0x80 | self._REGISTER_OUT_X_L_M, 6)
 
         if s >= 0:
-            raw = struct.unpack('<3h', memoryview(b))
-            return map(lambda x: x * self._mag_mgauss_lsb / 1000.0, raw)
+            # raw = struct.unpack('<3h', b)
+            # return map(lambda x: x * self._mag_mgauss_lsb / 1000.0, raw)
+            return np.frombuffer(b, '<3h') * self._mag_mgauss_lsb / 1000.0
 
     @property
     def gyro(self):
@@ -310,8 +315,11 @@ class I2C_9DOF(Hardware):
         (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_G, 6)
 
         if s>=0:
-            raw = struct.unpack('<3h', memoryview(b))
-            return map(lambda x: x * self._gyro_dps_digit, raw)
+            # raw = struct.unpack('<3h', b)
+            # return map(lambda x: x * self._gyro_dps_digit, raw)
+
+            return np.frombuffer(b, '<3h') * self._gyro_dps_digit
+
 
     @property
     def temperature(self):
@@ -320,8 +328,8 @@ class I2C_9DOF(Hardware):
             float: Temperature in Degrees C
         """
         (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_TEMP_OUT_L, 2)
-        buf = memoryview(b)
-        temp = ((buf[1] << 8) | buf[0]) >> 4
+        # buf = b
+        temp = ((b[1] << 8) | b[0]) >> 4
         temp = self._twos_comp(temp, 12)
         return 27.5 + temp/16
 
