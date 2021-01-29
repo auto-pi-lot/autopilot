@@ -288,7 +288,7 @@ class I2C_9DOF(Hardware):
         if s >= 0:
             # raw =  struct.unpack('<3h', memoryview(b))
             # return map(lambda x: x*self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD, raw)
-            return np.frombuffer(b, '<3h') * self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD
+            return np.squeeze(np.frombuffer(b, '<3h') * self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD)
 
     @property
     def magnetic(self):
@@ -304,7 +304,7 @@ class I2C_9DOF(Hardware):
         if s >= 0:
             # raw = struct.unpack('<3h', b)
             # return map(lambda x: x * self._mag_mgauss_lsb / 1000.0, raw)
-            return np.frombuffer(b, '<3h') * self._mag_mgauss_lsb / 1000.0
+            return np.squeeze(np.frombuffer(b, '<3h') * self._mag_mgauss_lsb / 1000.0)
 
     @property
     def gyro(self):
@@ -318,7 +318,7 @@ class I2C_9DOF(Hardware):
             # raw = struct.unpack('<3h', b)
             # return map(lambda x: x * self._gyro_dps_digit, raw)
 
-            return np.frombuffer(b, '<3h') * self._gyro_dps_digit
+            return np.squeeze(np.frombuffer(b, '<3h') * self._gyro_dps_digit)
 
 
     @property
