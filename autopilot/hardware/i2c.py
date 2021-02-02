@@ -323,12 +323,12 @@ class I2C_9DOF(Hardware):
     @property
     def rotation(self):
         """
-        Return pitch and roll computed from the accelerometer
+        Return pitch (rotation around y axis) and roll (rotation around x axis) computed from the accelerometer
 
         See :cite:`abyarjooImplementingSensorFusion2015`
 
         Returns:
-
+            np.ndarray - [pitch, roll]
         """
         pass
 
