@@ -86,7 +86,8 @@ extensions = [
     #'sphinxcontrib.fulltoc',
     #'localext.fulltoc'
     'sphinx_sass',
-    'local_directives'
+    'local_directives',
+    'sphinxcontrib.bibtex'
 ]
 
 if try_theme == 'rtd':
@@ -155,6 +156,9 @@ exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
+
+# location of .bib file used for references
+bibtex_bibfiles = ['autopilot_docs.bib']
 
 
 # -- Options for HTML output -------------------------------------------------

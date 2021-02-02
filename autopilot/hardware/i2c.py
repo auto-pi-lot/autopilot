@@ -320,6 +320,18 @@ class I2C_9DOF(Hardware):
 
             return np.squeeze(np.frombuffer(b, '<3h') * self._gyro_dps_digit)
 
+    @property
+    def rotation(self):
+        """
+        Return pitch and roll computed from the accelerometer
+
+        See :cite:`abyarjooImplementingSensorFusion2015`
+
+        Returns:
+
+        """
+        pass
+
 
     @property
     def temperature(self):

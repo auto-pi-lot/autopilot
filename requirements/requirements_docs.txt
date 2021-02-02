@@ -1,6 +1,7 @@
 sphinx>=3.1.2
 sphinx-bootstrap-theme>=0.6.5
 sphinx-automodapi
+sphinxcontrib-bibtex
 numpy>=1.12.1
 pyzmq>=17.1.2
 # pyo>=0.7.8
