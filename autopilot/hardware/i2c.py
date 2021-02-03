@@ -330,7 +330,11 @@ class I2C_9DOF(Hardware):
         Returns:
             np.ndarray - [pitch, roll]
         """
-        pass
+        accel = self.acceleration
+        pitch = np.arctan(accel[0]/(accel[0]**2 + accel[2]**2))
+        roll  = np.arctan(accel[1]/(accel[1]**2 + accel[2]**2))
+        return np.array((pitch, roll))
+
 
 
     @property

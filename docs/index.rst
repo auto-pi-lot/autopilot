@@ -69,6 +69,7 @@ This documentation is very young and is very much a work in progress! Please `su
     Discussion <https://groups.google.com/forum/#!forum/autopilot-users>
     To-Do <todo>
     Changelog <changelog/index>
+    References <references>
 
 
 
