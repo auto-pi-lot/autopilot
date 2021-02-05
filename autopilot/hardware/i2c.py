@@ -182,7 +182,7 @@ class I2C_9DOF(Hardware):
 
         # set default ranges for sensors
         self.accel_range = self.ACCELRANGE_2G
-
+        self.gyro_scale = self.GYROSCALE_245DPS
 
 
     @property
@@ -333,8 +333,8 @@ class I2C_9DOF(Hardware):
         accel = self.acceleration
         # pitch = np.arctan(accel[0]/(accel[0]**2 + accel[2]**2))
         # roll  = np.arctan(accel[1]/(accel[1]**2 + accel[2]**2))
-        pitch = np.arctan2(accel[0], np.sqrt(accel[1]**2 + accel[2]**2))
-        roll = np.arctan2(accel[1], np.sqrt(accel[0]**2 + accel[2]**2))
+        pitch = 180*np.arctan2(accel[0], np.sqrt(accel[1]**2 + accel[2]**2))/np.pi
+        roll = 180*np.arctan2(accel[1], np.sqrt(accel[0]**2 + accel[2]**2))/np.pi
 
         return np.array((pitch, roll))
 
