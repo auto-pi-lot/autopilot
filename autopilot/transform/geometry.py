@@ -2,6 +2,7 @@ import numpy as np
 from scipy.spatial import distance
 
 from autopilot.transform.transforms import Transform
+from autopilot.transform.timeseries import Kalman
 
 
 class Distance(Transform):
@@ -71,3 +72,17 @@ class Angle(Transform):
         if self.degrees:
             angle = angle*(180/np.pi)
         return angle
+
+
+class IMU_Orientation(Transform):
+    """
+    Transform accelerometer and gyroscope measurements (eg from :class:`.hardware.i2c.I2C_9DOF` )
+    to absolute orientation (
+
+    Uses a :class:`.timeseries.Kalman` filter, and implements :cite:`patonisFusionMethodCombining2018a`
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(IMU_Orientation, self).__init__(*args, **kwargs)
+
+        self.kalman = Kalman(dim_state=3, dim_measurement=3, dim_control=3)
