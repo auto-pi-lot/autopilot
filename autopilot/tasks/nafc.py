@@ -517,9 +517,9 @@ class Nafc_Gap_Laser(Nafc_Gap):
                                   'type': 'str'}
     PARAMS['laser_durations'] = {'tag': 'Laser durations (ms), list-like [10, 20]. if blank, use durations from stimuli',
                                  'type': 'str'}
-    PARAMS['arena_led_mode'] = {'tag': 'Arena LED Mode: always ON vs. on for longest stim duration during requests',
+    PARAMS['arena_led_mode'] = {'tag': 'Arena LED Mode: always ON vs. on for longest stim or laser duration during requests',
                                 'type': 'list',
-                                'values':{'ON': 0, 'STIM': 1}}
+                                'values':{'ON': 0, 'STIM': 1, 'LASER': 2}}
 
     HARDWARE = copy(Nafc_Gap.HARDWARE)
 
@@ -603,8 +603,11 @@ class Nafc_Gap_Laser(Nafc_Gap):
             max_duration = np.max(stim_durations_int)
             #self.hardware['LEDS']['TOP'].store_series('on', values=1, durations=max_duration )
             self.hardware['LEDS']['TOP'].store_series('on', values=1, durations=300 )
+        elif self.arena_led_mode == "LASER":
+            #assuming for now we have only a single laser duration, since I can't quite get the max duration to work for the str list
+            self.hardware['LEDS']['TOP'].store_series('on', values=1, durations=int(self.laser_durations) )
         else:
-            raise ValueError(f'arena_led_mode must be one of ON or STIM, got {self.arena_led_mode}')
+            raise ValueError(f'arena_led_mode must be one of ON or STIM or LASER, got {self.arena_led_mode}')
 
     def init_lasers(self):
         """
@@ -716,7 +719,7 @@ class Nafc_Gap_Laser(Nafc_Gap):
             self.laser_script = None
 
 
-        # always turn the light on
+        # always turn the light on if arena mode is STIM
         if self.arena_led_mode == "STIM":
             self.triggers['C'].insert(0, lambda: self.hardware['LEDS']['TOP'].series(id='on'))
 
@@ -734,10 +737,15 @@ class Nafc_Gap_Laser(Nafc_Gap):
         """
         called by stimulus callback at the end of the sound
         since this is gap-laser, this is where we deliver laser at gap termination
+        and where we turn on the arena LED if arena mode is set to LASER
         """
         if self.laser_script is not None:
             condition=self.laser_script
             self.hardware['LASERS']['LR'].series(id=condition['script_id'])
+
+        if self.arena_led_mode == "LASER":
+            self.triggers['C'].insert(0, lambda: self.hardware['LEDS']['TOP'].series(id='on'))
+
 
 
     def set_leds(self, color_dict=None):
