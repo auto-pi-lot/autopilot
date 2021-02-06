@@ -529,11 +529,11 @@ class Nafc_Gap_Laser(Nafc_Gap):
 
     HARDWARE['LEDS']['TOP'] = gpio.Digital_Out
 
-    TrialData = copy(Nafc_Gap.TrialData)
-    TrialData.laser = tables.Int32Col()
-    TrialData.laser_duration = tables.Float32Col()
-    TrialData.laser_freq = tables.Float32Col()
-    TrialData.laser_duty_cycle = tables.Float32Col()
+    class TrialData(Nafc_Gap.TrialData):
+        laser = tables.Int32Col()
+        laser_duration = tables.Float32Col()
+        laser_freq = tables.Float32Col()
+        laser_duty_cycle = tables.Float32Col()
 
 
     def __init__(self,
