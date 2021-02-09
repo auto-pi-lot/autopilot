@@ -282,15 +282,6 @@ _DEFAULTS = odict({
         "default": str(_basedir / "pilot_db.json"),
         "scope": Scopes.TERMINAL
     },
-    'TERMINAL_WINSIZE_BEHAVIOR': {
-        'type': 'str',
-        'text': (
-            'How the Terminal window is sized: '
-            '"maximum", "moderate", or "remember"'
-            ),
-        'default': 'moderate',
-        "scope": Scopes.TERMINAL    
-    },    
     'LINEAGE': {
         'type': 'choice',
         "text": "Are we a parent or a child?",
@@ -354,6 +345,7 @@ _DEFAULTS = odict({
         'depends': 'AUDIOSERVER',
         "scope": Scopes.AUDIO
     },
+
 })
 """
 Ordered Dictionary containing default values for prefs.
