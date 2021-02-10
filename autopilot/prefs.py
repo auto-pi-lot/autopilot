@@ -282,6 +282,26 @@ _DEFAULTS = odict({
         "default": str(_basedir / "pilot_db.json"),
         "scope": Scopes.TERMINAL
     },
+    'TERMINAL_SETTINGS_FN':{
+        'type': 'str',
+        'text': 'filename to store QSettings file for Terminal',
+        'default': str(_basedir / "terminal.conf"),
+        "scope": Scopes.TERMINAL
+    },
+    'TERMINAL_WINSIZE_BEHAVIOR': {
+        'type': 'choice',
+        'text': 'Strategy for resizing terminal window on opening',
+        "choices": ('remember', 'moderate', 'maximum', 'custom'),
+        "default": "remember",
+        "scope": Scopes.TERMINAL    
+    },
+    'TERMINAL_CUSTOM_SIZE': {
+        'type': 'list',
+        'text': 'Custom size for window, specified as [px from left, px from top, width, height]',
+        'default': [0, 0, 1000, 400],
+        'depends': ('TERMINAL_WINSIZE_BEHAVIOR', 'custom'),
+        'scope': Scopes.TERMINAL
+    },
     'LINEAGE': {
         'type': 'choice',
         "text": "Are we a parent or a child?",
@@ -345,7 +365,6 @@ _DEFAULTS = odict({
         'depends': 'AUDIOSERVER',
         "scope": Scopes.AUDIO
     },
-
 })
 """
 Ordered Dictionary containing default values for prefs.
