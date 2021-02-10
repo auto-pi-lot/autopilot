@@ -65,7 +65,7 @@ _TERMINAL = None
 
 class Terminal(QtWidgets.QMainWindow):
     """
-    Central host to a fleet of :class:`.Pilot` s and user-facing
+    Central host to a swarm of :class:`.Pilot` s and user-facing
     :mod:`~.core.gui` objects.
 
     Called as a module with the -f flag to give the location of a prefs file, eg::
@@ -89,17 +89,10 @@ class Terminal(QtWidgets.QMainWindow):
     | `'HANDSHAKE'` | :meth:`~.Terminal.l_handshake` | Pilot first contact, telling us it's alive and its IP  |
     +---------------+--------------------------------+--------------------------------------------------------+
 
-    ** Prefs needed by Terminal **
-    Typically set by :mod:`.setup.setup_terminal`
 
-    * **BASEDIR** - Base directory for all local autopilot data, typically `/usr/autopilot`
-    * **MSGPORT** - Port to use for our ROUTER listener, default `5560`
-    * **DATADIR** -  `os.path.join(params['BASEDIR'], 'data')`
-    * **SOUNDDIR** - `os.path.join(params['BASEDIR'], 'sounds')`
-    * **PROTOCOLDIR** - `os.path.join(params['BASEDIR'], 'protocols')`
-    * **LOGDIR** - `os.path.join(params['BASEDIR'], 'logs')`
-    * **REPODIR** - Path to autopilot git repo
-    * **PILOT_DB** - Location of `pilot_db.json` used to populate :attr:`~.Terminal.pilots`
+    .. note::
+
+        See :mod:`autopilot.prefs` for full list of prefs needed by terminal!
 
     Attributes:
         node (:class:`~.networking.Net_Node`): Our Net_Node we use to communicate with our main networking object
@@ -111,6 +104,8 @@ class Terminal(QtWidgets.QMainWindow):
         data_panel (:class:`~.plots.Plot_Widget`): Plots for each pilot and subject.
         logo (:class:`QtWidgets.QLabel`): Label holding our beautiful logo ;X
         logger (:class:`logging.Logger`): Used to log messages and network events.
+        settings (:class:`PySide2.QtCore.QSettings`): QSettings used to store pyside configuration like window size,
+            stored in ``prefs.get("TERMINAL_SETTINGS_FN")``
     """
 
     def __init__(self):
@@ -121,10 +116,10 @@ class Terminal(QtWidgets.QMainWindow):
         globals()['_TERMINAL'] = self
 
         # Load settings
-        # These are stored in ~/.config/Autopilot/Terminal.conf
         # Currently, the only setting is "geometry", but loading here
         # in case we start to use other ones in the future
-        self.settings = QtCore.QSettings("Autopilot", "Terminal")        
+        self.settings = QtCore.QSettings(prefs.get("TERMINAL_SETTINGS_FN"),
+                                         QtCore.QSettings.NativeFormat)
 
         # networking
         self.node = None
@@ -330,8 +325,15 @@ class Terminal(QtWidgets.QMainWindow):
             else:
                 # It was saved, so restore the last geometry
                 self.restoreGeometry(self.settings.value("geometry"))
-        
+
+        elif terminal_winsize_behavior == "custom":
+            custom_size = prefs.get('TERMINAL_CUSTOM_SIZE')
+            self.move(custom_size[0], custom_size[1])
+            self.resize(custom_size[2], custom_size[3])
         else:
+            if terminal_winsize_behavior != 'moderate':
+                self.logger.warning(f'TERMINAL_WINSIZE_BEHAVIOR {terminal_winsize_behavior} is not implemented, defaulting to "moderate"')
+
             # The moderate size
             self.move(primary_display.left(), primary_display.top())
             self.resize(1000, 400)
