@@ -117,7 +117,7 @@ class Kalman(Transform):
         # save them so that in case you want to inspect them for various
         # purposes
         self.K = np.zeros((self.dim_state, self.dim_measurement)) # kalman gain
-        self.y = zeros((self.dim_measurement, 1))
+        self.y = np.zeros((self.dim_measurement, 1))
         self.S = np.zeros((self.dim_measurement, self.dim_measurement)) # system uncertainty
         self.SI = np.zeros((self.dim_measurement, self.dim_measurement)) # inverse system uncertainty
 
