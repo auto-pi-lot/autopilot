@@ -398,12 +398,12 @@ class I2C_9DOF(Hardware):
     @property
     def rotation(self):
         """
-        Return pitch (rotation around y axis) and roll (rotation around x axis) computed from the accelerometer
+        Return roll (rotation around x axis) and pitch (rotation around y axis) computed from the accelerometer
 
         See :cite:`abyarjooImplementingSensorFusion2015`
 
         Returns:
-            np.ndarray - [pitch, roll]
+            np.ndarray - [roll, pitch]
         """
         accel = self.acceleration
         # pitch = np.arctan(accel[0]/(accel[0]**2 + accel[2]**2))
@@ -411,7 +411,7 @@ class I2C_9DOF(Hardware):
         pitch = 180*np.arctan2(accel[0], np.sqrt(accel[1]**2 + accel[2]**2))/np.pi
         roll = 180*np.arctan2(accel[1], np.sqrt(accel[0]**2 + accel[2]**2))/np.pi
 
-        return np.array((pitch, roll))
+        return np.array((roll, pitch))
 
 
 

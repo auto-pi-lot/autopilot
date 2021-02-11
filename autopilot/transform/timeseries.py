@@ -105,7 +105,7 @@ class Kalman(Transform):
         # initialize kalman arrays
         self.P_cov               = np.eye(self.dim_state)                           # uncertainty covariance
         self.Q_proc_var          = np.eye(self.dim_state)                           # process uncertainty
-        self.B_control           = None                                             # control transition matrix
+        self.B_control           = np.eye(self.dim_control)                         # control transition matrix
         self.F_state_trans       = np.eye(self.dim_state)                           # x_state transition matrix
         self.H_measure           = np.zeros((self.dim_measurement, self.dim_state)) # measurement function
         self.R_measure_var       = np.eye(self.dim_measurement)                     # measurement uncertainty
@@ -258,6 +258,7 @@ class Kalman(Transform):
         np.copyto(self.z_measure, z)
         np.copyto(self.x_post, self.x_state)
         np.copyto(self.P_post, self.P_cov)
+        return self.x_state
 
     def process(self, z, **kwargs):
         """
@@ -277,9 +278,7 @@ class Kalman(Transform):
 
         # same thing for update
         update_kwargs = {k: kwargs.get(k, None) for k in ('R', 'H')}
-        self.update(z, **update_kwargs)
-
-        return self.x_state
+        return self.update(z, **update_kwargs)
 
 
 

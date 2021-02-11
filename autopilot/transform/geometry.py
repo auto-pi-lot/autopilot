@@ -1,3 +1,6 @@
+import typing
+from time import time
+
 import numpy as np
 from scipy.spatial import distance
 
@@ -77,7 +80,7 @@ class Angle(Transform):
 class IMU_Orientation(Transform):
     """
     Transform accelerometer and gyroscope measurements (eg from :class:`.hardware.i2c.I2C_9DOF` )
-    to absolute orientation (
+    to absolute orientation
 
     Uses a :class:`.timeseries.Kalman` filter, and implements :cite:`patonisFusionMethodCombining2018a`
     """
@@ -85,6 +88,34 @@ class IMU_Orientation(Transform):
     def __init__(self, *args, **kwargs):
         super(IMU_Orientation, self).__init__(*args, **kwargs)
 
-        self.kalman = Kalman(dim_state=3, dim_measurement=3, dim_control=3)
+        self._last_update = None
+        self.kalman = Kalman(dim_state=2, dim_measurement=2, dim_control=2)
 
-    # def process(self, ):
+    def process(self, accelgyro:typing.Tuple[np.ndarray]):
+        """
+
+        Args:
+            accelgyro (tuple): tuple of (orientation, gyro) readings such that orientation = [roll, pitch]
+                (as from :meth:`.I2C_9DOF.rotation` ) and gyro = [x, y, z] readings from a gyroscope
+
+        Returns:
+            :class:`numpy.ndarray`: filtered [roll, pitch] calculations
+        """
+
+        # TODO: Don't assume that we're fed samples instantatneously -- ie. once data representations are stable, need to accept a timestamp here rather than making one
+        if self._last_update is None:
+            # first time through don't have dt to scale gyro by
+            ret = self.kalman.process(accelgyro[0])
+            self._last_update = time()
+
+        else:
+            update_time = time()
+            dt = update_time-self._last_update
+            self._last_update = update_time
+            self.kalman.predict(u=accelgyro[1][0:2]*dt)
+            ret = self.kalman.update(accelgyro[0])
+
+        return ret
+
+
+
