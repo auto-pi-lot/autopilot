@@ -89,6 +89,7 @@ class IMU_Orientation(Transform):
         super(IMU_Orientation, self).__init__(*args, **kwargs)
 
         self._last_update = None
+        self._dt = 0
         self.kalman = Kalman(dim_state=2, dim_measurement=2, dim_control=2)
 
     def process(self, accelgyro:typing.Tuple[np.ndarray]):
@@ -110,9 +111,9 @@ class IMU_Orientation(Transform):
 
         else:
             update_time = time()
-            dt = update_time-self._last_update
+            self._dt = update_time-self._last_update
             self._last_update = update_time
-            self.kalman.predict(u=accelgyro[1][0:2]*dt)
+            self.kalman.predict(u=accelgyro[1][0:2]*self._dt)
             ret = self.kalman.update(accelgyro[0])
 
         return ret
