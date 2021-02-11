@@ -83,16 +83,21 @@ class IMU_Orientation(Transform):
     to absolute orientation
 
     Uses a :class:`.timeseries.Kalman` filter, and implements :cite:`patonisFusionMethodCombining2018a`
+
+    Arguments:
+        invert_gyro (bool): if the gyroscope's orientation is inverted from accelerometer measurement, multiply
+            gyro readings by -1 before using
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, invert_gyro:bool=False, *args, **kwargs):
         super(IMU_Orientation, self).__init__(*args, **kwargs)
 
+        self.invert_gyro = invert_gyro
         self._last_update = None
         self._dt = 0
         self.kalman = Kalman(dim_state=2, dim_measurement=2, dim_control=2)
 
-    def process(self, accelgyro:typing.Tuple[np.ndarray]):
+    def process(self, accelgyro:typing.Tuple[np.ndarray, np.ndarray]):
         """
 
         Args:
@@ -103,18 +108,23 @@ class IMU_Orientation(Transform):
             :class:`numpy.ndarray`: filtered [roll, pitch] calculations
         """
 
+        accel, gyro = accelgyro
+
+        if self.invert_gyro:
+            gyro = gyro * -1
+
         # TODO: Don't assume that we're fed samples instantatneously -- ie. once data representations are stable, need to accept a timestamp here rather than making one
         if self._last_update is None:
             # first time through don't have dt to scale gyro by
-            ret = self.kalman.process(accelgyro[0])
+            ret = self.kalman.process(accel)
             self._last_update = time()
 
         else:
             update_time = time()
             self._dt = update_time-self._last_update
             self._last_update = update_time
-            self.kalman.predict(u=accelgyro[1][0:2]*self._dt)
-            ret = self.kalman.update(accelgyro[0])
+            self.kalman.predict(u=gyro[0:2]*self._dt)
+            ret = self.kalman.update(accel)
 
         return ret
 
