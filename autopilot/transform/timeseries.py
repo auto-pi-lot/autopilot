@@ -166,13 +166,14 @@ class Kalman(Transform):
         elif np.isscalar(Q):
             Q = np.eye(self.dim_state) * Q
 
-        # make sure control vector is column
-        u = np.atleast_2d(u)
-        if u.shape[1]>u.shape[0]:
-            u = u.T
+
 
         # x_state = Fx + Bu
         if B is not None and u is not None:
+            # make sure control vector is column
+            u = np.atleast_2d(u)
+            if u.shape[1] > u.shape[0]:
+                u = u.T
             self.x_state = np.dot(F, self.x_state) + np.dot(B, u)
         else:
             self.x_state = np.dot(F, self.x_state)
