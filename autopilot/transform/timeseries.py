@@ -107,7 +107,9 @@ class Kalman(Transform):
         self.Q_proc_var          = np.eye(self.dim_state)                           # process uncertainty
         self.B_control           = np.ones((self.dim_control))                         # control transition matrix
         self.F_state_trans       = np.eye(self.dim_state)                           # x_state transition matrix
-        self.H_measure           = np.zeros((self.dim_measurement, self.dim_state)) # measurement function
+        #if self.dim_state == self.dim_measurement:
+        self.H_measure = np.array([1])
+        #self.H_measure           = np.zeros((self.dim_measurement, self.dim_state)) # measurement function
         self.R_measure_var       = np.eye(self.dim_measurement)                     # measurement uncertainty
         self._alpha_sq           = 1.                                               # fading memory control
         self.M_proc_measure_xcor = np.zeros((self.dim_state, self.dim_measurement)) # process-measurement cross correlation
