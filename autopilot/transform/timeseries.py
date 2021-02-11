@@ -224,7 +224,7 @@ class Kalman(Transform):
             R = np.eye(self.dim_measurement) * R
 
         if H is None:
-            z = np.reshape_z(z, self.dim_measurement, self.x_state.ndim)
+            z = self._reshape_z(z, self.dim_measurement, self.x_state.ndim)
             H = self.H_measure
 
         # y = z_measure - Hx
@@ -259,6 +259,24 @@ class Kalman(Transform):
         np.copyto(self.x_post, self.x_state)
         np.copyto(self.P_post, self.P_cov)
         return self.x_state
+
+    def _reshape_z(self, z, dim_z, ndim):
+        """ ensure z is a (dim_z, 1) shaped vector"""
+
+        z = np.atleast_2d(z)
+        if z.shape[1] == dim_z:
+            z = z.T
+
+        if z.shape != (dim_z, 1):
+            raise ValueError('z (shape {}) must be convertible to shape ({}, 1)'.format(z.shape, dim_z))
+
+        if ndim == 1:
+            z = z[:, 0]
+
+        if ndim == 0:
+            z = z[0, 0]
+
+        return z
 
     def process(self, z, **kwargs):
         """
