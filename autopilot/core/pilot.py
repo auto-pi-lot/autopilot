@@ -288,6 +288,14 @@ class Pilot:
         if self.state == "RUNNING" or self.running.is_set():
             self.logger.warning("Asked to a run a task when already running")
             return
+            
+        if self.state == "STOPPING":
+            self.logger.info('Previous task still stopping, waiting to start the next')
+            waited = 0
+            while self.state == "STOPPING" and waited < 5:
+                self.logger.info('still waiting for task to stop')
+                time.sleep(1)
+                waited += 1
 
         self.state = 'RUNNING'
         self.running.set()
