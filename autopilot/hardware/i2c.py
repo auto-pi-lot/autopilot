@@ -1,4 +1,5 @@
 import os
+import typing
 import sys
 import warnings
 from autopilot import prefs
@@ -61,6 +62,10 @@ class I2C_9DOF(Hardware):
     .. note::
 
         use this for processing?? https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6111698/
+
+    Args:
+        gyro_hpf (int, float): Highpass filter cutoff for onboard gyroscope filter.
+            One of :attr:`.GYRO_HPF_CUTOFF` (default: 4), or ``False`` to disable
     """
 
     # Internal constants and register values:
@@ -151,13 +156,36 @@ class I2C_9DOF(Hardware):
     GYROSCALE_500DPS = (0b01 << 3)  # +/- 500 degrees/s rotation
     GYROSCALE_2000DPS = (0b11 << 3)  # +/- 2000 degrees/s rotation
 
-    def __init__(self, *args, **kwargs):
+    GYRO_HPF_CUTOFF = {
+        57: 0b0,
+        30: 0b1,
+        15: 0b10,
+        8:  0b11,
+        4:  0b100,
+        2:  0b101,
+        1:  0b110,
+        0.5: 0b111,
+        0.2: 0b1000,
+        0.1: 0b1001
+    }
+    """
+    Highpass-filter cutoff frequencies (keys, in Hz) mapped to binary flag.
+    
+    .. note::
+     
+        the frequency of a given binary flag is dependent on the output frequency (952Hz by default, changing
+        frequency is not currently exposed in this object). See Table 52 of 
+        `the sensor datasheet <https://cdn.sparkfun.com/assets/learn_tutorials/3/7/3/LSM9DS1_Datasheet.pdf>`_ for more.
+    """
+
+    def __init__(self, gyro_hpf: float = 4, *args, **kwargs):
         super(I2C_9DOF, self).__init__(*args, **kwargs)
 
         # init private attributes
         self._accel_mg_lsb = None
         self._mag_mgauss_lsb = None
         self._gyro_dps_digit = None
+        self._gyro_filter = False
 
         # Initialize the pigpio connection
         self.pigpiod = external.start_pigpiod()
@@ -183,6 +211,9 @@ class I2C_9DOF(Hardware):
         # set default ranges for sensors
         self.accel_range = self.ACCELRANGE_2G
         self.gyro_scale = self.GYROSCALE_245DPS
+
+        # turn on gyro hpf
+        self.gyro_filter = gyro_hpf
 
 
     @property
@@ -270,6 +301,50 @@ class I2C_9DOF(Hardware):
             self._gyro_dps_digit = self._GYRO_DPS_DIGIT_500DPS
         elif val == self.GYROSCALE_2000DPS:
             self._gyro_dps_digit = self._GYRO_DPS_DIGIT_2000DPS
+
+    @property
+    def gyro_filter(self) -> typing.Union[int, float, bool]:
+        """
+        Set the high-pass filter for the gyroscope.
+
+        .. note::
+
+            the frequency of a given binary flag is dependent on the output frequency (952Hz by default, changing
+            frequency is not currently exposed in this object). See Table 52 of
+            `the sensor datasheet <https://cdn.sparkfun.com/assets/learn_tutorials/3/7/3/LSM9DS1_Datasheet.pdf>`_ for more.
+
+        Args:
+            gyro_filter (int, float, False): Filter frequency (in :attr:`.GYRO_HPF_CUTOFF`) or False to disable
+
+        Returns:
+            float, bool: current HPF cutoff or ``False`` if disabled
+        """
+        return self._gyro_filter
+
+    @gyro_filter.setter
+    def gyro_filter(self, gyro_filter: float):
+
+        if gyro_filter and gyro_filter not in self.GYRO_HPF_CUTOFF.keys():
+            self.logger.exception(f'Cannot set gyro HPF to value other than one of {list(self.GYRO_HPF_CUTOFF.keys())} or False, got {gyro_filter}')
+            return
+
+        # turn on HPF/set to particular frequency
+        if gyro_filter:
+            # configure signal chain to take signal after HPF
+            # See Figure 28 in sensor datasheet
+            self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG2_G, 0b0101)
+
+            # configure filter
+            filt = 0b01000000 | self.GYRO_HPF_CUTOFF[gyro_filter]
+            self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG3_G, filt)
+
+            self._gyro_filter = gyro_filter
+
+        else:
+            # None or False, turn HPF off
+            self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG2_G, 0b0000)
+            self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG3_G, 0b00000000)
+            self._gyro_filter = False
 
 
     @property
