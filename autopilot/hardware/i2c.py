@@ -6,6 +6,7 @@ from autopilot import prefs
 from autopilot.core.networking import Net_Node
 from autopilot.hardware import Hardware
 from autopilot.hardware.cameras import Camera
+from autopilot.transform.geometry import IMU_Orientation
 from autopilot import external
 
 import threading
@@ -64,8 +65,13 @@ class I2C_9DOF(Hardware):
         use this for processing?? https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6111698/
 
     Args:
+        accel (bool): Whether the accelerometer should be made active (default: True)
+        gyro (bool): Whether the gyroscope should be made active (default: True) -- accel must be true if gyro is true
+        mag (bool): Whether the magnetomete should be made active (default: True)
         gyro_hpf (int, float): Highpass filter cutoff for onboard gyroscope filter.
             One of :attr:`.GYRO_HPF_CUTOFF` (default: 4), or ``False`` to disable
+        kalman_mode ('both', 'accel', None): Whether to use a kalman filter that integrates accelerometer and gyro readings ('both', default),
+            a kalman filter with just the accelerometer values ('accel'), or just return the raw calculated orientation values from :attr:`.rotation`
     """
 
     # Internal constants and register values:
@@ -121,6 +127,8 @@ class I2C_9DOF(Hardware):
     _REGISTER_OUT_Y_H_XL = 0x2B
     _REGISTER_OUT_Z_L_XL = 0x2C
     _REGISTER_OUT_Z_H_XL = 0x2D
+    _REGISTER_FIFO_CTRL = 0b101110
+    _REGISTER_FIFO_SRC = 0b101111
 
     _REGISTER_WHO_AM_I_M = 0x0F
     _REGISTER_CTRL_REG1_M = 0x20
@@ -178,14 +186,23 @@ class I2C_9DOF(Hardware):
         `the sensor datasheet <https://cdn.sparkfun.com/assets/learn_tutorials/3/7/3/LSM9DS1_Datasheet.pdf>`_ for more.
     """
 
-    def __init__(self, gyro_hpf: float = 4, *args, **kwargs):
+    def __init__(self, accel:bool=True, gyro:bool=True, mag:bool=True, gyro_hpf: float = 4, kalman_mode:str='both', *args, **kwargs):
         super(I2C_9DOF, self).__init__(*args, **kwargs)
+
+        if not any((accel, gyro, mag)):
+            self.logger.exception('All sensors were indicated as off! need to measure something!')
+            return
 
         # init private attributes
         self._accel_mg_lsb = None
         self._mag_mgauss_lsb = None
         self._gyro_dps_digit = None
         self._gyro_filter = False
+
+        # make empty arrays
+        self._acceleration = np.zeros((3), float)
+        self._gyro = np.zeros((3), float)
+        self._mag = np.zeros((3), float)
 
         # Initialize the pigpio connection
         self.pigpiod = external.start_pigpiod()
@@ -199,14 +216,20 @@ class I2C_9DOF(Hardware):
         self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG8, 0x05)
         self.pig.i2c_write_byte_data(self.magnet, self._REGISTER_CTRL_REG2_M, 0x0C)
 
-        ## enable continuous collection
+        ## enable hardware devices
         # gyro
-        self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG1_G, 0xC0)
+        if gyro:
+            self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG1_G, 0xC0)
+            # accelerometer must be turned on if gyro is
+            accel = True
+
         # accelerometer
-        self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG5_XL, 0x38)
-        self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG6_XL, 0xC0)
+        if accel:
+            self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG5_XL, 0x38)
+            self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG6_XL, 0xC0)
         # magnetometer
-        self.pig.i2c_write_byte_data(self.magnet, self._REGISTER_CTRL_REG3_M, 0x00)
+        if mag:
+            self.pig.i2c_write_byte_data(self.magnet, self._REGISTER_CTRL_REG3_M, 0x00)
 
         # set default ranges for sensors
         self.accel_range = self.ACCELRANGE_2G
@@ -214,6 +237,13 @@ class I2C_9DOF(Hardware):
 
         # turn on gyro hpf
         self.gyro_filter = gyro_hpf
+
+        # instantiate kalman
+        self.kalman_mode = kalman_mode
+        if self.kalman_mode in ('both', 'accel'):
+            self.kalman = IMU_Orientation()
+        else:
+            self.kalman = IMU_Orientation(use_kalman=False)
 
 
     @property
@@ -361,9 +391,11 @@ class I2C_9DOF(Hardware):
         # and adapting with the sparkfun code in main docstring
         (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_XL, 6)
         if s >= 0:
-            # raw =  struct.unpack('<3h', memoryview(b))
-            # return map(lambda x: x*self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD, raw)
-            return np.squeeze(np.frombuffer(b, '<3h') * self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD)
+            self._acceleration[:] = np.squeeze(np.frombuffer(b, '<3h') * self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD)
+            return self._acceleration.copy()
+        else:
+            self.logger.exception(f'Got pigpio exception code {s}')
+            return self._acceleration.copy()
 
     @property
     def magnetic(self):
@@ -377,9 +409,11 @@ class I2C_9DOF(Hardware):
         (s, b) = self.pig.i2c_read_i2c_block_data(self.magnet, 0x80 | self._REGISTER_OUT_X_L_M, 6)
 
         if s >= 0:
-            # raw = struct.unpack('<3h', b)
-            # return map(lambda x: x * self._mag_mgauss_lsb / 1000.0, raw)
-            return np.squeeze(np.frombuffer(b, '<3h') * self._mag_mgauss_lsb / 1000.0)
+            self._mag[:] =  np.squeeze(np.frombuffer(b, '<3h') * self._mag_mgauss_lsb / 1000.0)
+            return self._mag.copy()
+        else:
+            self.logger.exception(f'Got pigpio exception code {s}')
+            return self._mag.copy()
 
     @property
     def gyro(self):
@@ -390,30 +424,38 @@ class I2C_9DOF(Hardware):
         (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_G, 6)
 
         if s>=0:
-            # raw = struct.unpack('<3h', b)
-            # return map(lambda x: x * self._gyro_dps_digit, raw)
-
-            return np.squeeze(np.frombuffer(b, '<3h') * self._gyro_dps_digit)
+            self._gyro[:] = np.squeeze(np.frombuffer(b, '<3h') * self._gyro_dps_digit)
+            return self._gyro.copy()
+        else:
+            self.logger.exception(f'Got pigpio exception code {s}')
+            return self._gyro.copy()
 
     @property
     def rotation(self):
         """
         Return roll (rotation around x axis) and pitch (rotation around y axis) computed from the accelerometer
 
-        See :cite:`abyarjooImplementingSensorFusion2015`
+        Uses :class:`.transform.geometry.IMU_Orientation` to fuse accelerometer and gyroscope with Kalman filter
 
         Returns:
             np.ndarray - [roll, pitch]
         """
-        accel = self.acceleration
-        # pitch = np.arctan(accel[0]/(accel[0]**2 + accel[2]**2))
-        # roll  = np.arctan(accel[1]/(accel[1]**2 + accel[2]**2))
-        pitch = 180*np.arctan2(accel[0], np.sqrt(accel[1]**2 + accel[2]**2))/np.pi
-        roll = 180*np.arctan2(accel[1], np.sqrt(accel[0]**2 + accel[2]**2))/np.pi
 
-        return np.array((roll, pitch))
+        # read gyro and accelerometer together
+        s, b = self.pig.i2c_read_i2c_block_data(self.accel, self._REGISTER_OUT_X_L_G, 12)
 
+        if s > 0:
+            # unpack and transform
+            b = np.squeeze(np.frombuffer(b, '<6h'))
+            self._gyro[:] = b[0:3]*self._gyro_dps_digit
+            self._acceleration[:] = b[3:6] * self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD
+        else:
+            self.logger.exception(f'Got pigpio exception code {s}')
 
+        if self.kalman_mode == 'both':
+            return self.kalman.process((self._acceleration.copy(), self._gyro.copy()))
+        else:
+            return self.kalman.process(self._acceleration.copy())
 
     @property
     def temperature(self):

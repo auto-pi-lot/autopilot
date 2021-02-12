@@ -79,54 +79,102 @@ class Angle(Transform):
 
 class IMU_Orientation(Transform):
     """
-    Transform accelerometer and gyroscope measurements (eg from :class:`.hardware.i2c.I2C_9DOF` )
-    to absolute orientation
+    Compute absolute orientation (roll, pitch) from accelerometer and gyroscope measurements
+    (eg from :class:`.hardware.i2c.I2C_9DOF` )
 
-    Uses a :class:`.timeseries.Kalman` filter, and implements :cite:`patonisFusionMethodCombining2018a`
+    Uses a :class:`.timeseries.Kalman` filter, and implements :cite:`patonisFusionMethodCombining2018a` to fuse
+    the sensors
+
+    Can be used with accelerometer data only, or with combined accelerometer/gyroscope data for
+    greater accuracy
 
     Arguments:
         invert_gyro (bool): if the gyroscope's orientation is inverted from accelerometer measurement, multiply
             gyro readings by -1 before using
+        use_kalman (bool): Whether to use kalman filtering (True, default), or return raw trigonometric
+            transformation of accelerometer readings (if provided, gyroscope readings will be ignored)
+
+    Attributes:
+        kalman (:class:`.transform.timeseries.Kalman`): If ``use_kalman == True`` , the Kalman Filter.
+
+    References:
+        :cite:`patonisFusionMethodCombining2018a`
+        :cite:`abyarjooImplementingSensorFusion2015`
     """
 
-    def __init__(self, invert_gyro:bool=False, *args, **kwargs):
+    def __init__(self, use_kalman:bool = True, invert_gyro:bool=False, *args, **kwargs):
         super(IMU_Orientation, self).__init__(*args, **kwargs)
 
-        self.invert_gyro = invert_gyro
-        self._last_update = None
-        self._dt = 0
-        self.kalman = Kalman(dim_state=2, dim_measurement=2, dim_control=2)
+        self.invert_gyro = invert_gyro # type: bool
+        self._last_update = None # type: typing.Optional[float]
+        self._dt = 0 # type: float
+        # preallocate orientation array for filtered values
+        self.orientation = np.zeros((2), dtype=float) # type: np.ndarray
+        # and for unfiltered values so they aren't ambiguous
+        self._orientation = np.zeros((2), dtype=float)  # type: np.ndarray
 
-    def process(self, accelgyro:typing.Tuple[np.ndarray, np.ndarray]):
+        self.kalman = None # type: typing.Optional[Kalman]
+        if use_kalman:
+            self.kalman = Kalman(dim_state=2, dim_measurement=2, dim_control=2)  # type: typing.Optional[Kalman]
+
+    def process(self, accelgyro:typing.Union[typing.Tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
         """
 
         Args:
-            accelgyro (tuple): tuple of (orientation, gyro) readings such that orientation = [roll, pitch]
-                (as from :meth:`.I2C_9DOF.rotation` ) and gyro = [x, y, z] readings from a gyroscope
+            accelgyro (tuple, :class:`numpy.ndarray`): tuple of (accelerometer[x,y,z], gyro[x,y,z]) readings as arrays, or
+                an array of just accelerometer[x,y,z]
 
         Returns:
-            :class:`numpy.ndarray`: filtered [roll, pitch] calculations
+            :class:`numpy.ndarray`: filtered [roll, pitch] calculations in degrees
         """
+        # check what we were given...
+        if isinstance(accelgyro, (tuple, list)) and len(accelgyro) == 2:
+            # combined accelerometer and gyroscope readings
+            accel, gyro = accelgyro
+        elif isinstance(accelgyro, np.ndarray) and np.squeeze(accelgyro).shape[0] == 3:
+            # just accelerometer readings
+            accel = accelgyro
+            gyro = None
+        else:
+            # idk lol
+            self.logger.exception(f'Need input to be a tuple of accelerometer and gyroscope readings, or an array of accelerometer readings. got {accelgyro}')
+            return
 
-        accel, gyro = accelgyro
+        # convert accelerometer readings to roll and pitch
+        pitch = 180*np.arctan2(accel[0], np.sqrt(accel[1]**2 + accel[2]**2))/np.pi
+        roll = 180*np.arctan2(accel[1], np.sqrt(accel[0]**2 + accel[2]**2))/np.pi
 
-        if self.invert_gyro:
-            gyro = gyro * -1
+
+        if self.kalman is None:
+            # store orientations in external attribute if not using kalman filter
+            self.orientation[:] = (roll, pitch)
+            return self.orientation.copy()
+        else:
+            # if using kalman filter, use private array to store raw orientation
+            self._orientation[:] = (roll, pitch)
+
+
 
         # TODO: Don't assume that we're fed samples instantatneously -- ie. once data representations are stable, need to accept a timestamp here rather than making one
-        if self._last_update is None:
+        if self._last_update is None or gyro is None:
             # first time through don't have dt to scale gyro by
-            ret = self.kalman.process(accel)
+            self.orientation[:] = self.kalman.process(self._orientation)
             self._last_update = time()
 
         else:
+            if self.invert_gyro:
+                gyro *= -1
+
+            # get dt for time since last update
             update_time = time()
             self._dt = update_time-self._last_update
             self._last_update = update_time
-            self.kalman.predict(u=gyro[0:2]*self._dt)
-            ret = self.kalman.update(accel)
 
-        return ret
+            # run predict and update stages separately to incorporate gyro
+            self.kalman.predict(u=gyro[0:2]*self._dt)
+            self.orientation[:] = self.kalman.update(self._orientation)
+
+        return self.orientation.copy()
 
 
 

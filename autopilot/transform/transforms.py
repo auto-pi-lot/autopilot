@@ -20,6 +20,7 @@ or locations of objects to area labels
 import types
 import typing
 from enum import Enum, auto
+from autopilot.core.loggers import init_logger
 
 class TransformRhythm(Enum):
     """
@@ -58,6 +59,8 @@ class Transform(object):
 
 
         self.rhythm = rhythm
+
+        self.logger = init_logger(self)
 
         # self._wrap_process()
 
