@@ -3,6 +3,7 @@ from time import time
 
 import numpy as np
 from scipy.spatial import distance
+from scipy.spatial.transform import Rotation as R
 
 from autopilot.transform.transforms import Transform
 from autopilot.transform.timeseries import Kalman
@@ -170,11 +171,27 @@ class IMU_Orientation(Transform):
             self._dt = update_time-self._last_update
             self._last_update = update_time
 
-            # run predict and update stages separately to incorporate gyro
-            self.kalman.predict(u=gyro[0:2]*self._dt)
-            self.orientation[:] = np.squeeze(self.kalman.update(self._orientation))
+            if self._dt>1:
+                # if it's been really long, the gyro read is pretty much useless and will give ridiculous reads
+                self.orientation[:] = np.squeeze(self.kalman.process(self._orientation))
+            else:
+                # run predict and update stages separately to incorporate gyro
+                self.kalman.predict(u=gyro[0:2]*self._dt)
+                self.orientation[:] = np.squeeze(self.kalman.update(self._orientation))
 
         return self.orientation.copy()
 
+
+class Rotate(Transform):
+    """
+    Rotate in 3 dimensions using :class:`scipy.spatial.transform.Rotation`
+
+    Args:
+        rotation_type (str): Format of rotation input, must be one available to the :class:`~scipy.spatial.transform.Rotation` class
+            (but currently only euler angles are supported)
+    """
+
+    def __init__(self, rotation_type="euler", *args, **kwargs):
+        super(Rotate, self).__init__(*args, **kwargs)
 
 

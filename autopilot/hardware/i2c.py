@@ -186,7 +186,8 @@ class I2C_9DOF(Hardware):
         `the sensor datasheet <https://cdn.sparkfun.com/assets/learn_tutorials/3/7/3/LSM9DS1_Datasheet.pdf>`_ for more.
     """
 
-    def __init__(self, accel:bool=True, gyro:bool=True, mag:bool=True, gyro_hpf: float = 4, kalman_mode:str='both', *args, **kwargs):
+    def __init__(self, accel:bool=True, gyro:bool=True, mag:bool=True,
+                 gyro_hpf: float = 4, accel_range: int = 2, kalman_mode:str='both', *args, **kwargs):
         super(I2C_9DOF, self).__init__(*args, **kwargs)
 
         if not any((accel, gyro, mag)):
