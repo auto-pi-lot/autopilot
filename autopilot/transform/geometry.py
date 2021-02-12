@@ -158,7 +158,7 @@ class IMU_Orientation(Transform):
         # TODO: Don't assume that we're fed samples instantatneously -- ie. once data representations are stable, need to accept a timestamp here rather than making one
         if self._last_update is None or gyro is None:
             # first time through don't have dt to scale gyro by
-            self.orientation[:] = self.kalman.process(self._orientation)
+            self.orientation[:] = np.squeeze(self.kalman.process(self._orientation))
             self._last_update = time()
 
         else:
@@ -172,7 +172,7 @@ class IMU_Orientation(Transform):
 
             # run predict and update stages separately to incorporate gyro
             self.kalman.predict(u=gyro[0:2]*self._dt)
-            self.orientation[:] = self.kalman.update(self._orientation)
+            self.orientation[:] = np.squeeze(self.kalman.update(self._orientation))
 
         return self.orientation.copy()
 
