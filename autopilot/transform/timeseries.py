@@ -1,6 +1,7 @@
 """
 Timeseries transformations, filters, etc.
 """
+from time import time
 from collections import deque
 from autopilot.transform.transforms import Transform
 from scipy import signal
@@ -357,6 +358,32 @@ class Kalman(Transform):
             raise ValueError('alpha must be a float greater than 1')
 
         self._alpha_sq = value**2
+
+
+class Integrate(Transform):
+    def __init__(self, decay=1, dt_scale = False, *args, **kwargs):
+        super(Integrate, self).__init__(*args, **kwargs)
+        self._value = None
+        self.decay = decay
+        self.dt_scale = dt_scale
+
+        self.last_time = None
+
+    def process(self, input):
+        if self._value is None:
+            self._value = input
+            self.last_time = time()
+
+        else:
+            if self.dt_scale:
+                new_time = time()
+                input *= new_time-self.last_time
+                self.last_time = new_time
+
+            self._value += input
+            self._value *= self.decay
+
+        return self._value.copy()
 
 
 

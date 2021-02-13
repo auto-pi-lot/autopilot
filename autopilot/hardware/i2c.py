@@ -190,7 +190,7 @@ class I2C_9DOF(Hardware):
 
     def __init__(self, accel:bool=True, gyro:bool=True, mag:bool=True,
                  gyro_hpf: float = 0.2, accel_range = ACCELRANGE_4G, kalman_mode:str='both',
-                 invert_gyro = (0,1), *args, **kwargs):
+                 invert_gyro = False, *args, **kwargs):
         super(I2C_9DOF, self).__init__(*args, **kwargs)
 
         if not any((accel, gyro, mag)):
