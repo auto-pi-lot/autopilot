@@ -187,11 +187,103 @@ class Rotate(Transform):
     Rotate in 3 dimensions using :class:`scipy.spatial.transform.Rotation`
 
     Args:
+        dims ( "xyz" ): string specifying which axes the rotation will be around, eg ``"xy"`` , ``"xyz"```
         rotation_type (str): Format of rotation input, must be one available to the :class:`~scipy.spatial.transform.Rotation` class
             (but currently only euler angles are supported)
+        degrees (bool): whether to output rotation in degrees (True, default) or radians
+        inverse ("xyz"): dimensions in the "rotation" input to :meth:`.Rotate.process` to inverse before applying rotation
+        rotation (tuple, list, :class:`numpy.ndarray`, None): If supplied, use the same rotation for all processed data. If None,
+            :meth:`.Rotate.process` will expect a tuple of (data, rotation).
     """
 
-    def __init__(self, rotation_type="euler", *args, **kwargs):
+    _DIMS = {
+        'x': 0,
+        'y': 1,
+        'z': 2
+    }
+
+    def __init__(self, dims="xyz", rotation_type="euler", degrees=True, inverse="", rotation=None, *args, **kwargs):
         super(Rotate, self).__init__(*args, **kwargs)
+
+        self.degrees = degrees
+        self.rotation_type = rotation_type
+
+        # parse dimensions and inverse into slices
+        if not dims:
+            e = ValueError('need to provide some dimensino to rotate around, got empty dims')
+            self.logger.exception(e)
+            raise e
+
+        # store dims and something we can slice with for dims and inverse
+        self.dims = dims
+        self._dims = [self._DIMS[dim] for dim in dims]
+
+        if not inverse:
+            self.inverse = False
+        else:
+            self.inverse = inverse
+            self._inverse = [self._DIMS[dim] for dim in inverse]
+
+        # stash rotation creation method depending on rotation_type
+        if rotation_type == "euler":
+            self._rotate_constructor = R.from_euler
+        else:
+            e = NotImplementedError('Only euler is implemented currently!')
+            self.logger.exception(e)
+            raise e
+
+        # if we were provided an initial rotation, instantiate rotation here
+        if rotation:
+            # inverse what must be inverted
+            rotation[self._inverse] *= -1
+            self._rotation = rotation
+            self._rotator = self._rotate_constructor(self.dims, self._rotation, degrees=self.degrees)
+        else:
+            self._rotation = None
+            self._rotator = None
+
+    def process(self, input):
+        """
+
+
+        Args:
+            input (tuple, :class:`numpy.ndarray`): a tuple of (input[x,y,z], rotation[x,y,z]) where input is to be rotated
+                according to the axes in rotation (indicated in :attr:`.Rotate.dims` ). If only an input array is provided,
+                a static rotation array must have been provided in the constructor (otherwise the most recent rotation will be used)
+
+        Returns:
+            :class:`numpy.ndarray` - rotated input array
+        """
+
+        if isinstance(input, (tuple, list)) and len(input) == 2:
+            # split out input coords and rotation
+            input, rotate = input
+
+            # invert what must be inverted
+            rotate[self._inverse] *= -1
+
+        else:
+            rotate = None
+
+        # if given a new rotation, use it
+        if rotate and rotate != self._rotation:
+            self._rotator = self._rotate_constructor(self.dims, rotate, degrees=self.degrees)
+            self._rotation = rotate
+
+        # apply itttt and return
+        try:
+            return self._rotator.apply(input)
+        except AttributeError:
+            if self._rotator is None:
+                e = RuntimeError('No rotation was provided, and none is available!')
+                self.logger.exception(e)
+                raise e
+
+
+
+
+
+
+
 
 
