@@ -266,7 +266,7 @@ class Rotate(Transform):
             rotate = None
 
         # if given a new rotation, use it
-        if rotate and rotate != self._rotation:
+        if rotate and (self._rotation is None or not np.array_equal(rotate, self._rotation)):
             self._rotator = self._rotate_constructor(self.dims, rotate, degrees=self.degrees)
             self._rotation = rotate
 
