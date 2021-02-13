@@ -72,6 +72,7 @@ class I2C_9DOF(Hardware):
             One of :attr:`.GYRO_HPF_CUTOFF` (default: 4), or ``False`` to disable
         kalman_mode ('both', 'accel', None): Whether to use a kalman filter that integrates accelerometer and gyro readings ('both', default),
             a kalman filter with just the accelerometer values ('accel'), or just return the raw calculated orientation values from :attr:`.rotation`
+        invert_gyro (list, tuple):
     """
 
     # Internal constants and register values:
@@ -129,6 +130,7 @@ class I2C_9DOF(Hardware):
     _REGISTER_OUT_Z_H_XL = 0x2D
     _REGISTER_FIFO_CTRL = 0b101110
     _REGISTER_FIFO_SRC = 0b101111
+    _REGISTER_ORIENT_CFG_G = 0b10011
 
     _REGISTER_WHO_AM_I_M = 0x0F
     _REGISTER_CTRL_REG1_M = 0x20
@@ -187,7 +189,8 @@ class I2C_9DOF(Hardware):
     """
 
     def __init__(self, accel:bool=True, gyro:bool=True, mag:bool=True,
-                 gyro_hpf: float = 4, accel_range: int = 2, kalman_mode:str='both', *args, **kwargs):
+                 gyro_hpf: float = 4, accel_range: int = 2, kalman_mode:str='both',
+                 invert_gyro = (0,1), *args, **kwargs):
         super(I2C_9DOF, self).__init__(*args, **kwargs)
 
         if not any((accel, gyro, mag)):
@@ -223,6 +226,12 @@ class I2C_9DOF(Hardware):
             self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG1_G, 0xC0)
             # accelerometer must be turned on if gyro is
             accel = True
+
+            # invert gyro if requested
+            if invert_gyro:
+                self.gyro_polarity = invert_gyro
+            else:
+                self._gyro_polarity = None
 
         # accelerometer
         if accel:
@@ -376,6 +385,22 @@ class I2C_9DOF(Hardware):
             self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG2_G, 0b0000)
             self.pig.i2c_write_byte_data(self.accel, self._REGISTER_CTRL_REG3_G, 0b00000000)
             self._gyro_filter = False
+
+    @property
+    def gyro_polarity(self):
+        return self._gyro_polarity
+
+    @gyro_polarity.setter
+    def gyro_polarity(self, gyro_polarity):
+
+        # construct binary command in a rl shitty way lol
+        cmd = 0b0
+        for axis in gyro_polarity:
+            cmd |= 0b1 << (5-axis)
+
+        self.pig.i2c_write_byte_data(self.accel, self._REGISTER_ORIENT_CFG_G, cmd)
+
+        self._gyro_polarity = gyro_polarity
 
 
     @property
