@@ -1299,7 +1299,7 @@ class Net_Node(object):
     loop_thread = None
     repeat_interval = 5 # how many seconds to wait before trying to repeat a message
 
-    def __init__(self, id, upstream, port, listens, instance=True, upstream_ip='localhost',
+    def __init__(self, id, upstream, port, listens={}, instance=True, upstream_ip='localhost', route_port = None,
                  daemon=True, expand_on_receive=True):
         """
 
@@ -1327,6 +1327,7 @@ class Net_Node(object):
         #self.upstream = upstream.encode('utf-8')
         self.upstream = upstream
         self.port = int(port)
+        self.route_port = route_port
 
         # self.connected = False
         self.msg_counter = count()
@@ -1373,13 +1374,13 @@ class Net_Node(object):
         self.sock = ZMQStream(self.sock, self.loop)
         self.sock.on_recv(self.handle_listen)
 
-        # if self.route_port:
-        #     # if want to directly receive messages, bind a router port
-        #     self.router = self.context.socket(zmq.ROUTER)
-        #     self.router.identity = self.id
-        #     self.router.bind('tcp://*:{}'.format(self.route_port))
-        #     self.router = ZMQStream(self.router, self.loop)
-        #     self.router.on_recv(self.handle_listen)
+        if self.route_port:
+            # if want to directly receive messages, bind a router port
+            self.router = self.context.socket(zmq.ROUTER)
+            self.router.identity = self.id
+            self.router.bind('tcp://*:{}'.format(self.route_port))
+            self.router = ZMQStream(self.router, self.loop)
+            self.router.on_recv(self.handle_listen)
 
 
         self.loop_thread = threading.Thread(target=self.threaded_loop)
