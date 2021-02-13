@@ -1377,7 +1377,7 @@ class Net_Node(object):
         if self.route_port:
             # if want to directly receive messages, bind a router port
             self.router = self.context.socket(zmq.ROUTER)
-            self.router.identity = self.id
+            self.router.setsockopt_string(zmq.IDENTITY, self.id)
             self.router.bind('tcp://*:{}'.format(self.route_port))
             self.router = ZMQStream(self.router, self.loop)
             self.router.on_recv(self.handle_listen)
