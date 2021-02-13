@@ -166,8 +166,8 @@ class Transform(object):
             # if we haven't been chained at all yet, claim the child
             # first check if it aligns
 
-            if not self.check_compatible(other):
-                raise ValueError(f'Incompatible transformation formats: \nOutput: {self.format_out},\nInput: {other.format_in}')
+            #if not self.check_compatible(other):
+            #    raise ValueError(f'Incompatible transformation formats: \nOutput: {self.format_out},\nInput: {other.format_in}')
 
 
             self._child = other
