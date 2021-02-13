@@ -220,6 +220,7 @@ class Rotate(Transform):
 
         if not inverse:
             self.inverse = False
+            self._inverse = None
         else:
             self.inverse = inverse
             self._inverse = [self._DIMS[dim] for dim in inverse]
@@ -235,7 +236,8 @@ class Rotate(Transform):
         # if we were provided an initial rotation, instantiate rotation here
         if rotation:
             # inverse what must be inverted
-            rotation[self._inverse] *= -1
+            if self.inverse:
+                rotation[self._inverse] *= -1
             self._rotation = rotation
             self._rotator = self._rotate_constructor(self.dims, self._rotation, degrees=self.degrees)
         else:
@@ -260,7 +262,8 @@ class Rotate(Transform):
             input, rotate = input
 
             # invert what must be inverted
-            rotate[self._inverse] *= -1
+            if self.inverse:
+                rotate[self._inverse] *= -1
 
         else:
             rotate = None
