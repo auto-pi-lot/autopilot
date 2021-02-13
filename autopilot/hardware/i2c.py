@@ -468,15 +468,22 @@ class I2C_9DOF(Hardware):
         """
 
         # read gyro and accelerometer together
-        s, b = self.pig.i2c_read_i2c_block_data(self.accel, self._REGISTER_OUT_X_L_G, 12)
+        # s, b = self.pig.i2c_read_i2c_block_data(self.accel, self._REGISTER_OUT_X_L_G, 12)
+        if self.kalman_mode == "both":
+            # read gyro
+            (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_G, 6)
+            if s >= 0:
+                self._gyro[:] = np.squeeze(np.frombuffer(b, '<3h') * self._gyro_dps_digit)
+            else:
+                self.logger.exception(f'Got pigpio exception code getting gyro {s}')
 
-        if s > 0:
-            # unpack and transform
-            b = np.squeeze(np.frombuffer(b, '<6h'))
-            self._gyro[:] = b[0:3]*self._gyro_dps_digit
-            self._acceleration[:] = b[3:6] * self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD
+        # read accelerometer
+        (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_XL, 6)
+        if s >= 0:
+            self._acceleration[:] = np.squeeze(
+                np.frombuffer(b, '<3h') * self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD)
         else:
-            self.logger.exception(f'Got pigpio exception code {s}')
+            self.logger.exception(f'Got pigpio exception code getting accelerometer {s}')
 
         if self.kalman_mode == 'both':
             return self.kalman.process((self._acceleration.copy(), self._gyro.copy()))
