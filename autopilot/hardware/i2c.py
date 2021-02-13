@@ -189,7 +189,7 @@ class I2C_9DOF(Hardware):
     """
 
     def __init__(self, accel:bool=True, gyro:bool=True, mag:bool=True,
-                 gyro_hpf: float = 4, accel_range: int = 2, kalman_mode:str='both',
+                 gyro_hpf: float = 0.2, accel_range = ACCELRANGE_4G, kalman_mode:str='both',
                  invert_gyro = (0,1), *args, **kwargs):
         super(I2C_9DOF, self).__init__(*args, **kwargs)
 
@@ -242,7 +242,7 @@ class I2C_9DOF(Hardware):
             self.pig.i2c_write_byte_data(self.magnet, self._REGISTER_CTRL_REG3_M, 0x00)
 
         # set default ranges for sensors
-        self.accel_range = self.ACCELRANGE_2G
+        self.accel_range = accel_range
         self.gyro_scale = self.GYROSCALE_245DPS
 
         # turn on gyro hpf
