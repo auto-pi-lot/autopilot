@@ -105,7 +105,7 @@ class Kalman(Transform):
         # initialize kalman arrays
         self.P_cov               = np.eye(self.dim_state)                           # uncertainty covariance
         self.Q_proc_var          = np.eye(self.dim_state)                           # process uncertainty
-        self.B_control           = np.ones((self.dim_control))                         # control transition matrix
+        self.B_control           = np.eye(self.dim_control)                         # control transition matrix
         self.F_state_trans       = np.eye(self.dim_state)                           # x_state transition matrix
         if self.dim_state == self.dim_measurement:
             self.H_measure = np.eye(self.dim_measurement)
