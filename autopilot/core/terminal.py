@@ -466,6 +466,9 @@ class Terminal(QtWidgets.QMainWindow):
         if self.subjects[subject_name].did_graduate.is_set() is True:
             self.node.send(to=value['pilot'], key="STOP", value={'graduation':True})
             self.subjects[subject_name].stop_run()
+            #adding sleep to debug graduation hiccups -mike
+            self.logger.debug('subject graduated. Stopping run, sleep(1), graduating, and preparing next run')
+            time.sleep(1)    
             self.subjects[subject_name].graduate()
             task = self.subjects[subject_name].prepare_run()
             task['pilot'] = value['pilot']
