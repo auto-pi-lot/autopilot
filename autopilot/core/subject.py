@@ -359,6 +359,8 @@ class Subject(object):
             step (int): When type is 'param', changes the parameter at a particular step,
                 otherwise the current step is used.
         """
+        self.logger.info(f'Updating subject {self.name} history - type: {type}, name: {name}, value: {value}, step: {step}')
+
         # Make sure the updates are written to the subject file
         if type == 'param':
             if not step:
