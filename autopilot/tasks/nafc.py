@@ -691,6 +691,8 @@ class Nafc_Gap_Laser(Nafc_Gap):
             test_laser = True
         elif self.laser_mode == "Both":
             test_laser = True
+        else:
+            self.logger.debug(f'got bad laser_mode,  expected one of L, R, BOTH, got {self.laser_mode}, defaulted to no laser')
 
         duration = 0
         duty_cycle = 0
