@@ -12,6 +12,7 @@ import numpy as np
 from PySide2 import QtCore, QtGui, QtSvg, QtWidgets
 from autopilot import prefs
 from autopilot.core import styles
+import time
 
 if __name__ == '__main__':
     # Parse arguments - this should have been called with a .json prefs file passed
