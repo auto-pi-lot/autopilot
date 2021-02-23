@@ -3,6 +3,7 @@ import json
 import sys
 import os
 from pathlib import Path
+from pprint import pformat
 
 import datetime
 import logging
@@ -406,6 +407,8 @@ class Terminal(QtWidgets.QMainWindow):
                     # Load pilots db as ordered dictionary
                     with open(pilot_db_fn, 'r') as pilot_file:
                         self._pilots = json.load(pilot_file, object_pairs_hook=odict)
+                    self.logger.info(f'successfully loaded pilot_db.json file from {pilot_db_fn}')
+                    self.logger.debug(pformat(self._pilots))
                 except Exception as e:
                     self.logger.exception((f"Exception opening pilot_db.json file at {pilot_db_fn}, got exception: {e}.\n",
                                            "Not proceeding to prevent possibly overwriting corrupt pilot_db.file"))
