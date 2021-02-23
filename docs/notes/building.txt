@@ -1,7 +1,7 @@
 deployment
 - write docs
 - write changelog
-- bump version in setup.py
+- bump version in __init__.py
 
 - do PR
 - merge
