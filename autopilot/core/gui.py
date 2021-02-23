@@ -274,15 +274,8 @@ class Control_Panel(QtWidgets.QWidget):
             if 'state' in val.keys():
                 del val['state']
 
-        try:
-            with open(prefs.get('PILOT_DB'), 'w') as pilot_file:
-                json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
-        except NameError:
-            try:
-                with open('/usr/autopilot/pilot_db.json', 'w') as pilot_file:
-                    json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
-            except IOError:
-                Exception('Couldnt update pilot db!')
+        with open(prefs.get('PILOT_DB'), 'w') as pilot_file:
+            json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
 
 ####################################
 # Control Panel Widgets
