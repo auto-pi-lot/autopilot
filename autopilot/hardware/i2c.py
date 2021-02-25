@@ -502,6 +502,29 @@ class I2C_9DOF(Hardware):
         temp = self._twos_comp(temp, 12)
         return 27.5 + temp/16
 
+    def calibrate(self, what: str ="accelerometer",
+                  samples: int= 10000,
+                  sample_dur:typing.Optional[float] = None) -> dict:
+        """
+        Calibrate sensor readings to correct for bias and scale errors
+
+        .. note::
+
+            Currently only calibrating the accelerometer is implemented.
+
+        The accelerometer is calibrated by rotating the sensor slowly in all three rotational dimensions in such a
+        way that minimizes linear acceleration (not due to gravity). A perfect sensor would output a sphere of points
+        centered at 0
+
+        Args:
+            what (str): which sensor is to be calibrated (currentlty only "accelerometer" implemented)
+            samples (int): number of samples that should be used to compute the calibration
+            sample_dur (float): number of seconds to sample for, overrides ``samples`` if not None (default)
+
+        Returns:
+            dict: calibration dictionary (also saved to disk using :attr:`.Hardware.calibration` )
+        """
+
     def _twos_comp(self, val, bits):
         # Convert an unsigned integer in 2's compliment form of the specified bit
         # length to its signed integer value and return it.

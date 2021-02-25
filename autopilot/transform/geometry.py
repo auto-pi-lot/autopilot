@@ -4,6 +4,7 @@ from time import time
 import numpy as np
 from scipy.spatial import distance
 from scipy.spatial.transform import Rotation as R
+from scipy.optimize import curve_fit
 
 from autopilot.transform.transforms import Transform
 from autopilot.transform.timeseries import Kalman
@@ -281,6 +282,169 @@ class Rotate(Transform):
                 e = RuntimeError('No rotation was provided, and none is available!')
                 self.logger.exception(e)
                 raise e
+
+class Spheroid(Transform):
+    """
+    Fit and transform 3d coordinates according to some spheroid.
+
+    Eg. for calibrating accelerometer readings by transforming them from their uncalibrated spheroid to the expected
+    sphere with radius == 9.8m/s/s centered at (0,0,0).
+
+    Does not estimate/correct for rotation of the spheroid.
+
+    Args:
+        target (tuple): parameterization of spheroid to transform to, if none is passed, transform to unit circle
+            centered at (0,0,0). parameterized as::
+
+            (a, # radius of x dimension
+            b, # radius of y dimension
+            c, # radius of z dimension
+            x, # x-offset
+            y, # y-offset
+            z) # z-offset
+
+        source (tuple): parameterization of spheroid to transform from in the same 6-tuple form as ``target``,
+            if None is passed, assume we will use :meth:`.Spheroid.fit`
+        fit (None, :class:`numpy.ndarray`): Initialize with values to fit, if None assume fit will be called later.
+
+
+    References:
+        * https://jekel.me/2020/Least-Squares-Ellipsoid-Fit/
+        * http://www.juddzone.com/ALGORITHMS/least_squares_3D_ellipsoid.html
+    """
+
+    def __init__(self, target=(1,1,1,0,0,0),
+                 source:tuple=(None, None, None, None, None, None),
+                 fit:typing.Optional[np.ndarray]=None,
+                 *args, **kwargs):
+        super(Spheroid, self).__init__(*args, **kwargs)
+
+        self.target = target
+        self.source  = source
+
+        self._scale = None
+        self._offset_source = None
+        self._offset_target = None
+        self._update_arrays()
+
+        if fit is not None:
+            self.fit(fit, **kwargs)
+
+    def _update_arrays(self):
+        if not any([val is None for val in self.source]):
+            self._scale = np.array((self.target[0]/self.source[0],
+                                    self.target[1]/self.source[1],
+                                    self.target[2]/self.source[2]))
+            self._offset_source = np.array((self.source[3], self.source[4], self.source[5]))
+            self._offset_target = np.array((self.target[3], self.target[4], self.target[5]))
+
+    def fit(self, points, **kwargs):
+        """
+        Fit a spheroid from a set of noisy measurements
+
+        updates the :attr:`._scale` and :attr:`._offset` private arrays used to manipulate input data
+
+        .. note::
+
+            It's usually important to pass ``bounds`` to :func:`scipy.optimize.curve_fit` !!! passed as a 2-tuple
+            of ``((min_a, min_b, ...), (max_a, max_b...))`` In particular such that a, b, and c are positive. If no
+            bounds are passed, assume at least that much.
+
+        Args:
+            points (:class:`numpy.ndarray`): (M, 3) array of points to fit
+            **kwargs (): passed on to :func:`scipy.optimize.curve_fit`
+
+        Returns:
+            tuple: parameters of fit ellipsoid (a,b,c,x,y,z)
+        """
+        if 'bounds' in kwargs.keys():
+            bounds = kwargs.pop('bounds')
+        else:
+            bounds = ((0,      0,      0,      -np.inf, -np.inf, -np.inf),
+                      (np.inf, np.inf, np.inf,  np.inf,  np.inf,  np.inf))
+
+        y = np.ones((points.shape[0]))
+        parameters, _ = curve_fit(_ellipsoid_func, points, y, bounds=bounds, **kwargs)
+        self.source = parameters
+        self._update_arrays()
+
+    def process(self, input:np.ndarray):
+        """
+        Transform input (x,y,z) points such that points in :attr:`.source` are mapped to those in :attr:`.target`
+
+        Args:
+            input (:class:`numpy.ndarray`): x, y, and z coordinates
+
+        Returns:
+            :class:`numpy.ndarray` : coordinates transformed according to the spheroid requested
+        """
+        if self._scale is None or self._offset_target is None or self._offset_source is None:
+            self.logger.exception('process called without fit being performed or source ellipsoid provided! returning untransformed points!')
+            return input
+
+        # move to the center, then scale, then offset.
+
+        return ((input - self._offset_source) * self._scale) + self._offset_target
+
+    def generate(self, n:int, which:str='source', noise:float=0):
+        """
+        Generate random points from the ellipsoid
+
+        Args:
+            n (int): number of points to generate
+            which ('str'): which spheroid to generate from? ('source' - default, or 'target')
+            noise (float): noise to add to points
+
+        Returns:
+            :class:`numpy.ndarray` : (n, 3) array of generated points
+        """
+        if which == "source":
+            if not any([val is None for val in self.source]):
+                a,b,c,x,y,z = self.source
+            else:
+                self.logger.exception('Cannot generate from source, dont have ellipsoid parameterization')
+                return
+        elif which == "target":
+            a, b, c, x, y, z = self.target
+        else:
+            self.logger.exception(f"Dont know how to generate points for which == {which}")
+            return
+
+        u = np.random.rand(n)
+        v = np.random.rand(n)
+        theta = u * 2.0 * np.pi
+        phi = np.arccos(2.0 * v - 1.0)
+        sinTheta, cosTheta = np.sin(theta), np.cos(theta)
+        sinPhi,   cosPhi   = np.sin(phi),   np.cos(phi)
+        rx = (a * sinPhi * cosTheta) + x + (np.random.rand(n) * noise)
+        ry = (b * sinPhi * sinTheta) + y + (np.random.rand(n) * noise)
+        rz = (c * cosPhi) + z + (np.random.rand(n) * noise)
+        return np.column_stack((rx, ry, rz))
+
+
+
+def _ellipsoid_func(fit, a, b, c, x, y, z):
+    """
+    Ellipsoid equation for use with :meth:`.Ellipsoid.fit`
+
+    Args:
+        fit (:class:`numpy.ndarray`): (M, 3) array of x,y,z points to fit
+        a (float): X-scale parameter to fit
+        b (float): Y-scale parameter to fit
+        c (float): Z-scale parameter to fit
+        x (float): X-offset parameter to fit
+        y (float): Y-offset parameter to fit
+        z (float): Z-offset parameter to fit
+
+    Returns:
+        float: result of ellipsoid function, minimize parameters to == 1
+    """
+    x_fit, y_fit, z_fit = fit[:,0], fit[:,1], fit[:,2]
+    return ((x_fit - x)**2 / a**2) + ((y_fit - y)**2 / b**2) + ((z_fit - z)**2 / c**2)
+
+
+
+
 
 
 

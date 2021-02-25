@@ -37,10 +37,14 @@ Warning:
 """
 
 import typing
+import warnings
+import json
+from pathlib import Path
 
 from autopilot import prefs
 from autopilot.core.networking import Net_Node
 from autopilot.core.loggers import init_logger
+from autopilot.core.utils import NumpyEncoder, NumpyDecoder
 
 # FIXME: Hardcoding names of metaclasses, should have some better system of denoting which classes can be instantiated
 # directly for setup and prefs management.
@@ -82,6 +86,8 @@ class Hardware(object):
     even if not explicitly.
 
     Attributes:
+        name (str): unique name used to identify this object within its group.
+        group (str): hardware group, corresponds to key in prefs.json ``"HARDWARE": {"GROUP": {"ID": {**params}}}``
         is_trigger (bool): Is this object a discrete event input device?
             or, will this device be used to trigger some event? If `True`,
             will be given a callback by :class:`.Task`, and :meth:`.assign_cb`
@@ -98,17 +104,20 @@ class Hardware(object):
     input = False
     output = False
 
-    def __init__(self, name=None, **kwargs):
+    def __init__(self, name=None, group=None, **kwargs):
         if name:
             self.name = name
         else:
             try:
                 self.name = self.get_name()
             except:
-                Warning('wasnt passed name and couldnt find from prefs for object: {}'.format(self.__str__))
+                warnings.warn('wasnt passed name and couldnt find from prefs for object: {}'.format(self.__str__))
                 self.name = None
+        self.group = group
 
-        self.logger = init_logger(self) # type: logging.Logger
+        self._calibration = None
+
+        self.logger = init_logger(self)  # type: logging.Logger
         self.listens = {}
         self.node = None
 
@@ -179,7 +188,66 @@ class Hardware(object):
             #daemon=False
         )
 
+    @property
+    def calibration(self) -> dict:
+        """
+        Calibration used by the hardware object.
 
+        Attempt to read from ``prefs.get('CALIBRATIONDIR')/group.name.json`` , if :attr:`Hardware.group` is ``None``,
+        attempt to read from ``prefs.get('CALIBRATIONDIR')/name.json``
+
+        Setting the attribute (over)writes the calibration to disk as a `.json` file
+
+        Will be different for each hardware type, subclasses should document this property separately (eg.
+        by overwriting ``Hardware.calibration.__doc__``
+
+        Returns:
+            (dict): if calibration is found, a dictionary of calibration for each property. Empty if no calibration found
+        """
+        if not self._calibration:
+            # try and find calibration file
+            cal_name = None
+            if self.name is not None and self.group is not None:
+                cal_name = ".".join([self.group, self.name])
+            elif self.name is not None:
+                cal_name = self.name
+            else:
+                self.logger.warning('Hardware object has no group or name, cant find calibration!')
+                self._calibration = {}
+
+            if cal_name is not None:
+                cal_name += ".json"
+
+                path = Path(prefs.get('CALIBRATIONDIR')) / cal_name
+                if path.exists():
+                    with open(path, 'r') as cal_f:
+                        self._calibration = json.load(cal_f, cls=NumpyDecoder)
+                else:
+                    self.logger.exception(f"No calibration found at {path}!")
+
+        return self._calibration
+
+    @calibration.setter
+    def calibration(self, calibration):
+
+        # write to file
+        # try and find calibration file
+        cal_name = None
+        if self.name is not None and self.group is not None:
+            cal_name = ".".join([self.group, self.name])
+        elif self.name is not None:
+            cal_name = self.name
+        else:
+            self.logger.exception('Hardware has no group or name, dont know where to write calibration! saving in attribute, but will be lost on close!')
+
+        if cal_name is not None:
+            cal_name += '.json'
+            cal_fn = Path(prefs.get('CALIBRATIONDIR')) / cal_name
+            with open(cal_fn, 'w') as cal_f:
+                json.dump(calibration, cal_f, cls=NumpyEncoder)
+
+
+        self._calibration = calibration
 
     def __del__(self):
         self.release()
