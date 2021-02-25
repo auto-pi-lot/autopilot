@@ -6,7 +6,7 @@ from autopilot import prefs
 from autopilot.core.networking import Net_Node
 from autopilot.hardware import Hardware
 from autopilot.hardware.cameras import Camera
-from autopilot.transform.geometry import IMU_Orientation
+from autopilot.transform.geometry import IMU_Orientation, Spheroid
 from autopilot import external
 
 import threading
@@ -202,6 +202,7 @@ class I2C_9DOF(Hardware):
         self._mag_mgauss_lsb = None
         self._gyro_dps_digit = None
         self._gyro_filter = False
+        self._sphere = None
 
         # make empty arrays
         self._acceleration = np.zeros((3), float)
@@ -254,6 +255,11 @@ class I2C_9DOF(Hardware):
             self.kalman = IMU_Orientation()
         else:
             self.kalman = IMU_Orientation(use_kalman=False)
+
+        # load calibration
+        if 'accelerometer' in self.calibration.keys():
+            self._accel_sphere = Spheroid(target=(9.8,9.8,9.8,0,0,0),
+                                    source = self.calibration['accelerometer']['spheroid'])
 
 
     @property
@@ -418,9 +424,13 @@ class I2C_9DOF(Hardware):
         (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_XL, 6)
         if s >= 0:
             self._acceleration[:] = np.squeeze(np.frombuffer(b, '<3h') * self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD)
-            return self._acceleration.copy()
         else:
-            self.logger.exception(f'Got pigpio exception code {s}')
+            self.logger.exception(f'Got pigpio exception code {s}, returning last reading')
+
+        if self._accel_sphere is not None:
+            # return calibrated accelerometer readings
+            return self._accel_sphere.process(self._acceleration.copy())
+        else:
             return self._acceleration.copy()
 
     @property
@@ -524,6 +534,39 @@ class I2C_9DOF(Hardware):
         Returns:
             dict: calibration dictionary (also saved to disk using :attr:`.Hardware.calibration` )
         """
+        readings = []
+
+        if what == "accelerometer":
+            self.logger.info('Calibrating motion sensor -- rotate it in all three dimensions slowly!')
+
+            if sample_dur is not None:
+                start_time = time.time()
+                while time.time() - start_time < sample_dur:
+                    readings.append(self.accel)
+            else:
+                n = 0
+                while n < samples:
+                    readings.append(self.accel)
+
+            readings = np.row_stack(readings)
+
+            # fit a spheroid transformation from the read samples
+            self._accel_sphere = Spheroid(target=(9.8,9.8,9.8,0,0,0), fit=readings,
+                              bounds=((5,5,5,-10, -10, -10),(15,15,15,10,10,10)))
+            cal_dict = {
+                'accelerometer':{
+                    'spheroid': self._accel_sphere.source,
+                    'n_samples': int(readings.shape[0]),
+                    'timestamp': datetime.now().isoformat()
+
+                }
+            }
+            self.calibration = cal_dict
+        else:
+            self.logger.exception(f'Dont know how to calibrate {what}, only accelerometer calibration is implemented')
+
+
+
 
     def _twos_comp(self, val, bits):
         # Convert an unsigned integer in 2's compliment form of the specified bit

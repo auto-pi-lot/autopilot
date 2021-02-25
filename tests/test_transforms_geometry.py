@@ -69,8 +69,6 @@ def test_spheroid_process():
         pts_test = _ellipsoid_func(pts, *source)
         pts_tfm_test = _ellipsoid_func(pts_tfm, *target)
 
-        try:
-            assert np.allclose(pts_test, np.ones(1000))
-            assert np.allclose(pts_tfm_test, np.ones(1000))
-        except:
-            pdb.set_trace()
+
+        assert np.allclose(pts_test, np.ones(1000))
+        assert np.allclose(pts_tfm_test, np.ones(1000))

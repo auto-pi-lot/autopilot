@@ -115,7 +115,7 @@ class Hardware(object):
                 self.name = None
         self.group = group
 
-        self._calibration = None
+        self._calibration = {}
 
         self.logger = init_logger(self)  # type: logging.Logger
         self.listens = {}
@@ -212,8 +212,7 @@ class Hardware(object):
             elif self.name is not None:
                 cal_name = self.name
             else:
-                self.logger.warning('Hardware object has no group or name, cant find calibration!')
-                self._calibration = {}
+                self.logger.debug('Hardware object has no group or name, cant find calibration!')
 
             if cal_name is not None:
                 cal_name += ".json"
@@ -222,8 +221,9 @@ class Hardware(object):
                 if path.exists():
                     with open(path, 'r') as cal_f:
                         self._calibration = json.load(cal_f, cls=NumpyDecoder)
+                    self.logger.info(f'Calibration loaded from {path}')
                 else:
-                    self.logger.exception(f"No calibration found at {path}!")
+                    self.logger.debug(f"No calibration found at {path}!")
 
         return self._calibration
 
@@ -245,7 +245,7 @@ class Hardware(object):
             cal_fn = Path(prefs.get('CALIBRATIONDIR')) / cal_name
             with open(cal_fn, 'w') as cal_f:
                 json.dump(calibration, cal_f, cls=NumpyEncoder)
-
+            self.logger.info(f'Calibration saved to {cal_fn}: \n{calibration}')
 
         self._calibration = calibration
 

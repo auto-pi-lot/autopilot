@@ -305,7 +305,7 @@ class Spheroid(Transform):
         # transform to proper gravity
         >>> sphere.process(readings)
         [0., 0., 9.8]
-        
+
     Args:
         target (tuple): parameterization of spheroid to transform to, if none is passed, transform to unit circle
             centered at (0,0,0). parameterized as::
