@@ -574,6 +574,19 @@ class Camera(Hardware):
         # raise Exception('release must be overwritten by camera subclass!!')
 
 
+class PiCamera(Camera):
+    """
+
+
+    References:
+        - https://blog.robertelder.org/recording-660-fps-on-raspberry-pi-camera/
+        - Fast capture from the author of picamera - https://raspberrypi.stackexchange.com/a/58941/112948
+        - More on fast capture and processing, see last example in section - https://picamera.readthedocs.io/en/release-1.12/recipes2.html#rapid-capture
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(PiCamera, self).__init__(*args, **kwargs)
+
 
 
 
