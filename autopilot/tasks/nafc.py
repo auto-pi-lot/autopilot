@@ -559,7 +559,7 @@ class Nafc_Gap_Laser(Nafc_Gap):
 
         Args:
             laser_probability (float): if trial satisfies ``laser_mode``, probability that laser will be
-            laser_mode ('L', 'R', or 'Both'): Selects whether the laser is to be presented when :attr:`.target` is ``'L', 'R'`` or Either.
+            laser_mode ('L', 'R', or 'BOTH'): Selects whether the laser is to be presented when :attr:`.target` is ``'L', 'R'`` or Either.
             laser_freq (str, list): Single value or list of possible laser frequencies in Hz
             laser_duty_cycle (str, list): Single value or list of possible duty cycles from 0-1
             laser_durations (str, list): Single value or list of possible laser durations (total time laser is on) in ms
@@ -576,7 +576,7 @@ class Nafc_Gap_Laser(Nafc_Gap):
                 }
         """
         self.laser_probability = float(laser_probability)
-        self.laser_mode = laser_mode
+        self.laser_mode = str(laser_mode).upper()
         self.arena_led_mode = arena_led_mode
 
         # accept them if we're given a list of values, otherwise they should be strings that are single values,
@@ -588,6 +588,12 @@ class Nafc_Gap_Laser(Nafc_Gap):
         self.laser_conditions = tuple() # type: typing.Tuple[typing.Dict]
 
         super(Nafc_Gap_Laser, self).__init__(**kwargs)
+
+        # check for valid laser_mode
+        if self.laser_mode not in ('L', 'R', 'BOTH'):
+            err_text = f"Got invalid laser_mode, need one of 'L', 'R', 'BOTH', got {self.laser_mode}"
+            self.logger.exception(err_text)
+            raise ValueError(err_text)
 
         self.init_lasers()
 
@@ -677,10 +683,13 @@ class Nafc_Gap_Laser(Nafc_Gap):
 
         If we present a laser on this trial, we randomly draw from :attr:`.laser_conditions` and call the appropriate script.
         """
+        # lock the triggers dict while we modify it
+        # (so handle_triggers will not call any of them while we are still preparing the stage)
+        self.trigger_lock.acquire()
+
         # call the super method
         data = super(Nafc_Gap_Laser, self).request(*args, **kwargs)
         self.logger.debug(f'triggers: {self.triggers} ')
-
 
         # handle laser logic
         # if the laser_mode is fulfilled, roll for a laser
@@ -689,10 +698,8 @@ class Nafc_Gap_Laser(Nafc_Gap):
             test_laser = True
         elif self.laser_mode == "R" and self.target == "R":
             test_laser = True
-        elif self.laser_mode == "Both":
+        elif self.laser_mode == "BOTH":
             test_laser = True
-        else:
-            self.logger.debug(f'got bad laser_mode,  expected one of L, R, Both, got {self.laser_mode}, defaulted to no laser')
 
         duration = 0
         duty_cycle = 0
@@ -732,6 +739,8 @@ class Nafc_Gap_Laser(Nafc_Gap):
         data['laser_duty_cycle'] = duty_cycle
         data['laser_frequency'] = frequency
 
+        self.trigger_lock.release()
+
         # return the data created by the original task
         return data
 
@@ -746,9 +755,11 @@ class Nafc_Gap_Laser(Nafc_Gap):
             self.hardware['LASERS']['LR'].series(id=condition['script_id'])
 
         if self.arena_led_mode == "LASER":
-            self.triggers['C'].insert(0, lambda: self.hardware['LEDS']['TOP'].series(id='on'))
-
-
+            with self.trigger_lock:
+                if 'C' in self.triggers.keys():
+                    self.triggers['C'].insert(0, lambda: self.hardware['LEDS']['TOP'].series(id='on'))
+                else:
+                    self.triggers['C'] = [lambda: self.hardware['LEDS']['TOP'].series(id='on')]
 
     def set_leds(self, color_dict=None):
         """

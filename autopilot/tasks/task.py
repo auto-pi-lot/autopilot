@@ -67,12 +67,19 @@ class Task(object):
 
         STAGE_NAMES (list): List of stage method names
         stage_block (:class:`threading.Event`): Signal when task stages complete.
+        punish_block (:class:`threading.Event`): Event to mark when punishment is occuring
+        trigger_lock (:class:`threading.Lock`): Lock calls to triggers while they are being computed by stage methods.
+            Typically acquired at the beginning of a stage method and released at the end, most important when inheriting
+            task classes as the parent method will complete and make the `triggers` dictionary available to the
+            `handle_trigger` method. The `handle_trigger` method will check if the lock is released (unblocking):
+            if it is locked, then proceed doing nothing (the trigger is not yet valid to call), if it is unlocked,
+            do nothing.
         punish_stim (bool): Do a punishment stimulus
         stages (iterator): Some generator or iterator that continuously returns the next stage method of a trial
         triggers (dict): Some mapping of some pin to callback methods
         pins (dict): Dict to store references to hardware
         pin_id (dict): Reverse dictionary, pin numbers back to pin letters.
-        punish_block (:class:`threading.Event`): Event to mark when punishment is occuring
+
         logger (:class:`logging.Logger`): gets the 'main' logger for now.
     """
     # dictionary of Params needed to define task,
@@ -108,6 +115,8 @@ class Task(object):
         self.punish_block = threading.Event()
         self.punish_block.set()
         #self.running = threading.Event()
+
+        self.trigger_lock = threading.Lock()
 
         # try to get logger
         self.logger = init_logger(self)
@@ -233,6 +242,12 @@ class Task(object):
         if not self.punish_block.is_set():
             return
 
+        unlocked = self.trigger_lock.acquire(blocking=False)
+        if not unlocked:
+            self.logger.debug('Trigger called, but trigger lock has not been released by stage method. returning')
+            return
+
+
         # Call the trigger
         try:
             self.triggers[pin]()
@@ -246,6 +261,9 @@ class Task(object):
 
         # clear triggers
         self.triggers = {}
+
+        # clear the trigger lock (which we shoudl have acquired above successfully if we reached this far)
+        self.trigger_lock.release()
 
         # Set the stage block so the pilot calls the next stage
         self.stage_block.set()
