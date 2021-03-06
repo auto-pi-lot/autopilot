@@ -80,6 +80,12 @@ class Subject(object):
     the code can become out of sync with the underlying file structure. Subject files are automatically kept
     up to date with the :class:`.Updater` class, which has a specific class method to update between versions as they change.
 
+    .. warning::
+
+        Remember autopilot is **BETA** software -- we do the best we can to test it, but we make no guarantees
+        about the sanctity of your data. Until v1, we advise you **always** use autopilot with an additional backup
+        service to prevent catastrophic loss of data that would really break our hearts to hear about.
+
     Attributes:
         lock (:class:`threading.Lock`): manages access to the hdf5 file
         name (str): Subject ID
@@ -794,10 +800,28 @@ class Subject(object):
                             grad_params.update({param:getattr(self, param)})
 
                 if grad_obj.COLS:
+                    pdb.set_trace()
+                    # get timestamp of last step/protocol change from history table
+                    update_timestamp = self.history[self.history.type.isin((b'protocol', b'step'))].iloc[-1].time
+                    # format it!
+                    update_timestamp = datetime.datetime.strptime(update_timestamp.decode('utf-8'), '%y%m%d-%H%M%S')
+
+                    # filter out any data before the last change
+                    # get trial data table as pandas dataframe
+                    trial_df = pd.DataFrame(trial_table.read())
+                    # find columns that are timestamps!
+                    ts_cols = [colname for colname in trial_df.columns if "timestamp" in colname]
+                    # convert to datetime
+                    for ts_col in ts_cols:
+                        trial_df[ts_col] = pd.to_datetime(trial_df[ts_col].str.decode('utf-8'))
+                    # remove ye olde ones before the last update
+                    for ts_col in ts_cols:
+                        trial_df = trial_df[trial_df[ts_col]>update_timestamp]
+
                     # these are columns in our trial table
                     for col in grad_obj.COLS:
                         try:
-                            grad_params.update({col: trial_table.col(col)})
+                            grad_params.update({col: np.array(trial_df[col])})
                         except KeyError:
                             self.logger.warning('Graduation object requested column {}, but it was not found in the trial table'.format(col))
 
