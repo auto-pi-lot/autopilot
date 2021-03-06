@@ -421,6 +421,7 @@ def get(key: typing.Union[str, None] = None):
             # if you still can't find a value, None is an unambiguous signal for pref not set
             # (no pref is ever None)
             except KeyError:
+                warnings.warn(f'Pref {key} not set and no default, returning None')
                 return None
 
 def set(key: str, val):

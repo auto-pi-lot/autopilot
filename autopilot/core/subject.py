@@ -19,6 +19,7 @@ import pandas as pd
 import warnings
 import typing
 import warnings
+from pathlib import Path
 from copy import copy
 from autopilot.tasks import GRAD_LIST, TASK_LIST
 from autopilot import prefs
@@ -41,10 +42,25 @@ class Subject(object):
     """
     Class for managing one subject's data and protocol.
 
+    This is the general abstraction layer around subject data in autopilot. It should be the primary way that users
+    interact with autopilot data, to save, load, and export data. eg. ::
+
+        sub = Subject('subject_id') # load subject from default data directory
+        sub.get_trial_data() # get trial data from the most current step of the current protocol
+
+    Due to a quirk with concurrent access to .h5f files, access to the file itself is
+    handled within methods, where the method should open and close the file like this::
+
+        h5f = self.open_hdf()
+        # ... do something
+        self.close_hdf(h5f)
+
+    Which should be remedied in future versions by accessing through a context manager.
+
     Creates a :mod:`tables` hdf5 file in `prefs.get('DATADIR')` with the general structure::
 
         / root
-        |--- current (tables.filenode) storing the current task as serialized JSON
+        |--- protocol (tables.filenode) storing the protocol task as serialized JSON
         |--- data (group)
         |    |--- task_name  (group)
         |         |--- S##_step_name
@@ -60,12 +76,16 @@ class Subject(object):
         |         |--- ...
         |--- info - group with biographical information as attributes
 
+    Subject files have a :attr:`.Subject.VERSION` attribute that tracks updates to the filestructure, as
+    the code can become out of sync with the underlying file structure. Subject files are automatically kept
+    up to date with the :class:`.Updater` class, which has a specific class method to update between versions as they change.
+
     Attributes:
         lock (:class:`threading.Lock`): manages access to the hdf5 file
         name (str): Subject ID
-        file (str): Path to hdf5 file - usually `{prefs.get('DATADIR')}/{self.name}.h5`
-        current (dict): current task parameters. loaded from
-            the 'current' :mod:`~tables.filenode` of the h5 file
+        file (:class:`pathlib.Path`): Path to hdf5 file - usually `{prefs.get('DATADIR')}/{self.name}.h5`
+        protocol (dict): protocol task parameters. loaded from
+            the 'protocol' :mod:`~tables.filenode` of the h5 file
         step (int): current step
         protocol_name (str): name of currently assigned protocol
         current_trial (int): number of current trial
@@ -84,21 +104,29 @@ class Subject(object):
             :class:`tables.IsDescriptor` for tables.
     """
 
+    VERSION = 1
+    """
+    Keep track of structure changes in the subject files so that they can be automatically updated.
+    
+    Note that this is not the same as the version used on the whole library, but a distinct "subject format" version
+    that gets bumped every time that a change is made.
+    
+    A corresponding function that updates the file should be written, see :class:`.subject.Updater`
+    """
+
 
 
     def __init__(self, name: str=None, dir: str=None, file: str=None,
                  new: bool=False, biography: dict=None):
         """
         Args:
-            name (str): subject ID
-            dir (str): path where the .h5 file is located, if `None`, `prefs.get('DATADIR')` is used
-            file (str): load a subject from a filename. if `None`, ignored.
+            name (str): subject ID -- corresponds to a subject_id.h5 file. if None, ``file`` must be passed
+            dir (str): path where the .h5 file is located, if `None` (default), `prefs.get('DATADIR')` is used
+            file (str): load a subject from a filename. if `None`, ignored. if provided, ``name`` and ``dir`` are ignored.
             new (bool): if True, a new file is made (a new file is made if one does not exist anyway)
             biography (dict): If making a new subject file, a dictionary with biographical data can be passed
         """
-        # try to get name first off for logger
-        self.name = name
-        self.logger = init_logger(self)
+        # declare empty variables, instance-nonspecific variables
 
         self.STRUCTURE = [
             ('/data', '/', 'data', 'group'),
@@ -113,66 +141,9 @@ class Subject(object):
         # use a filter to compress continuous data
         self.continuous_filter = tables.Filters(complib='blosc', complevel=6)
 
+        # lock to control access to h5f
+        # most important thing is to protect flushing and opening events
         self.lock = threading.Lock()
-
-        if not dir:
-            try:
-                dir = prefs.get('DATADIR')
-            except AttributeError:
-                dir = os.path.split(file)[0]
-
-        if not name:
-            if not file:
-                raise Exception('Need to either have a name or a file, how else would we find the .h5 file?')
-            if not os.path.isfile(file):
-                raise Exception('no file was found at passed file: {}'.format(file))
-            self.file = file
-        else:
-            if file:
-                self.logger.warning('file passed, but so was name, defaulting to using name + dir')
-
-            self.name = str(name)
-            self.file = os.path.join(dir, name + '.h5')
-            if new or not os.path.isfile(self.file):
-                # set new to true in case new'd from absence of file
-                new = True
-                self.new_subject_file(biography)
-
-        # before we open, make sure we have the stuff we need
-        self.ensure_structure()
-
-        h5f = self.open_hdf()
-
-        if not name:
-            try:
-                self.name = h5f.root.info._v_attrs['name']
-            except KeyError:
-                self.logger.warning('No Name attribute saved, trying to recover from filename')
-                self.name = os.path.splitext(os.path.split(file)[-1])[0]
-
-
-
-        # If subject has a protocol, load it to a dict
-        self.current = None
-        self.step    = None
-        self.protocol_name = None
-        if "/current" in h5f:
-            # We load the info from 'current' but don't keep the node open
-            # Stash it as a dict so better access from Python
-            current_node = filenode.open_node(h5f.root.current)
-            protocol_string = current_node.readall()
-            self.current = json.loads(protocol_string)
-            self.step = int(current_node.attrs['step'])
-            self.protocol_name = current_node.attrs['protocol_name']
-        elif not new:
-            # if we're not being created for the first time, warn that there is no protocol assigned to the subject
-            self.logger.warning('Subject has no protocol assigned!')
-
-        # get last session number if we have it
-        try:
-            self.session = int(h5f.root.info._v_attrs['session'])
-        except KeyError:
-            self.session = None
 
         # We will get handles to trial and continuous data when we start running
         self.current_trial  = None
@@ -186,20 +157,146 @@ class Subject(object):
         self.thread = None
         self.did_graduate = threading.Event()
 
+        # attributes to store current protocol state
+        self.protocol = None
+        self.step    = None
+        self.protocol_name = None
+
+        ###############
+        # unpack args/kwargs to find file and name!!!
+        # first check if file was given, if so ignore the other params
+        if file:
+            self.file = Path(file) # type: Path
+            self.name = self.file.stem # type: str
+
+        # otherwise find file by name and directory
+        elif name:
+            self.name = name # type: str
+            # if we weren't given directory, use prefs
+            if dir:
+                dir = Path(dir)
+            else:
+                dir = Path(prefs.get('DATADIR'))
+
+            self.file = (dir / name).with_suffix('.h5') # type: Path
+
+        else:
+            raise ValueError('Subject attempted to be instantiated with neither name nor file, how would we know what to load?')
+
+        # now init logger since we have a name
+        self.logger = init_logger(self)
+
+        ############
+        # handle need for new file
+        if not self.file.exists():
+            # if asked to make a new file, need to have a biography
+            if biography is None:
+                err_txt = f"File does not exist, so need to create, but no biography was passed! Got file {self.file}"
+                self.logger.exception(err_txt)
+                raise FileNotFoundError(err_txt)
+
+            self.logger.info(f'Creating new subject file since none was found and a biography was provided')
+            new = True
+            self.new_subject_file(biography)
+        else:
+            # update ourselves if we need to!
+            Updater()(self)
+
+        #################
+        # before we open, make sure we have the stuff we need
+        self.ensure_structure()
+
+        h5f = self.open_hdf()
+
+        # sanity check -- does our stored name match the one we extracted from filename/were passed?
+        if h5f.root.info._v_attrs['name'] != self.name:
+            self.logger.exception((f'stored name {h5f.root.info._v_attrs["name"]} does not match name passed',
+                                   f'or derived from filename: {self.name}. Gonna try to proceed',
+                                   "but somethings gone wrong here..."))
+
+        # --------------------------------------------------
+        # Load attributes from h5f file
+        # --------------------------------------------------
+        # If subject has a protocol, load it to a dict
+        # TODO: move this to a property once h5f access has been made less janky
+        if "/protocol" in h5f:
+            h5f = self._load_protocol(h5f)
+
+        elif not new:
+            # if we're not being created for the first time, warn that there is no protocol assigned to the subject
+            self.logger.warning('Subject has no protocol assigned!')
+
+        # get last session number if we have it
+        try:
+            self.session = int(h5f.root.info._v_attrs['session'])
+        except KeyError:
+            self.session = None
+
         # Every time we are initialized we stash the git hash
         history_row = h5f.root.history.hashes.row
         history_row['time'] = self.get_timestamp()
-        try:
-            history_row['hash'] = prefs.get('HASH')
-            # FIXME: less implicit way of getting hash plz
-        except AttributeError:
-            history_row['hash'] = ''
+        history_row['hash'] = prefs.get('HASH')
         history_row.append()
 
         # we have to always open and close the h5f
-        _ = self.close_hdf(h5f)
+        self.close_hdf(h5f)
 
-    def open_hdf(self, mode='r+'):
+    # --------------------------------------------------
+    # Properties
+    # --------------------------------------------------
+    @property
+    def history(self) -> pd.DataFrame:
+        """Contents of history table"""
+        h5f = self.open_hdf()
+        df = pd.DataFrame(h5f.root.history.history.read())
+        self.close_hdf(h5f)
+        return df
+
+    # TODO: rest of the tables
+
+
+    # --------------------------------------------------
+    # private methods
+    # --------------------------------------------------
+
+    def _load_protocol(self, h5f):
+        # We load the info from 'protocol' but don't keep the node open
+        # Stash it as a dict so better access from Python
+        current_node = filenode.open_node(h5f.root.protocol)
+        protocol_string = current_node.readall()
+        self.protocol = json.loads(protocol_string)
+        self.step = int(current_node.attrs['step'])
+        self.protocol_name = current_node.attrs['protocol_name']
+
+        # if we can find a protocol file, compare it and update if changed
+        prot_file = Path(prefs.get('PROTOCOLDIR')) / (self.protocol_name + '.json')
+        if prot_file.exists():
+            try:
+                with open(prot_file, 'r') as prot_f:
+                    protocol = json.load(prot_f)
+
+                if protocol != self.protocol:
+                    self.logger.warning("Protocol file changed since assignment! updating stored protocol")
+
+                    # make sure we still get the h5f reference back (god i hate this pattern why isn't this a decorator)
+                    try:
+                        self.close_hdf(h5f)
+                        self.assign_protocol(str(prot_file.absolute()), step_n=self.step)
+                    finally:
+                        h5f = self.open_hdf()
+            except Exception as e:
+                self.logger.warning(
+                    f'Caught exception comparing protocol .json file with stored protocol, changes to protocol file will not be tracked automatically.\nGot exception:\n{e}')
+        else:
+            self.logger.warning(
+                f'Could not find protocol .json file to compare with stored protocol, expected to find {prot_file.absolute()}')
+
+        return h5f
+    # --------------------------------------------------
+    # methods
+    # --------------------------------------------------
+
+    def open_hdf(self, mode='r+') -> tables.File:
         """
         Opens the hdf5 file.
 
@@ -224,10 +321,9 @@ class Subject(object):
         """
         # TODO: Use a decorator around methods instead of explicitly calling
         with self.lock:
-            return tables.open_file(self.file, mode=mode)
+            return tables.open_file(str(self.file), mode=mode)
 
-    def close_hdf(self, h5f):
-        # type: (tables.file.File) -> None
+    def close_hdf(self, h5f: tables.File):
         """
         Flushes & closes the open hdf file.
         Must be called whenever :meth:`~.Subject.open_hdf` is used.
@@ -237,7 +333,7 @@ class Subject(object):
         """
         with self.lock:
             h5f.flush()
-            return h5f.close()
+            h5f.close()
 
     def new_subject_file(self, biography):
         """
@@ -265,10 +361,10 @@ class Subject(object):
             # When a whole protocol is changed, we stash the old protocol as a filenode in the past_protocols group
             h5f.create_group("/history", "past_protocols",'Past Protocol Files')
 
-            # Also canonical to the basic file structure is the 'current' filenode which stores the current protocol,
+            # Also canonical to the basic file structure is the 'protocol' filenode which stores the protocol protocol,
             # but since we want to be able to tell that a protocol hasn't been assigned yet we don't instantiate it here
             # See http://www.pytables.org/usersguide/filenode.html
-            # filenode.new_node(h5f, where="/", name="current")
+            # filenode.new_node(h5f, where="/", name="protocol")
 
             # We keep track of changes to parameters, promotions, etc. in the history table
             h5f.create_table(history_group, 'history', self.History_Table, "Change History")
@@ -302,23 +398,14 @@ class Subject(object):
             try:
                 node = h5f.get_node(node[0])
             except tables.exceptions.NoSuchNodeError:
-                #pdb.set_trace()
-                # try to make it
-                # python 3 compatibility
-                if sys.version_info >= (3,0):
-                    if isinstance(node[3], str):
-                        if node[3] == 'group':
-                            h5f.create_group(node[1], node[2])
-                    elif issubclass(node[3], tables.IsDescription):
-                        h5f.create_table(node[1], node[2], description=node[3])
 
-                # python 2
-                else:
-                    if isinstance(node[3], str):
-                        if node[3] == 'group':
-                            h5f.create_group(node[1], node[2])
-                    elif issubclass(node[3], tables.IsDescription):
-                        h5f.create_table(node[1], node[2], description=node[3])
+                if isinstance(node[3], str):
+                    if node[3] == 'group':
+                        self.logger.info(f'Group {node[0]} doesnt exist, attempting to create')
+                        h5f.create_group(node[1], node[2])
+                elif issubclass(node[3], tables.IsDescription):
+                    self.logger.info(f"Table {node[0]} doesn't exist, attempting to create")
+                    h5f.create_table(node[1], node[2], description=node[3])
 
         self.close_hdf(h5f)
 
@@ -340,7 +427,7 @@ class Subject(object):
         """
         Update the history table when changes are made to the subject's protocol.
 
-        The current protocol is flushed to the past_protocols group and an updated
+        The protocol protocol is flushed to the past_protocols group and an updated
         filenode is created.
 
         Note:
@@ -350,23 +437,24 @@ class Subject(object):
             type (str): What type of change is being made? Can be one of
 
                 * 'param' - a parameter of one task stage
-                * 'step' - the step of the current protocol
+                * 'step' - the step of the protocol protocol
                 * 'protocol' - the whole protocol is being updated.
+                * 'version' - the version of the subject file was updated by :class:`.subject.Updater`
 
             name (str): the name of either the parameter being changed or the new protocol
             value (str): the value that the parameter or step is being changed to,
                 or the protocol dictionary flattened to a string.
             step (int): When type is 'param', changes the parameter at a particular step,
-                otherwise the current step is used.
+                otherwise the protocol step is used.
         """
         self.logger.info(f'Updating subject {self.name} history - type: {type}, name: {name}, value: {value}, step: {step}')
 
         # Make sure the updates are written to the subject file
         if type == 'param':
             if not step:
-                self.current[self.step][name] = value
+                self.protocol[self.step][name] = value
             else:
-                self.current[step][name] = value
+                self.protocol[step][name] = value
             self.flush_current()
         elif type == 'step':
             self.step = int(value)
@@ -456,19 +544,19 @@ class Subject(object):
         # pdb.set_trace()
 
         # Check if there is an existing protocol, archive it if there is.
-        if "/current" in h5f:
+        if "/protocol" in h5f:
             _ = self.close_hdf(h5f)
             self.update_history(type='protocol', name=protocol_name, value = prot_dict)
             self.stash_current()
             h5f = self.open_hdf()
 
         # Make filenode and save as serialized json
-        current_node = filenode.new_node(h5f, where='/', name='current')
+        current_node = filenode.new_node(h5f, where='/', name='protocol')
         current_node.write(json.dumps(prot_dict).encode('utf-8'))
         h5f.flush()
 
         # save some protocol attributes
-        self.current = prot_dict
+        self.protocol = prot_dict
 
         current_node.attrs['protocol_name'] = protocol_name
         self.protocol_name = protocol_name
@@ -494,7 +582,7 @@ class Subject(object):
         # Each gets a single table within a group: since each step should have
         # consistent data requirements over time and hdf5 doesn't need to be in
         # memory, we can just keep appending to keep things simple.
-        for i, step in enumerate(self.current):
+        for i, step in enumerate(self.protocol):
             # First we get the task class for this step
             task_class = TASK_LIST[step['task_type']]
             step_name = step['step_name']
@@ -573,21 +661,21 @@ class Subject(object):
         _ = self.close_hdf(h5f)
 
         # Update history
-        self.update_history('protocol', protocol_name, self.current)
+        self.update_history('protocol', protocol_name, self.protocol)
 
     def flush_current(self):
         """
-        Flushes the 'current' attribute in the subject object to the current filenode
+        Flushes the 'protocol' attribute in the subject object to the protocol filenode
         in the .h5
 
-        Used to make sure the stored .json representation of the current task stays up to date
+        Used to make sure the stored .json representation of the protocol task stays up to date
         with the params set in the subject object
         """
 
         h5f = self.open_hdf()
-        h5f.remove_node('/current')
-        current_node = filenode.new_node(h5f, where='/', name='current')
-        current_node.write(json.dumps(self.current).encode('utf-8'))
+        h5f.remove_node('/protocol')
+        current_node = filenode.new_node(h5f, where='/', name='protocol')
+        current_node.write(json.dumps(self.protocol).encode('utf-8'))
         current_node.attrs['step'] = self.step
         current_node.attrs['protocol_name'] = self.protocol_name
         self.close_hdf(h5f)
@@ -603,20 +691,20 @@ class Subject(object):
         """
         h5f = self.open_hdf()
         try:
-            protocol_name = h5f.get_node_attr('/current', 'protocol_name')
+            protocol_name = h5f.get_node_attr('/protocol', 'protocol_name')
             archive_name = '_'.join([self.get_timestamp(simple=True), protocol_name])
         except AttributeError:
             warnings.warn("protocol_name attribute couldn't be accessed, using timestamp to stash protocol")
             archive_name = self.get_timestamp(simple=True)
 
         # TODO: When would we want to prefer the .h5f copy over the live one?
-        #current_node = filenode.open_node(h5f.root.current)
+        #current_node = filenode.open_node(h5f.root.protocol)
         #old_protocol = current_node.readall()
 
         archive_node = filenode.new_node(h5f, where='/history/past_protocols', name=archive_name)
-        archive_node.write(json.dumps(self.current).encode('utf-8'))
+        archive_node.write(json.dumps(self.protocol).encode('utf-8'))
 
-        h5f.remove_node('/current')
+        h5f.remove_node('/protocol')
         self.close_hdf(h5f)
         self.logger.debug('current protocol stashed')
 
@@ -632,7 +720,7 @@ class Subject(object):
             Dict: the parameters for the current step, with subject id, step number,
                 current trial, and session number included.
         """
-        if self.current is None:
+        if self.protocol is None:
             e = RuntimeError('No task assigned to subject, cant prepare_run. use Subject.assign_protocol or protocol reassignment wizard in the terminal GUI')
             self.logger.exception(f"{e}")
             raise e
@@ -643,8 +731,8 @@ class Subject(object):
 
         h5f = self.open_hdf()
 
-        # Get current task parameters and handles to tables
-        task_params = self.current[self.step]
+        # Get protocol task parameters and handles to tables
+        task_params = self.protocol[self.step]
         step_name = task_params['step_name']
 
         # file structure is '/data/protocol_name/##_step_name/tables'
@@ -660,7 +748,7 @@ class Subject(object):
         except IndexError:
             self.current_trial = 0
 
-        # should have gotten session from current node when we started
+        # should have gotten session from protocol node when we started
         if not self.session:
             try:
                 self.session = trial_table.cols.session[-1]
@@ -731,7 +819,7 @@ class Subject(object):
 
         # return a task parameter dictionary
 
-        task = copy(self.current[self.step])
+        task = copy(self.protocol[self.step])
         task['subject'] = self.name
         task['step'] = int(self.step)
         task['current_trial'] = int(self.current_trial)
@@ -757,7 +845,7 @@ class Subject(object):
         """
         h5f = self.open_hdf()
 
-        task_params = self.current[self.step]
+        task_params = self.protocol[self.step]
         step_name = task_params['step_name']
 
         # file structure is '/data/protocol_name/##_step_name/tables'
@@ -1100,7 +1188,7 @@ N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique()))
             # Iterate through steps, find first timestamp, use that.
             for step_key in step_groups:
                 step_n = int(step_key[1:3])  # beginning of keys will be 'S##'
-                step_name = self.current[step_n]['step_name']
+                step_name = self.protocol[step_n]['step_name']
                 step_tab = group._v_children[step_key]._v_children['trial_data']
                 # find name of column that is a timestamp
                 colnames = step_tab.cols._v_colnames
@@ -1248,13 +1336,13 @@ N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique()))
         """
         Increase the current step by one, unless it is the last step.
         """
-        if len(self.current)<=self.step+1:
-            self.logger.warning('Tried to graduate from the last step!\n Task has {} steps and we are on {}'.format(len(self.current), self.step+1))
+        if len(self.protocol)<=self.step+1:
+            self.logger.warning('Tried to graduate from the last step!\n Task has {} steps and we are on {}'.format(len(self.protocol), self.step + 1))
             return
 
         # increment step, update_history should handle the rest
         step = self.step+1
-        name = self.current[step]['step_name']
+        name = self.protocol[step]['step_name']
         self.update_history('step', name, step)
 
     class History_Table(tables.IsDescription):
@@ -1298,4 +1386,73 @@ N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique()))
         """
         time = tables.StringCol(256)
         hash = tables.StringCol(40)
+
+
+
+class Updater(object):
+    """
+    Methods to update subject files from version to version.
+
+    Called immediately after the `name` and more importantly `file` are defined,
+    each method should be a class method that takes and returns a Subject file.
+
+    When called, compares the stored ``VERSION`` in the top level h5f metadata to the class
+    attribute ``:attr:`.Subject.VERSION`` -- applies updated sequentially until ``VERSION`` is reached
+
+    """
+    def __init__(self):
+        self.METHODS = {
+            0: self.V0_to_1
+        }
+
+
+    def __call__(self, subject: Subject):
+        # get file version
+        h5f = subject.open_hdf()
+        try:
+            file_version = h5f.root.info._v_attrs['version']
+        except (AttributeError, KeyError):
+            file_version = 0
+
+        update_to = Subject.VERSION
+
+        subject.close_hdf(h5f)
+
+        for version in range(file_version, update_to):
+            self.METHODS[version](subject)
+
+            # update version in metadata
+            h5f = subject.open_hdf()
+            h5f.root.info._v_attrs['version'] = version+1
+            subject.close_hdf(h5f)
+            subject.logger.info(f'Updated subject file from V{version} to V{version+1}')
+
+        subject.update_history('version', 'update', str(update_to))
+
+
+
+    @classmethod
+    def V0_to_1(cls, subject: Subject):
+        """
+        Changed name of '/current' to '/protocol'
+        """
+        # get info about current protocol in filenode
+        h5f = subject.open_hdf()
+        current_node = filenode.open_node(h5f.root.current)
+        protocol_string = current_node.readall()
+        protocol = json.loads(protocol_string)
+        step = int(current_node.attrs['step'])
+        protocol_name = current_node.attrs['protocol_name']
+
+        # recreate filenode named 'protocol'
+        current_node = filenode.new_node(h5f, where='/', name='protocol')
+        current_node.write(json.dumps(protocol).encode('utf-8'))
+        current_node.attrs['step'] = step
+        current_node.attrs['protocol_name'] = protocol_name
+
+        # save version
+        subject.close_hdf(h5f)
+
+
+
 

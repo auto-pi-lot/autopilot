@@ -234,11 +234,11 @@ class Control_Panel(QtWidgets.QWidget):
     #     if subject not in self.subjects.keys():
     #         self.subjects[subject] = Subject(subject)
     #
-    #     if '/current' not in self.subjects[subject].h5f:
+    #     if '/protocol' not in self.subjects[subject].h5f:
     #         Warning("Subject {} has no protocol!".format(subject))
     #         return
     #
-    #     protocol = self.subjects[subject].current
+    #     protocol = self.subjects[subject].protocol
     #     step = self.subjects[subject].step
     #
     #     protocol_edit = Protocol_Parameters_Dialogue(protocol, step)
@@ -2425,7 +2425,7 @@ class Reassign(QtWidgets.QDialog):
             # add blank at the end
             protocol_box.addItem(text='')
 
-            # set current item if subject has matching protocol
+            # set protocol item if subject has matching protocol
             protocol_bool = [protocol == p for p in self.protocols]
             if any(protocol_bool):
                 protocol_ind = np.where(protocol_bool)[0][0]
@@ -2691,7 +2691,7 @@ class Psychometric(QtGui.QDialog):
             # protocol_box = self.subject_objects[subject][0]
             # protocol_box.setObjectName(subject_name)
             # protocol_box.insertItems(0, self.protocols)
-            # # set current item if subject has matching protocol
+            # # set protocol item if subject has matching protocol
             # protocol_bool = [protocol == p for p in self.protocols]
             # if any(protocol_bool):
             #     protocol_ind = np.where(protocol_bool)[0][0]
@@ -2714,7 +2714,7 @@ class Psychometric(QtGui.QDialog):
             n_trials_box.setValidator(QtGui.QIntValidator())
             n_trials_box.setText("-1")
 
-            # set index of current step to populate variables
+            # set index of protocol step to populate variables
             step_box.setCurrentIndex(step)
 
             # add layout
@@ -2751,11 +2751,11 @@ class Psychometric(QtGui.QDialog):
         while step_box.count():
             step_box.removeItem(0)
 
-        # open the subject file and use 'current' to get step names
+        # open the subject file and use 'protocol' to get step names
         asub = Subject(subject)
 
         step_list = []
-        for s in asub.current:
+        for s in asub.protocol:
             step_list.append(s['step_name'])
 
         step_box.insertItems(0, step_list)
