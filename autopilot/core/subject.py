@@ -800,7 +800,6 @@ class Subject(object):
                             grad_params.update({param:getattr(self, param)})
 
                 if grad_obj.COLS:
-                    pdb.set_trace()
                     # get timestamp of last step/protocol change from history table
                     update_timestamp = self.history[self.history.type.isin((b'protocol', b'step'))].iloc[-1].time
                     # format it!
