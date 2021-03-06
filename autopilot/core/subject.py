@@ -1418,6 +1418,9 @@ class Updater(object):
 
         subject.close_hdf(h5f)
 
+        if file_version == update_to:
+            return
+
         for version in range(file_version, update_to):
             self.METHODS[version](subject)
 
