@@ -586,11 +586,11 @@ class Camera(Hardware):
 class PiCamera(Camera):
     """
     Interface to the `Raspberry Pi Camera Module <https://www.raspberrypi.org/products/camera-module-v2/>`_
-    via `picamera <https://picamera.readthedocs.io/en/latest/>`
+    via `picamera <https://picamera.readthedocs.io/en/latest/>`_
 
-    Parameters of the :class:`picamera.PiCamera` class can be set after initialization by modifying the
+    Parameters of the :ref:`picamera.PiCamera <picamera:api_camera>` class can be set after initialization by modifying the
     :attr:`PiCamera.cam` attribute, eg ``PiCamera().cam.exposure_mode = 'fixedfps'`` -- see the
-    :class:`picamera.PiCamera` documentation for full documentation.
+    :ref:`picamera.PiCamera <picamera:api_camera>` documentation for full documentation.
 
     Note that some parameters, like resolution, can't be changed after starting :meth:`~PiCamera.capture` .
 
@@ -613,8 +613,8 @@ class PiCamera(Camera):
     .. todo::
 
         Currently timestamps are constructed with :meth:`datetime.datetime.now.isoformat`, which is
-        not altogether accurate. Timestamps should be gotten from the :attr:`~picamera.PiCamera.frame` attribute,
-        which depends on the :attr:`~picamera.PiCamera.clock_mode`
+        not altogether accurate. Timestamps should be gotten from the :attr:`picamera.PiCamera.frame` attribute,
+        which depends on the :attr:`picamera.PiCamera.clock_mode`
 
 
     References:
@@ -723,7 +723,7 @@ class PiCamera(Camera):
 
     def init_cam(self) -> 'picamera.PiCamera':
         """
-        Initialize and return the :class:`picamera.PiCamera` object.
+        Initialize and return the :ref:`picamera.PiCamera <picamera:api_camera>` object.
 
         Uses the stored :attr:`~PiCamera.camera_idx`, :attr:`~PiCamera.resolution`,
         :attr:`~PiCamera.fps`, and :attr:`~PiCamera.sensor_mode` attributes on init.
@@ -746,7 +746,7 @@ class PiCamera(Camera):
     def capture_init(self):
         """
         Spawn a :class:`PiCamera.PiCamera_Writer` object to :attr:`PiCamera._picam_writer`
-        and :meth:`~picamera.PiCamera.start_recording` in the set :attr:`~PiCamera.format`
+        and :meth:`picamera.PiCamera.start_recording` in the set :attr:`~PiCamera.format`
         """
         self._picam_writer = self.PiCamera_Writer(self.resolution)
         self.cam.start_recording(self.writer, self.format)
