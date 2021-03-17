@@ -333,7 +333,7 @@ intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
                        'npyscreen': ('https://npyscreen.readthedocs.io/', None),
                        'jack': ('https://jackclient-python.readthedocs.io/en/0.4.5/', None),
                        'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
-                       'picamera': ('https://picamera.readthedocs.io/en/latest/', None)}
+                       'picamera': ('https://picamera.readthedocs.io/en/release-1.13/', None)}
 
 # -- Options for todo extension ----------------------------------------------
 
