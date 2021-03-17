@@ -27,3 +27,4 @@ blosc
 scikit-video
 sphinx-autobuild
 git+https://github.com/sneakers-the-rat/sphinx-sass
+picamera
