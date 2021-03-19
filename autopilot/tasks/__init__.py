@@ -4,7 +4,7 @@ from autopilot.tasks.gonogo import GoNoGo
 from autopilot.tasks.parallax import Parallax
 from autopilot.tasks.free_water import Free_Water
 from autopilot.tasks.graduation import GRAD_LIST
-from autopilot.tasks.children import Wheel_Child, Video_Child, Transformer
+from autopilot.tasks.children import Wheel_Child, Video_Child, Transformer, Parallax_Child
 from autopilot.tasks.test import DLC_Latency, DLC_Hand
 
 
@@ -23,7 +23,8 @@ Link between string task names used in protocol descriptions and task classes
 CHILDREN_LIST = {
     'Wheel Child':Wheel_Child,
     'Video Child':Video_Child,
-    'Transformer': Transformer
+    'Transformer': Transformer,
+    'Parallax Child': Parallax_Child
 }
 """
 Link between string child names used in protocol descriptions and task classes

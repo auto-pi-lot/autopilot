@@ -19,6 +19,9 @@ from autopilot.hardware import cameras
 from autopilot.core.networking import Net_Node
 from autopilot.core.loggers import init_logger
 from autopilot.transform import transforms
+from autopilot.hardware.i2c import I2C_9DOF
+from autopilot.hardware.cameras import PiCamera
+from autopilot.tasks import Task
 from itertools import cycle
 from queue import Empty, LifoQueue
 import threading
@@ -272,6 +275,23 @@ class Transformer(object):
         if self.value_subset:
             value = value[self.value_subset]
         self.input_q.append(value)
+
+class Parallax_Child(Task):
+
+    HARDWARE = {
+        'MOTION': {
+            'IMU': I2C_9DOF
+        },
+        'CAMS':{
+            'SIDE': PiCamera
+        }
+    }
+
+    def __init__(self, *args, **kwargs):
+        super(Parallax_Child, self).__init__(*args, **kwargs)
+
+
+
 
 
 
