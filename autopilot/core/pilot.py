@@ -256,7 +256,7 @@ class Pilot:
 
         # TODO: Report any calibrations that we have
 
-        hello = {'pilot':self.name, 'ip':self.ip, 'state':self.state}
+        hello = {'pilot':self.name, 'ip':self.ip, 'state':self.state, 'prefs': prefs.get()}
 
         self.node.send(self.parentid, 'HANDSHAKE', value=hello)
 

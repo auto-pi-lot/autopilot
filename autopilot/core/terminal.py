@@ -41,7 +41,7 @@ from autopilot.core.subject import Subject
 from autopilot.core.plots import Plot_Widget
 from autopilot.core.networking import Terminal_Station, Net_Node
 from autopilot.core.utils import InvokeEvent, Invoker, get_invoker
-from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test
+from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test, Stream_Video
 from autopilot.core.loggers import init_logger
 
 
@@ -257,6 +257,13 @@ class Terminal(QtWidgets.QMainWindow):
         self.tool_menu.addAction(update_protocol_act)
         self.tool_menu.addAction(reassign_act)
         self.tool_menu.addAction(calibrate_act)
+
+        # Swarm menu
+        # (tools 4 administering and interacting with agents in swarm)
+        self.swarm_menu = self.menuBar().addMenu("S&warm")
+        stream_video = QtWidgets.QAction("Stream Video", self, triggered=self.stream_video)
+        self.swarm_menu.addAction(stream_video)
+
 
         # Plots menu
         self.plots_menu = self.menuBar().addMenu("&Plots")
@@ -545,10 +552,9 @@ class Terminal(QtWidgets.QMainWindow):
             value (dict): dict containing `ip` and `state`
         """
         if value['pilot'] in self.pilots.keys():
-            if 'ip' in value.keys():
-                self.pilots[value['pilot']]['ip'] = value['ip']
-            if 'state' in value.keys():
-                self.pilots[value['pilot']]['state'] = value['state']
+            self.pilots[value['pilot']]['ip'] = value.get('ip', '')
+            self.pilots[value['pilot']]['state'] = value.get('state', '')
+            self.pilots[value['pilot']]['prefs'] = value.get('prefs', {})
 
         else:
             self.new_pilot(name=value['pilot'], ip=value['ip'])
@@ -844,6 +850,19 @@ class Terminal(QtWidgets.QMainWindow):
             #viz.plot_psychometric(self.subjects_protocols)
         #result = psychometric_dialog.exec_()
 
+    def stream_video(self):
+        """
+        Open a window to stream videos from a connected pilot.
+
+        Choose from connected pilots and configured :class:`~.hardware.cameras.Camera` objects
+        (``prefs.json`` sent by Pilots in :meth:`.Pilot.handshake` ). Stream video, save to file.
+
+        .. todo::
+
+            Configure camera parameters!!!
+        """
+
+        video_dialog = Stream_Video(self.pilots)
 
 
 

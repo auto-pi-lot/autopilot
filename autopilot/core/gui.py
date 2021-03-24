@@ -16,6 +16,7 @@ If performing any GUI operations in another thread (eg. as a callback from a net
 the method must be decorated with `@gui_event` which will call perform the update in the main thread as required by Qt.
 """
 
+import typing
 import sys
 import os
 import json
@@ -43,6 +44,8 @@ from functools import wraps
 from autopilot.core.utils import InvokeEvent
 from autopilot.core import styles
 from autopilot.core.utils import get_invoker
+from autopilot.core.plots import Video
+from autopilot.core.loggers import init_logger
 
 
 
@@ -2601,7 +2604,7 @@ class Weights(QtWidgets.QTableWidget):
 #     def __init__(self):
 #         super(Autopilot_Style, self).__init__()
 
-class Psychometric(QtGui.QDialog):
+class Psychometric(QtWidgets.QDialog):
     """
     A Dialog to select subjects, steps, and variables to use in a psychometric curve plot.
 
@@ -2626,14 +2629,14 @@ class Psychometric(QtGui.QDialog):
 
 
     def init_ui(self):
-        self.grid = QtGui.QGridLayout()
+        self.grid = QtWidgets.QGridLayout()
 
         # top row just has checkbox for select all
-        check_all = QtGui.QCheckBox()
+        check_all = QtWidgets.QCheckBox()
         check_all.stateChanged.connect(self.check_all)
 
         self.grid.addWidget(check_all, 0,0)
-        self.grid.addWidget(QtGui.QLabel('Check All'), 0, 1)
+        self.grid.addWidget(QtWidgets.QLabel('Check All'), 0, 1)
 
         # identical to Reassign, above
         for i, (subject, protocol) in zip(xrange(len(self.subjects)), self.subjects.items()):
@@ -2642,7 +2645,7 @@ class Psychometric(QtGui.QDialog):
 
             # container for each subject's GUI object
             # checkbox, step, variable
-            self.subject_objects[subject] = [QtGui.QCheckBox(),  QtGui.QComboBox(), QtGui.QComboBox(), QtGui.QLineEdit()]
+            self.subject_objects[subject] = [QtWidgets.QCheckBox(),  QtWidgets.QComboBox(), QtWidgets.QComboBox(), QtWidgets.QLineEdit()]
 
             # include checkbox
             checkbox = self.subject_objects[subject][0]
@@ -2651,7 +2654,7 @@ class Psychometric(QtGui.QDialog):
             # self.checks.append(this_checkbox)
 
             # subject label
-            subject_lab = QtGui.QLabel(subject_name)
+            subject_lab = QtWidgets.QLabel(subject_name)
 
             # protocol_box = self.subject_objects[subject][0]
             # protocol_box.setObjectName(subject_name)
@@ -2690,10 +2693,10 @@ class Psychometric(QtGui.QDialog):
             self.grid.addWidget(n_trials_box, i+1, 4)
 
         # finish layout
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
-        main_layout = QtGui.QVBoxLayout()
+        main_layout = QtWidgets.QVBoxLayout()
         main_layout.addLayout(self.grid)
         main_layout.addWidget(buttonBox)
 
@@ -2793,6 +2796,173 @@ class Psychometric(QtGui.QDialog):
                 ))
         return _plot_params
 
+class Stream_Video(QtWidgets.QDialog):
+    """
+    Dialogue to stream, display, and save video.
+
+    """
+
+    def __init__(self, pilots:dict, *args, **kwargs):
+        """
+        Args:
+            pilots (dict): The :attr:`.Terminal.pilot_db` with the ``prefs`` of each pilot
+                (given by :meth:`.Pilot.handshake`)
+        """
+        super(Stream_Video, self).__init__(*args, **kwargs)
+
+        self.logger = init_logger(self)
+
+        self.pilots = pilots
+
+        # --------------------------------------------------
+        # Parse hardware devices
+        # --------------------------------------------------
+        self.cameras = {}
+        for pilot, pilot_params in self.pilots.items():
+            pilot_prefs = pilot_params.get('prefs', None)
+            if prefs is None:
+                self.logger.exception(f'pilot {pilot} had no prefs in its pilots_db entry')
+                continue
+
+            self.cameras[pilot] = {}
+
+            # iterate through nested hardware dictionary, lookin for cameras
+            hardware = pilot_prefs.get('HARDWARE', {'':{}})
+            for hw_group, hw_items in hardware.items():
+                for hw_id, hw_params in hw_items.items():
+                    # if it has cameras in its type (eg. 'cameras.PiCamera')
+                    # or a group that starts with cam...
+                    if 'cameras' in hw_params.get('type', '') or hw_group.lower().startswith('cam'):
+                        # store an abbreviated version of the name and its params for the comboboxes
+                        self.cameras[pilot]['.'.join((hw_group, hw_id))] = hw_params
+
+
+        self.id = f'{prefs.get("NAME")}_video'
+
+        self.video = Video(('stream',))
+
+        self.node = Net_Node(id=self.id,
+                             upstream="T",
+                             port=prefs.get('MSGPORT'),
+                             listens={'FRAME':self.l_frame},
+                             instance=True)
+
+        self.layout = None # type: typing.Optional[QtWidgets.QHBoxLayout]
+        self.comboboxes = {} # type: typing.Dict[str, QtWidgets.QComboBox]
+        self.buttons = {} # type: typing.Dict[str, QtWidgets.QPushButton]
+        self.cam_info = {} # type: typing.Dict[str, typing.Union[QtWidgets.QFormLayout, QtWidgets.QLabel]]
+
+        self.init_ui()
+
+    def init_ui(self):
+        self.layout = QtWidgets.QHBoxLayout()
+
+        self.layout.addWidget(self.video,3)
+
+        # --------------------------------------------------
+        # Controls layout on right - comboboxes and buttons
+        # --------------------------------------------------
+        self.button_layout = QtWidgets.QVBoxLayout()
+
+        # combobox to select pilot
+        self.comboboxes['pilot'] = QtWidgets.QComboBox()
+        self.comboboxes['pilot'].addItem('Select Pilot...')
+        for pilot in sorted(self.pilots.keys()):
+            self.comboboxes['pilot'].addItem(pilot)
+        self.comboboxes['pilot'].valueChanged.connect(self.populate_cameras)
+
+        # and to select camera device
+        self.comboboxes['camera'] = QtWidgets.QComboBox()
+        self.comboboxed['camera'].addItem('Select Camera...')
+        self.comboboxes['camera'].valueChanged.connect(self.camera_selected)
+
+        # buttons to control video
+        self.buttons['start'] = QtWidgets.QPushButton('Start Streaming')
+        self.buttons['start'].setCheckable(True)
+        self.buttons['start'].setChecked(False)
+        self.buttons['start'].setDisabled(True)
+        self.buttons['start'].toggled.connect(self.toggle_start)
+
+        # save button to start saving frames
+        self.buttons['write'] = QtWidgets.QPushButton('Write Video...')
+        self.buttons['write'].setCheckable(True)
+        self.buttons['write'].setChecked(False)
+        self.buttons['write'].setDisabled(True)
+        self.buttons['write'].toggled.connect(self.write_video)
+
+        # Infobox to display camera params
+        self.cam_info['label'] = QtWidgets.QLabel()
+        self.cam_info['form'] = QtWidgets.QFormLayout()
+
+        # --------------------------------------------------
+        # add to button layout
+        self.button_layout.addWidget(self.comboboxes['pilot'])
+        self.button_layout.addWidget(self.comboboxes['camera'])
+        self.button_layout.addWidget(self.buttons['start'])
+        self.button_layout.addWidget(self.buttons['write'])
+        self.button_layout.addWidget(self.cam_info['label'])
+        self.button_layout.addWidget(self.cam_info['form'])
+
+
+        self.layout.addLayout(self.button_layout)
+
+    @property
+    def current_pilot(self) -> str:
+        return self.comboboxes['pilot'].currentText()
+
+    @property
+    def current_camera(self) -> str:
+        return self.comboboxes['camera'].currentText()
+
+    def populate_cameras(self):
+        current_pilot = self.current_pilot
+        self.comboboxes['camera'].clear()
+        self._clear_info()
+
+        # ignore placeholder text
+        if current_pilot in self.cameras.keys():
+            self.comboboxes['camera'].addItem('Select Camera...')
+            for cam_name in sorted(self.cameras[current_pilot].keys()):
+                self.comboboxes['camera'].addItem(cam_name)
+        else:
+            self.comboboxes['camera'].addItem('No Camera Configured!')
+
+
+
+    def camera_selected(self):
+        current_pilot = self.current_pilot
+        current_camera = self.current_camera
+
+        if current_pilot in self.cameras.keys() and \
+                current_camera in self.cameras[current_pilot].keys():
+            self.cam_info['label'].setText(current_camera)
+            for param_name, param_val in self.cameras[current_pilot][current_camera].items():
+                self.cam_info['form'].addRow(param_name, QtWidgets.QLabel(str(param_val)))
+                
+
+    def toggle_start(self):
+        pass
+
+    def write_video(self):
+        pass
+
+    def _clear_info(self):
+        self.cam_info['label'].setText('')
+        while self.cam_info['form'].count():
+            child = self.cam_info['form'].takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+
+
+
+
+
+
+    def l_frame(self, value):
+        pass
+
+
+
 
 
 
@@ -2800,20 +2970,20 @@ class Psychometric(QtGui.QDialog):
 
 
 def pop_dialog(message, msg_type="info", details="", buttons=['Ok']):
-    """Convenience function to pop a :class:`.QtGui.QDialog window to display a message.
+    """Convenience function to pop a :class:`.QtWidgets.QDialog` window to display a message.
 
     Args:
         details:
         message (str): message to be displayed
-        msg_type (str): "info" (default), "question", "warning", or "error" to use :meth:`.QtGui.QMessageBox.information`, :meth:`.QtGui.QMessageBox.question`, :meth:`.QtGui.QMessageBox.warning`, or :meth:`.QtGui.QMessageBox.error`, respectively
-        buttons (list): A list specifying which :class:`.QtGui.QMessageBox.StandardButton` s to display. Use a string matching the button name, eg. "Ok" gives :class:`.QtGui.QMessageBox.Ok`
+        msg_type (str): "info" (default), "question", "warning", or "error" to use :meth:`.QtWidgets.QMessageBox.information`, :meth:`.QtWidgets.QMessageBox.question`, :meth:`.QtWidgets.QMessageBox.warning`, or :meth:`.QtWidgets.QMessageBox.error`, respectively
+        buttons (list): A list specifying which :class:`.QtWidgets.QMessageBox.StandardButton` s to display. Use a string matching the button name, eg. "Ok" gives :class:`.QtWidgets.QMessageBox.Ok`
 
 
     Returns:
         result (bool, str): The result of the dialog. If Ok/Cancel, boolean True/False, otherwise a string matching the button type
     """
 
-    msgBox = QtGui.QMessageBox()
+    msgBox = QtWidgets.QMessageBox()
 
     # set text
     msgBox.setText(message)
@@ -2821,24 +2991,24 @@ def pop_dialog(message, msg_type="info", details="", buttons=['Ok']):
         msgBox.setInformativeText(details)
 
     # add buttons
-    button_objs = [getattr(QtGui.QMessageBox, button) for button in buttons]
+    button_objs = [getattr(QtWidgets.QMessageBox, button) for button in buttons]
     # bitwise or to add them to the dialog box
     # https://www.geeksforgeeks.org/python-bitwise-or-among-list-elements/
     bitwise_buttons = reduce(ior, button_objs)
     msgBox.setStandardButtons(bitwise_buttons)
 
     if 'Ok' in buttons:
-        msgBox.setDefaultButton(QtGui.QMessageBox.Ok)
+        msgBox.setDefaultButton(QtWidgets.QMessageBox.Ok)
 
     icon = None
     if msg_type == "info":
-        icon = QtGui.QMessageBox.Information
+        icon = QtWidgets.QMessageBox.Information
     elif msg_type == "question" or msg_type.startswith('q'):
-        icon = QtGui.QMessageBox.Question
+        icon = QtWidgets.QMessageBox.Question
     elif msg_type == "warning":
-        icon = QtGui.QMessageBox.Warning
+        icon = QtWidgets.QMessageBox.Warning
     elif msg_type == "error":
-        icon = QtGui.QMessageBox.Critical
+        icon = QtWidgets.QMessageBox.Critical
 
     if icon:
         msgBox.setIcon(icon)
@@ -2848,7 +3018,7 @@ def pop_dialog(message, msg_type="info", details="", buttons=['Ok']):
     # pdb.set_trace()
 
     # get message box name
-    # for but in QtGui.QMessageBox.StandardButton
+    # for but in QtWidgets.QMessageBox.StandardButton
 
     for but in button_objs:
         print(but.name)
