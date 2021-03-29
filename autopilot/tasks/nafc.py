@@ -586,6 +586,7 @@ class Nafc_Gap_Laser(Nafc_Gap):
         self.laser_durations = laser_durations if isinstance(laser_durations, list) else [float(laser_durations)] # type: list
 
         self.laser_conditions = tuple() # type: typing.Tuple[typing.Dict]
+        self.laser_script = None
 
         super(Nafc_Gap_Laser, self).__init__(**kwargs)
 
