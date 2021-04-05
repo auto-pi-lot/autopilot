@@ -62,7 +62,6 @@ import pdb
 
 _TERMINAL = None
 
-
 class Terminal(QtWidgets.QMainWindow):
     """
     Central host to a swarm of :class:`.Pilot` s and user-facing
@@ -694,11 +693,15 @@ class Terminal(QtWidgets.QMainWindow):
         subjects = self.subject_list
         subjects_protocols = {}
         for subject in subjects:
-            if subject not in self.subjects.keys():
-                self.subjects[subject] = Subject(subject)
+            try:
+                if subject not in self.subjects.keys():
+                    self.subjects[subject] = Subject(subject)
 
-            subjects_protocols[subject] = [self.subjects[subject].protocol_name, self.subjects[subject].step]
+                subjects_protocols[subject] = [self.subjects[subject].protocol_name, self.subjects[subject].step]
+            except Exception as e:
+                self.logger.exception(f'Could not get protocol for subject {subject}, got error: {e}')
 
+        # TODO: Pop dialogue here with exceptions, but should implement in a uniform not ad-hoc way.
         return subjects_protocols
 
     def reassign_protocols(self):
