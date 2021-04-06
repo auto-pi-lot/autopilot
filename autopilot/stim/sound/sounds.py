@@ -245,6 +245,7 @@ if server_type in ("jack", "docs", True):
             # if the sound actually stopped...
             if self.stop_evt.is_set():
                 self.trigger()
+                self.logger.debug('called wait_trigger')
 
         def get_nsamples(self):
             """
@@ -392,15 +393,19 @@ if server_type in ("jack", "docs", True):
 
             If we have a trigger, set a Thread to wait on it.
             """
+            self.logger.debug('buffering sound')
             if not self.buffered:
                 self.buffer()
 
             if hasattr(self, 'path'):
                 self.logger.debug('PLAYING SOUND {}'.format(self.path))
 
+            self.logger.debug('playing sound')
             self.play_evt.set()
             self.stop_evt.clear()
             self.buffered = False
+
+            self.logger.debug('played sound')
 
             if callable(self.trigger):
                 threading.Thread(target=self.wait_trigger).start()
@@ -460,6 +465,7 @@ if server_type in ("jack", "docs", True):
             self.continuous = True
 
         def _buffer_continuous(self):
+            self.logger.debug('Entering _buffer_continuous thread')
 
             # empty queue
             while not self.continuous_q.empty():
@@ -477,7 +483,9 @@ if server_type in ("jack", "docs", True):
                     #self.continuous_q.put(self.continuous_cycle.next(), timeout=wait_time)
                     self.continuous_q.put_nowait(next(self.continuous_cycle))
                 except Full:
-                    pass
+                    self.logger.debug('Continuous queue was full!')
+
+            self.logger.debug("Exiting _buffer_continuous thread")
             # for chunk in self.chunks:
             #     self.continuous_q.put_nowait(chunk)
 
@@ -490,6 +498,8 @@ if server_type in ("jack", "docs", True):
             if not self.continuous:
                 self.logger.warning("stop_continuous called but not a continuous sound!")
                 return
+
+            self.logger.debug('stopping continous sound')
 
             self.quitting.set()
             self.continuous_flag.clear()

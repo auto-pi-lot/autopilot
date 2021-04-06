@@ -244,7 +244,7 @@ class JackClient(mp.Process):
                     data = self.continuous_q.get_nowait()
 
                 except Empty:
-                    self.logger.warning('Continuous queue was empty!')
+                    self.logger.warning('Continuous flag was set, but continuous queue was empty!')
                     #self.continuous.clear()
                     data = self.zero_arr
 
@@ -281,7 +281,7 @@ class JackClient(mp.Process):
                     try:
                         data = self.continuous_q.get_nowait()
                     except Empty:
-                        self.logger.warning('Continuous queue was empty!')
+                        self.logger.warning('Continuous queue was empty when trying to fill in for sound!')
                         # self.continuous.clear()
                         data = self.zero_arr
                         #self.continuous.clear()
@@ -302,7 +302,11 @@ class JackClient(mp.Process):
                     if self.continuous.is_set():
                         # data = np.concatenate((data, self.continuous_cycle.next()[-n_from_end:]),
                         #                       axis=0)
-                        cont_data = self.continuous_q.get_nowait()
+                        try:
+                            cont_data = self.continuous_q.get_nowait()
+                        except Empty:
+                            self.logger.warning('continuous queue was empty when attempting to pad sound')
+                            cont_data = self.zero_arr
                         data = np.concatenate((data, cont_data[-n_from_end:]),
                                               axis=0)
                     else:
