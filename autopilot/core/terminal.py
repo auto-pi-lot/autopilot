@@ -643,9 +643,9 @@ class Terminal(QtWidgets.QMainWindow):
 
         # for each subject, get weight
         weights = []
-        for subject in subjects:
-            weight = self.subjects[subject].get_weight(include_baseline=True)
-            weight['subject'] = subject
+        for subject_name, subject in self.subjects.items():
+            weight = subject.get_weight(include_baseline=True)
+            weight['subject'] = subject_name
             weights.append(weight)
 
         self.weight_widget = Weights(weights, self.subjects)
