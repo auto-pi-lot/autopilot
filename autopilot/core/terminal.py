@@ -636,7 +636,10 @@ class Terminal(QtWidgets.QMainWindow):
         # open objects if not already
         for subject in subjects:
             if subject not in self.subjects.keys():
-                self.subjects[subject] = Subject(subject)
+                try:
+                    self.subjects[subject] = Subject(subject)
+                except Exception as e:
+                    self.logger.exception(f"Could not instantiate subject {subject}, got exception {e}")
 
         # for each subject, get weight
         weights = []
