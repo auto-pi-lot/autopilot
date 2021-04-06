@@ -639,7 +639,7 @@ class Terminal(QtWidgets.QMainWindow):
                 try:
                     self.subjects[subject] = Subject(subject)
                 except Exception as e:
-                    self.logger.exception(f"Could not instantiate subject {subject}, got exception {e}")
+                    self.logger.exception(f"Could not instantiate subject {subject}, got exception:\n{e}")
 
         # for each subject, get weight
         weights = []
