@@ -607,7 +607,7 @@ class Nafc_Gap_Laser(Nafc_Gap):
         elif self.arena_led_mode == "STIM":
             stim_durations = list(find_recursive('duration', kwargs['stim']))
             stim_durations_int = [int(i) for i in stim_durations]
-            max_duration = np.max(stim_durations_int)
+            max_duration = int(np.max(stim_durations_int))
             self.hardware['LEDS']['TOP'].store_series('on', values=1, durations=max_duration )
         elif self.arena_led_mode == "LASER":
             #assuming for now we have only a single laser duration, since I can't quite get the max duration to work for the str list

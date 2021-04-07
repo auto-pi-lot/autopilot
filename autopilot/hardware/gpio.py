@@ -411,7 +411,7 @@ class Digital_Out(GPIO):
 
         if durations:
             if isinstance(durations, float) or isinstance(durations, int):
-                durations = [round(durations)]
+                durations = [int(round(durations))]
 
             if len(values) == len(durations):
                 iter_series = zip(values, durations)
