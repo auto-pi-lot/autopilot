@@ -401,8 +401,8 @@ if server_type in ("jack", "docs", True):
                 self.logger.debug('PLAYING SOUND {}'.format(self.path))
 
             self.logger.debug('playing sound')
-            self.play_evt.set()
             self.stop_evt.clear()
+            self.play_evt.set()
             self.buffered = False
 
             self.logger.debug('played sound')
@@ -458,7 +458,6 @@ if server_type in ("jack", "docs", True):
                 self.continuous_loop.set()
             else:
                 self.continuous_loop.clear()
-
 
             # tell the sound server that it has a continuous sound now
             self.continuous_flag.set()
@@ -805,6 +804,10 @@ class Gap(BASE_CLASS):
         if not self.gap_zero:
             super(Gap, self).play()
         else:
+            # instantaneous, so just clear play event, set stop event as if we've already played
+            # and then call the wait_trigger method immediately
+            self.play_evt.clear()
+            self.stop_evt.set()
             if callable(self.trigger):
                 threading.Thread(target=self.wait_trigger).start()
 
