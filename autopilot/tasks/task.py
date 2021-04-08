@@ -258,15 +258,15 @@ class Task(object):
         except KeyError:
             # If we don't have a trigger, that's fine, eg. L and R before requesting
             return
+        finally:
+            # clear triggers
+            self.triggers = {}
 
-        # clear triggers
-        self.triggers = {}
+            # clear the trigger lock (which we shoudl have acquired above successfully if we reached this far)
+            self.trigger_lock.release()
 
-        # clear the trigger lock (which we shoudl have acquired above successfully if we reached this far)
-        self.trigger_lock.release()
-
-        # Set the stage block so the pilot calls the next stage
-        self.stage_block.set()
+            # Set the stage block so the pilot calls the next stage
+            self.stage_block.set()
 
     def set_leds(self, color_dict=None):
         """
