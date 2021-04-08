@@ -226,8 +226,10 @@ class Parallax(Task):
         pass
 
     def jump(self):
+        pass
 
     def reinforcement(self):
+        pass
 
     def test(self):
         self.stage_block.clear()
