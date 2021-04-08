@@ -756,7 +756,9 @@ class Subject(object):
 
                         if trial_ts is not None and step_df is not None:
                             # see where, if any, the timestamp column is older than the last time the step was changed
-                            slice_start = np.min(np.where(trial_ts['timestamp'] >= step_df['timestamp'].iloc[-1]))
+                            good_rows = np.where(trial_ts['timestamp'] >= step_df['timestamp'].iloc[-1])[0]
+                            if len(good_rows) > 0:
+                                slice_start = np.min(good_rows)
 
                     except Exception as e:
                         self.logger.exception(f"Couldnt trim data given to graduation objects with step change history, got exception {e}")
