@@ -458,7 +458,6 @@ class Subject(object):
         # Check if there is an existing protocol, archive it if there is.
         if "/current" in h5f:
             _ = self.close_hdf(h5f)
-            self.update_history(type='protocol', name=protocol_name, value = prot_dict)
             self.stash_current()
             h5f = self.open_hdf()
 
@@ -573,7 +572,10 @@ class Subject(object):
         _ = self.close_hdf(h5f)
 
         # Update history
-        self.update_history('protocol', protocol_name, self.current)
+        self.update_history(type='protocol', name=protocol_name, value=self.current)
+        self.update_history(type='step',
+                            name=self.current[self.step]['step_name'],
+                            value=prot_dict)
 
     def flush_current(self):
         """
@@ -641,6 +643,13 @@ class Subject(object):
         trial_table = None
         cont_table = None
 
+        # get step history
+        try:
+            step_df = self.get_step_history(use_history=True)
+        except Exception as e:
+            self.logger.exception(f"Couldnt get step history to trim data given to graduation objects, got exception {e}")
+            step_df = None
+
         h5f = self.open_hdf()
 
         # Get current task parameters and handles to tables
@@ -658,6 +667,7 @@ class Subject(object):
         try:
             self.current_trial = trial_table.cols.trial_num[-1]+1
         except IndexError:
+            self.logger.info('No previous trials detected, setting current_trial to 0')
             self.current_trial = 0
 
         # should have gotten session from current node when we started
@@ -707,9 +717,32 @@ class Subject(object):
 
                 if grad_obj.COLS:
                     # these are columns in our trial table
+
+                    # first try and find some timestamp column to filter past data we give to the graduation object
+                    # in case the subject has been stepped back down to a previous stage, for example
+                    # FIXME: Hardcoding parameter names, should have a guaranteed 'trial_timestamp' column for each trial
+                    slice_start = 0
+                    try:
+                        ts_cols = [col for col in trial_table.colnames if 'timestamp' in col]
+                        # just use the first timestamp column
+                        if len(ts_cols) > 0:
+                            trial_ts = pd.DataFrame({'timestamp': trial_table.col(ts_cols[0])})
+                            trial_ts['timestamp'] = pd.to_datetime(trial_ts['timestamp'].str.decode('utf-8'))
+                        else:
+                            self.logger.warning('No timestamp column could be found in trial data, cannot trim data given to graduation objects')
+                            trial_ts = None
+
+                        if trial_ts is not None and step_df is not None:
+                            # see where, if any, the timestamp column is older than the last time the step was changed
+                            slice_start = np.min(np.where(trial_ts['timestamp'] >= step_df['timestamp'].iloc[-1]))
+
+                    except Exception as e:
+                        self.logger.exception(f"Couldnt trim data given to graduation objects with step change history, got exception {e}")
+
+                    # then give the data to the graduation object
                     for col in grad_obj.COLS:
                         try:
-                            grad_params.update({col: trial_table.col(col)})
+                            grad_params.update({col: trial_table.col(col)[slice_start:]})
                         except KeyError:
                             self.logger.warning('Graduation object requested column {}, but it was not found in the trial table'.format(col))
 
@@ -1076,15 +1109,27 @@ N Sessions: {}""".format(self.name, path, df.shape[0], len(df.session.unique()))
         h5f = self.open_hdf()
         if use_history:
             history = h5f.root.history.history
-            # return a dataframe of step number, datetime and step name
-            step_df = pd.DataFrame([(x['value'], x['time'], x['name']) for x in history.iterrows() if x['type'] == 'step'])
+            step_df = pd.DataFrame(history.read())
+            if step_df.shape[0] == 0:
+                return None
+            # encode as unicode
+            # https://stackoverflow.com/a/63028569/13113166
+            for col, dtype in step_df.dtypes.items():
+                if dtype == np.object:  # Only process byte object columns.
+                    step_df[col] = step_df[col].apply(lambda x: x.decode("utf-8"))
 
-            step_df = step_df.rename({0: 'step_n',
-                                      1: 'timestamp',
-                                      2: 'name'}, axis='columns')
+            # filter to step only
+            step_df = step_df[step_df['type'] == 'step'].drop('type', axis=1)
+            # rename and retype
+            step_df = step_df.rename(columns={
+                'value': 'step_n',
+                'time': 'timestamp',
+                'name': 'name'})
 
             step_df['timestamp'] = pd.to_datetime(step_df['timestamp'],
                                                   format='%y%m%d-%H%M%S')
+            step_df['step_n'] = pd.to_numeric(step_df['step_n'])
+
 
         else:
             group_name = "/data/{}".format(self.protocol_name)
