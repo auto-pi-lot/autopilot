@@ -745,9 +745,10 @@ class Terminal(QtWidgets.QMainWindow):
 
                 if subject_orig_step != step:
                     self.logger.info('Setting {} step from {} to {}'.format(subject, subject_orig_step, step))
-                    step_name = self.subjects[subject].current[step]['step_name']
+                    # this now happens in .assign_protocol
+                    #step_name = self.subjects[subject].current[step]['step_name']
                     #update history also flushes current - aka it also actually changes the step number
-                    self.subjects[subject].update_history('step', step_name, step)
+                    #self.subjects[subject].update_history('step', step_name, step)
         else:
             self.logger.debug('reassign cancelled')
 
