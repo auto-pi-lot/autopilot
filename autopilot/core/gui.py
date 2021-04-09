@@ -2870,6 +2870,7 @@ class Stream_Video(QtWidgets.QDialog):
         self.cam_info = {} # type: typing.Dict[str, typing.Union[QtWidgets.QFormLayout, QtWidgets.QLabel]]
 
         self._streaming_pilot = '' # keep reference to ID of pilot that was started if combobox values change while streaming
+        self._streaming_cam_id = ''
 
         self.init_ui()
         self.show()
@@ -2972,6 +2973,7 @@ class Stream_Video(QtWidgets.QDialog):
             # starting!!
             self.comboboxes['pilot'].setDisabled(True)
             self.comboboxes['camera'].setDisabled(True)
+            self._streaming_cam_id = self.current_camera.split('.')[-1]
             self.node.send(to=self.current_pilot, key="STREAM_VIDEO",
                            value={
                                'starting': True,
@@ -2983,7 +2985,7 @@ class Stream_Video(QtWidgets.QDialog):
             self.comboboxes['camera'].setDisabled(False)
             self.node.send(to=self.current_pilot, key="STREAM_VIDEO",
                            value={'starting':False,'camera':self.current_camera})
-            
+
 
     def write_video(self):
         # import here so only import when this particular widget is used.
@@ -3001,12 +3003,8 @@ class Stream_Video(QtWidgets.QDialog):
                 child.widget().deleteLater()
 
 
-
-
-
-
     def l_frame(self, value):
-        self.video.update_frame('stream', value[1])
+        self.video.update_frame('stream', value[self._streaming_cam_id])
 
 
 

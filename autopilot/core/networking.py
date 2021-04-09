@@ -1474,8 +1474,8 @@ class Net_Node(object):
                     listen_thread.start()
                 except Exception as e:
                     self.logger.exception(e)
-
-            self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
+            else:
+                self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
 
         if (msg.key != "CONFIRM") and ('NOREPEAT' not in msg.flags.keys()) :
             # send confirmation
