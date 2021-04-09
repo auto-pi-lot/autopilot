@@ -730,7 +730,7 @@ class Terminal(QtWidgets.QMainWindow):
                     self.logger.info(f'Protocol for {subject} set to blank, not setting')
                     continue
 
-                if self.subjects[subject].protocol_name != protocol:
+                if self.subjects[subject].protocol_name != protocol or subject_orig_step != step:
                     self.logger.info('Setting {} protocol from {} to {}'.format(subject, self.subjects[subject].protocol_name, protocol))
                     protocol_file = os.path.join(prefs.get('PROTOCOLDIR'), protocol + '.json')
                     self.subjects[subject].assign_protocol(protocol_file, step)
