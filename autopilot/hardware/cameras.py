@@ -649,13 +649,13 @@ class PiCamera(Camera):
         
         self._sensor_mode = None
         self._cam = None
+        self._picam_writer = None
 
         self.camera_idx = camera_idx
         self.sensor_mode = sensor_mode
         self.resolution = resolution
         self.fps = fps
         self.format = format
-        self._picam_writer = None
     
     @property
     def sensor_mode(self) -> int:
