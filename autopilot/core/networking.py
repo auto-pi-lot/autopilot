@@ -601,7 +601,7 @@ class Station(multiprocessing.Process):
                 listen_thread = threading.Thread(target=listen_funk, args=(msg,))
                 listen_thread.start()
             except KeyError:
-                self.logger.exception('ERROR: No function could be found for msg id {} with key: {}'.format(msg.id, msg.key))
+                self.logger.exception('No function could be found for msg id {} with key: {}'.format(msg.id, msg.key))
 
 
             # send a return message that confirms even if we except
@@ -1041,7 +1041,8 @@ class Pilot_Station(Station):
             'HANDSHAKE': self.l_noop,
             'CALIBRATE_PORT': self.l_forward,
             'CALIBRATE_RESULT': self.l_forward,
-            'BANDWIDTH': self.l_forward
+            'BANDWIDTH': self.l_forward,
+            'STREAM_VIDEO': self.l_forward
         })
 
     ###########################3
