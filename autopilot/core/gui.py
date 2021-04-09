@@ -132,14 +132,13 @@ class Control_Panel(QtWidgets.QWidget):
 
         # Make dict to store handles to subjects lists
         self.subject_lists = {}
+        self.panels = {}
 
         # Set layout for whole widget
         self.layout = QtWidgets.QGridLayout()
         self.layout.setContentsMargins(0,0,0,0)
         self.layout.setSpacing(0)
         self.setLayout(self.layout)
-
-        self.panels = {}
 
         self.init_ui()
 
@@ -157,24 +156,42 @@ class Control_Panel(QtWidgets.QWidget):
         self.layout.setColumnStretch(0, 2)
         self.layout.setColumnStretch(1, 2)
 
-        # Iterate through pilots and subjects, making start/stop buttons for pilots and lists of subjects
-        for i, (pilot, subjects) in enumerate(self.pilots.items()):
-            # in pilot dict, format is {'pilot':{'subjects':['subject1',...],'ip':'',etc.}}
-            subjects = subjects['subjects']
-            # Make a list of subjects
-            subject_list = Subject_List(subjects, drop_fn = self.update_db)
-            subject_list.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-            #subject_list.itemDoubleClicked.connect(self.edit_params)
-            self.subject_lists[pilot] = subject_list
+        # on init, add all the pilots we have
+        for pilot_id, pilot_params in self.pilots.items():
+            self.add_pilot(pilot_id, pilot_params.get('subjects', []))
 
-            # Make a panel for pilot control
-            pilot_panel = Pilot_Panel(pilot, subject_list, self.start_fn, self.create_subject)
-            pilot_panel.setFixedWidth(150)
 
-            self.panels[pilot] = pilot_panel
+    def add_pilot(self, pilot_id:str, subjects:list=None):
+        """
+        Add a :class:`.Pilot_Panel` for a new pilot, and populate a :class:`.Subject_List` for it
 
-            self.layout.addWidget(pilot_panel, i, 1, 1, 1)
-            self.layout.addWidget(subject_list, i, 2, 1, 1)
+        Args:
+            pilot_id (str): ID of new pilot
+            subjects (list): Optional, list of any subjects that the pilot has.
+
+        Returns:
+
+        """
+        if subjects is None:
+            subjects = []
+
+        # Make a list of subjects
+        subject_list = Subject_List(subjects, drop_fn=self.update_db)
+        subject_list.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        # subject_list.itemDoubleClicked.connect(self.edit_params)
+        self.subject_lists[pilot_id] = subject_list
+
+        # Make a panel for pilot control
+        pilot_panel = Pilot_Panel(pilot_id, subject_list, self.start_fn, self.create_subject)
+        pilot_panel.setFixedWidth(150)
+        self.panels[pilot_id] = pilot_panel
+
+        row_idx = self.layout.rowCount()
+
+        self.layout.addWidget(pilot_panel, row_idx, 1, 1, 1)
+        self.layout.addWidget(subject_list, row_idx, 2, 1, 1)
+
+
 
     def create_subject(self, pilot):
         """
@@ -259,6 +276,11 @@ class Control_Panel(QtWidgets.QWidget):
                 where `'pilot_values'` can be nothing, a list of subjects,
                 or any other information included in the pilot db
         """
+        # if we were given a new pilot, add it
+        if 'new' in kwargs.keys():
+            for pilot, value in kwargs['new'].items():
+                self.pilots[pilot] = value
+
         # gather subjects from lists
         for pilot, mlist in self.subject_lists.items():
             subjects = []
@@ -266,11 +288,6 @@ class Control_Panel(QtWidgets.QWidget):
                 subjects.append(mlist.item(i).text())
 
             self.pilots[pilot]['subjects'] = subjects
-
-        # if we were given a new pilot, add it
-        if 'new' in kwargs.keys():
-            for pilot, value in kwargs['new'].items():
-                self.pilots[pilot] = value
 
         # strip any state that's been stored
         for p, val in self.pilots.items():
@@ -285,7 +302,7 @@ class Control_Panel(QtWidgets.QWidget):
                 with open('/usr/autopilot/pilot_db.json', 'w') as pilot_file:
                     json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
             except IOError:
-                Exception('Couldnt update pilot db!')
+                self.logger.exception('Couldnt update pilot db!')
 
 ####################################
 # Control Panel Widgets
@@ -2820,7 +2837,7 @@ class Stream_Video(QtWidgets.QDialog):
         self.cameras = {}
         for pilot, pilot_params in self.pilots.items():
             pilot_prefs = pilot_params.get('prefs', None)
-            if prefs is None:
+            if pilot_prefs is None:
                 self.logger.exception(f'pilot {pilot} had no prefs in its pilots_db entry')
                 continue
 

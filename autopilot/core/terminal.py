@@ -372,19 +372,6 @@ class Terminal(QtWidgets.QMainWindow):
         self.show()
         logging.info('UI Initialized')
 
-    def reset_ui(self):
-        """
-        Clear Layout and call :meth:`~.Terminal.initUI` again
-        """
-
-        # type: () -> None
-        self.layout = QtWidgets.QGridLayout()
-        self.layout.setSpacing(0)
-        self.layout.setContentsMargins(0,0,0,0)
-        self.widget.setLayout(self.layout)
-        self.setCentralWidget(self.widget)
-        self.initUI()
-
 
     ##########################3
     # Listens & inter-object methods
@@ -528,6 +515,7 @@ class Terminal(QtWidgets.QMainWindow):
         # TODO: Also tell the relevant dataview to clear
 
         # update the pilot button
+        self.logger.debug(f'updating pilot state: {value}')
         if value['pilot'] in self.pilots.keys():
             if 'state' not in self.pilots[value['pilot']].keys():
                 self.pilots[value['pilot']]['state'] = value['state']
@@ -557,7 +545,9 @@ class Terminal(QtWidgets.QMainWindow):
             self.pilots[value['pilot']]['prefs'] = value.get('prefs', {})
 
         else:
-            self.new_pilot(name=value['pilot'], ip=value['ip'])
+            self.new_pilot(name=value['pilot'],
+                           ip=value.get('ip', ''),
+                           pilot_prefs=value.get('prefs', {}))
 
         # update the pilot button
         if value['pilot'] in self.control_panel.panels.keys():
@@ -569,7 +559,7 @@ class Terminal(QtWidgets.QMainWindow):
     #############################
     # GUI & etc. methods
 
-    def new_pilot(self, ip='', name=None):
+    def new_pilot(self,  name=None, ip='',pilot_prefs=None):
         """
         Make a new entry in :attr:`.Terminal.pilots` and make appropriate
         GUI elements.
@@ -580,19 +570,22 @@ class Terminal(QtWidgets.QMainWindow):
         """
         if name is None:
             name, ok = QtWidgets.QInputDialog.getText(self, "Pilot ID", "Pilot ID:")
+            if not ok or not name:
+                self.logger.info('Cancel button clicked, not adding new pilot')
+                return
 
-        # make sure we won't overwrite ourself
+        # Warn if we're going to overwrite
         if name in self.pilots.keys():
-            # TODO: Pop a window confirming we want to overwrite
-            pass
+            self.logger.warning(f'pilot with id {name} already in pilot db, overwriting...')
 
-        if name != '':
-            new_pilot = {name:{'subjects':[], 'ip':ip}}
-            self.control_panel.update_db(new=new_pilot)
-            self.reset_ui()
-        else:
-            # Idk maybe pop a dialog window but i don't really see why
-            pass
+        if pilot_prefs is None:
+            pilot_prefs = {}
+
+        self.control_panel.add_pilot(name)
+        new_pilot = {name:{'subjects':[], 'ip':ip, 'prefs':pilot_prefs}}
+        self.control_panel.update_db(new=new_pilot)
+        self.logger.info(f'added new pilot {name}')
+
 
     def new_protocol(self):
         """
