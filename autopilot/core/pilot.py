@@ -544,7 +544,7 @@ class Pilot:
             return
 
         if starting:
-            if cam_group in prefs.get('HARDwARE') and cam_id in prefs.get('HARDWARE')[cam_group]:
+            if cam_group in prefs.get('HARDWARE') and cam_id in prefs.get('HARDWARE')[cam_group]:
                 cam_prefs = prefs.get('HARDWARE')[cam_group][cam_id]
                 cam_obj = get_hardware_class(cam_prefs['type'])(**cam_prefs)
                 if cam_group not in self.hardware.keys():
