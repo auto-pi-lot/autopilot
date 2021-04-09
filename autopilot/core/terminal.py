@@ -516,17 +516,12 @@ class Terminal(QtWidgets.QMainWindow):
 
         # update the pilot button
         self.logger.debug(f'updating pilot state: {value}')
-        if value['pilot'] in self.pilots.keys():
-            if 'state' not in self.pilots[value['pilot']].keys():
-                self.pilots[value['pilot']]['state'] = value['state']
-                #self.control_panel.panels[value['pilot']].button.set_state(value['state'])
-            elif value['state'] != self.pilots[value['pilot']]['state']:
-                #self.control_panel.panels[value['pilot']].button.set_state(value['state'])
-                self.pilots[value['pilot']]['state'] = value['state']
+        if value['pilot'] not in self.pilots.keys():
+            self.logger.info('Got state info from an unknown pilot, adding...')
+            self.new_pilot(name=value['pilot'])
 
-            
-
-
+        self.pilots[value['pilot']]['state'] = value['state']
+        self.control_panel.panels[value['pilot']].button.set_state(value['state'])
 
 
     def l_handshake(self, value):

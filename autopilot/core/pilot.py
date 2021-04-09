@@ -24,8 +24,6 @@ warnings.simplefilter('ignore', category=tables.NaturalNameWarning)
 from autopilot import prefs
 from autopilot.core.loggers import init_logger
 
-
-
 if __name__ == '__main__':
     # Parse arguments - this should have been called with a .json prefs file passed
     # We'll try to look in the default location first
@@ -55,7 +53,7 @@ if __name__ == '__main__':
 from autopilot.core.networking import Pilot_Station, Net_Node, Message
 from autopilot import external
 from autopilot import tasks
-from autopilot.hardware import gpio
+from autopilot.hardware import gpio, get_hardware_class
 
 
 ########################################
@@ -184,7 +182,8 @@ class Pilot:
             'PARAM': self.l_param, # A parameter is being changed
             'CALIBRATE_PORT': self.l_cal_port, # Calibrate a water port
             'CALIBRATE_RESULT': self.l_cal_result, # Compute curve and store result
-            'BANDWIDTH': self.l_bandwidth # test our bandwidth
+            'BANDWIDTH': self.l_bandwidth, # test our bandwidth
+            'STREAM_VIDEO': self.l_stream_video
         }
 
         # spawn_network gives us the independent message-handling process
@@ -205,6 +204,10 @@ class Pilot:
         if prefs.get( 'PULLDOWNS'):
             for pin in prefs.get('PULLDOWNS'):
                 self.pulls.append(gpio.Digital_Out(int(pin), pull='D', polarity=1))
+
+        # store some hardware we use outside of a task
+        self.hardware = {}
+
 
         self.logger.debug('pullups and pulldowns set')
         # check if the calibration file needs to be updated
@@ -511,6 +514,60 @@ class Pilot:
 
         #self.networking.set_logging(True)
         #self.node.do_logging.set()
+
+    def l_stream_video(self, value):
+        """
+        Start or stop video streaming
+
+        Args:
+            value (dict): a dictionary of the form::
+
+                {
+                    'starting': bool, # whether we're starting (True) or stopping
+                    'camera': str, # the camera to start/stop, of form 'group.camera_id'
+                    'stream_to': node id that the camera should send to
+                }
+        """
+
+        starting = value.get('starting', False)
+        camera = value.get('camera', None)
+        stream_to = value.get('stream_to', None)
+
+        if camera is None or stream_to is None:
+            self.logger.exception('Need a camera and a place to stream it to!')
+            return
+
+        try:
+            cam_group, cam_id = camera.split('.')
+        except ValueError:
+            self.logger.exception(f'Expected camera id in form group.camera_id, got {camera}')
+            return
+
+        if starting:
+            if cam_group in prefs.get('HARDwARE') and cam_id in prefs.get('HARDWARE')[cam_group]:
+                cam_prefs = prefs.get('HARDWARE')[cam_group][cam_id]
+                cam_obj = get_hardware_class(cam_prefs['type'])(**cam_prefs)
+                if cam_group not in self.hardware.keys():
+                    self.hardware[cam_group] = {}
+                self.hardware[cam_group][cam_id] = cam_obj
+
+                cam_obj.stream(to=stream_to)
+                cam_obj.capture()
+                self.logger.info(f'Starting to stream video from {camera} to {stream_to}')
+
+            else:
+                self.logger.exception(f'No camera in group {cam_group} and id {cam_id} is configured in prefs')
+
+        else:
+            # stopping!
+            if cam_group in self.hardware.keys() and cam_id in self.hardware[cam_group]:
+                cam_obj = self.hardware[cam_group][cam_id]
+                cam_obj.stop()
+                cam_obj.release()
+                del self.hardware[cam_group][cam_id]
+                self.logger.info(f'Stopped streaming camera {camera}')
+            else:
+                self.logger.exception(f'No camera was capturing with group {cam_group} and id {cam_id}')
 
 
 

@@ -40,6 +40,7 @@ import typing
 import warnings
 import json
 from pathlib import Path
+import importlib
 
 from autopilot import prefs
 from autopilot.core.networking import Net_Node
@@ -73,6 +74,29 @@ BCM_TO_BOARD = dict([reversed(i) for i in BOARD_TO_BCM.items()])
 """
 dict: The inverse of :const:`BOARD_TO_BCM`.
 """
+
+def get_hardware_class(hardware_class:str) -> typing.Type['Hardware']:
+    """
+    Get a hardware class from a string like 'cameras.PiCamera'
+
+    Args:
+        hardware_class (str): Some string with the module and class name relative to the hardware module
+
+    Returns:
+        :class:`.Hardware`
+    """
+
+    # split off module name from class name
+    split_str = hardware_class.split('.')
+    if len(split_str)>2:
+        mod_str = '.'.join(split_str[0:-1])
+    else:
+        mod_str = split_str[0]
+    class_str = split_str[-1]
+
+    full_mod = 'autopilot.hardware.' + mod_str
+    imported_mod = importlib.import_module(full_mod)
+    return getattr(imported_mod, class_str)
 
 
 class Hardware(object):

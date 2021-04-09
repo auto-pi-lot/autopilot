@@ -2861,7 +2861,7 @@ class Stream_Video(QtWidgets.QDialog):
         self.node = Net_Node(id=self.id,
                              upstream="T",
                              port=prefs.get('MSGPORT'),
-                             listens={'FRAME':self.l_frame},
+                             listens={'CONTINUOUS':self.l_frame},
                              instance=True)
 
         self.layout = None # type: typing.Optional[QtWidgets.QHBoxLayout]
@@ -2869,7 +2869,10 @@ class Stream_Video(QtWidgets.QDialog):
         self.buttons = {} # type: typing.Dict[str, QtWidgets.QPushButton]
         self.cam_info = {} # type: typing.Dict[str, typing.Union[QtWidgets.QFormLayout, QtWidgets.QLabel]]
 
+        self._streaming_pilot = '' # keep reference to ID of pilot that was started if combobox values change while streaming
+
         self.init_ui()
+        self.show()
 
     def init_ui(self):
         self.layout = QtWidgets.QHBoxLayout()
@@ -2886,12 +2889,12 @@ class Stream_Video(QtWidgets.QDialog):
         self.comboboxes['pilot'].addItem('Select Pilot...')
         for pilot in sorted(self.pilots.keys()):
             self.comboboxes['pilot'].addItem(pilot)
-        self.comboboxes['pilot'].valueChanged.connect(self.populate_cameras)
+        self.comboboxes['pilot'].currentIndexChanged.connect(self.populate_cameras)
 
         # and to select camera device
         self.comboboxes['camera'] = QtWidgets.QComboBox()
-        self.comboboxed['camera'].addItem('Select Camera...')
-        self.comboboxes['camera'].valueChanged.connect(self.camera_selected)
+        self.comboboxes['camera'].addItem('Select Camera...')
+        self.comboboxes['camera'].currentIndexChanged.connect(self.camera_selected)
 
         # buttons to control video
         self.buttons['start'] = QtWidgets.QPushButton('Start Streaming')
@@ -2918,10 +2921,11 @@ class Stream_Video(QtWidgets.QDialog):
         self.button_layout.addWidget(self.buttons['start'])
         self.button_layout.addWidget(self.buttons['write'])
         self.button_layout.addWidget(self.cam_info['label'])
-        self.button_layout.addWidget(self.cam_info['form'])
+        self.button_layout.addLayout(self.cam_info['form'])
+        self.button_layout.addStretch(1)
 
-
-        self.layout.addLayout(self.button_layout)
+        self.layout.addLayout(self.button_layout, 1)
+        self.setLayout(self.layout)
 
     @property
     def current_pilot(self) -> str:
@@ -2935,6 +2939,11 @@ class Stream_Video(QtWidgets.QDialog):
         current_pilot = self.current_pilot
         self.comboboxes['camera'].clear()
         self._clear_info()
+        self.buttons['start'].setChecked(False)
+        self.buttons['start'].setDisabled(True)
+        self.buttons['write'].setChecked(False)
+        self.buttons['write'].setDisabled(True)
+
 
         # ignore placeholder text
         if current_pilot in self.cameras.keys():
@@ -2955,12 +2964,33 @@ class Stream_Video(QtWidgets.QDialog):
             self.cam_info['label'].setText(current_camera)
             for param_name, param_val in self.cameras[current_pilot][current_camera].items():
                 self.cam_info['form'].addRow(param_name, QtWidgets.QLabel(str(param_val)))
-                
+
+            self.buttons['start'].setDisabled(False)
 
     def toggle_start(self):
-        pass
+        if self.buttons['start'].isChecked():
+            # starting!!
+            self.comboboxes['pilot'].setDisabled(True)
+            self.comboboxes['camera'].setDisabled(True)
+            self.node.send(to=self.current_pilot, key="STREAM_VIDEO",
+                           value={
+                               'starting': True,
+                               'camera': self.current_camera,
+                               'stream_to': self.id
+                           })
+        else:
+            self.comboboxes['pilot'].setDisabled(False)
+            self.comboboxes['camera'].setDisabled(False)
+            self.node.send(to=self.current_pilot, key="STREAM_VIDEO",
+                           value={'starting':False,'camera':self.current_camera})
+            
 
     def write_video(self):
+        # import here so only import when this particular widget is used.
+        # (until we refactor GUI objects)
+        from autopilot.hardware.cameras import Video_Writer
+
+
         pass
 
     def _clear_info(self):
@@ -2976,7 +3006,7 @@ class Stream_Video(QtWidgets.QDialog):
 
 
     def l_frame(self, value):
-        pass
+        self.video.update_frame('stream', value[1])
 
 
 
