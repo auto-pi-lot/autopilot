@@ -597,7 +597,7 @@ class Subject(object):
         self.update_history(type='protocol', name=protocol_name, value=self.current)
         self.update_history(type='step',
                             name=self.current[self.step]['step_name'],
-                            value=prot_dict)
+                            value=self.step)
 
     def flush_current(self):
         """

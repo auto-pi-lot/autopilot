@@ -466,6 +466,7 @@ class Terminal(QtWidgets.QMainWindow):
         subject_name = value['subject']
         self.subjects[subject_name].save_data(value)
         if self.subjects[subject_name].did_graduate.is_set() is True:
+            self.logger.info(f'Graduating subject {subject_name}')
             self.node.send(to=value['pilot'], key="STOP", value={'graduation':True})
             self.subjects[subject_name].stop_run()
             #adding sleep to debug graduation hiccups -mike
@@ -727,6 +728,7 @@ class Terminal(QtWidgets.QMainWindow):
             subject_protocols = reassign_window.subjects
 
             for subject, protocol in subject_protocols.items():
+
                 step = protocol[1]
                 protocol = protocol[0]
 
@@ -738,7 +740,7 @@ class Terminal(QtWidgets.QMainWindow):
                     self.logger.info(f'Protocol for {subject} set to blank, not setting')
                     continue
 
-                if self.subjects[subject].protocol_name != protocol:
+                if self.subjects[subject].protocol_name != protocol or subject_orig_step != step:
                     self.logger.info('Setting {} protocol from {} to {}'.format(subject, self.subjects[subject].protocol_name, protocol))
                     protocol_file = os.path.join(prefs.get('PROTOCOLDIR'), protocol + '.json')
                     self.subjects[subject].assign_protocol(protocol_file, step)
