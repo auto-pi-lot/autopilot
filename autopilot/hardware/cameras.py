@@ -749,7 +749,7 @@ class PiCamera(Camera):
         and :meth:`~picamera.PiCamera.start_recording` in the set :attr:`~PiCamera.format`
         """
         self._picam_writer = self.PiCamera_Writer(self.resolution)
-        self.cam.start_recording(self.writer, self.format)
+        self.cam.start_recording(self._picam_writer, self.format)
 
     def _grab(self) -> typing.Tuple[str, np.ndarray]:
         """
