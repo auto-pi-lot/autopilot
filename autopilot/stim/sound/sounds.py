@@ -37,14 +37,8 @@ from scipy.io import wavfile
 from scipy.signal import resample
 import numpy as np
 import threading
-import logging
 from itertools import cycle
-import warnings
-if sys.version_info >= (3,0):
-    from queue import Empty, Full
-else:
-    from Queue import Empty, Full
-
+from queue import Empty, Full
 
 from autopilot import prefs
 from autopilot.core.loggers import init_logger
@@ -58,8 +52,6 @@ try:
 except:
 #    # TODO: The 'attribute don't exist' type - i think NameError?
     server_type = None
-
-
 
 if server_type in ("pyo", "docs"):
     try:

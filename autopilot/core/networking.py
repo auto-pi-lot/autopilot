@@ -31,11 +31,8 @@ from zmq.eventloop.zmqstream import ZMQStream
 from itertools import count
 import numpy as np
 import pdb
-#from pudb.remote import set_trace
-if sys.version_info >= (3,0):
-    import queue
-else:
-    import Queue as queue
+
+import queue
 
 from autopilot import prefs
 from autopilot.core.loggers import init_logger
