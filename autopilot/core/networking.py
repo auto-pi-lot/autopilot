@@ -1041,6 +1041,33 @@ class Pilot_Station(Station):
             'BANDWIDTH': self.l_forward
         })
 
+        # ping back our status to the terminal every so often
+        if prefs.get('PING_INTERVAL') is None:
+            self.ping_interval = 5
+        else:
+            self.ping_interval = float(prefs.get('PING_INTERVAL'))
+
+        self._ping_thread = threading.Timer(self.ping_interval, self._pinger)
+        self._ping_thread.setDaemon(True)
+        self._ping_thread.start()
+
+    def _pinger(self):
+        """
+        Periodically ping the terminal with our status
+
+        Calls its own timer to replace it
+
+
+        Returns:
+
+        """
+        self.l_ping()
+        if not self.closing.is_set():
+            self._ping_thread = threading.Timer(self.ping_interval, self._pinger)
+            self._ping_thread.setDaemon(True)
+            self._ping_thread.start()
+
+
     ###########################3
     # Message/Listen handling methods
 
@@ -1076,7 +1103,7 @@ class Pilot_Station(Station):
 
         pass
 
-    def l_ping(self, msg):
+    def l_ping(self, msg=None):
         """
         The Terminal wants to know our status
 
