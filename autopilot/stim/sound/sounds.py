@@ -37,14 +37,8 @@ from scipy.io import wavfile
 from scipy.signal import resample
 import numpy as np
 import threading
-import logging
 from itertools import cycle
-import warnings
-if sys.version_info >= (3,0):
-    from queue import Empty, Full
-else:
-    from Queue import Empty, Full
-
+from queue import Empty, Full
 
 from autopilot import prefs
 from autopilot.core.loggers import init_logger
@@ -58,8 +52,6 @@ try:
 except:
 #    # TODO: The 'attribute don't exist' type - i think NameError?
     server_type = None
-
-
 
 if server_type in ("pyo", "docs"):
     try:
@@ -190,7 +182,6 @@ if server_type in ("jack", "docs", True):
             self.continuous_flag = jackclient.CONTINUOUS
             self.continuous_q = jackclient.CONTINUOUS_QUEUE
             self.continuous_loop = jackclient.CONTINUOUS_LOOP
-            self.quitting = threading.Event()
 
             self.initialized = False
             self.buffered = False
@@ -286,10 +277,6 @@ if server_type in ("jack", "docs", True):
             # refresh nsamples
             self.get_nsamples()
 
-
-
-
-
         def buffer(self):
             """
             Dump chunks into the sound queue.
@@ -338,11 +325,6 @@ if server_type in ("jack", "docs", True):
             This method will call :meth:`.quantize_duration` to force duration such that the sound has full frames.
 
             An exception will be raised if the sound has been padded.
-
-
-
-            Returns:
-
             """
 
             # FIXME: Initialized should be more flexible,
@@ -352,13 +334,9 @@ if server_type in ("jack", "docs", True):
             self.initialized = False
 
             if not self.initialized and not self.table:
-                # try:
                 self.quantize_duration()
                 self.init_sound()
                 self.initialized = True
-                # except:
-                #     pass
-                    #TODO: Log this, better error handling here
 
             if not self.chunks:
                 self.chunk()
@@ -378,10 +356,8 @@ if server_type in ("jack", "docs", True):
             # load frames into continuous queue
             for frame in self.chunks:
                 self.continuous_q.put_nowait(frame)
-            # The jack server looks for a None object to clear the play flag
-            # self.continuous_q.put_nowait(None)
-            self.buffered_continuous = True
 
+            self.buffered_continuous = True
 
         def play(self):
             """
@@ -434,25 +410,8 @@ if server_type in ("jack", "docs", True):
             if not loop:
                 raise NotImplementedError('Continuous, unlooped streaming has not been implemented yet!')
 
-            # FIXME: Initialized should be more flexible,
-            # for now just deleting whatever init happened because
-            # continuous sounds are in development
-            self.table = None
-            self.initialized = False
-
-            self.quantize_duration()
-            self.init_sound()
-            self.initialized = True
-            self.chunk()
-
-            # if not self.buffered_continuous:
-            #     self.buffer_continuous()
-            self.continuous_cycle = cycle(self.chunks)
-
-            # start the buffering thread
-            self.cont_thread = threading.Thread(target=self._buffer_continuous)
-            self.cont_thread.setDaemon(True)
-            self.cont_thread.start()
+            if not self.buffered_continuous:
+                self.buffer_continuous()
 
             if loop:
                 self.continuous_loop.set()
@@ -463,30 +422,7 @@ if server_type in ("jack", "docs", True):
             self.continuous_flag.set()
             self.continuous = True
 
-        def _buffer_continuous(self):
-            self.logger.debug('Entering _buffer_continuous thread')
 
-            # empty queue
-            while not self.continuous_q.empty():
-                try:
-                    _ = self.continuous_q.get_nowait()
-                except Empty:
-                    # normal, get until it's empty
-                    break
-
-            # want to be able to quit if queue remains full for, say, 20 periods
-            #wait_time = (self.blocksize/float(self.fs))*20
-
-            while not self.quitting.is_set():
-                try:
-                    #self.continuous_q.put(self.continuous_cycle.next(), timeout=wait_time)
-                    self.continuous_q.put_nowait(next(self.continuous_cycle))
-                except Full:
-                    self.logger.debug('Continuous queue was full!')
-
-            self.logger.debug("Exiting _buffer_continuous thread")
-            # for chunk in self.chunks:
-            #     self.continuous_q.put_nowait(chunk)
 
         def stop_continuous(self):
             """
@@ -498,9 +434,7 @@ if server_type in ("jack", "docs", True):
                 self.logger.warning("stop_continuous called but not a continuous sound!")
                 return
 
-            self.logger.debug('stopping continous sound')
-
-            self.quitting.set()
+            self.logger.debug('stopping continuous so')
             self.continuous_flag.clear()
             self.continuous_loop.clear()
 

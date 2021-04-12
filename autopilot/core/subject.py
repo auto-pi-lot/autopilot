@@ -26,10 +26,8 @@ from autopilot import prefs
 from autopilot.stim.sound.sounds import STRING_PARAMS
 from autopilot.core.loggers import init_logger
 
-if sys.version_info >= (3,0):
-    import queue
-else:
-    import Queue as queue
+import queue
+
 
 # suppress pytables natural name warnings
 warnings.simplefilter('ignore', category=tables.NaturalNameWarning)
@@ -219,7 +217,7 @@ class Subject(object):
         history_row.append()
 
         # we have to always open and close the h5f
-        _ = self.close_hdf(h5f)
+        self.close_hdf(h5f)
 
     def open_hdf(self, mode='r+'):
         """
@@ -259,7 +257,7 @@ class Subject(object):
         """
         with self.lock:
             h5f.flush()
-            return h5f.close()
+            h5f.close()
 
     def new_subject_file(self, biography):
         """
@@ -324,23 +322,12 @@ class Subject(object):
             try:
                 node = h5f.get_node(node[0])
             except tables.exceptions.NoSuchNodeError:
-                #pdb.set_trace()
                 # try to make it
-                # python 3 compatibility
-                if sys.version_info >= (3,0):
-                    if isinstance(node[3], str):
-                        if node[3] == 'group':
-                            h5f.create_group(node[1], node[2])
-                    elif issubclass(node[3], tables.IsDescription):
-                        h5f.create_table(node[1], node[2], description=node[3])
-
-                # python 2
-                else:
-                    if isinstance(node[3], str):
-                        if node[3] == 'group':
-                            h5f.create_group(node[1], node[2])
-                    elif issubclass(node[3], tables.IsDescription):
-                        h5f.create_table(node[1], node[2], description=node[3])
+                if isinstance(node[3], str):
+                    if node[3] == 'group':
+                        h5f.create_group(node[1], node[2])
+                elif issubclass(node[3], tables.IsDescription):
+                    h5f.create_table(node[1], node[2], description=node[3])
 
         self.close_hdf(h5f)
 
@@ -685,19 +672,59 @@ class Subject(object):
         # tasks without TrialData will have some default table, so this should always be present
         trial_table = h5f.get_node(group_name, 'trial_data')
 
+        ##################################3
+        # first try and find some timestamp column to filter past data we give to the graduation object
+        # in case the subject has been stepped back down to a previous stage, for example
+        # FIXME: Hardcoding parameter names, should have a guaranteed 'trial_timestamp' column for each trial
+        slice_start = 0
+        try:
+            ts_cols = [col for col in trial_table.colnames if 'timestamp' in col]
+            # just use the first timestamp column
+            if len(ts_cols) > 0:
+                trial_ts = pd.DataFrame({'timestamp': trial_table.col(ts_cols[0])})
+                trial_ts['timestamp'] = pd.to_datetime(trial_ts['timestamp'].str.decode('utf-8'))
+            else:
+                self.logger.warning(
+                    'No timestamp column could be found in trial data, cannot trim data given to graduation objects')
+                trial_ts = None
+
+            if trial_ts is not None and step_df is not None:
+                # see where, if any, the timestamp column is older than the last time the step was changed
+                good_rows = np.where(trial_ts['timestamp'] >= step_df['timestamp'].iloc[-1])[0]
+                if len(good_rows) > 0:
+                    slice_start = np.min(good_rows)
+                # otherwise if it's because we found no good rows but have trials,
+                # we will say not to use them, otherwise we say not to use them by
+                # slicing at the end of the table
+                else:
+                    slice_start = trial_table.nrows
+
+        except Exception as e:
+            self.logger.exception(
+                f"Couldnt trim data given to graduation objects with step change history, got exception {e}")
+
+        trial_tab = trial_table.read(start=slice_start)
+        trial_tab_keys = tuple(trial_tab.dtype.fields.keys())
+
+        ##############################
+
         # get last trial number and session
         try:
-            self.current_trial = trial_table.cols.trial_num[-1]+1
+            self.current_trial = trial_tab['trial_num'][-1]+1
         except IndexError:
-            self.logger.info('No previous trials detected, setting current_trial to 0')
+            if 'trial_num' not in trial_tab_keys:
+                self.logger.info('No previous trials detected, setting current_trial to 0')
             self.current_trial = 0
 
         # should have gotten session from current node when we started
+        # so sessions increment over the lifespan of the subject, even if
+        # reassigned.
         if not self.session:
             try:
-                self.session = trial_table.cols.session[-1]
+                self.session = trial_tab['session'][-1]
             except IndexError:
-                self.logger.warning('previous session couldnt be found, setting to 0')
+                if 'session' not in trial_tab_keys:
+                    self.logger.warning('previous session couldnt be found, setting to 0')
                 self.session = 0
 
         self.session += 1
@@ -733,40 +760,18 @@ class Subject(object):
                     for param in grad_obj.PARAMS:
                         #if param not in grad_params.keys():
                         # for now, try to find it in our attributes
+                        # but don't overwrite if it already has what it needs in case
+                        # of name overlap
                         # TODO: See where else we would want to get these from
-                        if hasattr(self, param):
+                        if hasattr(self, param) and param not in grad_params.keys():
                             grad_params.update({param:getattr(self, param)})
 
                 if grad_obj.COLS:
                     # these are columns in our trial table
-
-                    # first try and find some timestamp column to filter past data we give to the graduation object
-                    # in case the subject has been stepped back down to a previous stage, for example
-                    # FIXME: Hardcoding parameter names, should have a guaranteed 'trial_timestamp' column for each trial
-                    slice_start = 0
-                    try:
-                        ts_cols = [col for col in trial_table.colnames if 'timestamp' in col]
-                        # just use the first timestamp column
-                        if len(ts_cols) > 0:
-                            trial_ts = pd.DataFrame({'timestamp': trial_table.col(ts_cols[0])})
-                            trial_ts['timestamp'] = pd.to_datetime(trial_ts['timestamp'].str.decode('utf-8'))
-                        else:
-                            self.logger.warning('No timestamp column could be found in trial data, cannot trim data given to graduation objects')
-                            trial_ts = None
-
-                        if trial_ts is not None and step_df is not None:
-                            # see where, if any, the timestamp column is older than the last time the step was changed
-                            good_rows = np.where(trial_ts['timestamp'] >= step_df['timestamp'].iloc[-1])[0]
-                            if len(good_rows) > 0:
-                                slice_start = np.min(good_rows)
-
-                    except Exception as e:
-                        self.logger.exception(f"Couldnt trim data given to graduation objects with step change history, got exception {e}")
-
                     # then give the data to the graduation object
                     for col in grad_obj.COLS:
                         try:
-                            grad_params.update({col: trial_table.col(col)[slice_start:]})
+                            grad_params.update({col: trial_tab[col]})
                         except KeyError:
                             self.logger.warning('Graduation object requested column {}, but it was not found in the trial table'.format(col))
 

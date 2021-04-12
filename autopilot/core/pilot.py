@@ -266,7 +266,7 @@ class Pilot:
         our Station object will cache this and will handle any
         future requests.
         """
-        self.node.send(self.parentid, 'STATE', self.state, flags={'NOLOG':True})
+        self.node.send(self.name, 'STATE', self.state, flags={'NOLOG':True})
 
     def l_start(self, value):
         """

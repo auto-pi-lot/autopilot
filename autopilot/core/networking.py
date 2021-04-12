@@ -31,11 +31,8 @@ from zmq.eventloop.zmqstream import ZMQStream
 from itertools import count
 import numpy as np
 import pdb
-#from pudb.remote import set_trace
-if sys.version_info >= (3,0):
-    import queue
-else:
-    import Queue as queue
+
+import queue
 
 from autopilot import prefs
 from autopilot.core.loggers import init_logger
@@ -919,19 +916,21 @@ class Terminal_Station(Station):
         Args:
             msg (:class:`.Message`):
         """
-        if msg.sender in self.pilots.keys():
+        if msg.sender not in self.pilots.keys():
+            self.pilots[msg.sender] = {}
             #if 'state' in self.pilots[msg.sender].keys():
                 # if msg.value == self.pilots[msg.sender]['state']:
                 #     # if we've already gotten this one, don't send to terminal
                 #     return
-            self.pilots[msg.sender]['state'] = msg.value
 
-            # Tell the terminal so it can update the pilot_db file
-            state = {'state':msg.value, 'pilot':msg.sender}
-            self.send('_T', 'STATE', state)
+        self.pilots[msg.sender]['state'] = msg.value
 
-            # Tell the plot
-            self.send("P_{}".format(msg.sender), 'STATE', msg.value)
+        # Tell the terminal so it can update the pilot_db file
+        state = {'state':msg.value, 'pilot':msg.sender}
+        self.send('_T', 'STATE', state)
+
+        # Tell the plot
+        self.send("P_{}".format(msg.sender), 'STATE', msg.value)
 
         self.senders[msg.sender] = msg.value
 
@@ -1020,7 +1019,7 @@ class Pilot_Station(Station):
         self.id = prefs.get('NAME')
         self.pi_id = "_{}".format(self.id)
         self.subject = None # Store current subject ID
-        self.state = None # store current pi state
+        self.state = 'IDLE' # store current pi state
         self.child = False # Are we acting as a child right now?
         self.parent = False # Are we acting as a parent right now?
 

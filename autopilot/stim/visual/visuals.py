@@ -10,10 +10,7 @@ import threading
 import os
 import sys
 import datetime
-if sys.version_info >= (3,0):
-    from queue import Queue, Empty
-else:
-    from queue import Queue, Empty
+from queue import Queue, Empty
 
 #print(prefs._PREFS.items())
 if prefs.get( 'CONFIG'):
