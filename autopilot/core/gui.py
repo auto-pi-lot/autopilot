@@ -120,7 +120,7 @@ class Control_Panel(QtWidgets.QWidget):
     # Hosts two nested tab widgets to select pilot and subject,
     # set params, run subjects, etc.
 
-    def __init__(self, subjects, start_fn, pilots=None):
+    def __init__(self, subjects, start_fn, ping_fn, pilots=None):
         """
 
         """
@@ -133,6 +133,7 @@ class Control_Panel(QtWidgets.QWidget):
 
         # We get the Terminal's send_message function so we can communicate directly from here
         self.start_fn = start_fn
+        self.ping_fn = ping_fn
 
         if pilots:
             self.pilots = pilots
@@ -197,7 +198,7 @@ class Control_Panel(QtWidgets.QWidget):
         self.subject_lists[pilot_id] = subject_list
 
         # Make a panel for pilot control
-        pilot_panel = Pilot_Panel(pilot_id, subject_list, self.start_fn, self.create_subject)
+        pilot_panel = Pilot_Panel(pilot_id, subject_list, self.start_fn, self.ping_fn, self.create_subject)
         pilot_panel.setFixedWidth(150)
         self.panels[pilot_id] = pilot_panel
 
@@ -403,7 +404,7 @@ class Pilot_Panel(QtWidgets.QWidget):
         layout (:py:class:`QtWidgets.QGridLayout`): Layout for UI elements
         button (:class:`.Pilot_Button`): button used to control a pilot
     """
-    def __init__(self, pilot=None, subject_list=None, start_fn=None, create_fn=None):
+    def __init__(self, pilot=None, subject_list=None, start_fn=None, ping_fn=None, create_fn=None):
         """
 
         """
@@ -417,6 +418,7 @@ class Pilot_Panel(QtWidgets.QWidget):
         self.pilot = pilot
         self.subject_list = subject_list
         self.start_fn = start_fn
+        self.ping_fn = ping_fn
         self.create_fn = create_fn
         self.button = None
 
@@ -431,7 +433,7 @@ class Pilot_Panel(QtWidgets.QWidget):
         label = QtWidgets.QLabel(self.pilot)
         label.setStyleSheet("font: bold 14pt; text-align:right")
         label.setAlignment(QtCore.Qt.AlignVCenter)
-        self.button = Pilot_Button(self.pilot, self.subject_list, self.start_fn)
+        self.button = Pilot_Button(self.pilot, self.subject_list, self.start_fn, self.ping_fn)
         add_button = QtWidgets.QPushButton("+")
         add_button.clicked.connect(self.create_subject)
         add_button.setSizePolicy(QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding)
@@ -479,7 +481,7 @@ class Pilot_Panel(QtWidgets.QWidget):
 
 
 class Pilot_Button(QtWidgets.QPushButton):
-    def __init__(self, pilot=None, subject_list=None, start_fn=None):
+    def __init__(self, pilot=None, subject_list=None, start_fn=None, ping_fn=None):
         """
         A subclass of (toggled) :class:`QtWidgets.QPushButton` that incorporates the style logic of a
         start/stop button - ie. color, text.
@@ -501,15 +503,23 @@ class Pilot_Button(QtWidgets.QPushButton):
         super(Pilot_Button, self).__init__()
 
         ## GUI Settings
-        self.setCheckable(True)
+        self.setCheckable(False)
         self.setChecked(False)
-        self.setEnabled(False)
+        self.setEnabled(True)
 
-        self.setStyleSheet("QPushButton {color:white; background-color: green}"
-                           "QPushButton:checked {color:white; background-color: red}"
-                           "QPushButton:disabled {color:black; background-color: gray}")
+        self.normal_stylesheet = (
+            "QPushButton {color:white; background-color: green}"
+            "QPushButton:checked {color:white; background-color: red}"
+            "QPushButton:disabled {color:black; background-color: gray}"
+        )
+
+        self.limbo_stylesheet = (
+            "QPushButton {color:black; background-color: gray}"
+        )
+
+        self.setStyleSheet(self.limbo_stylesheet)
         # at start, set our text to no pilot and wait for the signal
-        self.setText("?")
+        self.setText("?PING?")
 
         # keep track of our visual and functional state.
         self.state = "DISCONNECTED"
@@ -527,6 +537,7 @@ class Pilot_Button(QtWidgets.QPushButton):
 
         # Passed a function to toggle start from the control panel
         self.start_fn = start_fn
+        self.ping_fn = ping_fn
         # toggle_start has a little sugar on it before sending to control panel
         # use the clicked rather than toggled signal, clicked only triggers on user
         # interaction, toggle is whenever the state is toggled - so programmatically
@@ -542,6 +553,11 @@ class Pilot_Button(QtWidgets.QPushButton):
         """
         # If we're stopped, start, and vice versa...
         current_subject = self.subject_list.currentItem().text()
+
+        if self.state == "DISCONNECTED":
+            # ping our lil bebs
+            self.ping_fn()
+            return
 
         if current_subject is None:
             Warning("Start button clicked, but no subject selected.")
@@ -579,32 +595,40 @@ class Pilot_Button(QtWidgets.QPushButton):
         if state == self.state:
             return
 
+
         if state == "IDLE":
             # responsive and waiting
+            self.setCheckable(True)
             self.setEnabled(True)
             self.setText('START')
             self.setChecked(False)
         elif state == "RUNNING":
             # running a task
+            self.setCheckable(True)
             self.setEnabled(True)
             self.setText('STOP')
             self.setChecked(True)
         elif state == "STOPPING":
             # stopping
+            self.setCheckable(True)
             self.setEnabled(False)
             self.setText("STOPPING")
             self.setChecked(False)
         elif state == "DISCONNECTED":
             # contact w the pi is missing or lost
-            self.setEnabled(False)
-            self.setText("DISCONNECTED")
+            self.setCheckable(False)
+            self.setEnabled(True)
+            self.setText("?PING?")
             self.setChecked(False)
 
-
-        if self.isChecked():
-            self.setText("STOP")
+        if state == "DISCONNECTED":
+            self.setStyleSheet(self.limbo_stylesheet)
         else:
-            self.setText("START")
+            if self.isChecked():
+                self.setText('STOP')
+            else:
+                self.setText('START')
+            self.setStyleSheet(self.normal_stylesheet)
 
         self.state = state
 
