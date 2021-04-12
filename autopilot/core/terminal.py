@@ -272,7 +272,8 @@ class Terminal(QtWidgets.QMainWindow):
         # Control panel sits on the left, controls pilots & subjects
         self.control_panel = Control_Panel(pilots=self.pilots,
                                            subjects=self.subjects,
-                                           start_fn=self.toggle_start)
+                                           start_fn=self.toggle_start,
+                                           ping_fn=self.ping_pilot)
 
         # Data panel sits on the right, plots stuff.
         self.data_panel = Plot_Widget()
@@ -353,6 +354,9 @@ class Terminal(QtWidgets.QMainWindow):
 
     ##########################3
     # Listens & inter-object methods
+
+    def ping_pilot(self, pilot):
+        self.send(pilot, 'PING')
 
     def heartbeat(self, once=False):
         """
