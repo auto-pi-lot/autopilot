@@ -310,6 +310,8 @@ class Task(object):
             if self.stim_manager is not None:
                 self.stim_manager.end()
 
+        self.logger.info('stopped task')
+
 
 
 
