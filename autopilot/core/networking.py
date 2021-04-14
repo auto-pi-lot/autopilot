@@ -1700,7 +1700,7 @@ class Net_Node(object):
 
         return msg
 
-    def get_stream(self, id, key, min_size=5, upstream=None, port = None, ip=None, subject=None, q_size=1024):
+    def get_stream(self, id, key, min_size=5, upstream=None, port = None, ip=None, subject=None, q_size=1):
         """
 
         Make a queue that another object can dump data into that sends on its own socket.
