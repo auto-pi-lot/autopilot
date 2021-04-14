@@ -639,7 +639,8 @@ class PiCamera(Camera):
             resolution (tuple): a tuple of (width, height) integers, but mind the note in the above documentation
                 regarding the sensor_mode property and resolution
             fps (int): frames per second, but again mind the note on sensor_mode
-            format (str): One of the capture formats listed in :
+            format (str): Format passed to :class`picamera.PiCamera.start_recording` one of ``('rgb' (default), 'grayscale')``
+                The ``'grayscale'`` format uses the ``'yuv'`` format, and extracts the luminance channel
             *args (): passed to superclass
             **kwargs (): passed to superclass
         """
@@ -751,7 +752,11 @@ class PiCamera(Camera):
         and :meth:`~picamera.PiCamera.start_recording` in the set :attr:`~PiCamera.format`
         """
         self._picam_writer = self.PiCamera_Writer(self.resolution)
-        self.cam.start_recording(self._picam_writer, self.format)
+        format = self.format
+        if format == "grayscale":
+            format = 'yuv'
+
+        self.cam.start_recording(self._picam_writer, format)
 
     def _grab(self) -> typing.Tuple[str, np.ndarray]:
         """
@@ -763,7 +768,10 @@ class PiCamera(Camera):
         """
         # wait until a new frame is captured
         self._picam_writer.grab_event.wait()
-        ret = (self._picam_writer.timestamp, self._picam_writer.frame)
+        if self.format == "grayscale":
+            ret = (self._picam_writer.timestamp, self._picam_writer.frame[:,:,0])
+        else:
+            ret = (self._picam_writer.timestamp, self._picam_writer.frame)
         self._picam_writer.grab_event.clear()
         return ret
 
