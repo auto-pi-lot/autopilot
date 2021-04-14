@@ -829,12 +829,12 @@ class PiCamera(Camera):
                 self.frame = np.frombuffer(
                     buf, dtype=np.uint8,
                     count=self._block_resolution[0]*self._block_resolution[1]
-                ).reshape(self._block_resolution)[:self.resolution[0], :self.resolution[1]]
+                ).reshape((self._block_resolution[1],self._block_resolution[0]))[:self.resolution[1], :self.resolution[0]]
             else:
                 self.frame = np.frombuffer(
                     buf, dtype=np.uint8,
                     count=self.resolution[0]*self.resolution[1]*3
-                ).reshape((self.resolution[0], self.resolution[1], 3))
+                ).reshape((self.resolution[1], self.resolution[0], 3))
             self.timestamp = datetime.now().isoformat()
             self.grab_event.set()
 

@@ -15,6 +15,7 @@ Note:
 import sys
 import logging
 import os
+from collections import deque
 import numpy as np
 import PySide2 # have to import to tell pyqtgraph to use it
 import pandas as pd
@@ -790,7 +791,7 @@ class Video(QtWidgets.QWidget):
             self.layout.addWidget(self.vid_widgets[vid][0],row+1,col,5,1)
 
             # make queue for vid
-            self.qs[vid] = Queue(maxsize=1)
+            self.qs[vid] = deque(maxlen=1)
 
 
 
@@ -811,10 +812,10 @@ class Video(QtWidgets.QWidget):
             for vid, q in self.qs.items():
                 data = None
                 try:
-                    data = q.get_nowait()
+                    data = q.popleft()
                     self.vid_widgets[vid][2].setImage(data)
 
-                except Empty:
+                except IndexError:
                     pass
                 except KeyError:
                     pass
