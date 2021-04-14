@@ -751,7 +751,7 @@ class PiCamera(Camera):
         Spawn a :class:`PiCamera.PiCamera_Writer` object to :attr:`PiCamera._picam_writer`
         and :meth:`~picamera.PiCamera.start_recording` in the set :attr:`~PiCamera.format`
         """
-        self._picam_writer = self.PiCamera_Writer(self.resolution)
+        self._picam_writer = self.PiCamera_Writer(self.resolution, self.format)
         format = self.format
         if format == "grayscale":
             format = 'yuv'
@@ -768,10 +768,7 @@ class PiCamera(Camera):
         """
         # wait until a new frame is captured
         self._picam_writer.grab_event.wait()
-        if self.format == "grayscale":
-            ret = (self._picam_writer.timestamp, self._picam_writer.frame[:,:,0])
-        else:
-            ret = (self._picam_writer.timestamp, self._picam_writer.frame)
+        ret = (self._picam_writer.timestamp, self._picam_writer.frame)
         self._picam_writer.grab_event.clear()
         return ret
 
@@ -793,7 +790,7 @@ class PiCamera(Camera):
         Writer object for processing individual frames,
         see: https://raspberrypi.stackexchange.com/a/58941/112948
         """
-        def __init__(self, resolution:typing.Tuple[int, int]):
+        def __init__(self, resolution:typing.Tuple[int, int], format:str="rgb"):
             """
             Args:
                 resolution (tuple): (width, height) tuple used when making numpy array from buffer
@@ -806,6 +803,11 @@ class PiCamera(Camera):
 
             """
             self.resolution = resolution
+            self._block_resolution = (
+                self.resolution[0]+ 31 // 32 * 32,
+                self.resolution[1] + 15 // 16 * 16
+            )
+            self.format = format
             self.grab_event = threading.Event()
             self.grab_event.clear()
             self.frame = None
@@ -819,10 +821,20 @@ class PiCamera(Camera):
             Args:
                 buf (): Buffer given by PiCamera
             """
-            self.frame = np.frombuffer(
-                buf, dtype=np.uint8,
-                count=self.resolution[0]*self.resolution[1]*3
-            ).reshape((self.resolution[0], self.resolution[1], 3))
+            if self.format == 'grayscale':
+                # just capture the luminance channel. see
+                # https://raspberrypi.stackexchange.com/a/58941/112948
+                # and
+                # https://raspberrypi.stackexchange.com/a/58941/112948
+                self.frame = np.frombuffer(
+                    buf, dtype=np.uint8,
+                    count=self._block_resolution[0]*self._block_resolution[1]
+                ).reshape(self._block_resolution)[:self.resolution[0], :self.resolution[1]]
+            else:
+                self.frame = np.frombuffer(
+                    buf, dtype=np.uint8,
+                    count=self.resolution[0]*self.resolution[1]*3
+                ).reshape((self.resolution[0], self.resolution[1], 3))
             self.timestamp = datetime.now().isoformat()
             self.grab_event.set()
 

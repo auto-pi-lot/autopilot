@@ -3008,7 +3008,6 @@ class Stream_Video(QtWidgets.QDialog):
 
 
     def l_frame(self, value):
-        self.logger.debug(f'frame shape {value[self._streaming_cam_id].shape}')
         self.video.update_frame('stream', value[self._streaming_cam_id])
 
     def closeEvent(self, arg__1:QtGui.QCloseEvent):
