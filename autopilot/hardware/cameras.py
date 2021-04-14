@@ -246,7 +246,7 @@ class Camera(Hardware):
             try:
                 if self.streaming.is_set():
                     self.node.send(key='STATE', value='STOPPING')
-                    self._stream_q.put('END')
+                    self._stream_q.append('END')
             except Exception as e:
                 self.logger.exception('Failed to end stream, error message: {}'.format(e))
 
@@ -284,7 +284,7 @@ class Camera(Hardware):
 
         if self.streaming.is_set():
             try:
-                self._stream_q.put_nowait({'timestamp': self.frame[0],
+                self._stream_q.append({'timestamp': self.frame[0],
                                            self.name  : self.frame[1]})
             except Full:
                 self.logger.exception(f"queue was full for frame captured at {self.frame[0]}")
@@ -1255,7 +1255,7 @@ class Camera_Spinnaker(Camera):
         if self.streaming.is_set():
             if not frame_array:
                 frame_array = self.frame[1].GetNDArray()
-            self._stream_q.put_nowait({'timestamp': self.frame[0],
+            self._stream_q.append({'timestamp': self.frame[0],
                                        self.name  : frame_array})
 
         if self.queueing.is_set():
