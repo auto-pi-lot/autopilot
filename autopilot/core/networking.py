@@ -1840,7 +1840,7 @@ class Net_Node(object):
                               id="{}_{}".format(id, next(msg_counter)),
                               sender=socket_id).serialize()
                 last_msg = socket.send_multipart((upstream, upstream, msg),
-                                                 track=True, copy=True)
+                                                 track=False, copy=False)
 
                 self.logger.debug("STREAM {}: Sent 1 item".format(self.id + '_' + id))
 
