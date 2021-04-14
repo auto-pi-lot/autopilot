@@ -25,6 +25,7 @@ import base64
 import socket
 import struct
 import blosc
+from collections import deque
 from copy import copy
 from tornado.ioloop import IOLoop
 from zmq.eventloop.zmqstream import ZMQStream
@@ -1699,7 +1700,7 @@ class Net_Node(object):
 
         return msg
 
-    def get_stream(self, id, key, min_size=5, upstream=None, port = None, ip=None, subject=None):
+    def get_stream(self, id, key, min_size=5, upstream=None, port = None, ip=None, subject=None, q_size=1024):
         """
 
         Make a queue that another object can dump data into that sends on its own socket.
@@ -1724,7 +1725,7 @@ class Net_Node(object):
                 subject = prefs.get('SUBJECT')
 
         # make a queue
-        q = queue.Queue()
+        q = deque(maxlen=q_size)
 
         stream_thread = threading.Thread(target=self._stream,
                                          args=(id, key, min_size, upstream, port, ip, subject, q))
@@ -1785,8 +1786,15 @@ class Net_Node(object):
         pending_data = []
 
         if min_size > 1:
+            while True:
+                try:
+                    data = q.popleft()
+                except IndexError:
+                    # normal, we might iterate faster than the source
+                    continue
+                if isinstance(data, str) and data == 'END':
+                    break
 
-            for data in iter(q.get, 'END'):
                 if isinstance(data, tuple):
                     # tuples are immutable, so can't serialize numpy arrays they contain
                     data = list(data)
@@ -1810,7 +1818,15 @@ class Net_Node(object):
                     pending_data = []
         else:
             # just send like normal messags
-            for data in iter(q.get, 'END'):
+            while True:
+                try:
+                    data = q.popleft()
+                except IndexError:
+                    continue
+
+                if isinstance(data, str) and data == "END":
+                    break
+
                 if isinstance(data, tuple):
                     # tuples are immutable, so can't serialize numpy arrays they contain
                     data = list(data)

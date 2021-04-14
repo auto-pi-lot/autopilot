@@ -2984,7 +2984,11 @@ class Stream_Video(QtWidgets.QDialog):
             self.comboboxes['pilot'].setDisabled(False)
             self.comboboxes['camera'].setDisabled(False)
             self.node.send(to=self.current_pilot, key="STREAM_VIDEO",
-                           value={'starting':False,'camera':self.current_camera})
+                           value={
+                               'starting':False,
+                               'camera':self.current_camera,
+                               'stream_to':self.id
+                           })
 
 
     def write_video(self):
