@@ -3006,6 +3006,12 @@ class Stream_Video(QtWidgets.QDialog):
     def l_frame(self, value):
         self.video.update_frame('stream', value[self._streaming_cam_id])
 
+    def closeEvent(self, arg__1:QtGui.QCloseEvent):
+
+        self.node.send(to=self.current_pilot, key="STREAM_VIDEO",
+                       value={'starting': False, 'camera': self.current_camera})
+        super(Stream_Video, self).closeEvent(arg__1)
+
 
 
 

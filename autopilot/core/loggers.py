@@ -110,7 +110,6 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
 
     # use a lock to prevent loggers from being double-created, just to be extra careful
     with globals()['_INIT_LOCK']:
-        logger = logging.getLogger(logger_name)
 
         # check if something starting with module_name already exists in loggers
         MAKE_NEW = False
@@ -118,8 +117,9 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
             MAKE_NEW = True
 
         if MAKE_NEW:
+            parent_logger = logging.getLogger(module_name)
             loglevel = getattr(logging, prefs.get('LOGLEVEL'))
-            logger.setLevel(loglevel)
+            parent_logger.setLevel(loglevel)
 
             # make formatter that includes name
             log_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s : %(message)s")
@@ -152,7 +152,7 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
 
             fh.setLevel(loglevel)
             fh.setFormatter(log_formatter)
-            logger.addHandler(fh)
+            parent_logger.addHandler(fh)
 
             # console stream handler with same loglevel
             # ch = logging.StreamHandler()
@@ -160,15 +160,10 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
             # ch.setFormatter(log_formatter)
             # logger.addHandler(ch)
 
-
-
-
-
             ## log creation
             globals()['_LOGGERS'].append(module_name)
-            logger.info(f'logger created: {logger_name}')
+            parent_logger.info(f'parent module-level logger created: {module_name}')
 
-        else:
-            logger.info(f'logger reconstituted: {logger_name}')
-
+        logger = logging.getLogger(logger_name)
+        logger.info(f'Logger created: {logger_name}')
     return logger

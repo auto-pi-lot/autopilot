@@ -881,22 +881,26 @@ class Terminal_Station(Station):
         send to :class:`.Plot` according to update rate in ``prefs.get('DRAWFPS')``
 
         Args:
-            msg (dict): A continuous data message
+            msg (:class:`.Message`): A continuous data message
         """
 
-        if not self.plot_timer:
-            self.start_plot_timer()
+
 
         # Send through to terminal
         #msg.value.update({'continuous':True})
         self.send(to='_T', msg=msg)
 
         # Send to plot widget, which should be listening to "P_{pilot_name}"
-        if msg.sender not in self.sent_plot.keys():
-            self.sent_plot[msg.sender] = threading.Event()
-        if self.sent_plot[msg.sender].is_set():
-            self.send(to='P_{}'.format(msg.value['pilot']), msg=msg)
-            self.sent_plot[msg.sender].clear()
+        plot_id = 'P_{}'.format(msg.value['pilot'])
+        if plot_id in self.senders.keys():
+            if not self.plot_timer:
+                self.start_plot_timer()
+
+            if msg.sender not in self.sent_plot.keys():
+                self.sent_plot[msg.sender] = threading.Event()
+            if self.sent_plot[msg.sender].is_set():
+                self.send(to=plot_id, msg=msg)
+                self.sent_plot[msg.sender].clear()
 
 
     # def l_continuous(self, msg):
@@ -1811,17 +1815,16 @@ class Net_Node(object):
                     # tuples are immutable, so can't serialize numpy arrays they contain
                     data = list(data)
 
-                if not socket.sending():
-                    msg = Message(to=upstream.decode('utf-8'), key=msg_key,
-                                  subject=subject,
-                                  pilot=pilot,
-                                  continuous=True,
-                                  value=data,
-                                  flags={'NOREPEAT': True, 'MINPRINT': True},
-                                  id="{}_{}".format(id, next(msg_counter)),
-                                  sender=socket_id).serialize()
-                    last_msg = socket.send_multipart((upstream, upstream, msg),
-                                                     track=True, copy=True)
+                msg = Message(to=upstream.decode('utf-8'), key=msg_key,
+                              subject=subject,
+                              pilot=pilot,
+                              continuous=True,
+                              value=data,
+                              flags={'NOREPEAT': True, 'MINPRINT': True},
+                              id="{}_{}".format(id, next(msg_counter)),
+                              sender=socket_id).serialize()
+                last_msg = socket.send_multipart((upstream, upstream, msg),
+                                                 track=True, copy=True)
 
                 self.logger.debug("STREAM {}: Sent 1 item".format(self.id + '_' + id))
 

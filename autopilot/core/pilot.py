@@ -551,7 +551,7 @@ class Pilot:
                     self.hardware[cam_group] = {}
                 self.hardware[cam_group][cam_id] = cam_obj
 
-                cam_obj.stream(to=stream_to)
+                cam_obj.stream(to=stream_to, min_size=1)
                 cam_obj.capture()
                 self.logger.info(f'Starting to stream video from {camera} to {stream_to}')
 

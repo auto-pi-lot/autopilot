@@ -181,7 +181,6 @@ class Camera(Hardware):
         """
         Spawn a thread to begin capturing.
 
-
         Args:
             timed (None, int, float): if None, record according to :attr:`.timed` (default). If numeric, record for ``timed`` seconds.
         """
@@ -284,8 +283,11 @@ class Camera(Hardware):
             self.logger.exception(e)
 
         if self.streaming.is_set():
-            self._stream_q.put_nowait({'timestamp': self.frame[0],
-                                       self.name  : self.frame[1]})
+            try:
+                self._stream_q.put_nowait({'timestamp': self.frame[0],
+                                           self.name  : self.frame[1]})
+            except Full:
+                self.logger.exception(f"queue was full for frame captured at {self.frame[0]}")
 
         if self.writing.is_set():
             self._write_frame()
