@@ -17,6 +17,7 @@ the method must be decorated with `@gui_event` which will call perform the updat
 """
 
 import sys
+import typing
 import os
 import json
 import copy
@@ -25,13 +26,11 @@ import time
 from collections import OrderedDict as odict
 import numpy as np
 import ast
-import base64
 from PySide2 import QtGui, QtCore, QtWidgets
 import pyqtgraph as pg
 import pandas as pd
 import itertools
 import threading
-import logging
 from operator import ior
 from functools import reduce
 
@@ -121,7 +120,7 @@ class Control_Panel(QtWidgets.QWidget):
     # Hosts two nested tab widgets to select pilot and subject,
     # set params, run subjects, etc.
 
-    def __init__(self, subjects, start_fn, pilots=None):
+    def __init__(self, subjects, start_fn, ping_fn, pilots=None):
         """
 
         """
@@ -134,6 +133,7 @@ class Control_Panel(QtWidgets.QWidget):
 
         # We get the Terminal's send_message function so we can communicate directly from here
         self.start_fn = start_fn
+        self.ping_fn = ping_fn
 
         if pilots:
             self.pilots = pilots
@@ -151,14 +151,13 @@ class Control_Panel(QtWidgets.QWidget):
 
         # Make dict to store handles to subjects lists
         self.subject_lists = {}
+        self.panels = {}
 
         # Set layout for whole widget
         self.layout = QtWidgets.QGridLayout()
         self.layout.setContentsMargins(0,0,0,0)
         self.layout.setSpacing(0)
         self.setLayout(self.layout)
-
-        self.panels = {}
 
         self.init_ui()
 
@@ -178,24 +177,35 @@ class Control_Panel(QtWidgets.QWidget):
         self.layout.setColumnStretch(0, 2)
         self.layout.setColumnStretch(1, 2)
 
-        # Iterate through pilots and subjects, making start/stop buttons for pilots and lists of subjects
-        for i, (pilot, subjects) in enumerate(self.pilots.items()):
-            # in pilot dict, format is {'pilot':{'subjects':['subject1',...],'ip':'',etc.}}
-            subjects = subjects['subjects']
-            # Make a list of subjects
-            subject_list = Subject_List(subjects, drop_fn = self.update_db)
-            subject_list.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-            #subject_list.itemDoubleClicked.connect(self.edit_params)
-            self.subject_lists[pilot] = subject_list
+        for pilot_id, pilot_params in self.pilots.items():
+            self.add_pilot(pilot_id, pilot_params.get('subjects', []))
 
-            # Make a panel for pilot control
-            pilot_panel = Pilot_Panel(pilot, subject_list, self.start_fn, self.create_subject)
-            pilot_panel.setFixedWidth(150)
+    def add_pilot(self, pilot_id:str, subjects:typing.Optional[list]=None):
+        """
+        Add a :class:`.Pilot_Panel` for a new pilot, and populate a :class:`.Subject_List` for it
+        Args:
+         pilot_id (str): ID of new pilot
+         subjects (list): Optional, list of any subjects that the pilot has.
+        Returns:
+        """
+        if subjects is None:
+            subjects = []
 
-            self.panels[pilot] = pilot_panel
+        # Make a list of subjects
+        subject_list = Subject_List(subjects, drop_fn=self.update_db)
+        subject_list.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        # subject_list.itemDoubleClicked.connect(self.edit_params)
+        self.subject_lists[pilot_id] = subject_list
 
-            self.layout.addWidget(pilot_panel, i, 1, 1, 1)
-            self.layout.addWidget(subject_list, i, 2, 1, 1)
+        # Make a panel for pilot control
+        pilot_panel = Pilot_Panel(pilot_id, subject_list, self.start_fn, self.ping_fn, self.create_subject)
+        pilot_panel.setFixedWidth(150)
+        self.panels[pilot_id] = pilot_panel
+
+        row_idx = self.layout.rowCount()
+
+        self.layout.addWidget(pilot_panel, row_idx, 1, 1, 1)
+        self.layout.addWidget(subject_list, row_idx, 2, 1, 1)
 
     def create_subject(self, pilot):
         """
@@ -285,6 +295,11 @@ class Control_Panel(QtWidgets.QWidget):
                 where `'pilot_values'` can be nothing, a list of subjects,
                 or any other information included in the pilot db
         """
+        # if we were given a new pilot, add it
+        if 'new' in kwargs.keys():
+            for pilot, value in kwargs['new'].items():
+                self.pilots[pilot] = value
+
         # gather subjects from lists
         for pilot, mlist in self.subject_lists.items():
             subjects = []
@@ -292,11 +307,6 @@ class Control_Panel(QtWidgets.QWidget):
                 subjects.append(mlist.item(i).text())
 
             self.pilots[pilot]['subjects'] = subjects
-
-        # if we were given a new pilot, add it
-        if 'new' in kwargs.keys():
-            for pilot, value in kwargs['new'].items():
-                self.pilots[pilot] = value
 
         # strip any state that's been stored
         for p, val in self.pilots.items():
@@ -311,7 +321,7 @@ class Control_Panel(QtWidgets.QWidget):
                 with open('/usr/autopilot/pilot_db.json', 'w') as pilot_file:
                     json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
             except IOError:
-                Exception('Couldnt update pilot db!')
+                self.logger.exception('Couldnt update pilot db!')
 
 ####################################
 # Control Panel Widgets
@@ -394,7 +404,7 @@ class Pilot_Panel(QtWidgets.QWidget):
         layout (:py:class:`QtWidgets.QGridLayout`): Layout for UI elements
         button (:class:`.Pilot_Button`): button used to control a pilot
     """
-    def __init__(self, pilot=None, subject_list=None, start_fn=None, create_fn=None):
+    def __init__(self, pilot=None, subject_list=None, start_fn=None, ping_fn=None, create_fn=None):
         """
 
         """
@@ -408,6 +418,7 @@ class Pilot_Panel(QtWidgets.QWidget):
         self.pilot = pilot
         self.subject_list = subject_list
         self.start_fn = start_fn
+        self.ping_fn = ping_fn
         self.create_fn = create_fn
         self.button = None
 
@@ -422,7 +433,7 @@ class Pilot_Panel(QtWidgets.QWidget):
         label = QtWidgets.QLabel(self.pilot)
         label.setStyleSheet("font: bold 14pt; text-align:right")
         label.setAlignment(QtCore.Qt.AlignVCenter)
-        self.button = Pilot_Button(self.pilot, self.subject_list, self.start_fn)
+        self.button = Pilot_Button(self.pilot, self.subject_list, self.start_fn, self.ping_fn)
         add_button = QtWidgets.QPushButton("+")
         add_button.clicked.connect(self.create_subject)
         add_button.setSizePolicy(QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding)
@@ -470,7 +481,7 @@ class Pilot_Panel(QtWidgets.QWidget):
 
 
 class Pilot_Button(QtWidgets.QPushButton):
-    def __init__(self, pilot=None, subject_list=None, start_fn=None):
+    def __init__(self, pilot=None, subject_list=None, start_fn=None, ping_fn=None):
         """
         A subclass of (toggled) :class:`QtWidgets.QPushButton` that incorporates the style logic of a
         start/stop button - ie. color, text.
@@ -492,15 +503,23 @@ class Pilot_Button(QtWidgets.QPushButton):
         super(Pilot_Button, self).__init__()
 
         ## GUI Settings
-        self.setCheckable(True)
+        self.setCheckable(False)
         self.setChecked(False)
-        self.setEnabled(False)
+        self.setEnabled(True)
 
-        self.setStyleSheet("QPushButton {color:white; background-color: green}"
-                           "QPushButton:checked {color:white; background-color: red}"
-                           "QPushButton:disabled {color:black; background-color: gray}")
+        self.normal_stylesheet = (
+            "QPushButton {color:white; background-color: green}"
+            "QPushButton:checked {color:white; background-color: red}"
+            "QPushButton:disabled {color:black; background-color: gray}"
+        )
+
+        self.limbo_stylesheet = (
+            "QPushButton {color:black; background-color: gray}"
+        )
+
+        self.setStyleSheet(self.limbo_stylesheet)
         # at start, set our text to no pilot and wait for the signal
-        self.setText("?")
+        self.setText("?PING?")
 
         # keep track of our visual and functional state.
         self.state = "DISCONNECTED"
@@ -518,6 +537,7 @@ class Pilot_Button(QtWidgets.QPushButton):
 
         # Passed a function to toggle start from the control panel
         self.start_fn = start_fn
+        self.ping_fn = ping_fn
         # toggle_start has a little sugar on it before sending to control panel
         # use the clicked rather than toggled signal, clicked only triggers on user
         # interaction, toggle is whenever the state is toggled - so programmatically
@@ -533,6 +553,11 @@ class Pilot_Button(QtWidgets.QPushButton):
         """
         # If we're stopped, start, and vice versa...
         current_subject = self.subject_list.currentItem().text()
+
+        if self.state == "DISCONNECTED":
+            # ping our lil bebs
+            self.ping_fn()
+            return
 
         if current_subject is None:
             Warning("Start button clicked, but no subject selected.")
@@ -570,32 +595,40 @@ class Pilot_Button(QtWidgets.QPushButton):
         if state == self.state:
             return
 
+
         if state == "IDLE":
             # responsive and waiting
+            self.setCheckable(True)
             self.setEnabled(True)
             self.setText('START')
             self.setChecked(False)
         elif state == "RUNNING":
             # running a task
+            self.setCheckable(True)
             self.setEnabled(True)
             self.setText('STOP')
             self.setChecked(True)
         elif state == "STOPPING":
             # stopping
+            self.setCheckable(True)
             self.setEnabled(False)
             self.setText("STOPPING")
             self.setChecked(False)
         elif state == "DISCONNECTED":
             # contact w the pi is missing or lost
-            self.setEnabled(False)
-            self.setText("DISCONNECTED")
+            self.setCheckable(False)
+            self.setEnabled(True)
+            self.setText("?PING?")
             self.setChecked(False)
 
-
-        if self.isChecked():
-            self.setText("STOP")
+        if state == "DISCONNECTED":
+            self.setStyleSheet(self.limbo_stylesheet)
         else:
-            self.setText("START")
+            if self.isChecked():
+                self.setText('STOP')
+            else:
+                self.setText('START')
+            self.setStyleSheet(self.normal_stylesheet)
 
         self.state = state
 

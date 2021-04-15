@@ -13,10 +13,7 @@ import numpy as np
 from itertools import product
 from scipy.interpolate import griddata
 
-if sys.version_info >= (3,0):
-    from queue import Queue, Empty
-else:
-    from Queue import Queue, Empty
+from queue import Queue, Empty
 
 if prefs.get('AGENT') in ['pilot']:
     import pigpio

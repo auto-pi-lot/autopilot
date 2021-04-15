@@ -1,5 +1,6 @@
 """Methods for running the Terminal GUI"""
 
+import typing
 import argparse
 import json
 import sys
@@ -272,7 +273,8 @@ class Terminal(QtWidgets.QMainWindow):
         # Control panel sits on the left, controls pilots & subjects
         self.control_panel = Control_Panel(pilots=self.pilots,
                                            subjects=self.subjects,
-                                           start_fn=self.toggle_start)
+                                           start_fn=self.toggle_start,
+                                           ping_fn=self.ping_pilot)
 
         # Data panel sits on the right, plots stuff.
         self.data_panel = Plot_Widget()
@@ -351,22 +353,11 @@ class Terminal(QtWidgets.QMainWindow):
         self.show()
         logging.info('UI Initialized')
 
-    def reset_ui(self):
-        """
-        Clear Layout and call :meth:`~.Terminal.initUI` again
-        """
-
-        # type: () -> None
-        self.layout = QtWidgets.QGridLayout()
-        self.layout.setSpacing(0)
-        self.layout.setContentsMargins(0,0,0,0)
-        self.widget.setLayout(self.layout)
-        self.setCentralWidget(self.widget)
-        self.initUI()
-
-
     ##########################3
     # Listens & inter-object methods
+
+    def ping_pilot(self, pilot):
+        self.send(pilot, 'PING')
 
     def heartbeat(self, once=False):
         """
@@ -509,13 +500,13 @@ class Terminal(QtWidgets.QMainWindow):
         # TODO: Also tell the relevant dataview to clear
 
         # update the pilot button
-        if value['pilot'] in self.pilots.keys():
-            if 'state' not in self.pilots[value['pilot']].keys():
-                self.pilots[value['pilot']]['state'] = value['state']
-                #self.control_panel.panels[value['pilot']].button.set_state(value['state'])
-            elif value['state'] != self.pilots[value['pilot']]['state']:
-                #self.control_panel.panels[value['pilot']].button.set_state(value['state'])
-                self.pilots[value['pilot']]['state'] = value['state']
+        self.logger.debug(f'updating pilot state: {value}')
+        if value['pilot'] not in self.pilots.keys():
+            self.logger.info('Got state info from an unknown pilot, adding...')
+            self.new_pilot(name=value['pilot'])
+
+        self.pilots[value['pilot']]['state'] = value['state']
+        self.control_panel.panels[value['pilot']].button.set_state(value['state'])
 
     def l_handshake(self, value):
         """
@@ -528,13 +519,14 @@ class Terminal(QtWidgets.QMainWindow):
             value (dict): dict containing `ip` and `state`
         """
         if value['pilot'] in self.pilots.keys():
-            if 'ip' in value.keys():
-                self.pilots[value['pilot']]['ip'] = value['ip']
-            if 'state' in value.keys():
-                self.pilots[value['pilot']]['state'] = value['state']
+            self.pilots[value['pilot']]['ip'] = value.get('ip', '')
+            self.pilots[value['pilot']]['state'] = value.get('state', '')
+            self.pilots[value['pilot']]['prefs'] = value.get('prefs', {})
 
         else:
-            self.new_pilot(name=value['pilot'], ip=value['ip'])
+            self.new_pilot(name=value['pilot'],
+                           ip=value.get('ip', ''),
+                           pilot_prefs=value.get('prefs', {}))
 
         # update the pilot button
         if value['pilot'] in self.control_panel.panels.keys():
@@ -546,7 +538,10 @@ class Terminal(QtWidgets.QMainWindow):
     #############################
     # GUI & etc. methods
 
-    def new_pilot(self, ip='', name=None):
+    def new_pilot(self,
+                  name:typing.Optional[str]=None,
+                  ip:str='',
+                  pilot_prefs:typing.Optional[dict]=None):
         """
         Make a new entry in :attr:`.Terminal.pilots` and make appropriate
         GUI elements.
@@ -558,18 +553,18 @@ class Terminal(QtWidgets.QMainWindow):
         if name is None:
             name, ok = QtWidgets.QInputDialog.getText(self, "Pilot ID", "Pilot ID:")
 
-        # make sure we won't overwrite ourself
+        # Warn if we're going to overwrite
         if name in self.pilots.keys():
-            # TODO: Pop a window confirming we want to overwrite
-            pass
+            self.logger.warning(f'pilot with id {name} already in pilot db, overwriting...')
 
-        if name != '':
-            new_pilot = {name:{'subjects':[], 'ip':ip}}
-            self.control_panel.update_db(new=new_pilot)
-            self.reset_ui()
-        else:
-            # Idk maybe pop a dialog window but i don't really see why
-            pass
+
+        if pilot_prefs is None:
+            pilot_prefs = {}
+
+        self.control_panel.add_pilot(name)
+        new_pilot = {name:{'subjects':[], 'ip':ip, 'prefs':pilot_prefs}}
+        self.control_panel.update_db(new=new_pilot)
+        self.logger.info(f'added new pilot {name}')
 
     def new_protocol(self):
         """
@@ -738,7 +733,7 @@ class Terminal(QtWidgets.QMainWindow):
                     self.logger.info(f'Protocol for {subject} set to blank, not setting')
                     continue
 
-                if self.subjects[subject].protocol_name != protocol:
+                if self.subjects[subject].protocol_name != protocol or subject_orig_step != step:
                     self.logger.info('Setting {} protocol from {} to {}'.format(subject, self.subjects[subject].protocol_name, protocol))
                     protocol_file = os.path.join(prefs.get('PROTOCOLDIR'), protocol + '.json')
                     self.subjects[subject].assign_protocol(protocol_file, step)
