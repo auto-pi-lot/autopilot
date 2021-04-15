@@ -236,6 +236,7 @@ if server_type in ("jack", "docs", True):
             # if the sound actually stopped...
             if self.stop_evt.is_set():
                 self.trigger()
+                self.logger.debug('called wait_trigger')
 
         def get_nsamples(self):
             """
@@ -433,6 +434,7 @@ if server_type in ("jack", "docs", True):
                 self.logger.warning("stop_continuous called but not a continuous sound!")
                 return
 
+            self.logger.debug('stopping continuous so')
             self.continuous_flag.clear()
             self.continuous_loop.clear()
 

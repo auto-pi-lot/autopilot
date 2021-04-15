@@ -767,7 +767,6 @@ class Subject(object):
 
                 if grad_obj.COLS:
                     # these are columns in our trial table
-
                     # then give the data to the graduation object
                     for col in grad_obj.COLS:
                         try:
