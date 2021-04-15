@@ -842,16 +842,8 @@ class Video(QtWidgets.QWidget):
         # cur_time = time()
 
         try:
-            # if there's a waiting frame, it's old now so pull it.
-            _ = self.qs[video].get_nowait()
-        except Empty:
-            pass
-
-        try:
             # put the new frame in there.
-            self.qs[video].put_nowait(data)
-        except Full:
-            return
+            self.qs[video].append(data)
         except KeyError:
             return
 
