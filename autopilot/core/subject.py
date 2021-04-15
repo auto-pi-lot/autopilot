@@ -6,7 +6,6 @@ Currently named subject, but will likely be refactored to include other data
 models should the need arise.
 
 """
-
 # TODO: store pilot in biography
 import os
 import sys
@@ -922,13 +921,13 @@ class Subject(object):
                 # TODO: Or if all the values have been filled, shouldn't need explicit TRIAL_END flags
                 if 'TRIAL_END' in data.keys():
                     trial_row['session'] = self.session
-                    trial_row.append()
-                    trial_table.flush()
                     if self.graduation:
                         # set our graduation flag, the terminal will get the rest rolling
                         did_graduate = self.graduation.update(trial_row)
                         if did_graduate is True:
                             self.did_graduate.set()
+                    trial_row.append()
+                    trial_table.flush()
 
                 # always flush so that our row iteration routines above will find what they're looking for
                 trial_table.flush()
