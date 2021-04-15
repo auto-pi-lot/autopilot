@@ -31,11 +31,8 @@ from zmq.eventloop.zmqstream import ZMQStream
 from itertools import count
 import numpy as np
 import pdb
-#from pudb.remote import set_trace
-if sys.version_info >= (3,0):
-    import queue
-else:
-    import Queue as queue
+
+import queue
 
 from autopilot import prefs
 from autopilot.core.loggers import init_logger
@@ -919,19 +916,21 @@ class Terminal_Station(Station):
         Args:
             msg (:class:`.Message`):
         """
-        if msg.sender in self.pilots.keys():
+        if msg.sender not in self.pilots.keys():
+            self.pilots[msg.sender] = {}
             #if 'state' in self.pilots[msg.sender].keys():
                 # if msg.value == self.pilots[msg.sender]['state']:
                 #     # if we've already gotten this one, don't send to terminal
                 #     return
-            self.pilots[msg.sender]['state'] = msg.value
 
-            # Tell the terminal so it can update the pilot_db file
-            state = {'state':msg.value, 'pilot':msg.sender}
-            self.send('_T', 'STATE', state)
+        self.pilots[msg.sender]['state'] = msg.value
 
-            # Tell the plot
-            self.send("P_{}".format(msg.sender), 'STATE', msg.value)
+        # Tell the terminal so it can update the pilot_db file
+        state = {'state':msg.value, 'pilot':msg.sender}
+        self.send('_T', 'STATE', state)
+
+        # Tell the plot
+        self.send("P_{}".format(msg.sender), 'STATE', msg.value)
 
         self.senders[msg.sender] = msg.value
 
@@ -1020,7 +1019,7 @@ class Pilot_Station(Station):
         self.id = prefs.get('NAME')
         self.pi_id = "_{}".format(self.id)
         self.subject = None # Store current subject ID
-        self.state = None # store current pi state
+        self.state = 'IDLE' # store current pi state
         self.child = False # Are we acting as a child right now?
         self.parent = False # Are we acting as a parent right now?
 
@@ -1041,6 +1040,33 @@ class Pilot_Station(Station):
             'CALIBRATE_RESULT': self.l_forward,
             'BANDWIDTH': self.l_forward
         })
+
+        # ping back our status to the terminal every so often
+        if prefs.get('PING_INTERVAL') is None:
+            self.ping_interval = 5
+        else:
+            self.ping_interval = float(prefs.get('PING_INTERVAL'))
+
+        self._ping_thread = threading.Timer(self.ping_interval, self._pinger)
+        self._ping_thread.setDaemon(True)
+        self._ping_thread.start()
+
+    def _pinger(self):
+        """
+        Periodically ping the terminal with our status
+
+        Calls its own timer to replace it
+
+
+        Returns:
+
+        """
+        self.l_ping()
+        if not self.closing.is_set():
+            self._ping_thread = threading.Timer(self.ping_interval, self._pinger)
+            self._ping_thread.setDaemon(True)
+            self._ping_thread.start()
+
 
     ###########################3
     # Message/Listen handling methods
@@ -1077,7 +1103,7 @@ class Pilot_Station(Station):
 
         pass
 
-    def l_ping(self, msg):
+    def l_ping(self, msg=None):
         """
         The Terminal wants to know our status
 

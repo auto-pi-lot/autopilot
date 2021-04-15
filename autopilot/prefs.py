@@ -270,6 +270,12 @@ _DEFAULTS = odict({
         'text': 'Pins to pull down on system startup? (list of form [1, 2])',
         "scope": Scopes.PILOT
     },
+    'PING_INTERVAL': {
+        'type': 'float',
+        'text': 'How many seconds should pilots wait in between pinging the Terminal?',
+        'default': 5,
+        'scope': Scopes.PILOT
+    },
     'DRAWFPS': {
         'type': 'int',
         "text": "FPS to draw videos displayed during acquisition",

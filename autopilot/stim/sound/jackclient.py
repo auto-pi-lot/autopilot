@@ -1,10 +1,7 @@
 """
 Client that dumps samples directly to the jack client with the :mod:`jack` package.
 """
-
-
-
-
+from itertools import cycle
 import multiprocessing as mp
 import queue as queue
 import numpy as np
@@ -126,11 +123,11 @@ class JackClient(mp.Process):
         # a few objects that control continuous/background sound.
         # see descriptions in module variables
         self.continuous = mp.Event()
-        self.continuous_q = mp.Queue(maxsize=1024)
+        self.continuous_q = mp.Queue()
         self.continuous_loop = mp.Event()
+        self.continuous_cycle = None
         self.continuous.clear()
         self.continuous_loop.clear()
-        self.continuous_started = False
 
         # store the frames of the continuous sound and cycle through them if set in continous mode
         self.continuous_cycle = None
@@ -236,35 +233,26 @@ class JackClient(mp.Process):
         Args:
             frames: number of frames (samples) to be processed. unused. passed by jack client
         """
+
         if not self.play_evt.is_set():
             # if we are in continuous mode...
             if self.continuous.is_set():
+                if self.continuous_cycle is None:
+                    to_cycle = []
+                    while not self.continuous_q.empty():
+                        try:
+                            to_cycle.append(self.continuous_q.get_nowait())
+                        except Empty:
+                            # normal, queue empty
+                            pass
+                    self.continuous_cycle = cycle(to_cycle)
 
-                try:
-                    data = self.continuous_q.get_nowait()
-
-                except Empty:
-                    self.logger.warning('Continuous queue was empty!')
-                    #self.continuous.clear()
-                    data = self.zero_arr
-
-                self.client.outports[0].get_array()[:] = data.T
-
-                # if not self.continuous_started:
-                #     # if we are just entering continuous mode, get the continuous sound and prepare to play it
-                #     continuous_frames = []
-                #     while not self.continuous_q.empty():
-                #         try:
-                #             continuous_frames.append(self.continuous_q.get_nowait())
-                #         except Empty:
-                #             break
-                #     self.continuous_cycle = cycle(continuous_frames)
-                #     self.continuous_started = True
-                #
-                # # FIXME: Multichannel sound....
-                # self.client.outports[0].get_array()[:] = self.continuous_cycle.next().T
+                self.client.outports[0].get_array()[:] = next(self.continuous_cycle).T
 
             else:
+                # clear continuous sound after it's done
+                if self.continuous_cycle is not None:
+                    self.continuous_cycle = None
                 for channel, port in zip(self.zero_arr.T, self.client.outports):
                     port.get_array()[:] = channel
         else:
@@ -277,17 +265,13 @@ class JackClient(mp.Process):
             if data is None:
                 # fill with continuous noise
                 if self.continuous.is_set():
-                    #self.client.outports[0].get_array()[:] = self.continuous_cycle.next().T
                     try:
-                        data = self.continuous_q.get_nowait()
-                    except Empty:
-                        self.logger.warning('Continuous queue was empty!')
-                        # self.continuous.clear()
+                        data = next(self.continuous_cycle)
+                    except Exception as e:
+                        self.logger.exception(f'Continuous mode was set but got exception with continuous queue:\n{e}')
                         data = self.zero_arr
-                        #self.continuous.clear()
 
                     self.client.outports[0].get_array()[:] = data.T
-
 
                 else:
                     for channel, port in zip(self.zero_arr.T, self.client.outports):
@@ -302,17 +286,17 @@ class JackClient(mp.Process):
                     if self.continuous.is_set():
                         # data = np.concatenate((data, self.continuous_cycle.next()[-n_from_end:]),
                         #                       axis=0)
-                        cont_data = self.continuous_q.get_nowait()
-                        data = np.concatenate((data, cont_data[-n_from_end:]),
-                                              axis=0)
+                        try:
+                            cont_data = next(self.continuous_cycle)
+                            data = np.concatenate((data, cont_data[-n_from_end:]),
+                                                  axis=0)
+                        except Exception as e:
+                            self.logger.exception(f'Continuous mode was set but got exception with continuous queue:\n{e}')
+                            data = np.pad(data, (0, n_from_end), 'constant')
                     else:
                         data = np.pad(data, (0, n_from_end), 'constant')
-                #TODO: Fix the multi-output situation so it doesn't get all grumbly.
-                # use cycle so if sound is single channel it gets copied to all outports
 
                 self.client.outports[0].get_array()[:] = data.T
-                #for channel, port in zip(cycle(data.T), self.client.outports):
-                #    port.get_array()[:] = channel
 
 
 

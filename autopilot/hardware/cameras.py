@@ -4,32 +4,17 @@ import sys
 import os
 import csv
 from skvideo import io
-from skvideo.utils import vshape
-import numpy as np
-import base64
 from datetime import datetime
 import multiprocessing as mp
 from tqdm.auto import tqdm
-
 
 import time
 import traceback
 import blosc
 import warnings
 import subprocess
-import logging
-from ctypes import c_char_p
 
-
-
-
-# import the Queue class from Python 3
-if sys.version_info >= (3, 0):
-    from queue import Queue, Empty, Full
-
-# otherwise, import the Queue class for Python 2.7
-else:
-    from Queue import Queue, Empty, Full
+from queue import Queue, Empty, Full
 
 try:
     import PySpin
