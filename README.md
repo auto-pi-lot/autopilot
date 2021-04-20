@@ -36,6 +36,7 @@ Autopilot was developed with three primary design principles:
   code changes. Any part of an experiment that isn't documented is considered a bug. By integrating experiments and producing data that is
   clean at the time of acquisition, Autopilot makes it easy to do good science -- its goal is to allow
   exact experimental replication from a single file. 
+  
 
 # Distributed Behavior
 
@@ -84,6 +85,27 @@ All of Autopilot is quite new, so bugs, incomplete documentation, missing featur
 [raising issues](https://github.com/wehr-lab/autopilot/issues) or [asking questions in the forum](https://github.com/wehr-lab/autopilot/discussions).
 
 
+# Development Status
+
+## Branch Map
+
+We're working on a formal contribution system, pardon the mess! Until we get that and our CI coverage up, `main` will lag a bit behind the development branches:
+
+* [`dev`](https://github.com/wehr-lab/autopilot/tree/dev) - main development branch that collects hotfixes, PRs, etc. Unstable but usually has lots of extra goodies
+* [`hotfix`](https://github.com/wehr-lab/autopilot/tree/hotfix) - branches from `dev` for building and testing hotfixes, PRs back to `dev`.
+* [`lab`](https://github.com/wehr-lab/autopilot/tree/lab) - branches from `dev` but doesn't necessarily PR back, the local branch used in the maintaining ([Wehr](http://uoneuro.uoregon.edu/wehr/)) lab
+* [`parallax`](https://github.com/wehr-lab/autopilot/tree/parallax) - experimental departure from `dev` to implement a particular experiment and rebuild a lot of components along the way, will eventually return to `dev` <3
+
+## Short-Term
+
+See the short-term development goals in our version milestones:
+
+* [`v0.4.0`](https://github.com/wehr-lab/autopilot/milestone/1) - Implement registries to separate user code extensions like tasks and local hardware devices in a user directory, preserve source code in produced data so local development isn't lost. 
+* [`v0.5.0`](https://github.com/wehr-lab/autopilot/milestone/2) - Make a unitary inheritance structure from a root Autopilot object such that a) common operations like logging and networking are implemented only once, b) the plugin system for `v0.4.0` can not only add new objects, but replace core objects while maintaining provenance (ie. no monkey patching needed), c) object behavior that requires coordination across multiple instances gets much easier, making some magical things like self-healing self-discovering networking possible. This will also include a major refactoring of the code structure, finally breaking up some of the truly monstrous thousand-line modules in `core` into an actually modular system we can build from <3
+
+## Long-Term
+
+Autopilot's extended development goals, in their full extravagance, can be found at the [Autopilot Development Todo](https://docs.auto-pi-lot.com/en/latest/todo.html)
 
 # What's new?
 
@@ -101,10 +123,6 @@ After much ado, we're releasing Autopilot's first major upgrade. Cameras, Contin
 - We now have a detailed development roadmap , so you can see the magnificent future we have planned.
 - We have created the autopilot-users discussion board for troubleshooting & coordinating community development :)
 
-
-# What's next?
-
-[Autopilot Development Todo](https://docs.auto-pi-lot.com/en/latest/todo.html)
 
 # Supported Systems
 
