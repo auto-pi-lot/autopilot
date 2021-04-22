@@ -63,6 +63,7 @@ class Camera(Hardware):
     Arguments:
         fps (int): Framerate of video capture
         timed (bool, int, float): If False (default), camera captures indefinitely. If int or float, captures for this many seconds
+        rotate (int): Number of times to rotate image clockwise (default 0)
         **kwargs: Arguments to :meth:`~Camera.stream`, :meth:`~Camera.write`, and :meth:`~Camera.queue` can be passed as dictionaries, eg.::
 
             stream={'to':'T', 'ip':'localhost'}
@@ -111,7 +112,7 @@ class Camera(Hardware):
     type = "CAMERA" #: (str): what are we anyway?
     trigger = False
 
-    def __init__(self, fps=None, timed=False, crop=None, **kwargs):
+    def __init__(self, fps=None, timed=False, crop=None, rotate:int=0, **kwargs):
         """
 
         Args:
@@ -136,6 +137,7 @@ class Camera(Hardware):
         self.shape = None
         self.frame_n = 0
         self.crop = crop
+        self.rotate = rotate
 
         self.blosc = True
 
@@ -278,7 +280,7 @@ class Camera(Hardware):
         """
 
         try:
-            self.frame = self._grab()
+            frame = self._grab()
         except Exception as e:
             self.logger.exception(e)
 
@@ -653,6 +655,7 @@ class PiCamera(Camera):
         self._sensor_mode = None
         self._cam = None
         self._picam_writer = None
+        self._rotation = self.rotate * 90
 
         self.camera_idx = camera_idx
         self.sensor_mode = sensor_mode
@@ -724,6 +727,30 @@ class PiCamera(Camera):
         if self.initialized.is_set():
             self.cam.framerate = self._fps
 
+    @property
+    def rotation(self):
+        """
+        Rotation of the captured image, derived from :attr:`.Camera.rotate` * 90
+
+        Rotation can be changed during capture
+
+        Returns:
+            Current rotation
+        """
+        return self._rotation
+
+    @rotation.setter
+    def rotation(self, rotation):
+        rotation = int(round(rotation))
+        if rotation not in (0, 90, 180, 270):
+            errmsg = f"rotation must be 0, 90, 180, or 270, got {rotation}"
+            self.logger.exception(errmsg)
+            raise ValueError(errmsg)
+        
+        self._rotation = rotation
+        if self.initialized.is_set():
+            self.cam.rotation = self._rotation
+
     def init_cam(self) -> 'picamera.PiCamera':
         """
         Initialize and return the :class:`picamera.PiCamera` object.
@@ -741,6 +768,7 @@ class PiCamera(Camera):
             framerate=self.fps,
             sensor_mode=self.sensor_mode,
         )
+        cam.rotation = self._rotation
 
         self.initialized.set()
 
@@ -768,7 +796,7 @@ class PiCamera(Camera):
         """
         # wait until a new frame is captured
         self._picam_writer.grab_event.wait()
-        ret = (self._picam_writer.timestamp, self._picam_writer.frame)
+        ret = (self._picam_writer.timestamp, np.rot90(self._picam_writer.frame, axes=(1,0), k=self.rotate))
         self._picam_writer.grab_event.clear()
         return ret
 
@@ -939,7 +967,8 @@ class Camera_CV(Camera):
         ts = self._timestamp()
         if self.crop:
             frame = frame[self.crop[1]:self.crop[1]+self.crop[3], self.crop[0]:self.crop[0]+self.crop[2]]
-        return (ts, frame)
+
+        return (ts, np.rot90(frame, axes=(1,0), k=self.rotate))
 
     def _timestamp(self, frame=None):
         """
@@ -1274,13 +1303,13 @@ class Camera_Spinnaker(Camera):
 
         if self.streaming.is_set():
             if not frame_array:
-                frame_array = self.frame[1].GetNDArray()
+                frame_array = np.rot90(self.frame[1].GetNDArray(), axes=(1,0), k=self.rotate)
             self._stream_q.append({'timestamp': self.frame[0],
                                        self.name  : frame_array})
 
         if self.queueing.is_set():
             if not frame_array:
-                frame_array = self.frame[1].GetNDArray()
+                frame_array = np.rot90(self.frame[1].GetNDArray(), axes=(1,0), k=self.rotate)
             self.q.put_nowait((self.frame[0], frame_array))
 
         if self.indicating.is_set():
@@ -1954,6 +1983,7 @@ class Video_Writer(mp.Process):
                     break
 
         finally:
+            vid_out.close()
 
             # save timestamps as .csv
             ts_path = os.path.splitext(self.path)[0] + '.csv'
@@ -1962,7 +1992,6 @@ class Video_Writer(mp.Process):
                 for ts in self.timestamps:
                     csv_writer.writerow([ts])
 
-            vid_out.close()
 
 
 def list_spinnaker_cameras():
