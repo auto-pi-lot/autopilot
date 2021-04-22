@@ -3100,12 +3100,12 @@ class Stream_Video(QtWidgets.QDialog):
                        value={'starting': False, 'camera': self.current_camera,
                                'stream_to':self.id})
 
-        if self.buttons['play'].isChecked():
-            self.buttons['play'].toggle()
+        if self.buttons['start'].isChecked():
+            self.buttons['start'].toggle()
             # this will also stop the writer
             max_wait = 10
             waited = 0
-            while not self.buttons['play'].isEnabled() and waited < max_wait:
+            while not self.buttons['start'].isEnabled() and waited < max_wait:
                 time.sleep(1)
                 waited += 1
 

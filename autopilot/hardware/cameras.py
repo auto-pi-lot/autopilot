@@ -63,7 +63,10 @@ class Camera(Hardware):
     Arguments:
         fps (int): Framerate of video capture
         timed (bool, int, float): If False (default), camera captures indefinitely. If int or float, captures for this many seconds
-        rotate (int): Number of times to rotate image clockwise (default 0)
+        rotate (int): Number of times to rotate image clockwise (default 0). Note that
+            image rotation should happen in :meth:`._grab` or be otherwise implemented
+            in each camera subclass, because it's a common enough operation many
+            cameras have some optimized way of doing it.
         **kwargs: Arguments to :meth:`~Camera.stream`, :meth:`~Camera.write`, and :meth:`~Camera.queue` can be passed as dictionaries, eg.::
 
             stream={'to':'T', 'ip':'localhost'}
@@ -280,7 +283,7 @@ class Camera(Hardware):
         """
 
         try:
-            frame = self._grab()
+            self.frame = self._grab()
         except Exception as e:
             self.logger.exception(e)
 
@@ -655,14 +658,14 @@ class PiCamera(Camera):
         self._sensor_mode = None
         self._cam = None
         self._picam_writer = None
-        self._rotation = self.rotate * 90
 
         self.camera_idx = camera_idx
         self.sensor_mode = sensor_mode
         self.resolution = resolution
         self.fps = fps
         self.format = format
-    
+        self.rotation = self.rotate * 90
+
     @property
     def sensor_mode(self) -> int:
         """
@@ -728,25 +731,27 @@ class PiCamera(Camera):
             self.cam.framerate = self._fps
 
     @property
-    def rotation(self):
+    def rotation(self) -> int:
         """
-        Rotation of the captured image, derived from :attr:`.Camera.rotate` * 90
+        Rotation of the captured image, derived from :attr:`.Camera.rotate` * 90.
+
+        Must be one of ``(0, 90, 180, 270)``
 
         Rotation can be changed during capture
 
         Returns:
-            Current rotation
+            int - Current rotation
         """
         return self._rotation
 
     @rotation.setter
-    def rotation(self, rotation):
+    def rotation(self, rotation:int):
         rotation = int(round(rotation))
         if rotation not in (0, 90, 180, 270):
             errmsg = f"rotation must be 0, 90, 180, or 270, got {rotation}"
             self.logger.exception(errmsg)
             raise ValueError(errmsg)
-        
+
         self._rotation = rotation
         if self.initialized.is_set():
             self.cam.rotation = self._rotation
@@ -796,7 +801,7 @@ class PiCamera(Camera):
         """
         # wait until a new frame is captured
         self._picam_writer.grab_event.wait()
-        ret = (self._picam_writer.timestamp, np.rot90(self._picam_writer.frame, axes=(1,0), k=self.rotate))
+        ret = (self._picam_writer.timestamp, self._picam_writer.frame)
         self._picam_writer.grab_event.clear()
         return ret
 
