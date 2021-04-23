@@ -268,7 +268,7 @@ class Control_Panel(QtWidgets.QWidget):
     #
     #
 
-    def update_db(self, **kwargs):
+    def update_db(self, pilots:typing.Optional[dict]=None, **kwargs):
         """
         Gathers any changes in :class:`Subject_List` s and dumps :py:attr:`.pilots` to :py:attr:`.prefs.get('PILOT_DB')`
 
@@ -285,26 +285,29 @@ class Control_Panel(QtWidgets.QWidget):
             for pilot, value in kwargs['new'].items():
                 self.pilots[pilot] = value
 
+        if pilots is None:
+            pilots = self.pilots.copy()
+
         # gather subjects from lists
         for pilot, mlist in self.subject_lists.items():
             subjects = []
             for i in range(mlist.count()):
                 subjects.append(mlist.item(i).text())
 
-            self.pilots[pilot]['subjects'] = subjects
+            pilots[pilot]['subjects'] = subjects
 
         # strip any state that's been stored
-        for p, val in self.pilots.items():
+        for p, val in pilots.items():
             if 'state' in val.keys():
                 del val['state']
 
         try:
             with open(prefs.get('PILOT_DB'), 'w') as pilot_file:
-                json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
+                json.dump(pilots, pilot_file, indent=4, separators=(',', ': '))
         except NameError:
             try:
                 with open('/usr/autopilot/pilot_db.json', 'w') as pilot_file:
-                    json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
+                    json.dump(pilots, pilot_file, indent=4, separators=(',', ': '))
             except IOError:
                 self.logger.exception('Couldnt update pilot db!')
 

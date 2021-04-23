@@ -811,13 +811,17 @@ class PiCamera(Camera):
         releasing its resources.
         """
         self.cam.stop_recording()
-        self.cam.close()
+        # self.cam.close()
 
     def release(self):
         self._picam_writer.grab_event.clear()
         super(PiCamera, self).release()
         self._picam_writer.grab_event.clear()
-        self.cam.close()
+        try:
+            self.cam.close()
+        except KeyError as e:
+            self.logger.debug(f"Exception closing picamera: {e}")
+
         self._cam = None
 
     class PiCamera_Writer(object):

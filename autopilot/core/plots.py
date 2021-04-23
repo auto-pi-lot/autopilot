@@ -32,7 +32,8 @@ import multiprocessing as mp
 import pdb
 from queue import Queue, Empty, Full
 #import cv2
-pg.setConfigOptions(antialias=True)
+pg.setConfigOptions(antialias=True, imageAxisOrder='row-major')
+
 # from pyqtgraph.widgets.RawImageWidget import RawImageWidget, RawImageGLWidget
 
 from autopilot import tasks, prefs
@@ -843,6 +844,7 @@ class Video(QtWidgets.QWidget):
 
         try:
             # put the new frame in there.
+            print(data.shape)
             self.qs[video].append(data)
         except KeyError:
             return

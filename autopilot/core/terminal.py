@@ -549,7 +549,7 @@ class Terminal(QtWidgets.QMainWindow):
             self.control_panel.panels[value['pilot']].button.set_state(value['state'])
 
 
-        self.control_panel.update_db()
+        self.control_panel.update_db(**self.pilots.copy())
 
     #############################
     # GUI & etc. methods
