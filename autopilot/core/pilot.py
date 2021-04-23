@@ -567,7 +567,7 @@ class Pilot:
                 del self.hardware[cam_group][cam_id]
                 self.logger.info(f'Stopped streaming camera {camera}')
             else:
-                self.logger.exception(f'No camera was capturing with group {cam_group} and id {cam_id}')
+                self.logger.exception(f'No camera was capturing with group {cam_group} and id {cam_id}, have hardware {self.hardware}')
 
 
 

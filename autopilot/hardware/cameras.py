@@ -817,6 +817,8 @@ class PiCamera(Camera):
         self._picam_writer.grab_event.clear()
         super(PiCamera, self).release()
         self._picam_writer.grab_event.clear()
+        self.cam.close()
+        self._cam = None
 
     class PiCamera_Writer(object):
         """

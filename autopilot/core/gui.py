@@ -2983,7 +2983,9 @@ class Stream_Video(QtWidgets.QDialog):
             # starting!!
             self.comboboxes['pilot'].setDisabled(True)
             self.comboboxes['camera'].setDisabled(True)
+            self.buttons['write'].setDisabled(False)
             self._streaming_cam_id = self.current_camera.split('.')[-1]
+            self.buttons['start'].setText('Streaming...')
             self.node.send(to=self.current_pilot, key="STREAM_VIDEO",
                            value={
                                'starting': True,
@@ -3007,6 +3009,8 @@ class Stream_Video(QtWidgets.QDialog):
 
             self.comboboxes['pilot'].setDisabled(False)
             self.comboboxes['camera'].setDisabled(False)
+            self.buttons['write'].setDisabled(True)
+            self.buttons['start'].setText('Start Streaming')
 
 
 
@@ -3055,6 +3059,8 @@ class Stream_Video(QtWidgets.QDialog):
                     time.sleep(0.2)
 
                 # give the writer an additional second if it needs it
+                self.writer.join(3)
+
                 if self.writer.exitcode is None:
                     # ask if we want to wait
                     waitforit = pop_dialog(
@@ -3063,6 +3069,7 @@ class Stream_Video(QtWidgets.QDialog):
                         msg_type='question',
                         buttons=('Ok', 'Abort')
                     )
+                    print(waitforit)
 
                     if waitforit == True:
                         start_time = time.time()
@@ -3095,10 +3102,6 @@ class Stream_Video(QtWidgets.QDialog):
                                       value[self._streaming_cam_id]))
 
     def closeEvent(self, arg__1:QtGui.QCloseEvent):
-
-        self.node.send(to=self.current_pilot, key="STREAM_VIDEO",
-                       value={'starting': False, 'camera': self.current_camera,
-                               'stream_to':self.id})
 
         if self.buttons['start'].isChecked():
             self.buttons['start'].toggle()
