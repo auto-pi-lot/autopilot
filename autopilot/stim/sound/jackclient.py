@@ -238,13 +238,7 @@ class JackClient(mp.Process):
             # if we are in continuous mode...
             if self.continuous.is_set():
                 if self.continuous_cycle is None:
-                    to_cycle = []
-                    while not self.continuous_q.empty():
-                        try:
-                            to_cycle.append(self.continuous_q.get_nowait())
-                        except Empty:
-                            # normal, queue empty
-                            pass
+                    to_cycle = self.continuous_q.get_nowait()
                     self.continuous_cycle = cycle(to_cycle)
 
                 self.client.outports[0].get_array()[:] = next(self.continuous_cycle).T
