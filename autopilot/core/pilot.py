@@ -691,45 +691,56 @@ class Pilot:
 
         # TODO: Init sending continuous data here
         self.logger.debug('Starting task loop')
-        while True:
-            # Calculate next stage data and prep triggers
-            data = next(self.task.stages)() # Double parens because next just gives us the function, we still have to call it
-            self.logger.debug('called stage method')
+        try:
+            while True:
+                # Calculate next stage data and prep triggers
+                data = next(self.task.stages)() # Double parens because next just gives us the function, we still have to call it
+                self.logger.debug('called stage method')
 
-            if data:
-                data['pilot'] = self.name
-                data['subject'] = self.subject
+                if data:
+                    data['pilot'] = self.name
+                    data['subject'] = self.subject
 
-                # Send data back to terminal (subject is identified by the networking object)
-                self.node.send('T', 'DATA', data)
+                    # Send data back to terminal (subject is identified by the networking object)
+                    self.node.send('T', 'DATA', data)
 
-                # Store a local copy
-                # the task class has a class variable DATA that lets us know which data the row is expecting
-                if trial_data:
-                    for k, v in data.items():
-                        if k in self.task.TrialData.columns.keys():
-                            row[k] = v
+                    # Store a local copy
+                    # the task class has a class variable DATA that lets us know which data the row is expecting
+                    if trial_data:
+                        for k, v in data.items():
+                            if k in self.task.TrialData.columns.keys():
+                                row[k] = v
 
-                # If the trial is over (either completed or bailed), flush the row
-                if 'TRIAL_END' in data.keys():
-                    row.append()
-                    table.flush()
-                self.logger.debug('sent data')
+                    # If the trial is over (either completed or bailed), flush the row
+                    if 'TRIAL_END' in data.keys():
+                        row.append()
+                        table.flush()
+                    self.logger.debug('sent data')
 
 
-            # Wait on the stage lock to clear
-            self.stage_block.wait()
-            self.logger.debug('stage lock passed')
+                # Wait on the stage lock to clear
+                self.stage_block.wait()
+                self.logger.debug('stage lock passed')
 
-            # If the running flag gets set, we're closing.
-            if not self.running.is_set():
+                # If the running flag gets set, we're closing.
+                if not self.running.is_set():
+                    break
+
+        except Exception as e:
+            self.logger.exception(f'got exception while running task, task stopping\n {e}')
+
+        finally:
+            self.logger.debug('stopping task')
+            try:
                 self.task.end()
-                self.task = None
-                row.append()
-                table.flush()
-                self.logger.debug('stopping task')
-                break
-
+            except Exception as e:
+                self.logger.exception(f'got exception while stopping task: {e}')
+            self.task = None
+            row.append()
+            table.flush()
+            gpio.clear_scripts()
+            self.logger.debug('stopped task and cleared scripts')
+            
         h5f.flush()
         h5f.close()
 
