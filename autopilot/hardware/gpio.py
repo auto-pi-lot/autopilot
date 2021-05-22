@@ -22,6 +22,7 @@ import time
 import numpy as np
 from datetime import datetime
 import itertools
+import warnings
 
 
 from autopilot import prefs
@@ -90,7 +91,43 @@ try:
     ENABLED = True
 
 except ImportError:
-    ImportWarning("pigpio could not be imported, gpio not enabled")
+    raise ImportWarning("pigpio could not be imported, gpio not enabled")
+
+
+def clear_scripts(max_scripts=256):
+    """
+    Stop and delete all scripts running on the pigpio client.
+
+    To be called, eg. between tasks to ensure none are left hanging by badly behaved GPIO devices
+
+    Args:
+        max_scripts (int): maximum number of scripts allowed by pigpio. Set in ``pigpio.c`` and not exported
+            to the python module, so have to hardcode it again here, default for pigpio fork is 256
+    """
+
+    if globals()['ENABLED'] == False:
+        warnings.warn('pigpio was not imported, so scripts cannot be cleared')
+        return
+
+    pig = pigpio.pi()
+
+    for i in range(max_scripts):
+        try:
+            pig.stop_script(i)
+        except pigpio.error as e:
+            if 'unknown script id' in str(e):
+                continue
+
+        try:
+            pig.delete_script(i)
+        except Exception as e:
+            warnings.warn(f'Error deleting script {i}, got exception: \n{e}')
+
+
+
+
+
+
 
 
 class GPIO(Hardware):

@@ -52,6 +52,7 @@ SCRIPTS = odict({
             'sudo sed -i \'/^exit 0/i echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor\' /etc/rc.local',
             'sudo sh -c "echo @audio - memlock 256000 >> /etc/security/limits.conf"',
             'sudo sh -c "echo @audio - rtprio 75 >> /etc/security/limits.conf"',
+            'sudo sh -c "echo vm.swappiness = 10 >> /etc/sysctl.conf"' # https://www.raspberrypi.org/forums/viewtopic.php?t=198765
         ]
     },
     'change_pw': {
