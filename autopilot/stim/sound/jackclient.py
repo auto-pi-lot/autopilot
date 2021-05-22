@@ -244,7 +244,7 @@ class JackClient(mp.Process):
                         self.logger.debug(f'started playing continuous sound with length {len(to_cycle)} frames')
                     except Empty:
                         self.logger.exception('told to play continuous sound but nothing in queue, will try again next loop around')
-                        self.client.outports[0].get_array[:] = self.zero_arr.T
+                        self.client.outports[0].get_array()[:] = self.zero_arr.T
                         return
 
                 self.client.outports[0].get_array()[:] = next(self.continuous_cycle).T
