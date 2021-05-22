@@ -354,7 +354,7 @@ if server_type in ("jack", "docs", True):
 
             # put all the chunks into the queue, rather than one at a time
             # to avoid partial receipt
-            self.continuous_q.put_nowait(self.chunks)
+            self.continuous_q.put(self.chunks.copy())
 
             self.buffered_continuous = True
 

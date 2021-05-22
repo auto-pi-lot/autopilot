@@ -240,6 +240,7 @@ class JackClient(mp.Process):
                 if self.continuous_cycle is None:
                     to_cycle = self.continuous_q.get_nowait()
                     self.continuous_cycle = cycle(to_cycle)
+                    self.logger.debug(f'started playing continuous sound with length {len(to_cycle)} frames')
 
                 self.client.outports[0].get_array()[:] = next(self.continuous_cycle).T
 
