@@ -1061,7 +1061,11 @@ class Pilot_Station(Station):
         Returns:
 
         """
-        self.l_ping()
+        # before .run is called, pusher is a boolean flag telling us to make one when it is
+        # not great and should be changed, but these modules are not long for this world
+        # in their current form anyway
+        if not isinstance(self.pusher, bool):
+            self.l_ping()
         if not self.closing.is_set():
             self._ping_thread = threading.Timer(self.ping_interval, self._pinger)
             self._ping_thread.setDaemon(True)
