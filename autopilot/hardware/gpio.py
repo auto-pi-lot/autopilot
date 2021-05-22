@@ -91,7 +91,8 @@ try:
     ENABLED = True
 
 except ImportError:
-    raise ImportWarning("pigpio could not be imported, gpio not enabled")
+    if prefs.get('AGENT') == "PILOT":
+        warnings.warn("pigpio could not be imported, gpio not enabled", ImportWarning)
 
 
 def clear_scripts(max_scripts=256):
