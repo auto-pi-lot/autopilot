@@ -740,7 +740,7 @@ class Pilot:
             table.flush()
             gpio.clear_scripts()
             self.logger.debug('stopped task and cleared scripts')
-            
+
         h5f.flush()
         h5f.close()
 
