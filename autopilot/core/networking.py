@@ -31,6 +31,8 @@ from zmq.eventloop.zmqstream import ZMQStream
 from itertools import count
 import numpy as np
 import pdb
+import typing
+from typing import Optional, Union
 
 import queue
 
@@ -1288,7 +1290,10 @@ class Net_Node(object):
 
     To minimize the complexity of the network topology, Net_Nodes
     must communicate through a :class:`.Station` ROUTER, rather than
-    address each other directly.
+    address each other directly. -- This proved to be horribly misguided and
+    will be changed in v0.5.0 to support simplified
+    messaging to a ``agent_id.netnode_id`` address.
+
 
     Args:
         id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
@@ -1300,6 +1305,7 @@ class Net_Node(object):
         upstream_ip (str): If this Net_Node is being used on its own (ie. not behind a :class:`.Station`), it can directly connect to another node at this IP. Otherwise use 'localhost' to connect to a station.
         route_port (int): Typically, Net_Nodes only have a single Dealer socket and receive messages from their encapsulating :class:`.Station`, but
             if you want to take this node offroad and use it independently, an int here binds a Router to the port.
+        daemon (bool): Run the IOLoop thread as a ``daemon`` (default: ``True``)
 
     Attributes:
         context (:class:`zmq.Context`):  zeromq context
@@ -1315,65 +1321,48 @@ class Net_Node(object):
         msg_counter (:class:`itertools.count`): counter to index our sent messages
         loop_thread (:class:`threading.Thread`): Thread that holds our loop. initialized with `daemon=True`
     """
-    context = None
-    loop = None
-    id = None
-    upstream = None # ID of router we connect to
-    port = None
-    listens = {}
-    outbox = {}
-    timers = {}
-    #connected = False
-    logger = None
-    sock = None
-    loop_thread = None
     repeat_interval = 5 # how many seconds to wait before trying to repeat a message
 
-    def __init__(self, id, upstream, port, listens, instance=True, upstream_ip='localhost',
-                 daemon=True, expand_on_receive=True):
+    def __init__(self, id: str, upstream: str, port: int,
+                 listens: typing.Dict[str, typing.Callable],
+                 instance:bool=True, upstream_ip:str='localhost',
+                 daemon:bool=True, expand_on_receive:bool=True):
         """
 
         """
         if instance:
-            self.context = zmq.Context.instance()
-            self.loop    = IOLoop.current()
+            self.context = zmq.Context.instance() # type: zmq.Context
+            self.loop    = IOLoop.current() # type: IOLoop
         else:
-            self.context = zmq.Context()
-            self.loop    = IOLoop()
+            self.context = zmq.Context()  # type: zmq.Context
+            self.loop    = IOLoop() # type: IOLoop
 
-        self.closing = threading.Event()
+        self.closing = threading.Event() # type: threading.Event
         self.closing.clear()
 
         # we have a few builtin listens
         self.listens = {
             'CONFIRM': self.l_confirm,
             #'STREAM' : self.l_stream
-        }
+        } # type: typing.Dict[str, typing.Callable]
         # then add the rest
         self.listens.update(listens)
 
-        #self.id = id.encode('utf-8')
-        self.id = id
-        #self.upstream = upstream.encode('utf-8')
-        self.upstream = upstream
-        self.port = int(port)
+        self.id = id # type: str
+        self.upstream = upstream # type: str
+        self.port = int(port) # type: int
 
         # self.connected = False
         self.msg_counter = count()
-
-        # try to get a logger
         self.logger = init_logger(self)
 
         # If we were given an explicit IP to connect to, stash it
         self.upstream_ip = upstream_ip
 
-        # # If we want to be able to have messages sent to us directly, make a router at this port
-        # self.route_port = route_port
-
         self.daemon = daemon
-
         self.streams = {}
-
+        self.outbox = {}
+        self.timers = {}
         self.expand = expand_on_receive
 
         if prefs.get( 'SUBJECT'):
@@ -1392,7 +1381,6 @@ class Net_Node(object):
         and starts the :meth:`~Net_Node.threaded_loop` as a daemon thread.
         """
         self.sock = self.context.socket(zmq.DEALER)
-        #self.sock.identity = self.id
         self.sock.setsockopt_string(zmq.IDENTITY, self.id)
         #self.sock.probe_router = 1
 
@@ -1403,26 +1391,10 @@ class Net_Node(object):
         self.sock = ZMQStream(self.sock, self.loop)
         self.sock.on_recv(self.handle_listen)
 
-        # if self.route_port:
-        #     # if want to directly receive messages, bind a router port
-        #     self.router = self.context.socket(zmq.ROUTER)
-        #     self.router.identity = self.id
-        #     self.router.bind('tcp://*:{}'.format(self.route_port))
-        #     self.router = ZMQStream(self.router, self.loop)
-        #     self.router.on_recv(self.handle_listen)
-
-
         self.loop_thread = threading.Thread(target=self.threaded_loop)
         if self.daemon:
             self.loop_thread.daemon = True
         self.loop_thread.start()
-
-        # self.repeat_thread = threading.Thread(target=self.repeat)
-        # if self.daemon:
-        #     self.repeat_thread.daemon = True
-        # self.repeat_thread.start()
-
-        #self.connected = True
 
     def threaded_loop(self):
         """
@@ -1515,7 +1487,11 @@ class Net_Node(object):
             self.logger.debug('RECEIVED: {}'.format(str(msg)))
 
 
-    def send(self, to=None, key=None, value=None, msg=None, repeat=True, flags = None, force_to = False):
+    def send(self, to:Union[str, list]=None,
+             key:str=None,
+             value:typing.Any=None,
+             msg:Optional['Message']=None,
+             repeat:bool=True, flags = None, force_to:bool = False):
         """
         Send a message via our :attr:`~.Net_Node.sock` , DEALER socket.
 
@@ -1544,6 +1520,11 @@ class Net_Node(object):
             force_to (bool): If we really really want to use the 'to' field to address messages
                 (eg. node being used for direct communication), overrides default behavior of sending to upstream.
         """
+        if (key is None) and (msg is None):
+            if self.logger:
+                self.logger.error('Push sent without Key')
+            return
+
         # send message via the dealer
         # even though we only have one connection over our dealer,
         # we still include 'to' in case we are sending further upstream
@@ -1551,35 +1532,34 @@ class Net_Node(object):
         if to is None:
             to = self.upstream
 
-        if (key is None) and (msg is None):
-            if self.logger:
-                self.logger.error('Push sent without Key')
-            return
+        # differentiate between a single 'to' and a list (ie. a multihop message)
+        # in this case, 'recipient' is encoded in the message as the final node to
+        # send to, and the rest of 'to' is encoded as parts in a multipart message
+        if isinstance(to, list):
+            recipient = to[-1]
+        else:
+            recipient = to
 
         if not msg:
-            msg = self.prepare_message(to, key, value, repeat, flags)
+            msg = self.prepare_message(recipient, key, value, repeat, flags)
 
         log_this = True
         if 'NOLOG' in msg.flags.keys():
             log_this = False
 
-        # Make sure our message has everything
-        # if not msg.validate():
-        #     if self.logger:
-        #         self.logger.error('Message Invalid:\n{}'.format(str(msg)))
-        #     return
-
         # encode message
         msg_enc = msg.serialize()
-        #pdb.set_trace()
         if not msg_enc:
             self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
-        if force_to:
-            self.sock.send_multipart([bytes(msg.to, encoding="utf-8"), bytes(msg.to, encoding="utf-8"), msg_enc])
+        if isinstance(to, list):
+            multipart = [bytes(hop, encoding='utf-8') for hop in to]
+            multipart.append(recipient)
+            multipart.append(msg_enc)
+            self.sock.send_multipart(multipart)
         else:
-            self.sock.send_multipart([self.upstream.encode('utf-8'), bytes(msg.to, encoding="utf-8"), msg_enc])
+            self.sock.send_multipart([to.encode('utf-8'), recipient.encode('utf-8'), msg_enc])
         if self.logger and log_this:
             self.logger.debug("MESSAGE SENT - {}".format(str(msg)))
 
