@@ -148,8 +148,6 @@ class Station(multiprocessing.Process):
 
             if self.pusher is True:
                 self.pusher = self.context.socket(zmq.DEALER)
-                #self.pusher.identity = self.id.encode('utf-8')
-                #self.pusher.identity = self.id
                 self.pusher.setsockopt_string(zmq.IDENTITY, self.id)
                 self.pusher.connect('tcp://{}:{}'.format(self.push_ip, self.push_port))
                 self.pusher = ZMQStream(self.pusher, self.loop)
@@ -250,15 +248,14 @@ class Station(multiprocessing.Process):
 
         # Make sure our message has everything
         if not msg.validate():
-            self.logger.error('Message Invalid:\n{}'.format(str(msg)))
+            self.logger.exception('Message Invalid:\n{}'.format(str(msg)))
 
         # encode message
         msg_enc = msg.serialize()
 
-        # TODO: try/except here
         if not msg_enc:
             #set_trace(term_size=(80,40))
-            self.logger.error('Message could not be encoded:\n{}'.format(str(msg)))
+            self.logger.exception('Message could not be encoded:\n{}'.format(str(msg)))
             return
 
         if manual_to:
@@ -267,7 +264,7 @@ class Station(multiprocessing.Process):
 
             if isinstance(msg.to, list):
 
-                self.listener.send_multipart([msg.to[0].encode('utf-8'), msg_enc])
+                self.listener.send_multipart([*[hop.encode('utf-8') for hop in to], msg_enc])
             else:
                 self.listener.send_multipart([msg.to.encode('utf-8'), msg_enc])
 
@@ -476,8 +473,6 @@ class Station(multiprocessing.Process):
         # TODO: This check is v. fragile, pyzmq has a way of sending the stream along with the message
         #####################33
         # Parse the message
-
-
         if len(msg)==1:
             # from our dealer, these are always to us.
             send_type = 'dealer'
@@ -511,20 +506,18 @@ class Station(multiprocessing.Process):
             if unserialized_to.decode('utf-8') not in [self.id, "_{}".format(self.id)]:
                 if unserialized_to not in self.senders.keys() and self.pusher:
                     # if we don't know who they are and we have a pusher, try to push it
-                    self.pusher.send_multipart([self.push_id, unserialized_to, msg[-1]])
+                    self.pusher.send_multipart([self.push_id, *msg[2:]])
+                    self.logger.debug(f'FORWARDING (dealer): {msg}')
                 else:
-                    #if we know who they are or not, try to send it through router anyway.
-                    self.listener.send_multipart([unserialized_to, unserialized_to, msg[-1]])
-
-                # self.logger.debug('FORWARDING: to - {}, {}'.format(unserialized_to, msg[-1][:100] if len(msg[-1])>100 else msg[-1]))
+                    # if we know who they are or not, try to send it through router anyway.
+                    # send everything but the first two frames, which should be the ID of
+                    # the sender and us
+                    self.listener.send_multipart(msg[2:])
+                    self.logger.debug(f'FORWARDING (router): {msg}')
 
                 return
 
-            #msg = json.loads(msg[-1])
-            #msg = Message(**msg)
-            #set_trace(term_size=(80, 24))
             msg = Message(msg[-1])
-
 
             # if this is a new sender, add them to the list
             if msg['sender'] not in self.senders.keys():
@@ -535,38 +528,16 @@ class Station(multiprocessing.Process):
             self.logger.error('Dont know what this message is:{}'.format(msg))
             return
 
-        # Check if our listen was sent properly
-        # if not msg.validate():
-        #     self.logger.error('Message failed to validate:\n{}'.format(str(msg)))
-        #     return
-
-
-
-
         ###################################
         # Handle the message
-        # if this message has a multihop 'to' field, forward it along
 
-        # some messages have a flag not to log them
-        # log_this = True
-        # if 'NOLOG' in msg.flags.keys():
-        #     log_this = False
-
+        # unstack and listed to fields remaining from forwarding
         if isinstance(msg.to, list):
             if len(msg.to) == 1:
                 msg.to = msg.to[0]
 
-        if isinstance(msg.to, list):
-            # pop ourselves off the list
-            _ = msg.to.pop(0)
-
-            # if the next recipient in the list is our push-parent, push it
-            if msg.to[0] == self.push_id:
-                self.push(msg=msg)
-            else:
-                self.send(msg=msg)
         # if this message is to us, just handle it and return
-        elif msg.to in [self.id, "_{}".format(self.id)]:
+        if msg.to in [self.id, "_{}".format(self.id)]:
             if (msg.key != "CONFIRM"):
                 self.logger.debug('RECEIVED: {}'.format(str(msg)))
             # Log and spawn thread to respond to listen
@@ -586,38 +557,44 @@ class Station(multiprocessing.Process):
                 elif send_type == 'dealer':
                     self.push(msg.sender, 'CONFIRM', msg.id)
             return
-
-        # otherwise, if it's to someone we know about, send it there
         elif self.child and (msg.to == 'T'):
             # FIXME UGLY HACK
             self.push(msg=msg)
-        elif msg.to in self.senders.keys():
-            self.send(msg=msg)
-        # otherwise, if we have a pusher, send it there
-        # it's either for them or some other upstream node we don't know about
-        elif self.pusher:
-            self.push(msg=msg)
         else:
+            self.logger.exception(f'Message not to us, but wasnt forwarded previously in handling method, message must be misformatted: {msg}')
 
-            self.logger.warning('Message to unconfirmed recipient, attempting to send: {}'.format(str(msg)))
-            self.send(msg=msg)
+        # all of the below should be removed but i am paranoid and like
+        # sorta bad at reverting changes on git so i am just commenting for now
+
+        #
+        #
+        # elif msg.to in self.senders.keys():
+        #     self.send(msg=msg)
+        # # otherwise, if we have a pusher, send it there
+        # # it's either for them or some other upstream node we don't know about
+        # elif self.pusher:
+        #     self.push(msg=msg)
+        # else:
+        #
+        #     self.logger.warning('Message to unconfirmed recipient, attempting to send: {}'.format(str(msg)))
+        #     self.send(msg=msg)
 
         # finally, if there's something we're supposed to do, do it
         # even if the message is not to us,
         # sometimes we do work en passant to reduce effort doubling
         # FIXME Seems like a really bad idea.
-        if msg.key in self.listens.keys():
-            listen_funk = self.listens[msg.key]
-            listen_thread = threading.Thread(target=listen_funk, args=(msg,))
-            listen_thread.start()
-
-        # since we return if it's to us before, confirm is repeated down here.
-        # FIXME: Inelegant
-        if (msg.key != "CONFIRM") and ('NOREPEAT' not in msg.flags.keys()):
-            if send_type == 'router':
-                self.send(sender, 'CONFIRM', msg.id)
-            elif send_type == 'dealer':
-                self.push(msg.sender, 'CONFIRM', msg.id)
+        # if msg.key in self.listens.keys():
+        #     listen_funk = self.listens[msg.key]
+        #     listen_thread = threading.Thread(target=listen_funk, args=(msg,))
+        #     listen_thread.start()
+        #
+        # # since we return if it's to us before, confirm is repeated down here.
+        # # FIXME: Inelegant
+        # if (msg.key != "CONFIRM") and ('NOREPEAT' not in msg.flags.keys()):
+        #     if send_type == 'router':
+        #         self.send(sender, 'CONFIRM', msg.id)
+        #     elif send_type == 'dealer':
+        #         self.push(msg.sender, 'CONFIRM', msg.id)
 
     def get_ip(self):
         """

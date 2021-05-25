@@ -9,6 +9,21 @@ There are two general types of network objects -
     the :class:`~.pilot.Pilot` or :class:`~.terminal.Terminal`.
 * :class:`.Net_Node` is a pop-in networking class that can be given to any other object that
     wants to send or receive messages.
+
+The :class:`~autopilot.networking.Message` object is used to serialize and pass
+messages. When sent, messages are ``JSON`` serialized (with some special magic
+to compress/encode numpy arrays) and sent as ``zmq`` multipart messages.
+
+Each serialized message, when sent, can have ``n`` frames of the format::
+
+    [hop_0, hop_1, ... hop_n, final_recipient, serialized_message]
+
+Or, messages can have multiple "hops" (a typical message will have one 'hop' specified
+by the ``to`` field), the second to last frame is always the final intended recipient,
+and the final frame is the serialized message. Note that the ``to`` field of a
+:class:`~autopilot.networking.Message` object will always be the final recipient
+even if a list is passed for ``to`` when sending. This lets :class:`~.networking.Station`
+objects efficiently forward messages without deserializing them at every hop.
 """
 
 

@@ -42,7 +42,6 @@ class Message(object):
     serialized = None
 
     def __init__(self, msg=None, expand_arrays = False,  **kwargs):
-        # type: (object, object) -> None
         # Messages don't need to have all attributes on creation,
         # but do need them to serialize
         """
