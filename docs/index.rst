@@ -52,22 +52,22 @@ This documentation is very young and is very much a work in progress! Please `su
    :maxdepth: 1
    :caption: API Documentation:
 
-   Core Modules <core>
-   Hardware <hardware>
-   Tasks <tasks>
-   Stimuli <stim>
-   Transformations <transform>
-   Visualization Tools <autopilot.viz>
-   Setup <setup>
+   Core Modules <core/index>
+   Hardware <hardware/index>
+   Tasks <tasks/index>
+   Stimuli <stim/index>
+   Transformations <transform/index>
+   Visualization Tools <viz/index>
+   Setup <setup/index>
    Prefs <prefs>
-   External <autopilot.external>
+   External <external>
 
 
 .. toctree::
     :maxdepth: 1
     :caption: Meta:
 
-    Discussion <https://groups.google.com/forum/#!forum/autopilot-users>
+    Discussion <https://github.com/wehr-lab/autopilot/discussions>
     To-Do <todo>
     Changelog <changelog/index>
 
