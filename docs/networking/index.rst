@@ -1,7 +1,7 @@
 networking
 =============================
 
-.. automodule:: autopilot.core.networking
+.. automodule:: autopilot.networking
     :members:
     :undoc-members:
     :show-inheritance:
