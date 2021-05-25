@@ -72,4 +72,4 @@ Module Tour
 * :mod:`.stim` - Stimulus generation & presentation, of which sound is currently the most heavily developed
 
 .. raw:: html
-   :file: includes/module_map.html
+   :file: ../includes/module_map.html

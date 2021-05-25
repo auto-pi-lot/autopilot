@@ -953,6 +953,8 @@ class Pilot_Station(Station):
     """
     def __init__(self):
         # Pilot has a pusher - connects back to terminal
+        super(Pilot_Station, self).__init__()
+
         self.pusher = True
         if prefs.get('LINEAGE') == 'CHILD':
             self.push_id = prefs.get('PARENTID').encode('utf-8')
@@ -977,7 +979,6 @@ class Pilot_Station(Station):
         self.child = False # Are we acting as a child right now?
         self.parent = False # Are we acting as a parent right now?
 
-        super(Pilot_Station, self).__init__()
 
         self.listens.update({
             'STATE': self.l_state,  # Confirm or notify terminal of state change
