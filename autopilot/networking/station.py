@@ -6,6 +6,8 @@ import threading
 import time
 from copy import copy
 from itertools import count
+import typing
+from typing import Optional, Union
 
 import zmq
 from tornado.ioloop import IOLoop
@@ -40,7 +42,7 @@ class Station(multiprocessing.Process):
     be subclassed in order to provide methods used by :meth:`~.Station.handle_listen`.
 
     Attributes:
-        ctx (:class:`zmq.Context`):  zeromq context
+        context (:class:`zmq.Context`):  zeromq context
         loop (:class:`tornado.ioloop.IOLoop`): a tornado ioloop
         pusher (:class:`zmq.Socket`): pusher socket - a dealer socket that connects to other routers
         push_ip (str): If we have a dealer, IP to push messages to
@@ -53,43 +55,41 @@ class Station(multiprocessing.Process):
         ip (str): Device IP
         listens (dict): Dictionary of functions to call for different types of messages. keys match the :attr:`.Message.key`.
         senders (dict): Identities of other sockets (keys, ie. directly connected) and their state (values) if they keep one
-        outbox (dict): Messages that have been sent but have not been confirmed
+        push_outbox (dict): Messages that have been sent but have not been confirmed to our :attr:`Station.pusher`
+        send_outbox (dict): Messages that have been sent but have not been confirmed to our :attr:`Station.listener`
         timers (dict): dict of :class:`threading.Timer` s that will check in on outbox messages
         msg_counter (:class:`itertools.count`): counter to index our sent messages
         file_block (:class:`threading.Event`): Event to signal when a file is being received.
-
-
     """
-    ctx          = None    # Context
-    loop         = None    # IOLoop
-    push_ip      = None    # IP to push to
-    push_port    = None    # Publisher Port
-    push_id      = ""      # Identity of the Router we push to
-    listen_port  = None    # Listener Port
-    pusher       = None    # pusher socket - a dealer socket that connects to other routers
-    listener     = None    # Listener socket - a router socket to send/recv messages
-    logger       = None    # Logger....
-    id           = None    # What are we known as?
-    ip           = None    # whatismy
-    listens      = {}    # Dictionary of functions to call for different types of messages
-    senders      = {} # who has sent us stuff (ie. directly connected) and their state if they keep one
-    push_outbox = {}  # Messages that are out with unconfirmed delivery
-    send_outbox = {}  # Messages that are out with unconfirmed delivery
-    timers = {}  # dict of timer threads that will check in on outbox messages
-    child = False
-    routes = {} # dict of 'to' addressee and the route that should be taken to reach them
     repeat_interval = 5.0 # seconds to wait before retrying messages
 
     def __init__(self):
         super(Station, self).__init__()
         # Prefs should be passed by the terminal, if not, try to load from default locatio
+        # init instance attrs that are populated either by a child object or
+        # in run
+        self.context = None
+        self.loop = None
+        self.push_ip = None
+        self.push_port = None
+        self.push_id = None
+        self.pusher = None
+        self.listen_port = None
+        self.listener = None
+        self.id = None
+        self.repeat_thread = None
+        self.senders = {}
+        self.push_outbox = {}
+        self.send_outbox = {}
+        self.timers = {}
+        self.child = False
+        self.routes = {}
 
         try:
             self.ip = self.get_ip()
         except Exception as e:
             Warning("Couldn't get IP!: {}".format(e))
             self.ip = ""
-
 
         # Setup logging
         self.logger = init_logger(self)
@@ -109,10 +109,6 @@ class Station(multiprocessing.Process):
         self.closing = threading.Event()
         self.closing.clear()
 
-        # start thread that periodically resends messages
-        self.repeat_thread = threading.Thread(target=self.repeat)
-        self.repeat_thread.setDaemon(True)
-        self.repeat_thread.start()
 
     def __del__(self):
         self.closing.set()
@@ -139,8 +135,6 @@ class Station(multiprocessing.Process):
             # each Station object may have one Dealer that
             # connects it with its antecedents.
             self.listener  = self.context.socket(zmq.ROUTER)
-            #self.listener.identity = self.id.encode('utf-8')
-            #self.listener.identity = self.id
             self.listener.setsockopt_string(zmq.IDENTITY, self.id)
             self.listener.bind('tcp://*:{}'.format(self.listen_port))
             self.listener = ZMQStream(self.listener, self.loop)
@@ -153,6 +147,11 @@ class Station(multiprocessing.Process):
                 self.pusher = ZMQStream(self.pusher, self.loop)
                 self.pusher.on_recv(self.handle_listen)
                 # TODO: Make sure handle_listen knows how to handle ID-less messages
+
+            # start thread that periodically resends messages
+            self.repeat_thread = threading.Thread(target=self.repeat)
+            self.repeat_thread.setDaemon(True)
+            self.repeat_thread.start()
 
             self.logger.info('Starting IOLoop')
             self.loop.start()
@@ -458,7 +457,7 @@ class Station(multiprocessing.Process):
             msg.value = v
             listen_fn(msg)
 
-    def handle_listen(self, msg):
+    def handle_listen(self, msg:typing.List[bytes, ...]):
         """
         Upon receiving a message, call the appropriate listen method
         in a new thread.
@@ -734,7 +733,7 @@ class Terminal_Station(Station):
     ##########################
     # Message Handling Methods
 
-    def l_ping(self, msg):
+    def l_ping(self, msg:Message):
         """
         We are asked to confirm that we are alive
 
@@ -747,7 +746,7 @@ class Terminal_Station(Station):
         # respond with blank message since the terminal isn't really stateful
         self.send(msg.sender, 'STATE', flags={'NOLOG':True})
 
-    def l_init(self, msg):
+    def l_init(self, msg:Message):
         """
         Ask all pilots to confirm that they are alive
 
@@ -763,7 +762,7 @@ class Terminal_Station(Station):
             self.send(p, 'PING', flags={'NOLOG':True})
 
 
-    def l_change(self, msg):
+    def l_change(self, msg:Message):
         """
         Change a parameter on the Pi
 
@@ -776,7 +775,7 @@ class Terminal_Station(Station):
         # TODO: Should also handle param changes to GUI objects like ntrials, etc.
         pass
 
-    def l_stopall(self, msg):
+    def l_stopall(self, msg:Message):
         """
         Stop all pilots and plots
 
@@ -789,7 +788,7 @@ class Terminal_Station(Station):
             self.send("P_{}".format(p), 'STOP')
 
 
-    def l_kill(self, msg):
+    def l_kill(self, msg:Message):
         """
         Terminal wants us to die :(
 
@@ -806,7 +805,7 @@ class Terminal_Station(Station):
         self.loop.stop()
 
 
-    def l_data(self, msg):
+    def l_data(self, msg:Message):
         """
         Stash incoming data from a Pilot
 
@@ -824,7 +823,7 @@ class Terminal_Station(Station):
         #self.send('P_{}'.format(msg.value['pilot']), 'DATA', msg.value, flags=msg.flags)
         self.send(to='P_{}'.format(msg.value['pilot']), msg=msg)
 
-    def l_continuous(self, msg):
+    def l_continuous(self, msg:Message):
         """
         Handle the storage of continuous data
 
@@ -861,7 +860,7 @@ class Terminal_Station(Station):
 
 
 
-    def l_state(self, msg):
+    def l_state(self, msg:Message):
         """
         A Pilot has changed state.
 
@@ -888,7 +887,7 @@ class Terminal_Station(Station):
 
         self.senders[msg.sender] = msg.value
 
-    def l_handshake(self, msg):
+    def l_handshake(self, msg:Message):
         """
         A Pi is telling us it's alive and its IP.
 
@@ -902,7 +901,7 @@ class Terminal_Station(Station):
 
 
 
-    def l_file(self, msg):
+    def l_file(self, msg:Message):
         """
         A Pilot needs some file from us.
 
@@ -1033,7 +1032,7 @@ class Pilot_Station(Station):
     def l_noop(self, msg):
         pass
 
-    def l_state(self, msg):
+    def l_state(self, msg:Message):
         """
         Pilot has changed state
 
@@ -1049,7 +1048,7 @@ class Pilot_Station(Station):
         self.push(to=self.push_id, key='STATE', value=msg.value)
 
 
-    def l_cohere(self, msg):
+    def l_cohere(self, msg:Message):
         """
         Send our local version of the data table so the terminal can double check
 
@@ -1062,7 +1061,7 @@ class Pilot_Station(Station):
 
         pass
 
-    def l_ping(self, msg=None):
+    def l_ping(self, msg:Message=None):
         """
         The Terminal wants to know our status
 
@@ -1075,7 +1074,7 @@ class Pilot_Station(Station):
         # don't bother the pi
         self.push(key='STATE', value=self.state, flags={'NOLOG':True})
 
-    def l_start(self, msg):
+    def l_start(self, msg:Message):
         """
         We are being sent a task to start
 
@@ -1134,7 +1133,7 @@ class Pilot_Station(Station):
         # once we make sure we have everything, tell the Pilot to start.
         self.send(self.pi_id, 'START', msg.value)
 
-    def l_stop(self, msg):
+    def l_stop(self, msg:Message):
         """
         Tell the pi to stop the task
 
@@ -1143,7 +1142,7 @@ class Pilot_Station(Station):
         """
         self.send(self.pi_id, 'STOP')
 
-    def l_change(self, msg):
+    def l_change(self, msg:Message):
         """
         The terminal is changing a parameter
 
@@ -1156,7 +1155,7 @@ class Pilot_Station(Station):
         # TODO: Changing some task parameter from the Terminal
         pass
 
-    def l_file(self, msg):
+    def l_file(self, msg:Message):
         """
         We are receiving a file.
 
@@ -1185,7 +1184,7 @@ class Pilot_Station(Station):
         # If we requested a file, some poor start fn is probably waiting on us
         self.file_block.set()
 
-    def l_continuous(self, msg):
+    def l_continuous(self, msg:Message):
         """
         Forwards continuous data sent by children back to terminal.
 
@@ -1205,7 +1204,7 @@ class Pilot_Station(Station):
                                 continuous data should be streamed directly to terminal \
                                 from pilot')
 
-    def l_child(self, msg):
+    def l_child(self, msg:Message):
         """
         Telling our child to run a task.
 
@@ -1216,12 +1215,12 @@ class Pilot_Station(Station):
 
         """
         if 'KEY' in msg.value.keys():
-            KEY = msg.value['keys']
+            KEY = msg.value['KEY']
         else:
             KEY = 'START'
         self.send(to=prefs.get('CHILDID'), key=KEY, value=msg.value)
 
-    def l_forward(self, msg):
+    def l_forward(self, msg:Message):
         """
         Just forward the message to the pi.
         """
