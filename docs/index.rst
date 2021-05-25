@@ -54,8 +54,9 @@ This documentation is very young and is very much a work in progress! Please `su
 
    Core Modules <core/index>
    Hardware <hardware/index>
-   Tasks <tasks/index>
+   Networking <networking/index>
    Stimuli <stim/index>
+   Tasks <tasks/index>
    Transformations <transform/index>
    Visualization Tools <viz/index>
    Setup <setup/index>
