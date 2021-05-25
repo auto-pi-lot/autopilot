@@ -41,25 +41,25 @@ This documentation is very young and is very much a work in progress! Please `su
    :maxdepth: 1
    :caption: User Guide:
 
-   Overview <guide.overview>
-   Installation <guide.installation>
-   Training a Subject <guide.training>
-   Writing a Task <guide.task>
-   Writing a Hardware Class <guide.hardware>
+   Overview <guide/overview>
+   Installation <guide/installation>
+   Training a Subject <guide/training>
+   Writing a Task <guide/task>
+   Writing a Hardware Class <guide/hardware>
 
 
 .. toctree::
    :maxdepth: 1
    :caption: API Documentation:
 
-   Core Modules <autopilot.core>
-   Hardware <autopilot.hardware>
-   Tasks <autopilot.tasks>
-   Stimuli <autopilot.stim>
-   Transformations <autopilot.transform>
+   Core Modules <core>
+   Hardware <hardware>
+   Tasks <tasks>
+   Stimuli <stim>
+   Transformations <transform>
    Visualization Tools <autopilot.viz>
-   Setup <autopilot.setup>
-   Prefs <autopilot.prefs>
+   Setup <setup>
+   Prefs <prefs>
    External <autopilot.external>
 
 

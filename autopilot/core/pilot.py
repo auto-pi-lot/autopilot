@@ -52,7 +52,7 @@ if __name__ == '__main__':
         else:
             from autopilot.stim.sound import jackclient
 
-from autopilot.core.networking import Pilot_Station, Net_Node, Message
+from autopilot.networking import Message, Net_Node, Pilot_Station
 from autopilot import external
 from autopilot import tasks
 from autopilot.hardware import gpio

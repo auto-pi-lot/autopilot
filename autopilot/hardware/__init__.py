@@ -38,7 +38,7 @@ Warning:
 
 
 from autopilot import prefs
-from autopilot.core.networking import Net_Node
+from autopilot.networking import Net_Node
 from autopilot.core.loggers import init_logger
 
 # FIXME: Hardcoding names of metaclasses, should have some better system of denoting which classes can be instantiated

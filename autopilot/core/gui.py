@@ -38,7 +38,7 @@ from functools import reduce
 from autopilot.core.subject import Subject
 from autopilot import tasks, prefs
 from autopilot.stim.sound import sounds
-from autopilot.core.networking import Net_Node
+from autopilot.networking import Net_Node
 from functools import wraps
 from autopilot.core.utils import InvokeEvent
 from autopilot.core import styles
