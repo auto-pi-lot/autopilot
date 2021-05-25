@@ -20,9 +20,6 @@ class Net_Node(object):
     Drop in networking object to be given to any sub-object
     behind some external-facing :class:`.Station` object.
 
-    These objects are intended to communicate locally, within a piece of hardware,
-    though not necessarily within the same process.
-
     To minimize the complexity of the network topology, the typical way to use
      ``Net_Node``s is through a :class:`.Station` ROUTER, rather than
     addressing each other directly. Practically, this means that
@@ -169,7 +166,7 @@ class Net_Node(object):
                 # loop already started
                 break
 
-    def handle_listen(self, msg: typing.List[bytes, ...]):
+    def handle_listen(self, msg: typing.List[bytes]):
         """
         Upon receiving a message, call the appropriate listen method
         in a new thread and send confirmation it was received.

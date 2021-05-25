@@ -457,7 +457,7 @@ class Station(multiprocessing.Process):
             msg.value = v
             listen_fn(msg)
 
-    def handle_listen(self, msg:typing.List[bytes, ...]):
+    def handle_listen(self, msg:typing.List[bytes]):
         """
         Upon receiving a message, call the appropriate listen method
         in a new thread.
