@@ -186,7 +186,6 @@ SCRIPTS = odict({
             'sudo rm -rf ./pigpio-master',
             'sudo rm ./master.zip'
         ]
-
     }
 })
 """"""
