@@ -543,10 +543,21 @@ class Tone(BASE_CLASS):
         self.initialized = True
 
 class Noise(BASE_CLASS):
-    """White Noise"""
-
+    """Generates a white noise burst with specified parameters
+    
+    duration : the duration of the sound
+    amplitude : the amplitude of the sound
+    channel : whether it should play from left, right, or both speakers
+    
+    The `type` attribute is always "Noise".
+    """
+    # These are the parameters of the sound, I think this is used to generate
+    # sounds automatically for a protocol
     PARAMS = ['duration','amplitude', 'channel']
+    
+    # The type of the sound
     type='Noise'
+    
     def __init__(self, duration, amplitude=0.01, channel=None, **kwargs):
         """
         Args:
