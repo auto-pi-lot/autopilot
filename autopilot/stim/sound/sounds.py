@@ -579,7 +579,7 @@ class Noise(BASE_CLASS):
         self.amplitude = float(amplitude)
         try:
             self.channel = int(channel)
-        except TypeError
+        except TypeError:
             self.channel = channel
         
         # Currently only mono or stereo sound is supported
