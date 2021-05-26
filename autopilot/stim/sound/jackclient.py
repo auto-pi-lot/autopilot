@@ -150,8 +150,8 @@ class JackClient(mp.Process):
         """
         Called by :meth:`.JackClient.run` to boot the server upon starting the process.
 
-        Activates the client and connects it to the number of outports
-        determined by `prefs.get('NCHANNELS')`
+        Activates the client and connects it to the physical speaker outputs
+        as determined by `prefs.get('OUTCHANNELS')`.
 
         :class:`jack.Client` s can't be kept alive, so this must be called just before
         processing sample starts.
@@ -177,22 +177,32 @@ class JackClient(mp.Process):
         # Get the actual physical ports that can play sound
         target_ports = self.client.get_ports(is_physical=True, is_input=True, is_audio=True)
 
-        # If OUTCHANNELS has length 1: then connect a single outport to that target port
-        #   If stereo data is provided, this is likely an error
-        # If OUTCHANNELS has length 2: then connect two outports to those target ports
-        #   If mono data is provided, write the same data to both target ports
-        #   Otherwise, write the data in that order
-
+        
+        ## Hook up the outports (data sinks) to physical ports
+        # If OUTCHANNELS has length 1: 
+        #   This is the "mono" case where we only want to play to one speaker.
+        #   Hook up one outport to that physical port
+        #   Set self.stereo_output to False
+        #   If stereo sounds are provided, then this is probably an error
+        # If OUTCHANNELS has length 2:
+        #   This is the "stereo" case where we want to play to two speakers.
+        #   Connect two outports to those speakers, using OUTCHANNELS to index
+        #   the target ports.
+        #   If mono sounds are provided, play the same sound from both
+        
         # Get the pref
         outchannels = prefs.get('OUTCHANNELS')
-
         if len(outchannels) == 1:
+            # Mono case
             self.stereo_output = False
             self.client.outports[0].connect(target_ports[int(outchannels[0])])
+        
         elif len(outchannels) == 2:
+            # Stereo case
             self.stereo_output = True
             self.client.outports[0].connect(target_ports[int(outchannels[0])])
             self.client.outports[1].connect(target_ports[int(outchannels[1])])
+        
         else:
             raise ValueError(
                 "OUTCHANNELS must be a list of length 1 or 2, not {}".format(
