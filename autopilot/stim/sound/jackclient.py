@@ -159,23 +159,47 @@ class JackClient(mp.Process):
         :class:`jack.Client` s can't be kept alive, so this must be called just before
         processing sample starts.
         """
-
+        # Initalize a new Client and store some its properties
+        # I believe this is how downstream code knows the sample rate
         self.client = jack.Client(self.name)
         self.blocksize = self.client.blocksize
         self.fs = self.client.samplerate
+        
+        # This is used for writing silence
         self.zero_arr = np.zeros((self.blocksize,1),dtype='float32')
 
         self.client.set_process_callback(self.process)
 
+        # Register an "outport" for both channel 0 and channel 1
+        # This is something we can write data into
         self.client.outports.register('out_0')
         self.client.outports.register('out_1')
 
         self.client.activate()
+        
+        # Get the actual physical ports that can play sound
         target_ports = self.client.get_ports(is_physical=True, is_input=True, is_audio=True)
 
-        self.client.outports[0].connect(target_ports[0])
-        self.client.outports[1].connect(target_ports[1])
+        # If OUTCHANNELS has length 1: then connect a single outport to that target port
+        #   If stereo data is provided, this is likely an error
+        # If OUTCHANNELS has length 2: then connect two outports to those target ports
+        #   If mono data is provided, write the same data to both target ports
+        #   Otherwise, write the data in that order
 
+        # Get the pref
+        outchannels = prefs.get('OUTCHANNELS')
+
+        if len(outchannels) == 1:
+            self.stereo_output = False
+            self.client.outports[0].connect(target_ports[int(outchannels[0])])
+        elif len(outchannels) == 2:
+            self.stereo_output = True
+            self.client.outports[0].connect(target_ports[int(outchannels[0])])
+            self.client.outports[1].connect(target_ports[int(outchannels[1])])
+        else:
+            raise ValueError(
+                "OUTCHANNELS must be a list of length 1 or 2, not {}".format(
+                outchannels))
 
     def run(self):
         """
@@ -327,23 +351,38 @@ class JackClient(mp.Process):
 
                 
                 ## Write the output to each outport
-                # Buffers to write into each channel
-                buff0 = self.client.outports[0].get_array()
-                buff1 = self.client.outports[1].get_array()
-                
-                if data.ndim == 1:
-                    # Mono output, write same to both
-                    buff0[:] = data
-                    buff1[:] = data
-                
-                elif data.ndim == 2:
-                    # Stereo output, write each column to each channel
-                    buff0[:] = data[:, 0]
-                    buff1[:] = data[:, 1]
+                if self.stereo_output:
+                    # Buffers to write into each channel
+                    buff0 = self.client.outports[0].get_array()
+                    buff1 = self.client.outports[1].get_array()
+                    
+                    if data.ndim == 1:
+                        # Mono output, write same to both
+                        buff0[:] = data
+                        buff1[:] = data
+                    
+                    elif data.ndim == 2:
+                        # Stereo output, write each column to each channel
+                        buff0[:] = data[:, 0]
+                        buff1[:] = data[:, 1]
+                    
+                    else:
+                        raise ValueError(
+                            "data must be 1 or 2d, not {}".format(data.shape))
                 
                 else:
-                    raise ValueError(
-                        "data must be 1 or 2d, not {}".format(data.shape))
+                    # Buffers to write into each channel
+                    buff0 = self.client.outports[0].get_array()
+                    
+                    if data.ndim == 1:
+                        # Mono output, write same to both
+                        buff0[:] = data
+                    
+                    else:
+                        # Stereo data provided, this is an error
+                        raise ValueError(
+                            "outchannels has length 1, but data "
+                            "has shape {}".format(data.shape))
 
 
 
