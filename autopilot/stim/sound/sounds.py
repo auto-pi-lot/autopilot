@@ -529,9 +529,9 @@ class Tone(BASE_CLASS):
 class Noise(BASE_CLASS):
     """White Noise"""
 
-    PARAMS = ['duration','amplitude']
+    PARAMS = ['duration','amplitude', 'channel']
     type='Noise'
-    def __init__(self, duration, amplitude=0.01, **kwargs):
+    def __init__(self, duration, amplitude=0.01, channel=None, **kwargs):
         """
         Args:
             duration (float): duration of the noise
@@ -542,6 +542,7 @@ class Noise(BASE_CLASS):
 
         self.duration = float(duration)
         self.amplitude = float(amplitude)
+        self.channel = int(channel)
 
         self.init_sound()
 
@@ -558,6 +559,24 @@ class Noise(BASE_CLASS):
             # rand generates from 0 to 1, so subtract 0.5, double to get -1 to 1,
             # then multiply by amplitude.
             self.table = (self.amplitude * np.random.uniform(-1,1,self.nsamples)).astype(np.float32)
+            if self.channel == 0:
+                self.table = np.array([
+                    self.table,
+                    np.zeros_like(self.table),
+                    ]).T
+            elif self.channel == 1:
+                self.table = np.array([
+                    np.zeros_like(self.table),
+                    self.table,
+                    ]).T
+            else:
+                raise ValueError("unrecognized value for channel: {}".format(channel))
+            
+            print("Just generated table with shape {}, ch0 minmax {} {}, ch1 minmax {} {}".format(
+                self.table.shape,
+                self.table[:, 0].min(), self.table[:, 0].max(),
+                self.table[:, 1].min(), self.table[:, 1].max(),
+                ))
             self.chunk()
 
         self.initialized = True

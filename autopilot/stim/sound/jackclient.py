@@ -168,10 +168,15 @@ class JackClient(mp.Process):
         self.client.set_process_callback(self.process)
 
         self.client.outports.register('out_0')
+        self.client.outports.register('out_1')
 
         self.client.activate()
         target_ports = self.client.get_ports(is_physical=True, is_input=True, is_audio=True)
 
+        self.client.outports[0].connect(target_ports[0])
+        self.client.outports[1].connect(target_ports[1])
+
+	# Fix this
         if prefs.get( 'OUTCHANNELS'):
             if isinstance(prefs.get('OUTCHANNELS'), list):
                 for outchan in prefs.get('OUTCHANNELS'):
@@ -247,14 +252,44 @@ class JackClient(mp.Process):
                             pass
                     self.continuous_cycle = cycle(to_cycle)
 
-                self.client.outports[0].get_array()[:] = next(self.continuous_cycle).T
+                # CR: comment out this one-channel code
+                #self.client.outports[0].get_array()[:] = next(self.continuous_cycle).T
+                
+                # CR: two-channel solution
+                buff0 = self.client.outports[0].get_array()
+                buff1 = self.client.outports[1].get_array()
+                data = next(self.continuous_cycle).T
+                
+                #~ print("buff0 shape: {}".format(buff0.shape))
+                #~ print("buff1 shape: {}".format(buff1.shape))
+                #~ print("data shape: {}".format(data.shape))
+                
+                assert data.ndim == 2
+                if data.shape[0] == 2:
+                    buff0[:] = data[0]
+                    buff1[:] = data[1]
+                else:
+                    print(
+                        "warning: for some reason data has only 1 channel, "
+                        "maxmin {} {}".format(data.max(), data.min()))                    
+                    buff0[:] = data[0]
+                    buff1[:] = data[0]                
 
             else:
                 # clear continuous sound after it's done
                 if self.continuous_cycle is not None:
                     self.continuous_cycle = None
-                for channel, port in zip(self.zero_arr.T, self.client.outports):
-                    port.get_array()[:] = channel
+                
+                # CR: comment out this one-channel code
+                #for channel, port in zip(self.zero_arr.T, self.client.outports):
+                #    port.get_array()[:] = channel
+                
+                # CR: two-channel solution
+                #~ print("zeroing out outports")
+                buff0 = self.client.outports[0].get_array()
+                buff1 = self.client.outports[1].get_array()
+                buff0[:] = np.zeros(self.blocksize, dtype='float32')
+                buff1[:] = np.zeros(self.blocksize, dtype='float32')                
         else:
 
             try:
@@ -271,7 +306,20 @@ class JackClient(mp.Process):
                         self.logger.exception(f'Continuous mode was set but got exception with continuous queue:\n{e}')
                         data = self.zero_arr
 
-                    self.client.outports[0].get_array()[:] = data.T
+                    #self.client.outports[0].get_array()[:] = data.T
+
+                    buff0 = self.client.outports[0].get_array()
+                    buff1 = self.client.outports[1].get_array()
+                    assert data.ndim == 2
+                    if data.shape[1] == 2:
+                        buff0[:] = data[:, 0]
+                        buff1[:] = data[:, 1]
+                    else:
+                        print(
+                            "warning: for some reason data has only 1 channel, "
+                            "maxmin {} {}".format(data.max(), data.min()))                    
+                        buff0[:] = data[:, 0]
+                        buff1[:] = data[:, 0]
 
                 else:
                     for channel, port in zip(self.zero_arr.T, self.client.outports):
@@ -296,7 +344,24 @@ class JackClient(mp.Process):
                     else:
                         data = np.pad(data, (0, n_from_end), 'constant')
 
-                self.client.outports[0].get_array()[:] = data.T
+                #self.client.outports[0].get_array()[:] = data.T
+                
+                buff0 = self.client.outports[0].get_array()
+                buff1 = self.client.outports[1].get_array()
+                assert data.ndim == 2
+                if data.shape[1] == 2:
+                    buff0[:] = data[:, 0]
+                    buff1[:] = data[:, 1]
+                else:
+                    print(
+                        "warning: for some reason data has only 1 channel, "
+                        "maxmin {} {}".format(data.max(), data.min()))                    
+                    buff0[:] = data[:, 0]
+                    buff1[:] = data[:, 0]
+
+                
+                #for channel, port in zip(cycle(data.T), self.client.outports):
+                #    port.get_array()[:] = channel
 
 
 
