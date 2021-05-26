@@ -545,10 +545,6 @@ class Tone(BASE_CLASS):
 class Noise(BASE_CLASS):
     """Generates a white noise burst with specified parameters
     
-    duration : the duration of the sound
-    amplitude : the amplitude of the sound
-    channel : whether it should play from left, right, or both speakers
-    
     The `type` attribute is always "Noise".
     """
     # These are the parameters of the sound, I think this is used to generate
@@ -559,53 +555,83 @@ class Noise(BASE_CLASS):
     type='Noise'
     
     def __init__(self, duration, amplitude=0.01, channel=None, **kwargs):
-        """
+        """Initialize a new white noise burst with specified parameters.
+        
+        The sound itself is stored as the attribute `self.table`. This can
+        be 1-dimensional or 2-dimensional, depending on `channel`. If it is
+        2-dimensional, then each channel is a column.
+        
         Args:
             duration (float): duration of the noise
             amplitude (float): amplitude of the sound as a proportion of 1.
+            channel (int or None): which channel should be used
+                If 0, play noise from the first channel
+                If 1, play noise from the second channel
+                If None, send the same information to all channels ("mono")
             **kwargs: extraneous parameters that might come along with instantiating us
         """
+        # This calls the base class, which sets server-specific parameters
+        # like samplign rate
         super(Noise, self).__init__()
-
+        
+        # Set the parameters specific to Noise
         self.duration = float(duration)
         self.amplitude = float(amplitude)
-        self.channel = int(channel)
+        self.channel = channel
+        
+        # Currently only mono or stereo sound is supported
+        if self.channel not in [None, 0, 1]:
+            raise ValueError(
+                "audio channel must be 0, 1, or None, not {}".format(
+                self.channel))
 
+        # Initialize the sound itself
         self.init_sound()
 
     def init_sound(self):
+        """Defines `self.table`, the waveform that is played. 
+        
+        The way this is generated depends on `self.server_type`, because
+        parameters like the sampling rate cannot be known otherwise.
+        
+        The sound is generated and then it is "chunked" (zero-padded and
+        divided into chunks). Finally `self.initialized` is set True.
         """
-        Create a table of Noise using pyo or numpy, depending on the server_type
-        """
-
+        # Depends on the server_type
         if self.server_type == 'pyo':
             noiser = pyo.Noise(mul=self.amplitude)
             self.table = self.table_wrap(noiser)
+        
         elif self.server_type == 'jack':
+            # This calculates the number of samples, using the specified 
+            # duration and the sampling rate from the server, and stores it
+            # as `self.nsamples`.
             self.get_nsamples()
-            # rand generates from 0 to 1, so subtract 0.5, double to get -1 to 1,
-            # then multiply by amplitude.
-            self.table = (self.amplitude * np.random.uniform(-1,1,self.nsamples)).astype(np.float32)
-            if self.channel == 0:
-                self.table = np.array([
-                    self.table,
-                    np.zeros_like(self.table),
-                    ]).T
-            elif self.channel == 1:
-                self.table = np.array([
-                    np.zeros_like(self.table),
-                    self.table,
-                    ]).T
-            else:
-                raise ValueError("unrecognized value for channel: {}".format(channel))
             
-            print("Just generated table with shape {}, ch0 minmax {} {}, ch1 minmax {} {}".format(
-                self.table.shape,
-                self.table[:, 0].min(), self.table[:, 0].max(),
-                self.table[:, 1].min(), self.table[:, 1].max(),
-                ))
+            # Generate the table by sampling from a uniform distribution
+            # The shape of the table depends on `self.channel`
+            if self.channel is None:
+                # The table will be 1-dimensional for mono sound
+                self.table = np.random.uniform(-1, 1, self.nsamples)
+            else:
+                # The table will be 2-dimensional for stereo sound
+                # Each channel is a column
+                # Only the specified channel contains data and the other is zero
+                data = np.random.uniform(-1, 1, self.nsamples)
+                self.table = np.zeros((self.nsamples, 2))
+                assert self.channel in [0, 1]
+                self.table[:, self.channel] = data
+            
+            # Scale by the amplitude
+            self.table = self.table * self.amplitude
+            
+            # Convert to float32
+            self.table = self.table.astype(np.float32)
+            
+            # Chunk the sound 
             self.chunk()
 
+        # Flag as initialized
         self.initialized = True
 
 class File(BASE_CLASS):
