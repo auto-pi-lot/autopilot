@@ -132,7 +132,6 @@ class JackClient(mp.Process):
         # store the frames of the continuous sound and cycle through them if set in continous mode
         self.continuous_cycle = None
 
-
         # store a reference to us and our values in the module
         globals()['SERVER'] = self
         globals()['FS'] = copy(self.fs)
@@ -146,8 +145,6 @@ class JackClient(mp.Process):
         globals()['CONTINUOUS_LOOP'] = self.continuous_loop
 
         self.logger = init_logger(self)
-
-
 
     def boot_server(self):
         """
@@ -215,11 +212,6 @@ class JackClient(mp.Process):
         except KeyboardInterrupt:
             # just want to kill the process, so just continue from here
             pass
-
-
-    # def close(self):
-    #     # TODO: shut down server but also reset module level variables
-    #     pass
 
     def quit(self):
         """
@@ -383,7 +375,4 @@ class JackClient(mp.Process):
                         raise ValueError(
                             "outchannels has length 1, but data "
                             "has shape {}".format(data.shape))
-
-
-
 
