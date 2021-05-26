@@ -176,25 +176,6 @@ class JackClient(mp.Process):
         self.client.outports[0].connect(target_ports[0])
         self.client.outports[1].connect(target_ports[1])
 
-	# Fix this
-        if prefs.get( 'OUTCHANNELS'):
-            if isinstance(prefs.get('OUTCHANNELS'), list):
-                for outchan in prefs.get('OUTCHANNELS'):
-
-                    self.client.outports[0].connect(target_ports[int(outchan)])
-            elif isinstance(prefs.get('OUTCHANNELS'), int):
-                self.client.outports[0].connect(target_ports[prefs.get('OUTCHANNELS')])
-            elif isinstance(prefs.get('OUTCHANNELS'), str):
-                try:
-                    self.client.outports[0].connect(target_ports[int(prefs.get('OUTCHANNELS'))])
-                except TypeError:
-                    Exception('Could not coerce prefs.get(\'OUTCHANNELS\') to an integer or list of ints. Connecting to port 0. got {}'.format(prefs.get('OUTCHANNELS')))
-                    self.client.outports[0].connect(target_ports[0])
-        else:
-            self.client.outports[0].connect(target_ports[0])
-            if prefs.get('NCHANNELS') == 2:
-                # TODO: Limited, obvs. want to handle arbitrary output arrangements.
-                self.client.outports[0].connect(target_ports[1])
 
     def run(self):
         """
