@@ -325,24 +325,25 @@ class JackClient(mp.Process):
                     else:
                         data = np.pad(data, (0, n_from_end), 'constant')
 
-                #self.client.outports[0].get_array()[:] = data.T
                 
+                ## Write the output to each outport
+                # Buffers to write into each channel
                 buff0 = self.client.outports[0].get_array()
                 buff1 = self.client.outports[1].get_array()
-                assert data.ndim == 2
-                if data.shape[1] == 2:
+                
+                if data.ndim == 1:
+                    # Mono output, write same to both
+                    buff0[:] = data
+                    buff1[:] = data
+                
+                elif data.ndim == 2:
+                    # Stereo output, write each column to each channel
                     buff0[:] = data[:, 0]
                     buff1[:] = data[:, 1]
-                else:
-                    print(
-                        "warning: for some reason data has only 1 channel, "
-                        "maxmin {} {}".format(data.max(), data.min()))                    
-                    buff0[:] = data[:, 0]
-                    buff1[:] = data[:, 0]
-
                 
-                #for channel, port in zip(cycle(data.T), self.client.outports):
-                #    port.get_array()[:] = channel
+                else:
+                    raise ValueError(
+                        "data must be 1 or 2d, not {}".format(data.shape))
 
 
 
