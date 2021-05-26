@@ -64,7 +64,7 @@ if server_type == True:
 try:
     server_type = server_type.lower()
 except AttributeError:
-    continue
+    pass
 
 # From now on, server_type should be 'jack', 'pyo', 'docs', or None
 if server_type not in ['jack', 'pyo', 'docs']:
