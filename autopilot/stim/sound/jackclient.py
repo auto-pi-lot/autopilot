@@ -245,11 +245,16 @@ class JackClient(mp.Process):
         Args:
             frames: number of frames (samples) to be processed. unused. passed by jack client
         """
-
+        ## Switch on whether the play event is set
         if not self.play_evt.is_set():
-            # if we are in continuous mode...
+            # A play event has not been set
+            # Play only if we are in continuous mode, otherwise write zeros
+            
+            ## Switch on whether we are in continuous mode
             if self.continuous.is_set():
+                # We are in continuous mode, keep playing
                 if self.continuous_cycle is None:
+                    # Set up self.continuous_cycle if not already set
                     to_cycle = []
                     while not self.continuous_q.empty():
                         try:
@@ -259,51 +264,37 @@ class JackClient(mp.Process):
                             pass
                     self.continuous_cycle = cycle(to_cycle)
 
-                # CR: comment out this one-channel code
-                #self.client.outports[0].get_array()[:] = next(self.continuous_cycle).T
-                
-                # CR: two-channel solution
-                buff0 = self.client.outports[0].get_array()
-                buff1 = self.client.outports[1].get_array()
+                # Get the data to play
                 data = next(self.continuous_cycle).T
                 
-                #~ print("buff0 shape: {}".format(buff0.shape))
-                #~ print("buff1 shape: {}".format(buff1.shape))
-                #~ print("data shape: {}".format(data.shape))
-                
-                assert data.ndim == 2
-                if data.shape[0] == 2:
-                    buff0[:] = data[0]
-                    buff1[:] = data[1]
-                else:
-                    print(
-                        "warning: for some reason data has only 1 channel, "
-                        "maxmin {} {}".format(data.max(), data.min()))                    
-                    buff0[:] = data[0]
-                    buff1[:] = data[0]                
+                # Write
+                self.write_to_outports(data)
 
             else:
+                # We are not in continuous mode, play silence
                 # clear continuous sound after it's done
                 if self.continuous_cycle is not None:
                     self.continuous_cycle = None
-                
-                # CR: comment out this one-channel code
-                #for channel, port in zip(self.zero_arr.T, self.client.outports):
-                #    port.get_array()[:] = channel
-                
-                # CR: two-channel solution
-                #~ print("zeroing out outports")
-                buff0 = self.client.outports[0].get_array()
-                buff1 = self.client.outports[1].get_array()
-                buff0[:] = np.zeros(self.blocksize, dtype='float32')
-                buff1[:] = np.zeros(self.blocksize, dtype='float32')                
-        else:
 
+                # Play zeros
+                data = np.zeros(self.blocksize, dtype='float32')
+                
+                # Write
+                self.write_to_outports(data)
+
+        else:
+            # A play event has been set
+            # Play a sound
+
+            # Try to get data
             try:
                 data = self.q.get_nowait()
             except queue.Empty:
                 data = None
                 self.logger.warning('Queue Empty')
+            
+            
+            ## Switch on whether data is available
             if data is None:
                 # fill with continuous noise
                 if self.continuous.is_set():
@@ -313,28 +304,20 @@ class JackClient(mp.Process):
                         self.logger.exception(f'Continuous mode was set but got exception with continuous queue:\n{e}')
                         data = self.zero_arr
 
-                    #self.client.outports[0].get_array()[:] = data.T
-
-                    buff0 = self.client.outports[0].get_array()
-                    buff1 = self.client.outports[1].get_array()
-                    assert data.ndim == 2
-                    if data.shape[1] == 2:
-                        buff0[:] = data[:, 0]
-                        buff1[:] = data[:, 1]
-                    else:
-                        print(
-                            "warning: for some reason data has only 1 channel, "
-                            "maxmin {} {}".format(data.max(), data.min()))                    
-                        buff0[:] = data[:, 0]
-                        buff1[:] = data[:, 0]
-
                 else:
-                    for channel, port in zip(self.zero_arr.T, self.client.outports):
-                        port.get_array()[:] = channel
+                    # Play zeros
+                    data = np.zeros(self.blocksize, dtype='float32')
+                
+                # Write data
+                self.write_to_outports(data)
+                
                 # sound is over
                 self.play_evt.clear()
                 self.stop_evt.set()
+                
             else:
+                ## There is data available
+                # Pad the data if necessary
                 if data.shape[0] < self.blocksize:
                     # if sound was not padded, fill remaining with continuous sound or silence
                     n_from_end = self.blocksize - data.shape[0]
@@ -350,39 +333,47 @@ class JackClient(mp.Process):
                             data = np.pad(data, (0, n_from_end), 'constant')
                     else:
                         data = np.pad(data, (0, n_from_end), 'constant')
-
                 
-                ## Write the output to each outport
-                if self.stereo_output:
-                    # Buffers to write into each channel
-                    buff0 = self.client.outports[0].get_array()
-                    buff1 = self.client.outports[1].get_array()
-                    
-                    if data.ndim == 1:
-                        # Mono output, write same to both
-                        buff0[:] = data
-                        buff1[:] = data
-                    
-                    elif data.ndim == 2:
-                        # Stereo output, write each column to each channel
-                        buff0[:] = data[:, 0]
-                        buff1[:] = data[:, 1]
-                    
-                    else:
-                        raise ValueError(
-                            "data must be 1 or 2d, not {}".format(data.shape))
-                
-                else:
-                    # Buffers to write into each channel
-                    buff0 = self.client.outports[0].get_array()
-                    
-                    if data.ndim == 1:
-                        # Mono output, write same to both
-                        buff0[:] = data
-                    
-                    else:
-                        # Stereo data provided, this is an error
-                        raise ValueError(
-                            "outchannels has length 1, but data "
-                            "has shape {}".format(data.shape))
+                # Write
+                self.write_to_outports(data)
+    
+    def write_to_outports(self, data):
+        """Write the sound in `data` to the outport(s).
+        
+        If self.stereo_output, then stereo data is written.
+        Otherwise, mono data is written.
+        """
+        ## Write the output to each outport
+        if self.stereo_output:
+            # Buffers to write into each channel
+            buff0 = self.client.outports[0].get_array()
+            buff1 = self.client.outports[1].get_array()
+            
+            if data.ndim == 1:
+                # Mono output, write same to both
+                buff0[:] = data
+                buff1[:] = data
+            
+            elif data.ndim == 2:
+                # Stereo output, write each column to each channel
+                buff0[:] = data[:, 0]
+                buff1[:] = data[:, 1]
+            
+            else:
+                raise ValueError(
+                    "data must be 1 or 2d, not {}".format(data.shape))
+        
+        else:
+            # Buffers to write into each channel
+            buff0 = self.client.outports[0].get_array()
+            
+            if data.ndim == 1:
+                # Mono output, write same to both
+                buff0[:] = data
+            
+            else:
+                # Stereo data provided, this is an error
+                raise ValueError(
+                    "outchannels has length 1, but data "
+                    "has shape {}".format(data.shape))
 
