@@ -1,18 +1,27 @@
-"""
-Classes to play sounds.
+"""This module defines classes to generate different sounds.
 
-Each sound inherits a base type depending on `prefs.get('AUDIOSERVER')`
+These classes are currently implemented:
+* Tone : a sinuosoidal pure tone
+* Noise : a burst of white noise
+* File : read from a file
+* Speech
+* Gap
 
-* `prefs.get('AUDIOSERVER') == 'jack'` : :class:`.Jack_Sound`
-* `prefs.get('AUDIOSERVER') == 'pyo'` : :class:`.Pyo_Sound`
-
-To avoid unnecessary dependencies, `Jack_Sound` is not defined if AUDIOSERVER is `'pyo'`
-and vice versa.
+The behavior of this module depends on `prefs.get('AUDIOSERVER')`.
+* If this is 'jack', or True:
+    Then import jack, define Jack_Sound, and all sounds inherit from that.
+* If this is 'pyo':
+    Then import pyo, define PyoSound, and all sounds inherit from that.
+* If this is 'docs':
+    Then import both jack and pyo, define both Jack_Sound and PyoSound,
+    and all sounds inherit from `object`.
+* Otherwise:
+    Then do not import jack or pyo, or define either Jack_Sound or PyoSound,
+    and all sounds inherit from `object`.
 
 TODO:
     Implement sound level and filter calibration
-
-
+    Be a whole lot more robust about handling different numbers of channels
 """
 
 # Re: The organization of this module
@@ -28,7 +37,6 @@ TODO:
 # behavior for making sounds, so use an init_audio() method that
 # creates sound conditional on the type of audio server.
 
-# TODO: Be a whole lot more robust about handling different numbers of channels
 
 import os
 import sys
@@ -43,22 +51,42 @@ from queue import Empty, Full
 from autopilot import prefs
 from autopilot.core.loggers import init_logger
 
-# switch behavior based on audio server type
+
+## First, switch the behavior based on the pref AUDIOSERVER
+# Get the pref
+server_type = prefs.get('AUDIOSERVER')
+
+# True is a synonym for 'jack', the default server
+if server_type == True:
+    server_type = 'jack'
+
+# Force lower-case if string
 try:
-    if isinstance(prefs.get('AUDIOSERVER'), str):
-        server_type = prefs.get('AUDIOSERVER').lower()
-    else:
-        server_type = prefs.get('AUDIOSERVER')
-except:
-#    # TODO: The 'attribute don't exist' type - i think NameError?
+    server_type = server_type.lower()
+except AttributeError:
+    continue
+
+# From now on, server_type should be 'jack', 'pyo', 'docs', or None
+if server_type not in ['jack', 'pyo', 'docs']:
     server_type = None
 
-if server_type in ("pyo", "docs"):
+
+## Import the required modules
+if server_type in ['jack', 'docs']:
+    # This will warn if the jack library is not found
+    from autopilot.stim.sound import jackclient
+
+elif server_type in ['pyo', 'docs']:
+    # Using these import guards for compatibility, but I think we should
+    # actually error here
     try:
         import pyo
     except ImportError:
         pass
 
+
+## Define Pyo_Sound if needed
+if server_type in ("pyo", "docs"):
     class Pyo_Sound(object):
         """
         Metaclass for pyo sound objects.
@@ -69,8 +97,6 @@ if server_type in ("pyo", "docs"):
             intentionally left undocumented.
 
         """
-
-
         def __init__(self):
             self.PARAMS = None  # list of strings of parameters to be defined
             self.type = None  # string human readable name of sound
@@ -79,7 +105,6 @@ if server_type in ("pyo", "docs"):
             self.table = None
             self.trigger = None
             self.server_type = 'pyo'
-
 
         def play(self):
             self.table.out()
@@ -114,11 +139,8 @@ if server_type in ("pyo", "docs"):
             self.trigger = pyo.TrigFunc(self.table['trig'], trig_fn)
 
 
-if server_type in ("jack", "docs", True):
-    if server_type is True:
-        server_type = "jack"
-    from autopilot.stim.sound import jackclient
-
+## Define Jack_Sound if needed
+if server_type in ("jack", "docs"):
     class Jack_Sound(object):
         """
         Base class for sounds that use the :class:`~.jackclient.JackClient` audio
@@ -162,6 +184,14 @@ if server_type in ("jack", "docs", True):
         """
 
         def __init__(self):
+            """Initialize a new Jack_Sound
+            
+            This sets sound-specific parameters to None, set jack-specific
+            parameters to their equivalents in jackclient, initializes
+            some other flags and a logger.
+            """
+            # These sound-specific parameters will be set by the derived
+            # objects.
             self.duration = None  # duration in ms
             self.amplitude = None
             self.table = None  # numpy array of samples
@@ -171,7 +201,7 @@ if server_type in ("jack", "docs", True):
             self.padded = False # whether or not the sound was padded with zeros when chunked
             self.continuous = False
 
-
+            # These jack-specific parameters are copied from jackclient
             self.fs = jackclient.FS
             self.blocksize = jackclient.BLOCKSIZE
             self.server = jackclient.SERVER
@@ -183,19 +213,22 @@ if server_type in ("jack", "docs", True):
             self.continuous_q = jackclient.CONTINUOUS_QUEUE
             self.continuous_loop = jackclient.CONTINUOUS_LOOP
 
+            # Initalize these flags
             self.initialized = False
             self.buffered = False
             self.buffered_continuous = False
 
+            # Initialize a logger
             self.logger = init_logger(self)
-
 
         def chunk(self, pad=True):
             """
             Split our `table` up into a list of :attr:`.Jack_Sound.blocksize` chunks.
 
             Args:
-                pad (bool): If the sound is not evenly divisible into chunks, pad with zeros (True, default), otherwise jackclient will pad with its continuous sound
+                pad (bool): If the sound is not evenly divisible into chunks, 
+                pad with zeros (True, default), otherwise jackclient will pad 
+                with its continuous sound
             """
             # break sound into chunks
 
@@ -417,8 +450,6 @@ if server_type in ("jack", "docs", True):
             self.continuous_flag.set()
             self.continuous = True
 
-
-
         def stop_continuous(self):
             """
             Stop playing a continuous sound
@@ -431,11 +462,6 @@ if server_type in ("jack", "docs", True):
 
             self.continuous_flag.clear()
             self.continuous_loop.clear()
-
-
-
-
-
 
         def end(self):
             """
@@ -466,17 +492,7 @@ if server_type in ("jack", "docs", True):
             self.end()
 
 
-
-
-else:
-    # just importing to query parameters, not play sounds.
-    pass
-
-
-
-
-
-####################
+## Now define BASE_CLASS to be Pyo_Sound, Jack_Sound, or object
 if server_type == "pyo":
     BASE_CLASS = Pyo_Sound
 elif server_type == "jack":
@@ -484,9 +500,9 @@ elif server_type == "jack":
 else:
     # just importing to query parameters, not play sounds.
     BASE_CLASS = object
-    # warnings.warn('No Base Sound class specified! sounds will probably not work!!!')
 
 
+## The rest of the module defines actual sounds, which inherit from BASE_CLASS
 class Tone(BASE_CLASS):
     """The Humble Sine Wave"""
 
@@ -622,8 +638,6 @@ class File(BASE_CLASS):
         converting int to float as needed.
 
         Create a sound table, resampling sound if needed.
-
-
         """
 
         fs, audio = wavfile.read(self.path)
@@ -652,7 +666,6 @@ class File(BASE_CLASS):
             self.table = audio
 
         self.initialized = True
-
 
 class Speech(File):
     """
@@ -755,18 +768,7 @@ class Gap(BASE_CLASS):
                 threading.Thread(target=self.wait_trigger).start()
 
 
-
-
-
-
-
-
-
-
-
-
-
-#######################
+## Finally, define SOUND_LIST, a dict from sound name to corresponding class
 # Has to be at bottom so fnxns already defined when assigned.
 SOUND_LIST = {
     'Tone':Tone,
@@ -791,6 +793,7 @@ v0.3 will be all about doing parameters better.
 """
 
 
+## Helper function
 def int_to_float(audio):
     """
     Convert 16 or 32 bit integer audio to 32 bit float.
@@ -809,15 +812,3 @@ def int_to_float(audio):
         audio = audio / (float(2 ** 32) / 2)
 
     return audio
-
-
-
-
-
-
-
-
-
-
-
-
