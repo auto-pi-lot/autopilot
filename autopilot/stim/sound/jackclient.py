@@ -145,6 +145,10 @@ class JackClient(mp.Process):
         globals()['CONTINUOUS_LOOP'] = self.continuous_loop
 
         self.logger = init_logger(self)
+        
+        # Something calls process() before boot_server(), so this has to
+        # be initialized
+        self.stereo_output = True
 
     def boot_server(self):
         """
