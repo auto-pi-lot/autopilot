@@ -171,14 +171,14 @@ class Terminal(QtWidgets.QMainWindow):
         # The split is so the external networking can run in another process, do potentially time-consuming tasks
         # like resending & confirming message delivery without blocking or missing messages
 
-        self.node = Net_Node(id="_T", upstream='T', port=prefs.get('MSGPORT'), listens=self.listens)
-        self.logger.info("Net Node Initialized")
-
         # Start external communications in own process
         # Has to be after init_network so it makes a new context
         self.networking = Terminal_Station(self.pilots)
         self.networking.start()
         self.logger.info("Station object Initialized")
+
+        self.node = Net_Node(id="_T", upstream='T', port=prefs.get('MSGPORT'), listens=self.listens, instance=False)
+        self.logger.info("Net Node Initialized")
 
         # send an initial ping looking for our pilots
         self.node.send('T', 'INIT')
