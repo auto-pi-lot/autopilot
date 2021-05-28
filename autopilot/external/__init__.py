@@ -111,10 +111,10 @@ def start_jackd():
         jackd_string = jackd_string.replace('-rfs', f"-r{prefs.get('FS')}")
 
     if prefs.get('JACKDBLOCKSIZE'):
-        jackd_string = jackd_string.replace('JACKDBLOCKSIZE', prefs.get('JACKDBLOCKSIZE'))
+        jackd_string = jackd_string.replace('JACKDBLOCKSIZE', str(prefs.get('JACKDBLOCKSIZE')))
 
     if prefs.get('JACKDNPERIODS'):
-        jackd_string = jackd_string.replace('JACKDNPERIODS', prefs.get('JACKDNPERIODS'))
+        jackd_string = jackd_string.replace('JACKDNPERIODS', str(prefs.get('JACKDNPERIODS')))
 
 
     # construct rest of launch string!
