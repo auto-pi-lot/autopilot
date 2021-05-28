@@ -103,6 +103,7 @@ class Net_Node(object):
 
         # self.connected = False
         self.msg_counter = count()
+        self.msgs_received = 0
         self.logger = init_logger(self)
 
         # If we were given an explicit IP to connect to, stash it
@@ -179,6 +180,7 @@ class Net_Node(object):
         Args:
             msg (list): JSON :meth:`.Message.serialize` d message.
         """
+        self.msgs_received += 1
 
         # if we have a router, check if this is a router msg and store
         # the sender if so
@@ -246,6 +248,9 @@ class Net_Node(object):
           directly sent via :attr:`.Net_Node.router`
         * If the ``force_to`` arg is ``True``, send to the ``to`` recipient directly
           via the dealer :attr:`.Net_Node.sock`
+        * If ``to`` is a list, or is intended to be sent as a multihop message with
+          an explicit path, then networking objects will attempt to forward it
+          along that path (disregarding implicit topology).
 
         Either an already created :class:`.Message` should be passed as `msg`,
         or at least `key` must be provided for a new message created
@@ -302,20 +307,20 @@ class Net_Node(object):
 
         if isinstance(to, list):
             multipart = [bytes(hop, encoding='utf-8') for hop in to]
-            multipart.append(recipient)
+            multipart.append(recipient.encode('utf-8'))
             multipart.append(msg_enc)
 
         else:
             # the first frame will be added below if needed...
             multipart = [recipient.encode('utf-8'), msg_enc]
+            if force_to or to.encode('utf-8') in self.senders.keys():
+                multipart.insert(0, to.encode('utf-8'))
+            else:
+                multipart.insert(0, self.upstream.encode('utf-8'))
 
         if self.router is not None and multipart[0] in self.senders.keys():
             self.router.send_multipart(multipart)
-        elif force_to:
-            multipart.insert(0, to.encode('utf-8'))
-            self.sock.send_multipart(multipart)
         else:
-            multipart.insert(0, self.upstream.encode('utf-8'))
             self.sock.send_multipart(multipart)
 
         if self.logger and log_this:

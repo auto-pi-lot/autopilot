@@ -10,7 +10,7 @@ import typing
 from typing import Optional, Union
 
 import zmq
-from tornado.ioloop import IOLoop
+from tornado.ioloop import IOLoop, PeriodicCallback
 from zmq.eventloop.zmqstream import ZMQStream
 
 from autopilot import prefs
@@ -38,8 +38,26 @@ class Station(multiprocessing.Process):
     a :class:`zmq.DEALER` socket that connects to the :class:`zmq.ROUTER`
     socket of an upstream Station object.
 
-    This class should not be instantiated on its own, but should instead
-    be subclassed in order to provide methods used by :meth:`~.Station.handle_listen`.
+    This class can be instantiated on its own if all of the required arguments
+    are supplied, but the intended pattern of use is to subclass it with
+    any custom ``listen`` methods for handling message types and other logic
+    that would be specific for an agent type that uses it.
+
+    .. note::
+
+        This object will likely be deprecated in v0.5.0, as the gains of
+        a separate messaging process are not as great as the complications
+        caused by having two different kinds of networking object in the system.
+        In the future we will move to having a single type of networking object
+        that can either be spawned as a separate process or as a thread.
+
+    Args are similar to the documented Attributes, and so only those that differ
+    from attributes are documented here
+
+    Args:
+        pusher (bool): If ``True``, create a ``zmq.DEALER`` socket connected to
+            ``push_ip``, ``push_port``, and ``push_id``. (Default: ``False``).
+
 
     Attributes:
         context (:class:`zmq.Context`):  zeromq context
@@ -63,20 +81,28 @@ class Station(multiprocessing.Process):
     """
     repeat_interval = 5.0 # seconds to wait before retrying messages
 
-    def __init__(self):
+    def __init__(self,
+                 id: Optional[str] = None,
+                 push_ip: Optional[str] = None,
+                 push_port: Optional[int] = None,
+                 push_id: Optional[str] = None,
+                 pusher: bool = False,
+                 listen_port: Optional[int] = None,
+                 listens: Optional[typing.Dict[str, typing.Callable]] = None
+                 ):
         super(Station, self).__init__()
         # Prefs should be passed by the terminal, if not, try to load from default locatio
         # init instance attrs that are populated either by a child object or
         # in run
         self.context = None
         self.loop = None
-        self.push_ip = None
-        self.push_port = None
-        self.push_id = None
-        self.pusher = None
-        self.listen_port = None
+        self.push_ip = push_ip
+        self.push_port = push_port
+        self.push_id = push_id.encode('utf-8') if isinstance(push_id, str) else push_id
+        self.pusher = pusher # type: Union[bool, zmq.Socket]
+        self.listen_port = listen_port
         self.listener = None
-        self.id = None
+        self.id = id
         self.repeat_thread = None
         self.senders = {}
         self.push_outbox = {}
@@ -84,6 +110,8 @@ class Station(multiprocessing.Process):
         self.timers = {}
         self.child = False
         self.routes = {}
+        self.msgs_received = multiprocessing.Value('i', lock=True)
+        self.msgs_received.value = 0
 
         try:
             self.ip = self.get_ip()
@@ -91,8 +119,6 @@ class Station(multiprocessing.Process):
             Warning("Couldn't get IP!: {}".format(e))
             self.ip = ""
 
-        # Setup logging
-        self.logger = init_logger(self)
 
         self.file_block = threading.Event() # to wait for file transfer
 
@@ -100,20 +126,21 @@ class Station(multiprocessing.Process):
         self.msg_counter = count()
 
         # we have a few builtin listens
-        self.listens = {
+        if listens is None:
+            listens = {}
+        self.listens = listens
+        self.listens.update({
             'CONFIRM': self.l_confirm,
             'STREAM' : self.l_stream
-        }
+        })
 
         # even tthat signals when we are closing
-        self.closing = threading.Event()
+        self.closing = multiprocessing.Event()
         self.closing.clear()
 
 
     def __del__(self):
-        self.closing.set()
-        # Stopping the loop should kill the process, as it's what's holding us in run()
-        self.loop.stop()
+        self.release()
 
     def run(self):
         """
@@ -125,6 +152,7 @@ class Station(multiprocessing.Process):
         The process is kept open by the :class:`tornado.IOLoop` .
         """
         try:
+            self.logger = init_logger(self)
             # init zmq objects
             self.context = zmq.Context()
             self.loop = IOLoop()
@@ -153,13 +181,22 @@ class Station(multiprocessing.Process):
             self.repeat_thread.setDaemon(True)
             self.repeat_thread.start()
 
+            # periodically check if stopping
+            self.stop_checker = PeriodicCallback(
+                callback=self._check_stop,
+                callback_time=500
+            )
+            self.stop_checker.start()
+
             self.logger.info('Starting IOLoop')
             self.loop.start()
         except KeyboardInterrupt:
             # normal quitting behavior
             pass
         finally:
-            self.release()
+            self.context.destroy()
+            self.loop.close()
+            # self.release()
 
     def prepare_message(self, to, key, value, repeat=True, flags=None):
         """
@@ -472,6 +509,8 @@ class Station(multiprocessing.Process):
         # TODO: This check is v. fragile, pyzmq has a way of sending the stream along with the message
         #####################33
         # Parse the message
+        with self.msgs_received.get_lock():
+            self.msgs_received.value += 1
         if len(msg)==1:
             # from our dealer, these are always to us.
             send_type = 'dealer'
@@ -503,16 +542,27 @@ class Station(multiprocessing.Process):
             # the second to last should always be the intended recipient
             unserialized_to = msg[-2]
             if unserialized_to.decode('utf-8') not in [self.id, "_{}".format(self.id)]:
-                if unserialized_to not in self.senders.keys() and self.pusher:
-                    # if we don't know who they are and we have a pusher, try to push it
-                    self.pusher.send_multipart([self.push_id, *msg[2:]])
-                    self.logger.debug(f'FORWARDING (dealer): {msg}')
+                # forward it!!
+                if len(msg) > 4:
+                    # multihop message, just determine whether the next hop is through
+                    # our pusher or router
+                    if self.pusher and msg[2] not in self.senders.keys():
+                        self.pusher.send_multipart(msg[2:])
+                        self.logger.debug(f'FORWARDING (multihop dealer): {msg}')
+                    else:
+                        self.listener.send_multipart(msg[2:])
+                        self.logger.debug(f'FORWARDING (multihop router): {msg}')
                 else:
-                    # if we know who they are or not, try to send it through router anyway.
-                    # send everything but the first two frames, which should be the ID of
-                    # the sender and us
-                    self.listener.send_multipart(msg[2:])
-                    self.logger.debug(f'FORWARDING (router): {msg}')
+                    if unserialized_to not in self.senders.keys() and self.pusher:
+                        # if we don't know who they are and we have a pusher, try to push it
+                        self.pusher.send_multipart([self.push_id, *msg[2:]])
+                        self.logger.debug(f'FORWARDING (dealer): {msg}')
+                    else:
+                        # if we know who they are or not, try to send it through router anyway.
+                        # send everything but the first two frames, which should be the ID of
+                        # the sender and us
+                        self.listener.send_multipart(msg[2:])
+                        self.logger.debug(f'FORWARDING (router): {msg}')
 
                 return
 
@@ -617,15 +667,23 @@ class Station(multiprocessing.Process):
         return unwrap2
 
     def release(self):
-        try:
-            self.closing.set()
-            self.terminate()
-        except AttributeError:
-            # already been called, NoneTypes have no attribute terminate
-            pass
+
+        self.closing.set()
+        # self.loop.stop()
+        self.terminate()
+        # except AttributeError:
+        #     # already been called, NoneTypes have no attribute terminate
+        #     pass
 
         # Stopping the loop should kill the process, as it's what's holding us in run()
         #self.loop.stop()
+
+    def _check_stop(self):
+        """
+        periodic callback called by the IOLoop to check if the `closing` flag has been set, and closing process if so
+        """
+        if self.closing.is_set():
+            self.loop.stop()
 
 
 class Terminal_Station(Station):
