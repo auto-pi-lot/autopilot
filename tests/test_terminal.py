@@ -1,3 +1,5 @@
+from time import sleep
+
 import pytest
 from pytestqt import qt_compat
 from pytestqt.qt_compat import qt_api
@@ -17,6 +19,8 @@ def spawn_terminal(qtbot):
 
 def test_terminal_launch(spawn_terminal):
     app, terminal = spawn_terminal
+
+    sleep(5)
 
     assert terminal.isVisible()
 
