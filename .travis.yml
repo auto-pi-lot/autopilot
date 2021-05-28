@@ -49,6 +49,7 @@ script:
   - pytest --cov=autopilot --cov-config=.coveragerc --cov-report term-missing tests
 
 after_script:
+  - coverage combine
   - coveralls
 
 before_deploy:
