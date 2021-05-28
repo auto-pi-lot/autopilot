@@ -1,17 +1,19 @@
 # Base class for tasks
-
-#!/usr/bin/python2.7
 from collections import OrderedDict as odict
 import threading
+from datetime import datetime
+import os
 import logging
+import tables
 # from autopilot.core.networking import Net_Node
 from autopilot.hardware import BCM_TO_BOARD
 from autopilot import prefs
+from autopilot.core.loggers import init_logger
 
-if hasattr(prefs, "AUDIOSERVER"):
-    if prefs.AUDIOSERVER == 'pyo':
+if prefs.get( "AUDIOSERVER"):
+    if prefs.get('AUDIOSERVER') == 'pyo':
         pass
-    elif prefs.AUDIOSERVER == 'jack':
+    elif prefs.get('AUDIOSERVER') == 'jack':
         pass
 
 
@@ -72,9 +74,6 @@ class Task(object):
         pin_id (dict): Reverse dictionary, pin numbers back to pin letters.
         punish_block (:class:`threading.Event`): Event to mark when punishment is occuring
         logger (:class:`logging.Logger`): gets the 'main' logger for now.
-
-
-
     """
     # dictionary of Params needed to define task,
     # these should correspond to argument names for the task
@@ -84,12 +83,13 @@ class Task(object):
     HARDWARE = {} # Hardware needed to run the task
     STAGE_NAMES = [] # list of names of stage methods
     PLOT = {} # dictionary of plotting params
-    TrialData = None # tables.IsDescription class to make data table
+    class TrialData(tables.IsDescription):
+        trial_num = tables.Int32Col()
+        session = tables.Int32Col()
 
 
 
-
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
 
         # Task management
         self.stage_block = None  # a threading.Event used by the pilot to manage stage transitions
@@ -110,10 +110,7 @@ class Task(object):
         #self.running = threading.Event()
 
         # try to get logger
-        self.logger = logging.getLogger('main')
-
-
-
+        self.logger = init_logger(self)
 
     def init_hardware(self):
         """
@@ -128,7 +125,7 @@ class Task(object):
         # alongside the HARDWARE subdict in the prefs structure to tell us how they're plugged in to the pi
         self.hardware = {}
         self.pin_id = {} # Reverse dict to identify pokes
-        pin_numbers = prefs.HARDWARE
+        pin_numbers = prefs.get('HARDWARE')
 
         # We first iterate through the types of hardware we need
         for type, values in self.HARDWARE.items():
@@ -139,14 +136,14 @@ class Task(object):
                     hw_args = pin_numbers[type][pin]
                     if isinstance(hw_args, dict):
                         if 'name' not in hw_args.keys():
-                            hw_name = "{}_{}".format(type, pin)
+                            hw_args['name'] = "{}_{}".format(type, pin)
                         hw = handler(**hw_args)
                     else:
                         hw_name = "{}_{}".format(type, pin)
                         hw = handler(hw_args, name=hw_name)
 
                     # if a pin is a trigger pin (event-based input), give it the trigger handler
-                    if hw.trigger:
+                    if hw.is_trigger:
                         hw.assign_cb(self.handle_trigger)
 
                     # add to forward and backwards pin dicts
@@ -163,7 +160,6 @@ class Task(object):
                 except:
                     self.logger.exception("Pin could not be instantiated - Type: {}, Pin: {}".format(type, pin))
 
-
     def set_reward(self, vol=None, duration=None, port=None):
         """
         Set the reward value for each of the 'PORTS'.
@@ -175,9 +171,9 @@ class Task(object):
                 only set `port`
         """
         if not vol and not duration:
-            Exception("Need to have duration or volume!!")
+            raise Exception("Need to have duration or volume!!")
         if vol and duration:
-            Warning('given both volume and duration, using volume.')
+            self.logger.warning('given both volume and duration, using volume.')
 
         if not port:
             for k, port in self.hardware['PORTS'].items():
@@ -185,7 +181,7 @@ class Task(object):
                     try:
                         port.dur_from_vol(vol)
                     except AttributeError:
-                        Warning('No calibration found, using duration = 20ms instead')
+                        self.logger.warning('No calibration found, using duration = 20ms instead')
                         port.duration = 0.02
                 else:
                     port.duration = float(duration)/1000.
@@ -195,18 +191,15 @@ class Task(object):
                     try:
                         self.hardware['PORTS'][port].dur_from_vol(vol)
                     except AttributeError:
-                        Warning('No calibration found, using duration = 20ms instead')
+                        self.logger.warning('No calibration found, using duration = 20ms instead')
                         port.duration = 0.02
 
                 else:
                     self.hardware['PORTS'][port].duration = float(duration) / 1000.
             except KeyError:
-                Exception('No port found named {}'.format(port))
+                raise Exception('No port found named {}'.format(port))
 
-    # def init_sound(self):
-    #     pass
-
-    def handle_trigger(self, pin, level, tick):
+    def handle_trigger(self, pin, level=None, tick=None):
         """
         All GPIO triggers call this function with the pin number, level (high, low),
         and ticks since booting pigpio.
@@ -227,6 +220,7 @@ class Task(object):
             pin = self.pin_id[pin]
 
         if pin not in self.triggers.keys():
+            self.logger.debug(f"No trigger found for {pin}")
             # No trigger assigned, get out without waiting
             return
 
@@ -256,7 +250,6 @@ class Task(object):
         # Set the stage block so the pilot calls the next stage
         self.stage_block.set()
 
-
     def set_leds(self, color_dict=None):
         """
         Set the color of all LEDs at once.
@@ -277,14 +270,15 @@ class Task(object):
             if k in color_dict.keys():
                 v.set(color_dict[k])
             else:
-                v.set([0,0,0])
+                v.set(0)
 
     def flash_leds(self):
         """
         flash lights for punish_dir
         """
         for k, v in self.hardware['LEDS'].items():
-            v.flash(self.punish_dur)
+            if v.__module__ == "autopilot.hardware.gpio" and type(v).__name__ == "LED_RGB":
+                v.flash(self.punish_dur)
 
     def end(self):
         """

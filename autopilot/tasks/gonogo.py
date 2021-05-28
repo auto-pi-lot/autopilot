@@ -109,21 +109,21 @@ class GoNoGo(Task):
         self.init_hardware()
         self.set_reward(self.reward)
 
-        self.node = Net_Node(id="T_{}".format(prefs.NAME),
-                             upstream=prefs.NAME,
-                             port=prefs.MSGPORT,
+        self.node = Net_Node(id="T_{}".format(prefs.get('NAME')),
+                             upstream=prefs.get('NAME'),
+                             port=prefs.get('MSGPORT'),
                              listens={},
                              instance=True)
 
         # get our child started
         self.subject = kwargs['subject']
         value = {
-            'child': {'parent': prefs.NAME, 'subject': kwargs['subject']},
+            'child': {'parent': prefs.get('NAME'), 'subject': kwargs['subject']},
             'task_type': 'Wheel Child',
             'subject': kwargs['subject']
         }
 
-        self.node.send(to=prefs.NAME, key='CHILD', value=value)
+        self.node.send(to=prefs.get('NAME'), key='CHILD', value=value)
 
         # hardcoding stimulus for testing
         self.stim = Grating(angle=0, freq=(4,0), rate=1, size=(1,1), debug=True)
@@ -167,7 +167,7 @@ class GoNoGo(Task):
         self.set_leds({'C': [0, 255, 0]})
 
         # tell our wheel to start measuring
-        self.node.send(to=[prefs.NAME, prefs.CHILDID, 'wheel_0'],
+        self.node.send(to=[prefs.get('NAME'), prefs.get('CHILDID'), 'wheel_0'],
                        key="MEASURE",
                        value={'mode':'steady',
                               'thresh':100})

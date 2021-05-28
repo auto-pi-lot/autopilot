@@ -17,7 +17,6 @@ import logging
 import os
 import numpy as np
 import PySide2 # have to import to tell pyqtgraph to use it
-#import PySide
 import pandas as pd
 from PySide2 import QtGui
 from PySide2 import QtCore
@@ -35,11 +34,12 @@ from queue import Queue, Empty, Full
 pg.setConfigOptions(antialias=True)
 # from pyqtgraph.widgets.RawImageWidget import RawImageWidget, RawImageGLWidget
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from autopilot import tasks, prefs
 from autopilot.core import styles
+from autopilot.core.utils import get_invoker
 from .utils import InvokeEvent, Invoker
 from autopilot.core.networking import Net_Node
+from autopilot.core.loggers import init_logger
 
 
 ############
@@ -63,7 +63,7 @@ def gui_event(fn):
             *args (): 
             **kwargs (): 
         """
-        QtCore.QCoreApplication.postEvent(prefs.INVOKER, InvokeEvent(fn, *args, **kwargs))
+        QtCore.QCoreApplication.postEvent(get_invoker(), InvokeEvent(fn, *args, **kwargs))
     return wrapper_gui_event
 
 
@@ -83,7 +83,7 @@ class Plot_Widget(QtWidgets.QWidget):
         # type: () -> None
         QtWidgets.QWidget.__init__(self)
 
-        self.logger = logging.getLogger('main')
+        self.logger = init_logger(self)
 
 
         # We should get passed a list of pilots to keep ourselves in order after initing
@@ -189,7 +189,7 @@ class Plot(QtWidgets.QWidget):
         #super(Plot, self).__init__(QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers), parent)
         super(Plot, self).__init__()
 
-        self.logger = logging.getLogger('main')
+        self.logger = init_logger(self)
 
         self.parent = parent
         self.layout = None
@@ -208,7 +208,7 @@ class Plot(QtWidgets.QWidget):
         self.video = None
         self.videos = []
 
-        self.invoker = prefs.INVOKER
+        self.invoker = get_invoker()
 
         # The name of our pilot, used to listen for events
         self.pilot = pilot
@@ -233,7 +233,7 @@ class Plot(QtWidgets.QWidget):
 
         self.node = Net_Node(id='P_{}'.format(self.pilot),
                              upstream="T",
-                             port=prefs.MSGPORT,
+                             port=prefs.get('MSGPORT'),
                              listens=self.listens,
                              instance=True)
 
@@ -286,7 +286,9 @@ class Plot(QtWidgets.QWidget):
         self.plot.getPlotItem().getAxis('bottom').setPen({'color':'k'})
         self.plot.getPlotItem().getAxis('bottom').setTickFont('FreeMono')
         self.plot.setXRange(self.xrange[0], self.xrange[1])
-        self.plot.setYRange(0, 1)
+        self.plot.enableAutoRange(y=True)
+        # self.plot
+        # self.plot.setYRange(0, 1)
 
     @gui_event
     def l_start(self, value):
@@ -316,8 +318,24 @@ class Plot(QtWidgets.QWidget):
 
         self.state = "INITIALIZING"
 
+
+        # set infobox stuff
+        self.n_trials = count()
+        self.session_trials = 0
+        self.info['N Trials'].setText(str(value['current_trial']))
+        self.info['Runtime'].start_timer()
+        self.info['Step'].setText(str(value['step']))
+        self.info['Session'].setText(str(value['session']))
+        self.info['Protocol'].setText(value['step_name'])
+
         # We're sent a task dict, we extract the plot params and send them to the plot object
         self.plot_params = tasks.TASK_LIST[value['task_type']].PLOT
+
+        # if we got no plot params, that's fine, just set as running and return
+        if not self.plot_params:
+            self.logger.warning(f"No plot params for task {value['task_type']}")
+            self.state = "RUNNING"
+            return
 
         if 'continuous' in self.plot_params.keys():
             if self.plot_params['continuous']:
@@ -329,14 +347,6 @@ class Plot(QtWidgets.QWidget):
 
 
 
-        # set infobox stuff
-        self.n_trials = count()
-        self.session_trials = 0
-        self.info['N Trials'].setText(str(value['current_trial']))
-        self.info['Runtime'].start_timer()
-        self.info['Step'].setText(str(value['step']))
-        self.info['Session'].setText(str(value['session']))
-        self.info['Protocol'].setText(value['step_name'])
 
 
         # TODO: Make this more general, make cases for each non-'data' key
@@ -534,6 +544,27 @@ class Point(pg.PlotDataItem):
         self.scatter.setData(x=data[...,0], y=data[...,1], size=self.size,
                              brush=self.brush, symbol='o', pen=self.pen)
 
+class Line(pg.PlotDataItem):
+    """
+    A simple line
+    """
+
+    def __init__(self, color=(0,0,0), size=1, **kwargs):
+        super(Line, self).__init__(**kwargs)
+
+        self.brush = pg.mkBrush(color)
+        self.pen = pg.mkPen(color, width=size)
+        self.size = size
+
+    def update(self, data):
+        data[data=="R"] = 1
+        data[data=="L"] = 0
+        data[data=="C"] = 0.5
+        data = data.astype(np.float)
+
+        self.curve.setData(data[...,0], data[...,1])
+
+
 
 class Segment(pg.PlotDataItem):
     """
@@ -541,7 +572,7 @@ class Segment(pg.PlotDataItem):
     """
     def __init__(self, **kwargs):
         # type: () -> None
-        super(Segment, self).__init__()
+        super(Segment, self).__init__(**kwargs)
 
     def update(self, data):
         """
@@ -698,11 +729,11 @@ class Video(QtWidgets.QWidget):
 
         Args:
             videos (list, tuple): Names of video streams that will be displayed
-            fps (int): if None, draw according to ``prefs.DRAWFPS``. Otherwise frequency of widget update
+            fps (int): if None, draw according to ``prefs.get('DRAWFPS')``. Otherwise frequency of widget update
 
         Attributes:
             videos (list, tuple): Names of video streams that will be displayed
-            fps (int): if None, draw according to ``prefs.DRAWFPS``. Otherwise frequency of widget update
+            fps (int): if None, draw according to ``prefs.get('DRAWFPS')``. Otherwise frequency of widget update
             ifps (int): 1/fps, duration of frame in s
             qs (dict): Dictionary of :class:`~queue.Queue`s in which frames will be dumped
             quitting (:class:`threading.Event`): Signal to quit drawing
@@ -715,8 +746,8 @@ class Video(QtWidgets.QWidget):
         self.videos = videos
 
         if fps is None:
-            if hasattr(prefs, 'DRAWFPS'):
-                self.fps = prefs.DRAWFPS
+            if prefs.get( 'DRAWFPS'):
+                self.fps = prefs.get('DRAWFPS')
             else:
                 self.fps = 10
         else:
@@ -986,7 +1017,7 @@ class ImageItem_TimedUpdate(pg.ImageItem):
     Rather than calling :meth:`~pyqtgraph.ImageItem.update` every time a frame is updated,
     call it according to the timer.
 
-    fps is set according to ``prefs.DRAWFPS``, if not available, draw at 10fps
+    fps is set according to ``prefs.get('DRAWFPS')``, if not available, draw at 10fps
 
     Attributes:
         timer (:class:`~PySide2.QtCore.QTimer`): Timer held in ``globals()`` that synchronizes frame updates across
@@ -1005,8 +1036,8 @@ class ImageItem_TimedUpdate(pg.ImageItem):
         self.timer = globals()['VIDEO_TIMER']
         self.timer.stop()
         self.timer.timeout.connect(self.update_img)
-        if hasattr(prefs, 'DRAWFPS'):
-            self.fps = prefs.DRAWFPS
+        if prefs.get( 'DRAWFPS'):
+            self.fps = prefs.get('DRAWFPS')
         else:
             self.fps = 10.
         self.timer.start(1./self.fps)
@@ -1112,7 +1143,8 @@ PLOT_LIST = {
     'point':Point,
     'segment':Segment,
     'rollmean':Roll_Mean,
-    'shaded':Shaded
+    'shaded':Shaded,
+    'line': Line
     # 'highlight':Highlight
 }
 """

@@ -1,10 +1,10 @@
 """
 Classes to play sounds.
 
-Each sound inherits a base type depending on `prefs.AUDIOSERVER`
+Each sound inherits a base type depending on `prefs.get('AUDIOSERVER')`
 
-* `prefs.AUDIOSERVER == 'jack'` : :class:`.Jack_Sound`
-* `prefs.AUDIOSERVER == 'pyo'` : :class:`.Pyo_Sound`
+* `prefs.get('AUDIOSERVER') == 'jack'` : :class:`.Jack_Sound`
+* `prefs.get('AUDIOSERVER') == 'pyo'` : :class:`.Pyo_Sound`
 
 To avoid unnecessary dependencies, `Jack_Sound` is not defined if AUDIOSERVER is `'pyo'`
 and vice versa.
@@ -37,24 +37,21 @@ from scipy.io import wavfile
 from scipy.signal import resample
 import numpy as np
 import threading
-import logging
 from itertools import cycle
-if sys.version_info >= (3,0):
-    from queue import Empty, Full
-else:
-    from Queue import Empty, Full
-
+from queue import Empty, Full
 
 from autopilot import prefs
+from autopilot.core.loggers import init_logger
 
 # switch behavior based on audio server type
 try:
-    server_type = prefs.AUDIOSERVER
+    if isinstance(prefs.get('AUDIOSERVER'), str):
+        server_type = prefs.get('AUDIOSERVER').lower()
+    else:
+        server_type = prefs.get('AUDIOSERVER')
 except:
 #    # TODO: The 'attribute don't exist' type - i think NameError?
     server_type = None
-
-
 
 if server_type in ("pyo", "docs"):
     try:
@@ -103,7 +100,7 @@ if server_type in ("pyo", "docs"):
             # See https://groups.google.com/forum/#!topic/pyo-discuss/N-pan7wPF-o
             # TODO: Get chnls to be responsive to NCHANNELS in prefs. hardcoded for now
             tab = pyo.NewTable(length=(float(duration) / 1000),
-                               chnls=prefs.NCHANNELS)  # Prefs should always be declared in the global namespace
+                               chnls=prefs.get('NCHANNELS'))  # Prefs should always be declared in the global namespace
             tabrec = pyo.TableRec(audio, table=tab, fadetime=0.005).play()
             sleep((float(duration) / 1000))
             self.table = pyo.TableRead(tab, freq=tab.getRate(), loop=0)
@@ -117,7 +114,9 @@ if server_type in ("pyo", "docs"):
             self.trigger = pyo.TrigFunc(self.table['trig'], trig_fn)
 
 
-if server_type in ("jack", "docs"):
+if server_type in ("jack", "docs", True):
+    if server_type is True:
+        server_type = "jack"
     from autopilot.stim.sound import jackclient
 
     class Jack_Sound(object):
@@ -183,14 +182,12 @@ if server_type in ("jack", "docs"):
             self.continuous_flag = jackclient.CONTINUOUS
             self.continuous_q = jackclient.CONTINUOUS_QUEUE
             self.continuous_loop = jackclient.CONTINUOUS_LOOP
-            self.quitting = threading.Event()
 
             self.initialized = False
             self.buffered = False
             self.buffered_continuous = False
 
-            # FIXME: debugging sound file playback by logging which sounds loaded before crash
-            self.logger = logging.getLogger('main')
+            self.logger = init_logger(self)
 
 
         def chunk(self, pad=True):
@@ -279,17 +276,13 @@ if server_type in ("jack", "docs"):
             # refresh nsamples
             self.get_nsamples()
 
-
-
-
-
         def buffer(self):
             """
             Dump chunks into the sound queue.
             """
 
             if hasattr(self, 'path'):
-                self.logger.info('BUFFERING SOUND {}'.format(self.path))
+                self.logger.debug('BUFFERING SOUND {}'.format(self.path))
 
             if not self.initialized and not self.table:
                 try:
@@ -331,11 +324,6 @@ if server_type in ("jack", "docs"):
             This method will call :meth:`.quantize_duration` to force duration such that the sound has full frames.
 
             An exception will be raised if the sound has been padded.
-
-
-
-            Returns:
-
             """
 
             # FIXME: Initialized should be more flexible,
@@ -345,13 +333,9 @@ if server_type in ("jack", "docs"):
             self.initialized = False
 
             if not self.initialized and not self.table:
-                # try:
                 self.quantize_duration()
                 self.init_sound()
                 self.initialized = True
-                # except:
-                #     pass
-                    #TODO: Log this, better error handling here
 
             if not self.chunks:
                 self.chunk()
@@ -371,10 +355,8 @@ if server_type in ("jack", "docs"):
             # load frames into continuous queue
             for frame in self.chunks:
                 self.continuous_q.put_nowait(frame)
-            # The jack server looks for a None object to clear the play flag
-            # self.continuous_q.put_nowait(None)
-            self.buffered_continuous = True
 
+            self.buffered_continuous = True
 
         def play(self):
             """
@@ -390,7 +372,7 @@ if server_type in ("jack", "docs"):
                 self.buffer()
 
             if hasattr(self, 'path'):
-                self.logger.info('PLAYING SOUND {}'.format(self.path))
+                self.logger.debug('PLAYING SOUND {}'.format(self.path))
 
             self.play_evt.set()
             self.stop_evt.clear()
@@ -423,60 +405,17 @@ if server_type in ("jack", "docs"):
             if not loop:
                 raise NotImplementedError('Continuous, unlooped streaming has not been implemented yet!')
 
-            # FIXME: Initialized should be more flexible,
-            # for now just deleting whatever init happened because
-            # continuous sounds are in development
-            self.table = None
-            self.initialized = False
-
-            self.quantize_duration()
-            self.init_sound()
-            self.initialized = True
-            self.chunk()
-
-            # if not self.buffered_continuous:
-            #     self.buffer_continuous()
-            self.continuous_cycle = cycle(self.chunks)
-
-            # start the buffering thread
-            self.cont_thread = threading.Thread(target=self._buffer_continuous)
-            self.cont_thread.setDaemon(True)
-            self.cont_thread.start()
+            if not self.buffered_continuous:
+                self.buffer_continuous()
 
             if loop:
                 self.continuous_loop.set()
             else:
                 self.continuous_loop.clear()
 
-
             # tell the sound server that it has a continuous sound now
             self.continuous_flag.set()
             self.continuous = True
-
-        def _buffer_continuous(self):
-
-            # empty queue
-            while not self.continuous_q.empty():
-                try:
-                    _ = self.continuous_q.get_nowait()
-                except Empty:
-                    # normal, get until it's empty
-                    break
-
-            # want to be able to quit if queue remains full for, say, 20 periods
-            #wait_time = (self.blocksize/float(self.fs))*20
-
-            while not self.quitting.is_set():
-                try:
-                    #self.continuous_q.put(self.continuous_cycle.next(), timeout=wait_time)
-                    self.continuous_q.put_nowait(self.continuous_cycle.next())
-                except Full:
-                    pass
-            # for chunk in self.chunks:
-            #     self.continuous_q.put_nowait(chunk)
-
-
-
 
 
 
@@ -487,10 +426,9 @@ if server_type in ("jack", "docs"):
             Should be merged into a general stop method
             """
             if not self.continuous:
-                Warning("Not a continous sound!")
+                self.logger.warning("stop_continuous called but not a continuous sound!")
                 return
 
-            self.quitting.set()
             self.continuous_flag.clear()
             self.continuous_loop.clear()
 
@@ -546,6 +484,7 @@ elif server_type == "jack":
 else:
     # just importing to query parameters, not play sounds.
     BASE_CLASS = object
+    # warnings.warn('No Base Sound class specified! sounds will probably not work!!!')
 
 
 class Tone(BASE_CLASS):
@@ -637,7 +576,7 @@ class File(BASE_CLASS):
     def __init__(self, path, amplitude=0.01, **kwargs):
         """
         Args:
-            path (str): Path to a .wav file relative to the `prefs.SOUNDDIR`
+            path (str): Path to a .wav file relative to the `prefs.get('SOUNDDIR')`
             amplitude (float): amplitude of the sound as a proportion of 1.
             **kwargs: extraneous parameters that might come along with instantiating us
         """
@@ -645,8 +584,8 @@ class File(BASE_CLASS):
 
         if os.path.exists(path):
             self.path = path
-        elif os.path.exists(os.path.join(prefs.SOUNDDIR, path)):
-            self.path = os.path.join(prefs.SOUNDDIR, path)
+        elif os.path.exists(os.path.join(prefs.get('SOUNDDIR'), path)):
+            self.path = os.path.join(prefs.get('SOUNDDIR'), path)
         else:
             Exception('Could not find {} in current directory or sound directory'.format(path))
 
@@ -674,7 +613,7 @@ class File(BASE_CLASS):
 
         # load file to sound table
         if self.server_type == 'pyo':
-            self.dtable = pyo.DataTable(size=audio.shape[0], chnls=prefs.NCHANNELS, init=audio.tolist())
+            self.dtable = pyo.DataTable(size=audio.shape[0], chnls=prefs.get('NCHANNELS'), init=audio.tolist())
 
             # get server to determine sampling rate modification and duration
             server_fs = self.dtable.getServer().getSamplingRate()

@@ -1,0 +1,17 @@
+requests
+blosc
+JACK-Client
+tqdm
+cffi
+pigpio @ https://github.com/sneakers-the-rat/pigpio/tarball/master
+tables>=3.4.2
+numpy>=1.12.1
+pyzmq>=17.1.2
+pandas>=0.19.2
+npyscreen
+scipy
+tornado
+inputs
+scikit-video
+pyqtgraph>=0.11.0rc0
+PySide2

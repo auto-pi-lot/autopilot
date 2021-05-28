@@ -31,15 +31,11 @@ from zmq.eventloop.zmqstream import ZMQStream
 from itertools import count
 import numpy as np
 import pdb
-#from pudb.remote import set_trace
-if sys.version_info >= (3,0):
-    import queue
-else:
-    import Queue as queue
+
+import queue
 
 from autopilot import prefs
-
-from pprint import pprint
+from autopilot.core.loggers import init_logger
 
 # TODO: Periodically ping pis to check that they are still responsive
 
@@ -76,11 +72,6 @@ class Station(multiprocessing.Process):
         listener (:class:`zmq.Socket`): The main router socket to send/recv messages
         listen_port (str): Port our router listens on
         logger (:class:`logging.Logger`): Used to log messages and network events.
-        log_handler (:class:`logging.FileHandler`): Handler for logging
-        log_formatter (:class:`logging.Formatter`): Formats log entries as::
-
-            "%(asctime)s %(levelname)s : %(message)s"
-
         id (str): What are we known as? What do we set our :attr:`~zmq.Socket.identity` as?
         ip (str): Device IP
         listens (dict): Dictionary of functions to call for different types of messages. keys match the :attr:`.Message.key`.
@@ -101,8 +92,6 @@ class Station(multiprocessing.Process):
     pusher       = None    # pusher socket - a dealer socket that connects to other routers
     listener     = None    # Listener socket - a router socket to send/recv messages
     logger       = None    # Logger....
-    log_handler  = None
-    log_formatter = None
     id           = None    # What are we known as?
     ip           = None    # whatismy
     listens      = {}    # Dictionary of functions to call for different types of messages
@@ -126,7 +115,7 @@ class Station(multiprocessing.Process):
 
 
         # Setup logging
-        self.init_logging()
+        self.logger = init_logger(self)
 
         self.file_block = threading.Event() # to wait for file transfer
 
@@ -162,35 +151,41 @@ class Station(multiprocessing.Process):
 
         The process is kept open by the :class:`tornado.IOLoop` .
         """
-        # init zmq objects
-        self.context = zmq.Context()
-        self.loop = IOLoop()
+        try:
+            # init zmq objects
+            self.context = zmq.Context()
+            self.loop = IOLoop()
 
-        # Our networking topology is treelike:
-        # each Station object binds one Router to
-        # send and receive messages from its descendants
-        # each Station object may have one Dealer that
-        # connects it with its antecedents.
-        self.listener  = self.context.socket(zmq.ROUTER)
-        #self.listener.identity = self.id.encode('utf-8')
-        #self.listener.identity = self.id
-        self.listener.setsockopt_string(zmq.IDENTITY, self.id)
-        self.listener.bind('tcp://*:{}'.format(self.listen_port))
-        self.listener = ZMQStream(self.listener, self.loop)
-        self.listener.on_recv(self.handle_listen)
+            # Our networking topology is treelike:
+            # each Station object binds one Router to
+            # send and receive messages from its descendants
+            # each Station object may have one Dealer that
+            # connects it with its antecedents.
+            self.listener  = self.context.socket(zmq.ROUTER)
+            #self.listener.identity = self.id.encode('utf-8')
+            #self.listener.identity = self.id
+            self.listener.setsockopt_string(zmq.IDENTITY, self.id)
+            self.listener.bind('tcp://*:{}'.format(self.listen_port))
+            self.listener = ZMQStream(self.listener, self.loop)
+            self.listener.on_recv(self.handle_listen)
 
-        if self.pusher is True:
-            self.pusher = self.context.socket(zmq.DEALER)
-            #self.pusher.identity = self.id.encode('utf-8')
-            #self.pusher.identity = self.id
-            self.pusher.setsockopt_string(zmq.IDENTITY, self.id)
-            self.pusher.connect('tcp://{}:{}'.format(self.push_ip, self.push_port))
-            self.pusher = ZMQStream(self.pusher, self.loop)
-            self.pusher.on_recv(self.handle_listen)
-            # TODO: Make sure handle_listen knows how to handle ID-less messages
+            if self.pusher is True:
+                self.pusher = self.context.socket(zmq.DEALER)
+                #self.pusher.identity = self.id.encode('utf-8')
+                #self.pusher.identity = self.id
+                self.pusher.setsockopt_string(zmq.IDENTITY, self.id)
+                self.pusher.connect('tcp://{}:{}'.format(self.push_ip, self.push_port))
+                self.pusher = ZMQStream(self.pusher, self.loop)
+                self.pusher.on_recv(self.handle_listen)
+                # TODO: Make sure handle_listen knows how to handle ID-less messages
 
-        self.logger.info('Starting IOLoop')
-        self.loop.start()
+            self.logger.info('Starting IOLoop')
+            self.loop.start()
+        except KeyboardInterrupt:
+            # normal quitting behavior
+            pass
+        finally:
+            self.release()
 
     def prepare_message(self, to, key, value, repeat=True, flags=None):
         """
@@ -290,23 +285,14 @@ class Station(multiprocessing.Process):
             return
 
         if manual_to:
-            self.listener.send_multipart([to.encode('utf-8'),
-                                          to.encode('utf-8'),
-                                          msg.id.encode('utf-8'),
-                                          msg_enc])
+            self.listener.send_multipart([to.encode('utf-8'), msg_enc])
         else:
 
             if isinstance(msg.to, list):
 
-                self.listener.send_multipart([msg.to[0].encode('utf-8'),
-                                              msg.to[0].encode('utf-8'),
-                                              msg.id.encode('utf-8'),
-                                              msg_enc])
+                self.listener.send_multipart([msg.to[0].encode('utf-8'), msg_enc])
             else:
-                self.listener.send_multipart([msg.to.encode('utf-8'),
-                                              msg.to.encode('utf-8'),
-                                              msg.id.encode('utf-8'),
-                                              msg_enc])
+                self.listener.send_multipart([msg.to.encode('utf-8'), msg_enc])
 
         # messages can have a flag that says not to log
         # log_this = True
@@ -385,10 +371,7 @@ class Station(multiprocessing.Process):
 
         # Even if the message is not to our upstream node, we still send it
         # upstream because presumably our target is upstream.
-        self.pusher.send_multipart([self.push_id,
-                                    bytes(msg.to, encoding="utf-8"),
-                                    msg.id.encode('utf-8'),
-                                    msg_enc])
+        self.pusher.send_multipart([self.push_id, bytes(msg.to, encoding="utf-8"), msg_enc])
 
         if not (msg.key == "CONFIRM") and log_this:
             self.logger.debug('MESSAGE PUSHED - {}'.format(str(msg)))
@@ -426,10 +409,7 @@ class Station(multiprocessing.Process):
                         if (time.time() - push_outbox[id][0]) > self.repeat_interval*2:
 
                             self.logger.debug('REPUBLISH {} - {}'.format(id, str(push_outbox[id][1])))
-                            self.pusher.send_multipart([self.push_id,
-                                                        push_outbox[id][1].to.encode('utf-8'),
-                                                        push_outbox[id][1].id.encode("utf-8"),
-                                                        push_outbox[id][1].serialize()])
+                            self.pusher.send_multipart([self.push_id, push_outbox[id][1].serialize()])
                             self.push_outbox[id][1].ttl -= 1
 
 
@@ -449,10 +429,7 @@ class Station(multiprocessing.Process):
                         if (time.time() - send_outbox[id][0]) > self.repeat_interval*2:
 
                             self.logger.debug('REPUBLISH {} - {}'.format(id, str(send_outbox[id][1])))
-                            self.listener.send_multipart([bytes(send_outbox[id][1].to, encoding="utf-8"),
-                                                          bytes(send_outbox[id][1].to, encoding="utf-8"),
-                                                          bytes(send_outbox[id][1].id, encoding="utf-8"),
-                                                          send_outbox[id][1].serialize()])
+                            self.listener.send_multipart([bytes(send_outbox[id][1].to, encoding="utf-8"), send_outbox[id][1].serialize()])
                             self.send_outbox[id][1].ttl -= 1
                     
             # wait to do it again
@@ -500,6 +477,7 @@ class Station(multiprocessing.Process):
         listen_fn = self.listens[msg.value['inner_key']]
         old_value = copy(msg.value)
         delattr(msg, 'value')
+        msg.key = old_value['inner_key']
         for v in old_value['payload']:
             if isinstance(v, dict) and ('headers' in old_value.keys()):
                 v.update(old_value['headers'])
@@ -536,8 +514,8 @@ class Station(multiprocessing.Process):
             sender = msg[0]
 
             # if this message was a multihop message, store the route
-            if len(msg)>5:
-                self.routes[sender] = msg[0:-4]
+            if len(msg)>4:
+                self.routes[sender] = msg[0:-3]
 
             # # if this is a new sender, add them to the list
             if sender not in self.senders.keys():
@@ -552,22 +530,16 @@ class Station(multiprocessing.Process):
 
             # if this message wasn't to us, forward without deserializing
             # the second to last should always be the intended recipient
-            unserialized_to = msg[-3]
+            unserialized_to = msg[-2]
             if unserialized_to.decode('utf-8') not in [self.id, "_{}".format(self.id)]:
                 if unserialized_to not in self.senders.keys() and self.pusher:
                     # if we don't know who they are and we have a pusher, try to push it
-                    self.pusher.send_multipart([self.push_id, unserialized_to, msg[-2], msg[-1]])
+                    self.pusher.send_multipart([self.push_id, unserialized_to, msg[-1]])
                 else:
                     #if we know who they are or not, try to send it through router anyway.
-                    self.listener.send_multipart([unserialized_to, unserialized_to, msg[-2],  msg[-1]])
+                    self.listener.send_multipart([unserialized_to, unserialized_to, msg[-1]])
 
-                self.logger.debug('FORWARDING: to - {}, {}'.format(unserialized_to, msg[-1]))
-
-
-                if send_type == 'router':
-                    self.send(sender, 'CONFIRM', msg[-2], repeat=False)
-                elif send_type == 'dealer':
-                    self.push(msg.sender, 'CONFIRM', msg[-2], repeat=False)
+                # self.logger.debug('FORWARDING: to - {}, {}'.format(unserialized_to, msg[-1][:100] if len(msg[-1])>100 else msg[-1]))
 
                 return
 
@@ -670,26 +642,6 @@ class Station(multiprocessing.Process):
             elif send_type == 'dealer':
                 self.push(msg.sender, 'CONFIRM', msg.id)
 
-    def init_logging(self):
-        """
-        Initialize logging to a timestamped file in `prefs.LOGDIR` .
-        """
-        # Setup logging
-        timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(prefs.LOGDIR, 'Networking_Log_{}.log'.format(timestr))
-
-        self.logger = logging.getLogger('networking')
-        self.log_handler = logging.FileHandler(log_file)
-        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
-        self.log_handler.setFormatter(self.log_formatter)
-        self.logger.addHandler(self.log_handler)
-        if hasattr(prefs, 'LOGLEVEL'):
-            loglevel = getattr(logging, prefs.LOGLEVEL)
-        else:
-            loglevel = logging.WARNING
-        self.logger.setLevel(loglevel)
-        self.logger.info('Station Logging Initiated')
-
     def get_ip(self):
         """
         Find our IP address
@@ -712,8 +664,12 @@ class Station(multiprocessing.Process):
         return unwrap2
 
     def release(self):
-        self.closing.set()
-        self.terminate()
+        try:
+            self.closing.set()
+            self.terminate()
+        except AttributeError:
+            # already been called, NoneTypes have no attribute terminate
+            pass
 
         # Stopping the loop should kill the process, as it's what's holding us in run()
         #self.loop.stop()
@@ -769,7 +725,7 @@ class Terminal_Station(Station):
         self.pusher = False
 
         # Store some prefs values
-        self.listen_port = prefs.MSGPORT
+        self.listen_port = prefs.get('MSGPORT')
         self.id = 'T'
 
         # Message dictionary - What method to call for each type of message received by the terminal class
@@ -790,8 +746,8 @@ class Terminal_Station(Station):
         self.pilots = pilots
 
         # start a timer at the draw FPS of the terminal -- only send
-        if hasattr(prefs, 'DRAWFPS'):
-            self.data_fps = float(prefs.DRAWFPS)
+        if prefs.get( 'DRAWFPS'):
+            self.data_fps = float(prefs.get('DRAWFPS'))
         else:
             self.data_fps = 20
         self.data_ifps = 1.0/self.data_fps
@@ -919,7 +875,7 @@ class Terminal_Station(Station):
         Handle the storage of continuous data
 
         Forwards all data on to the Terminal's internal :class:`Net_Node`,
-        send to :class:`.Plot` according to update rate in ``prefs.DRAWFPS``
+        send to :class:`.Plot` according to update rate in ``prefs.get('DRAWFPS')``
 
         Args:
             msg (dict): A continuous data message
@@ -960,19 +916,21 @@ class Terminal_Station(Station):
         Args:
             msg (:class:`.Message`):
         """
-        if msg.sender in self.pilots.keys():
+        if msg.sender not in self.pilots.keys():
+            self.pilots[msg.sender] = {}
             #if 'state' in self.pilots[msg.sender].keys():
                 # if msg.value == self.pilots[msg.sender]['state']:
                 #     # if we've already gotten this one, don't send to terminal
                 #     return
-            self.pilots[msg.sender]['state'] = msg.value
 
-            # Tell the terminal so it can update the pilot_db file
-            state = {'state':msg.value, 'pilot':msg.sender}
-            self.send('_T', 'STATE', state)
+        self.pilots[msg.sender]['state'] = msg.value
 
-            # Tell the plot
-            self.send("P_{}".format(msg.sender), 'STATE', msg.value)
+        # Tell the terminal so it can update the pilot_db file
+        state = {'state':msg.value, 'pilot':msg.sender}
+        self.send('_T', 'STATE', state)
+
+        # Tell the plot
+        self.send("P_{}".format(msg.sender), 'STATE', msg.value)
 
         self.senders[msg.sender] = msg.value
 
@@ -1001,13 +959,13 @@ class Terminal_Station(Station):
 
         Args:
             msg (:class:`.Message`): The value field of the message should contain some
-                relative path to a file contained within `prefs.SOUNDDIR` . eg.
-                `'/songs/sadone.wav'` would return `'os.path.join(prefs.SOUNDDIR/songs.sadone.wav'`
+                relative path to a file contained within `prefs.get('SOUNDDIR')` . eg.
+                `'/songs/sadone.wav'` would return `'os.path.join(prefs.get('SOUNDDIR')/songs.sadone.wav'`
         """
         # The <target> pi has requested some file <value> from us, let's send it back
         # This assumes the file is small, if this starts crashing we'll have to split the message...
 
-        full_path = os.path.join(prefs.SOUNDDIR, msg.value)
+        full_path = os.path.join(prefs.get('SOUNDDIR'), msg.value)
         with open(full_path, 'rb') as open_file:
             # encode in base64 so json doesn't complain
             file_contents = base64.b64encode(open_file.read())
@@ -1042,26 +1000,26 @@ class Pilot_Station(Station):
     def __init__(self):
         # Pilot has a pusher - connects back to terminal
         self.pusher = True
-        if prefs.LINEAGE == 'CHILD':
-            self.push_id = prefs.PARENTID.encode('utf-8')
-            self.push_port = prefs.PARENTPORT
-            self.push_ip = prefs.PARENTIP
+        if prefs.get('LINEAGE') == 'CHILD':
+            self.push_id = prefs.get('PARENTID').encode('utf-8')
+            self.push_port = prefs.get('PARENTPORT')
+            self.push_ip = prefs.get('PARENTIP')
             self.child = True
 
         else:
             self.push_id = b'T'
-            self.push_port = prefs.PUSHPORT
-            self.push_ip = prefs.TERMINALIP
-            self.child - False
+            self.push_port = prefs.get('PUSHPORT')
+            self.push_ip = prefs.get('TERMINALIP')
+            self.child = False
 
         # Store some prefs values
-        self.listen_port = prefs.MSGPORT
+        self.listen_port = prefs.get('MSGPORT')
 
-        #self.id = prefs.NAME.encode('utf-8')
-        self.id = prefs.NAME
+        #self.id = prefs.get('NAME').encode('utf-8')
+        self.id = prefs.get('NAME')
         self.pi_id = "_{}".format(self.id)
         self.subject = None # Store current subject ID
-        self.state = None # store current pi state
+        self.state = 'IDLE' # store current pi state
         self.child = False # Are we acting as a child right now?
         self.parent = False # Are we acting as a parent right now?
 
@@ -1082,6 +1040,37 @@ class Pilot_Station(Station):
             'CALIBRATE_RESULT': self.l_forward,
             'BANDWIDTH': self.l_forward
         })
+
+        # ping back our status to the terminal every so often
+        if prefs.get('PING_INTERVAL') is None:
+            self.ping_interval = 5
+        else:
+            self.ping_interval = float(prefs.get('PING_INTERVAL'))
+
+        self._ping_thread = threading.Timer(self.ping_interval, self._pinger)
+        self._ping_thread.setDaemon(True)
+        self._ping_thread.start()
+
+    def _pinger(self):
+        """
+        Periodically ping the terminal with our status
+
+        Calls its own timer to replace it
+
+
+        Returns:
+
+        """
+        # before .run is called, pusher is a boolean flag telling us to make one when it is
+        # not great and should be changed, but these modules are not long for this world
+        # in their current form anyway
+        if not isinstance(self.pusher, bool):
+            self.l_ping()
+        if not self.closing.is_set():
+            self._ping_thread = threading.Timer(self.ping_interval, self._pinger)
+            self._ping_thread.setDaemon(True)
+            self._ping_thread.start()
+
 
     ###########################3
     # Message/Listen handling methods
@@ -1118,7 +1107,7 @@ class Pilot_Station(Station):
 
         pass
 
-    def l_ping(self, msg):
+    def l_ping(self, msg=None):
         """
         The Terminal wants to know our status
 
@@ -1167,7 +1156,7 @@ class Pilot_Station(Station):
             if len(f_sounds)>0:
                 # check to see if we have these files, if not, request them
                 for sound in f_sounds:
-                    full_path = os.path.join(prefs.SOUNDDIR, sound['path'])
+                    full_path = os.path.join(prefs.get('SOUNDDIR'), sound['path'])
                     if not os.path.exists(full_path):
                         # We ask the terminal to send us the file and then wait.
                         self.logger.info('REQUESTING SOUND {}'.format(sound['path']))
@@ -1220,12 +1209,12 @@ class Pilot_Station(Station):
 
         Args:
             msg (:class:`.Message`): value will have 'path' and 'file',
-                where the path determines where in `prefs.SOUNDDIR` the
+                where the path determines where in `prefs.get('SOUNDDIR')` the
                 b64 encoded 'file' will be saved.
         """
         # The file should be of the structure {'path':path, 'file':contents}
 
-        full_path = os.path.join(prefs.SOUNDDIR, msg.value['path'])
+        full_path = os.path.join(prefs.get('SOUNDDIR'), msg.value['path'])
         # TODO: give Message full deserialization capabilities including this one
         file_data = base64.b64decode(msg.value['file'])
         try:
@@ -1271,8 +1260,11 @@ class Pilot_Station(Station):
         Returns:
 
         """
-
-        self.send(to=prefs.CHILDID, key='START', value=msg.value)
+        if 'KEY' in msg.value.keys():
+            KEY = msg.value['keys']
+        else:
+            KEY = 'START'
+        self.send(to=prefs.get('CHILDID'), key=KEY, value=msg.value)
 
     def l_forward(self, msg):
         """
@@ -1320,11 +1312,6 @@ class Net_Node(object):
         outbox (dict): Messages that have been sent but have not been confirmed
         timers (dict): dict of :class:`threading.Timer` s that will check in on outbox messages
         logger (:class:`logging.Logger`): Used to log messages and network events.
-        log_handler (:class:`logging.FileHandler`): Handler for logging
-        log_formatter (:class:`logging.Formatter`): Formats log entries as::
-
-            "%(asctime)s %(levelname)s : %(message)s"
-
         msg_counter (:class:`itertools.count`): counter to index our sent messages
         loop_thread (:class:`threading.Thread`): Thread that holds our loop. initialized with `daemon=True`
     """
@@ -1338,8 +1325,6 @@ class Net_Node(object):
     timers = {}
     #connected = False
     logger = None
-    log_handler = None
-    log_formatter = None
     sock = None
     loop_thread = None
     repeat_interval = 5 # how many seconds to wait before trying to repeat a message
@@ -1377,7 +1362,7 @@ class Net_Node(object):
         self.msg_counter = count()
 
         # try to get a logger
-        self.init_logging()
+        self.logger = init_logger(self)
 
         # If we were given an explicit IP to connect to, stash it
         self.upstream_ip = upstream_ip
@@ -1391,8 +1376,8 @@ class Net_Node(object):
 
         self.expand = expand_on_receive
 
-        if hasattr(prefs, 'SUBJECT'):
-            self.subject = prefs.SUBJECT.encode('utf-8')
+        if prefs.get( 'SUBJECT'):
+            self.subject = prefs.get('SUBJECT').encode('utf-8')
         else:
             self.subject = None
 
@@ -1432,10 +1417,10 @@ class Net_Node(object):
             self.loop_thread.daemon = True
         self.loop_thread.start()
 
-        self.repeat_thread = threading.Thread(target=self.repeat)
-        if self.daemon:
-            self.repeat_thread.daemon = True
-        self.repeat_thread.start()
+        # self.repeat_thread = threading.Thread(target=self.repeat)
+        # if self.daemon:
+        #     self.repeat_thread.daemon = True
+        # self.repeat_thread.start()
 
         #self.connected = True
 
@@ -1509,6 +1494,12 @@ class Net_Node(object):
             listen_thread = threading.Thread(target=listen_funk, args=(msg.value,))
             listen_thread.start()
         except KeyError:
+            if msg.key=="STREAM":
+                try:
+                    listen_thread = threading.Thread(target=self.l_stream, args=(msg,))
+                    listen_thread.start()
+                except Exception as e:
+                    self.logger.exception(e)
 
             self.logger.error('MSG ID {} - No listen function found for key: {}'.format(msg.id, msg.key))
 
@@ -1521,7 +1512,7 @@ class Net_Node(object):
             log_this = False
 
         if self.logger and log_this:
-            self.logger.debug('RECEIVED: {}'.format(self.id, str(msg)))
+            self.logger.debug('RECEIVED: {}'.format(str(msg)))
 
 
     def send(self, to=None, key=None, value=None, msg=None, repeat=True, flags = None, force_to = False):
@@ -1586,9 +1577,9 @@ class Net_Node(object):
             return
 
         if force_to:
-            self.sock.send_multipart([bytes(msg.to, encoding="utf-8"), bytes(msg.to, encoding="utf-8"), bytes(msg.id, encoding="utf-8"), msg_enc])
+            self.sock.send_multipart([bytes(msg.to, encoding="utf-8"), bytes(msg.to, encoding="utf-8"), msg_enc])
         else:
-            self.sock.send_multipart([self.upstream.encode('utf-8'), bytes(msg.to, encoding="utf-8"), bytes(msg.id, encoding="utf-8"), msg_enc])
+            self.sock.send_multipart([self.upstream.encode('utf-8'), bytes(msg.to, encoding="utf-8"), msg_enc])
         if self.logger and log_this:
             self.logger.debug("MESSAGE SENT - {}".format(str(msg)))
 
@@ -1623,10 +1614,7 @@ class Net_Node(object):
                         # if we didn't just put this message in the outbox...
                         if (time.time() - outbox[id][0]) > (self.repeat_interval*2):
                             self.logger.debug('REPUBLISH {} - {}'.format(id, str(outbox[id][1])))
-                            self.sock.send_multipart([self.upstream.encode('utf-8'),
-                                                      bytes(outbox[id][1].to, encoding="utf-8"),
-                                                      bytes(outbox[id][1].id, encoding="utf-8"),
-                                                      outbox[id][1].serialize()])
+                            self.sock.send_multipart([self.upstream.encode('utf-8'), outbox[id][1].serialize()])
                             self.outbox[id][1].ttl -= 1
 
 
@@ -1656,6 +1644,25 @@ class Net_Node(object):
 
 
         self.logger.debug('CONFIRMED MESSAGE {}'.format(value))
+
+    def l_stream(self, msg):
+        """
+        Reconstitute the original stream of messages and call their handling methods
+
+        The ``msg`` should contain an ``inner_key`` that indicates the key, and thus the
+        handling method.
+
+        Args:
+            msg (dict): Compressed stream sent by :meth:`Net_Node._stream`
+        """
+        listen_fn = self.listens[msg.value['inner_key']]
+        old_value = copy(msg.value)
+        delattr(msg, 'value')
+        for v in old_value['payload']:
+            # if isinstance(v, dict) and ('headers' in old_value.keys()):
+            #     v.update(old_value['headers'])
+            #msg.value = v
+            listen_fn(v)
     #
     # def l_stream(self, value):
     #     listen_fn = self.listens[value['inner_key']]
@@ -1735,8 +1742,8 @@ class Net_Node(object):
         if subject is None:
             if self.subject:
                 subject = self.subject
-            elif hasattr(prefs, 'SUBJECT'):
-                subject = prefs.SUBJECT
+            elif prefs.get( 'SUBJECT'):
+                subject = prefs.get('SUBJECT')
 
         # make a queue
         q = queue.Queue()
@@ -1778,82 +1785,72 @@ class Net_Node(object):
 
         socket = ZMQStream(socket, self.loop)
 
-        upstream = bytes(upstream, encoding="utf-8")
+        upstream = upstream.encode('utf-8')
 
         if subject is None:
-            if hasattr(prefs, 'SUBJECT'):
-                subject = bytes(prefs.SUBJECT, encoding="utf-8")
+            if prefs.get( 'SUBJECT'):
+                subject = prefs.get('SUBJECT')
             else:
-                subject = b""
+                subject = ""
+        if isinstance(subject, bytes):
+            subject = subject.decode('utf-8')
 
-        if prefs.LINEAGE == "CHILD":
-            pilot = bytes(prefs.PARENTID, encoding="utf-8")
+        if prefs.get('LINEAGE') == "CHILD":
+            # pilot = bytes(prefs.get('PARENTID'), encoding="utf-8")
+            pilot = prefs.get('PARENTID')
         else:
-            pilot = bytes(prefs.NAME, encoding="utf-8")
+            # pilot = bytes(prefs.get('NAME'), encoding="utf-8")
+            pilot = prefs.get('NAME')
 
         msg_counter = count()
 
         pending_data = []
 
-        for data in iter(q.get, 'END'):
-            if isinstance(data, tuple):
-                # tuples are immutable, so can't serialize numpy arrays they contain
-                data = list(data)
+        if min_size > 1:
 
-            if isinstance(data, list):
-                for i, item in enumerate(data):
-                    if isinstance(item, np.ndarray):
-                        data[i] = serialize_array(item)
-            elif isinstance(data, dict):
-                for key, value in data.items():
-                    if isinstance(value, np.ndarray):
-                        data[key] = serialize_array(value)
-            elif isinstance(data, np.ndarray):
-                data = serialize_array(data)
+            for data in iter(q.get, 'END'):
+                if isinstance(data, tuple):
+                    # tuples are immutable, so can't serialize numpy arrays they contain
+                    data = list(data)
 
-            pending_data.append(data)
+                pending_data.append(data)
 
-            if not socket.sending() and len(pending_data)>=min_size:
-                msg = Message(to=upstream, key="STREAM",
-                              value={'inner_key' : msg_key,
-                                     'headers'   : {'subject': subject,
-                                                    'pilot'  : pilot,
-                                                    'continuous': True},
-                                     'payload'   : pending_data},
-                              id="{}_{}".format(id, next(msg_counter)),
-                              flags={'NOREPEAT':True, 'MINPRINT':True},
-                              sender=socket_id).serialize()
-                last_msg = socket.send_multipart((upstream, upstream, msg.id.encode('utf-8'), msg),
-                                                 track=True, copy=True)
+                if not socket.sending() and len(pending_data)>=min_size:
+                    msg = Message(to=upstream.decode('utf-8'), key="STREAM",
+                                  value={'inner_key' : msg_key,
+                                         'headers'   : {'subject': subject,
+                                                        'pilot'  : pilot,
+                                                        'continuous': True},
+                                         'payload'   : pending_data},
+                                  id="{}_{}".format(id, next(msg_counter)),
+                                  flags={'NOREPEAT':True, 'MINPRINT':True},
+                                  sender=socket_id).serialize()
+                    last_msg = socket.send_multipart((upstream, upstream, msg),
+                                                     track=True, copy=True)
 
-                self.logger.debug("STREAM {}: Sent {} items".format(self.id+'_'+id, len(pending_data)))
-                pending_data = []
-
-
-
-
-
-
-    def init_logging(self):
-        """
-        Initialize logging to a timestamped file in `prefs.LOGDIR` .
-
-        The logger name will be `'node.{id}'` .
-        """
-        timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(prefs.LOGDIR, 'NetNode_{}_{}.log'.format(self.id, timestr))
-
-        self.logger = logging.getLogger('node.{}'.format(self.id))
-        self.log_handler = logging.FileHandler(log_file)
-        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
-        self.log_handler.setFormatter(self.log_formatter)
-        self.logger.addHandler(self.log_handler)
-        if hasattr(prefs, 'LOGLEVEL'):
-            loglevel = getattr(logging, prefs.LOGLEVEL)
+                    self.logger.debug("STREAM {}: Sent {} items".format(self.id+'_'+id, len(pending_data)))
+                    pending_data = []
         else:
-            loglevel = logging.WARNING
-        self.logger.setLevel(loglevel)
-        self.logger.info('{} Logging Initiated'.format(self.id))
+            # just send like normal messags
+            for data in iter(q.get, 'END'):
+                if isinstance(data, tuple):
+                    # tuples are immutable, so can't serialize numpy arrays they contain
+                    data = list(data)
+
+                if not socket.sending():
+                    msg = Message(to=upstream.decode('utf-8'), key=msg_key,
+                                  subject=subject,
+                                  pilot=pilot,
+                                  continuous=True,
+                                  value=data,
+                                  flags={'NOREPEAT': True, 'MINPRINT': True},
+                                  id="{}_{}".format(id, next(msg_counter)),
+                                  sender=socket_id).serialize()
+                    last_msg = socket.send_multipart((upstream, upstream, msg),
+                                                     track=True, copy=True)
+
+                self.logger.debug("STREAM {}: Sent 1 item".format(self.id + '_' + id))
+
 
     def release(self):
         self.closing.set()
@@ -2010,8 +2007,7 @@ class Message(object):
         Returns:
 
         """
-
-        compressed = base64.b64encode(blosc.pack_array(array))
+        compressed = base64.b64encode(blosc.pack_array(array)).decode('ascii')
         return {'NUMPY_ARRAY': compressed}
 
 
@@ -2126,7 +2122,7 @@ def serialize_array(array):
     Returns:
         dict: {'NUMPY_ARRAY': base-64 encoded, blosc-compressed array.}
     """
-    compressed = base64.b64encode(blosc.pack_array(array))
+    compressed = base64.b64encode(blosc.pack_array(array)).decode('ascii')
     return {'NUMPY_ARRAY': compressed}
 
 

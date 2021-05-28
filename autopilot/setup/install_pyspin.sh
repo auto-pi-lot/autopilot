@@ -61,8 +61,8 @@ echo -e "\n${RED}Attempting to download Spinnaker SDK files from static link${NC
 SPINURL="https://flir.app.boxcn.net/v/SpinnakerSDK/file/545650882106"
 PYSPINURL="https://flir.app.boxcn.net/v/SpinnakerSDK/file/545654685895"
 
-python -c "from request_helpers import download_box; download_box('${SPINURL}')"
-python -c "from request_helpers import download_box; download_box('${PYSPINURL}')"
+python -c "from autopilot.setup.request_helpers import download_box; download_box('${SPINURL}')"
+python -c "from autopilot.setup.request_helpers import download_box; download_box('${PYSPINURL}')"
 
 SPINFILES=( spinnaker-*.tar.gz )
 PYSPINFILES=( spinnaker_python*.tar.gz )

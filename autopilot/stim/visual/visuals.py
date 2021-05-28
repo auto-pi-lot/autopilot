@@ -10,14 +10,11 @@ import threading
 import os
 import sys
 import datetime
-if sys.version_info >= (3,0):
-    from queue import Queue, Empty
-else:
-    from queue import Queue, Empty
+from queue import Queue, Empty
 
-#print(prefs.prefdict.items())
-if hasattr(prefs, 'CONFIG'):
-    if 'VISUAL' in prefs.CONFIG:
+#print(prefs._PREFS.items())
+if prefs.get( 'CONFIG'):
+    if 'VISUAL' in prefs.get('CONFIG'):
         from psychopy import visual, core
 else:
     Warning('No CONFIG attr set in prefs, dont know if youre set up for visual stim. not importing psychopy')
@@ -137,7 +134,7 @@ class Grating(Visual):
             self.play_evt.clear()
 
             if self.debug:
-                path = os.path.join(prefs.DATADIR, 'frameintervals_'+datetime.datetime.now().isoformat()+'.csv')
+                path = os.path.join(prefs.get('DATADIR'), 'frameintervals_'+datetime.datetime.now().isoformat()+'.csv')
                 self.win.saveFrameIntervals(path)
                 self.win.recordFrameIntervals = False
 

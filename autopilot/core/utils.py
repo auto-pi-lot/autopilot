@@ -1,7 +1,12 @@
-# import numpy as np
 from autopilot import prefs
-if prefs.AGENT not in ("PILOT"):
+# if prefs.get('AGENT') in ("TERMINAL", "DOCS"):
+HAVE_PYSIDE = False
+try:
     from PySide2 import QtCore
+    HAVE_PYSIDE = True
+except ImportError:
+    pass
+
 import json
 import pandas as pd
 from scipy.stats import linregress
@@ -72,9 +77,9 @@ class Param(object):
     #         return False
 
 
+_INVOKER = None
 
-
-if prefs.AGENT not in ["PILOT"]:
+if HAVE_PYSIDE:
     class InvokeEvent(QtCore.QEvent):
         """
         Sends signals to the main QT thread from spawned message threads
@@ -108,6 +113,11 @@ if prefs.AGENT not in ["PILOT"]:
             """
             event.fn(*event.args, **event.kwargs)
             return True
+
+    def get_invoker():
+        if globals()['_INVOKER'] is None:
+            globals()['_INVOKER'] = Invoker()
+        return globals()['_INVOKER']
 
 
 class ReturnThread(Thread):
@@ -208,6 +218,27 @@ def coerce_discrete(df, col, mapping={'L':0, 'R':1}):
     return df
 
 
+def find_recursive(key, dictionary):
+    """
+    Find all instances of a key in a dictionary, recursively.
+
+    Args:
+        key:
+        dictionary:
+
+    Returns:
+        list
+    """
+    for k, v in dictionary.items():
+        if k == key:
+            yield v
+        elif isinstance(v, dict):
+            for result in find_recursive(key, v):
+                yield result
+        elif isinstance(v, list):
+            for d in v:
+                for result in find_recursive(key, d):
+                    yield result
 
 
 

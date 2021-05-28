@@ -179,8 +179,6 @@ class Free_Water(Task):
         """
         for k, v in self.hardware.items():
             for pin, obj in v.items():
-                if k == "LEDS":
-                    obj.set_color([0,0,0])
                 obj.release()
 
 

@@ -1,11 +1,6 @@
-#!/usr/bin/python2.7
-
 """
 
 """
-
-__version__ = '0.2'
-__author__ = 'Jonny Saunders <jsaunder@uoregon.edu>'
 
 import os
 import sys
@@ -18,19 +13,24 @@ import socket
 import json
 import base64
 import subprocess
+import warnings
 import numpy as np
 import pandas as pd
 from scipy.stats import linregress
 
 import tables
+warnings.simplefilter('ignore', category=tables.NaturalNameWarning)
 
 from autopilot import prefs
+from autopilot.core.loggers import init_logger
+
+
 
 if __name__ == '__main__':
     # Parse arguments - this should have been called with a .json prefs file passed
     # We'll try to look in the default location first
     parser = argparse.ArgumentParser(description="Run an autopilot")
-    parser.add_argument('-f', '--prefs', help="Location of .json prefs file (created during setup_terminal.py)")
+    parser.add_argument('-f', '--prefs', help="Location of .json prefs file (created during setup_autopilot.py)")
     args = parser.parse_args()
 
     if not args.prefs:
@@ -46,10 +46,10 @@ if __name__ == '__main__':
 
     prefs.init(prefs_file)
 
-    if hasattr(prefs, 'AUDIOSERVER') and 'AUDIO' in prefs.CONFIG:
-        if prefs.AUDIOSERVER == 'pyo':
+    if prefs.get('AUDIOSERVER') or 'AUDIO' in prefs.get('CONFIG'):
+        if prefs.get('AUDIOSERVER') == 'pyo':
             from autopilot.stim.sound import pyoserver
-        elif prefs.AUDIOSERVER == 'jack':
+        else:
             from autopilot.stim.sound import jackclient
 
 from autopilot.core.networking import Pilot_Station, Net_Node, Message
@@ -120,20 +120,17 @@ class Pilot:
         ip (str): Our IPv4 address
         listens (dict): Dictionary mapping message keys to methods used to process them.
         logger (:class:`logging.Logger`): Used to log messages and network events.
-        log_handler (:class:`logging.FileHandler`): Handler for logging
-        log_formatter (:class:`logging.Formatter`): Formats log entries as::
-
-            "%(asctime)s %(levelname)s : %(message)s"
     """
 
     logger = None
-    log_handler = None
-    log_formatter = None
+
 
     # Events for thread handling
     running = None
     stage_block = None
     file_block = None
+    quitting = None
+    """mp.Event to signal when process is quitting"""
 
     # networking - our internal and external messengers
     node = None
@@ -143,27 +140,41 @@ class Pilot:
     server = None
 
     def __init__(self, splash=True):
-        self.name = prefs.NAME
-        if prefs.LINEAGE == "CHILD":
+
+        if splash:
+            with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'setup', 'welcome_msg.txt'), 'r') as welcome_f:
+                welcome = welcome_f.read()
+                print('')
+                for line in welcome.split('\n'):
+                    print(line)
+                print('')
+                sys.stdout.flush()
+
+        self.name = prefs.get('NAME')
+        if prefs.get('LINEAGE') == "CHILD":
             self.child = True
-            self.parentid = prefs.PARENTID
+            self.parentid = prefs.get('PARENTID')
         else:
             self.child = False
             self.parentid = 'T'
 
-        self.init_logging()
+        self.logger = init_logger(self)
+        self.logger.debug('pilot logger initialized')
 
         # Locks, etc. for threading
         self.running = threading.Event() # Are we running a task?
         self.stage_block = threading.Event() # Are we waiting on stage triggers?
         self.file_block = threading.Event() # Are we waiting on file transfer?
+        self.quitting = threading.Event()
+        self.quitting.clear()
 
         # init pigpiod process
         self.init_pigpio()
 
         # Init audio server
-        if hasattr(prefs, 'AUDIOSERVER') and 'AUDIO' in prefs.CONFIG:
+        if prefs.get('AUDIOSERVER') or 'AUDIO' in prefs.get('CONFIG'):
             self.init_audio()
+
 
         # Init Station
         # Listen dictionary - what do we do when we receive different messages?
@@ -181,19 +192,21 @@ class Pilot:
         self.networking.start()
         self.node = Net_Node(id = "_{}".format(self.name),
                              upstream = self.name,
-                             port = prefs.MSGPORT,
+                             port = prefs.get('MSGPORT'),
                              listens = self.listens,
                              instance=False)
+        self.logger.debug('pilot networking initialized')
 
         # if we need to set pins pulled up or down, do that now
         self.pulls = []
-        if hasattr(prefs, 'PULLUPS'):
-            for pin in prefs.PULLUPS:
-                self.pulls.append(gpio.Digital_Out(int(pin), pull='U'))
-        if hasattr(prefs, 'PULLDOWNS'):
-            for pin in prefs.PULLDOWNS:
-                self.pulls.append(gpio.Digital_Out(int(pin), pull='D'))
+        if prefs.get( 'PULLUPS'):
+            for pin in prefs.get('PULLUPS'):
+                self.pulls.append(gpio.Digital_Out(int(pin), pull='U', polarity=0))
+        if prefs.get( 'PULLDOWNS'):
+            for pin in prefs.get('PULLDOWNS'):
+                self.pulls.append(gpio.Digital_Out(int(pin), pull='D', polarity=1))
 
+        self.logger.debug('pullups and pulldowns set')
         # check if the calibration file needs to be updated
 
 
@@ -204,35 +217,15 @@ class Pilot:
         # Since we're starting up, handshake to introduce ourselves
         self.ip = self.get_ip()
         self.handshake()
+        self.logger.debug('handshake sent')
 
-        if splash:
-            with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'setup', 'welcome_msg.txt'), 'r') as welcome_f:
-                welcome = welcome_f.read()
-                print('')
-                for line in welcome.split('\n'):
-                    print(line)
-                print('')
-                sys.stdout.flush()
+
 
         #self.blank_LEDs()
 
         # TODO Synchronize system clock w/ time from terminal.
 
-    def init_logging(self):
-        """
-        Start logging to a timestamped file in `prefs.LOGDIR`
-        """
 
-        timestr = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
-        log_file = os.path.join(prefs.LOGDIR, 'Pilots_Log_{}.log'.format(timestr))
-
-        self.logger = logging.getLogger('main')
-        self.log_handler = logging.FileHandler(log_file)
-        self.log_formatter = logging.Formatter("%(asctime)s %(levelname)s : %(message)s")
-        self.log_handler.setFormatter(self.log_formatter)
-        self.logger.addHandler(self.log_handler)
-        self.logger.setLevel(logging.INFO)
-        self.logger.info('Pilot Logging Initiated')
 
     #################################################################
     # Station
@@ -273,7 +266,7 @@ class Pilot:
         our Station object will cache this and will handle any
         future requests.
         """
-        self.node.send(self.parentid, 'STATE', self.state, flags={'NOLOG':True})
+        self.node.send(self.name, 'STATE', self.state, flags={'NOLOG':True})
 
     def l_start(self, value):
         """
@@ -292,11 +285,12 @@ class Pilot:
         # Value should be a dict of protocol params
         # The networking object should have already checked that we have all the files we need
 
-        if self.state == "RUNNING":
+        if self.state == "RUNNING" or self.running.is_set():
             self.logger.warning("Asked to a run a task when already running")
             return
 
         self.state = 'RUNNING'
+        self.running.set()
         try:
             # Get the task object by its type
             if 'child' in value.keys():
@@ -305,17 +299,16 @@ class Pilot:
                 task_class = tasks.TASK_LIST[value['task_type']]
             # Instantiate the task
             self.stage_block.clear()
-            self.task = task_class(stage_block=self.stage_block, **value)
 
             # Make a group for this subject if we don't already have one
             self.subject = value['subject']
-            prefs.add('SUBJECT', self.subject)
+            prefs.set('SUBJECT', self.subject)
 
 
 
             # Run the task and tell the terminal we have
-            self.running.set()
-            threading.Thread(target=self.run_task).start()
+            # self.running.set()
+            threading.Thread(target=self.run_task, args=(task_class, value)).start()
 
 
             self.update_state()
@@ -404,7 +397,7 @@ class Pilot:
             iti (int, float): how long we should :func:`~time.sleep` between openings
 
         """
-        pin_num = prefs.HARDWARE['PORTS'][port_name]
+        pin_num = prefs.get('HARDWARE')['PORTS'][port_name]
         port = gpio.Solenoid(pin_num, duration=int(open_dur))
         msg = {'click_num': 0,
                'pilot': self.name,
@@ -431,7 +424,7 @@ class Pilot:
         """
 
         # files for storing raw and fit calibration results
-        cal_fn = os.path.join(prefs.BASEDIR, 'port_calibration.json')
+        cal_fn = os.path.join(prefs.get('BASEDIR'), 'port_calibration.json')
 
         if os.path.exists(cal_fn):
             try:
@@ -465,8 +458,8 @@ class Pilot:
         payload = int(value['payload'])
         confirm = bool(value['confirm'])
 
-        payload = base64.b64encode(np.zeros(payload*1024, dtype=np.bool))
-
+        payload = np.zeros(payload*1024, dtype=np.bool)
+        payload_size = sys.getsizeof(payload)
 
         message = {
             'pilot': self.name,
@@ -479,6 +472,7 @@ class Pilot:
         msg_size = sys.getsizeof(test_msg.serialize())
 
         message['message_size'] = msg_size
+        message['payload_size'] = payload_size
 
         if rate > 0:
             spacing = 1.0/rate
@@ -529,14 +523,14 @@ class Pilot:
             path: If present, use calibration file specified, otherwise use default.
         """
 
-        lut_fn = os.path.join(prefs.BASEDIR, 'port_calibration_fit.json')
+        lut_fn = os.path.join(prefs.get('BASEDIR'), 'port_calibration_fit.json')
 
         if not calibration:
             # if we weren't given calibration results, load them
             if path:
                 open_fn = path
             else:
-                open_fn = os.path.join(prefs.BASEDIR, "port_calibration.json")
+                open_fn = os.path.join(prefs.get('BASEDIR'), "port_calibration.json")
 
             with open(open_fn, 'r') as open_f:
                 calibration = json.load(open_f)
@@ -572,20 +566,25 @@ class Pilot:
     #################################################################
 
     def init_pigpio(self):
-        self.pigpiod = external.start_pigpiod()
+        try:
+            self.pigpiod = external.start_pigpiod()
+            self.logger.debug('pigpio daemon started')
+        except ImportError as e:
+            self.pigpiod = None
+            self.logger.exception(e)
 
     def init_audio(self):
         """
         Initialize an audio server depending on the value of
-        `prefs.AUDIOSERVER`
+        `prefs.get('AUDIOSERVER')`
 
         * 'pyo' = :func:`.pyoserver.pyo_server`
         * 'jack' = :class:`.jackclient.JackClient`
         """
-        if prefs.AUDIOSERVER == 'pyo':
+        if prefs.get('AUDIOSERVER') == 'pyo':
             self.server = pyoserver.pyo_server()
             self.logger.info("pyo server started")
-        elif prefs.AUDIOSERVER == 'jack':
+        elif prefs.get('AUDIOSERVER') in ('jack', True):
             self.jackd = external.start_jackd()
             self.server = jackclient.JackClient()
             self.server.start()
@@ -594,14 +593,14 @@ class Pilot:
 
     def blank_LEDs(self):
         """
-        If any 'LEDS' are defined in `prefs.HARDWARE` ,
+        If any 'LEDS' are defined in `prefs.get('HARDWARE')` ,
         instantiate them, set their color to [0,0,0],
         and then release them.
         """
-        if 'LEDS' not in prefs.HARDWARE.keys():
+        if 'LEDS' not in prefs.get('HARDWARE').keys():
             return
 
-        for position, pins in prefs.HARDWARE['LEDS'].items():
+        for position, pins in prefs.get('HARDWARE')['LEDS'].items():
             led = gpio.LED_RGB(pins=pins)
             time.sleep(1.)
             led.set_color(col=[0,0,0])
@@ -614,17 +613,21 @@ class Pilot:
         """
         Setup a table to store data locally.
 
-        Opens `prefs.DATADIR/local.h5`, creates a group for the current subject,
+        Opens `prefs.get('DATADIR')/local.h5`, creates a group for the current subject,
         a new table for the current day.
+
+        .. todo::
+
+            This needs to be unified with a general file constructor abstracted from :class:`.Subject` so it doesn't reimplement file creation!!
 
         Returns:
             (:class:`tables.File`, :class:`tables.Table`,
             :class:`tables.tableextension.Row`): The file, table, and row for the local data table
         """
-        local_file = os.path.join(prefs.DATADIR, 'local.h5')
+        local_file = os.path.join(prefs.get('DATADIR'), 'local.h5')
         try:
             h5f = tables.open_file(local_file, mode='a')
-        except IOError as e:
+        except (IOError, tables.HDF5ExtError) as e:
             self.logger.warning("local file was broken, making new")
             self.logger.warning(e)
             os.remove(local_file)
@@ -663,7 +666,7 @@ class Pilot:
         else:
             return h5f, None, None
 
-    def run_task(self):
+    def run_task(self, task_class, task_params):
         """
         Called in a new thread, run the task.
 
@@ -676,6 +679,7 @@ class Pilot:
         """
         # TODO: give a net node to the Task class and let the task run itself.
         # Run as a separate thread, just keeps calling next() and shoveling data
+        self.task = task_class(stage_block=self.stage_block, **task_params)
 
         # do we expect TrialData?
         trial_data = False
@@ -686,40 +690,56 @@ class Pilot:
         h5f, table, row = self.open_file()
 
         # TODO: Init sending continuous data here
+        self.logger.debug('Starting task loop')
+        try:
+            while True:
+                # Calculate next stage data and prep triggers
+                data = next(self.task.stages)() # Double parens because next just gives us the function, we still have to call it
+                self.logger.debug('called stage method')
 
-        while True:
-            # Calculate next stage data and prep triggers
-            data = next(self.task.stages)() # Double parens because next just gives us the function, we still have to call it
+                if data:
+                    data['pilot'] = self.name
+                    data['subject'] = self.subject
 
-            if data:
-                data['pilot'] = self.name
-                data['subject'] = self.subject
+                    # Send data back to terminal (subject is identified by the networking object)
+                    self.node.send('T', 'DATA', data)
 
-                # Send data back to terminal (subject is identified by the networking object)
-                self.node.send('T', 'DATA', data)
+                    # Store a local copy
+                    # the task class has a class variable DATA that lets us know which data the row is expecting
+                    if trial_data:
+                        for k, v in data.items():
+                            if k in self.task.TrialData.columns.keys():
+                                row[k] = v
 
-                # Store a local copy
-                # the task class has a class variable DATA that lets us know which data the row is expecting
-                if trial_data:
-                    for k, v in data.items():
-                        if k in self.task.TrialData.columns.keys():
-                            row[k] = v
+                    # If the trial is over (either completed or bailed), flush the row
+                    if 'TRIAL_END' in data.keys():
+                        row.append()
+                        table.flush()
+                    self.logger.debug('sent data')
 
-                # If the trial is over (either completed or bailed), flush the row
-                if 'TRIAL_END' in data.keys():
-                    row.append()
-                    table.flush()
 
-            # Wait on the stage lock to clear
-            self.stage_block.wait()
+                # Wait on the stage lock to clear
+                self.stage_block.wait()
+                self.logger.debug('stage lock passed')
 
-            # If the running flag gets set, we're closing.
-            if not self.running.is_set():
+                # If the running flag gets set, we're closing.
+                if not self.running.is_set():
+                    break
+
+        except Exception as e:
+            self.logger.exception(f'got exception while running task, task stopping\n {e}')
+
+        finally:
+            self.logger.debug('stopping task')
+            try:
                 self.task.end()
-                self.task = None
-                row.append()
-                table.flush()
-                break
+            except Exception as e:
+                self.logger.exception(f'got exception while stopping task: {e}')
+            self.task = None
+            row.append()
+            table.flush()
+            gpio.clear_scripts()
+            self.logger.debug('stopped task and cleared scripts')
 
         h5f.flush()
         h5f.close()
@@ -727,8 +747,13 @@ class Pilot:
 
 if __name__ == "__main__":
 
-    a = Pilot()
 
+    try:
+        a = Pilot()
+        a.quitting.wait()
+    except KeyboardInterrupt:
+        a.quitting.set()
+        sys.exit()
 
 
 

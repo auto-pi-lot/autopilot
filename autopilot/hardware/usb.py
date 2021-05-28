@@ -4,10 +4,8 @@ Hardware that uses USB
 import sys
 import threading
 import time
-if sys.version_info >= (3, 0):
-    from queue import Queue, Empty
-else:
-    from Queue import Queue, Empty
+
+from queue import Queue, Empty
 
 import numpy as np
 from inputs import devices
@@ -101,8 +99,8 @@ class Wheel(Hardware):
                         'CLEAR':self.l_clear,
                         'STOP':self.l_stop}
         self.node = Net_Node('wheel_{}'.format(mouse_idx),
-                             upstream=prefs.NAME,
-                             port=prefs.MSGPORT,
+                             upstream=prefs.get('NAME'),
+                             port=prefs.get('MSGPORT'),
                              listens=self.listens,
                              )
 
