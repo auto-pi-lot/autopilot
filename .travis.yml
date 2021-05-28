@@ -34,6 +34,7 @@ install:
   - pip install -U pytest-cov
   - pip install -U pylint
   - pip install -U coveralls
+  - pip install -U pytest-qt
   - pip install -e .
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX +render -noreset"
   - sleep 2
