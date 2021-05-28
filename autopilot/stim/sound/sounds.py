@@ -243,6 +243,8 @@ if server_type in ("jack", "docs", True):
                 self.logger.exception(f'could not get additional wait time to wait to call trigger, triggers will be early!\n{e}')
                 extra_wait = 0
 
+            self.logger.debug(f'extra wait time: {extra_wait}')
+
             # wait for our duration plus a second at most.
             self.stop_evt.wait((self.duration+1000)/1000.)
             stop_time = time()
