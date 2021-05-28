@@ -1,2 +1,3 @@
 [run]
-concurrency=multiprocessing
+concurrency = multiprocessing
+parallel = true
