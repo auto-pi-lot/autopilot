@@ -514,12 +514,6 @@ def init(fn=None):
         with open(fn, 'r') as pfile:
             prefs = json.load(pfile)
 
-    try:
-        assert(isinstance(prefs, dict))
-    except AssertionError:
-        print(prefs)
-        Exception('prefs must return a dict')
-
     # Get the current git hash
     prefs['HASH'] = git_version(prefs['REPODIR'])
 
@@ -654,6 +648,16 @@ def compute_calibration(path=None, calibration=None, do_return=False):
         lut_fn = os.path.join(globals()['BASEDIR'], 'port_calibration_fit.json')
         with open(lut_fn, 'w') as lutf:
             json.dump(luts, lutf)
+
+def clear():
+    """
+    Mostly for use in testing, clear loaded prefs (without deleting prefs.json)
+
+    (though you will probably overwrite prefs.json if you clear and then set another pref so don't use this except in testing probably)
+    """
+    global _PREFS
+    global _PREF_MANAGER
+    _PREFS = _PREF_MANAGER.dict()
 
 #
 # class _Prefs(types.ModuleType):
