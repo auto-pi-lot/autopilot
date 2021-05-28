@@ -1,7 +1,7 @@
 import os
 import sys
 from autopilot import prefs
-from autopilot.core.networking import Net_Node
+from autopilot.networking import Net_Node
 from autopilot.hardware import Hardware
 from autopilot.hardware.cameras import Camera
 

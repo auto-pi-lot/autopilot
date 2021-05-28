@@ -38,7 +38,7 @@ from autopilot import tasks, prefs
 from autopilot.core import styles
 from autopilot.core.utils import get_invoker
 from .utils import InvokeEvent, Invoker
-from autopilot.core.networking import Net_Node
+from autopilot.networking import Net_Node
 from autopilot.core.loggers import init_logger
 
 

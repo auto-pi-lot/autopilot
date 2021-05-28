@@ -7,7 +7,7 @@ stim
     :show-inheritance:
 
 .. toctree::
-    autopilot.stim.managers
-    autopilot.stim.sound
+    managers
+    sound
 
 

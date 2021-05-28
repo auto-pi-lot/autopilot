@@ -493,7 +493,7 @@ turn it off when it finishes
 Distributed Go/No-Go - Using Child Agents
 =========================================
 
-.. figure:: _images/gonogo.png
+.. figure:: ../_images/gonogo.png
    :align: right
 
 To demonstrate the use of Child agents, we'll build the distributed Go/No-Go task described in section 4.3 of the Autopilot whitepaper.
