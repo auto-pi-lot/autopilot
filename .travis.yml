@@ -46,8 +46,7 @@ before_script:
   # - pylint autopilot
 
 script:
-  - pytest --cov=autopilot --cov-report --cov-config=.coveragerc term-missing tests
-  - coverage combine
+  - pytest --cov=autopilot --cov-config=.coveragerc --cov-report term-missing tests
 
 after_script:
   - coveralls
