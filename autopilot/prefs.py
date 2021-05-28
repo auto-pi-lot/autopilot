@@ -364,10 +364,24 @@ _DEFAULTS = odict({
         'depends': 'AUDIOSERVER',
         "scope": Scopes.AUDIO
     },
+    'JACKDBLOCKSIZE': {
+        'type': 'int',
+        'text': 'Block Size - number of samples in a single jack frame',
+        'default': 1024,
+        'depends': 'AUDIOSERVER',
+        'scope': Scopes.AUDIO
+    },
+    'JACKDNPERIODS': {
+        'type': 'int',
+        'text': 'N Periods - number of blocks of audio stored in jack buffer',
+        'default': 3,
+        'depends': 'AUDIOSERVER',
+        'scope': Scopes.AUDIO
+    },
     'JACKDSTRING': {
         'type': 'str',
         'text': 'Arguments to pass to jackd, see the jackd manpage',
-        'default': 'jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -n3 -s &',
+        'default': 'jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -nJACKDNPERIODS -pJACKDBLOCKSIZE -s &',
         'depends': 'AUDIOSERVER',
         "scope": Scopes.AUDIO
     },

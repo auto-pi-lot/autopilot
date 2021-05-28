@@ -110,6 +110,13 @@ def start_jackd():
     if prefs.get('FS'):
         jackd_string = jackd_string.replace('-rfs', f"-r{prefs.get('FS')}")
 
+    if prefs.get('JACKDBLOCKSIZE'):
+        jackd_string = jackd_string.replace('JACKDBLOCKSIZE', prefs.get('JACKDBLOCKSIZE'))
+
+    if prefs.get('JACKDNPERIODS'):
+        jackd_string = jackd_string.replace('JACKDNPERIODS', prefs.get('JACKDNPERIODS'))
+
+
     # construct rest of launch string!
     # if JACKD_MODULE:
     #     jackd_path = os.path.join(autopilot_jack.__path__._path[0])

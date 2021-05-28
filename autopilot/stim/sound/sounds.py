@@ -32,13 +32,14 @@ TODO:
 
 import os
 import sys
-from time import sleep
+from time import sleep, time
 from scipy.io import wavfile
 from scipy.signal import resample
 import numpy as np
 import threading
 from itertools import cycle
 from queue import Empty, Full
+import typing
 
 from autopilot import prefs
 from autopilot.core.loggers import init_logger
@@ -174,6 +175,7 @@ if server_type in ("jack", "docs", True):
 
             self.fs = jackclient.FS
             self.blocksize = jackclient.BLOCKSIZE
+            self.nperiods = prefs.get('JACKDNPERIODS')
             self.server = jackclient.SERVER
             self.q = jackclient.QUEUE
             self.q_lock = jackclient.Q_LOCK
@@ -231,10 +233,24 @@ if server_type in ("jack", "docs", True):
 
             Call the trigger when the event is set.
             """
+
+            # jack client will flip the stop event when it runs out of
+            # new frames, but the sound won't actually stop until the buffer is refilled
+            # so we wait  (self.nsamples % (BLOCKSIZE * NPERIODS)) / FS
+            try:
+                extra_wait = (self.nsamples % (self.blocksize * self.nperiods))/self.fs
+            except Exception as e:
+                self.logger.exception(f'could not get additional wait time to wait to call trigger, triggers will be early!\n{e}')
+                extra_wait = 0
+
             # wait for our duration plus a second at most.
             self.stop_evt.wait((self.duration+1000)/1000.)
-            # if the sound actually stopped...
+            stop_time = time()
+
+            # if the sound actually stopped (ie. we didnt just timeout)...
             if self.stop_evt.is_set():
+                while time()<stop_time+extra_wait:
+                    sleep(0.0005)
                 self.trigger()
                 self.logger.debug('called wait_trigger')
 
