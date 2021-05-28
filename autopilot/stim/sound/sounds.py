@@ -191,6 +191,22 @@ if server_type in ("jack", "docs", True):
 
             self.logger = init_logger(self)
 
+            self.get_nsamples()
+
+            # for calling triggers when sounds finish,
+            # jack client will flip the stop event when it runs out of
+            # new frames, but the sound won't actually stop until the buffer is refilled
+            # so we wait  (self.nsamples % (BLOCKSIZE * NPERIODS)) / FS
+            try:
+                self.extra_wait = (self.nsamples % (self.blocksize * self.nperiods))/self.fs
+                # if we are an exact multiple of the frame size, wait the full thing
+                if self.extra_wait < 0.001:
+                    self.extra_wait = (self.blocksize * self.nperiods)/self.fs
+                #extra_wait = (self.blocksize * self.nperiods) / self.fs
+            except Exception as e:
+                self.logger.exception(f'could not get additional wait time to wait to call trigger, triggers will be early!\n{e}')
+                self.extra_wait = 0
+
 
         def chunk(self, pad=True):
             """
@@ -234,28 +250,19 @@ if server_type in ("jack", "docs", True):
             Call the trigger when the event is set.
             """
 
-            # jack client will flip the stop event when it runs out of
-            # new frames, but the sound won't actually stop until the buffer is refilled
-            # so we wait  (self.nsamples % (BLOCKSIZE * NPERIODS)) / FS
-            try:
-                extra_wait = (self.nsamples % (self.blocksize * self.nperiods))/self.fs
-                #extra_wait = (self.blocksize * self.nperiods) / self.fs
-            except Exception as e:
-                self.logger.exception(f'could not get additional wait time to wait to call trigger, triggers will be early!\n{e}')
-                extra_wait = 0
-
-            self.logger.debug(f'extra wait time: {extra_wait}')
-
             # wait for our duration plus a second at most.
             self.stop_evt.wait((self.duration+1000)/1000.)
             stop_time = time()
 
             # if the sound actually stopped (ie. we didnt just timeout)...
             if self.stop_evt.is_set():
-                while time()<stop_time+extra_wait:
-                    sleep(0.0005)
+                while time()<stop_time+self.extra_wait:
+                    sleep(0.0001)
                 self.trigger()
                 self.logger.debug('called wait_trigger')
+
+            self.logger.debug(f'extra wait time: {self.extra_wait}')
+
 
         def get_nsamples(self):
             """
