@@ -171,6 +171,7 @@ if server_type in ("jack", "docs", True):
             self.nsamples = None
             self.padded = False # whether or not the sound was padded with zeros when chunked
             self.continuous = False
+            self._extra_wait = None
 
 
             self.fs = jackclient.FS
@@ -190,22 +191,6 @@ if server_type in ("jack", "docs", True):
             self.buffered_continuous = False
 
             self.logger = init_logger(self)
-
-            self.get_nsamples()
-
-            # for calling triggers when sounds finish,
-            # jack client will flip the stop event when it runs out of
-            # new frames, but the sound won't actually stop until the buffer is refilled
-            # so we wait  (self.nsamples % (BLOCKSIZE * NPERIODS)) / FS
-            try:
-                self.extra_wait = (self.nsamples % (self.blocksize * self.nperiods))/self.fs
-                # if we are an exact multiple of the frame size, wait the full thing
-                if self.extra_wait < 0.001:
-                    self.extra_wait = (self.blocksize * self.nperiods)/self.fs
-                #extra_wait = (self.blocksize * self.nperiods) / self.fs
-            except Exception as e:
-                self.logger.exception(f'could not get additional wait time to wait to call trigger, triggers will be early!\n{e}')
-                self.extra_wait = 0
 
 
         def chunk(self, pad=True):
@@ -262,6 +247,28 @@ if server_type in ("jack", "docs", True):
                 self.logger.debug('called wait_trigger')
 
             self.logger.debug(f'extra wait time: {self.extra_wait}')
+
+        @property
+        def extra_wait(self) -> float:
+            """
+            # for calling triggers when sounds finish,
+            # jack client will flip the stop event when it runs out of
+            # new frames, but the sound won't actually stop until the buffer is refilled
+            # so we wait  (self.nsamples % (BLOCKSIZE * NPERIODS)) / FS
+            """
+
+            if self._extra_wait is None:
+                try:
+                    self._extra_wait = (self.nsamples % (self.blocksize * self.nperiods))/self.fs
+                    # if we are an exact multiple of the frame size, wait the full thing
+                    if self.extra_wait < 0.001:
+                        self._extra_wait = (self.blocksize * self.nperiods)/self.fs
+                    #extra_wait = (self.blocksize * self.nperiods) / self.fs
+                except Exception as e:
+                    self.logger.exception(f'could not get additional wait time to wait to call trigger, triggers will be early!\n{e}')
+                    self._extra_wait = 0
+            return self._extra_wait
+
 
 
         def get_nsamples(self):
