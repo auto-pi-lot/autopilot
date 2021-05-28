@@ -105,13 +105,13 @@ class Scopes(Enum):
 
 
 
-_PREF_MANAGER = mp.Manager() # type: mp.Manager
+_PREF_MANAGER = mp.Manager() # type: mp.managers.SyncManager
 """
 The :class:`multiprocessing.Manager` that stores prefs during system operation and makes them available
 and consistent across processes.
 """
 
-_PREFS = _PREF_MANAGER.dict() # type: dict
+_PREFS = _PREF_MANAGER.dict() # type: mp.managers.SyncManager.dict
 """
 stores a dictionary of preferences that mirrors the global variables.
 """
@@ -128,7 +128,7 @@ _INITIALIZED = mp.Value(c_bool, False) # type: mp.Value
 Boolean flag to indicate whether prefs have been initialzied from ``prefs.json``
 """
 
-_LOCK = mp.Lock()
+_LOCK = mp.Lock() # type: mp.Lock
 """
 :class:`multiprocessing.Lock` to control access to ``prefs.json``
 """
