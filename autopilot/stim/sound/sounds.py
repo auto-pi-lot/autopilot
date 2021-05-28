@@ -238,8 +238,8 @@ if server_type in ("jack", "docs", True):
             # new frames, but the sound won't actually stop until the buffer is refilled
             # so we wait  (self.nsamples % (BLOCKSIZE * NPERIODS)) / FS
             try:
-                #extra_wait = (self.nsamples % (self.blocksize * self.nperiods))/self.fs
-                extra_wait = (self.blocksize * self.nperiods) / self.fs
+                extra_wait = (self.nsamples % (self.blocksize * self.nperiods))/self.fs
+                #extra_wait = (self.blocksize * self.nperiods) / self.fs
             except Exception as e:
                 self.logger.exception(f'could not get additional wait time to wait to call trigger, triggers will be early!\n{e}')
                 extra_wait = 0
