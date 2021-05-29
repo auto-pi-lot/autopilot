@@ -120,7 +120,7 @@ class Control_Panel(QtWidgets.QWidget):
     # Hosts two nested tab widgets to select pilot and subject,
     # set params, run subjects, etc.
 
-    def __init__(self, subjects, start_fn, ping_fn, pilots=None):
+    def __init__(self, subjects, start_fn, ping_fn, pilots):
         """
 
         """
@@ -134,20 +134,8 @@ class Control_Panel(QtWidgets.QWidget):
         # We get the Terminal's send_message function so we can communicate directly from here
         self.start_fn = start_fn
         self.ping_fn = ping_fn
+        self.pilots = pilots
 
-        if pilots:
-            self.pilots = pilots
-        else:
-            try:
-                # Try finding prefs in the encapsulating namespaces
-                with open(prefs.get('PILOT_DB')) as pilot_file:
-                    self.pilots = json.load(pilot_file, object_pairs_hook=odict)
-            except NameError:
-                try:
-                    with open('/usr/autopilot/pilot_db.json') as pilot_file:
-                        self.pilots = json.load(pilot_file, object_pairs_hook=odict)
-                except IOError:
-                    Exception('Couldnt find pilot directory!')
 
         # Make dict to store handles to subjects lists
         self.subject_lists = {}

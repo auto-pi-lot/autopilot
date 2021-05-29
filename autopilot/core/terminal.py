@@ -8,6 +8,7 @@ import os
 import datetime
 import logging
 import threading
+from pathlib import Path
 from collections import OrderedDict as odict
 import numpy as np
 from PySide2 import QtCore, QtGui, QtSvg, QtWidgets
@@ -143,8 +144,13 @@ class Terminal(QtWidgets.QMainWindow):
         self.logger = init_logger(self)
 
         # Load pilots db as ordered dictionary
-        with open(prefs.get('PILOT_DB')) as pilot_file:
-            self.pilots = json.load(pilot_file, object_pairs_hook=odict)
+        pilot_db_fn = Path(prefs.get('PILOT_DB'))
+        if pilot_db_fn.exists():
+            with open(pilot_db_fn) as pilot_file:
+                self.pilots = json.load(pilot_file, object_pairs_hook=odict)
+        else:
+            self.logger.warning(f'Pilot DB file not found at! {pilot_db_fn}')
+            self.pilots = {}
 
         # Listen dictionary - which methods to call for different messages
         # Methods are spawned in new threads using handle_message
