@@ -33,7 +33,7 @@ services:
 
 
 env:
-  - DISPLAY=":99.0" QT_DEBUG_PLUGINS=1 PYTHONASYNCIODEBUG=1  # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html?highlight=travis#xvfb-assertionerror-timeouterror-when-using-waituntil-waitexposed-and-ui-events
+  - DISPLAY=":99.0" QT_DEBUG_PLUGINS=1  # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html?highlight=travis#xvfb-assertionerror-timeouterror-when-using-waituntil-waitexposed-and-ui-events
 
 install:
   - pip install -U pip
