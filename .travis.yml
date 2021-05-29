@@ -19,6 +19,13 @@ addons:
       - herbstluftwm # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html#xvfb-assertionerror-timeouterror-when-using-waituntil-waitexposed-and-ui-events
       - qt5-default
       - qttools5-dev-tools
+      - libxcb-icccm4 # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html#github-actions
+      - libxcb-image0
+      - libxcb-keysyms1
+      - libxcb-randr0
+      - libxcb-render-util0
+      - libxcb-xinerama0
+      - libxcb-xfixes0
 
 # enable virtual framebuffer for testing GUI
 services:
