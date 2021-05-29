@@ -15,6 +15,7 @@ def spawn_terminal(qtbot):
     prefs.set('AGENT', 'TERMINAL')
 
     app = qt_api.QApplication.instance()
+    app.setStyle('GTK+')
     terminal = Terminal()
     qtbot.addWidget(terminal)
     return app, terminal

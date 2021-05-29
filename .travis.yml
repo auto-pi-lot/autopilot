@@ -27,6 +27,7 @@ services:
 
 env:
   - DISPLAY=":99.0" QT_DEBUG_PLUGINS=1  # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html?highlight=travis#xvfb-assertionerror-timeouterror-when-using-waituntil-waitexposed-and-ui-events
+  - PYTHONASYNCIODEBUG=1
 
 install:
   - pip install -U pip
@@ -37,7 +38,7 @@ install:
   - pip install -U pytest-qt
   - pip install -e .
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX +render -noreset"
-  - sleep 2
+  - sleep 3
 
 # make directories?
 before_script:
