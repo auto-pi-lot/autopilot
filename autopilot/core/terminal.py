@@ -221,22 +221,31 @@ class Terminal(QtWidgets.QMainWindow):
         #self.menuBar().setFixedHeight(40)
 
         # This is the pixel resolution of the entire screen
-        app = QtWidgets.QApplication.instance()
-        screensize = app.primaryScreen().size()
-        
-        # This is the available geometry of the primary screen, excluding
-        # window manager reserved areas such as task bars and system menus.
-        primary_display = app.primaryScreen().availableGeometry()
-        
-        
+        if 'pytest' in sys.modules:
+            primary_display = None
+            terminal_winsize_behavior = 'custom'
+            custom_size=[0,0,1000,480]
+        else:
+            terminal_winsize_behavior = prefs.get('TERMINAL_WINSIZE_BEHAVIOR')
+            custom_size = prefs.get('TERMINAL_CUSTOM_SIZE')
+            app = QtWidgets.QApplication.instance()
+            screensize = app.primaryScreen().size()
+
+            # This is the available geometry of the primary screen, excluding
+            # window manager reserved areas such as task bars and system menus.
+            primary_display = app.primaryScreen().availableGeometry()
+
         ## Initalize the menuBar
         # Linux: Set the menuBar to a fixed height
         # Darwin: Don't worry about menuBar
         if sys.platform == 'darwin':
             bar_height = 0
         else:
-            bar_height = (primary_display.height()/30)+5
-            self.menuBar().setFixedHeight(bar_height)
+            if primary_display is None:
+                self.menuBar().setFixedHeight(30)
+            else:
+                bar_height = (primary_display.height()/30)+5
+                self.menuBar().setFixedHeight(bar_height)
 
         # Create a File menu
         self.file_menu = self.menuBar().addMenu("&File")
@@ -287,9 +296,9 @@ class Terminal(QtWidgets.QMainWindow):
         self.data_panel.init_plots(self.pilots.keys())
 
         # Set logo to corner widget
-        if sys.platform != 'darwin':
-            self.menuBar().setCornerWidget(self.logo, QtCore.Qt.TopRightCorner)
-            self.menuBar().adjustSize()
+        # if sys.platform != 'darwin':
+        #     self.menuBar().setCornerWidget(self.logo, QtCore.Qt.TopRightCorner)
+        #     self.menuBar().adjustSize()
 
         # Add Control Panel and Data Panel to main layout
         #self.layout.addWidget(self.logo, 0,0,1,2)
@@ -304,8 +313,7 @@ class Terminal(QtWidgets.QMainWindow):
         # If 'remember': restore to the geometry from the last close
         # If 'maximum': restore to fill the entire screen
         # If 'moderate': restore to a reasonable size of (1000, 400) pixels
-        terminal_winsize_behavior = prefs.get('TERMINAL_WINSIZE_BEHAVIOR')
-        
+
         # Set geometry according to pref
         if terminal_winsize_behavior == 'maximum':
             # Set geometry to available geometry
@@ -335,7 +343,6 @@ class Terminal(QtWidgets.QMainWindow):
                 self.restoreGeometry(self.settings.value("geometry"))
 
         elif terminal_winsize_behavior == "custom":
-            custom_size = prefs.get('TERMINAL_CUSTOM_SIZE')
             self.move(custom_size[0], custom_size[1])
             self.resize(custom_size[2], custom_size[3])
         else:
