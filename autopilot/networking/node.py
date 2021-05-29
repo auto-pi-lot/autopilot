@@ -71,7 +71,7 @@ class Net_Node(object):
 
     def __init__(self, id: str, upstream: str, port: int,
                  listens: typing.Dict[str, typing.Callable],
-                 instance:bool=True, upstream_ip:str='localhost',
+                 instance:bool=False, upstream_ip:str='localhost',
                  router_port:Optional[int] = None,
                  daemon:bool=True, expand_on_receive:bool=True):
 

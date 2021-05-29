@@ -234,8 +234,7 @@ class Plot(QtWidgets.QWidget):
         self.node = Net_Node(id='P_{}'.format(self.pilot),
                              upstream="T",
                              port=prefs.get('MSGPORT'),
-                             listens=self.listens,
-                             instance=True)
+                             listens=self.listens)
 
 
     @gui_event
