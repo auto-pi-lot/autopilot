@@ -1,11 +1,11 @@
 blosc
 tables>=3.4.2
 numpy>=1.12.1
-pyzmq>=17.1.2
+pyzmq>=18.1.*
 pandas>=0.19.2
 npyscreen
 scipy
-tornado
+tornado>=5.0.*
 inputs
 scikit-video
 PyOpenGL

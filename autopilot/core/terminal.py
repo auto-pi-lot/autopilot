@@ -214,7 +214,8 @@ class Terminal(QtWidgets.QMainWindow):
         self.setWindowTitle('Terminal')
         #self.menuBar().setFixedHeight(40)
 
-        # This is the pixel resolution of the entire screen 
+        # This is the pixel resolution of the entire screen
+        app = QtWidgets.QApplication.instance()
         screensize = app.primaryScreen().size()
         
         # This is the available geometry of the primary screen, excluding

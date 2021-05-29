@@ -7,6 +7,8 @@ from pytestqt.qt_compat import qt_api
 from autopilot.core.terminal import Terminal
 from autopilot import prefs
 
+
+
 @pytest.fixture
 def spawn_terminal(qtbot):
     prefs.clear()

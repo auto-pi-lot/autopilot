@@ -1,10 +1,12 @@
+import pytest
+
 from autopilot.networking import Net_Node, Station, Message
 import numpy as np
 import zmq
 import time
 import multiprocessing as mp
 
-import pytest
+
 
 PORTRANGE = (5000, 8000)
 

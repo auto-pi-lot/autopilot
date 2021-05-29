@@ -109,7 +109,7 @@ class Autopilot_Form(nps.Form):
         for param_name, param in params.items():
             if param['type'] == 'bool':
                 widget = self.add(nps.CheckBox, name=param['text'])
-            elif param['type'] in ('str', 'int', 'list'):
+            elif param['type'] in ('str', 'int', 'list', 'float'):
                 # try to get default from prefs, otherwise use the hardcoded default if present. otherwise blank
                 if param_name in prefs.keys():
                     default = prefs[param_name]

@@ -1,7 +1,5 @@
-import warnings
-
 import pytest
-
+import warnings
 
 from autopilot import prefs
 
