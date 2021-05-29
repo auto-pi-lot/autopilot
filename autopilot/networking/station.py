@@ -58,7 +58,6 @@ class Station(multiprocessing.Process):
         pusher (bool): If ``True``, create a ``zmq.DEALER`` socket connected to
             ``push_ip``, ``push_port``, and ``push_id``. (Default: ``False``).
 
-
     Attributes:
         context (:class:`zmq.Context`):  zeromq context
         loop (:class:`tornado.ioloop.IOLoop`): a tornado ioloop
@@ -88,7 +87,7 @@ class Station(multiprocessing.Process):
                  push_id: Optional[str] = None,
                  pusher: bool = False,
                  listen_port: Optional[int] = None,
-                 listens: Optional[typing.Dict[str, typing.Callable]] = None
+                 listens: Optional[typing.Dict[str, typing.Callable]] = None,
                  ):
         super(Station, self).__init__()
         # Prefs should be passed by the terminal, if not, try to load from default locatio
@@ -180,13 +179,6 @@ class Station(multiprocessing.Process):
             self.repeat_thread = threading.Thread(target=self.repeat)
             self.repeat_thread.setDaemon(True)
             self.repeat_thread.start()
-
-            # periodically check if stopping
-            self.stop_checker = PeriodicCallback(
-                callback=self._check_stop,
-                callback_time=500
-            )
-            self.stop_checker.start()
 
             self.logger.info('Starting IOLoop')
             self.loop.start()
@@ -511,6 +503,10 @@ class Station(multiprocessing.Process):
         # Parse the message
         with self.msgs_received.get_lock():
             self.msgs_received.value += 1
+
+        if msg[-1] == b'CLOSING':
+            self.loop.stop()
+
         if len(msg)==1:
             # from our dealer, these are always to us.
             send_type = 'dealer'
@@ -669,6 +665,15 @@ class Station(multiprocessing.Process):
     def release(self):
 
         self.closing.set()
+
+        # send a message to ourselves from the parent process to this one
+        ctx = zmq.Context().instance()
+        sock = ctx.socket(zmq.DEALER)
+        sock.setsockopt_string(zmq.IDENTITY, f"{self.id}.closer")
+        sock.connect(f'tcp://localhost:{self.listen_port}')
+        sock.send_multipart([self.id.encode('utf-8'), 'CLOSING'.encode('utf-8')])
+        sock.close()
+
         # self.loop.stop()
         self.terminate()
         # except AttributeError:
