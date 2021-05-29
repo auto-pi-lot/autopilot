@@ -63,6 +63,11 @@ This documentation is very young and is very much a work in progress! Please `su
    Prefs <prefs>
    External <external>
 
+.. toctree::
+    :caption: Tests:
+
+    tests/index
+
 
 .. toctree::
     :maxdepth: 1

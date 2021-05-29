@@ -1,3 +1,12 @@
+"""
+Networking Tests.
+
+**Assumptions**
+
+- In docstring examples, ``listens`` callbacks are often omitted for clarity
+
+"""
+
 import pytest
 
 from autopilot.networking import Net_Node, Station, Message
@@ -53,8 +62,7 @@ def station_params():
 
 def test_node(node_params):
     """
-    Just initialize and release a net node.
-    Just testing that the default params havent changed basically
+    :class:`.Net_Node` s can be initialized with their default parameters
     """
 
     id = 'init'
@@ -63,8 +71,14 @@ def test_node(node_params):
 
 def test_node_to_node(node_params):
     """
-    Test that one node can send a message to another when acting as a router,
-    and back
+    :class:`.Net_Node` s can directly send messages to each other with ``ROUTER``/``DEALER`` pairs.
+
+    .. code-block:: python
+
+        >>> node_1 = Net_Node(id='a', router_port=5000)
+        >>> node_2 = Net_Node(id='b', upstream='a', port=5000)
+        >>> node_2.send('a', 'KEY', 'VALUE')
+        >>> node_2.send('b', 'KEY', 'VALUE')
     """
     global node1_received
     global node2_received
@@ -108,7 +122,24 @@ def test_node_to_node(node_params):
 
 def test_multihop(node_params, station_params):
     """
-    TODO: test messages hopping from node -> Station -> Station -> node
+    :class:`.Message` s can be routed through multiple :class:`.Station` objects
+    by using a list in the ``to`` field
+
+    .. code-block:: python
+
+        # send message:
+        # node_1 -> station_1 -> station_2 -> station_3 -> node_3
+        >>> station_1 = Station(id='station_1', listen_port=6000,
+                pusher=True, push_port=6001, push_id='station_2')
+        >>> station_2 = Station(id='station_2', listen_port=6001,
+                pusher=True, push_port=6002, push_id='station_3',)
+        >>> station_3 = Station(id='station_3', listen_port=6002)
+        >>> node_1 = Net_Node(id='node_1',
+                upstream='station_1', port=6000)
+        >>> node_3 = Net_Node(id='node_3',
+                upstream='station_3', port=6002)
+        >>> node_1.send(key='KEY', value='VALUE',
+                to=['station_1', 'station_2', 'station_3', 'node_3'])
     """
     # node_1 -> station_1 -> station_2 -> station_3 -> node_3
 
