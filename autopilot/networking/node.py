@@ -596,4 +596,3 @@ class Net_Node(object):
     def release(self):
         self.closing.set()
         self.loop.stop()
-        self.loop.close()
