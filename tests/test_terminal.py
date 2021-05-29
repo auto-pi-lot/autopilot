@@ -20,7 +20,7 @@ def spawn_terminal(qtbot):
     qtbot.addWidget(terminal)
     return app, terminal
 
-def test_terminal_launch(spawn_terminal):
+def test_terminal_launch(qtbot, spawn_terminal):
     app, terminal = spawn_terminal
 
     sleep(5)
