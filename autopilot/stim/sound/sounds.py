@@ -286,11 +286,6 @@ if server_type in ("jack", "docs"):
             elif sound.ndim == 2:
                 self.chunks = list(
                     sound.reshape(-1, self.blocksize, sound.shape[1]))
-            
-            
-            ## Error check
-            for frame in self.chunks:
-                print(frame.shape)
 
         def set_trigger(self, trig_fn):
             """
