@@ -230,20 +230,67 @@ if server_type in ("jack", "docs"):
                 pad with zeros (True, default), otherwise jackclient will pad 
                 with its continuous sound
             """
-            # break sound into chunks
-
+            # Convert the table to float32 (if it isn't already)
             sound = self.table.astype(np.float32)
-            sound_list = [sound[i:i+self.blocksize] for i in range(0, sound.shape[0], self.blocksize)]
 
-            if (sound_list[-1].shape[0] < self.blocksize) and pad:
-                sound_list[-1] = np.pad(sound_list[-1],
-                                        (0, self.blocksize-sound_list[-1].shape[0]),
-                                        'constant')
+            # Determine how much longer it would have to be, if it were
+            # padded to a length that is a multiple of self.blocksize
+            oldlen = len(sound)
+            newlen = int(
+                np.ceil(float(oldlen) / self.blocksize) * self.blocksize)
+
+            
+            ## Only pad if necessary AND requested
+            if pad and newlen > oldlen:
+                # Pad differently depending on mono or stereo
+                if sound.ndim == 1:
+                    # Pad with 1d array of zeros
+                    to_concat = np.zeros((newlen - oldlen,), np.float32)
+
+                    # Pad
+                    sound = np.concatenate([sound, to_concat])
+
+                elif sound.ndim == 2:
+                    # Each column is a channel
+                    n_channels = sound.shape[1]
+                    
+                    # Raise error if more than two-channel sound
+                    # This would actually be fine for this function, but this 
+                    # almost surely indicates somebody has transposed something
+                    if n_channels > 2:
+                        raise ValueError("only 1- or 2-channel sound supported")
+                    
+                    # Pad with 2d array of zeros
+                    to_concat = np.zeros(
+                        (newlen - oldlen, sound.shape[1]), np.float32)
+
+                    # Pad
+                    sound = np.concatenate([sound, to_concat])
+                
+                else:
+                    raise ValueError("sound must be 1d or 2d")
+                
+                # Flag as padded
                 self.padded = True
+            
             else:
+                # Flag as not padded
                 self.padded = False
-
-            self.chunks = sound_list
+            
+            
+            ## Reshape into chunks, each of length `self.blocksize`
+            if sound.ndim == 1:
+                self.chunks = list(
+                    sound.reshape(-1, self.blocksize))
+            
+            elif sound.ndim == 2:
+                self.chunks = list(
+                    sound.reshape(-1, self.blocksize, sound.shape[1]))
+            
+            
+            ## Error check
+            for frame in self.chunks:
+                print(frame.shape)
 
         def set_trigger(self, trig_fn):
             """
@@ -312,6 +359,10 @@ if server_type in ("jack", "docs"):
         def buffer(self):
             """
             Dump chunks into the sound queue.
+            
+            After the last chunk, a `None` is put into the queue. This
+            tells the jack server that the sound is over and that it should
+            clear the play flag.
             """
 
             if hasattr(self, 'path'):
