@@ -1073,24 +1073,29 @@ class LED_RGB(Digital_Out):
             g (float, int): value to set green channel
             b (float, int): value to set blue channel
         """
+        # Stop any running scripts (like blinks)
         self.stop_script()
 
-        # if we were given a value, ignore other arguments
+        # Set either by `value` or by individual r, g, b
         if value is not None:
+            # Set by `value`
             if isinstance(value, int) or isinstance(value, float):
+                # Apply `value` to each channel
                 for channel in self.channels.values():
                     channel.set(value)
             elif len(value) == 3:
+                # Assume value is a tuple of r, g, b
                 for channel_key, color_val in zip(('r','g','b'), value):
                     self.channels[channel_key].set(color_val)
             else:
                 raise ValueError('Value must either be a single value or a tuple of (r,g,b)')
         else:
-            if r:
+            # Set by individually specified r, g, b arguments
+            if r is not None:
                 self.channels['r'].set(r)
-            if g:
+            if g is not None:
                 self.channels['g'].set(g)
-            if b:
+            if b is not None:
                 self.channels['b'].set(b)
 
     def toggle(self):
@@ -1098,7 +1103,6 @@ class LED_RGB(Digital_Out):
 
     def pulse(self, duration=None):
         self.logger.warning('Use flash for LEDs instead')
-
 
     def _series_script(self, colors, durations = None, unit="ms", repeat=None, finish_off = True):
         """
