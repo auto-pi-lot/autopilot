@@ -168,6 +168,7 @@ class Control_Panel(QtWidgets.QWidget):
         for pilot_id, pilot_params in self.pilots.items():
             self.add_pilot(pilot_id, pilot_params.get('subjects', []))
 
+    @gui_event
     def add_pilot(self, pilot_id:str, subjects:typing.Optional[list]=None):
         """
         Add a :class:`.Pilot_Panel` for a new pilot, and populate a :class:`.Subject_List` for it
@@ -2868,20 +2869,27 @@ class Psychometric(QtGui.QDialog):
         return _plot_params
 
 
-
-
-
-
 def pop_dialog(message:str,
                details:str="",
                buttons:tuple=("Ok",),
                modality:str="nonmodal",
-               msg_type:str="info",):
+               msg_type:str="info",) -> QtWidgets.QMessageBox:
     """Convenience function to pop a :class:`.QtGui.QDialog window to display a message.
 
     .. note::
 
         This function does *not* call `.exec_` on the dialog so that it can be managed by the caller.
+
+    Examples:
+        box = pop_dialog(
+            message='Hey what up',
+            details='i got something to tell you',
+            buttons = ('Ok', 'Cancel'))
+        ret = box.exec_()
+        if ret == box.Ok:
+            print("user answered 'Ok'")
+        else:
+            print("user answered 'Cancel'")
 
     Args:
         message (str): message to be displayed

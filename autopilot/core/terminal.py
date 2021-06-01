@@ -40,7 +40,7 @@ from autopilot.core.subject import Subject
 from autopilot.core.plots import Plot_Widget
 from autopilot.networking import Net_Node, Terminal_Station
 from autopilot.core.utils import InvokeEvent, Invoker, get_invoker
-from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test
+from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test, pop_dialog
 from autopilot.core.loggers import init_logger
 
 # Try to import viz, but continue if that doesn't work
@@ -195,6 +195,18 @@ class Terminal(QtWidgets.QMainWindow):
         # self.heartbeat_timer.start()
         #self.heartbeat(once=True)
         self.logger.info('Terminal Initialized')
+
+        # if we don't have any pilots, pop a dialogue to declare one
+        if len(self.pilots) == 0:
+            box = pop_dialog(
+                'No Pilots', 'No pilots were found in the pilot_db, add one now?',
+                buttons=('Yes', 'No')
+            )
+            ret = box.exec_()
+            if ret == box.Yes:
+                self.new_pilot()
+
+
 
     def initUI(self):
         """
