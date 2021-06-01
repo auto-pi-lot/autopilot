@@ -1,9 +1,6 @@
+import pytest
 import re
 from pathlib import Path
-
-
-import pytest
-
 
 from autopilot.setup.setup_autopilot import make_alias
 

@@ -105,13 +105,13 @@ class Scopes(Enum):
 
 
 
-_PREF_MANAGER = mp.Manager() # type: mp.Manager
+_PREF_MANAGER = mp.Manager() # type: mp.managers.SyncManager
 """
 The :class:`multiprocessing.Manager` that stores prefs during system operation and makes them available
 and consistent across processes.
 """
 
-_PREFS = _PREF_MANAGER.dict() # type: dict
+_PREFS = _PREF_MANAGER.dict() # type: mp.managers.SyncManager.dict
 """
 stores a dictionary of preferences that mirrors the global variables.
 """
@@ -128,7 +128,7 @@ _INITIALIZED = mp.Value(c_bool, False) # type: mp.Value
 Boolean flag to indicate whether prefs have been initialzied from ``prefs.json``
 """
 
-_LOCK = mp.Lock()
+_LOCK = mp.Lock() # type: mp.Lock
 """
 :class:`multiprocessing.Lock` to control access to ``prefs.json``
 """
@@ -444,7 +444,7 @@ def set(key: str, val):
         val: Value of pref to set (prefs are not type validated against default types)
     """
     globals()['_PREFS'][key] = val
-    if globals()['_INITIALIZED'].value:
+    if globals()['_INITIALIZED'].value and 'pytest' not in sys.modules:
         save_prefs()
 
 
@@ -514,33 +514,32 @@ def init(fn=None):
         with open(fn, 'r') as pfile:
             prefs = json.load(pfile)
 
-    try:
-        assert(isinstance(prefs, dict))
-    except AssertionError:
-        print(prefs)
-        Exception('prefs must return a dict')
-
     # Get the current git hash
-    prefs['HASH'] = git_version(prefs['REPODIR'])
+    if prefs.get('REPODIR', False):
+        try:
+            prefs['HASH'] = git_version(prefs.get('REPODIR'))
+        except Exception as e:
+            prefs['HASH'] = ''
+            warnings.warn(f'git hash for repo could not be found! will not be able to keep good provenance! got exception: \n{e}')
+    else:
+        warnings.warn('REPODIR is not set in prefs.json, cant get git hash!!!')
 
-    # FIXME: Should this be here? if so need to restructure so that it uses calibration directory, more standardized way of doing calibrations.
+    # FIXME: This 100% should not happen here and should happen in the relevant hardware classes.
     # Load any calibration data
+    if prefs.get('BASEDIR', False):
+        cal_path = os.path.join(prefs['BASEDIR'], 'port_calibration_fit.json')
+        cal_raw = os.path.join(prefs['BASEDIR'], 'port_calibration.json')
 
-    cal_path = os.path.join(prefs['BASEDIR'], 'port_calibration_fit.json')
-    cal_raw = os.path.join(prefs['BASEDIR'], 'port_calibration.json')
-
-    #TODO: make fit calibration update if new calibration results received
-    # aka check if dates in raw results are more recent than date in a 'info' field, for example
-    if os.path.exists(cal_path):
-        with open(cal_path, 'r') as calf:
-            cal_fns = json.load(calf)
-        prefs['PORT_CALIBRATION'] = cal_fns
-    elif os.path.exists(cal_raw):
-        # aka raw calibration results exist but no fit has been computed
-        luts = compute_calibration(path=cal_raw, do_return=True)
-        with open(cal_path, 'w') as calf:
-            json.dump(luts, calf)
-        prefs['PORT_CALIBRATION'] = luts
+        if os.path.exists(cal_path):
+            with open(cal_path, 'r') as calf:
+                cal_fns = json.load(calf)
+            prefs['PORT_CALIBRATION'] = cal_fns
+        elif os.path.exists(cal_raw):
+            # aka raw calibration results exist but no fit has been computed
+            luts = compute_calibration(path=cal_raw, do_return=True)
+            with open(cal_path, 'w') as calf:
+                json.dump(luts, calf)
+            prefs['PORT_CALIBRATION'] = luts
 
     ###########################
 
@@ -599,11 +598,8 @@ def git_version(repo_dir):
         out = subprocess.Popen(cmd, stdout = subprocess.PIPE, env=env).communicate()[0]
         return out
 
-    try:
-        out = _minimal_ext_cmd(['git','-C',repo_dir, 'rev-parse', 'HEAD'])
-        GIT_REVISION = out.strip().decode('ascii')
-    except OSError:
-        GIT_REVISION = "Unknown"
+    out = _minimal_ext_cmd(['git','-C',repo_dir, 'rev-parse', 'HEAD'])
+    GIT_REVISION = out.strip().decode('ascii')
 
     return GIT_REVISION
 
@@ -654,6 +650,16 @@ def compute_calibration(path=None, calibration=None, do_return=False):
         lut_fn = os.path.join(globals()['BASEDIR'], 'port_calibration_fit.json')
         with open(lut_fn, 'w') as lutf:
             json.dump(luts, lutf)
+
+def clear():
+    """
+    Mostly for use in testing, clear loaded prefs (without deleting prefs.json)
+
+    (though you will probably overwrite prefs.json if you clear and then set another pref so don't use this except in testing probably)
+    """
+    global _PREFS
+    global _PREF_MANAGER
+    _PREFS = _PREF_MANAGER.dict()
 
 #
 # class _Prefs(types.ModuleType):

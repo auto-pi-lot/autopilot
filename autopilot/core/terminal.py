@@ -8,6 +8,7 @@ import os
 import datetime
 import logging
 import threading
+from pathlib import Path
 from collections import OrderedDict as odict
 import numpy as np
 from PySide2 import QtCore, QtGui, QtSvg, QtWidgets
@@ -37,9 +38,9 @@ if __name__ == '__main__':
 
 from autopilot.core.subject import Subject
 from autopilot.core.plots import Plot_Widget
-from autopilot.core.networking import Terminal_Station, Net_Node
+from autopilot.networking import Net_Node, Terminal_Station
 from autopilot.core.utils import InvokeEvent, Invoker, get_invoker
-from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test
+from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test, pop_dialog
 from autopilot.core.loggers import init_logger
 
 # Try to import viz, but continue if that doesn't work
@@ -143,8 +144,13 @@ class Terminal(QtWidgets.QMainWindow):
         self.logger = init_logger(self)
 
         # Load pilots db as ordered dictionary
-        with open(prefs.get('PILOT_DB')) as pilot_file:
-            self.pilots = json.load(pilot_file, object_pairs_hook=odict)
+        pilot_db_fn = Path(prefs.get('PILOT_DB'))
+        if pilot_db_fn.exists():
+            with open(pilot_db_fn) as pilot_file:
+                self.pilots = json.load(pilot_file, object_pairs_hook=odict)
+        else:
+            self.logger.warning(f'Pilot DB file not found at! {pilot_db_fn}')
+            self.pilots = {}
 
         # Listen dictionary - which methods to call for different messages
         # Methods are spawned in new threads using handle_message
@@ -171,14 +177,14 @@ class Terminal(QtWidgets.QMainWindow):
         # The split is so the external networking can run in another process, do potentially time-consuming tasks
         # like resending & confirming message delivery without blocking or missing messages
 
-        self.node = Net_Node(id="_T", upstream='T', port=prefs.get('MSGPORT'), listens=self.listens)
-        self.logger.info("Net Node Initialized")
-
         # Start external communications in own process
         # Has to be after init_network so it makes a new context
         self.networking = Terminal_Station(self.pilots)
         self.networking.start()
         self.logger.info("Station object Initialized")
+
+        self.node = Net_Node(id="_T", upstream='T', port=prefs.get('MSGPORT'), listens=self.listens, instance=False)
+        self.logger.info("Net Node Initialized")
 
         # send an initial ping looking for our pilots
         self.node.send('T', 'INIT')
@@ -189,6 +195,18 @@ class Terminal(QtWidgets.QMainWindow):
         # self.heartbeat_timer.start()
         #self.heartbeat(once=True)
         self.logger.info('Terminal Initialized')
+
+        # if we don't have any pilots, pop a dialogue to declare one
+        if len(self.pilots) == 0:
+            box = pop_dialog(
+                'No Pilots', 'No pilots were found in the pilot_db, add one now?',
+                buttons=('Yes', 'No')
+            )
+            ret = box.exec_()
+            if ret == box.Yes:
+                self.new_pilot()
+
+
 
     def initUI(self):
         """
@@ -214,22 +232,32 @@ class Terminal(QtWidgets.QMainWindow):
         self.setWindowTitle('Terminal')
         #self.menuBar().setFixedHeight(40)
 
-        # This is the pixel resolution of the entire screen 
-        screensize = app.primaryScreen().size()
-        
-        # This is the available geometry of the primary screen, excluding
-        # window manager reserved areas such as task bars and system menus.
-        primary_display = app.primaryScreen().availableGeometry()
-        
-        
+        # This is the pixel resolution of the entire screen
+        if 'pytest' in sys.modules:
+            primary_display = None
+            terminal_winsize_behavior = 'custom'
+            custom_size=[0,0,1000,480]
+        else:
+            terminal_winsize_behavior = prefs.get('TERMINAL_WINSIZE_BEHAVIOR')
+            custom_size = prefs.get('TERMINAL_CUSTOM_SIZE')
+            app = QtWidgets.QApplication.instance()
+            screensize = app.primaryScreen().size()
+
+            # This is the available geometry of the primary screen, excluding
+            # window manager reserved areas such as task bars and system menus.
+            primary_display = app.primaryScreen().availableGeometry()
+
         ## Initalize the menuBar
         # Linux: Set the menuBar to a fixed height
         # Darwin: Don't worry about menuBar
         if sys.platform == 'darwin':
             bar_height = 0
         else:
-            bar_height = (primary_display.height()/30)+5
-            self.menuBar().setFixedHeight(bar_height)
+            if primary_display is None:
+                self.menuBar().setFixedHeight(30)
+            else:
+                bar_height = (primary_display.height()/30)+5
+                self.menuBar().setFixedHeight(bar_height)
 
         # Create a File menu
         self.file_menu = self.menuBar().addMenu("&File")
@@ -280,9 +308,9 @@ class Terminal(QtWidgets.QMainWindow):
         self.data_panel.init_plots(self.pilots.keys())
 
         # Set logo to corner widget
-        if sys.platform != 'darwin':
-            self.menuBar().setCornerWidget(self.logo, QtCore.Qt.TopRightCorner)
-            self.menuBar().adjustSize()
+        # if sys.platform != 'darwin':
+        #     self.menuBar().setCornerWidget(self.logo, QtCore.Qt.TopRightCorner)
+        #     self.menuBar().adjustSize()
 
         # Add Control Panel and Data Panel to main layout
         #self.layout.addWidget(self.logo, 0,0,1,2)
@@ -297,8 +325,7 @@ class Terminal(QtWidgets.QMainWindow):
         # If 'remember': restore to the geometry from the last close
         # If 'maximum': restore to fill the entire screen
         # If 'moderate': restore to a reasonable size of (1000, 400) pixels
-        terminal_winsize_behavior = prefs.get('TERMINAL_WINSIZE_BEHAVIOR')
-        
+
         # Set geometry according to pref
         if terminal_winsize_behavior == 'maximum':
             # Set geometry to available geometry
@@ -328,7 +355,6 @@ class Terminal(QtWidgets.QMainWindow):
                 self.restoreGeometry(self.settings.value("geometry"))
 
         elif terminal_winsize_behavior == "custom":
-            custom_size = prefs.get('TERMINAL_CUSTOM_SIZE')
             self.move(custom_size[0], custom_size[1])
             self.resize(custom_size[2], custom_size[3])
         else:

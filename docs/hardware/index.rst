@@ -10,8 +10,8 @@ hardware
 .. toctree::
    :maxdepth: 10
 
-   autopilot.hardware.cameras
-   autopilot.hardware.gpio
-   autopilot.hardware.i2c
-   autopilot.hardware.usb
+   cameras
+   gpio
+   i2c
+   usb
 

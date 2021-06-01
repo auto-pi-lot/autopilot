@@ -8,6 +8,6 @@ viz
 
 .. toctree::
 
-   autopilot.viz.trial_viewer
-   autopilot.viz.psychometric
+   trial_viewer
+   psychometric
 
