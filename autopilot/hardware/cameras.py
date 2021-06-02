@@ -19,6 +19,7 @@ import subprocess
 from queue import Queue, Empty, Full
 import logging
 from ctypes import c_char_p
+import numpy as np
 
 try:
     import PySpin
