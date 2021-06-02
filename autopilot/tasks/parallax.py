@@ -14,6 +14,7 @@ import tables
 import typing
 from collections import OrderedDict as odict
 import threading
+from datetime import datetime
 
 import numpy as np
 
@@ -57,11 +58,38 @@ class Parallax(Task):
         'tag': 'Time from request to aborting trial if mouse has not jumped, in seconds',
         'type': 'float'
     },
+    PARAMS['bail_height'] = {
+        'tag': 'Height below which to consider the trial bailed',
+        'type': 'int'
+    }
     PARAMS['dlc_model_name'] = {
         'tag': 'name of DLC model to use, model files must be in <autopilot_dir>/dlc on the processing child',
         'type': 'str'
     },
-
+    PARAMS['dlc_use_point'] = {
+        'tag': 'Name of point from DLC model to use in motion estimation and task control',
+        'type': 'str'
+    }
+    PARAMS['dlc_platform_points'] = {
+        'tag': 'Names of left and right points used to track the platform lip (as a list)',
+        'type': 'list'
+    }
+    PARAMS['dlc_jumpoff_points'] = {
+        'tag': 'Names of left and right points used to track the platform the mouse jumps from (as a list)',
+        'type': 'list'
+    }
+    PARAMS['child_dlc_id'] = {
+        'tag': 'ID of agent that is running the DLC transformation',
+        'type': 'str'
+    }
+    PARAMS['child_motion_id'] = {
+        'tag': 'ID of agent that is running the motion controller',
+        'type': 'str'
+    }
+    PARAMS['node_port'] = {
+        'tag': 'Port to receive messages from our children',
+        'type': 'int'
+    }
 
 
     PLOT = {
@@ -84,10 +112,6 @@ class Parallax(Task):
         multiplier = tables.Float32Col()
 
 
-
-
-        # other stuff once we formalize the task more
-
     # since continuous data is one folder per session, one table per stream, specify with dict
     ContinuousData = {
         'accel_x': tables.Float64Col(),
@@ -101,6 +125,9 @@ class Parallax(Task):
     HARDWARE = {
         'PLAT':{
             'FORM': Parallax_Platform
+        },
+        'CAMS':{
+            'SIDE': cameras.PiCamera
         }
     }
 
@@ -128,7 +155,14 @@ class Parallax(Task):
                  platform_distances:typing.Tuple[int, ...]=(0,1,2,3,4,5),
                  velocity_multipliers:typing.Tuple[float, ...] = (1,),
                  timeout:float=10,
+                 bail_height:int=None,
                  dlc_model_name:typing.Optional[str]=None,
+                 dlc_use_point:typing.Optional[str] = None,
+                 dlc_platform_points:typing.Optional[list] = None,
+                 dlc_jumpoff_points:typing.Optional[list] = None,
+                 child_dlc_id: typing.Optional[str] = None,
+                 child_motion_id: typing.Optional[str] = None,
+                 node_port:int=5570,
                  stage_block = None, *args, **kwargs):
 
         super(Parallax, self).__init__(*args, **kwargs)
@@ -141,8 +175,16 @@ class Parallax(Task):
         self.platform_distances = (int(distance) for distance in platform_distances)
         self.velocity_multipliers = (float(vel) for vel in velocity_multipliers)
         self.timeout = float(timeout)
+        self.bail_height = bail_height
         self.dlc_model_name = dlc_model_name
+        self.dlc_use_point = dlc_use_point
+        self.dlc_platform_points = dlc_platform_points
+        self.dlc_jumpoff_points = dlc_jumpoff_points
+        self.child_dlc_id = child_dlc_id
+        self.child_motion_id = child_motion_id
         self.stage_block = stage_block
+        self.node_port = node_port
+        self.subject = kwargs.get('subject', prefs.get('SUBJECT'))
 
         # init attributes
         self.velocity_multiplier = 0
@@ -172,29 +214,84 @@ class Parallax(Task):
         self.init_hardware()
 
         # initialize net node for communicating with child
-        self.node = Net_Node(id="{}_TASK".format(prefs.get('NAME')),
+        self.node_id ="{}_TASK".format(prefs.get('NAME'))
+        self.node = Net_Node(id=self.node_id,
                              upstream=prefs.get('NAME'),
                              port=prefs.get('MSGPORT'),
-                             listens = {},
-                             instance = False)
+                             router_port=node_port,
+                             listens = {
+                                 'DLC': self.l_dlc,
+                                 'MOTION': self.l_motion
+                             },
+                             instance = True)
 
-        self.stream = self.node.get_stream("{}_TASK_STREAM".format(prefs.get('NAME')))
+        # stream to send continuous data back to Terminal
+        self.stream = self.node.get_stream(
+            id="{}_TASK_STREAM".format(prefs.get('NAME')),
+            key='CONTINUOUS'
+        )
 
+        ## ------------------
+        # Children
 
-        # value = {
-        #     'child': {'parent': prefs.get('NAME'), 'subject': self.subject},
-        #     'subject' : self.subject,
-        #
-        # }
-        # value.update(self.CHILDREN['HEADCAM'])
-        #
-        # self.node.send(to=prefs.get('NAME'), key='CHILD', value=value)
+        # start DLC child
+        transform_descriptor = [
+            {
+                'transform': 'image.DLC',
+                'kwargs': {
+                    'model_dir': self.dlc_model_name
+                }
+            }
+        ]
+        # this will start the DLC transformer, see tasks/children::Transformer
+        self.node.send(
+            to=[prefs.get('NAME'), self.child_dlc_id],
+            key='START',
+            value= {
+                'child': {'parent': prefs.get('NAME'), 'subject': self.subject},
+                'task_type': 'Transformer',
+                'subject': self.subject,
+                'operation': 'stream',
+                'transform': transform_descriptor,
+                'return_id': self.node_id,
+                'return_ip': self.node.ip,
+                'return_port': self.node_port,
+                'return_key': 'DLC'
+            }
+        )
 
-        self.stages = itertools.cycle([self.test])
+        # start IMU child
+        self.node.send(
+            to = [prefs.get('NAME'), self.child_motion_id],
+            key='START',
+            value = {
+                'child': {'parent': prefs.get('NAME'), 'subject': self.subject},
+                'task_type': 'Stream_Hardware',
+                'subject': self.subject,
+                'return_id': self.node_id,
+                'return_ip': self.node.ip,
+                'return_port': self.node_port,
+                'return_key': 'MOTION',
+                'device': ('I2C', 'IMU'),
+            }
+        )
+
+        ## -------------------
+
+        # TODO: Setup kalman filter transform
+
+        # Start streaming frames to DLC agent
+        self.hardware['CAMS']['SIDE'].stream(
+            to=self.child_dlc_id,
+            min_size=1
+        )
+        self.hardware['CAMS']['SIDE'].capture()
+
+        self.stages = itertools.cycle([self.request, self.jump, self.reinforcement])
 
         self.n_trials = itertools.count()
 
-        # print(self.hardware)
+
 
         # self.hardware['CAMS']['EYE'].capture()
         # self.hardware['CAMERAS']['SIDE'].stream(to="T")
@@ -222,25 +319,119 @@ class Parallax(Task):
 
         self.current_trial = next(self.trial_counter)
 
-
-        pass
+        return {
+            'trial_num': self.current_trial,
+            'platform_width': self.platform_width,
+            'platform_distance': self.platform_distance,
+            'velocity_multiplier': self.velocity_multiplier
+        }
 
     def jump(self):
-        pass
+        """
+        Raise the platform to the particular level,
 
-    def reinforcement(self):
-        pass
+        Returns:
 
-    def test(self):
+        """
         self.stage_block.clear()
 
-        n_trial = next(self.n_trials)
+        timestamp_requested = datetime.now().isoformat()
+        # raise platform to height
+        mask = self.hardware['PLAT']['FORM'].mask
+        mask[:,:] = 0
+        if self.platform_width == 2:
+            mask[2:4, self.platform_distance:] = 1
+        elif self.platform_width == 4:
+            mask[1:5, self.platform_distance:] = 1
+        elif self.platform_width == 6:
+            mask[:,self.platform_distance:] = 1
+        self.hardware['PLAT']['FORM'].mask = mask
+        self.hardware['PLAT']['FORM'].height = self.platform_height
+        # wait until the movement is finished
+        self.hardware['PLAT']['FORM'].join()
 
-        return {'trial_num':n_trial}
+        timestamp_raise = datetime.now().isoformat()
 
-    def l_velocity(self, value):
+        # set the platform velocity control mode active
+        self.velocity_active.set()
+        self.current_stage = 'jump'
+
+        # TODO: start timeout timer
+
+        return {
+            'timestamp_request': timestamp_requested,
+            'timestamp_raise': timestamp_raise
+        }
+
+
+    def reinforcement(self):
+        timestamp_jumped = datetime.now().isoformat()
+
+        # TODO: clear timeout timer
+        # TODO: deliver reward or don't
+
+        # reset platform (level is blocking)
+        self.hardware['PLAT']['FORM'].level()
+
+        return {
+            'timestamp_jumped': timestamp_jumped
+        }
+
+
+    def l_motion(self, value):
         if self.velocity_active.is_set():
+            # TODO: kalman filter and transformation
             self.hardware['PLAT']['FORM'].velocity = value['velocity_y']*self.velocity_multiplier
+        # TODO: send velocity on to T
+
+
+    def l_dlc(self, value):
+        if self.current_stage == 'request':
+            # test that the mouse is above and between the jump platform
+            on_plat = self._point_above(
+                value[self.dlc_use_point],
+                value[self.dlc_jumpoff_points[0]],
+                value[self.dlc_jumpoff_points[1]]
+            )
+            # set the stage block to advance the task
+            if on_plat:
+                # unset until the stage method re-sets it
+                self.current_stage = ''
+                self.stage_block.set()
+
+        elif self.current_stage == 'jump':
+            # test that the mouse is above and between the parallax platform
+            # test that the mouse is above and between the jump platform
+            on_plat = self._point_above(
+                value[self.dlc_use_point],
+                value[self.dlc_platform_points[0]],
+                value[self.dlc_platform_points[1]]
+            )
+            # set the stage block to advance the task
+            if on_plat:
+                # unset until the stage method re-sets it
+                self.current_stage = ''
+                self.stage_block.set()
+
+        # TODO: send to terminal and add to kalman filter
+
+
+    def _point_above(self, test_point, left_point, right_point):
+
+        # check if x coord is within the left and right points
+        within = left_point[0]<=test_point[0]<=right_point[0]
+        if not within:
+            return False
+
+        # check if y coord is above the line formed by the two points
+        b = left_point[1]
+        m = (right_point[1] - left_point[1]) / (right_point[0] - left_point[0])
+        # minimum y for the x position of the point
+        y = m*(test_point[0]-left_point[0]) + b
+        return test_point[1]>y
+
+
+
 
 
 

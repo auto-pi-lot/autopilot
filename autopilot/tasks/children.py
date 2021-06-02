@@ -176,6 +176,8 @@ class Transformer(object):
     def __init__(self, transform,
                  operation: str ="trigger",
                  return_id = 'T',
+                 return_ip = None,
+                 return_port = None,
                  return_key = None,
                  stage_block = None,
                  value_subset=None,
@@ -205,6 +207,11 @@ class Transformer(object):
             self.return_key = return_key
 
         self.return_id = return_id
+        self.return_ip = return_ip
+        self.return_port = return_port
+        if self.return_port is None:
+            self.return_port = prefs.get('MSGPORT')
+
         self.stage_block = stage_block
         self.stages = cycle([self.noop])
         # self.input_q = LifoQueue()
@@ -230,8 +237,9 @@ class Transformer(object):
 
         self.node = Net_Node(
             f"{prefs.get('NAME')}_TRANSFORMER",
-            upstream=prefs.get('NAME'),
-            port=prefs.get('MSGPORT'),
+            upstream=self.return_id,
+            upstream_ip=self.return_ip,
+            port=self.return_port,
             listens = {
                 'CONTINUOUS': self.l_process
             },
@@ -251,7 +259,6 @@ class Transformer(object):
             result = self.transform.process(value)
 
             self.node.logger.debug(f'Processed frame, result: {result}')
-
 
             if self.operation == "trigger":
                 if result != self._last_result:
