@@ -14,7 +14,7 @@ from autopilot.stim import init_manager
 from autopilot.stim.sound import sounds as stim_sounds
 from autopilot.hardware import gpio
 from collections import OrderedDict as odict
-from autopilot.core.networking import Net_Node
+from autopilot.networking import Net_Node
 from autopilot.core.utils import find_recursive
 
 from autopilot import prefs

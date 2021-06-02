@@ -4,9 +4,6 @@ import sys
 import os
 import csv
 from skvideo import io
-from skvideo.utils import vshape
-import numpy as np
-import base64
 from datetime import datetime
 import multiprocessing as mp
 from tqdm.auto import tqdm
@@ -18,9 +15,10 @@ import traceback
 import blosc
 import warnings
 import subprocess
+
+from queue import Queue, Empty, Full
 import logging
 from ctypes import c_char_p
-from queue import Queue, Empty, Full
 
 try:
     import PySpin
@@ -497,19 +495,19 @@ class Camera(Hardware):
     @output_filename.setter
     def output_filename(self, output_filename):
         self._output_filename = output_filename
-        
+
     @property
     def resolution(self):
         return self._resolution
-    
+
     @resolution.setter
     def resolution(self, resolution):
         self._resolution = resolution
-        
+
     @property
     def fps(self):
         return self._fps
-    
+
     @fps.setter
     def fps(self, fps):
         self._fps = fps
@@ -654,7 +652,7 @@ class PiCamera(Camera):
         if not globals()['PICAMERA']:
             self.logger.exception('the picamera package could not be imported, install it before use!')
             return
-        
+
         self._sensor_mode = None
         self._cam = None
         self._picam_writer = None
@@ -679,7 +677,7 @@ class PiCamera(Camera):
             int
         """
         return self._sensor_mode
-    
+
     @sensor_mode.setter
     def sensor_mode(self, sensor_mode: int):
         self._sensor_mode = sensor_mode

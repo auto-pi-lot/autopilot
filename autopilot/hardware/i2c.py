@@ -3,7 +3,7 @@ import typing
 import sys
 import warnings
 from autopilot import prefs
-from autopilot.core.networking import Net_Node
+from autopilot.networking import Net_Node
 from autopilot.hardware import Hardware
 from autopilot.hardware.cameras import Camera
 from autopilot.transform.geometry import IMU_Orientation, Spheroid
@@ -17,10 +17,7 @@ import numpy as np
 from itertools import product
 from scipy.interpolate import griddata
 
-if sys.version_info >= (3,0):
-    from queue import Queue, Empty
-else:
-    from Queue import Queue, Empty
+from queue import Queue, Empty
 
 # if prefs.get('AGENT') in ['pilot']:
 #     import pigpio

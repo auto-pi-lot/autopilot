@@ -16,8 +16,8 @@ If performing any GUI operations in another thread (eg. as a callback from a net
 the method must be decorated with `@gui_event` which will call perform the update in the main thread as required by Qt.
 """
 
-import typing
 import sys
+import typing
 import os
 import json
 import copy
@@ -26,7 +26,6 @@ import time
 from collections import OrderedDict as odict
 import numpy as np
 import ast
-import base64
 from PySide2 import QtGui, QtCore, QtWidgets
 import pyqtgraph as pg
 import pandas as pd
@@ -43,7 +42,7 @@ from collections import abc
 from autopilot.core.subject import Subject
 from autopilot import tasks, prefs
 from autopilot.stim.sound import sounds
-from autopilot.core.networking import Net_Node
+from autopilot.networking import Net_Node
 from functools import wraps
 from autopilot.core.utils import InvokeEvent
 from autopilot.core import styles
@@ -51,7 +50,25 @@ from autopilot.core.utils import get_invoker
 from autopilot.core.plots import Video
 from autopilot.core.loggers import init_logger
 
+_MAPS = {
+    'dialog': {
+        'icon': {
+            'info': QtWidgets.QMessageBox.Information,
+            'question': QtWidgets.QMessageBox.Question,
+            'warning': QtWidgets.QMessageBox.Warning,
+            'error': QtWidgets.QMessageBox.Critical
+        },
+        'modality': {
+            'modal': QtCore.Qt.NonModal,
+            'nonmodal': QtCore.Qt.WindowModal
+        }
+    }
+}
+"""
+Maps of shorthand names for objects to the objects themselves.
 
+Grouped by a rough use case, intended for internal (rather than user-facing) use.
+"""
 
 
 def gui_event(fn):
@@ -108,31 +125,22 @@ class Control_Panel(QtWidgets.QWidget):
     # Hosts two nested tab widgets to select pilot and subject,
     # set params, run subjects, etc.
 
-    def __init__(self, subjects, start_fn, pilots=None):
+    def __init__(self, subjects, start_fn, ping_fn, pilots):
         """
 
         """
         super(Control_Panel, self).__init__()
+
+        self.logger = init_logger(self)
 
         # We share a dict of subject objects with the main Terminal class to avoid access conflicts
         self.subjects = subjects
 
         # We get the Terminal's send_message function so we can communicate directly from here
         self.start_fn = start_fn
+        self.ping_fn = ping_fn
+        self.pilots = pilots
 
-        if pilots:
-            self.pilots = pilots
-        else:
-            try:
-                # Try finding prefs in the encapsulating namespaces
-                with open(prefs.get('PILOT_DB')) as pilot_file:
-                    self.pilots = json.load(pilot_file, object_pairs_hook=odict)
-            except NameError:
-                try:
-                    with open('/usr/autopilot/pilot_db.json') as pilot_file:
-                        self.pilots = json.load(pilot_file, object_pairs_hook=odict)
-                except IOError:
-                    Exception('Couldnt find pilot directory!')
 
         # Make dict to store handles to subjects lists
         self.subject_lists = {}
@@ -146,7 +154,9 @@ class Control_Panel(QtWidgets.QWidget):
 
         self.init_ui()
 
-        self.setSizePolicy(QtWidgets.QSizePolicy.Maximum,QtWidgets.QSizePolicy.Maximum)
+        # self.setSizePolicy(QtWidgets.QSizePolicy.Maximum,QtWidgets.QSizePolicy.Maximum)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding)
+
         self.setStyleSheet(styles.CONTROL_PANEL)
 
     def init_ui(self):
@@ -160,21 +170,17 @@ class Control_Panel(QtWidgets.QWidget):
         self.layout.setColumnStretch(0, 2)
         self.layout.setColumnStretch(1, 2)
 
-        # on init, add all the pilots we have
         for pilot_id, pilot_params in self.pilots.items():
             self.add_pilot(pilot_id, pilot_params.get('subjects', []))
 
-
-    def add_pilot(self, pilot_id:str, subjects:list=None):
+    @gui_event
+    def add_pilot(self, pilot_id:str, subjects:typing.Optional[list]=None):
         """
         Add a :class:`.Pilot_Panel` for a new pilot, and populate a :class:`.Subject_List` for it
-
         Args:
-            pilot_id (str): ID of new pilot
-            subjects (list): Optional, list of any subjects that the pilot has.
-
+         pilot_id (str): ID of new pilot
+         subjects (list): Optional, list of any subjects that the pilot has.
         Returns:
-
         """
         if subjects is None:
             subjects = []
@@ -186,7 +192,7 @@ class Control_Panel(QtWidgets.QWidget):
         self.subject_lists[pilot_id] = subject_list
 
         # Make a panel for pilot control
-        pilot_panel = Pilot_Panel(pilot_id, subject_list, self.start_fn, self.create_subject)
+        pilot_panel = Pilot_Panel(pilot_id, subject_list, self.start_fn, self.ping_fn, self.create_subject)
         pilot_panel.setFixedWidth(150)
         self.panels[pilot_id] = pilot_panel
 
@@ -194,8 +200,6 @@ class Control_Panel(QtWidgets.QWidget):
 
         self.layout.addWidget(pilot_panel, row_idx, 1, 1, 1)
         self.layout.addWidget(subject_list, row_idx, 2, 1, 1)
-
-
 
     def create_subject(self, pilot):
         """
@@ -211,7 +215,9 @@ class Control_Panel(QtWidgets.QWidget):
 
         # If the wizard completed successfully, get its values
         if new_subject_wizard.result() == 1:
+
             biography_vals = new_subject_wizard.bio_tab.values
+            self.logger.debug(f'subject wizard exited with 1, got biography vals {biography_vals}')
             # TODO: Make a "session" history table that stashes pilot, git hash, step, etc. for each session - subjects might run on different pilots
             biography_vals['pilot'] = pilot
 
@@ -226,10 +232,13 @@ class Control_Panel(QtWidgets.QWidget):
                 if 'protocol' in protocol_vals.keys() and 'step' in protocol_vals.keys():
                     protocol_file = os.path.join(prefs.get('PROTOCOLDIR'), protocol_vals['protocol'] + '.json')
                     subject_obj.assign_protocol(protocol_file, int(protocol_vals['step']))
-            except:
+                    self.logger.debug(f'assigned protocol with {protocol_vals}')
+                else:
+                    self.logger.warning(f'protocol couldnt be assigned, no step and protocol keys in protocol_vals.\ngot protocol_vals: {protocol_vals}')
+            except Exception as e:
+                self.logger.exception(f'exception when assigning protocol, continuing subject creation. \n{e}')
                 # the wizard couldn't find the protocol dir, so no task tab was made
                 # or no task was assigned
-                pass
 
             # Add subject to pilots dict, update it and our tabs
             self.pilots[pilot]['subjects'].append(biography_vals['id'])
@@ -392,7 +401,7 @@ class Pilot_Panel(QtWidgets.QWidget):
         layout (:py:class:`QtWidgets.QGridLayout`): Layout for UI elements
         button (:class:`.Pilot_Button`): button used to control a pilot
     """
-    def __init__(self, pilot=None, subject_list=None, start_fn=None, create_fn=None):
+    def __init__(self, pilot=None, subject_list=None, start_fn=None, ping_fn=None, create_fn=None):
         """
 
         """
@@ -406,6 +415,7 @@ class Pilot_Panel(QtWidgets.QWidget):
         self.pilot = pilot
         self.subject_list = subject_list
         self.start_fn = start_fn
+        self.ping_fn = ping_fn
         self.create_fn = create_fn
         self.button = None
 
@@ -420,7 +430,7 @@ class Pilot_Panel(QtWidgets.QWidget):
         label = QtWidgets.QLabel(self.pilot)
         label.setStyleSheet("font: bold 14pt; text-align:right")
         label.setAlignment(QtCore.Qt.AlignVCenter)
-        self.button = Pilot_Button(self.pilot, self.subject_list, self.start_fn)
+        self.button = Pilot_Button(self.pilot, self.subject_list, self.start_fn, self.ping_fn)
         add_button = QtWidgets.QPushButton("+")
         add_button.clicked.connect(self.create_subject)
         add_button.setSizePolicy(QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding)
@@ -468,7 +478,7 @@ class Pilot_Panel(QtWidgets.QWidget):
 
 
 class Pilot_Button(QtWidgets.QPushButton):
-    def __init__(self, pilot=None, subject_list=None, start_fn=None):
+    def __init__(self, pilot=None, subject_list=None, start_fn=None, ping_fn=None):
         """
         A subclass of (toggled) :class:`QtWidgets.QPushButton` that incorporates the style logic of a
         start/stop button - ie. color, text.
@@ -490,15 +500,23 @@ class Pilot_Button(QtWidgets.QPushButton):
         super(Pilot_Button, self).__init__()
 
         ## GUI Settings
-        self.setCheckable(True)
+        self.setCheckable(False)
         self.setChecked(False)
-        self.setEnabled(False)
+        self.setEnabled(True)
 
-        self.setStyleSheet("QPushButton {color:white; background-color: green}"
-                           "QPushButton:checked {color:white; background-color: red}"
-                           "QPushButton:disabled {color:black; background-color: gray}")
+        self.normal_stylesheet = (
+            "QPushButton {color:white; background-color: green}"
+            "QPushButton:checked {color:white; background-color: red}"
+            "QPushButton:disabled {color:black; background-color: gray}"
+        )
+
+        self.limbo_stylesheet = (
+            "QPushButton {color:black; background-color: gray}"
+        )
+
+        self.setStyleSheet(self.limbo_stylesheet)
         # at start, set our text to no pilot and wait for the signal
-        self.setText("?")
+        self.setText("?PING?")
 
         # keep track of our visual and functional state.
         self.state = "DISCONNECTED"
@@ -516,6 +534,7 @@ class Pilot_Button(QtWidgets.QPushButton):
 
         # Passed a function to toggle start from the control panel
         self.start_fn = start_fn
+        self.ping_fn = ping_fn
         # toggle_start has a little sugar on it before sending to control panel
         # use the clicked rather than toggled signal, clicked only triggers on user
         # interaction, toggle is whenever the state is toggled - so programmatically
@@ -531,6 +550,11 @@ class Pilot_Button(QtWidgets.QPushButton):
         """
         # If we're stopped, start, and vice versa...
         current_subject = self.subject_list.currentItem().text()
+
+        if self.state == "DISCONNECTED":
+            # ping our lil bebs
+            self.ping_fn()
+            return
 
         if current_subject is None:
             Warning("Start button clicked, but no subject selected.")
@@ -568,32 +592,40 @@ class Pilot_Button(QtWidgets.QPushButton):
         if state == self.state:
             return
 
+
         if state == "IDLE":
             # responsive and waiting
+            self.setCheckable(True)
             self.setEnabled(True)
             self.setText('START')
             self.setChecked(False)
         elif state == "RUNNING":
             # running a task
+            self.setCheckable(True)
             self.setEnabled(True)
             self.setText('STOP')
             self.setChecked(True)
         elif state == "STOPPING":
             # stopping
+            self.setCheckable(True)
             self.setEnabled(False)
             self.setText("STOPPING")
             self.setChecked(False)
         elif state == "DISCONNECTED":
             # contact w the pi is missing or lost
-            self.setEnabled(False)
-            self.setText("DISCONNECTED")
+            self.setCheckable(False)
+            self.setEnabled(True)
+            self.setText("?PING?")
             self.setChecked(False)
 
-
-        if self.isChecked():
-            self.setText("STOP")
+        if state == "DISCONNECTED":
+            self.setStyleSheet(self.limbo_stylesheet)
         else:
-            self.setText("START")
+            if self.isChecked():
+                self.setText('STOP')
+            else:
+                self.setText('START')
+            self.setStyleSheet(self.normal_stylesheet)
 
         self.state = state
 
@@ -2239,10 +2271,10 @@ class Pilot_Ports(QtWidgets.QWidget):
 
         layout = QtWidgets.QHBoxLayout()
         pilot_lab = QtWidgets.QLabel(self.pilot)
-        pilot_font = QtWidgets.QFont()
-        pilot_font.setBold(True)
-        pilot_font.setPointSize(14)
-        pilot_lab.setFont(pilot_font)
+        #pilot_font = QtWidgets.QFont()
+        #pilot_font.setBold(True)
+        #pilot_font.setPointSize(14)
+        #pilot_lab.setFont(pilot_font)
         pilot_lab.setStyleSheet('border: 1px solid black')
         layout.addWidget(pilot_lab)
 
@@ -2410,6 +2442,9 @@ class Reassign(QtWidgets.QDialog):
         """
         super(Reassign, self).__init__()
 
+        # FIXME: get logger in a superclass, good god.
+        self.logger = init_logger(self)
+
         self.subjects = subjects
         self.protocols = protocols
         self.protocol_dir = prefs.get('PROTOCOLDIR')
@@ -2425,7 +2460,7 @@ class Reassign(QtWidgets.QDialog):
 
         self.subject_objects = {}
 
-        for i, (subject, protocol) in zip(range(len(self.subjects)), self.subjects.items()):
+        for i, (subject, protocol) in enumerate(self.subjects.items()):
             subject_name = copy.deepcopy(subject)
             step = protocol[1]
             protocol = protocol[0]
@@ -2437,19 +2472,28 @@ class Reassign(QtWidgets.QDialog):
             protocol_box = self.subject_objects[subject][0]
             protocol_box.setObjectName(subject_name)
             protocol_box.insertItems(0, self.protocols)
+            # add blank at the end
+            protocol_box.addItem(text='')
+
             # set current item if subject has matching protocol
             protocol_bool = [protocol == p for p in self.protocols]
             if any(protocol_bool):
                 protocol_ind = np.where(protocol_bool)[0][0]
                 protocol_box.setCurrentIndex(protocol_ind)
+            else:
+                # set to blank
+                protocol_box.setCurrentIndex(protocol_box.count()-1)
+
             protocol_box.currentIndexChanged.connect(self.set_protocol)
 
+            # create & populate step box
             step_box = self.subject_objects[subject][1]
             step_box.setObjectName(subject_name)
 
             self.populate_steps(subject_name)
 
-            step_box.setCurrentIndex(step)
+            if step:
+                step_box.setCurrentIndex(step)
             step_box.currentIndexChanged.connect(self.set_step)
 
             # add to layout
@@ -2483,15 +2527,29 @@ class Reassign(QtWidgets.QDialog):
 
         # Load the protocol and parse its steps
         protocol_str = protocol_box.currentText()
-        protocol_file = os.path.join(self.protocol_dir, protocol_str + '.json')
-        with open(protocol_file) as protocol_file_open:
-            protocol = json.load(protocol_file_open)
 
-        step_list = []
-        for i, s in enumerate(protocol):
-            step_list.append(s['step_name'])
+        # if unassigned, will be the blank string (which evals False here)
+        # so do nothing in that case
+        if protocol_str:
+            protocol_file = os.path.join(self.protocol_dir, protocol_str + '.json')
+            try:
+                with open(protocol_file) as protocol_file_open:
+                    protocol = json.load(protocol_file_open)
+            except json.decoder.JSONDecodeError:
+                self.logger.exception(f'Steps could not be populated because task could not be loaded due to malformed JSON in protocol file {protocol_file}')
+                return
+            except Exception:
+                self.logger.exception(f'Steps could not be populated due to an unknown error loading {protocol_file}. Catching and continuing to populate window')
+                return
 
-        step_box.insertItems(0, step_list)
+
+            step_list = []
+            for i, s in enumerate(protocol):
+                step_list.append(s['step_name'])
+
+            step_box.insertItems(0, step_list)
+
+
 
     def set_protocol(self):
         """
@@ -3118,20 +3176,31 @@ class Stream_Video(QtWidgets.QDialog):
         super(Stream_Video, self).closeEvent(arg__1)
 
 
+def pop_dialog(message:str,
+               details:str="",
+               buttons:tuple=("Ok",),
+               modality:str="nonmodal",
+               msg_type:str="info",) -> QtWidgets.QMessageBox:
+    """Convenience function to pop a :class:`.QtGui.QDialog window to display a message.
 
+    .. note::
 
+        This function does *not* call `.exec_` on the dialog so that it can be managed by the caller.
 
-
-
-
-
-def pop_dialog(message, msg_type="info", details="", buttons:abc.Iterable=('Ok',)):
-    """Convenience function to pop a :class:`.QtWidgets.QDialog` window to display a message.
+    Examples:
+        box = pop_dialog(
+            message='Hey what up',
+            details='i got something to tell you',
+            buttons = ('Ok', 'Cancel'))
+        ret = box.exec_()
+        if ret == box.Ok:
+            print("user answered 'Ok'")
+        else:
+            print("user answered 'Cancel'")
 
     Args:
-        details:
         message (str): message to be displayed
-        msg_type (str): "info" (default), "question", "warning", or "error" to use :meth:`.QtWidgets.QMessageBox.information`, :meth:`.QtWidgets.QMessageBox.question`, :meth:`.QtWidgets.QMessageBox.warning`, or :meth:`.QtWidgets.QMessageBox.error`, respectively
+        details (str): Additional detailed to be added to the displayed message
         buttons (list): A list specifying which :class:`.QtWidgets.QMessageBox.StandardButton` s to display. Use a string matching the button name, eg. "Ok" gives :class:`.QtWidgets.QMessageBox.Ok`
 
             The full list of available buttons is::
@@ -3142,8 +3211,13 @@ def pop_dialog(message, msg_type="info", details="", buttons:abc.Iterable=('Ok',
                  'FirstButton', 'LastButton', 'YesAll', 'NoAll', 'Default',
                  'Escape', 'FlagMask', 'ButtonMask']
 
+        modality (str): Window modality to use, one of "modal", "nonmodal" (default). Modal windows block nonmodal windows don't.
+        msg_type (str): "info" (default), "question", "warning", or "error" to use :meth:`.QtGui.QMessageBox.information`,
+            :meth:`.QtGui.QMessageBox.question`, :meth:`.QtGui.QMessageBox.warning`, or :meth:`.QtGui.QMessageBox.error`,
+            respectively
+
     Returns:
-        result (bool, str): The result of the dialog. If Ok/Cancel, boolean True/False, otherwise a string matching the button type
+        QtWidgets.QMessageBox
     """
 
     msgBox = QtWidgets.QMessageBox()
@@ -3163,33 +3237,12 @@ def pop_dialog(message, msg_type="info", details="", buttons:abc.Iterable=('Ok',
     if 'Ok' in buttons:
         msgBox.setDefaultButton(QtWidgets.QMessageBox.Ok)
 
-    icon = None
-    if msg_type == "info":
-        icon = QtWidgets.QMessageBox.Information
-    elif msg_type == "question" or msg_type.startswith('q'):
-        icon = QtWidgets.QMessageBox.Question
-    elif msg_type == "warning":
-        icon = QtWidgets.QMessageBox.Warning
-    elif msg_type == "error":
-        icon = QtWidgets.QMessageBox.Critical
-
-    if icon:
+    icon = _MAPS['dialog']['icon'].get(msg_type, None)
+    if icon is not None:
         msgBox.setIcon(icon)
 
-    ret = msgBox.exec_()
+    modality = _MAPS['dialog']['modality'].get(modality, None)
+    if modality is not None:
+        msgBox.setWindowModality(modality)
 
-    # pdb.set_trace()
-
-    # get message box name
-    # for but in QtWidgets.QMessageBox.StandardButton
-
-    for but in button_objs:
-        if ret == but:
-            ret = but.name
-
-    if ret in ("Ok", "Yes"):
-        ret = True
-    elif ret in ('Cancel', 'No'):
-        ret = False
-
-    return ret
+    return msgBox

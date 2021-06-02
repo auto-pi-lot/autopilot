@@ -1,0 +1,8 @@
+https://stackoverflow.com/questions/49255645/travisci-on-raspberry-pi
+https://pypi.org/project/fake-rpi/
+
+use qemu
+https://github.com/jdub/travis-qemu-example
+https://github.com/jdub/travis-qemu
+https://azeria-labs.com/emulate-raspberry-pi-with-qemu/
+https://blog.agchapman.com/using-qemu-to-emulate-a-raspberry-pi/

@@ -12,11 +12,11 @@ Transformations
     :show-inheritance:
 
 .. toctree::
-   autopilot.transform.coercion
-   autopilot.transform.geometry
-   autopilot.transform.image
-   autopilot.transform.logical
-   autopilot.transform.selection
-   autopilot.transform.timeseries
-   autopilot.transform.units
+   coercion
+   geometry
+   image
+   logical
+   selection
+   timeseries
+   units
 

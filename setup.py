@@ -7,6 +7,9 @@ from setuptools import find_packages, setup
 import subprocess
 import sys
 
+# fix user install issue
+import site
+site.ENABLE_USER_SITE = "--user" in sys.argv[1:]
 
 # declare defaults
 IS_RASPI = False
@@ -79,7 +82,7 @@ elif ARCH == 'x86':
     REQUIREMENTS = load_requirements('requirements/requirements_terminal.txt')
 
 elif os.environ.get('TRAVIS', False):
-    REQUIREMENTS = load_requirements('requirements/requirements_texts.txt')
+    REQUIREMENTS = load_requirements('requirements/requirements_tests.txt')
 
 else:
     REQUIREMENTS = load_requirements('requirements.txt')
@@ -143,4 +146,5 @@ setup(
         "Operating System :: MacOS",
         "Topic :: Scientific/Engineering"
     ],
+    python_requires="==3.7.*"
 )

@@ -18,8 +18,8 @@ very few design requirements:
 Note:
     This software was primarily developed for the Raspberry Pi, which
     has `two types of numbering schemes <https://pinout.xyz/#>`_ ,
-    "board" numbering based on physical position and "bcm" numbering
-    based on the broadcom chip numbering scheme.
+    "board" numbering based on physical position (e.g. pins 1-40, in 2 rows of 20 pins) and "bcm" numbering
+    based on the broadcom chip numbering scheme (e.g. GPIO2, GPIO27).
 
     Board numbering is easier to use, but `pigpio <http://abyz.me.uk/rpi/pigpio/>`_
     , which we use as a bridge between Python and the GPIOs, uses the BCM scheme.
@@ -43,7 +43,7 @@ from pathlib import Path
 import importlib
 
 from autopilot import prefs
-from autopilot.core.networking import Net_Node
+from autopilot.networking import Net_Node
 from autopilot.core.loggers import init_logger
 from autopilot.core.utils import NumpyEncoder, NumpyDecoder
 

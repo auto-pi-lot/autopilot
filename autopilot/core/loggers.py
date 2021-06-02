@@ -75,18 +75,17 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
             p_num = 2
             if module_name in globals()['_LOGGERS']:
                 for existing_mod in globals()['_LOGGERS']:
-                    if module_name in existing_mod and re.match('\d$', existing_mod):
+                    if module_name in existing_mod and re.match(r'\d$', existing_mod):
                         p_num += 1
 
             module_name += f"_{str(p_num).zfill(2)}"
 
 
-
         # get name of object if it has one
-        if hasattr(instance, 'name'):
-            object_name = str(instance.name)
-        elif hasattr(instance, 'id'):
+        if hasattr(instance, 'id'):
             object_name = str(instance.id)
+        elif hasattr(instance, 'name'):
+            object_name = str(instance.name)
         else:
             object_name = None
 
@@ -126,10 +125,15 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
 
             ## file handler
             # base filename is the module_name + '.log
-            base_filename = os.path.join(prefs.get('LOGDIR'), module_name + '.log')
+            base_filename = (Path(prefs.get('LOGDIR')) / module_name).with_suffix('.log')
+
+            # if directory doesn't exist, try to make it
+            if not base_filename.parent.exists():
+                base_filename.parent.mkdir(parents=True, exist_ok=True)
+
             try:
                 fh = RotatingFileHandler(
-                    base_filename,
+                    str(base_filename),
                     mode='a',
                     maxBytes=int(prefs.get('LOGSIZE')),
                     backupCount=int(prefs.get('LOGNUM'))
@@ -154,16 +158,11 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
             fh.setFormatter(log_formatter)
             parent_logger.addHandler(fh)
 
-            # console stream handler with same loglevel
-            # ch = logging.StreamHandler()
-            # ch.setLevel(loglevel)
-            # ch.setFormatter(log_formatter)
-            # logger.addHandler(ch)
-
             ## log creation
             globals()['_LOGGERS'].append(module_name)
-            parent_logger.info(f'parent module-level logger created: {module_name}')
+            parent_logger.info(f'parent, module-level logger created: {module_name}')
 
         logger = logging.getLogger(logger_name)
-        logger.info(f'Logger created: {logger_name}')
+        logger.info(f"Logger created: {logger_name}")
+
     return logger

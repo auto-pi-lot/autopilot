@@ -18,7 +18,8 @@ For a detailed overview of Autopilot's motivation, design, and structure, see ou
 
 .. admonition:: What's New :ref:`(v0.3.0) <changelog_v030>`
 
-    * Autopilot has moved to Python 3!! (Tested on 3.6-3.8)
+    * Autopilot has moved to Python 3!! (Tested on 3.6-3.8, but 3.7 is currently required because the Spinnaker SDK currently only has armhf
+      binaries released for 3.7)
     * Capturing video with OpenCV and the Spinnaker SDK is now supported (See :mod:`autopilot.hardware.cameras`)
     * An :class:`~hardware.i2c.I2C_9DOF` motion sensor and the :class:`~hardware.i2c.MLX90640` temperature sensor
       are now supported.
@@ -40,33 +41,39 @@ This documentation is very young and is very much a work in progress! Please `su
    :maxdepth: 1
    :caption: User Guide:
 
-   Overview <guide.overview>
-   Installation <guide.installation>
-   Training a Subject <guide.training>
-   Writing a Task <guide.task>
-   Writing a Hardware Class <guide.hardware>
+   Overview <guide/overview>
+   Installation <guide/installation>
+   Training a Subject <guide/training>
+   Writing a Task <guide/task>
+   Writing a Hardware Class <guide/hardware>
 
 
 .. toctree::
    :maxdepth: 1
    :caption: API Documentation:
 
-   Core Modules <autopilot.core>
-   Hardware <autopilot.hardware>
-   Tasks <autopilot.tasks>
-   Stimuli <autopilot.stim>
-   Transformations <autopilot.transform>
-   Visualization Tools <autopilot.viz>
-   Setup <autopilot.setup>
-   Prefs <autopilot.prefs>
-   External <autopilot.external>
+   Core Modules <core/index>
+   Hardware <hardware/index>
+   Networking <networking/index>
+   Stimuli <stim/index>
+   Tasks <tasks/index>
+   Transformations <transform/index>
+   Visualization Tools <viz/index>
+   Setup <setup/index>
+   Prefs <prefs>
+   External <external>
+
+.. toctree::
+    :caption: Tests:
+
+    tests/index
 
 
 .. toctree::
     :maxdepth: 1
     :caption: Meta:
 
-    Discussion <https://groups.google.com/forum/#!forum/autopilot-users>
+    Discussion <https://github.com/wehr-lab/autopilot/discussions>
     To-Do <todo>
     Changelog <changelog/index>
     References <references>

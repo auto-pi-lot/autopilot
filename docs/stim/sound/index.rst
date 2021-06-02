@@ -8,7 +8,7 @@ sound
 
 .. toctree::
 
-   autopilot.stim.sound.jackclient
-   autopilot.stim.sound.pyoserver
-   autopilot.stim.sound.sounds
+   jackclient
+   pyoserver
+   sounds
 

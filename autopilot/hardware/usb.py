@@ -4,16 +4,14 @@ Hardware that uses USB
 import sys
 import threading
 import time
-if sys.version_info >= (3, 0):
-    from queue import Queue, Empty
-else:
-    from Queue import Queue, Empty
+
+from queue import Queue, Empty
 
 import numpy as np
 from inputs import devices
 
 from autopilot import prefs
-from autopilot.core.networking import Net_Node
+from autopilot.networking import Net_Node
 from autopilot.hardware import Hardware
 
 

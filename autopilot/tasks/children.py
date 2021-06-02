@@ -16,7 +16,7 @@ from autopilot import prefs
 from autopilot.hardware.gpio import Digital_Out
 from autopilot.hardware.usb import Wheel
 from autopilot.hardware import cameras
-from autopilot.core.networking import Net_Node
+from autopilot.networking import Net_Node
 from autopilot.core.loggers import init_logger
 from autopilot.transform import transforms
 from autopilot.hardware.i2c import I2C_9DOF

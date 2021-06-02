@@ -170,6 +170,7 @@ bibtex_bibfiles = ['autopilot_docs.bib']
 html_theme = 'sphinx_rtd_theme'
 html_style = 'css/autopilot_theme.css'
 html_logo = '_images/autopilot_logo.svg'
+html_favicon = '_images/favicon.svg'
 # elif try_theme == 'bootstrap':
 #     html_theme = 'bootstrap'
 #     html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
