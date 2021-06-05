@@ -89,7 +89,7 @@ class Autopilot_Form(nps.Form):
                 if isinstance(param['depends'], str):
                     depends_on = param['depends']
                     depend_value = True
-                elif isinstance(param['depends'], tuple):
+                elif isinstance(param['depends'], (tuple, list)):
                     depends_on = param['depends'][0]
                     depend_value = param['depends'][1]
 
@@ -109,17 +109,6 @@ class Autopilot_Form(nps.Form):
         for param_name, param in params.items():
             if param['type'] == 'bool':
                 widget = self.add(nps.CheckBox, name=param['text'])
-            elif param['type'] in ('str', 'int', 'list', 'float'):
-                # try to get default from prefs, otherwise use the hardcoded default if present. otherwise blank
-                if param_name in prefs.keys():
-                    default = prefs[param_name]
-                else:
-                    try:
-                        default = param['default']
-                    except KeyError:
-                        default = ''
-
-                widget = self.add(nps.TitleText, name=param['text'], value = str(default))
             elif param['type'] == 'choice':
                 if param_name in prefs.keys():
                     try:
@@ -140,7 +129,19 @@ class Autopilot_Form(nps.Form):
                                   value = default_ind,
                                   scroll_exit = True)
             else:
-                raise Warning("Not sure what to do with param {} with type {}".format(param_name, param['type']))
+                # params that just need a textbox, will attempt to be coerced
+                # in unfold_values with ast.literal_eval.
+                # eg. type in ('str', 'int', 'list', 'float')
+                # try to get default from prefs, otherwise use the hardcoded default if present. otherwise blank
+                if param_name in prefs.keys():
+                    default = prefs[param_name]
+                else:
+                    try:
+                        default = param['default']
+                    except KeyError:
+                        default = ''
+
+                widget = self.add(nps.TitleText, name=param['text'], value=str(default))
 
             # if this widget depends on another, initially make it uneditable
             if 'depends' in param.keys():
