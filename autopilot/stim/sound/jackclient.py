@@ -216,7 +216,7 @@ class JackClient(mp.Process):
         """
         Start the process, boot the server, start processing frames and wait for the end.
         """
-
+        self.logger = init_logger(self)
         self.boot_server()
 
         # we are just holding the process open, so wait to quit
@@ -258,15 +258,14 @@ class JackClient(mp.Process):
             if self.continuous.is_set():
                 # We are in continuous mode, keep playing
                 if self.continuous_cycle is None:
-                    # Set up self.continuous_cycle if not already set
-                    to_cycle = []
-                    while not self.continuous_q.empty():
-                        try:
-                            to_cycle.append(self.continuous_q.get_nowait())
-                        except Empty:
-                            # normal, queue empty
-                            pass
-                    self.continuous_cycle = cycle(to_cycle)
+                    try:
+                        to_cycle = self.continuous_q.get_nowait()
+                        self.continuous_cycle = cycle(to_cycle)
+                        self.logger.debug(f'started playing continuous sound with length {len(to_cycle)} frames')
+                    except Empty:
+                        self.logger.exception('told to play continuous sound but nothing in queue, will try again next loop around')
+                        self.client.outports[0].get_array()[:] = self.zero_arr.T
+                        return
 
                 # Get the data to play
                 data = next(self.continuous_cycle).T

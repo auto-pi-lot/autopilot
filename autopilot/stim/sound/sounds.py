@@ -431,9 +431,9 @@ if server_type in ("jack", "docs"):
                     # normal, get until it's empty
                     break
 
-            # load frames into continuous queue
-            for frame in self.chunks:
-                self.continuous_q.put_nowait(frame)
+            # put all the chunks into the queue, rather than one at a time
+            # to avoid partial receipt
+            self.continuous_q.put(self.chunks.copy())
 
             self.buffered_continuous = True
 
@@ -495,6 +495,9 @@ if server_type in ("jack", "docs"):
             # tell the sound server that it has a continuous sound now
             self.continuous_flag.set()
             self.continuous = True
+
+            # after the sound server start playing, it will clear the queue, unbuffering us
+            self.buffered_continuous = False
 
         def stop_continuous(self):
             """

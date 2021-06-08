@@ -38,7 +38,7 @@ from functools import reduce
 from autopilot.core.subject import Subject
 from autopilot import tasks, prefs
 from autopilot.stim.sound import sounds
-from autopilot.core.networking import Net_Node
+from autopilot.networking import Net_Node
 from functools import wraps
 from autopilot.core.utils import InvokeEvent
 from autopilot.core import styles
@@ -120,7 +120,7 @@ class Control_Panel(QtWidgets.QWidget):
     # Hosts two nested tab widgets to select pilot and subject,
     # set params, run subjects, etc.
 
-    def __init__(self, subjects, start_fn, ping_fn, pilots=None):
+    def __init__(self, subjects, start_fn, ping_fn, pilots):
         """
 
         """
@@ -134,20 +134,8 @@ class Control_Panel(QtWidgets.QWidget):
         # We get the Terminal's send_message function so we can communicate directly from here
         self.start_fn = start_fn
         self.ping_fn = ping_fn
+        self.pilots = pilots
 
-        if pilots:
-            self.pilots = pilots
-        else:
-            try:
-                # Try finding prefs in the encapsulating namespaces
-                with open(prefs.get('PILOT_DB')) as pilot_file:
-                    self.pilots = json.load(pilot_file, object_pairs_hook=odict)
-            except NameError:
-                try:
-                    with open('/usr/autopilot/pilot_db.json') as pilot_file:
-                        self.pilots = json.load(pilot_file, object_pairs_hook=odict)
-                except IOError:
-                    Exception('Couldnt find pilot directory!')
 
         # Make dict to store handles to subjects lists
         self.subject_lists = {}
@@ -180,6 +168,7 @@ class Control_Panel(QtWidgets.QWidget):
         for pilot_id, pilot_params in self.pilots.items():
             self.add_pilot(pilot_id, pilot_params.get('subjects', []))
 
+    @gui_event
     def add_pilot(self, pilot_id:str, subjects:typing.Optional[list]=None):
         """
         Add a :class:`.Pilot_Panel` for a new pilot, and populate a :class:`.Subject_List` for it
@@ -2880,20 +2869,27 @@ class Psychometric(QtGui.QDialog):
         return _plot_params
 
 
-
-
-
-
 def pop_dialog(message:str,
                details:str="",
                buttons:tuple=("Ok",),
                modality:str="nonmodal",
-               msg_type:str="info",):
+               msg_type:str="info",) -> QtWidgets.QMessageBox:
     """Convenience function to pop a :class:`.QtGui.QDialog window to display a message.
 
     .. note::
 
         This function does *not* call `.exec_` on the dialog so that it can be managed by the caller.
+
+    Examples:
+        box = pop_dialog(
+            message='Hey what up',
+            details='i got something to tell you',
+            buttons = ('Ok', 'Cancel'))
+        ret = box.exec_()
+        if ret == box.Ok:
+            print("user answered 'Ok'")
+        else:
+            print("user answered 'Cancel'")
 
     Args:
         message (str): message to be displayed

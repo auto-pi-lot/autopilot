@@ -161,7 +161,7 @@ If you're configuring multiple Pis, then select "Child" on the child Pis. Then h
 
 You can navigate this interface with the arrow keys, tab key, and enter key.
 
-.. image:: _images/setup_agent_selection.png
+.. image:: ../_images/setup_agent_selection.png
     :alt: Select an autopilot agent
     :width: 100%
 
@@ -172,7 +172,7 @@ Select the scripts you want to run, and then hit "OK". Note that even the simple
 so you may want to include that one. You can see the commands that will be run in each of these scripts with :func:`.setup_autopilot.run_script` and :func:`.setup_autopilot.list_scripts`.
 
 
-.. image:: _images/setup_scripts.png
+.. image:: ../_images/setup_scripts.png
     :alt: Select scripts to setup environment
     :width: 100%
 
@@ -187,7 +187,7 @@ Configure Agent
 ----------------
 Each agent has a set of systemwide preferences stored in ``<AUTOPILOT_DIR>/prefs.json`` and accessible from :mod:`autopilot.prefs`.
 
-.. image:: _images/setup_agent.png
+.. image:: ../_images/setup_agent.png
     :alt: Set systemwide prefs
     :width: 100%
 
@@ -198,7 +198,7 @@ If configuring a Pilot, you'll be asked to configure your hardware.
 
 Press ``ctrl+x`` to add Hardware, and fill in the relevant parameters (most are optional and can be left blank)
 
-.. image:: _images/setup_hardware.gif
+.. image:: ../_images/setup_hardware.gif
     :alt: Configure Hardware
     :width: 100%
 

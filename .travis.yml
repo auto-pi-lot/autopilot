@@ -19,6 +19,13 @@ addons:
       - herbstluftwm # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html#xvfb-assertionerror-timeouterror-when-using-waituntil-waitexposed-and-ui-events
       - qt5-default
       - qttools5-dev-tools
+      - libxcb-icccm4 # https://pytest-qt.readthedocs.io/en/latest/troubleshooting.html#github-actions
+      - libxcb-image0
+      - libxcb-keysyms1
+      - libxcb-randr0
+      - libxcb-render-util0
+      - libxcb-xinerama0
+      - libxcb-xfixes0
 
 # enable virtual framebuffer for testing GUI
 services:
@@ -34,9 +41,10 @@ install:
   - pip install -U pytest-cov
   - pip install -U pylint
   - pip install -U coveralls
+  - pip install -U pytest-qt~=3.3.0
   - pip install -e .
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX +render -noreset"
-  - sleep 2
+  - sleep 3
 
 # make directories?
 before_script:
@@ -46,9 +54,10 @@ before_script:
   # - pylint autopilot
 
 script:
-  - pytest --cov=autopilot --cov-report term-missing tests
+  - pytest --cov=autopilot --cov-config=.coveragerc --cov-report term-missing tests
 
 after_script:
+  - coverage combine --append
   - coveralls
 
 before_deploy:

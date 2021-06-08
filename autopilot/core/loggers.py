@@ -75,18 +75,17 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
             p_num = 2
             if module_name in globals()['_LOGGERS']:
                 for existing_mod in globals()['_LOGGERS']:
-                    if module_name in existing_mod and re.match('\d$', existing_mod):
+                    if module_name in existing_mod and re.match(r'\d$', existing_mod):
                         p_num += 1
 
             module_name += f"_{str(p_num).zfill(2)}"
 
 
-
         # get name of object if it has one
-        if hasattr(instance, 'name'):
-            object_name = str(instance.name)
-        elif hasattr(instance, 'id'):
+        if hasattr(instance, 'id'):
             object_name = str(instance.id)
+        elif hasattr(instance, 'name'):
+            object_name = str(instance.name)
         else:
             object_name = None
 
