@@ -21,7 +21,6 @@ The behavior of this module depends on `prefs.get('AUDIOSERVER')`.
 
 TODO:
     Implement sound level and filter calibration
-    Be a whole lot more robust about handling different numbers of channels
 """
 
 # Re: The organization of this module
