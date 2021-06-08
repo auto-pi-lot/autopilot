@@ -158,7 +158,7 @@ class JackClient(mp.Process):
         as determined by `prefs.get('OUTCHANNELS')`.
 
         This is the interpretation of OUTCHANNELS:
-        * None
+        * empty string
             'mono' audio: the same sound is always played to all channels. 
             Connect a single virtual outport to every physical channel.
             If multi-channel sound is provided, raise an error.
@@ -185,7 +185,7 @@ class JackClient(mp.Process):
         
         # This generates `listified_outchannels`, which is always a list
         # It also sets `self.mono_output` if outchannels is None
-        if outchannels is None:
+        if outchannels == '':
             # Mono mode
             listified_outchannels = []
             self.mono_output = True
@@ -197,7 +197,6 @@ class JackClient(mp.Process):
             # Already a list
             listified_outchannels = outchannels
             self.mono_output = False
-        
         
         ## Initalize self.client
         # Initalize a new Client and store some its properties
@@ -217,7 +216,7 @@ class JackClient(mp.Process):
         # This is something we can write data into
         if self.mono_output:
             # One single outport
-            self.client.outports.registers('out_0')
+            self.client.outports.register('out_0')
         else:
             # One outport per provided outchannel
             for n in range(len(listified_outchannels)):
@@ -395,8 +394,8 @@ class JackClient(mp.Process):
             else:
                 # Stereo data provided, this is an error
                 raise ValueError(
-                    "outchannels has length 1, but data has shape {}".format(
-                    data.shape))
+                    "pref OUTCHANNELS indicates mono mode, but "
+                    "data has shape {}".format(data.shape))
             
         else:
             ## Multi-channel mode - Write a column to each channel
@@ -412,7 +411,8 @@ class JackClient(mp.Process):
                 # Error check
                 if data.shape[1] != len(self.client.outports):
                     raise ValueError(
-                        "data has {} channels but only {} outports".format(
+                        "data has {} channels "
+                        "but only {} outports in pref OUTCHANNELS".format(
                         data.shape[1], len(self.client.outports)))
                 
                 # Write one column to each channel
