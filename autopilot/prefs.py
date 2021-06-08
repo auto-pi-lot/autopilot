@@ -345,7 +345,7 @@ _DEFAULTS = odict({
     },
     'NCHANNELS': {
         'type': 'int',
-        'text': "Number of Audio channels",
+        'text': "Number of Audio channels (deprecated; used OUTCHANNELS)",
         'default': 1,
         'depends': 'AUDIOSERVER',
         "scope": Scopes.AUDIO
