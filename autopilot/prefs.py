@@ -353,7 +353,7 @@ _DEFAULTS = odict({
     'OUTCHANNELS': {
         'type': 'list',
         'text': 'List of Audio channel indexes to connect to',
-        'default': '[1]',
+        'default': '',
         'depends': 'AUDIOSERVER',
         "scope": Scopes.AUDIO
     },
