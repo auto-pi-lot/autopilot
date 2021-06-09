@@ -1270,40 +1270,19 @@ class Pilot_Station(Station):
 
     def l_child(self, msg:Message):
         """
-        Tell one or more children to start running a task.
-
-        By default, the `key` argument passed to `self.send` is 'START'.
-        However, this can be overriden by providing the desired string
-        as `msg.value['KEY']`.
-
-        This checks the pref `CHILDID` to get the names of one or more children.
-        If that pref is a string, sends the message to just that child.
-        If that pref is a list, sends the message to each child in the list.
+        Telling our child to run a task.
 
         Args:
-            msg (): A message to send to the child or children.
+            msg ():
 
-        Returns: 
-            nothing
+        Returns:
+
         """
-        # Take `KEY` from msg.value['KEY'] if available
-        # Otherwise, use 'START'
         if 'KEY' in msg.value.keys():
             KEY = msg.value['KEY']
         else:
             KEY = 'START'
-        
-        # Get the list of children
-        childid_pref = prefs.get('CHILDID')
-        
-        # Send to one or more children
-        if isinstance(childid_pref, list):
-            # It's a list of multiple children, send to each
-            for childid in pref_childid:
-                self.send(to=childid, key=KEY, value=msg.value)
-        else:
-            # Send to the only child
-            self.send(to=pref_childid, key=KEY, value=msg.value)
+        self.send(to=prefs.get('CHILDID'), key=KEY, value=msg.value)
 
     def l_forward(self, msg:Message):
         """

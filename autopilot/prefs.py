@@ -315,9 +315,8 @@ _DEFAULTS = odict({
         "scope": Scopes.LINEAGE
     },
     'CHILDID': {
-        'type': 'list',
-        "text": "List of Child ID:",
-        'default': [],
+        'type': 'str',
+        "text": "Child ID:",
         "depends": ("LINEAGE", "PARENT"),
         "scope": Scopes.LINEAGE
     },
