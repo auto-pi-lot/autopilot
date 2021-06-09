@@ -1294,10 +1294,10 @@ class Pilot_Station(Station):
             KEY = 'START'
         
         # Get the list of children
-        childid_pref = prefs.get('CHILDID')
+        pref_childid = prefs.get('CHILDID')
         
         # Send to one or more children
-        if isinstance(childid_pref, list):
+        if isinstance(pref_childid, list):
             # It's a list of multiple children, send to each
             for childid in pref_childid:
                 self.send(to=childid, key=KEY, value=msg.value)
