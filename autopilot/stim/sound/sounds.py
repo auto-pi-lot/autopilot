@@ -649,11 +649,11 @@ class Noise(BASE_CLASS):
         divided into chunks). Finally `self.initialized` is set True.
         """
         # Depends on the server_type
-        if self.server_type == 'pyo':
+        if server_type == 'pyo':
             noiser = pyo.Noise(mul=self.amplitude)
             self.table = self.table_wrap(noiser)
         
-        elif self.server_type == 'jack':
+        elif server_type == 'jack':
             # This calculates the number of samples, using the specified 
             # duration and the sampling rate from the server, and stores it
             # as `self.nsamples`.
