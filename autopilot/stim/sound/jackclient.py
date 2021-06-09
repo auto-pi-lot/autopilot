@@ -15,7 +15,7 @@ from autopilot.core.loggers import init_logger
 
 try:
     import jack
-except OSError as e:
+except (OSError, ModuleNotFoundError):
     print('jack library not found! sounds unavailable')
 
 from autopilot import prefs
