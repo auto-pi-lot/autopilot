@@ -1,5 +1,27 @@
-"""
-Here is how the sampling rate comes into play:
+"""Tests for generating sound stimuli.
+
+This script runs tests that generate different sound stimuli and verifies
+that they are initialized correctly.
+
+Currently these only work if AUDIOSERVER is 'jack'. 'pyo' is not tested.
+'docs' doesn't actually generate waveforms.
+
+This doesn't require (or test) a running jackd or even a JackClient.
+Instead, these tests short-circuit those dependencies by manually setting
+FS and BLOCKSIZE in autopilot.stim.sound.jackclient.
+
+A TODO is to test the JackClient itself.
+
+Currently only the sound Noise is tested.
+
+These tests cover multiple durations and amplitudes of mono and
+multi-channel Noise, including some edges cases like very short durations
+or zero amplitude.
+
+The rest of this docstring addresses the workaround used to short-circuit
+jackd and JackClient.
+
+Here is the sequence of events that leads to FS and BLOCKSIZE.
 * If an autopilot.core.pilot.Pilot is initialized:
 **  autopilot.core.pilot.Pilot.__init__ checks prefs.AUDIOSERVER,
     and calls autopilot.core.pilot.Pilot.init_audio.
@@ -14,7 +36,9 @@ Here is how the sampling rate comes into play:
 **  autopilot.stim.sound.jackclient.JackClient.__init__ 
     initalizes a jack.Client
 **  autopilot.stim.sound.jackclient.JackClient.fs 
-    is set to jack.Client.samplerate
+    is set to jack.Client.samplerate. Note that this is either the
+    requested sample rate, or some default value from jack (not Autopilot)
+    if the client did not actually succeed in booting.
 **  autopilot.stim.sound.jackclient.FS (a global variable) is set to 
     autopilot.stim.sound.jackclient.JackClient.fs
 
