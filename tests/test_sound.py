@@ -121,23 +121,34 @@ def test_init_noise(duration_ms, check_duration_samples=None,
     assert len(concatted) == len(noise.table) + n_padded_zeros
     assert (concatted[:len(noise.table)] == noise.table).all()
 
+def test_init_noise_various_durations():
+    """Pass various durations to test_init_noise"""
+    ## Run the tests
+    # A typical duration, as int and float
+    test_init_noise(
+        100, check_duration_samples=19200, check_n_chunks_expected=19)
+    test_init_noise(
+        100., check_duration_samples=19200, check_n_chunks_expected=19)
 
-## Run the tests
-# A typical duration, as int and float
-test_init_noise(100, check_duration_samples=19200, check_n_chunks_expected=19)
-test_init_noise(100., check_duration_samples=19200, check_n_chunks_expected=19)
+    # exactly one chunk
+    test_init_noise(
+        5.33332, check_duration_samples=block_size, check_n_chunks_expected=1)
 
-# exactly one chunk
-test_init_noise(
-    5.33332, check_duration_samples=block_size, check_n_chunks_expected=1)
+    # Less than one chunk
+    test_init_noise(
+        5, check_duration_samples=960, check_n_chunks_expected=1)
+    test_init_noise(
+        5., check_duration_samples=960, check_n_chunks_expected=1)
 
-# Less than one chunk
-test_init_noise(5, check_duration_samples=960, check_n_chunks_expected=1)
-test_init_noise(5., check_duration_samples=960, check_n_chunks_expected=1)
+    # Length 1
+    test_init_noise(
+        1/192000. - 1e-8, check_duration_samples=1, check_n_chunks_expected=1)
 
-# Length 1
-test_init_noise(
-    1/192000. - 1e-8, check_duration_samples=1, check_n_chunks_expected=1)
+    # Length 0
+    test_init_noise(
+        0., check_duration_samples=0, check_n_chunks_expected=0)
 
-# Length 0
-test_init_noise(0., check_duration_samples=0, check_n_chunks_expected=0)
+
+## Run tests
+test_init_noise_various_durations()
+
