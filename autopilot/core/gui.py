@@ -40,9 +40,8 @@ from autopilot import tasks, prefs
 from autopilot.stim.sound import sounds
 from autopilot.networking import Net_Node
 from functools import wraps
-from autopilot.core.utils import InvokeEvent
+from autopilot.utils.invoker import InvokeEvent, get_invoker
 from autopilot.core import styles
-from autopilot.core.utils import get_invoker
 from autopilot.core.loggers import init_logger
 
 _MAPS = {
@@ -83,7 +82,7 @@ def gui_event(fn):
             *args ():
             **kwargs ():
         """
-        QtCore.QCoreApplication.postEvent(get_invoker(), InvokeEvent(fn, *args, **kwargs))
+        QtCore.QCoreApplication.postEvent(get_invoker(), InvokeEvent(fn, args, kwargs))
     return wrapper_gui_event
 
 

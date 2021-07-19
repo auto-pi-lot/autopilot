@@ -39,7 +39,7 @@ if __name__ == '__main__':
 from autopilot.core.subject import Subject
 from autopilot.core.plots import Plot_Widget
 from autopilot.networking import Net_Node, Terminal_Station
-from autopilot.core.utils import InvokeEvent, Invoker, get_invoker
+from autopilot.utils.invoker import get_invoker
 from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test, pop_dialog
 from autopilot.core.loggers import init_logger
 
