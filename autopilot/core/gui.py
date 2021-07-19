@@ -2205,7 +2205,7 @@ class Pilot_Ports(QtWidgets.QWidget):
 
         layout = QtWidgets.QHBoxLayout()
         pilot_lab = QtWidgets.QLabel(self.pilot)
-        pilot_font = QtWidgets.QFont()
+        pilot_font = QtGui.QFont()
         pilot_font.setBold(True)
         pilot_font.setPointSize(14)
         pilot_lab.setFont(pilot_font)
@@ -2543,7 +2543,7 @@ class Weights(QtWidgets.QTableWidget):
                         minimum = float(self.subject_weights[row]['minimum_mass'])
                         item = QtWidgets.QTableWidgetItem(stop_wt)
                         if float(stop_wt) < minimum:
-                            item.setBackground(QtWidgets.QColor(255,0,0))
+                            item.setBackground(QtGui.QColor(255,0,0))
 
                     else:
                         item = QtWidgets.QTableWidgetItem(str(self.subject_weights[row][col]))
@@ -2594,7 +2594,7 @@ class Weights(QtWidgets.QTableWidget):
 #     def __init__(self):
 #         super(Autopilot_Style, self).__init__()
 
-class Psychometric(QtGui.QDialog):
+class Psychometric(QtWidgets.QDialog):
     """
     A Dialog to select subjects, steps, and variables to use in a psychometric curve plot.
 
@@ -2619,23 +2619,23 @@ class Psychometric(QtGui.QDialog):
 
 
     def init_ui(self):
-        self.grid = QtGui.QGridLayout()
+        self.grid = QtWidgets.QGridLayout()
 
         # top row just has checkbox for select all
-        check_all = QtGui.QCheckBox()
+        check_all = QtWidgets.QCheckBox()
         check_all.stateChanged.connect(self.check_all)
 
         self.grid.addWidget(check_all, 0,0)
-        self.grid.addWidget(QtGui.QLabel('Check All'), 0, 1)
+        self.grid.addWidget(QtWidgets.QLabel('Check All'), 0, 1)
 
         # identical to Reassign, above
-        for i, (subject, protocol) in zip(xrange(len(self.subjects)), self.subjects.items()):
+        for i, (subject, protocol) in zip(range(len(self.subjects)), self.subjects.items()):
             subject_name = copy.deepcopy(subject)
             step = protocol[1]
 
             # container for each subject's GUI object
             # checkbox, step, variable
-            self.subject_objects[subject] = [QtGui.QCheckBox(),  QtGui.QComboBox(), QtGui.QComboBox(), QtGui.QLineEdit()]
+            self.subject_objects[subject] = [QtWidgets.QCheckBox(),  QtWidgets.QComboBox(), QtWidgets.QComboBox(), QtWidgets.QLineEdit()]
 
             # include checkbox
             checkbox = self.subject_objects[subject][0]
@@ -2644,7 +2644,7 @@ class Psychometric(QtGui.QDialog):
             # self.checks.append(this_checkbox)
 
             # subject label
-            subject_lab = QtGui.QLabel(subject_name)
+            subject_lab = QtWidgets.QLabel(subject_name)
 
             # protocol_box = self.subject_objects[subject][0]
             # protocol_box.setObjectName(subject_name)
@@ -2683,10 +2683,10 @@ class Psychometric(QtGui.QDialog):
             self.grid.addWidget(n_trials_box, i+1, 4)
 
         # finish layout
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
-        main_layout = QtGui.QVBoxLayout()
+        main_layout = QtWidgets.QVBoxLayout()
         main_layout.addLayout(self.grid)
         main_layout.addWidget(buttonBox)
 
@@ -2806,7 +2806,7 @@ def pop_dialog(message, msg_type="info", details="", buttons=['Ok']):
         result (bool, str): The result of the dialog. If Ok/Cancel, boolean True/False, otherwise a string matching the button type
     """
 
-    msgBox = QtGui.QMessageBox()
+    msgBox = QtWidgets.QMessageBox()
 
     # set text
     msgBox.setText(message)
@@ -2814,24 +2814,24 @@ def pop_dialog(message, msg_type="info", details="", buttons=['Ok']):
         msgBox.setInformativeText(details)
 
     # add buttons
-    button_objs = [getattr(QtGui.QMessageBox, button) for button in buttons]
+    button_objs = [getattr(QtWidgets.QMessageBox, button) for button in buttons]
     # bitwise or to add them to the dialog box
     # https://www.geeksforgeeks.org/python-bitwise-or-among-list-elements/
     bitwise_buttons = reduce(ior, button_objs)
     msgBox.setStandardButtons(bitwise_buttons)
 
     if 'Ok' in buttons:
-        msgBox.setDefaultButton(QtGui.QMessageBox.Ok)
+        msgBox.setDefaultButton(QtWidgets.QMessageBox.Ok)
 
     icon = None
     if msg_type == "info":
-        icon = QtGui.QMessageBox.Information
+        icon = QtWidgets.QMessageBox.Information
     elif msg_type == "question" or msg_type.startswith('q'):
-        icon = QtGui.QMessageBox.Question
+        icon = QtWidgets.QMessageBox.Question
     elif msg_type == "warning":
-        icon = QtGui.QMessageBox.Warning
+        icon = QtWidgets.QMessageBox.Warning
     elif msg_type == "error":
-        icon = QtGui.QMessageBox.Critical
+        icon = QtWidgets.QMessageBox.Critical
 
     if icon:
         msgBox.setIcon(icon)
