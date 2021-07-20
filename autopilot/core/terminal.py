@@ -259,7 +259,7 @@ class Terminal(QtWidgets.QMainWindow):
 
         # Plots menu
         self.plots_menu = self.menuBar().addMenu("&Plots")
-        psychometric = QtGui.QAction("Psychometric Curve", self, triggered=self.plot_psychometric)
+        psychometric = QtWidgets.QAction("Psychometric Curve", self, triggered=self.plot_psychometric)
         self.plots_menu.addAction(psychometric)
 
         # Tests menu
