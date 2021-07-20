@@ -10,6 +10,7 @@ import sys
 import os
 
 import autopilot.utils
+import autopilot.utils.common
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
@@ -32,7 +33,7 @@ def load_subject_data(data_dir, subject_name, steps=True, grad=True):
 
     # pilot_db_fn = [fn for fn in os.listdir(data_dir) if fn == 'pilot_db.json'][0]
     # pilot_db_fn = os.path.join(data_dir, pilot_db_fn)
-    pilot_db = autopilot.utils.load_pilotdb(reverse=True)
+    pilot_db = autopilot.utils.common.load_pilotdb(reverse=True)
 
     # find pilot for subject
     pilot_name = pilot_db[subject_name]
@@ -201,7 +202,7 @@ if __name__ == '__main__':
         data_dir = args.dir
 
     # TODO Make arg
-    active_mice = autopilot.utils.list_subjects()
+    active_mice = autopilot.utils.common.list_subjects()
 
 
 

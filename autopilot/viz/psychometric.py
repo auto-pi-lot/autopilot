@@ -3,7 +3,7 @@ from sklearn.linear_model import LogisticRegression
 from autopilot import prefs
 from autopilot.core.subject import Subject
 import numpy as np
-from autopilot.utils import coerce_discrete
+from autopilot.utils.common import coerce_discrete
 import pandas as pd
 import pdb
 

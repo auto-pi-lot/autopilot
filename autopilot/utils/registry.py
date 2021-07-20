@@ -72,10 +72,10 @@ def get(base_class:Union[REGISTRIES,str], class_name:str, plugins:bool=True, ast
 
     # load the contents of the plugin directory if we are supposed to
     # and if we haven't yet
-    if not plugins:
+    if not plugins or prefs.get('AUTOPLUGIN') is False:
         # if given explicit negative override, dont do it
         pass
-    elif plugins or prefs.get('AUTOPLUGIN'):
+    else:
         with globals()['_IMPORT_LOCK']:
             if not _IMPORTED:
                 _ = import_plugins()
