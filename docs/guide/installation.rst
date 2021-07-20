@@ -79,7 +79,6 @@ be located anywhere.
 
     mkdir ~/.venv
     python3 -m virtualenv ~/.venv/autopilot
-    source ~/
 
 **With conda**::
 
@@ -94,7 +93,7 @@ The virtual environment must be "activated" now and any time you work with autop
 
 **With `virtualenv`**::
 
-    source ~/.venv/autopilot
+    source ~/.venv/autopilot/bin/activate
 
 **With conda**::
 

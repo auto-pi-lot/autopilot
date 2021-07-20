@@ -7,6 +7,7 @@ try:
 except ImportError:
     pass
 
+from collections import OrderedDict as odict
 import json
 import pandas as pd
 from scipy.stats import linregress
@@ -165,23 +166,23 @@ def load_pilotdb(file_name=None, reverse=False):
     Try to load the file_db
 
     Args:
-        reverse:
-        file_name:
+        reverse (bool): Return inverted pilot db mapping subjects: pilots (default False)
+        file_name (str): Path of ``pilot_db.json``, if None, use ``prefs.get('PILOT_DB')``
 
     Returns:
-
+        :class:`collections.OrderedDict` : pilot_db.json or reversed pilot_db
     """
 
     if file_name is None:
-        file_name = '/usr/autopilot/pilot_db.json'
+        file_name = prefs.get('PILOT_DB')
 
     with open(file_name) as pilot_file:
-        pilot_db = json.load(pilot_file)
+        pilot_db = json.load(pilot_file, object_pairs_hook=odict)
 
     if reverse:
         # simplify pilot db
-        pilot_db = {k: v['subjects'] for k, v in pilot_db.items()}
-        pilot_dict = {}
+        pilot_db = odict({k: v['subjects'] for k, v in pilot_db.items()})
+        pilot_dict = odict()
         for pilot, subjectlist in pilot_db.items():
             for ms in subjectlist:
                 pilot_dict[ms] = pilot

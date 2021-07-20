@@ -302,15 +302,8 @@ class Control_Panel(QtWidgets.QWidget):
             if 'state' in val.keys():
                 del val['state']
 
-        try:
-            with open(prefs.get('PILOT_DB'), 'w') as pilot_file:
-                json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
-        except NameError:
-            try:
-                with open('/usr/autopilot/pilot_db.json', 'w') as pilot_file:
-                    json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
-            except IOError:
-                self.logger.exception('Couldnt update pilot db!')
+        with open(prefs.get('PILOT_DB'), 'w') as pilot_file:
+            json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
 
 ####################################
 # Control Panel Widgets
@@ -2261,10 +2254,10 @@ class Pilot_Ports(QtWidgets.QWidget):
 
         layout = QtWidgets.QHBoxLayout()
         pilot_lab = QtWidgets.QLabel(self.pilot)
-        #pilot_font = QtWidgets.QFont()
-        #pilot_font.setBold(True)
-        #pilot_font.setPointSize(14)
-        #pilot_lab.setFont(pilot_font)
+        pilot_font = QtGui.QFont()
+        pilot_font.setBold(True)
+        pilot_font.setPointSize(14)
+        pilot_lab.setFont(pilot_font)
         pilot_lab.setStyleSheet('border: 1px solid black')
         layout.addWidget(pilot_lab)
 
@@ -2625,7 +2618,7 @@ class Weights(QtWidgets.QTableWidget):
                         minimum = float(self.subject_weights[row]['minimum_mass'])
                         item = QtWidgets.QTableWidgetItem(stop_wt)
                         if float(stop_wt) < minimum:
-                            item.setBackground(QtWidgets.QColor(255,0,0))
+                            item.setBackground(QtGui.QColor(255,0,0))
 
                     else:
                         item = QtWidgets.QTableWidgetItem(str(self.subject_weights[row][col]))
@@ -2676,7 +2669,7 @@ class Weights(QtWidgets.QTableWidget):
 #     def __init__(self):
 #         super(Autopilot_Style, self).__init__()
 
-class Psychometric(QtGui.QDialog):
+class Psychometric(QtWidgets.QDialog):
     """
     A Dialog to select subjects, steps, and variables to use in a psychometric curve plot.
 
@@ -2701,14 +2694,14 @@ class Psychometric(QtGui.QDialog):
 
 
     def init_ui(self):
-        self.grid = QtGui.QGridLayout()
+        self.grid = QtWidgets.QGridLayout()
 
         # top row just has checkbox for select all
-        check_all = QtGui.QCheckBox()
+        check_all = QtWidgets.QCheckBox()
         check_all.stateChanged.connect(self.check_all)
 
         self.grid.addWidget(check_all, 0,0)
-        self.grid.addWidget(QtGui.QLabel('Check All'), 0, 1)
+        self.grid.addWidget(QtWidgets.QLabel('Check All'), 0, 1)
 
         # identical to Reassign, above
         for i, (subject, protocol) in zip(range(len(self.subjects)), self.subjects.items()):
@@ -2717,7 +2710,7 @@ class Psychometric(QtGui.QDialog):
 
             # container for each subject's GUI object
             # checkbox, step, variable
-            self.subject_objects[subject] = [QtGui.QCheckBox(),  QtGui.QComboBox(), QtGui.QComboBox(), QtGui.QLineEdit()]
+            self.subject_objects[subject] = [QtWidgets.QCheckBox(),  QtWidgets.QComboBox(), QtWidgets.QComboBox(), QtWidgets.QLineEdit()]
 
             # include checkbox
             checkbox = self.subject_objects[subject][0]
@@ -2726,7 +2719,7 @@ class Psychometric(QtGui.QDialog):
             # self.checks.append(this_checkbox)
 
             # subject label
-            subject_lab = QtGui.QLabel(subject_name)
+            subject_lab = QtWidgets.QLabel(subject_name)
 
             # protocol_box = self.subject_objects[subject][0]
             # protocol_box.setObjectName(subject_name)
@@ -2765,10 +2758,10 @@ class Psychometric(QtGui.QDialog):
             self.grid.addWidget(n_trials_box, i+1, 4)
 
         # finish layout
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
-        main_layout = QtGui.QVBoxLayout()
+        main_layout = QtWidgets.QVBoxLayout()
         main_layout.addLayout(self.grid)
         main_layout.addWidget(buttonBox)
 
