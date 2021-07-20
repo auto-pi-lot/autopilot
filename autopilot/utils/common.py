@@ -26,11 +26,17 @@ def list_classes(module) -> typing.List[typing.Tuple[str, str]]:
     Returns:
         list of tuples [('ClassName', 'module1.module2.ClassName')] a la :func:`inspect.getmembers`
     """
+    ret_classes = []
+
     if not inspect.ismodule(module):
         module = importlib.import_module(module)
 
     # First get any members that are defined within the base module itself
-    ret_classes = inspect.getmembers(module, inspect.isclass)
+    base_classes = inspect.getmembers(module, inspect.isclass)
+    ret_classes.extend([
+        (bc[0], ".".join([bc[1].__module__, bc[1].__name__]))
+        for bc in base_classes
+    ])
 
     mod_path = Path(module.__file__).resolve()
     if '__init__' in str(mod_path):

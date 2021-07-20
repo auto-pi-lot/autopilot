@@ -6,6 +6,7 @@ using the ``get`` methods in this module. This makes it possible for plugins to
 be integrated across the system.
 
 """
+import pdb
 from enum import Enum
 import multiprocessing as mp
 from typing import TYPE_CHECKING, Union, Optional, List
@@ -37,7 +38,7 @@ class REGISTRIES(str, Enum):
     TASK = "autopilot.tasks.Task"
 
 # TODO: Update return type hint when unified Autopilot Object class made
-def get(base_class:Union[REGISTRIES,str], class_name:Optional[str]=None, plugins:bool=True, ast:bool=True) -> Union[Task, Hardware, List[Task], List[Hardware]]:
+def get(base_class:Union[REGISTRIES,str], class_name:Optional[str]=None, plugins:bool=True, ast:bool=True) -> Union["Task", "Hardware", List["Task"], List["Hardware"]]:
     """
     Get an autopilot object.
 
@@ -117,7 +118,11 @@ def get(base_class:Union[REGISTRIES,str], class_name:Optional[str]=None, plugins
 
     # if all the found classes were requested, return them.
     if class_name is None:
-        return sorted(subclasses)
+        return sorted(subclasses,
+                      key=lambda subclass: ''.join([
+                          subclass.__module__,
+                          subclass.__name__
+                      ]))
 
     # if we've gotten this far then we haven't found it :(
     ex_text = f"Could not find subclass of {cls} with name {class_name}!"
@@ -125,7 +130,7 @@ def get(base_class:Union[REGISTRIES,str], class_name:Optional[str]=None, plugins
     raise ValueError(ex_text)
 
 
-def get_hardware(class_name:Optional[str] = None, plugins:bool = True, ast:bool = True) -> Union[Hardware, List[Hardware]]:
+def get_hardware(class_name:Optional[str] = None, plugins:bool = True, ast:bool = True) -> Union["Hardware", List["Hardware"]]:
     """
     Get a hardware class by name.
 
@@ -146,7 +151,7 @@ def get_hardware(class_name:Optional[str] = None, plugins:bool = True, ast:bool 
     return get(REGISTRIES.HARDWARE, class_name=class_name, plugins=plugins, ast=ast)
 
 
-def get_task(class_name:Optional[str] = None, plugins:bool = True, ast:bool = True) -> Union[Task, List[Task]]:
+def get_task(class_name:Optional[str] = None, plugins:bool = True, ast:bool = True) -> Union["Task", List["Task"]]:
     """
     Get a task class by name.
 
