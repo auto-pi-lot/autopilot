@@ -81,6 +81,7 @@ extensions = [
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.graphviz',
     'sphinx.ext.autosummary',
+    'sphinx.ext.imgconverter'
     #'sphinx_automodapi.automodapi',
     'autodocsumm',   # https://github.com/Chilipp/autodocsumm
     #'sphinxcontrib.fulltoc',
