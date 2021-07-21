@@ -12,7 +12,8 @@ This page is rendered in the docs here in order to provide links to the mentione
 this example was intended to be read as source code, as some comments will only be visible there.
 
 .. note::
-    Currently, after completion, the task needs to be explicitly imported and added to :data:`.tasks.TASK_LIST` ,
+
+    Currently, after completion, the task needs to be explicitly imported and added to :data:`autopilot.tasks.TASK_LIST` ,
     this will be remedied shortly (see the ``registries`` branch).
 """
 import itertools
@@ -28,7 +29,7 @@ class Blink(Task):
     """
     Blink an LED.
 
-    Note that we subclass the :class:`.tasks.Task` class (``Blink(Task)``) to provide us with some methods
+    Note that we subclass the :class:`~autopilot.tasks.Task` class (``Blink(Task)``) to provide us with some methods
     useful for all Tasks.
 
     Args:
@@ -65,7 +66,7 @@ class Blink(Task):
     class TrialData(tables.IsDescription):
         """
         This class declares the data that will be returned for each "trial" -- or complete set of executed task
-        stages. It is used by the :class:`.subject.Subject` object to make a data table with the
+        stages. It is used by the :class:`~autopilot.core.subject.Subject` object to make a data table with the
         correct data types. Declare each piece of data using a pytables Column descriptor
         (see https://www.pytables.org/usersguide/libref/declarative_classes.html#col-sub-classes for available
         data types, and the pytables guide: https://www.pytables.org/usersguide/tutorials.html for more information)
@@ -135,25 +136,29 @@ class Blink(Task):
 
 
         self.init_hardware()
+
         """
         Hardware is initialized by the superclass's :meth:`.Task.init_hardware` method, which creates all the
         hardware objects defined in :attr:`.Blink.HARDWARE` according to their parameterization in 
         ``prefs.json`` , and makes them available in the :attr:`.Blink.hardware` dictionary.
         """
+
         self.logger.debug('Hardware initialized')
+
         """
-        All task subclass objects have an :attr:`.Task.logger` -- a :class:`logging.Logger` that allows
+        All task subclass objects have an :attr:`~autopilot.tasks.Task.logger` -- a :class:`logging.Logger` that allows
         users to easily debug their tasks and see feedback about their operation. To prevent stdout from
         getting clogged, logging messages are printed and stored according to the ``LOGLEVEL`` pref -- so this
         message would only appear if ``LOGLEVEL == "DEBUG"``
         """
 
         self.stage_block.set()
+
         """
         We set the stage block and never clear it so that the :class:`.Pilot` doesn't wait for a trigger 
         to call the next stage -- it just does it as soon as the previous one completes. 
         
-        See :meth:`.Pilot.run_task` for more detail on this loop.
+        See :meth:`~autopilot.core.pilot.Pilot.run_task` for more detail on this loop.
         """
 
 
@@ -196,6 +201,7 @@ class Blink(Task):
             'timestamp_on': timestamp_on,
             'timestamp_off': timestamp_off
         }
+
         """
         Create the data dictionary to be returned from the stage. Note that each of the keys in the dictionary
         must correspond to the names of the columns declared in the :attr:`.Blink.TrialData` descriptor. 
