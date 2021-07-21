@@ -10,6 +10,7 @@ import pdb
 from enum import Enum
 import multiprocessing as mp
 from typing import TYPE_CHECKING, Union, Optional, List
+import inspect
 
 
 from autopilot.utils.common import find_class, recurse_subclasses, list_classes
@@ -38,14 +39,15 @@ class REGISTRIES(str, Enum):
     TASK = "autopilot.tasks.Task"
 
 # TODO: Update return type hint when unified Autopilot Object class made
-def get(base_class:Union[REGISTRIES,str], class_name:Optional[str]=None, plugins:bool=True, ast:bool=True) -> Union["Task", "Hardware", List["Task"], List["Hardware"]]:
+def get(base_class:Union[REGISTRIES,str, type], class_name:Optional[str]=None, plugins:bool=True, ast:bool=True) -> Union["Task", "Hardware", List["Task"], List["Hardware"]]:
     """
     Get an autopilot object.
 
     Args:
-        base_class (:class:`.REGISTRIES`): Class to search its subclasses for the indicated object. One of the values in the :class:`.REGISTRIES` enum,
+        base_class (:class:`.REGISTRIES`, str, type): Class to search its subclasses for the indicated object. One of the values in the :class:`.REGISTRIES` enum,
            or else one of its keys (eg. ``'HARDWARE'``). If given a full module.ClassName string
-           (eg. ``"autopilot.tasks.Task"``) attempt to get the indicated object
+           (eg. ``"autopilot.tasks.Task"``) attempt to get the indicated object. If given an object,
+           use that.
        class_name (str, None): Name of class that inherits from base_class that is to be returned.
            if ``None`` (default), return all found subclasses of ``base_class``
        plugins (bool): If ``True`` (default), ensure contents of PLUGINDIR are loaded (with :func:`~.utils.plugins.import_plugins`)
@@ -70,11 +72,17 @@ def get(base_class:Union[REGISTRIES,str], class_name:Optional[str]=None, plugins
     elif base_class in REGISTRIES.__members__.values():
         # already have the value, which is what we use to get the object
         pass
+    elif inspect.isclass(base_class):
+        # fine! we'll just use it
+        pass
     else:
         logger.warning(f'Attempting to get subclasses from {base_class}, but it isn\'t in the REGISTRIES enum.\nPossible Values:\n{REGISTRIES.__members__}')
 
-    # get the class indicated by the base_class string
-    cls = find_class(base_class)
+    if inspect.isclass(base_class):
+        cls = base_class
+    else:
+        # get the class indicated by the base_class string
+        cls = find_class(base_class)
 
     # load the contents of the plugin directory if we are supposed to
     # and if we haven't yet
@@ -83,7 +91,7 @@ def get(base_class:Union[REGISTRIES,str], class_name:Optional[str]=None, plugins
         pass
     else:
         with globals()['_IMPORT_LOCK']:
-            if not _IMPORTED:
+            if not _IMPORTED.value:
                 _ = import_plugins()
 
     # find subclasses!
@@ -118,7 +126,7 @@ def get(base_class:Union[REGISTRIES,str], class_name:Optional[str]=None, plugins
 
     # if all the found classes were requested, return them.
     if class_name is None:
-        return sorted(subclasses,
+        return sorted(list(set(subclasses)),
                       key=lambda subclass: ''.join([
                           subclass.__module__,
                           subclass.__name__

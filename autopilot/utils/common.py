@@ -31,7 +31,7 @@ def list_classes(module) -> typing.List[typing.Tuple[str, str]]:
     if not inspect.ismodule(module):
         module = importlib.import_module(module)
 
-    # First get any members that are defined within the base module itself
+    # First get any members that are defined within the base __init__.py module itself
     base_classes = inspect.getmembers(module, inspect.isclass)
     ret_classes.extend([
         (bc[0], ".".join([bc[1].__module__, bc[1].__name__]))
@@ -42,7 +42,7 @@ def list_classes(module) -> typing.List[typing.Tuple[str, str]]:
     if '__init__' in str(mod_path):
         mod_path = mod_path.parent
 
-    # get names of modules
+    # get names of module files within top-level package
     submodules = [mod for _, mod, _ in pkgutil.iter_modules([mod_path])]
     submod_paths = [(mod_path / mod).with_suffix('.py') for mod in submodules]
 
@@ -51,10 +51,11 @@ def list_classes(module) -> typing.List[typing.Tuple[str, str]]:
         with open(submod, 'r') as submod_f:
             submod_ast = ast.parse(submod_f.read())
 
-        submod_classes = [n.name for n in submod_ast.body if
-                          isinstance(n, ast.ClassDef)]
-        for submod_class in submod_classes:
-            ret_classes.append((submod_class, '.'.join([module.__name__, str(submod_name), submod_class])))
+        ret_classes.extend([
+            (n.name, '.'.join([module.__name__, str(submod_name), n.name]))
+            for n in submod_ast.body
+            if isinstance(n, ast.ClassDef)
+        ])
 
     return ret_classes
 
@@ -210,7 +211,7 @@ def coerce_discrete(df, col, mapping={'L':0, 'R':1}):
     return df
 
 
-def find_recursive(key, dictionary):
+def find_key_recursive(key, dictionary):
     """
     Find all instances of a key in a dictionary, recursively.
 
@@ -225,9 +226,33 @@ def find_recursive(key, dictionary):
         if k == key:
             yield v
         elif isinstance(v, dict):
-            for result in find_recursive(key, v):
+            for result in find_key_recursive(key, v):
                 yield result
         elif isinstance(v, list):
             for d in v:
-                for result in find_recursive(key, d):
+                for result in find_key_recursive(key, d):
                     yield result
+
+def find_key_value(dicts:typing.List[dict], key:str, value:str, single=True):
+    """
+    Find an entry in a list of dictionaries where dict[key] == value.
+
+    Args:
+        dicts ():
+        key ():
+        value ():
+        single (bool): if ``True`` (default), raise an exception if multiple
+            results are matched
+    """
+    if not all([isinstance(item, dict) for item in dicts]):
+        raise ValueError(f"Pass me a list of dicts! got {dicts}")
+
+    matches = [match for match in dicts if match[key] == value]
+
+    if len(matches)>1 and single:
+        raise IndexError(f"Multiple matches found for key: {key}, value: {value}, got:\n{matches}")
+    elif len(matches) == 1:
+        matches = matches[0]
+
+    return matches
+

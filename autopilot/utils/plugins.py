@@ -9,6 +9,8 @@ from pathlib import Path
 from multiprocessing import Value
 from ctypes import c_bool
 
+import requests
+
 from autopilot.core.loggers import init_logger
 from autopilot import prefs
 
@@ -81,4 +83,8 @@ def import_plugins(plugin_dir:Optional[Path]=None) -> dict:
     globals()['_IMPORTED'].value = True
 
     return plugins
+
+
+
+
 
