@@ -1,5 +1,6 @@
 """
-Note:
+.. note::
+
     Currently, the GUI code is some of the oldest code in the library --
     in particular much of it was developed before the network infrastructure was mature.
     As a result, a lot of modules are interdependent (eg. pass objects between each other).

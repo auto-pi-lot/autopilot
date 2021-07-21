@@ -322,7 +322,7 @@ epub_exclude_files = ['search.html']
 intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
                        'PySide2': ('https://doc.qt.io/qtforpython/PySide2/', None),
                        'tables': ('https://pytables.readthedocs.io/en/latest/', None),
-                       'pandas': ('http://pandas.pydata.org/pandas-docs/stable/', None),
+                       'pandas': ('https://pandas.pydata.org/pandas-docs/stable/objects.inv', None),
                        'zmq': ('https://pyzmq.readthedocs.io/en/latest/', None),
                        'tornado': ('https://www.tornadoweb.org/en/stable/', None),
                        'pyqtgraph': ('https://pyqtgraph.readthedocs.io/en/latest/', None),

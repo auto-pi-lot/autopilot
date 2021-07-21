@@ -22,26 +22,29 @@ class Task(object):
     Generic Task metaclass
 
     Attributes:
-        PARAMS (:class:`collections.OrderedDict`): Params to define task, like::
+        PARAMS (:class:`collections.OrderedDict`): Params to define task, like:
+            ::
 
-            PARAMS = odict()
-            PARAMS['reward']         = {'tag':'Reward Duration (ms)',
-                                        'type':'int'}
-            PARAMS['req_reward']     = {'tag':'Request Rewards',
-                                        'type':'bool'}
+                PARAMS = odict()
+                PARAMS['reward']         = {'tag':'Reward Duration (ms)',
+                                            'type':'int'}
+                PARAMS['req_reward']     = {'tag':'Request Rewards',
+                                            'type':'bool'}
 
-        HARDWARE (dict): dict for necessary hardware, like::
+        HARDWARE (dict): dict for necessary hardware, like:
+            ::
 
-            HARDWARE = {
-                'POKES':{
-                    'L': hardware.Beambreak, ...
-                },
-                'PORTS':{
-                    'L': hardware.Solenoid, ...
+                HARDWARE = {
+                    'POKES':{
+                        'L': hardware.Beambreak, ...
+                    },
+                    'PORTS':{
+                        'L': hardware.Solenoid, ...
+                    }
                 }
-            }
 
-        PLOT (dict): Dict of plotting parameters, like::
+        PLOT (dict): Dict of plotting parameters, like:
+            ::
 
                 PLOT = {
                     'data': {
@@ -53,17 +56,18 @@ class Task(object):
                     'roll_window' : 50 # number of trials to roll window over
                 }
 
-        Trial_Data (:class:`tables.IsDescription`): Data table description, like::
+        Trial_Data (:class:`tables.IsDescription`): Data table description, like:
+            ::
 
-            class TrialData(tables.IsDescription):
-                trial_num = tables.Int32Col()
-                target = tables.StringCol(1)
-                response = tables.StringCol(1)
-                correct = tables.Int32Col()
-                correction = tables.Int32Col()
-                RQ_timestamp = tables.StringCol(26)
-                DC_timestamp = tables.StringCol(26)
-                bailed = tables.Int32Col()
+                class TrialData(tables.IsDescription):
+                    trial_num = tables.Int32Col()
+                    target = tables.StringCol(1)
+                    response = tables.StringCol(1)
+                    correct = tables.Int32Col()
+                    correction = tables.Int32Col()
+                    RQ_timestamp = tables.StringCol(26)
+                    DC_timestamp = tables.StringCol(26)
+                    bailed = tables.Int32Col()
 
         STAGE_NAMES (list): List of stage method names
         stage_block (:class:`threading.Event`): Signal when task stages complete.

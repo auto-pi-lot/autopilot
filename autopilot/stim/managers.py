@@ -288,26 +288,27 @@ class Proportional(Stim_Manager):
     (frequency)/(sum(frequencies)).
 
     Arguments:
-        stim (dict): Dictionary with the structure::
+        stim (dict): Dictionary with the structure:
+            ::
 
-            {'manager': 'proportional',
-             'type': 'sounds',
-             'groups': (
-                 {'name':'group_name',
-                  'frequency': 0.2,
-                  'sounds':{
-                      'L': [{Tone1_params}, {Tone2_params}...],
-                      'R': [{Tone3_params}, {Tone4_params}...]
-                  }
-                },
-                {'name':'second_group',
-                  'frequency': 0.8,
-                  'sounds':{
-                      'L': [{Tone1_params}, {Tone2_params}...],
-                      'R': [{Tone3_params}, {Tone4_params}...]
-                  }
-                })
-            }
+                {'manager': 'proportional',
+                 'type': 'sounds',
+                 'groups': (
+                     {'name':'group_name',
+                      'frequency': 0.2,
+                      'sounds':{
+                          'L': [{Tone1_params}, {Tone2_params}...],
+                          'R': [{Tone3_params}, {Tone4_params}...]
+                      }
+                    },
+                    {'name':'second_group',
+                      'frequency': 0.8,
+                      'sounds':{
+                          'L': [{Tone1_params}, {Tone2_params}...],
+                          'R': [{Tone3_params}, {Tone4_params}...]
+                      }
+                    })
+                }
 
     Attributes:
         stimuli (dict): A dictionary of stimuli organized into groups
@@ -341,22 +342,24 @@ class Proportional(Stim_Manager):
         Instantiate sound objects similarly to :class:`.Stim_Manager`, just organizes them into groups.
 
         Args:
-            sound_stim (tuple, list): an iterator like::
-                (
-                 {'name':'group_name',
-                  'frequency': 0.2,
-                  'sounds': {
-                      'L': [{Tone1_params}, {Tone2_params}...],
-                      'R': [{Tone3_params}, {Tone4_params}...]
-                    }
-                },
-                {'name':'second_group',
-                  'frequency': 0.8,
-                  'sounds':{
-                      'L': [{Tone1_params}, {Tone2_params}...],
-                      'R': [{Tone3_params}, {Tone4_params}...]
-                  }
-                })
+            sound_stim (tuple, list): an iterator like:
+                ::
+
+                    (
+                     {'name':'group_name',
+                      'frequency': 0.2,
+                      'sounds': {
+                          'L': [{Tone1_params}, {Tone2_params}...],
+                          'R': [{Tone3_params}, {Tone4_params}...]
+                        }
+                    },
+                    {'name':'second_group',
+                      'frequency': 0.8,
+                      'sounds':{
+                          'L': [{Tone1_params}, {Tone2_params}...],
+                          'R': [{Tone3_params}, {Tone4_params}...]
+                      }
+                    })
         """
         # Iterate through sounds and load them to memory
         self.stimuli = {}
