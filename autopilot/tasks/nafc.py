@@ -566,14 +566,15 @@ class Nafc_Gap_Laser(Nafc_Gap):
             arena_led_mode ('ON', 'STIM'): Whether the overhead LED should always be 'ON', or whether it should be illuminated for the duration of the longest stimulus at every request
 
         Attributes:
-            laser_conditions (tuple): tuple of dicts of laser conditions, of format::
+            laser_conditions (tuple): tuple of dicts of laser conditions, of format:
+                ::
 
-                {
-                'freq': laser frequency,
-                'duty_cycle': laser duty cycle,
-                'duration': laser duration,
-                'script_id': script ID for the series used by the laser Digital Out object,
-                }
+                    {
+                    'freq': laser frequency,
+                    'duty_cycle': laser duty cycle,
+                    'duration': laser duration,
+                    'script_id': script ID for the series used by the laser Digital Out object,
+                    }
         """
         self.laser_probability = float(laser_probability)
         self.laser_mode = laser_mode

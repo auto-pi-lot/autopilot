@@ -1,7 +1,7 @@
 """
 Run scripts to setup system dependencies and autopilot plugins
 
-.. example::
+::
 
     > # to list scripts
     > python3 -m autopilot.setup.run_script --list

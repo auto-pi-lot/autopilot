@@ -8,6 +8,6 @@ stim
 
 .. toctree::
     managers
-    sound
+    sound/index
 
 
