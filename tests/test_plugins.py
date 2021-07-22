@@ -2,10 +2,11 @@ import pytest
 from pathlib import Path
 from autopilot import prefs
 from autopilot.utils.registry import get
+from tests.fixtures import default_dirs
 
 
 @pytest.fixture
-def hardware_plugin():
+def hardware_plugin(default_dirs):
     """
     Make a basic plugin that inherits from the Hardware class,
     clean it up on exit

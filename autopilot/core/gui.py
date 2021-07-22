@@ -16,7 +16,6 @@ the method must be decorated with `@gui_event` which will call perform the updat
     This will be corrected before v1.0
 
 """
-
 import sys
 import typing
 import os
@@ -76,14 +75,13 @@ def gui_event(fn):
     """
     @wraps(fn)
     def wrapper_gui_event(*args, **kwargs):
-        # type: (object, object) -> None
         """
 
         Args:
             *args ():
             **kwargs ():
         """
-        QtCore.QCoreApplication.postEvent(get_invoker(), InvokeEvent(fn, args, kwargs))
+        QtCore.QCoreApplication.postEvent(get_invoker(), InvokeEvent(fn, *args, **kwargs))
     return wrapper_gui_event
 
 

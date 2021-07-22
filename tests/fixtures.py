@@ -1,10 +1,10 @@
 import pytest
 from pathlib import Path
-from autopilot.prefs import _DEFAULTS
+from autopilot.prefs import _DEFAULTS, Scopes
 
 @pytest.fixture
-def default_folder_structure():
+def default_dirs():
     for k, v in _DEFAULTS.items():
-        pass
-    return True
+        if v['scope'] == Scopes.DIRECTORY and 'default' in v.keys():
+            Path(v['default']).mkdir(parents=True, exist_ok=True)
 
