@@ -38,9 +38,12 @@ def list_classes(module) -> typing.List[typing.Tuple[str, str]]:
         for bc in base_classes
     ])
 
-    mod_path = Path(module.__file__).resolve()
-    if '__init__' in str(mod_path):
-        mod_path = mod_path.parent
+    # get the parent directory name and module name, we'll use that
+    mod_path = Path(module.__file__).resolve().parent
+    if '__init__' not in str(Path(module.__file__)):
+        mod_name = ".".join(module.__name__.split('.')[:-1])
+    else:
+        mod_name = module.__name__
 
     # get names of module files within top-level package
     submodules = [mod for _, mod, _ in pkgutil.iter_modules([mod_path])]
@@ -52,7 +55,7 @@ def list_classes(module) -> typing.List[typing.Tuple[str, str]]:
             submod_ast = ast.parse(submod_f.read())
 
         ret_classes.extend([
-            (n.name, '.'.join([module.__name__, str(submod_name), n.name]))
+            (n.name, '.'.join([mod_name, submod_name, n.name]))
             for n in submod_ast.body
             if isinstance(n, ast.ClassDef)
         ])

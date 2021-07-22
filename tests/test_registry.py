@@ -83,7 +83,7 @@ def test_get_subtree(logger_registry_get, caplog):
 
     # assert we haven't gotten any warnings yet
     assert all([record.levelname != "WARNING" for record in caplog.records])
-    gpio_subclasses = autopilot.get('autopilot.hardware.gpio.GPIO')
+    gpio_subclasses = autopilot.get('autopilot.hardware.gpio.GPIO', include_base=True)
     # we should be warned about doing this because it's in a very generic 'else' clause for now
     assert sum([record.levelname == "WARNING" for record in caplog.records]) == 1
     assert any(['Attempting to get subclasses' in record.getMessage() for record in caplog.records])
