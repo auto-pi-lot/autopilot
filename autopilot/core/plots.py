@@ -12,29 +12,24 @@ Note:
 """
 
 # Classes for plots
-import sys
 import logging
-import os
 import numpy as np
 import PySide2 # have to import to tell pyqtgraph to use it
 import pandas as pd
-from PySide2 import QtGui
 from PySide2 import QtCore
-from PySide2 import QtOpenGL
 from PySide2 import QtWidgets
 import pyqtgraph as pg
 from time import time, sleep
 from itertools import count
 from functools import wraps
 from threading import Event, Thread
-import multiprocessing as mp
-import pdb
 from queue import Queue, Empty, Full
 #import cv2
 pg.setConfigOptions(antialias=True)
 # from pyqtgraph.widgets.RawImageWidget import RawImageWidget, RawImageGLWidget
 
-from autopilot import tasks, prefs
+import autopilot
+from autopilot import prefs
 from autopilot.core import styles
 from ..utils.invoker import InvokeEvent, Invoker, get_invoker
 from autopilot.networking import Net_Node
@@ -328,7 +323,7 @@ class Plot(QtWidgets.QWidget):
         self.info['Protocol'].setText(value['step_name'])
 
         # We're sent a task dict, we extract the plot params and send them to the plot object
-        self.plot_params = tasks.TASK_LIST[value['task_type']].PLOT
+        self.plot_params = autopilot.get_task(value['task_type']).PLOT
 
         # if we got no plot params, that's fine, just set as running and return
         if not self.plot_params:

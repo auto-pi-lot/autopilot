@@ -75,7 +75,7 @@ def test_hardware_plugin(hardware_plugin):
     hw_path, class_name = hardware_plugin
 
     assert hw_path.exists()
-    
+
     plugin_class = autopilot.get('hardware', class_name)
 
     assert inspect.isclass(plugin_class)

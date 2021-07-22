@@ -23,8 +23,7 @@ _EXPECTED_HARDWARE = (
  "autopilot.hardware.i2c.I2C_9DOF",
  "autopilot.hardware.i2c.MLX90640",
  "autopilot.hardware.usb.Scale",
- "autopilot.hardware.usb.Wheel",
- "autopilot.hardware.Hardware",
+ "autopilot.hardware.usb.Wheel"
 )
 """A list of all the hardware we expect to have at the moment.
 

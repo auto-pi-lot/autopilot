@@ -35,8 +35,9 @@ from operator import ior
 from functools import reduce
 
 # adding autopilot parent directory to path
+import autopilot
 from autopilot.core.subject import Subject
-from autopilot import tasks, prefs
+from autopilot import prefs
 from autopilot.stim.sound import sounds
 from autopilot.networking import Net_Node
 from functools import wraps
@@ -865,7 +866,7 @@ class Protocol_Wizard(QtWidgets.QDialog):
 
     This widget is composed of three windows:
 
-    * **left**: possible task types from :py:data:`.tasks.TASK_LIST`
+    * **left**: possible task types from :func:`autopilot.get_task()`
     * **center**: current steps in task
     * **right**: :class:`.Parameters` for currently selected step.
 
@@ -912,7 +913,7 @@ class Protocol_Wizard(QtWidgets.QDialog):
         addstep_label = QtWidgets.QLabel("Add Step")
         addstep_label.setFixedHeight(40)
         self.task_list = QtWidgets.QListWidget()
-        self.task_list.insertItems(0, tasks.TASK_LIST.keys())
+        self.task_list.insertItems(0, autopilot.get_names('task'))
         self.add_button = QtWidgets.QPushButton("+")
         self.add_button.setFixedHeight(40)
         self.add_button.clicked.connect(self.add_step)
@@ -978,7 +979,7 @@ class Protocol_Wizard(QtWidgets.QDialog):
         task_type = self.task_list.currentItem().text()
         new_item = QtWidgets.QListWidgetItem()
         new_item.setText(task_type)
-        task_params = copy.deepcopy(tasks.TASK_LIST[task_type].PARAMS)
+        task_params = copy.deepcopy(autopilot.get_task(task_type).PARAMS)
 
         # Add params that are non-task specific
         # Name of task type
@@ -1200,7 +1201,7 @@ class Graduation_Widget(QtWidgets.QWidget):
 
     Attributes:
         type_selection (:class:`QtWidgets.QComboBox`): A box to select from the available
-            graduation types listed in :py:data:`.tasks.GRAD_LIST` . Has its `currentIndexChanged`
+            graduation types listed in :func:`autopilot.get_task()` . Has its `currentIndexChanged`
             signal connected to :py:meth:`.Graduation_Widget.populate_params`
         param_dict (dict): Stores the type of graduation and the relevant params,
             fetched by :class:`.Protocol_Wizard` when defining a protocol.
@@ -1213,7 +1214,7 @@ class Graduation_Widget(QtWidgets.QWidget):
         # Grad type dropdown
         type_label = QtWidgets.QLabel("Graduation Criterion:")
         self.type_selection = QtWidgets.QComboBox()
-        self.type_selection.insertItems(0, tasks.GRAD_LIST.keys())
+        self.type_selection.insertItems(0, autopilot.get_names('graduation'))
         self.type_selection.currentIndexChanged.connect(self.populate_params)
 
         # Param form
@@ -1256,7 +1257,7 @@ class Graduation_Widget(QtWidgets.QWidget):
         self.type = self.type_selection.currentText()
         self.param_dict['type'] = self.type
 
-        for k in tasks.GRAD_LIST[self.type].PARAMS:
+        for k in autopilot.get_task(self.type).PARAMS:
             edit_box = QtWidgets.QLineEdit()
             edit_box.setObjectName(k)
             edit_box.editingFinished.connect(self.store_param)
@@ -2625,7 +2626,7 @@ class Weights(QtWidgets.QTableWidget):
                 self.setItem(row, j, item)
 
         # make headers
-        self.setHorizontalHeaderLabels(self.colnames.values())
+        self.setHorizontalHeaderLabels(list(self.colnames.values()))
         self.resizeColumnsToContents()
         self.updateGeometry()
         self.adjustSize()

@@ -21,6 +21,7 @@ from scipy.stats import linregress
 import tables
 warnings.simplefilter('ignore', category=tables.NaturalNameWarning)
 
+import autopilot
 from autopilot import prefs
 from autopilot.core.loggers import init_logger
 
@@ -54,7 +55,6 @@ if __name__ == '__main__':
 
 from autopilot.networking import Message, Net_Node, Pilot_Station
 from autopilot import external
-from autopilot import tasks
 from autopilot.hardware import gpio
 
 
@@ -273,7 +273,7 @@ class Pilot:
         Start running a task.
 
         Get the task object by using `value['task_type']` to select from
-        :data:`.tasks.TASK_LIST` , then feed the rest of `value` as kwargs
+        :func:`autopilot.get_task()` , then feed the rest of `value` as kwargs
         into the task object.
 
         Calls :meth:`.autopilot.run_task` in a new thread
@@ -294,9 +294,9 @@ class Pilot:
         try:
             # Get the task object by its type
             if 'child' in value.keys():
-                task_class = tasks.CHILDREN_LIST[value['task_type']]
+                task_class = autopilot.get('children', value['task_type'])
             else:
-                task_class = tasks.TASK_LIST[value['task_type']]
+                task_class = autopilot.get_task(value['task_type'])
             # Instantiate the task
             self.stage_block.clear()
 

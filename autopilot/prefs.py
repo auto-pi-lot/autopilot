@@ -192,7 +192,7 @@ _DEFAULTS = odict({
         'type': 'str',
         'text': 'Location of virtual environment, if used.',
         "scope": Scopes.COMMON,
-        "default": sys.prefix if hasattr(sys, 'real_prefix') or (sys.base_prefix != sys.prefix) else False
+        "default": str(Path(sys.prefix).resolve()) if hasattr(sys, 'real_prefix') or (sys.base_prefix != sys.prefix) else False
     },
     'AUTOPLUGIN': {
         'type': 'bool',
