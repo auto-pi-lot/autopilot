@@ -67,7 +67,7 @@ def get(base_class:Union[REGISTRIES,str, type], class_name:Optional[str]=None, p
 
     if isinstance(base_class, REGISTRIES):
         base_class = base_class.value
-    elif base_class.upper() in REGISTRIES.__members__.keys():
+    elif isinstance(base_class, str) and base_class.upper() in REGISTRIES.__members__.keys():
         base_class = REGISTRIES[base_class.upper()].value
     elif base_class in REGISTRIES.__members__.values():
         # already have the value, which is what we use to get the object

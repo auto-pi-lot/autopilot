@@ -86,5 +86,14 @@ def import_plugins(plugin_dir:Optional[Path]=None) -> dict:
 
 
 
+def unload_plugins():
+    """
+    Un-import imported plugins (mostly for testing purposes)
+    """
+    mods = [mod for mod in sys.modules if 'autopilot.plugins' in mod]
+    for mod in mods:
+        del sys.modules[mod]
+    _IMPORTED.value = False
+
 
 

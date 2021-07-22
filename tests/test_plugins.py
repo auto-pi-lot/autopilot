@@ -36,6 +36,13 @@ def hardware_plugin():
 def test_hardware_plugin(hardware_plugin):
     pass
 
+def test_autoplugin():
+    """
+    the :func:`autopilot.utils.registry.get` function should automatically load
+    plugins if the pref ``AUTOPLUGIN`` is ``True`` and the ``plugins`` argument is True
+    """
+    pass
+
 
 
 
