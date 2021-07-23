@@ -8,11 +8,13 @@ from typing import Union, Optional
 from pathlib import Path
 from multiprocessing import Value
 from ctypes import c_bool
+from collections import OrderedDict as odict
 
 import requests
 
 from autopilot.core.loggers import init_logger
 from autopilot import prefs
+from autopilot.utils import wiki
 
 _IMPORTED = Value(c_bool, False)
 
@@ -94,6 +96,42 @@ def unload_plugins():
     for mod in mods:
         del sys.modules[mod]
     _IMPORTED.value = False
+
+
+def list_wiki_plugins():
+    """
+    List plugins available on the wiki using :func:`.utils.wiki.ask`
+
+    Returns:
+        dict: {'plugin_name': {'plugin_prop':'prop_value',...}
+    """
+
+    plugins = wiki.ask(filters="[[Category:Autopilot Plugin]]",
+             properties=[
+                 'Created By',
+                 'Has Description',
+                 'For Autopilot Version',
+                 'Has Git Repository',
+                 'Has Contributor',
+                 'Is Autopilot Plugin Type',
+                 'Controls Hardware'
+             ])
+
+    ordered_plugins = []
+    # reorder fields in plugins with odicts
+    for plugin in plugins:
+        oplugin = odict()
+        for field in ('name','Has Description',
+                      'Created By', 'Has Contributor',
+                      'url','Has Git Repository',
+                      'For Autopilot Version',
+                      'Is Autopilot Plugin Type',
+                      'Controls Hardware'):
+            oplugin[field] = plugin[field]
+
+        ordered_plugins.append(oplugin)
+
+    return plugins
 
 
 

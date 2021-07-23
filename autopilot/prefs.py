@@ -200,6 +200,12 @@ _DEFAULTS = odict({
         "scope": Scopes.COMMON,
         "default": True
     },
+    'PLUGIN_DB': {
+        'type': 'str',
+        'text': 'filename to use for the .json plugin_db that keeps track of installed plugins',
+        "default": str(_basedir / "plugin_db.json"),
+        "scope": Scopes.COMMON
+    },
     'BASEDIR': {
         'type': 'str',
         "text": "Base Directory",
