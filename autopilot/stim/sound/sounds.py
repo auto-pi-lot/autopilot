@@ -49,6 +49,7 @@ from queue import Empty, Full
 
 from autopilot import prefs
 from autopilot.core.loggers import init_logger
+from autopilot.stim import Stim
 
 
 ## First, switch the behavior based on the pref AUDIOSERVER
@@ -551,7 +552,7 @@ elif server_type == "jack":
     BASE_CLASS = Jack_Sound
 else:
     # just importing to query parameters, not play sounds.
-    BASE_CLASS = object
+    BASE_CLASS = Stim
 
 
 ## The rest of the module defines actual sounds, which inherit from BASE_CLASS
@@ -859,20 +860,6 @@ class Gap(BASE_CLASS):
             if callable(self.trigger):
                 threading.Thread(target=self.wait_trigger).start()
 
-
-## Finally, define SOUND_LIST, a dict from sound name to corresponding class
-# Has to be at bottom so fnxns already defined when assigned.
-SOUND_LIST = {
-    'Tone':Tone,
-    'Noise':Noise,
-    'File':File,
-    'Speech':Speech,
-    'speech':Speech,
-    'Gap': Gap
-}
-"""
-Sounds must be added to this SOUND_LIST so they can be indexed by the string keys used elsewhere. 
-"""
 
 # These parameters are strings not numbers... jonny should do this better
 STRING_PARAMS = ['path', 'speaker', 'consonant', 'vowel', 'type']

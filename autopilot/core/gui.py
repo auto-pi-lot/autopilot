@@ -1569,7 +1569,7 @@ class Sound_Widget(QtWidgets.QWidget):
         Presents a dialog to define a new sound.
 
         Makes a selection box to choose the sound type from
-        :py:data:`.sounds.SOUND_LIST` , and then populates edit boxes
+        ``autopilot.get_names('sound')``, and then populates edit boxes
         so we can fill in its `PARAMS` .
 
         Attributes:
@@ -1584,7 +1584,7 @@ class Sound_Widget(QtWidgets.QWidget):
             # Sound type dropdown
             type_label = QtWidgets.QLabel("Sound Type:")
             self.type_selection = QtWidgets.QComboBox()
-            self.type_selection.insertItems(0, sounds.SOUND_LIST.keys())
+            self.type_selection.insertItems(0, autopilot.get_names('sound'))
             self.type_selection.currentIndexChanged.connect(self.populate_params)
 
             # Param form
@@ -1621,7 +1621,7 @@ class Sound_Widget(QtWidgets.QWidget):
             self.type = self.type_selection.currentText()
             self.param_dict['type'] = self.type
 
-            for k in sounds.SOUND_LIST[self.type].PARAMS:
+            for k in autopilot.get('sound', self.type).PARAMS:
                 edit_box = QtWidgets.QLineEdit()
                 edit_box.setObjectName(k)
                 edit_box.editingFinished.connect(self.store_param)

@@ -9,6 +9,3 @@ This module contains the following files:
 The use of pyoserver is discouraged in favor of jackclient. This is
 controlled by the pref `AUDIOSERVER`.
 """
-
-# Import the list of available sounds
-from autopilot.stim.sound.sounds import SOUND_LIST
