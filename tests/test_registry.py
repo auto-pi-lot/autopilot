@@ -92,7 +92,7 @@ def test_get_subtree(logger_registry_get, caplog):
     got_names = ['.'.join([cls.__module__, cls.__name__]) for cls in gpio_subclasses]
 
     assert all([testcls in got_names for testcls in minimum_expected])
-    assert all(['hardware.gpio' in clsname for clsname in got_names])
+    assert all([('hardware.gpio' in clsname) or ('autopilot.plugins' in clsname) for clsname in got_names])
     for got_cls in gpio_subclasses:
         assert issubclass(got_cls, GPIO) or got_cls is GPIO
         
