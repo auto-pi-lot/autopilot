@@ -40,6 +40,7 @@ class REGISTRIES(str, Enum):
     GRADUATION = "autopilot.tasks.graduation.Graduation"
     TRANSFORM = "autopilot.transform.transforms.Transform"
     CHILDREN = "autopilot.tasks.children.Child"
+    SOUND = "autopilot.stim.sound.sounds.BASE_CLASS"
 
 # TODO: Update return type hint when unified Autopilot Object class made
 def get(base_class:Union[REGISTRIES,str, type],
