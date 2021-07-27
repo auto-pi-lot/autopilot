@@ -43,8 +43,8 @@ if __name__ == '__main__':
 from autopilot.core.subject import Subject
 from autopilot.core.plots import Plot_Widget
 from autopilot.networking import Net_Node, Terminal_Station
-from autopilot.core.utils import InvokeEvent, Invoker, get_invoker
-from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test, pop_dialog
+from autopilot.utils.invoker import get_invoker
+from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test, pop_dialog, Plugins
 from autopilot.core.loggers import init_logger
 
 # Try to import viz, but continue if that doesn't work
@@ -290,6 +290,11 @@ class Terminal(QtWidgets.QMainWindow):
         self.tests_menu = self.menuBar().addMenu("Test&s")
         bandwidth_test_act = QtWidgets.QAction("Test Bandwidth", self, triggered=self.test_bandwidth)
         self.tests_menu.addAction(bandwidth_test_act)
+
+        # Create a Plugins menu to manage plugins and provide a hook to give them additional terminal actions
+        self.plugins_menu = self.menuBar().addMenu("Plugins")
+        plugin = QtWidgets.QAction("Manage Plugins", self, triggered=self.manage_plugins)
+        self.plugins_menu.addAction(plugin)
 
 
         ## Init main panels and add to layout
@@ -892,6 +897,10 @@ class Terminal(QtWidgets.QMainWindow):
 
             #viz.plot_psychometric(self.subjects_protocols)
         #result = psychometric_dialog.exec_()
+
+    def manage_plugins(self):
+        plugs = Plugins()
+        plugs.exec_()
 
     def closeEvent(self, event):
         """
