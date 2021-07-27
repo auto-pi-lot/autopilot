@@ -48,6 +48,10 @@ Warning:
 
 This iteration of prefs with respect to work done on the `People's Ventilator Project <https://www.peoplesvent.org/en/latest/pvp.common.prefs.html>`_
 
+If a pref has a string for a ``'deprecation'`` field in :data:`.prefs._DEFAULTS` , a ``FutureWarning``
+will be raised with the string given as the message
+
+
 """
 
 # this is strictly a placeholder module to
@@ -62,7 +66,6 @@ This iteration of prefs with respect to work done on the `People's Ventilator Pr
 # Prefs is a top-level module! It shouldn't depend on anything else in Autopilot,
 # and if it does, it should carefully import it where it is needed!
 # (prefs needs to be possible to import everywhere, including eg. in setup_autopilot)
-
 import json
 import subprocess
 import multiprocessing as mp
@@ -348,7 +351,8 @@ _DEFAULTS = odict({
         'text': "Number of Audio channels (deprecated; used OUTCHANNELS)",
         'default': 1,
         'depends': 'AUDIOSERVER',
-        "scope": Scopes.AUDIO
+        "scope": Scopes.AUDIO,
+        'deprecation': "Deprecated and will be removed, use OUTCHANNELS instead"
     },
     'OUTCHANNELS': {
         'type': 'list',
@@ -412,6 +416,11 @@ def get(key: typing.Union[str, None] = None):
         return globals()['_PREFS']._getvalue()
 
     else:
+        # check for deprecation
+        dep_notice = globals()['_DEFAULTS'].get(key, {}).get('deprecation', None)
+        if dep_notice is not None:
+            warnings.warn(dep_notice, FutureWarning)
+
         # try to get the value from the prefs manager
         try:
             return globals()['_PREFS'][key]
