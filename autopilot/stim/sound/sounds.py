@@ -69,6 +69,10 @@ except AttributeError:
 if server_type not in ['jack', 'pyo', 'docs']:
     server_type = None
 
+# if we're testing, set server_type to jack
+if 'pytest' in sys.modules:
+    server_type = 'jack'
+
 
 ## Import the required modules
 if server_type in ['jack', 'docs']:

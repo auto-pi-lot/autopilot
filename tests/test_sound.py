@@ -60,11 +60,13 @@ autopilot.stim.sound.jackclient.FS
 autopilot.stim.sound.jackclient.BLOCKSIZE
 """
 
+import pytest
 import numpy as np
 import multiprocessing
 import autopilot.prefs
 import autopilot.external
 import autopilot.stim.sound
+from autopilot.stim.sound import jackclient
 
 
 ## Ensure we get the same random sound every time
@@ -74,19 +76,47 @@ np.random.seed(0)
 ## Specify needed params to circumvent init_audio
 sample_rate = 192000
 block_size = 1024
-autopilot.stim.sound.jackclient.FS = sample_rate
-autopilot.stim.sound.jackclient.BLOCKSIZE = block_size
+jackclient.FS = sample_rate
+jackclient.BLOCKSIZE = block_size
 
 # These are only used in Jack_Sound.__del__
 # Setting them here to avoid warnings during garbage collection
 # Why is there one global PLAY and STOP, rather than sound-specific?
-autopilot.stim.sound.jackclient.PLAY = multiprocessing.Event()
-autopilot.stim.sound.jackclient.STOP = multiprocessing.Event()
+jackclient.PLAY = multiprocessing.Event()
+jackclient.STOP = multiprocessing.Event()
 
 
 ## Define tests
+@pytest.mark.parametrize(
+    "duration_ms,amplitude,check_duration_samples,check_n_chunks_expected",
+    (
+        (100, 0.1, 19200, 19),
+        (100., 0.1, 19200, 19),
+        ((block_size/sample_rate)*1000, 0.1, block_size, 1), # exactly one chunk
+        (5, 0.1, 960, 1),
+        (5., 0.1, 960, 1),
+        (1/192000. - 1e-8, 0.1, 1, 1),
+        (0, 0.1, 0, 0),
+        ###### amplitude = 1
+        (100, 1, 19200, 19),
+        (100., 1, 19200, 19),
+        ((block_size / sample_rate) * 1000, 1, block_size, 1),  # exactly one chunk
+        (5, 1, 960, 1),
+        (5., 1, 960, 1),
+        (1 / 192000. - 1e-8, 1, 1, 1),
+        (0, 1, 0, 0),
+        ###### amplitude = 10.
+        (100, 10., 19200, 19),
+        (100., 10., 19200, 19),
+        ((block_size / sample_rate) * 1000, 10., block_size, 1),  # exactly one chunk
+        (5, 10., 960, 1),
+        (5., 10., 960, 1),
+        (1 / 192000. - 1e-8, 10., 1, 1),
+        (0, 10., 0, 0)
+    )
+)
 def test_init_noise(duration_ms, amplitude, 
-    check_duration_samples=None, check_n_chunks_expected=None):
+    check_duration_samples, check_n_chunks_expected):
     """Initialize and check a mono (single-channel) noise.
     
     A mono `Noise` is initialized with specified duration and amplitude.
@@ -155,11 +185,11 @@ def test_init_noise(duration_ms, amplitude,
         assert noise.table.shape == (duration_samples,)
         
         # The table should not exceed `amplitude` anywhere
-        assert (np.abs(noise.table) < amplitude).all()
+        assert np.all(np.abs(noise.table) < amplitude)
         
         # The table itself should NOT be zero-padded
         # Vanishingly unlikely that any real sample is exactly zero
-        assert (noise.table != 0).all()
+        assert np.all(noise.table != 0)
 
         # As long as we have enough samples, almost certainly
         # the max value should be >90% of amplitude.
@@ -183,10 +213,65 @@ def test_init_noise(duration_ms, amplitude,
         
         # The concatenated chunks should be equal to the table
         assert len(concatted) == len(noise.table) + n_padded_zeros
-        assert (concatted[:len(noise.table)] == noise.table).all()
+        assert np.all(concatted[:len(noise.table)] == noise.table)
 
+@pytest.mark.parametrize(
+    "duration_ms,amplitude,channel,check_duration_samples,check_n_chunks_expected",
+    (
+        ########
+        ######## channel = 0
+        (100, 0.1, 0, 19200, 19),
+        (100., 0.1, 0, 19200, 19),
+        ((block_size/sample_rate)*1000, 0.1, 0, block_size, 1), # exactly one chunk
+        (5, 0.1, 0, 960, 1),
+        (5., 0.1, 0, 960, 1),
+        (1/192000. - 1e-8, 0.1, 0, 1, 1),
+        (0, 0.1, 0, 0, 0),
+        ###### amplitude = 1
+        (100, 1, 0, 19200, 19),
+        (100., 1, 0, 19200, 19),
+        ((block_size / sample_rate) * 1000, 1, 0, block_size, 1),  # exactly one chunk
+        (5, 1, 0, 960, 1),
+        (5., 1, 0, 960, 1),
+        (1 / 192000. - 1e-8, 1, 0, 1, 1),
+        (0, 1, 0, 0, 0),
+        ###### amplitude = 10.
+        (100, 10., 0, 19200, 19),
+        (100., 10., 0, 19200, 19),
+        ((block_size / sample_rate) * 1000, 10., 0, block_size, 1),  # exactly one chunk
+        (5, 10., 0, 960, 1),
+        (5., 10., 0, 960, 1),
+        (1 / 192000. - 1e-8, 10., 0, 1, 1),
+        (0, 10., 0, 0, 0),
+        #######
+        ####### channel = 1
+        (100, 0.1, 1, 19200, 19),
+        (100., 0.1, 1, 19200, 19),
+        ((block_size/sample_rate)*1000, 0.1, 1, block_size, 1), # exactly one chunk
+        (5, 0.1, 1, 960, 1),
+        (5., 0.1, 1, 960, 1),
+        (1/192000. - 1e-8, 0.1, 1, 1, 1),
+        (0, 0.1, 1, 0, 0),
+        ###### amplitude = 1
+        (100, 1, 1, 19200, 19),
+        (100., 1, 1, 19200, 19),
+        ((block_size / sample_rate) * 1000, 1, 1, block_size, 1),  # exactly one chunk
+        (5, 1, 1, 960, 1),
+        (5., 1, 1, 960, 1),
+        (1 / 192000. - 1e-8, 1, 1, 1, 1),
+        (0, 1, 1, 0, 0),
+        ###### amplitude = 10.
+        (100, 10., 1, 19200, 19),
+        (100., 10., 1, 19200, 19),
+        ((block_size / sample_rate) * 1000, 10., 1, block_size, 1),  # exactly one chunk
+        (5, 10., 1, 960, 1),
+        (5., 10., 1, 960, 1),
+        (1 / 192000. - 1e-8, 10., 1, 1, 1),
+        (0, 10., 1, 0, 0)
+    )
+)
 def test_init_multichannel_noise(duration_ms, amplitude, channel, 
-    check_duration_samples=None, check_n_chunks_expected=None):
+    check_duration_samples, check_n_chunks_expected):
     """Initialize and check a multi-channel noise.
 
     A multi-channel `Noise` is initialized with specified duration, amplitude,
@@ -287,93 +372,4 @@ def test_init_multichannel_noise(duration_ms, amplitude, channel,
     # The concatenated chunks should be equal to the table
     assert concatted.shape == (len(noise.table) + n_padded_zeros, 2)
     assert (concatted[:len(noise.table)] == noise.table).all()
-
-
-## These tests iterate over various parameters and call the above tests
-def test_init_noise_various_parameters():
-    """Pass various durations and amplitudes to test_init_noise
-    
-    This iterates over a variety of `amplitude` parameters (some int
-    and some float). It also tried various `duration` parameters, including
-    very short waveforms.
-    """
-    ## Run the tests
-    for amplitude in [.1, 1, 10.]:
-        # A typical duration, as int and float
-        test_init_noise(
-            100, amplitude=amplitude,
-            check_duration_samples=19200, check_n_chunks_expected=19)
-        test_init_noise(
-            100., amplitude=amplitude,
-            check_duration_samples=19200, check_n_chunks_expected=19)
-
-        # exactly one chunk
-        test_init_noise(
-            5.33332, amplitude=amplitude,
-            check_duration_samples=block_size, check_n_chunks_expected=1)
-
-        # Less than one chunk
-        test_init_noise(
-            5,  amplitude=amplitude,
-            check_duration_samples=960, check_n_chunks_expected=1)
-        test_init_noise(
-            5.,  amplitude=amplitude,
-            check_duration_samples=960, check_n_chunks_expected=1)
-
-        # Length 1
-        test_init_noise(
-            1/192000. - 1e-8,  amplitude=amplitude,
-            check_duration_samples=1, check_n_chunks_expected=1)
-
-        # Length 0
-        test_init_noise(
-            0.,  amplitude=amplitude,
-            check_duration_samples=0, check_n_chunks_expected=0)
-
-def test_init_multichannel_noise_various_parameters():
-    """Pass various parameters to test_init_multichannel_noise
-    
-    This iterates over a variety of `amplitude` parameters (some int
-    and some float). It also tries various `duration` parameters, including
-    very short waveforms. Finally it tried both channel 0 and 1.
-    """    
-    ## Run the tests
-    for amplitude in [.1, 1, 10.]:
-        for channel in [0, 1]:
-            # A typical duration, as int and float
-            test_init_multichannel_noise(
-                100, amplitude=amplitude, channel=channel,
-                check_duration_samples=19200, check_n_chunks_expected=19)
-            test_init_multichannel_noise(
-                100., amplitude=amplitude, channel=channel,
-                check_duration_samples=19200, check_n_chunks_expected=19)
-
-            # exactly one chunk
-            test_init_multichannel_noise(
-                5.33332, amplitude=amplitude, channel=channel,
-                check_duration_samples=block_size, check_n_chunks_expected=1)
-
-            # Less than one chunk
-            test_init_multichannel_noise(
-                5, amplitude=amplitude, channel=channel,
-                check_duration_samples=960, check_n_chunks_expected=1)
-            test_init_multichannel_noise(
-                5., amplitude=amplitude, channel=channel,
-                check_duration_samples=960, check_n_chunks_expected=1)
-
-            # Length 1
-            test_init_multichannel_noise(
-                1/192000. - 1e-8, amplitude=amplitude, channel=channel,
-                check_duration_samples=1, check_n_chunks_expected=1)
-
-            # Length 0
-            test_init_multichannel_noise(
-                0., amplitude=amplitude, channel=channel,
-                check_duration_samples=0, check_n_chunks_expected=0)
-
-
-## Run tests
-test_init_noise_various_parameters()
-test_init_multichannel_noise_various_parameters()
-
 
