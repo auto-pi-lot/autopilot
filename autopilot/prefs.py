@@ -195,7 +195,19 @@ _DEFAULTS = odict({
         'type': 'str',
         'text': 'Location of virtual environment, if used.',
         "scope": Scopes.COMMON,
-        "default": sys.prefix if hasattr(sys, 'real_prefix') or (sys.base_prefix != sys.prefix) else False
+        "default": str(Path(sys.prefix).resolve()) if hasattr(sys, 'real_prefix') or (sys.base_prefix != sys.prefix) else False
+    },
+    'AUTOPLUGIN': {
+        'type': 'bool',
+        'text': "Attempt to import the contents of the plugin directory",
+        "scope": Scopes.COMMON,
+        "default": True
+    },
+    'PLUGIN_DB': {
+        'type': 'str',
+        'text': 'filename to use for the .json plugin_db that keeps track of installed plugins',
+        "default": str(_basedir / "plugin_db.json"),
+        "scope": Scopes.COMMON
     },
     'BASEDIR': {
         'type': 'str',
@@ -236,7 +248,7 @@ _DEFAULTS = odict({
     'PLUGINDIR': {
         'type': 'str',
         "text": "Directory to import ",
-        "default": os.path.join(os.path.expanduser("~"), "autopilot"),
+        "default": str(_basedir / 'plugins'),
         "scope": Scopes.DIRECTORY
     },
     'REPODIR': {
