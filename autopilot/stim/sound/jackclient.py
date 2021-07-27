@@ -89,12 +89,13 @@ class JackClient(mp.Process):
         play_evt (:class:`multiprocessing.Event`): Event used to trigger loading samples from `QUEUE`, ie. playing.
         stop_evt (:class:`multiprocessing.Event`): Event that is triggered on the end of buffered audio.
         quit_evt (:class:`multiprocessing.Event`): Event that causes the process to be terminated.
-
         client (:class:`jack.Client`): Client to interface with jackd
         blocksize (int): The blocksize - ie. samples processed per :meth:`.JackClient.process` call.
         fs (int): Sampling rate of client
         zero_arr (:class:`numpy.ndarray`): cached array of zeroes used to fill jackd pipe when not processing audio.
         continuous_cycle (:class:`itertools.cycle`): cycle of frames used for continuous sounds
+        mono_output (bool): ``True`` or ``False`` depending on if the number of output channels is 1 or >1, respectively.
+            detected and set in :meth:`.JackClient.boot_server` , initialized to ``True`` (which is hopefully harmless)
     """
     def __init__(self, name='jack_client'):
         """
@@ -132,6 +133,10 @@ class JackClient(mp.Process):
         # store the frames of the continuous sound and cycle through them if set in continous mode
         self.continuous_cycle = None
 
+        # Something calls process() before boot_server(), so this has to
+        # be initialized
+        self.mono_output = True
+
         # store a reference to us and our values in the module
         globals()['SERVER'] = self
         globals()['FS'] = copy(self.fs)
@@ -145,10 +150,12 @@ class JackClient(mp.Process):
         globals()['CONTINUOUS_LOOP'] = self.continuous_loop
 
         self.logger = init_logger(self)
-        
-        # Something calls process() before boot_server(), so this has to
-        # be initialized
-        self.mono_output = True
+
+        if self.fs != prefs.get('FS'):
+            self.logger.warning(
+                f"Sampling rate was set to {prefs.get('FS')} in prefs, but the jack audio daemon is running at {self.fs}. \
+                Check that jackd was not already running, and is being correctly started by autopilot (see autopilot.external)")
+    
 
     def boot_server(self):
         """
