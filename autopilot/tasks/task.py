@@ -186,9 +186,9 @@ class Task(object):
                         port.dur_from_vol(vol)
                     except AttributeError:
                         self.logger.warning('No calibration found, using duration = 20ms instead')
-                        port.duration = 0.02
+                        port.duration = 20.0
                 else:
-                    port.duration = float(duration)/1000.
+                    port.duration = float(duration)
         else:
             try:
                 if vol:
@@ -196,10 +196,10 @@ class Task(object):
                         self.hardware['PORTS'][port].dur_from_vol(vol)
                     except AttributeError:
                         self.logger.warning('No calibration found, using duration = 20ms instead')
-                        port.duration = 0.02
+                        port.duration = 20.0
 
                 else:
-                    self.hardware['PORTS'][port].duration = float(duration) / 1000.
+                    self.hardware['PORTS'][port].duration = float(duration)
             except KeyError:
                 raise Exception('No port found named {}'.format(port))
 
