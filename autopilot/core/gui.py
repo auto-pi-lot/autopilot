@@ -1,11 +1,4 @@
 """
-Note:
-    Currently, the GUI code is some of the oldest code in the library --
-    in particular much of it was developed before the network infrastructure was mature.
-    As a result, a lot of modules are interdependent (eg. pass objects between each other).
-    This will be corrected before v1.0
-
-
 These classes implement the GUI used by the Terminal.
 
 The GUI is built using `PySide2 <https://doc.qt.io/qtforpython/>`_, a Python wrapper around Qt5.
@@ -14,8 +7,15 @@ These classes are all currently used only by the :class:`~.autopilot.core.termin
 
 If performing any GUI operations in another thread (eg. as a callback from a networking object),
 the method must be decorated with `@gui_event` which will call perform the update in the main thread as required by Qt.
-"""
 
+.. note::
+
+    Currently, the GUI code is some of the oldest code in the library --
+    in particular much of it was developed before the network infrastructure was mature.
+    As a result, a lot of modules are interdependent (eg. pass objects between each other).
+    This will be corrected before v1.0
+
+"""
 import sys
 import typing
 import os
@@ -39,16 +39,17 @@ from functools import reduce
 from collections import abc
 
 # adding autopilot parent directory to path
+import autopilot
 from autopilot.core.subject import Subject
-from autopilot import tasks, prefs
+from autopilot import prefs
 from autopilot.stim.sound import sounds
 from autopilot.networking import Net_Node
 from functools import wraps
-from autopilot.core.utils import InvokeEvent
+from autopilot.utils.invoker import InvokeEvent, get_invoker
 from autopilot.core import styles
-from autopilot.core.utils import get_invoker
 from autopilot.core.plots import Video
 from autopilot.core.loggers import init_logger
+from autopilot.utils import plugins, registry, wiki
 
 _MAPS = {
     'dialog': {
@@ -81,7 +82,6 @@ def gui_event(fn):
     """
     @wraps(fn)
     def wrapper_gui_event(*args, **kwargs):
-        # type: (object, object) -> None
         """
 
         Args:
@@ -310,15 +310,8 @@ class Control_Panel(QtWidgets.QWidget):
             if 'state' in val.keys():
                 del val['state']
 
-        try:
-            with open(prefs.get('PILOT_DB'), 'w') as pilot_file:
-                json.dump(pilots, pilot_file, indent=4, separators=(',', ': '))
-        except NameError:
-            try:
-                with open('/usr/autopilot/pilot_db.json', 'w') as pilot_file:
-                    json.dump(pilots, pilot_file, indent=4, separators=(',', ': '))
-            except IOError:
-                self.logger.exception('Couldnt update pilot db!')
+        with open(prefs.get('PILOT_DB'), 'w') as pilot_file:
+            json.dump(self.pilots, pilot_file, indent=4, separators=(',', ': '))
 
 ####################################
 # Control Panel Widgets
@@ -882,7 +875,7 @@ class Protocol_Wizard(QtWidgets.QDialog):
 
     This widget is composed of three windows:
 
-    * **left**: possible task types from :py:data:`.tasks.TASK_LIST`
+    * **left**: possible task types from :func:`autopilot.get_task()`
     * **center**: current steps in task
     * **right**: :class:`.Parameters` for currently selected step.
 
@@ -929,7 +922,7 @@ class Protocol_Wizard(QtWidgets.QDialog):
         addstep_label = QtWidgets.QLabel("Add Step")
         addstep_label.setFixedHeight(40)
         self.task_list = QtWidgets.QListWidget()
-        self.task_list.insertItems(0, tasks.TASK_LIST.keys())
+        self.task_list.insertItems(0, autopilot.get_names('task'))
         self.add_button = QtWidgets.QPushButton("+")
         self.add_button.setFixedHeight(40)
         self.add_button.clicked.connect(self.add_step)
@@ -995,7 +988,7 @@ class Protocol_Wizard(QtWidgets.QDialog):
         task_type = self.task_list.currentItem().text()
         new_item = QtWidgets.QListWidgetItem()
         new_item.setText(task_type)
-        task_params = copy.deepcopy(tasks.TASK_LIST[task_type].PARAMS)
+        task_params = copy.deepcopy(autopilot.get_task(task_type).PARAMS)
 
         # Add params that are non-task specific
         # Name of task type
@@ -1038,7 +1031,6 @@ class Protocol_Wizard(QtWidgets.QDialog):
         Returns:
 
         """
-
         self.clear_params()
 
         # Get current item index
@@ -1218,7 +1210,7 @@ class Graduation_Widget(QtWidgets.QWidget):
 
     Attributes:
         type_selection (:class:`QtWidgets.QComboBox`): A box to select from the available
-            graduation types listed in :py:data:`.tasks.GRAD_LIST` . Has its `currentIndexChanged`
+            graduation types listed in :func:`autopilot.get_task()` . Has its `currentIndexChanged`
             signal connected to :py:meth:`.Graduation_Widget.populate_params`
         param_dict (dict): Stores the type of graduation and the relevant params,
             fetched by :class:`.Protocol_Wizard` when defining a protocol.
@@ -1231,7 +1223,7 @@ class Graduation_Widget(QtWidgets.QWidget):
         # Grad type dropdown
         type_label = QtWidgets.QLabel("Graduation Criterion:")
         self.type_selection = QtWidgets.QComboBox()
-        self.type_selection.insertItems(0, tasks.GRAD_LIST.keys())
+        self.type_selection.insertItems(0, autopilot.get_names('graduation'))
         self.type_selection.currentIndexChanged.connect(self.populate_params)
 
         # Param form
@@ -1274,7 +1266,7 @@ class Graduation_Widget(QtWidgets.QWidget):
         self.type = self.type_selection.currentText()
         self.param_dict['type'] = self.type
 
-        for k in tasks.GRAD_LIST[self.type].PARAMS:
+        for k in autopilot.get_task(self.type).PARAMS:
             edit_box = QtWidgets.QLineEdit()
             edit_box.setObjectName(k)
             edit_box.editingFinished.connect(self.store_param)
@@ -1585,7 +1577,7 @@ class Sound_Widget(QtWidgets.QWidget):
         Presents a dialog to define a new sound.
 
         Makes a selection box to choose the sound type from
-        :py:data:`.sounds.SOUND_LIST` , and then populates edit boxes
+        ``autopilot.get_names('sound')``, and then populates edit boxes
         so we can fill in its `PARAMS` .
 
         Attributes:
@@ -1600,7 +1592,7 @@ class Sound_Widget(QtWidgets.QWidget):
             # Sound type dropdown
             type_label = QtWidgets.QLabel("Sound Type:")
             self.type_selection = QtWidgets.QComboBox()
-            self.type_selection.insertItems(0, sounds.SOUND_LIST.keys())
+            self.type_selection.insertItems(0, autopilot.get_names('sound'))
             self.type_selection.currentIndexChanged.connect(self.populate_params)
 
             # Param form
@@ -1637,7 +1629,7 @@ class Sound_Widget(QtWidgets.QWidget):
             self.type = self.type_selection.currentText()
             self.param_dict['type'] = self.type
 
-            for k in sounds.SOUND_LIST[self.type].PARAMS:
+            for k in autopilot.get('sound', self.type).PARAMS:
                 edit_box = QtWidgets.QLineEdit()
                 edit_box.setObjectName(k)
                 edit_box.editingFinished.connect(self.store_param)
@@ -1656,7 +1648,6 @@ class Sound_Widget(QtWidgets.QWidget):
             """
             When one of our edit boxes is edited, stash the parameter in `param_dict`
             """
-
             sender = self.sender()
             name = sender.objectName()
             self.param_dict[name] = sender.text()
@@ -2271,10 +2262,10 @@ class Pilot_Ports(QtWidgets.QWidget):
 
         layout = QtWidgets.QHBoxLayout()
         pilot_lab = QtWidgets.QLabel(self.pilot)
-        #pilot_font = QtWidgets.QFont()
-        #pilot_font.setBold(True)
-        #pilot_font.setPointSize(14)
-        #pilot_lab.setFont(pilot_font)
+        pilot_font = QtGui.QFont()
+        pilot_font.setBold(True)
+        pilot_font.setPointSize(14)
+        pilot_lab.setFont(pilot_font)
         pilot_lab.setStyleSheet('border: 1px solid black')
         layout.addWidget(pilot_lab)
 
@@ -2635,7 +2626,7 @@ class Weights(QtWidgets.QTableWidget):
                         minimum = float(self.subject_weights[row]['minimum_mass'])
                         item = QtWidgets.QTableWidgetItem(stop_wt)
                         if float(stop_wt) < minimum:
-                            item.setBackground(QtWidgets.QColor(255,0,0))
+                            item.setBackground(QtGui.QColor(255,0,0))
 
                     else:
                         item = QtWidgets.QTableWidgetItem(str(self.subject_weights[row][col]))
@@ -2644,7 +2635,7 @@ class Weights(QtWidgets.QTableWidget):
                 self.setItem(row, j, item)
 
         # make headers
-        self.setHorizontalHeaderLabels(self.colnames.values())
+        self.setHorizontalHeaderLabels(list(self.colnames.values()))
         self.resizeColumnsToContents()
         self.updateGeometry()
         self.adjustSize()
@@ -2676,6 +2667,114 @@ class Weights(QtWidgets.QTableWidget):
             date = self.subject_weights[row]['date']
             column_name = self.colnames.keys()[column] # recall colnames is an ordered dictionary
             self.subjects[subject_name].set_weight(date, column_name, new_val)
+
+class Plugins(QtWidgets.QDialog):
+    """
+    Dialog window that allows plugins to be viewed and installed.
+
+    Works by querying the `wiki <https://wiki.auto-pi-lot.com>`_ ,
+    find anything in the category ``Autopilot Plugins`` , clone the
+    related repo, and reload plugins.
+
+    At the moment this widget is a proof of concept and will be made functional
+    asap :)
+    """
+
+    def __init__(self):
+        super(Plugins, self).__init__()
+
+        self.logger = init_logger(self)
+        self.plugins = {}
+
+        self.init_ui()
+        self.list_plugins()
+
+    def init_ui(self):
+        self.layout = QtWidgets.QGridLayout()
+
+        # top combobox for selecting plugin type
+        self.plugin_type = QtWidgets.QComboBox()
+        self.plugin_type.addItem("Plugin Type")
+        self.plugin_type.addItem('All')
+        for ptype in registry.REGISTRIES:
+            self.plugin_type.addItem(str(ptype.name).capitalize())
+        self.plugin_type.currentIndexChanged.connect(self.select_plugin_type)
+
+        # left panel for listing plugins
+        self.plugin_list = QtWidgets.QListWidget()
+        self.plugin_list.currentItemChanged.connect(self.select_plugin)
+        self.plugin_details = QtWidgets.QFormLayout()
+
+        self.plugin_list.setMinimumWidth(200)
+        self.plugin_list.setMinimumHeight(600)
+
+        self.status = QtWidgets.QLabel()
+        self.download_button = QtWidgets.QPushButton('Download')
+        self.download_button.setDisabled(True)
+
+        # --------------------------------------------------
+        # layout
+
+        self.layout.addWidget(self.plugin_type, 0, 0, 1, 2)
+        self.layout.addWidget(self.plugin_list, 1, 0, 1, 1)
+        self.layout.addLayout(self.plugin_details, 1, 1, 1, 1)
+        self.layout.addWidget(self.status, 2, 0, 1, 1)
+        self.layout.addWidget(self.download_button, 2, 1, 1, 1)
+
+        self.layout.setRowStretch(0, 1)
+        self.layout.setRowStretch(1, 10)
+        self.layout.setRowStretch(2, 1)
+
+        self.setLayout(self.layout)
+
+    def list_plugins(self):
+        self.status.setText('Querying wiki for plugin list...')
+
+        self.plugins = plugins.list_wiki_plugins()
+        self.logger.info(f'got plugins: {self.plugins}')
+
+        self.status.setText(f'Got {len(self.plugins)} plugins')
+
+    def download_plugin(self):
+        pass
+
+    def select_plugin_type(self):
+        nowtype = self.plugin_type.currentText()
+
+
+        if nowtype == "Plugin Type":
+            return
+        elif nowtype == "All":
+            plugins = self.plugins.copy()
+        else:
+            plugins = [plug for plug in self.plugins if plug['Is Autopilot Plugin Type'] == nowtype]
+
+        self.logger.debug(f'showing plugin type {nowtype}, matched {plugins}')
+
+        self.plugin_list.clear()
+        for plugin in plugins:
+            self.plugin_list.addItem(plugin['name'])
+
+    def select_plugin(self):
+        if self.plugin_list.currentItem() is None:
+            self.download_button.setDisabled(True)
+        else:
+            self.download_button.setDisabled(False)
+
+        plugin_name = self.plugin_list.currentItem().text()
+        plugin = [p for p in self.plugins if p['name'] == plugin_name][0]
+
+        while self.plugin_details.rowCount() > 0:
+            self.plugin_details.removeRow(0)
+
+        for k, v in plugin.items():
+            if k == 'name':
+                continue
+            self.plugin_details.addRow(k, QtWidgets.QLabel(v))
+
+
+
+
 
 
 #####################################################
@@ -3234,7 +3333,7 @@ def pop_dialog(message:str,
     bitwise_buttons = reduce(ior, button_objs)
     msgBox.setStandardButtons(bitwise_buttons)
 
-    if 'Ok' in buttons:
+    if "Ok" in buttons:
         msgBox.setDefaultButton(QtWidgets.QMessageBox.Ok)
 
     icon = _MAPS['dialog']['icon'].get(msg_type, None)

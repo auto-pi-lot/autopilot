@@ -5,13 +5,17 @@ import argparse
 import json
 import sys
 import os
+from pathlib import Path
+from pprint import pformat
+
 import datetime
 import logging
 import threading
-from pathlib import Path
 from collections import OrderedDict as odict
 import numpy as np
+
 from PySide2 import QtCore, QtGui, QtSvg, QtWidgets
+
 from autopilot import prefs
 from autopilot.core import styles
 
@@ -39,8 +43,8 @@ if __name__ == '__main__':
 from autopilot.core.subject import Subject
 from autopilot.core.plots import Plot_Widget
 from autopilot.networking import Net_Node, Terminal_Station
-from autopilot.core.utils import InvokeEvent, Invoker, get_invoker
-from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test, pop_dialog, Stream_Video
+from autopilot.utils.invoker import get_invoker
+from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test, pop_dialog, Stream_Video, Plugins
 from autopilot.core.loggers import init_logger
 
 # Try to import viz, but continue if that doesn't work
@@ -99,7 +103,6 @@ class Terminal(QtWidgets.QMainWindow):
         node (:class:`~.networking.Net_Node`): Our Net_Node we use to communicate with our main networking object
         networking (:class:`~.networking.Terminal_Station`): Our networking object to communicate with the outside world
         subjects (dict): A dictionary mapping subject ID to :class:`~.subject.Subject` object.
-        pilots (dict): A dictionary mapping pilot ID to a list of its subjects, its IP, and any other pilot attributes.
         layout (:class:`QtWidgets.QGridLayout`): Layout used to organize widgets
         control_panel (:class:`~.gui.Control_Panel`): Control Panel to manage pilots and subjects
         data_panel (:class:`~.plots.Plot_Widget`): Plots for each pilot and subject.
@@ -129,7 +132,6 @@ class Terminal(QtWidgets.QMainWindow):
 
         # data
         self.subjects = {}  # Dict of our open subject objects
-        self.pilots = None
 
         # gui
         self.layout = None
@@ -140,17 +142,11 @@ class Terminal(QtWidgets.QMainWindow):
         self.data_panel = None
         self.logo = None
 
+        # property private attributes
+        self._pilots = None
+
         # logging
         self.logger = init_logger(self)
-
-        # Load pilots db as ordered dictionary
-        pilot_db_fn = Path(prefs.get('PILOT_DB'))
-        if pilot_db_fn.exists():
-            with open(pilot_db_fn) as pilot_file:
-                self.pilots = json.load(pilot_file, object_pairs_hook=odict)
-        else:
-            self.logger.warning(f'Pilot DB file not found at! {pilot_db_fn}')
-            self.pilots = {}
 
         # Listen dictionary - which methods to call for different messages
         # Methods are spawned in new threads using handle_message
@@ -293,13 +289,18 @@ class Terminal(QtWidgets.QMainWindow):
 
         # Plots menu
         self.plots_menu = self.menuBar().addMenu("&Plots")
-        psychometric = QtGui.QAction("Psychometric Curve", self, triggered=self.plot_psychometric)
+        psychometric = QtWidgets.QAction("Psychometric Curve", self, triggered=self.plot_psychometric)
         self.plots_menu.addAction(psychometric)
 
         # Create a Tests menu and add a Test Bandwidth action
         self.tests_menu = self.menuBar().addMenu("Test&s")
         bandwidth_test_act = QtWidgets.QAction("Test Bandwidth", self, triggered=self.test_bandwidth)
         self.tests_menu.addAction(bandwidth_test_act)
+
+        # Create a Plugins menu to manage plugins and provide a hook to give them additional terminal actions
+        self.plugins_menu = self.menuBar().addMenu("Plugins")
+        plugin = QtWidgets.QAction("Manage Plugins", self, triggered=self.manage_plugins)
+        self.plugins_menu.addAction(plugin)
 
 
         ## Init main panels and add to layout
@@ -384,6 +385,106 @@ class Terminal(QtWidgets.QMainWindow):
         self.show()
         logging.info('UI Initialized')
 
+    def reset_ui(self):
+        """
+        Clear Layout and call :meth:`~.Terminal.initUI` again
+        """
+
+        # type: () -> None
+        self.layout = QtWidgets.QGridLayout()
+        self.layout.setSpacing(0)
+        self.layout.setContentsMargins(0,0,0,0)
+        self.widget.setLayout(self.layout)
+        self.setCentralWidget(self.widget)
+        self.initUI()
+
+    ################
+    # Properties
+
+    @property
+    def pilots(self) -> odict:
+        """
+        A dictionary mapping pilot ID to its attributes, including a list of its subjects assigned to it, its IP, etc.
+
+        Returns:
+            dict: like ``self.pilots['pilot_id'] = {'subjects': ['subject_0', 'subject_1'], 'ip': '192.168.0.101'}``
+        """
+
+        # try to load, if none exists make one
+        if self._pilots is None:
+
+            pilot_db_fn = Path(prefs.get('PILOT_DB'))
+
+            # if pilot file doesn't exist, make blank one
+            if not pilot_db_fn.exists():
+                self.logger.warning(f'No pilot_db.json file was found at {pilot_db_fn}, creating a new one')
+                self._pilots = odict()
+                with open(pilot_db_fn, 'w') as pilot_file:
+                    json.dump(self._pilots, pilot_file)
+
+            # otherwise, try to load it
+            else:
+                try:
+                    # Load pilots db as ordered dictionary
+                    with open(pilot_db_fn, 'r') as pilot_file:
+                        self._pilots = json.load(pilot_file, object_pairs_hook=odict)
+                    self.logger.info(f'successfully loaded pilot_db.json file from {pilot_db_fn}')
+                    self.logger.debug(pformat(self._pilots))
+                except Exception as e:
+                    self.logger.exception((f"Exception opening pilot_db.json file at {pilot_db_fn}, got exception: {e}.\n",
+                                           "Not proceeding to prevent possibly overwriting corrupt pilot_db.file"))
+                    raise e
+
+        return self._pilots
+
+
+    @property
+    def protocols(self) -> list:
+        """
+        List of protocol names available in ``PROTOCOLDIR``
+
+        Returns:
+            list: list of protocol names in ``prefs.get('PROTOCOLDIR')``
+        """
+        # get list of protocol files
+        protocols = os.listdir(prefs.get('PROTOCOLDIR'))
+        protocols = [os.path.splitext(p)[0] for p in protocols if p.endswith('.json')]
+        return protocols
+
+    @property
+    def subject_protocols(self) -> dict:
+        """
+
+        Returns:
+            subject_protocols (dict): a dictionary of subjects: [protocol, step]
+        """
+        # get subjects and current protocols
+        subjects = self.subject_list
+        subjects_protocols = {}
+        for subject in subjects:
+            if subject not in self.subjects.keys():
+                self.subjects[subject] = Subject(subject)
+
+            subjects_protocols[subject] = [self.subjects[subject].protocol_name, self.subjects[subject].step]
+
+        return subjects_protocols
+
+    @property
+    def subject_list(self) -> list:
+        """
+        Get a list of all subject IDs
+
+        Returns:
+            list: list of all subject IDs present in :attr:`.Terminal.pilots`
+        """
+        subjects = []
+        for pilot, vals in self.pilots.items():
+            subjects.extend(vals['subjects'])
+
+        # use sets to get a unique list
+        subjects = list(set(subjects))
+
+        return subjects
 
     ##########################3
     # Listens & inter-object methods
@@ -635,23 +736,6 @@ class Terminal(QtWidgets.QMainWindow):
                 with open(protocol_file, 'w') as pfile_open:
                     json.dump(save_steps, pfile_open, indent=4, separators=(',', ': '), sort_keys=True)
 
-    @property
-    def subject_list(self):
-        """
-        Get a list of all subject IDs
-
-        Returns:
-            list: list of all subject IDs present in :attr:`.Terminal.pilots`
-        """
-        subjects = []
-        for pilot, vals in self.pilots.items():
-            subjects.extend(vals['subjects'])
-
-        # use sets to get a unique list
-        subjects = list(set(subjects))
-
-        return subjects
-
     def subject_weights(self):
         """
         Gets recent weights from all :attr:`~.Terminal.subjects` and
@@ -700,39 +784,6 @@ class Terminal(QtWidgets.QMainWindow):
         msgbox.setText("Subject Protocols Updated for:")
         msgbox.setDetailedText("\n".join(sorted(updated_subjects)))
         msgbox.exec_()
-
-    @property
-    def protocols(self):
-        """
-        Returns:
-            list: list of protocol files in ``prefs.get('PROTOCOLDIR')``
-        """
-        # get list of protocol files
-        protocols = os.listdir(prefs.get('PROTOCOLDIR'))
-        protocols = [os.path.splitext(p)[0] for p in protocols if p.endswith('.json')]
-        return protocols
-
-    @property
-    def subject_protocols(self):
-        """
-
-        Returns:
-            subject_protocols (dict): a dictionary of subjects: [protocol, step]
-        """
-        # get subjects and current protocols
-        subjects = self.subject_list
-        subjects_protocols = {}
-        for subject in subjects:
-            try:
-                if subject not in self.subjects.keys():
-                    self.subjects[subject] = Subject(subject)
-
-                subjects_protocols[subject] = [self.subjects[subject].protocol_name, self.subjects[subject].step]
-            except Exception as e:
-                self.logger.exception(f'Could not get protocol for subject {subject}, got error: {e}')
-
-        # TODO: Pop dialogue here with exceptions, but should implement in a uniform not ad-hoc way.
-        return subjects_protocols
 
     def reassign_protocols(self):
         """
@@ -854,6 +905,10 @@ class Terminal(QtWidgets.QMainWindow):
 
             #viz.plot_psychometric(self.subjects_protocols)
         #result = psychometric_dialog.exec_()
+
+    def manage_plugins(self):
+        plugs = Plugins()
+        plugs.exec_()
 
     def stream_video(self):
         """

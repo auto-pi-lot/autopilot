@@ -48,6 +48,10 @@ Warning:
 
 This iteration of prefs with respect to work done on the `People's Ventilator Project <https://www.peoplesvent.org/en/latest/pvp.common.prefs.html>`_
 
+If a pref has a string for a ``'deprecation'`` field in :data:`.prefs._DEFAULTS` , a ``FutureWarning``
+will be raised with the string given as the message
+
+
 """
 
 # this is strictly a placeholder module to
@@ -62,7 +66,6 @@ This iteration of prefs with respect to work done on the `People's Ventilator Pr
 # Prefs is a top-level module! It shouldn't depend on anything else in Autopilot,
 # and if it does, it should carefully import it where it is needed!
 # (prefs needs to be possible to import everywhere, including eg. in setup_autopilot)
-
 import json
 import subprocess
 import multiprocessing as mp
@@ -192,7 +195,19 @@ _DEFAULTS = odict({
         'type': 'str',
         'text': 'Location of virtual environment, if used.',
         "scope": Scopes.COMMON,
-        "default": sys.prefix if hasattr(sys, 'real_prefix') or (sys.base_prefix != sys.prefix) else False
+        "default": str(Path(sys.prefix).resolve()) if hasattr(sys, 'real_prefix') or (sys.base_prefix != sys.prefix) else False
+    },
+    'AUTOPLUGIN': {
+        'type': 'bool',
+        'text': "Attempt to import the contents of the plugin directory",
+        "scope": Scopes.COMMON,
+        "default": True
+    },
+    'PLUGIN_DB': {
+        'type': 'str',
+        'text': 'filename to use for the .json plugin_db that keeps track of installed plugins',
+        "default": str(_basedir / "plugin_db.json"),
+        "scope": Scopes.COMMON
     },
     'BASEDIR': {
         'type': 'str',
@@ -233,7 +248,7 @@ _DEFAULTS = odict({
     'PLUGINDIR': {
         'type': 'str',
         "text": "Directory to import ",
-        "default": os.path.join(os.path.expanduser("~"), "autopilot"),
+        "default": str(_basedir / 'plugins'),
         "scope": Scopes.DIRECTORY
     },
     'REPODIR': {
@@ -315,8 +330,9 @@ _DEFAULTS = odict({
         "scope": Scopes.LINEAGE
     },
     'CHILDID': {
-        'type': 'str',
-        "text": "Child ID:",
+        'type': 'list',
+        "text": "List of Child ID:",
+        'default': [],
         "depends": ("LINEAGE", "PARENT"),
         "scope": Scopes.LINEAGE
     },
@@ -345,15 +361,16 @@ _DEFAULTS = odict({
     },
     'NCHANNELS': {
         'type': 'int',
-        'text': "Number of Audio channels",
+        'text': "Number of Audio channels (deprecated; used OUTCHANNELS)",
         'default': 1,
         'depends': 'AUDIOSERVER',
-        "scope": Scopes.AUDIO
+        "scope": Scopes.AUDIO,
+        'deprecation': "Deprecated and will be removed, use OUTCHANNELS instead"
     },
     'OUTCHANNELS': {
         'type': 'list',
         'text': 'List of Audio channel indexes to connect to',
-        'default': '[1]',
+        'default': '',
         'depends': 'AUDIOSERVER',
         "scope": Scopes.AUDIO
     },
@@ -412,6 +429,11 @@ def get(key: typing.Union[str, None] = None):
         return globals()['_PREFS']._getvalue()
 
     else:
+        # check for deprecation
+        dep_notice = globals()['_DEFAULTS'].get(key, {}).get('deprecation', None)
+        if dep_notice is not None:
+            warnings.warn(dep_notice, FutureWarning)
+
         # try to get the value from the prefs manager
         try:
             return globals()['_PREFS'][key]

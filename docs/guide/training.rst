@@ -3,8 +3,7 @@
 Training a Subject
 ******************
 
-After you have set up a `Terminal <setup_terminal>`_ and a `Pilot <setup_pilot>`_, launch the Terminal.
-
+After you have set up a Terminal and a Pilot, launch the Terminal.
 
 Connecting the Pilot
 ====================
@@ -263,7 +262,7 @@ If a Pilot doesn't start the task appropriately, if you have installed the Pilot
 
 .. note::
 
-    Because Raspberry Pis are common prey on the internet, we strongly advise changing the default password, installing RSA keys to access the pi, and disabling password access via SSH (see `Pilot Setup <setup_pilot_>`_).
+    Because Raspberry Pis are common prey on the internet, we strongly advise changing the default password, installing RSA keys to access the pi, and disabling password access via SSH.
 
 and then printing the end of the logs with ``journalctl``::
 

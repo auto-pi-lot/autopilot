@@ -20,7 +20,7 @@ import importlib
 import re
 from pathlib import Path
 
-from autopilot import hardware
+import autopilot
 from autopilot.setup.run_script import call_series, run_script, list_scripts
 from autopilot.setup.scripts import SCRIPTS
 from autopilot.prefs import _DEFAULTS, Scopes
@@ -89,7 +89,7 @@ class Autopilot_Form(nps.Form):
                 if isinstance(param['depends'], str):
                     depends_on = param['depends']
                     depend_value = True
-                elif isinstance(param['depends'], tuple):
+                elif isinstance(param['depends'], (tuple, list)):
                     depends_on = param['depends'][0]
                     depend_value = param['depends'][1]
 
@@ -109,17 +109,6 @@ class Autopilot_Form(nps.Form):
         for param_name, param in params.items():
             if param['type'] == 'bool':
                 widget = self.add(nps.CheckBox, name=param['text'])
-            elif param['type'] in ('str', 'int', 'list', 'float'):
-                # try to get default from prefs, otherwise use the hardcoded default if present. otherwise blank
-                if param_name in prefs.keys():
-                    default = prefs[param_name]
-                else:
-                    try:
-                        default = param['default']
-                    except KeyError:
-                        default = ''
-
-                widget = self.add(nps.TitleText, name=param['text'], value = str(default))
             elif param['type'] == 'choice':
                 if param_name in prefs.keys():
                     try:
@@ -140,7 +129,19 @@ class Autopilot_Form(nps.Form):
                                   value = default_ind,
                                   scroll_exit = True)
             else:
-                raise Warning("Not sure what to do with param {} with type {}".format(param_name, param['type']))
+                # params that just need a textbox, will attempt to be coerced
+                # in unfold_values with ast.literal_eval.
+                # eg. type in ('str', 'int', 'list', 'float')
+                # try to get default from prefs, otherwise use the hardcoded default if present. otherwise blank
+                if param_name in prefs.keys():
+                    default = prefs[param_name]
+                else:
+                    try:
+                        default = param['default']
+                    except KeyError:
+                        default = ''
+
+                widget = self.add(nps.TitleText, name=param['text'], value=str(default))
 
             # if this widget depends on another, initially make it uneditable
             if 'depends' in param.keys():
@@ -192,54 +193,30 @@ class Hardware_Form(nps.FormWithMenus, Autopilot_Form):
     def create(self):
         self.add(nps.FixedText, value="Use the ctrl+X menu to add new hardware", editable=False, color="VERYGOOD")
 
-        hardware_objs = self.list_hardware()
+        # hardware_objs = self.list_hardware()
+        hardware_objs = autopilot.get_hardware()
+        # make dict, grouping by module
+        hardware_dict = {}
+        for hw_class in hardware_objs:
+            module_name = hw_class.__module__.split('.')[-1]
+            if module_name not in hardware_dict.keys():
+                hardware_dict[module_name] = []
+            hardware_dict[module_name].append(hw_class)
 
-        for module, hardware_classes in hardware_objs.items():
+        for module, hardware_classes in hardware_dict.items():
 
             mod_menu = self.add_menu(module)
             for class_name in hardware_classes:
-                mod_menu.addItem(text=class_name, onSelect=self.add_hardware, arguments=[module, class_name])
+                mod_menu.addItem(text=class_name,
+                                 onSelect=self.add_hardware,
+                                 arguments=[module, class_name])
 
-    #
-    # def init_hardware(self):
-    #     global prefs
-    #     if 'HARDWARE' in prefs.keys():
-    #         for hw_group, hardware_name in prefs
-    #
-    # def add_hardware_widget(self, sigs):
-    #
-
-    def list_hardware(self):
-        # start at the top of the autopilot hardware package and work down
-        # get all classes that are defined within the hardware module
-        base_hardware = [m[0]for m in inspect.getmembers(hardware, inspect.isclass) if m[1].__module__ == hardware.__name__]
-
-        hardware_path = os.path.dirname(hardware.__file__)
-
-        # get names of modules
-        submodules = [mod for _, mod, _ in pkgutil.iter_modules([hardware_path])]
-        submod_paths = [os.path.join(hardware_path, mod)+'.py' for mod in submodules]
-
-        # we don't want to have to import all the hardware modules just to get a list of them,
-        # and only want to try to import them if the user wants to add one to their system
-        # so we have to parse the files to get the names of the classes
-
-        hardware_objs = {}
-        for submod_name, submod in zip(submodules, submod_paths):
-            with open(submod, 'r') as submod_f:
-                submod_ast = ast.parse(submod_f.read())
-
-            submod_classes = [n.name for n in submod_ast.body if isinstance(n, ast.ClassDef) and n.name not in hardware.META_CLASS_NAMES]
-            hardware_objs[submod_name] = submod_classes
-
-        return hardware_objs
-
-    def add_hardware(self, module, class_name):
+    def add_hardware(self, class_name):
         #self.nextrely = 1
         self.DISPLAY()
 
         # import the class
-        hw_class = getattr(importlib.import_module("autopilot.hardware."+module), class_name)
+        hw_class = autopilot.get_hardware(class_name)
         # get its parent classes (which includes class itself)
         hw_parents = inspect.getmro(hw_class)
         # get signatures for each
@@ -264,12 +241,17 @@ class Hardware_Form(nps.FormWithMenus, Autopilot_Form):
                     sigs.append((param_name, param_default))
                     param_names.append(param_name)
 
+        module = hw_class.__module__.split('.')[-1]
         MODULE = module.upper()
         # create title and input widgets for arguments
 
         #pdb.set_trace()
 
-        self.add(nps.FixedText, value="{}.{}".format(module, class_name), rely=self.altrely, editable=False, color="VERYGOOD")
+        self.add(nps.FixedText,
+                 value="{}.{}".format(module, class_name),
+                 rely=self.altrely,
+                 editable=False,
+                 color="VERYGOOD")
 
         self.altrely+=1
 
@@ -279,11 +261,10 @@ class Hardware_Form(nps.FormWithMenus, Autopilot_Form):
             if sig[1] is None:
                 sig = (sig[0], '')
 
-
-            #if isinstance(sig[1], bool):
-            #    hw_widgets.append(self.add(nps.CheckBox, name=sig[0], value=sig[1], rely=self.altrely))
-            #else:
-            hw_widgets[sig[0]] = self.add(nps.TitleText, name=sig[0], value=str(sig[1]), rely=self.altrely)
+            hw_widgets[sig[0]] = self.add(nps.TitleText,
+                                          name=sig[0],
+                                          value=str(sig[1]),
+                                          rely=self.altrely)
 
             self.altrely+=1
         self.altrely+=1
@@ -389,6 +370,10 @@ class Autopilot_Setup(nps.NPSAppManaged):
     }
     """
     Allow different agents to have different paths through setup
+    
+    For each Agent, a list of forms to call in order using :meth:`.next_form_in_path`
+    
+    Setup always starts with the :class:`.Agent_Form` which populates the :attr:`.agent` and :attr:`.path` attributes
     """
 
     def __init__(self, prefs):
@@ -403,6 +388,8 @@ class Autopilot_Setup(nps.NPSAppManaged):
     def onStart(self):
         """
         Add forms by gathering subclasses of :class:`.Autopilot_Form`
+
+        Set the :class:`.Agent_Form` as the ``'MAIN'`` form -- opened first.
         """
         self.forms['AGENT'] = self.addForm('MAIN', Agent_Form, name="Select Agent")
 
@@ -411,6 +398,13 @@ class Autopilot_Setup(nps.NPSAppManaged):
             self.forms[form_class.NAME] = self.addForm(form_class.NAME, form_class, name=form_class.DESCRIPTION)
 
     def next_form_in_path(self, calling_form: Autopilot_Form):
+        """
+        Call :meth:`.setNextForm` to set the next form in the :attr:`.path`
+        :attr:`.path` and :attr:`.agent` will be set by :class:`.Agent_Form`
+
+        Args:
+            calling_form (:class:`.Autopilot_Form`): The currently active form
+        """
         # path = self.PATHS[self.agent]
         next_ind = self.path.index(calling_form.NAME) + 1
         if next_ind >= len(self.path):

@@ -11,7 +11,7 @@ blosc
 JACK-Client
 scikit-video
 tqdm
-numpy
+numpy>=1.16.5
 pandas
 tables
 cffi

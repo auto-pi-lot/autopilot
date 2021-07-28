@@ -1,5 +1,18 @@
 .. _changelog_v030:
 
+v0.3.5 (February 22, 2021)
+--------------------------
+
+Bugfixes
+~~~~~~~~
+
+* Very minor one, fixes to the way :class:`.Terminal` accesses the ``pilot_db.json`` file to use :attr:`.Terminal.pilots`
+  property that makes a new pilot_db.json file if one doesn't exist, but otherwise loads the one that is found in
+  ``prefs.get('PILOT_DB')``
+* Reorganized :class:`.Terminal` source to group properties together & minor additions of type hinting
+* Fixed some bad fallback behavior looking for files in old hardcoded default directories, eg. in the ye olde
+  :func:`.utils.get_pilotdb`
+
 v0.3.4 (December 13, 2020)
 ---------------------------
 

@@ -154,7 +154,7 @@ class Hardware(object):
 
         When not redefined, a warning is given.
         """
-        Exception('The release method was not overridden by the subclass!')
+        raise Exception('The release method was not overridden by the subclass!')
 
     def assign_cb(self, trigger_fn):
         """
@@ -165,7 +165,7 @@ class Hardware(object):
         When not redefined, a warning is given.
         """
         if self.is_trigger:
-            Exception("The assign_cb method was not overridden by the subclass!")
+            raise Exception("The assign_cb method was not overridden by the subclass!")
 
     def get_name(self):
         """
@@ -275,3 +275,4 @@ class Hardware(object):
 
     def __del__(self):
         self.release()
+

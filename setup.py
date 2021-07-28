@@ -146,5 +146,5 @@ setup(
         "Operating System :: MacOS",
         "Topic :: Scientific/Engineering"
     ],
-    python_requires="==3.7.*"
+    python_requires=">=3.7.*"
 )

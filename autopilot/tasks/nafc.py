@@ -15,7 +15,7 @@ from autopilot.stim.sound import sounds as stim_sounds
 from autopilot.hardware import gpio
 from collections import OrderedDict as odict
 from autopilot.networking import Net_Node
-from autopilot.core.utils import find_recursive
+from autopilot.utils.common import find_key_recursive
 
 from autopilot import prefs
 import pdb
@@ -564,14 +564,15 @@ class Nafc_Gap_Laser(Nafc_Gap):
             arena_led_mode ('ON', 'STIM'): Whether the overhead LED should always be 'ON', or whether it should be illuminated for the duration of the longest stimulus at every request
 
         Attributes:
-            laser_conditions (tuple): tuple of dicts of laser conditions, of format::
+            laser_conditions (tuple): tuple of dicts of laser conditions, of format:
+                ::
 
-                {
-                'freq': laser frequency,
-                'duty_cycle': laser duty cycle,
-                'duration': laser duration,
-                'script_id': script ID for the series used by the laser Digital Out object,
-                }
+                    {
+                    'freq': laser frequency,
+                    'duty_cycle': laser duty cycle,
+                    'duration': laser duration,
+                    'script_id': script ID for the series used by the laser Digital Out object,
+                    }
         """
         self.laser_probability = float(laser_probability)
         self.laser_mode = laser_mode
@@ -591,12 +592,12 @@ class Nafc_Gap_Laser(Nafc_Gap):
 
         # -----------------------------------
         # create a pulse for the LED that's equal to the longest stimulus duration
-        # use find_recursive to find all durations
+        # use find_key_recursive to find all durations
         # FIXME: implement stimulus managers properly, including API to get attributes of stimuli
         if self.arena_led_mode == "ON":
             self.hardware['LEDS']['TOP'].turn(True)
         elif self.arena_led_mode == "STIM":
-            stim_durations = list(find_recursive('duration', kwargs['stim']))
+            stim_durations = list(find_key_recursive('duration', kwargs['stim']))
             max_duration = np.max(stim_durations)
             self.hardware['LEDS']['TOP'].store_series('on', values=1, durations=max_duration )
         else:
