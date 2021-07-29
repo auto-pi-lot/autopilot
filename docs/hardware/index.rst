@@ -14,5 +14,4 @@ hardware
    gpio
    i2c
    usb
-   esoteric
 
