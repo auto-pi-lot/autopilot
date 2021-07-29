@@ -24,7 +24,7 @@ We have tried to take care to make certain platform-specific dependencies not br
 so if you have some difficulty installing autopilot on a non-raspberry-pi linux machine please submit an issue!
 
 
-Pre-installation prep
+Pre-installation
 =====================
 
 On the Pilot device
@@ -39,7 +39,9 @@ It's also best to update the Pi's operating system at this time::
     sudo apt update
     sudo apt upgrade -y
 
-Now install the system packages that are required by Autopilot. You can do this by running this command, or it's also available as a setup script in the guided installation of Autopilot. ::
+Now install the system packages that are required by Autopilot.
+You can do this by running this command, or it's also available as a setup script
+in the guided installation of Autopilot. (``python -m autopilot.setup.run_script env_pilot``) ::
 
     sudo apt install -y \
         python3-dev \
@@ -61,7 +63,17 @@ Now install the system packages that are required by Autopilot. You can do this 
 On the Terminal device
 ----------------------
 
-On the computer that will run the Terminal, you also need to install virtualenv and create a virtualenv for Autopilot, but you don't need to install all the system dependencies (the line beginning with "sudo apt install").
+The following system packages are required by ``PySide2`` (which no longer packages ``xcb``)::
+
+    sudo apt-get update && \
+    sudo apt-get install -y \
+      libxcb-icccm4 \
+      libxcb-image0 \
+      libxcb-keysyms1 \
+      libxcb-randr0 \
+      libxcb-render-util0 \
+      libxcb-xinerama0 \
+      libxcb-xfixes0
 
 Creating a Virtual Environment
 ------------------------------
@@ -79,7 +91,6 @@ be located anywhere.
 
     mkdir ~/.venv
     python3 -m virtualenv ~/.venv/autopilot
-    source ~/
 
 **With conda**::
 
@@ -94,7 +105,7 @@ The virtual environment must be "activated" now and any time you work with autop
 
 **With `virtualenv`**::
 
-    source ~/.venv/autopilot
+    source ~/.venv/autopilot/bin/activate
 
 **With conda**::
 

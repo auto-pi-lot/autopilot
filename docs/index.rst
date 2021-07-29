@@ -46,7 +46,7 @@ This documentation is very young and is very much a work in progress! Please `su
    Training a Subject <guide/training>
    Writing a Task <guide/task>
    Writing a Hardware Class <guide/hardware>
-
+   Examples <examples>
 
 .. toctree::
    :maxdepth: 1
@@ -59,6 +59,7 @@ This documentation is very young and is very much a work in progress! Please `su
    Tasks <tasks/index>
    Transformations <transform/index>
    Visualization Tools <viz/index>
+   Utilities <utils/index>
    Setup <setup/index>
    Prefs <prefs>
    External <external>

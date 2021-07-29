@@ -28,7 +28,7 @@ except ImportError:
 
 class I2C_9DOF(Hardware):
     """
-    A `Sparkfun 9DOF<https://www.sparkfun.com/products/13944>`_ combined accelerometer, magnetometer, and gyroscope.
+    A `Sparkfun 9DOF <https://www.sparkfun.com/products/13944>`_ combined accelerometer, magnetometer, and gyroscope.
 
     This device uses I2C, so must be connected accordingly:
 

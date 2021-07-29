@@ -25,3 +25,23 @@ def test_prefs_defaults(default_pref):
     for k, v in existing_prefs.items():
         prefs._PREFS[k] = v
 
+
+def test_prefs_deprecation():
+    """
+    If there is a string in the ``'deprecation'`` field of a pref in `_DEFAULTS`,
+    a warning is raised printing the string.
+    """
+
+    # add a fake deprecated pref
+    prefs._DEFAULTS['DEPRECATEME'] = {
+        'type': 'int',
+        "text": "A pref that was born just to die",
+        "default": 4,
+        "scope": prefs.Scopes.COMMON,
+        'deprecation': 'This pref will be DECIMATED i mean DEPRECATED in a future version'
+    }
+
+    with pytest.warns(FutureWarning):
+        pref_val = prefs.get('DEPRECATEME')
+
+    assert pref_val == 4
