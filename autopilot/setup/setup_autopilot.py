@@ -288,7 +288,7 @@ def make_ectopic_dirnames(basedir:Path) -> dict:
     out['BASEDIR'] = str(basedir)
     for key, val in _DEFAULTS.items():
         if val['scope'] == Scopes.DIRECTORY and key != "BASEDIR":
-            out[key] = str(basedir / Path(val).stem)
+            out[key] = str(basedir / Path(val['default']).stem)
     return out
 
 

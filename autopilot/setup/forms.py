@@ -51,7 +51,9 @@ class Autopilot_Form(nps.Form):
     NAME = "" # type: str
     DESCRIPTION = "" # type: str
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, prefs:dict, *args, **kwargs):
+        self.prefs = prefs
+        self.exports = {} # put any programmatically declared prefs here.
         self.input = odict()
         self.depends = {}
         super(Autopilot_Form, self).__init__(*args, **kwargs)
@@ -78,7 +80,6 @@ class Autopilot_Form(nps.Form):
     def populate_form(self, params):
 
         # check for existing values in global prefs
-        global prefs
 
         self.populate_dependencies(params)
 
@@ -87,9 +88,9 @@ class Autopilot_Form(nps.Form):
             if param['type'] == 'bool':
                 widget = self.add(nps.CheckBox, name=param['text'])
             elif param['type'] == 'choice':
-                if param_name in prefs.keys():
+                if param_name in self.prefs.keys():
                     try:
-                        default_ind = [param['choices'].index(prefs[param_name])]
+                        default_ind = [param['choices'].index(self.prefs[param_name])]
                     except ValueError:
                         default_ind = [0]
                 else:
@@ -110,8 +111,8 @@ class Autopilot_Form(nps.Form):
                 # in unfold_values with ast.literal_eval.
                 # eg. type in ('str', 'int', 'list', 'float')
                 # try to get default from prefs, otherwise use the hardcoded default if present. otherwise blank
-                if param_name in prefs.keys():
-                    default = prefs[param_name]
+                if param_name in self.prefs.keys():
+                    default = self.prefs[param_name]
                 else:
                     try:
                         default = param['default']
@@ -277,7 +278,6 @@ class Agent_Form(nps.Form):
 
     def afterEditing(self):
         # terminal
-        global prefs
 
         if self.input['AGENT'].value[0] == 0:
             agent_name = "TERMINAL"
@@ -289,7 +289,6 @@ class Agent_Form(nps.Form):
             self.parentApp.setNextForm(None)
             return
 
-        prefs['AGENT'] = agent_name
         self.parentApp.agent = agent_name
         self.parentApp.path = self.parentApp.PATHS[agent_name]
         self.parentApp.next_form_in_path(self)
@@ -370,11 +369,11 @@ class Autopilot_Setup(nps.NPSAppManaged):
 
         Set the :class:`.Agent_Form` as the ``'MAIN'`` form -- opened first.
         """
-        self.forms['AGENT'] = self.addForm('MAIN', Agent_Form, name="Select Agent")
+        self.forms['AGENT'] = self.addForm('MAIN', Agent_Form, name="Select Agent", prefs=self.prefs)
 
         # then iterate through subclasses and add
         for form_class in Autopilot_Form.__subclasses__():
-            self.forms[form_class.NAME] = self.addForm(form_class.NAME, form_class, name=form_class.DESCRIPTION)
+            self.forms[form_class.NAME] = self.addForm(form_class.NAME, form_class, name=form_class.DESCRIPTION, prefs=self.prefs)
 
     def next_form_in_path(self, calling_form: Autopilot_Form):
         """
