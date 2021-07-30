@@ -289,22 +289,6 @@ class Transformer(Child):
             value = value[self.value_subset]
         self.input_q.append(value)
 
-class Parallax_Child(Task):
-
-    HARDWARE = {
-        'MOTION': {
-            'IMU': I2C_9DOF
-        },
-        'CAMS':{
-            'SIDE': PiCamera
-        }
-    }
-
-    def __init__(self, *args, **kwargs):
-        super(Parallax_Child, self).__init__(*args, **kwargs)
-
-
-
 
 
 
