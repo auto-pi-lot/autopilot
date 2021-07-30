@@ -18,6 +18,7 @@ from pathlib import Path
 
 from autopilot.setup.forms import Autopilot_Setup, DIRECTORY_STRUCTURE
 from autopilot.setup.run_script import run_script, list_scripts, run_scripts
+from autopilot.prefs import _DEFAULTS, Scopes
 
 
 def make_dir(adir:Path, permissions:int=0o777):
@@ -82,6 +83,8 @@ def parse_manual_prefs(manual_prefs:typing.List[str]) -> dict:
         key, val = p.split('=')
         prefdict[key] = val
     return prefdict
+
+
 
 
 
@@ -279,16 +282,31 @@ def results_string(env_results:dict,
 
     return env_result
 
+def make_ectopic_dirnames(basedir:Path) -> dict:
+    basedir = Path(basedir).resolve()
+    out = {}
+    out['BASEDIR'] = str(basedir)
+    for key, val in _DEFAULTS.items():
+        if val['scope'] == Scopes.DIRECTORY and key != "BASEDIR":
+            out[key] = str(basedir / Path(val).stem)
+    return out
+
+
 def main():
     env = {}
     env_results = {}
     prefs = {}
+    extra_dirs = {}
     error_msgs = []
     config_msgs = []
 
     args = parse_args()
 
     autopilot_dir = locate_user_dir(args)
+    # if we were passed an explicit basedir, make a dict of the usual directory structure
+    # to use as defaults
+    if args.dir is not None:
+        extra_dirs = make_ectopic_dirnames(autopilot_dir)
 
     # attempt to load .prefs from standard location (~/autopilot/prefs.json)
     if args.prefs:
@@ -304,6 +322,10 @@ def main():
     else:
         if not args.quiet:
             print('No existing prefs found, starting from defaults')
+
+    # recombine default directories after loading prefs, but before
+    # incorporating any custom passed prefs.
+    prefs.update(extra_dirs)
 
     # combine and manually given prefs
     if args.pref is not None:
