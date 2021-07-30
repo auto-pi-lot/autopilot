@@ -28,6 +28,14 @@ the script to proceed.
     The above syntax will be used in the future for additional parameterizations that need to be made to scripts (
     though being optional is the only paramaterization avaialable now).
 
+.. note::
+
+    An unadvertised feature of ``raspi-config`` is the ability to run commands frmo the cli --
+    find the name of a command here: https://github.com/RPi-Distro/raspi-config/blob/master/raspi-config
+    and then use it like this: ``sudo raspi-config nonint function_name argument`` , so for example
+    to enable the camera one just calls ``sudo raspi-config nonint do_camera 0`` (where turning the
+    camera on, perhaps counterintuitively, is ``0`` which is true for all commands)
+
 .. todo::
 
     Probably should have these use :data:`.prefs.get('S')copes` as well
@@ -188,6 +196,13 @@ SCRIPTS = odict({
             "sudo sed -i \"/^exit 0/i sudo sh -c 'echo ${usbfs_size} > /sys/module/usbcore/parameters/usbfs_memory_mb'\" /etc/rc.local"
         ],
     },
+    'picamera': {
+        'type': 'bool',
+        'text': 'Enable PiCamera (with raspi-config)',
+        'commands': [
+            'sudo raspi-config nonint do_camera 0'
+        ]
+    },
     'pigpiod': {
         'type': 'bool',
         'text': 'Install pigpio daemon (sneakers fork that gives full timestamps and has greater capacity for scripts)',
@@ -200,6 +215,17 @@ SCRIPTS = odict({
             'cd ..',
             'sudo rm -rf ./pigpio-master',
             'sudo rm ./master.zip'
+        ]
+    },
+    'i2c': {
+        'type': 'bool',
+        'text': 'Enable i2c and set baudrate to 100kHz',
+        'commands': [
+            'sudo sed -i \'s/^#dtparam=i2c_arm=on/dtparam=i2c_arm=on/g\' /boot/config.txt',
+            'sudo sed -i \'$s/$/\ni2c_arm_baudrate=100000/\' /boot/config.txt',
+            'sudo sed -i \'$s/$/\ni2c-dev/\' /etc/modules',
+            'sudo dtparam i2c_arm=on',
+            'sudo modprobe i2c-dev'
         ]
     }
 })

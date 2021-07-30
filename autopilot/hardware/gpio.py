@@ -22,6 +22,7 @@ import time
 import numpy as np
 from datetime import datetime
 import itertools
+import typing
 import warnings
 
 
@@ -180,7 +181,7 @@ class GPIO(Hardware):
             # if a subclass has made this a property, don't fail here
             self.logger.warning('pin_bcm is defined as a property without a setter so cant be set')
 
-        self.pig = None
+        self.pig = None # type: typing.Optional[pigpio.pi]
         self.pigpiod = None
 
         # init pigpio
@@ -197,8 +198,7 @@ class GPIO(Hardware):
         if not self.CONNECTED:
             RuntimeError('No connection could be made to the pigpio daemon')
 
-
-    def init_pigpio(self):
+    def init_pigpio(self) -> bool:
         """
         Create a socket connection to the pigpio daemon and set as :attr:`GPIO.pig`
 

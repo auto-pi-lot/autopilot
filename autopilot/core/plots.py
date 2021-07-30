@@ -13,6 +13,8 @@ Note:
 
 # Classes for plots
 import logging
+import os
+from collections import deque
 import numpy as np
 import PySide2 # have to import to tell pyqtgraph to use it
 import pandas as pd
@@ -25,7 +27,8 @@ from functools import wraps
 from threading import Event, Thread
 from queue import Queue, Empty, Full
 #import cv2
-pg.setConfigOptions(antialias=True)
+pg.setConfigOptions(antialias=True, imageAxisOrder='row-major')
+
 # from pyqtgraph.widgets.RawImageWidget import RawImageWidget, RawImageGLWidget
 
 import autopilot
@@ -792,7 +795,7 @@ class Video(QtWidgets.QWidget):
             self.layout.addWidget(self.vid_widgets[vid][0],row+1,col,5,1)
 
             # make queue for vid
-            self.qs[vid] = Queue(maxsize=1)
+            self.qs[vid] = deque(maxlen=1)
 
 
 
@@ -813,10 +816,10 @@ class Video(QtWidgets.QWidget):
             for vid, q in self.qs.items():
                 data = None
                 try:
-                    data = q.get_nowait()
+                    data = q.popleft()
                     self.vid_widgets[vid][2].setImage(data)
 
-                except Empty:
+                except IndexError:
                     pass
                 except KeyError:
                     pass
@@ -843,16 +846,8 @@ class Video(QtWidgets.QWidget):
         # cur_time = time()
 
         try:
-            # if there's a waiting frame, it's old now so pull it.
-            _ = self.qs[video].get_nowait()
-        except Empty:
-            pass
-
-        try:
             # put the new frame in there.
-            self.qs[video].put_nowait(data)
-        except Full:
-            return
+            self.qs[video].append(data)
         except KeyError:
             return
 

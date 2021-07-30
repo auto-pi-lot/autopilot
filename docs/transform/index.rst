@@ -12,10 +12,11 @@ Transformations
     :show-inheritance:
 
 .. toctree::
+   coercion
    geometry
    image
    logical
    selection
-   coercion
+   timeseries
    units
 

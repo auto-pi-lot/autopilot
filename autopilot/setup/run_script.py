@@ -75,11 +75,23 @@ def run_script(script_name):
     else:
         Exception('No script named {}, must be one of {}'.format(script_name, "\n".join(SCRIPTS.keys())))
 
-def run_scripts(scripts):
+def run_scripts(scripts) -> bool:
+    """
+    Run a series of scripts, printing results
+
+    Args:
+        scripts (list): list of script names
+
+    Returns:
+        bool: success or failure of scripts - ``True`` if all were successful, ``False`` otherwise.
+    """
     env_results = {}
     for script_name in scripts:
         commands = SCRIPTS[script_name]['commands']
         env_results[script_name] = call_series(commands, script_name)
+
+    # indicate global success
+    success = True
 
     # make results string
     env_result = "\033[0;32;40m\n--------------------------------\nScript Results:\n"
@@ -88,6 +100,7 @@ def run_scripts(scripts):
             env_result += "  [ SUCCESS ] "
         else:
             env_result += "  [ FAILURE ] "
+            success = False
 
         env_result += config
         env_result += '\n'
@@ -95,6 +108,8 @@ def run_scripts(scripts):
     env_result += '--------------------------------\u001b[0m'
 
     print(env_result)
+
+    return success
 
 
 def list_scripts():
@@ -118,7 +133,10 @@ if __name__ == "__main__":
         list_scripts()
         sys.exit()
     elif args.scripts:
-        run_scripts(args.scripts)
-        sys.exit()
+        res = run_scripts(args.scripts)
+        if res:
+            sys.exit()
+        else:
+            sys.exit(1)
     else:
         raise RuntimeError('Need to give name of one or multiple scripts, ')

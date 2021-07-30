@@ -165,5 +165,4 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
         logger = logging.getLogger(logger_name)
         logger.info(f"Logger created: {logger_name}")
 
-
     return logger

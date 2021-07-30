@@ -130,7 +130,7 @@ class Nafc(Task):
 
     def __init__(self, stage_block=None, stim=None, reward=50, req_reward=False,
                  punish_stim=False, punish_dur=100, correction=False, correction_pct=50.,
-                 bias_mode=False, bias_threshold=20, current_trial=0, stim_light=True, **kwargs):
+                 bias_mode=False, bias_threshold=20, stim_light=True, **kwargs):
         """
         Args:
             stage_block (:class:`threading.Event`): Signal when task stages complete.
@@ -181,8 +181,6 @@ class Nafc(Task):
         self.response = None
         self.correct = None
         self.correction_trial = False
-        self.trial_counter = itertools.count(int(current_trial))
-        self.current_trial = int(current_trial)
         #self.discrim_finished = False # Set to true once the discrim stim has finished, used for punishing leaving C early
         self.discrim_playing = False
         self.current_stage = None # Keep track of stages so some asynchronous callbacks know when it's their turn

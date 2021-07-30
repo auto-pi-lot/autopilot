@@ -16,3 +16,4 @@ pandas
 tables
 cffi
 pigpio @ https://github.com/sneakers-the-rat/pigpio/tarball/master
+scipy

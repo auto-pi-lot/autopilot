@@ -87,7 +87,8 @@ extensions = [
     #'sphinxcontrib.fulltoc',
     #'localext.fulltoc'
     'sphinx_sass',
-    'local_directives'
+    'local_directives',
+    'sphinxcontrib.bibtex'
 ]
 
 if try_theme == 'rtd':
@@ -113,6 +114,7 @@ autodoc_default_options = {
     'members': True,
     'member-order': 'bysource',
     # 'exclude-members': '__doc__',
+    'private-members': True,
     'undoc-members': False,
     'show-inheritance': True,
     'autosummary': True
@@ -155,6 +157,9 @@ exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
+
+# location of .bib file used for references
+bibtex_bibfiles = ['autopilot_docs.bib']
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -329,7 +334,8 @@ intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
                        'numpy': ('https://numpy.readthedocs.io/en/latest/', None),
                        'npyscreen': ('https://npyscreen.readthedocs.io/', None),
                        'jack': ('https://jackclient-python.readthedocs.io/en/0.4.5/', None),
-                       'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),}
+                       'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
+                       'picamera': ('https://picamera.readthedocs.io/en/release-1.13/', None)}
 
 # -- Options for todo extension ----------------------------------------------
 

@@ -53,6 +53,7 @@ before_script:
   - "herbstluftwm &"
   - sleep 1
   - mkdir -p /home/travis/autopilot # make directories for logs
+  - mkdir -p /home/travis/autopilot/logs
   # - pylint autopilot
 
 script:

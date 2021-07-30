@@ -12,6 +12,7 @@ import pkgutil
 import ast
 import typing
 from threading import Thread
+import numpy as np
 
 
 def list_classes(module) -> typing.List[typing.Tuple[str, str]]:
@@ -259,3 +260,61 @@ def find_key_value(dicts:typing.List[dict], key:str, value:str, single=True):
 
     return matches
 
+
+class NumpyEncoder(json.JSONEncoder):
+    """
+    Allow json serialization of objects containing numpy arrays.
+
+    Use like ``json.dump(obj, fp, cls=NumpyEncoder)``
+
+    Deserialize with :class:`.NumpyDecoder`
+
+    References:
+        * https://stackoverflow.com/a/49677241/13113166
+        * https://github.com/mpld3/mpld3/issues/434#issuecomment-340255689
+        * https://gist.github.com/massgh/297a73f2dba017ffd28dbc34b9a40e90
+    """
+
+    def default(self, obj):
+        if isinstance(obj, (np.int_, np.intc, np.intp, np.int8,
+                            np.int16, np.int32, np.int64, np.uint8,
+                            np.uint16, np.uint32, np.uint64)):
+            return int(obj)
+        elif isinstance(obj, (np.float_, np.float16, np.float32,
+                              np.float64)):
+            return float(obj)
+        elif isinstance(obj, (np.ndarray,)):  #### This is the fix
+            return {
+                "_kind_": "ndarray",
+                "_value_": obj.tolist()
+            }
+        return json.JSONEncoder.default(self, obj)
+
+class NumpyDecoder(json.JSONDecoder):
+    """
+    Allow json deserialization of objects containing numpy arrays.
+
+    Use like ``json.load(fp, cls=NumpyDecoder)``
+
+    Serialize with :class:`.NumpyEncoder`
+
+    References:
+        * https://stackoverflow.com/a/49677241/13113166
+        * https://github.com/mpld3/mpld3/issues/434#issuecomment-340255689
+        * https://gist.github.com/massgh/297a73f2dba017ffd28dbc34b9a40e90
+    """
+
+    def __init__(self, *args, **kwargs):
+        json.JSONDecoder.__init__(self, object_hook=self.object_hook, *args, **kwargs)
+
+    def object_hook(self, obj):
+        try:
+            kind = obj['_kind_']
+            if kind == 'ndarray':
+                    obj = np.array(obj['_value_'])
+
+        except (TypeError, KeyError):
+            # normal, just return obj
+            pass
+
+        return obj

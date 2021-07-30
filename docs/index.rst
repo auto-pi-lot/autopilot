@@ -77,6 +77,7 @@ This documentation is very young and is very much a work in progress! Please `su
     Discussion <https://github.com/wehr-lab/autopilot/discussions>
     To-Do <todo>
     Changelog <changelog/index>
+    References <references>
 
 
 
