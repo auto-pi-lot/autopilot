@@ -96,9 +96,6 @@ be located anywhere.
 
     conda create --name autopilot python=3.7
 
-.. note::
-    Python version 3.7 is required on both the Terminal and the Pilot due to dependencies on the Spinnaker API for high-speed
-    cameras. In the future we will move to `aravis <https://github.com/SintefManufacturing/python-aravis>`_ to avoid this.
 
 The virtual environment must be "activated" now and any time you work with autopilot
 (:mod:`.setup_autopilot` will detect which venv it is run from and source it in the launch script).
@@ -162,7 +159,7 @@ After installation, set Autopilot up! Autopilot comes with a "guided installatio
 
 To start the guided process, run the following line. ::
 
-    python3 -m autopilot.setup.setup_autopilot
+    python3 -m autopilot.setup
 
 Select agent
 -------------

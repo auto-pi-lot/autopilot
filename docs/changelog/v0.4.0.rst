@@ -7,10 +7,10 @@ This release is primarily to introduce the new plugin system, the autopilot wiki
 starting the transformation of Autopilot into a tool with decentralized development and governance (as well as
 make using the tool a whole lot easier and more powerful).
 
-*With humble thanks to `Chris Rogers! <https://github.com/cxrodgers/>`_ ,
+*With humble thanks to Lucas Ott, Tillie Morris,* `Chris Rogers <https://github.com/cxrodgers/>`_,
 `Arne Meyer <https://github.com/arnefmeyer>`_ , `Mikkel Roald-Arbøl <https://github.com/roaldarbol>`_ ,
-`David Robbe <https://github.com/neurodavidus>`_ and an anonymous
-discussion board poster for being part of this release.*
+`David Robbe <https://github.com/neurodavidus>`_ ,
+*and an anonymous discussion board poster for being part of this release.*
 
 New Features
 ~~~~~~~~~~~~~
@@ -91,7 +91,7 @@ Minor Improvements
 * Allowed the creation of dataless tasks - https://github.com/wehr-lab/autopilot/pull/115/commits/628e1fb9c8fcd15399b19b351fed87e4826bc9ab
 * Allowed the creation of plotless tasks - https://github.com/wehr-lab/autopilot/pull/115/commits/08d99d55a32b45f54e3853813c7c71ea230b25dc
 * The ``I2C_9DOF`` clas uses memoryviews rather than buffers for a small performance boost - https://github.com/wehr-lab/autopilot/pull/115/commits/890f2c500df8010b50d61f64e2755cd2c7a8aeed
-* Phasing out using ``Queue``s in favor of ``collections.deque`` for applications that only need thread and not process safety because they
+* Phasing out using ``Queue`` s in favor of ``collections.deque`` for applications that only need thread and not process safety because they
   are way faster and what we wanted in the first place anyway.
 * New Scripts - ``i2c``, ``picamera``, ``env_terminal``
 * utils.NumpyEncoder and decoder to allow numpy arrays to be json serialized

@@ -77,20 +77,21 @@ This documentation is very young and is very much a work in progress! Please `su
    Prefs <prefs>
    External <external>
 
-.. toctree::
-    :caption: Tests:
-
-    tests/index
-
 
 .. toctree::
     :maxdepth: 1
     :caption: Meta:
 
+    Wiki <https://wiki.auto-pi-lot.com/>
     Discussion <https://github.com/wehr-lab/autopilot/discussions>
-    To-Do <todo>
     Changelog <changelog/index>
+    To-Do <todo>
     References <references>
+
+.. toctree::
+    :caption: Tests:
+
+    tests/index
 
 
 
