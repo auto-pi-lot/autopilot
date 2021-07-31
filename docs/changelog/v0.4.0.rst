@@ -1,7 +1,9 @@
 .. _changelog_v040:
 
-v0.4.0 - A Turn for the Multifarious (July 30, 2021)
+v0.4.0 - Become Multifarious (July 30, 2021)
 ------------------------------------------------------
+
+Including
 
 This release is primarily to introduce the new plugin system, the autopilot wiki, and their integration as a way of
 starting the transformation of Autopilot into a tool with decentralized development and governance (as well as
@@ -18,7 +20,9 @@ New Features
   expand registries to every object in Autopilot, including the ability for plugins to replace core modules to make
   Autopilot's flexibility verge on ludicrous. The basic syntax of the registry system is simple and doesn't require any
   additional logic beyond inheritance to be implemented on plugin objects -- ``autopilot.get('object_type', 'object_name')``
-  is the basic method, with a few aliases for specific object types like ``autopilot.get_hardware()``.
+  is the basic method, with a few aliases for specific object types like ``autopilot.get_hardware()``. Also thanks to
+  `Arne Meyer <https://github.com/arnefmeyer>`_ for submitting an early draft of the registry system and
+  `Mikkel Roald-Arbøl <https://github.com/roaldarbol>`_ for raising the issue.
 * At long last, the Autopilot Wiki is alive!!!! - https://wiki.auto-pi-lot.com/ - The wiki is the place for communal
   preservation of technical knowledge about using Autopilot, like hardware designs, build guides, parameter sets,
   and beyond! This isn't any ordinary wiki, though, we got ourselves a *semantic wiki* which augments traditional wikis
@@ -40,20 +44,20 @@ New Features
     * :class:`.cameras.PiCamera` - A fast interface to the PiCamera, wrapping the picamera library, and using tips from its developer to juice every bit of speed i could!
     * The I2C_9DOF object was massively improved to take better advantage of its onboard DSP and expose more of its i2c commands.
 * New Transforms
-    * timeseries - adapted a Kalman filter from the wonderful filterpy package! it's in the new timeseries transform module
-    * geometry - IMU_Orientation performs a sensor fusion algorithm with the Kalman Filter class to combine gyroscope and accelerometer measurements into a better estimate of earth-centric roll and pitch.
+    * :class:`.timeseries.Kalman` - adapted a Kalman filter from the wonderful filterpy package! it's in the new timeseries transform module
+    * :class:`.geometry.IMU_Orientation` - IMU_Orientation performs a sensor fusion algorithm with the Kalman Filter class to combine gyroscope and accelerometer measurements into a better estimate of earth-centric roll and pitch.
       This is used by the IMU class, but is made independent so it can be used without an Autopilot hardware object/post-facto/etc.
-    * timeseries - Filter_IIR implements scipy's IIR filter as a transform object.
-    * timeseries - Integrate adds successive numbers together (scaled by dt if requested). not much by itself, but when used with a kalman filter very useful :)
-    * geometry - Rotate - use scipy to rotate a vector by some angle in x, y, and/or z
-    * geometry - Spheroid - fit and transform 3d coordinates according to some spheroid - used in the IMU's accelerometer calibration method: given some target spheroid, and some deformed spheroid (eg. a miscalibrated accelerometer might have the x, y, or z axis scaled or offset) either explicitly set or estimated from a series of point measurements, transform future input given that transformation to correct for the deformed source spheroid.
+    * :class:`.timeseries.Filter_IIR` - Filter_IIR implements scipy's IIR filter as a transform object.
+    * :class:`.timeseries.Integrate` - Integrate adds successive numbers together (scaled by dt if requested). not much by itself, but when used with a kalman filter very useful :)
+    * :class:`.geometry.Rotate` - use scipy to rotate a vector by some angle in x, y, and/or z
+    * :class:`.geometry.Spheroid` - fit and transform 3d coordinates according to some spheroid - used in the IMU's accelerometer calibration method: given some target spheroid, and some deformed spheroid (eg. a miscalibrated accelerometer might have the x, y, or z axis scaled or offset) either explicitly set or estimated from a series of point measurements, transform future input given that transformation to correct for the deformed source spheroid.
 * New Prefs
-    * 'AUTOPLUGIN' - Attempt to import the contents of the plugin directory,
-    * 'PLUGIN_DB' - filename to use for the .json plugin_db that keeps track of installed plugins',
-    * 'PING_INTERVAL - How many seconds should pilots wait in between pinging the Terminal?',
-    * 'TERMINAL_SETTINGS_FN' - filename to store QSettings file for Terminal',
-    * 'TERMINAL_WINSIZE_BEHAVIOR' - Strategy for resizing terminal window on opening',
-    * 'TERMINAL_CUSTOM_SIZE' - Custom size for window, specified as [px from left, px from top, width, height]',
+    * ``'AUTOPLUGIN'`` - Attempt to import the contents of the plugin directory,
+    * ``'PLUGIN_DB'`` - filename to use for the .json plugin_db that keeps track of installed plugins',
+    * ``'PING_INTERVAL'`` - How many seconds should pilots wait in between pinging the Terminal?',
+    * ``'TERMINAL_SETTINGS_FN'`` - filename to store QSettings file for Terminal',
+    * ``'TERMINAL_WINSIZE_BEHAVIOR'`` - Strategy for resizing terminal window on opening',
+    * ``'TERMINAL_CUSTOM_SIZE'`` - Custom size for window, specified as [px from left, px from top, width, height]',
 
 Major Improvements
 ~~~~~~~~~~~~~~~~~~~
@@ -76,7 +80,7 @@ Major Improvements
 Minor Improvements
 ~~~~~~~~~~~~~~~~~~~
 
-* Terminal can be opened maximized, or have its size and position set explicitly, preserve between launches (ty Chris) - https://github.com/wehr-lab/autopilot/pull/70
+* Terminal can be opened maximized, or have its size and position set explicitly, preserve between launches (Thank you `Chris Rogers! <https://github.com/cxrodgers/>`_) - https://github.com/wehr-lab/autopilot/pull/70
 * Pilots will periodically ping the Terminal again, Terminal can manually ping Pilots that may have gone silent - https://github.com/wehr-lab/autopilot/pull/91
 * Pilots share their prefs with the Terminal in their initial handshake - https://github.com/wehr-lab/autopilot/pull/91
 * Reintroduce router ports for net-nodes to allow them to bind a port to receive messages - https://github.com/wehr-lab/autopilot/pull/115/commits/35be5d634d98a7983ec3d3d6c5b94da6965a2579
@@ -100,7 +104,7 @@ Bugfixes
 
 * Loggers would only work for the last object that was instantiated, which was really embarassing. fixed - https://github.com/wehr-lab/autopilot/pull/91
 * Graduation criteria were calculated incorrectly when subjects were demoted in stages of a protocol - https://github.com/wehr-lab/autopilot/pull/91
-* fix durations in solenoid class (ty Chris) - https://github.com/wehr-lab/autopilot/pull/63
+* fix durations in solenoid class (Thank you `Chris Rogers! <https://github.com/cxrodgers/>`_) - https://github.com/wehr-lab/autopilot/pull/63
 * LED_RGB ignores zero - https://github.com/wehr-lab/autopilot/pull/98
 * Fix batch assignment window crashing when there are subjects that are unassigned to a task - https://github.com/wehr-lab/autopilot/pull/115/commits/e42fc5802792822ff5a53a2379041a4a8b301e9e
 * Catch malformed protocols in batch assignment widget - https://github.com/wehr-lab/autopilot/pull/115/commits/2cc8508a4bf3a6d49512197dc72433c60d0c656e
