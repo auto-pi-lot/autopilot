@@ -14,6 +14,19 @@ Autopilot integrates every part of your experiment,
 including hardware operation, task logic, stimulus delivery, data management, and visualization of task progress --
 making experiments in behavioral neuroscience replicable from a single file.
 
+Instead of rigid programming requirements, Autopilot attempts to be a flexible framework with many different modalities of use
+in order to adapt to the way you do and think about your science rather than the other way around. Use only the parts of the
+framework that are useful to you, build on top of it with its plugin system as you would normally, while also maintaining
+the provenance and system integration that more rigid systems offer.
+
+For developers of other tools, Autopilot provides a skeleton with minimal assumptions to integrate their work with its
+broader collection of tools, for example our integration of `DeepLabCut-live <https://github.com/DeepLabCut/DeepLabCut-live>`_
+as the :class:`~.transform.image.DLC` transform (:cite:`kaneRealtimeLowlatencyClosedloop2020`).
+
+Our long-range vision is to build a tool that lowers barriers to tool use and contribution, from code to contextual technical
+knowledge, so our broad and scattered work can be cumulatively combined without needing a centralized consortium or
+adoption of a singular standard.
+
 For a detailed overview of Autopilot's motivation, design, and structure, see our `whitepaper <https://www.biorxiv.org/content/10.1101/807693v1>`_.
 
 .. admonition:: What's New :ref:`(v0.3.0) <changelog_v030>`
