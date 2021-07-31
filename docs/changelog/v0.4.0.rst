@@ -3,11 +3,14 @@
 v0.4.0 - Become Multifarious (July 30, 2021)
 ------------------------------------------------------
 
-Including
-
 This release is primarily to introduce the new plugin system, the autopilot wiki, and their integration as a way of
 starting the transformation of Autopilot into a tool with decentralized development and governance (as well as
 make using the tool a whole lot easier and more powerful).
+
+*With humble thanks to `Chris Rogers! <https://github.com/cxrodgers/>`_ ,
+`Arne Meyer <https://github.com/arnefmeyer>`_ , `Mikkel Roald-Arbøl <https://github.com/roaldarbol>`_ ,
+`David Robbe <https://github.com/neurodavidus>`_ and an anonymous
+discussion board poster for being part of this release.*
 
 New Features
 ~~~~~~~~~~~~~
