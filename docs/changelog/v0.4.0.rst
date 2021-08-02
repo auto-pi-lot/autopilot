@@ -129,6 +129,9 @@ Code Structure
 * the npyscreen forms in ``setup_autopilot`` were moved to a separate module
 * ``setup_autopilot`` was broken into functions instead of a very long and impenetrable script. still a bit of cleaning to do there.
 * ``autopilot.setup.setup_autopilot`` was always extremely awkward, so it's now been aliased as ``autopilot.setup``
+* the docs have now been split into subfolders rather than period separated names to make urls nicer -- eg /dev/hardware/cameras.htm
+  rather than /dev/hardware.cameras.html . this should break some links when switching between versions on readthedocs
+  but other than that be nondestructive.
 
 Regressions
 ~~~~~~~~~~~
