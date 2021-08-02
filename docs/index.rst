@@ -55,6 +55,7 @@ This documentation is very young and is very much a work in progress! Please `su
    :caption: User Guide:
 
    Overview <guide/overview>
+   Quickstart <guide/quickstart>
    Installation <guide/installation>
    Training a Subject <guide/training>
    Writing a Task <guide/task>
