@@ -185,12 +185,115 @@ or you can pass an object itself as the registry type in order to only find subc
     GPIO = autopilot.get('hardware', 'GPIO')
     autopilot.get(GPIO)
 
+.. todo::
+
+    In the future, we will extend registries to all autopilot objects by implementing a unitary inheritance structure.
+    This will also clean up a lot of the awkward parts of the library and pave the way to rebuilding eg. the networking
+    modules to be much simpler to use.
+
+    That work will be the defining feature of v0.5.0, you can track progress and contribute by seeing the relevant
+    issue: https://github.com/wehr-lab/autopilot/issues/31
+
+    as well as the issues in the v0.5.0 milestone: https://github.com/wehr-lab/autopilot/milestone/2
+
 The Wiki API
 ============
 
-See :mod:`.utils.wiki`
+.. _guide_plugins_wiki:
+
+The wiki's semantic information can be accessed with the functions in the :mod:`.utils.wiki` module.
+
+Specifically, we make a function that wraps the `Semantic Mediawiki Ask API <https://www.semantic-mediawiki.org/wiki/Help:API:ask>`_
+that consists of a
+
+* **query** or a set of **filters** that select relevant pages using their **categories** and **properties**, and then
+* the **properties** to retrieve from those pages.
+
+You can see a list of the `categories <https://wiki.auto-pi-lot.com/index.php/Special:Categories>`_ and
+`properties <https://wiki.auto-pi-lot.com/index.php/Special:Properties>`_ that can be used on the wiki.
+
+For **Filters**:
+
+* **Both** types of filters are specified with the ``[[Double Brackets]]`` of mediawiki
+* **Categories** are specified with a single colon [#singlebracket]_ like ``[[Category:Hardware]]``
+* **Properties** are specified with double colons, and take a property and a value like ``[[Created By::Jonny Saunders]]``
+
+The **queried properties** are specified with a list of strings like ``['Has Datasheet', 'Has STL']``
+
+So, for example, one could query the manufacturer, price, and url of the audio hardware documented in the wiki like::
+
+    from autopilot.utils import wiki
+
+    wiki.ask(
+        filters=[
+            "[[Category:Hardware]]",
+            "[[Modality::Audio]]"
+        ],
+        properties=[
+            "Manufactured By",
+            "Has Product Page",
+            "Has USD Price"
+        ]
+    )
+
+which would return a list of dictionaries like::
+
+    [{
+        'Has Product Page': 'https://www.hifiberry.com/shop/boards/hifiberry-amp2/',
+        'Has USD Price': 49.9,
+        'Manufactured By': 'HiFiBerry',
+        'name': 'HiFiBerry Amp2',
+        'url': 'https://wiki.auto-pi-lot.com/index.php/HiFiBerry_Amp2'
+    },
+    {
+        'Has Datasheet': 'https://wiki.auto-pi-lot.com/index.php/File:HiVi-RT13WE-spec-sheet.pdf',
+        'Has Product Page': 'https://www.parts-express.com/HiVi-RT1.3WE-Isodynamic-Tweeter-297-421',
+        'Has USD Price': 37.98,
+        'Is Part Type': 'Speakers',
+        'Manufactured By': 'HiVi',
+        'name': 'HiVi RT1.3WE',
+        'url': 'https://wiki.auto-pi-lot.com/index.php/HiVi_RT1.3WE'
+    }]
+
+These functions can be used on their own to provide interactive, programmatic access to the wiki, but maybe more importantly
+it serves as a bridge between the wiki and Autopilot's software. By building API calls into the various modules of autopilot that
+can query structured information from the wiki, the software can be made to take advantage of communally curated experimental
+and technical knowledge.
+
+Additionally, since it is relatively simple to create new templates and forms to accept different
+kinds of submissions and link them to the rest of the wiki, and the plugin and registry system allow anyone to
+build the classes needed to take advantage of them, it becomes possible for anyone to create **new kinds of public
+knowledge interfaces to autopilot.** For example, if there was desire to share and describe parameterizations of
+a particular ``Task`` along with summaries of the data, then it would be possible to make a form and template on the
+wiki to accept them, and provide a GUI plugin to select *empirically optimal parameters for a given outcome measurement* ,
+which would make all the *hard-won rules of thumb and superstition that guides a lot of the fine decisions in behavioral research obsolete*
+*in an afternoon.*
+
+The use of the wiki to have communal control over plugins and interfaces makes it possible for us to move
+autopilot to a model of **decentralized governance** where the "official" repository becomes one version among many,
+but the plugins remain integrated with the system rather than live on as unrelated forks.
 
 Plugins on the Wiki
 ====================
 
+Autopilot plugins can be found on the wiki here: https://wiki.auto-pi-lot.com/index.php/Autopilot_Plugins
+
+(at the moment the cupboard is relatively bare, but it always starts that way.)
+
+To submit new plugin, one would use the relevant form: https://wiki.auto-pi-lot.com/index.php/Form:Autopilot_Plugin
+
+So we might submit our plugin "Fancy New Plugin" (by entering that on the form entry page), and
+filling in the fields in the form as requested:
+
+.. figure:: ../_images/plugin_form.png
+
+Where we provide a description and other metadata -- most important some git repository url -- that describes
+the plugin. 
+
+
+
+(pic of name submission
+
 ACH gotta finish tomorrow
+
+.. [#singlebracket] This is because categories are a part of mediawiki itself, but properties are implemented by semantic mediawiki. The two have slightly different meanings -- categories denote the "type of something that a page is" and properties denote "the attributes that a page has"
