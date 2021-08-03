@@ -172,20 +172,6 @@ html_theme = 'sphinx_rtd_theme'
 html_style = 'css/autopilot_theme.css'
 html_logo = '_images/autopilot_logo.svg'
 html_favicon = '_images/favicon.svg'
-# elif try_theme == 'bootstrap':
-#     html_theme = 'bootstrap'
-#     html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
-# else:
-#     html_theme = 'bootstrap'
-#     html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
-
-#html_theme = "basicstrap"
-#
-# html_theme = "sphinx_rtd_theme"
-# html_theme_path = ["_themes", ]
-#
-
-
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -196,23 +182,6 @@ if html_theme == 'sphinx_rtd_theme':
         'canonical_url': 'https://docs.auto-pi-lot.com',
         'collapse_navigation': False # keep expanding toc
     }
-
-elif html_theme == 'bootstrap':
-    html_theme_options = {
-        'navbar_title': "Autopilot",
-        'navbar_site_name': 'Autopilot Docs',
-        'globaltoc_depth': 3,
-        'navbar_class': "navbar navbar-inverse",
-        'bootswatch_theme': "readable",
-        'navbar_pagenav': True,
-
-    }
-
-
-#
-# html_sidebars = {
-#     '**': ['localtoc.html', 'relations.html']
-# }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -233,22 +202,10 @@ html_css_files = [
 
 html_baseurl = 'https://docs.auto-pi-lot.com/'
 
-# Custom sidebar templates, must be a dictionary that maps document names
-# to template names.
-#
-# The default sidebars (for documents that don't match any pattern) are
-# defined by theme itself.  Builtin themes are using these templates by
-# default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
-# 'searchbox.html']``.
-#
-# html_sidebars = {}
-
-
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'autopilotdoc'
-
 
 # -- Options for LaTeX output ------------------------------------------------
 

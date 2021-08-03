@@ -12,17 +12,17 @@ https://wiki.auto-pi-lot.com
 In addition to a system for storing, discussing, and knitting together a library of technical knowledge,
 the wiki is used to manage Autopilot's plugin system. The integrated plugin/wiki system is designed to
 
-* make it easier to extend and hack existing autopilot classes, particularly Hardware and Task classes, without needing to
+* make it easier to **extend** and hack existing autopilot classes, particularly Hardware and Task classes, without needing to
   modify any of the core library code
-* make it easier to share code across multiple rigs-in-use by allowing you to specify the name of the plugin on the
+* make it easier to **share code** across multiple rigs-in-use by allowing you to specify the name of the plugin on the
   autopilot wiki so you don't need to manually keep the code updated on all computers it's used on
-* make a gentler scaffold between using and contributing to the library -- by developing in a plugin folder, your
+* make a gentler **scaffold between using and contributing to the library** -- by developing in a plugin folder, your
   code is likely very close, if it isn't already, ready to integrate back into the main autopilot library. In the meantime,
   anyone that is curious
-* make it possible to encode semantic metadata about the plugin so that others can discover, modify, and improve on it.
+* make it possible to **encode semantic metadata about the plugin** so that others can **discover, modify, and improve** on it.
   eg. your plugin might control an array of stepper motors, and from that someone can cherrypick code to run a single one,
   even if it wasn't designed to do that.
-* decentralize the development of autopilot, allowing anyone to extend it in arbitrary ways without needing to go through
+* **decentralize the development of autopilot**, allowing anyone to extend it in arbitrary ways without needing to go through
   a fork/merge process that is ultimately subject to the whims of the maintainer(s) (me 😈), or even an approval process
   to submit or categorize plugins. Autopilot seeks to be as noncoercive as possible while embracing and giving tools
   to support the heterogeneity of its use.
