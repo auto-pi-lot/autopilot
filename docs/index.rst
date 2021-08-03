@@ -60,6 +60,7 @@ This documentation is very young and is very much a work in progress! Please `su
    Training a Subject <guide/training>
    Writing a Task <guide/task>
    Writing a Hardware Class <guide/hardware>
+   Using Plugins <guide/plugins>
    Examples <examples>
 
 .. toctree::
