@@ -260,10 +260,11 @@ it serves as a bridge between the wiki and Autopilot's software. By building API
 can query structured information from the wiki, the software can be made to take advantage of communally curated experimental
 and technical knowledge.
 
-Additionally, since it is relatively simple to create new templates and forms to accept different
-kinds of submissions and link them to the rest of the wiki, and the plugin and registry system allow anyone to
-build the classes needed to take advantage of them, it becomes possible for anyone to create **new kinds of public
-knowledge interfaces to autopilot.** For example, if there was desire to share and describe parameterizations of
+Additionally, since it is relatively simple to create new templates and forms (see the `Page Forms <https://www.mediawiki.org/wiki/Extension:Page_Forms>`_
+and `Page Schemas <https://www.mediawiki.org/wiki/Extension:Page_Schemas>`_ extensions that are used to create and
+manage them)t o accept different kinds of submissions and link them to the rest of the wiki, and the plugin and
+registry system allow anyone to build the classes needed to take advantage of them, it becomes possible for anyone to
+create **new kinds of public knowledge interfaces to autopilot.** For example, if there was desire to share and describe parameterizations of
 a particular ``Task`` along with summaries of the data, then it would be possible to make a form and template on the
 wiki to accept them, and provide a GUI plugin to select *empirically optimal parameters for a given outcome measurement* ,
 which would make all the *hard-won rules of thumb and superstition that guides a lot of the fine decisions in behavioral research obsolete*
@@ -278,7 +279,10 @@ Plugins on the Wiki
 
 Autopilot plugins can be found on the wiki here: https://wiki.auto-pi-lot.com/index.php/Autopilot_Plugins
 
-(at the moment the cupboard is relatively bare, but it always starts that way.)
+*(at the moment the cupboard is relatively bare, but it always starts that way.)*
+
+Within Autopilot, you can use the :func:`.utils.plugins.list_wiki_plugins` function to list the available functions
+and return their basic metadata, which is a *very* thin wrapper around :func:`.utils.wiki.ask`
 
 To submit new plugin, one would use the relevant form: https://wiki.auto-pi-lot.com/index.php/Form:Autopilot_Plugin
 
@@ -293,10 +297,24 @@ semblance of consistency in the semantic links we create. At the end you are the
 common `wiki markup <https://www.mediawiki.org/wiki/Help:Formatting>`_ as well as free declaration of any semantic links that
 aren't asked for in the form.
 
+After you submit, it's immediately available in the :class:`.gui.Plugins` manager!
+
+.. figure:: ../_images/plugin_widget.png
+
+Each plugin has one or multiple ``Plugin Type(s)`` that corresponds to a particular entry in :class:`~.registry.REGISTRIES`
+for filtering plugins that provide different types of objects.
+
+.. todo::
+
+    Currently the plugin manager is just a proof of concept, though it would require relatively little to add a
+    routine to clone the git repo into the plugins directory, as mentioned above, we are working on integrating
+    dependency management in a way that's unified throughout the package (instead of, say, needing to manually run
+    ``python -m autopilot.setup.run_script picamera`` to enable the camera, objects are able to specify and
+    request that their dependencies be met automatically).
+
+    For now just ``git clone <plugin_url> ~/autopilot/plugins`` or wherever your ``PLUGINDIR`` is!
 
 
-(pic of name submission
 
-ACH gotta finish tomorrow
 
 .. [#singlebracket] This is because categories are a part of mediawiki itself, but properties are implemented by semantic mediawiki. The two have slightly different meanings -- categories denote the "type of something that a page is" and properties denote "the attributes that a page has"
