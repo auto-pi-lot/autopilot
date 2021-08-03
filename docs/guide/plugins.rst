@@ -288,7 +288,10 @@ filling in the fields in the form as requested:
 .. figure:: ../_images/plugin_form.png
 
 Where we provide a description and other metadata -- most important some git repository url -- that describes
-the plugin. 
+the plugin. There are free text fields where appropriate, but also autocompleting token fields that let us keep some
+semblance of consistency in the semantic links we create. At the end you are then given a free-text field that accepts all
+common `wiki markup <https://www.mediawiki.org/wiki/Help:Formatting>`_ as well as free declaration of any semantic links that
+aren't asked for in the form.
 
 
 
