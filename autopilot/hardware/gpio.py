@@ -231,6 +231,16 @@ class GPIO(Hardware):
         self.pin_bcm = BOARD_TO_BCM[self._pin]
 
     @property
+    def state(self) -> bool:
+        """
+        Instantaneous state of GPIO pin, on (``True``) or off (``False``)
+
+        Returns:
+            bool
+        """
+        return bool(self.pig.read(self.pin_bcm))
+
+    @property
     def pull(self):
         """
         State of internal pullup/down resistor.

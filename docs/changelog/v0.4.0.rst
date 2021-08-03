@@ -119,6 +119,7 @@ Bugfixes
 * PySide2 references still incorrectly used ``QtGui`` rather than ``QtWidgets``
 * pigpio scripts would not be stopped and removed when a task was stopped, the :func:`.gpio.clear_scripts` function now handles that.
 * ``xcb`` was removed from ``PySide2`` distributions, so it's now listed in the requirements for the Terminal and made available in the ``env_terminal`` script.
+* ``LED_RGB`` didn't appropriately raise a ``ValueError`` when called with a single ``pin`` - https://github.com/wehr-lab/autopilot/issues/117
 * A fistful of lingering Python 2 artifacts
 
 Code Structure
@@ -132,6 +133,11 @@ Code Structure
 * the docs have now been split into subfolders rather than period separated names to make urls nicer -- eg /dev/hardware/cameras.htm
   rather than /dev/hardware.cameras.html . this should break some links when switching between versions on readthedocs
   but other than that be nondestructive.
+
+Docs
+~~~~
+
+* new :ref:`quickstart` documentation with lots of quick examples!
 
 Regressions
 ~~~~~~~~~~~

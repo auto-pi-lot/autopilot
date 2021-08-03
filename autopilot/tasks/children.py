@@ -180,10 +180,12 @@ class Transformer(Child):
 
     def __init__(self, transform,
                  operation: str ="trigger",
+                 node_id = None,
                  return_id = 'T',
                  return_ip = None,
                  return_port = None,
                  return_key = None,
+                 router_port = None,
                  stage_block = None,
                  value_subset=None,
                  **kwargs):
@@ -198,6 +200,10 @@ class Transformer(Child):
                 * "stream", where each result of the transformation is returned to sender
 
             return_id:
+            return_ip:
+            return_port:
+            return_key:
+            router_port (None, int): If not ``None`` (default), spawn the node with a route port to receieve
             stage_block:
             value_subset (str): Optional - subset a value from from a dict/list sent to :meth:`.l_process`
             **kwargs:
@@ -217,6 +223,11 @@ class Transformer(Child):
         self.return_port = return_port
         if self.return_port is None:
             self.return_port = prefs.get('MSGPORT')
+        if node_id is None:
+            self.node_id = f"{prefs.get('NAME')}_TRANSFORMER"
+        else:
+            self.node_id = node_id
+        self.router_port = router_port
 
         self.stage_block = stage_block
         self.stages = cycle([self.noop])
@@ -242,10 +253,11 @@ class Transformer(Child):
         self.transform = autopilot.transform.make_transform(transform)
 
         self.node = Net_Node(
-            f"{prefs.get('NAME')}_TRANSFORMER",
+            self.node_id,
             upstream=self.return_id,
             upstream_ip=self.return_ip,
             port=self.return_port,
+            router_port=self.router_port,
             listens = {
                 'CONTINUOUS': self.l_process
             },

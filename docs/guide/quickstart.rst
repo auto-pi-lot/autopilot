@@ -35,7 +35,7 @@ Control the LED by using the :class:`.gpio.Digital_Out` class::
     # turn if off!
     led.set(0)
 
-Or, blink "hello" in morse code!
+Or, blink "hello" in morse code using :meth:`~.hardware.gpio.Digital_Out.series` !
 
 ::
 
@@ -135,7 +135,7 @@ You can use your own pretrained models (stored in your autopilot user directory 
 Now let's say we have a desktop linux machine with DeepLabCut and dlc-live installed. DeepLabCut-Live is implemented
 in Autopilot with the :class:`.transform.image.DLC` object, part of the :mod:`.transform` module.
 
-First, assuming we have some image ``img`` (as a numpy array), we can process the image to get a pandas dataframe of
+First, assuming we have some image ``img`` (as a numpy array), we can process the image to get an array of x,y positions for
 each of the tracked points::
 
     from autopilot import transform as t
@@ -165,6 +165,108 @@ to other computers. How about we process an image and determine whether the left
 Put it Together - Close a Loop!
 ===============================
 
-We've tried a few things, why not put them together? 
+We've tried a few things, why not put them together?
+
+Let's use our two raspberry pis and our desktop GPU-bearing computer to record a video of someone and
+turn an LED on when their hand is over their head. We could do this two (or one) computer as well, but let's be extravagant.
+
+Let's say pilot 1, pilot 2, and the gpu computer have ip addresses of ``192.168.0.101``, ``192.168.0.102``, and ``192.168.0.103``,
+respectively.
+
+On **pilot 1**, we configure our :class:`~.cameras.PiCamera` to stream to the gpu computer. While we're at it, we might as well
+also save a local copy of the video to watch later. The camera won't stop capturing, streaming, or writing until we call
+:meth:`~.cameras.Camera.capture`::
+
+    from autopilot.hardware.cameras import PiCamera
+    cam = PiCamera()
+    cam.stream(to='gpu', ip='192.168.0.103', port=5000)
+    cam.write('cool_video.mp4')
+
+On the **gpu computer**, we need to receive frames, process them with the above defined transformation chain, and
+send the results on to **pilot 2**, which will control the LED. We could do this with the objects that we've already seen
+(make the transform object, make some callback function that sends a frame through it and give it to a :class:`~.networking.Net_Node`
+as a ``listen`` method), but we'll make use of the :class:`~.tasks.children.Transformer` "child" object -- which is
+a peculiar type of :class:`~.tasks.Task` designed to perform some auxiliary function in an experiment.
+
+Rather than giving it an already-instantiated transform object, we instead give it a schematic representation of
+the transform to be constructed -- When used with the rest of autopilot, this is to both enable it to be dispatched
+flexibly to different computers, but also to preserve a clear chain of data provenance by keeping logs of every parameter
+used to perform an experiment.
+
+The :class:`~.tasks.children.Transformer` class uses :func:`~.transform.make_transform` to reconstitute it, receives
+messages containing data to process, and then forwards them on to some other node. We use its
+``trigger`` mode, which only sends the value on to the final recipient with the key ``'TRIGGER'`` when it changes.::
+
+    from autopilot.tasks.children import Transformer
+    import numpy as np
+
+    transform_description = [
+        {
+            "transform": "DLC",
+            "kwargs": {'model_zoo':'full_human'}
+        },
+        {
+            "transform": "DLCSlice",
+            "kwargs": {"select": ("wrist1", "forehead")}
+        }
+        {
+            "transform": "Slice",
+            "kwargs": {"select":(
+                slice(start=0,stop=2),
+                slice(start=1,stop=2)
+            )}
+        },
+        {
+            "transform": "Compare",
+            "args": [np.greater],
+        },
+    ]
+
+    transformer = Transformer(
+        transform = transform_description
+        operation = "trigger",
+        node_id = "gpu",
+        return_id = 'pilot_2',
+        return_ip = '192.168.0.102',
+        return_port = 5001,
+        return_key = 'TRIGGER',
+        router_port = 5000
+    )
+
+And finally on **pilot 2** we just write a listen callback to handle the incoming trigger::
+
+    from autopilot.hardware.gpio import Digital_Out
+    from autopilot.networking.Net_Node
+
+    global led
+    led = Digital_Out(pin=7)
+
+    def led_trigger(value:bool):
+        global led
+        led.set(value)
+
+    node = Net_Node(
+        id='pilot_2', router_port=5001, upstream='', port=9999,
+        listens = {'TRIGGER':led_trigger}
+    )
+
+There you have it! Just start capturing on **pilot 1**::
+
+    cam.capture()
+
+What Next?
+===========
+
+The rest of Autopilot expands on this basic use by providing tools to do the rest of your experiment, and to make
+replicable science easy.
+
+* write standardized experimental protocols that consist of multiple :class:`~.tasks.Task` s linked by flexible
+  :mod:`~.tasks.graduation` criteria
+* extend the library to use your custom hardware, and make your work available to anyone with our :mod:`~.utils.plugins` system
+  integrated with the `autopilot wiki <https://wiki.auto-pi-lot.com>`_
+* Use our GUI that makes managing many experimental rigs simple from a single computer.
+
+and so on...
+
 
 
