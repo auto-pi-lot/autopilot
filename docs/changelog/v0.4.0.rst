@@ -7,7 +7,7 @@ This release is primarily to introduce the new plugin system, the autopilot wiki
 starting the transformation of Autopilot into a tool with decentralized development and governance (as well as
 make using the tool a whole lot easier and more powerful).
 
-*With humble thanks to Lucas Ott, Tillie Morris,* `Chris Rogers <https://github.com/cxrodgers/>`_,
+*With humble thanks to Lucas Ott, Tillie Morris,* `Chris Rodgers <https://github.com/cxrodgers/>`_,
 `Arne Meyer <https://github.com/arnefmeyer>`_ , `Mikkel Roald-Arbøl <https://github.com/roaldarbol>`_ ,
 `David Robbe <https://github.com/neurodavidus>`_ ,
 *and an anonymous discussion board poster for being part of this release.*
@@ -65,11 +65,11 @@ New Features
 Major Improvements
 ~~~~~~~~~~~~~~~~~~~
 
-* Stereo Sound (Thank you `Chris Rogers! <https://github.com/cxrodgers/>`_) - https://github.com/wehr-lab/autopilot/pull/102
+* Stereo Sound (Thank you `Chris Rodgers! <https://github.com/cxrodgers/>`_) - https://github.com/wehr-lab/autopilot/pull/102
 * Multihop messages & direct messaging - https://github.com/wehr-lab/autopilot/pull/99 - it is now possible to
   send multihop messages through multiple Station objects, as well as easier to send messages directly
   between net nodes. See the examples in the network tests section of the docs.
-* Multiple Children  (Thank you `Chris Rogers! <https://github.com/cxrodgers/>`_) - https://github.com/wehr-lab/autopilot/pull/103 -
+* Multiple Children  (Thank you `Chris Rodgers! <https://github.com/cxrodgers/>`_) - https://github.com/wehr-lab/autopilot/pull/103 -
   the ``CHILDID`` field now accepts a list, allowing a Pilot to initialize child tasks on multiple children. (this syntax and
   the hierarchical nature of pilots and children will be deprecated as we refactor the networking modules into a general mesh system,
   but this is lovely to have for now :)
@@ -83,7 +83,7 @@ Major Improvements
 Minor Improvements
 ~~~~~~~~~~~~~~~~~~~
 
-* Terminal can be opened maximized, or have its size and position set explicitly, preserve between launches (Thank you `Chris Rogers! <https://github.com/cxrodgers/>`_) - https://github.com/wehr-lab/autopilot/pull/70
+* Terminal can be opened maximized, or have its size and position set explicitly, preserve between launches (Thank you `Chris Rodgers! <https://github.com/cxrodgers/>`_) - https://github.com/wehr-lab/autopilot/pull/70
 * Pilots will periodically ping the Terminal again, Terminal can manually ping Pilots that may have gone silent - https://github.com/wehr-lab/autopilot/pull/91
 * Pilots share their prefs with the Terminal in their initial handshake - https://github.com/wehr-lab/autopilot/pull/91
 * Reintroduce router ports for net-nodes to allow them to bind a port to receive messages - https://github.com/wehr-lab/autopilot/pull/115/commits/35be5d634d98a7983ec3d3d6c5b94da6965a2579
@@ -107,7 +107,7 @@ Bugfixes
 
 * Loggers would only work for the last object that was instantiated, which was really embarassing. fixed - https://github.com/wehr-lab/autopilot/pull/91
 * Graduation criteria were calculated incorrectly when subjects were demoted in stages of a protocol - https://github.com/wehr-lab/autopilot/pull/91
-* fix durations in solenoid class (Thank you `Chris Rogers! <https://github.com/cxrodgers/>`_) - https://github.com/wehr-lab/autopilot/pull/63
+* fix durations in solenoid class (Thank you `Chris Rodgers! <https://github.com/cxrodgers/>`_) - https://github.com/wehr-lab/autopilot/pull/63
 * LED_RGB ignores zero - https://github.com/wehr-lab/autopilot/pull/98
 * Fix batch assignment window crashing when there are subjects that are unassigned to a task - https://github.com/wehr-lab/autopilot/pull/115/commits/e42fc5802792822ff5a53a2379041a4a8b301e9e
 * Catch malformed protocols in batch assignment widget - https://github.com/wehr-lab/autopilot/pull/115/commits/2cc8508a4bf3a6d49512197dc72433c60d0c656e
