@@ -3,7 +3,6 @@
 Blink
 ======================
 
-.. automodule:: examples.tasks.blink
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. literalinclude:: ../examples/tasks/blink.py
+    :language: python
+    :linenos:

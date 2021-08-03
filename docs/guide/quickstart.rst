@@ -170,8 +170,11 @@ We've tried a few things, why not put them together?
 Let's use our two raspberry pis and our desktop GPU-bearing computer to record a video of someone and
 turn an LED on when their hand is over their head. We could do this two (or one) computer as well, but let's be extravagant.
 
-Let's say pilot 1, pilot 2, and the gpu computer have ip addresses of ``192.168.0.101``, ``192.168.0.102``, and ``192.168.0.103``,
+Let's say **pilot 1, pilot 2, and the gpu computer** have ip addresses of ``192.168.0.101``, ``192.168.0.102``, and ``192.168.0.103``,
 respectively.
+
+Pilot 1 - Image Capture
+------------------------
 
 On **pilot 1**, we configure our :class:`~.cameras.PiCamera` to stream to the gpu computer. While we're at it, we might as well
 also save a local copy of the video to watch later. The camera won't stop capturing, streaming, or writing until we call
@@ -181,6 +184,9 @@ also save a local copy of the video to watch later. The camera won't stop captur
     cam = PiCamera()
     cam.stream(to='gpu', ip='192.168.0.103', port=5000)
     cam.write('cool_video.mp4')
+
+GPU Computer
+--------------
 
 On the **gpu computer**, we need to receive frames, process them with the above defined transformation chain, and
 send the results on to **pilot 2**, which will control the LED. We could do this with the objects that we've already seen
@@ -232,6 +238,9 @@ messages containing data to process, and then forwards them on to some other nod
         return_key = 'TRIGGER',
         router_port = 5000
     )
+
+Pilot 2 - LED
+--------------
 
 And finally on **pilot 2** we just write a listen callback to handle the incoming trigger::
 
