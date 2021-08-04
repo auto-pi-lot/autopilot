@@ -1,6 +1,6 @@
 .. _changelog_v040:
 
-v0.4.0 - Become Multifarious (July 30, 2021)
+v0.4.0 - Become Multifarious (August 3rd, 2021)
 ------------------------------------------------------
 
 This release is primarily to introduce the new plugin system, the autopilot wiki, and their integration as a way of

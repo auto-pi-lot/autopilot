@@ -3,6 +3,7 @@ deployment
 - write changelog
 - bump version in __init__.py
 - bump version in CITATION.cff
+- refresh what's new
 
 - do PR
 
