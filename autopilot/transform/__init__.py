@@ -32,7 +32,9 @@ The :meth:`~.Transform.__add__` method allows transforms to be combined, eg.::
 """
 
 import typing
+import autopilot
 from autopilot.transform import image, geometry, logical, selection, units
+from autopilot.transform.transforms import Transform
 
 IMPORTED = False
 
@@ -40,8 +42,6 @@ IMPORTED = False
 def make_transform(transforms: typing.List[dict]):
     """
     Make a transform from a list of iterator specifications.
-
-
 
     Args:
         transforms (list): A list of :class:`Transform` s and parameterizations in the form::
@@ -60,10 +60,13 @@ def make_transform(transforms: typing.List[dict]):
     ret = None
     for t in transforms:
         if isinstance(t['transform'], str):
-            module, classname = t['transform'].split('.')
-            mod = __import__(f"autopilot.transform.{module}", fromlist=[classname])
-            t['transform'] = getattr(mod, classname)
-        transform = t['transform'](
+            tfm_class = autopilot.get('transform', t['transform'])
+        elif issubclass(t['transform'], Transform):
+            tfm_class = t['transform']
+        else:
+            raise ValueError(f'Could not get transform from {t["transform"]}, need a name of a Transform class, or the class itself')
+
+        transform = tfm_class(
             *t.get('args', []),
             **t.get('kwargs', {})
         )

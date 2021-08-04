@@ -1,11 +1,4 @@
 """
-Note:
-    Currently, the GUI code is some of the oldest code in the library --
-    in particular much of it was developed before the network infrastructure was mature.
-    As a result, a lot of modules are interdependent (eg. pass objects between each other).
-    This will be corrected before v1.0
-
-
 These classes implement the GUI used by the Terminal.
 
 The GUI is built using `PySide2 <https://doc.qt.io/qtforpython/>`_, a Python wrapper around Qt5.
@@ -14,9 +7,17 @@ These classes are all currently used only by the :class:`~.autopilot.core.termin
 
 If performing any GUI operations in another thread (eg. as a callback from a networking object),
 the method must be decorated with `@gui_event` which will call perform the update in the main thread as required by Qt.
-"""
 
+.. note::
+
+    Currently, the GUI code is some of the oldest code in the library --
+    in particular much of it was developed before the network infrastructure was mature.
+    As a result, a lot of modules are interdependent (eg. pass objects between each other).
+    This will be corrected before v1.0
+
+"""
 import sys
+import typing
 import os
 import json
 import copy
@@ -25,26 +26,50 @@ import time
 from collections import OrderedDict as odict
 import numpy as np
 import ast
-import base64
 from PySide2 import QtGui, QtCore, QtWidgets
 import pyqtgraph as pg
 import pandas as pd
 import itertools
 import threading
+from queue import Empty, Full
+import multiprocessing as mp
 import logging
 from operator import ior
+from functools import reduce
+from collections import abc
 
 # adding autopilot parent directory to path
+import autopilot
 from autopilot.core.subject import Subject
-from autopilot import tasks, prefs
+from autopilot import prefs
 from autopilot.stim.sound import sounds
-from autopilot.core.networking import Net_Node
+from autopilot.networking import Net_Node
 from functools import wraps
-from autopilot.core.utils import InvokeEvent
+from autopilot.utils.invoker import InvokeEvent, get_invoker
 from autopilot.core import styles
-from autopilot.core.utils import get_invoker
+from autopilot.core.plots import Video
+from autopilot.core.loggers import init_logger
+from autopilot.utils import plugins, registry, wiki
 
+_MAPS = {
+    'dialog': {
+        'icon': {
+            'info': QtWidgets.QMessageBox.Information,
+            'question': QtWidgets.QMessageBox.Question,
+            'warning': QtWidgets.QMessageBox.Warning,
+            'error': QtWidgets.QMessageBox.Critical
+        },
+        'modality': {
+            'modal': QtCore.Qt.NonModal,
+            'nonmodal': QtCore.Qt.WindowModal
+        }
+    }
+}
+"""
+Maps of shorthand names for objects to the objects themselves.
 
+Grouped by a rough use case, intended for internal (rather than user-facing) use.
+"""
 
 
 def gui_event(fn):
@@ -57,7 +82,6 @@ def gui_event(fn):
     """
     @wraps(fn)
     def wrapper_gui_event(*args, **kwargs):
-        # type: (object, object) -> None
         """
 
         Args:
@@ -101,34 +125,26 @@ class Control_Panel(QtWidgets.QWidget):
     # Hosts two nested tab widgets to select pilot and subject,
     # set params, run subjects, etc.
 
-    def __init__(self, subjects, start_fn, pilots=None):
+    def __init__(self, subjects, start_fn, ping_fn, pilots):
         """
 
         """
         super(Control_Panel, self).__init__()
+
+        self.logger = init_logger(self)
 
         # We share a dict of subject objects with the main Terminal class to avoid access conflicts
         self.subjects = subjects
 
         # We get the Terminal's send_message function so we can communicate directly from here
         self.start_fn = start_fn
+        self.ping_fn = ping_fn
+        self.pilots = pilots
 
-        if pilots:
-            self.pilots = pilots
-        else:
-            try:
-                # Try finding prefs in the encapsulating namespaces
-                with open(prefs.get('PILOT_DB')) as pilot_file:
-                    self.pilots = json.load(pilot_file, object_pairs_hook=odict)
-            except NameError:
-                try:
-                    with open('/usr/autopilot/pilot_db.json') as pilot_file:
-                        self.pilots = json.load(pilot_file, object_pairs_hook=odict)
-                except IOError:
-                    Exception('Couldnt find pilot directory!')
 
         # Make dict to store handles to subjects lists
         self.subject_lists = {}
+        self.panels = {}
 
         # Set layout for whole widget
         self.layout = QtWidgets.QGridLayout()
@@ -136,11 +152,11 @@ class Control_Panel(QtWidgets.QWidget):
         self.layout.setSpacing(0)
         self.setLayout(self.layout)
 
-        self.panels = {}
-
         self.init_ui()
 
-        self.setSizePolicy(QtWidgets.QSizePolicy.Maximum,QtWidgets.QSizePolicy.Maximum)
+        # self.setSizePolicy(QtWidgets.QSizePolicy.Maximum,QtWidgets.QSizePolicy.Maximum)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding)
+
         self.setStyleSheet(styles.CONTROL_PANEL)
 
     def init_ui(self):
@@ -154,24 +170,36 @@ class Control_Panel(QtWidgets.QWidget):
         self.layout.setColumnStretch(0, 2)
         self.layout.setColumnStretch(1, 2)
 
-        # Iterate through pilots and subjects, making start/stop buttons for pilots and lists of subjects
-        for i, (pilot, subjects) in enumerate(self.pilots.items()):
-            # in pilot dict, format is {'pilot':{'subjects':['subject1',...],'ip':'',etc.}}
-            subjects = subjects['subjects']
-            # Make a list of subjects
-            subject_list = Subject_List(subjects, drop_fn = self.update_db)
-            subject_list.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-            #subject_list.itemDoubleClicked.connect(self.edit_params)
-            self.subject_lists[pilot] = subject_list
+        for pilot_id, pilot_params in self.pilots.items():
+            self.add_pilot(pilot_id, pilot_params.get('subjects', []))
 
-            # Make a panel for pilot control
-            pilot_panel = Pilot_Panel(pilot, subject_list, self.start_fn, self.create_subject)
-            pilot_panel.setFixedWidth(150)
+    @gui_event
+    def add_pilot(self, pilot_id:str, subjects:typing.Optional[list]=None):
+        """
+        Add a :class:`.Pilot_Panel` for a new pilot, and populate a :class:`.Subject_List` for it
+        Args:
+         pilot_id (str): ID of new pilot
+         subjects (list): Optional, list of any subjects that the pilot has.
+        Returns:
+        """
+        if subjects is None:
+            subjects = []
 
-            self.panels[pilot] = pilot_panel
+        # Make a list of subjects
+        subject_list = Subject_List(subjects, drop_fn=self.update_db)
+        subject_list.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        # subject_list.itemDoubleClicked.connect(self.edit_params)
+        self.subject_lists[pilot_id] = subject_list
 
-            self.layout.addWidget(pilot_panel, i, 1, 1, 1)
-            self.layout.addWidget(subject_list, i, 2, 1, 1)
+        # Make a panel for pilot control
+        pilot_panel = Pilot_Panel(pilot_id, subject_list, self.start_fn, self.ping_fn, self.create_subject)
+        pilot_panel.setFixedWidth(150)
+        self.panels[pilot_id] = pilot_panel
+
+        row_idx = self.layout.rowCount()
+
+        self.layout.addWidget(pilot_panel, row_idx, 1, 1, 1)
+        self.layout.addWidget(subject_list, row_idx, 2, 1, 1)
 
     def create_subject(self, pilot):
         """
@@ -187,7 +215,9 @@ class Control_Panel(QtWidgets.QWidget):
 
         # If the wizard completed successfully, get its values
         if new_subject_wizard.result() == 1:
+
             biography_vals = new_subject_wizard.bio_tab.values
+            self.logger.debug(f'subject wizard exited with 1, got biography vals {biography_vals}')
             # TODO: Make a "session" history table that stashes pilot, git hash, step, etc. for each session - subjects might run on different pilots
             biography_vals['pilot'] = pilot
 
@@ -202,10 +232,13 @@ class Control_Panel(QtWidgets.QWidget):
                 if 'protocol' in protocol_vals.keys() and 'step' in protocol_vals.keys():
                     protocol_file = os.path.join(prefs.get('PROTOCOLDIR'), protocol_vals['protocol'] + '.json')
                     subject_obj.assign_protocol(protocol_file, int(protocol_vals['step']))
-            except:
+                    self.logger.debug(f'assigned protocol with {protocol_vals}')
+                else:
+                    self.logger.warning(f'protocol couldnt be assigned, no step and protocol keys in protocol_vals.\ngot protocol_vals: {protocol_vals}')
+            except Exception as e:
+                self.logger.exception(f'exception when assigning protocol, continuing subject creation. \n{e}')
                 # the wizard couldn't find the protocol dir, so no task tab was made
                 # or no task was assigned
-                pass
 
             # Add subject to pilots dict, update it and our tabs
             self.pilots[pilot]['subjects'].append(biography_vals['id'])
@@ -244,7 +277,7 @@ class Control_Panel(QtWidgets.QWidget):
     #
     #
 
-    def update_db(self, **kwargs):
+    def update_db(self, pilots:typing.Optional[dict]=None, **kwargs):
         """
         Gathers any changes in :class:`Subject_List` s and dumps :py:attr:`.pilots` to :py:attr:`.prefs.get('PILOT_DB')`
 
@@ -256,21 +289,24 @@ class Control_Panel(QtWidgets.QWidget):
                 where `'pilot_values'` can be nothing, a list of subjects,
                 or any other information included in the pilot db
         """
+        # if we were given a new pilot, add it
+        if 'new' in kwargs.keys():
+            for pilot, value in kwargs['new'].items():
+                self.pilots[pilot] = value
+
+        if pilots is None:
+            pilots = self.pilots.copy()
+
         # gather subjects from lists
         for pilot, mlist in self.subject_lists.items():
             subjects = []
             for i in range(mlist.count()):
                 subjects.append(mlist.item(i).text())
 
-            self.pilots[pilot]['subjects'] = subjects
-
-        # if we were given a new pilot, add it
-        if 'new' in kwargs.keys():
-            for pilot, value in kwargs['new'].items():
-                self.pilots[pilot] = value
+            pilots[pilot]['subjects'] = subjects
 
         # strip any state that's been stored
-        for p, val in self.pilots.items():
+        for p, val in pilots.items():
             if 'state' in val.keys():
                 del val['state']
 
@@ -358,7 +394,7 @@ class Pilot_Panel(QtWidgets.QWidget):
         layout (:py:class:`QtWidgets.QGridLayout`): Layout for UI elements
         button (:class:`.Pilot_Button`): button used to control a pilot
     """
-    def __init__(self, pilot=None, subject_list=None, start_fn=None, create_fn=None):
+    def __init__(self, pilot=None, subject_list=None, start_fn=None, ping_fn=None, create_fn=None):
         """
 
         """
@@ -372,6 +408,7 @@ class Pilot_Panel(QtWidgets.QWidget):
         self.pilot = pilot
         self.subject_list = subject_list
         self.start_fn = start_fn
+        self.ping_fn = ping_fn
         self.create_fn = create_fn
         self.button = None
 
@@ -382,11 +419,11 @@ class Pilot_Panel(QtWidgets.QWidget):
         Initializes UI elements - creates widgets and adds to :py:attr:`Pilot_Panel.layout` .
         Called on init.
         """
-        # type: () -> None
+
         label = QtWidgets.QLabel(self.pilot)
         label.setStyleSheet("font: bold 14pt; text-align:right")
         label.setAlignment(QtCore.Qt.AlignVCenter)
-        self.button = Pilot_Button(self.pilot, self.subject_list, self.start_fn)
+        self.button = Pilot_Button(self.pilot, self.subject_list, self.start_fn, self.ping_fn)
         add_button = QtWidgets.QPushButton("+")
         add_button.clicked.connect(self.create_subject)
         add_button.setSizePolicy(QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding)
@@ -434,7 +471,7 @@ class Pilot_Panel(QtWidgets.QWidget):
 
 
 class Pilot_Button(QtWidgets.QPushButton):
-    def __init__(self, pilot=None, subject_list=None, start_fn=None):
+    def __init__(self, pilot=None, subject_list=None, start_fn=None, ping_fn=None):
         """
         A subclass of (toggled) :class:`QtWidgets.QPushButton` that incorporates the style logic of a
         start/stop button - ie. color, text.
@@ -456,15 +493,23 @@ class Pilot_Button(QtWidgets.QPushButton):
         super(Pilot_Button, self).__init__()
 
         ## GUI Settings
-        self.setCheckable(True)
+        self.setCheckable(False)
         self.setChecked(False)
-        self.setEnabled(False)
+        self.setEnabled(True)
 
-        self.setStyleSheet("QPushButton {color:white; background-color: green}"
-                           "QPushButton:checked {color:white; background-color: red}"
-                           "QPushButton:disabled {color:black; background-color: gray}")
+        self.normal_stylesheet = (
+            "QPushButton {color:white; background-color: green}"
+            "QPushButton:checked {color:white; background-color: red}"
+            "QPushButton:disabled {color:black; background-color: gray}"
+        )
+
+        self.limbo_stylesheet = (
+            "QPushButton {color:black; background-color: gray}"
+        )
+
+        self.setStyleSheet(self.limbo_stylesheet)
         # at start, set our text to no pilot and wait for the signal
-        self.setText("?")
+        self.setText("?PING?")
 
         # keep track of our visual and functional state.
         self.state = "DISCONNECTED"
@@ -482,6 +527,7 @@ class Pilot_Button(QtWidgets.QPushButton):
 
         # Passed a function to toggle start from the control panel
         self.start_fn = start_fn
+        self.ping_fn = ping_fn
         # toggle_start has a little sugar on it before sending to control panel
         # use the clicked rather than toggled signal, clicked only triggers on user
         # interaction, toggle is whenever the state is toggled - so programmatically
@@ -497,6 +543,11 @@ class Pilot_Button(QtWidgets.QPushButton):
         """
         # If we're stopped, start, and vice versa...
         current_subject = self.subject_list.currentItem().text()
+
+        if self.state == "DISCONNECTED":
+            # ping our lil bebs
+            self.ping_fn()
+            return
 
         if current_subject is None:
             Warning("Start button clicked, but no subject selected.")
@@ -534,32 +585,40 @@ class Pilot_Button(QtWidgets.QPushButton):
         if state == self.state:
             return
 
+
         if state == "IDLE":
             # responsive and waiting
+            self.setCheckable(True)
             self.setEnabled(True)
             self.setText('START')
             self.setChecked(False)
         elif state == "RUNNING":
             # running a task
+            self.setCheckable(True)
             self.setEnabled(True)
             self.setText('STOP')
             self.setChecked(True)
         elif state == "STOPPING":
             # stopping
+            self.setCheckable(True)
             self.setEnabled(False)
             self.setText("STOPPING")
             self.setChecked(False)
         elif state == "DISCONNECTED":
             # contact w the pi is missing or lost
-            self.setEnabled(False)
-            self.setText("DISCONNECTED")
+            self.setCheckable(False)
+            self.setEnabled(True)
+            self.setText("?PING?")
             self.setChecked(False)
 
-
-        if self.isChecked():
-            self.setText("STOP")
+        if state == "DISCONNECTED":
+            self.setStyleSheet(self.limbo_stylesheet)
         else:
-            self.setText("START")
+            if self.isChecked():
+                self.setText('STOP')
+            else:
+                self.setText('START')
+            self.setStyleSheet(self.normal_stylesheet)
 
         self.state = state
 
@@ -816,7 +875,7 @@ class Protocol_Wizard(QtWidgets.QDialog):
 
     This widget is composed of three windows:
 
-    * **left**: possible task types from :py:data:`.tasks.TASK_LIST`
+    * **left**: possible task types from :func:`autopilot.get_task()`
     * **center**: current steps in task
     * **right**: :class:`.Parameters` for currently selected step.
 
@@ -863,7 +922,7 @@ class Protocol_Wizard(QtWidgets.QDialog):
         addstep_label = QtWidgets.QLabel("Add Step")
         addstep_label.setFixedHeight(40)
         self.task_list = QtWidgets.QListWidget()
-        self.task_list.insertItems(0, tasks.TASK_LIST.keys())
+        self.task_list.insertItems(0, autopilot.get_names('task'))
         self.add_button = QtWidgets.QPushButton("+")
         self.add_button.setFixedHeight(40)
         self.add_button.clicked.connect(self.add_step)
@@ -929,7 +988,7 @@ class Protocol_Wizard(QtWidgets.QDialog):
         task_type = self.task_list.currentItem().text()
         new_item = QtWidgets.QListWidgetItem()
         new_item.setText(task_type)
-        task_params = copy.deepcopy(tasks.TASK_LIST[task_type].PARAMS)
+        task_params = copy.deepcopy(autopilot.get_task(task_type).PARAMS)
 
         # Add params that are non-task specific
         # Name of task type
@@ -972,7 +1031,6 @@ class Protocol_Wizard(QtWidgets.QDialog):
         Returns:
 
         """
-        # type: () -> None
         self.clear_params()
 
         # Get current item index
@@ -1152,7 +1210,7 @@ class Graduation_Widget(QtWidgets.QWidget):
 
     Attributes:
         type_selection (:class:`QtWidgets.QComboBox`): A box to select from the available
-            graduation types listed in :py:data:`.tasks.GRAD_LIST` . Has its `currentIndexChanged`
+            graduation types listed in :func:`autopilot.get_task()` . Has its `currentIndexChanged`
             signal connected to :py:meth:`.Graduation_Widget.populate_params`
         param_dict (dict): Stores the type of graduation and the relevant params,
             fetched by :class:`.Protocol_Wizard` when defining a protocol.
@@ -1165,7 +1223,7 @@ class Graduation_Widget(QtWidgets.QWidget):
         # Grad type dropdown
         type_label = QtWidgets.QLabel("Graduation Criterion:")
         self.type_selection = QtWidgets.QComboBox()
-        self.type_selection.insertItems(0, tasks.GRAD_LIST.keys())
+        self.type_selection.insertItems(0, autopilot.get_names('graduation'))
         self.type_selection.currentIndexChanged.connect(self.populate_params)
 
         # Param form
@@ -1208,7 +1266,7 @@ class Graduation_Widget(QtWidgets.QWidget):
         self.type = self.type_selection.currentText()
         self.param_dict['type'] = self.type
 
-        for k in tasks.GRAD_LIST[self.type].PARAMS:
+        for k in autopilot.get_task(self.type).PARAMS:
             edit_box = QtWidgets.QLineEdit()
             edit_box.setObjectName(k)
             edit_box.editingFinished.connect(self.store_param)
@@ -1519,7 +1577,7 @@ class Sound_Widget(QtWidgets.QWidget):
         Presents a dialog to define a new sound.
 
         Makes a selection box to choose the sound type from
-        :py:data:`.sounds.SOUND_LIST` , and then populates edit boxes
+        ``autopilot.get_names('sound')``, and then populates edit boxes
         so we can fill in its `PARAMS` .
 
         Attributes:
@@ -1534,7 +1592,7 @@ class Sound_Widget(QtWidgets.QWidget):
             # Sound type dropdown
             type_label = QtWidgets.QLabel("Sound Type:")
             self.type_selection = QtWidgets.QComboBox()
-            self.type_selection.insertItems(0, sounds.SOUND_LIST.keys())
+            self.type_selection.insertItems(0, autopilot.get_names('sound'))
             self.type_selection.currentIndexChanged.connect(self.populate_params)
 
             # Param form
@@ -1571,7 +1629,7 @@ class Sound_Widget(QtWidgets.QWidget):
             self.type = self.type_selection.currentText()
             self.param_dict['type'] = self.type
 
-            for k in sounds.SOUND_LIST[self.type].PARAMS:
+            for k in autopilot.get('sound', self.type).PARAMS:
                 edit_box = QtWidgets.QLineEdit()
                 edit_box.setObjectName(k)
                 edit_box.editingFinished.connect(self.store_param)
@@ -1590,7 +1648,6 @@ class Sound_Widget(QtWidgets.QWidget):
             """
             When one of our edit boxes is edited, stash the parameter in `param_dict`
             """
-            # type: () -> None
             sender = self.sender()
             name = sender.objectName()
             self.param_dict[name] = sender.text()
@@ -2376,6 +2433,9 @@ class Reassign(QtWidgets.QDialog):
         """
         super(Reassign, self).__init__()
 
+        # FIXME: get logger in a superclass, good god.
+        self.logger = init_logger(self)
+
         self.subjects = subjects
         self.protocols = protocols
         self.protocol_dir = prefs.get('PROTOCOLDIR')
@@ -2391,7 +2451,7 @@ class Reassign(QtWidgets.QDialog):
 
         self.subject_objects = {}
 
-        for i, (subject, protocol) in zip(range(len(self.subjects)), self.subjects.items()):
+        for i, (subject, protocol) in enumerate(self.subjects.items()):
             subject_name = copy.deepcopy(subject)
             step = protocol[1]
             protocol = protocol[0]
@@ -2403,19 +2463,28 @@ class Reassign(QtWidgets.QDialog):
             protocol_box = self.subject_objects[subject][0]
             protocol_box.setObjectName(subject_name)
             protocol_box.insertItems(0, self.protocols)
+            # add blank at the end
+            protocol_box.addItem(text='')
+
             # set current item if subject has matching protocol
             protocol_bool = [protocol == p for p in self.protocols]
             if any(protocol_bool):
                 protocol_ind = np.where(protocol_bool)[0][0]
                 protocol_box.setCurrentIndex(protocol_ind)
+            else:
+                # set to blank
+                protocol_box.setCurrentIndex(protocol_box.count()-1)
+
             protocol_box.currentIndexChanged.connect(self.set_protocol)
 
+            # create & populate step box
             step_box = self.subject_objects[subject][1]
             step_box.setObjectName(subject_name)
 
             self.populate_steps(subject_name)
 
-            step_box.setCurrentIndex(step)
+            if step:
+                step_box.setCurrentIndex(step)
             step_box.currentIndexChanged.connect(self.set_step)
 
             # add to layout
@@ -2449,15 +2518,29 @@ class Reassign(QtWidgets.QDialog):
 
         # Load the protocol and parse its steps
         protocol_str = protocol_box.currentText()
-        protocol_file = os.path.join(self.protocol_dir, protocol_str + '.json')
-        with open(protocol_file) as protocol_file_open:
-            protocol = json.load(protocol_file_open)
 
-        step_list = []
-        for i, s in enumerate(protocol):
-            step_list.append(s['step_name'])
+        # if unassigned, will be the blank string (which evals False here)
+        # so do nothing in that case
+        if protocol_str:
+            protocol_file = os.path.join(self.protocol_dir, protocol_str + '.json')
+            try:
+                with open(protocol_file) as protocol_file_open:
+                    protocol = json.load(protocol_file_open)
+            except json.decoder.JSONDecodeError:
+                self.logger.exception(f'Steps could not be populated because task could not be loaded due to malformed JSON in protocol file {protocol_file}')
+                return
+            except Exception:
+                self.logger.exception(f'Steps could not be populated due to an unknown error loading {protocol_file}. Catching and continuing to populate window')
+                return
 
-        step_box.insertItems(0, step_list)
+
+            step_list = []
+            for i, s in enumerate(protocol):
+                step_list.append(s['step_name'])
+
+            step_box.insertItems(0, step_list)
+
+
 
     def set_protocol(self):
         """
@@ -2552,7 +2635,7 @@ class Weights(QtWidgets.QTableWidget):
                 self.setItem(row, j, item)
 
         # make headers
-        self.setHorizontalHeaderLabels(self.colnames.values())
+        self.setHorizontalHeaderLabels(list(self.colnames.values()))
         self.resizeColumnsToContents()
         self.updateGeometry()
         self.adjustSize()
@@ -2584,6 +2667,116 @@ class Weights(QtWidgets.QTableWidget):
             date = self.subject_weights[row]['date']
             column_name = self.colnames.keys()[column] # recall colnames is an ordered dictionary
             self.subjects[subject_name].set_weight(date, column_name, new_val)
+
+class Plugins(QtWidgets.QDialog):
+    """
+    Dialog window that allows plugins to be viewed and installed.
+
+    Works by querying the `wiki <https://wiki.auto-pi-lot.com>`_ ,
+    find anything in the category ``Autopilot Plugins`` , clone the
+    related repo, and reload plugins.
+
+    At the moment this widget is a proof of concept and will be made functional
+    asap :)
+    """
+
+    def __init__(self):
+        super(Plugins, self).__init__()
+
+        self.logger = init_logger(self)
+        self.plugins = {}
+
+        self.init_ui()
+        self.list_plugins()
+
+    def init_ui(self):
+        self.layout = QtWidgets.QGridLayout()
+
+        # top combobox for selecting plugin type
+        self.plugin_type = QtWidgets.QComboBox()
+        self.plugin_type.addItem("Plugin Type")
+        self.plugin_type.addItem('All')
+        for ptype in registry.REGISTRIES:
+            self.plugin_type.addItem(str(ptype.name).capitalize())
+        self.plugin_type.currentIndexChanged.connect(self.select_plugin_type)
+
+        # left panel for listing plugins
+        self.plugin_list = QtWidgets.QListWidget()
+        self.plugin_list.currentItemChanged.connect(self.select_plugin)
+        self.plugin_details = QtWidgets.QFormLayout()
+
+        self.plugin_list.setMinimumWidth(200)
+        self.plugin_list.setMinimumHeight(600)
+
+        self.status = QtWidgets.QLabel()
+        self.download_button = QtWidgets.QPushButton('Download')
+        self.download_button.setDisabled(True)
+
+        # --------------------------------------------------
+        # layout
+
+        self.layout.addWidget(self.plugin_type, 0, 0, 1, 2)
+        self.layout.addWidget(self.plugin_list, 1, 0, 1, 1)
+        self.layout.addLayout(self.plugin_details, 1, 1, 1, 1)
+        self.layout.addWidget(self.status, 2, 0, 1, 1)
+        self.layout.addWidget(self.download_button, 2, 1, 1, 1)
+
+        self.layout.setRowStretch(0, 1)
+        self.layout.setRowStretch(1, 10)
+        self.layout.setRowStretch(2, 1)
+
+        self.setLayout(self.layout)
+
+    def list_plugins(self):
+        self.status.setText('Querying wiki for plugin list...')
+
+        self.plugins = plugins.list_wiki_plugins()
+        self.logger.info(f'got plugins: {self.plugins}')
+
+        self.status.setText(f'Got {len(self.plugins)} plugins')
+
+    def download_plugin(self):
+        pass
+
+    def select_plugin_type(self):
+        nowtype = self.plugin_type.currentText()
+
+
+        if nowtype == "Plugin Type":
+            return
+        elif nowtype == "All":
+            plugins = self.plugins.copy()
+        else:
+            plugins = [plug for plug in self.plugins if plug['Is Autopilot Plugin Type'] == nowtype]
+
+        self.logger.debug(f'showing plugin type {nowtype}, matched {plugins}')
+
+        self.plugin_list.clear()
+        for plugin in plugins:
+            self.plugin_list.addItem(plugin['name'])
+
+    def select_plugin(self):
+        if self.plugin_list.currentItem() is None:
+            self.download_button.setDisabled(True)
+        else:
+            self.download_button.setDisabled(False)
+
+        plugin_name = self.plugin_list.currentItem().text()
+        plugin = [p for p in self.plugins if p['name'] == plugin_name][0]
+
+        while self.plugin_details.rowCount() > 0:
+            self.plugin_details.removeRow(0)
+
+        for k, v in plugin.items():
+            if k == 'name':
+                continue
+            if isinstance(v, list):
+                v = ", ".join(v)
+            self.plugin_details.addRow(k, QtWidgets.QLabel(v))
+
+
+
+
 
 
 #####################################################
@@ -2786,24 +2979,346 @@ class Psychometric(QtWidgets.QDialog):
                 ))
         return _plot_params
 
+class Stream_Video(QtWidgets.QDialog):
+    """
+    Dialogue to stream, display, and save video.
+
+    """
+
+    def __init__(self, pilots:dict, *args, **kwargs):
+        """
+        Args:
+            pilots (dict): The :attr:`.Terminal.pilot_db` with the ``prefs`` of each pilot
+                (given by :meth:`.Pilot.handshake`)
+        """
+        super(Stream_Video, self).__init__(*args, **kwargs)
+
+        self.writer = None # type: typing.Optional['Video_Writer']
+        self.writer_q = mp.Queue()
+        self.writer_file = ""
+        self.writing = threading.Event()
+        self.writing.clear()
+
+        self.logger = init_logger(self)
+
+        self.pilots = pilots
+
+        # --------------------------------------------------
+        # Parse hardware devices
+        # --------------------------------------------------
+        self.cameras = {}
+        for pilot, pilot_params in self.pilots.items():
+            pilot_prefs = pilot_params.get('prefs', None)
+            if pilot_prefs is None:
+                self.logger.exception(f'pilot {pilot} had no prefs in its pilots_db entry')
+                continue
+
+            self.cameras[pilot] = {}
+
+            # iterate through nested hardware dictionary, lookin for cameras
+            hardware = pilot_prefs.get('HARDWARE', {'':{}})
+            for hw_group, hw_items in hardware.items():
+                for hw_id, hw_params in hw_items.items():
+                    # if it has cameras in its type (eg. 'cameras.PiCamera')
+                    # or a group that starts with cam...
+                    if 'cameras' in hw_params.get('type', '') or hw_group.lower().startswith('cam'):
+                        # store an abbreviated version of the name and its params for the comboboxes
+                        self.cameras[pilot]['.'.join((hw_group, hw_id))] = hw_params
+
+
+        self.id = f'{prefs.get("NAME")}_video'
+
+        self.video = Video(('stream',))
+
+        self.node = Net_Node(id=self.id,
+                             upstream="T",
+                             port=prefs.get('MSGPORT'),
+                             listens={'CONTINUOUS':self.l_frame},
+                             instance=True)
+
+        self.layout = None # type: typing.Optional[QtWidgets.QHBoxLayout]
+        self.comboboxes = {} # type: typing.Dict[str, QtWidgets.QComboBox]
+        self.buttons = {} # type: typing.Dict[str, QtWidgets.QPushButton]
+        self.cam_info = {} # type: typing.Dict[str, typing.Union[QtWidgets.QFormLayout, QtWidgets.QLabel]]
+
+        self._streaming_pilot = '' # keep reference to ID of pilot that was started if combobox values change while streaming
+        self._streaming_cam_id = ''
+
+        self.init_ui()
+        self.show()
+
+    def init_ui(self):
+        self.layout = QtWidgets.QHBoxLayout()
+
+        self.layout.addWidget(self.video,3)
+
+        # --------------------------------------------------
+        # Controls layout on right - comboboxes and buttons
+        # --------------------------------------------------
+        self.button_layout = QtWidgets.QVBoxLayout()
+
+        # combobox to select pilot
+        self.comboboxes['pilot'] = QtWidgets.QComboBox()
+        self.comboboxes['pilot'].addItem('Select Pilot...')
+        for pilot in sorted(self.pilots.keys()):
+            self.comboboxes['pilot'].addItem(pilot)
+        self.comboboxes['pilot'].currentIndexChanged.connect(self.populate_cameras)
+
+        # and to select camera device
+        self.comboboxes['camera'] = QtWidgets.QComboBox()
+        self.comboboxes['camera'].addItem('Select Camera...')
+        self.comboboxes['camera'].currentIndexChanged.connect(self.camera_selected)
+
+        # buttons to control video
+        self.buttons['start'] = QtWidgets.QPushButton('Start Streaming')
+        self.buttons['start'].setCheckable(True)
+        self.buttons['start'].setChecked(False)
+        self.buttons['start'].setDisabled(True)
+        self.buttons['start'].toggled.connect(self.toggle_start)
+
+        # save button to start saving frames
+        self.buttons['write'] = QtWidgets.QPushButton('Write Video...')
+        self.buttons['write'].setCheckable(True)
+        self.buttons['write'].setChecked(False)
+        self.buttons['write'].setDisabled(True)
+        self.buttons['write'].toggled.connect(self.write_video)
+
+        # Infobox to display camera params
+        self.cam_info['label'] = QtWidgets.QLabel()
+        self.cam_info['form'] = QtWidgets.QFormLayout()
+
+        # --------------------------------------------------
+        # add to button layout
+        self.button_layout.addWidget(self.comboboxes['pilot'])
+        self.button_layout.addWidget(self.comboboxes['camera'])
+        self.button_layout.addWidget(self.buttons['start'])
+        self.button_layout.addWidget(self.buttons['write'])
+        self.button_layout.addWidget(self.cam_info['label'])
+        self.button_layout.addLayout(self.cam_info['form'])
+        self.button_layout.addStretch(1)
+
+        self.layout.addLayout(self.button_layout, 1)
+        self.setLayout(self.layout)
+
+    @property
+    def current_pilot(self) -> str:
+        return self.comboboxes['pilot'].currentText()
+
+    @property
+    def current_camera(self) -> str:
+        return self.comboboxes['camera'].currentText()
+
+    def populate_cameras(self):
+        current_pilot = self.current_pilot
+        self.comboboxes['camera'].clear()
+        self._clear_info()
+        self.buttons['start'].setChecked(False)
+        self.buttons['start'].setDisabled(True)
+        self.buttons['write'].setChecked(False)
+        self.buttons['write'].setDisabled(True)
+
+
+        # ignore placeholder text
+        if current_pilot in self.cameras.keys():
+            self.comboboxes['camera'].addItem('Select Camera...')
+            for cam_name in sorted(self.cameras[current_pilot].keys()):
+                self.comboboxes['camera'].addItem(cam_name)
+        else:
+            self.comboboxes['camera'].addItem('No Camera Configured!')
 
 
 
+    def camera_selected(self):
+        current_pilot = self.current_pilot
+        current_camera = self.current_camera
+
+        if current_pilot in self.cameras.keys() and \
+                current_camera in self.cameras[current_pilot].keys():
+            self.cam_info['label'].setText(current_camera)
+            for param_name, param_val in self.cameras[current_pilot][current_camera].items():
+                self.cam_info['form'].addRow(param_name, QtWidgets.QLabel(str(param_val)))
+
+            self.buttons['start'].setDisabled(False)
+
+    def toggle_start(self):
+        if self.buttons['start'].isChecked():
+            # starting!!
+            self.comboboxes['pilot'].setDisabled(True)
+            self.comboboxes['camera'].setDisabled(True)
+            self.buttons['write'].setDisabled(False)
+            self._streaming_cam_id = self.current_camera.split('.')[-1]
+            self.buttons['start'].setText('Streaming...')
+            self.node.send(to=self.current_pilot, key="STREAM_VIDEO",
+                           value={
+                               'starting': True,
+                               'camera': self.current_camera,
+                               'stream_to': self.id
+                           })
+        else:
+            self.node.send(to=self.current_pilot, key="STREAM_VIDEO",
+                           value={
+                               'starting': False,
+                               'camera': self.current_camera,
+                               'stream_to': self.id
+                           })
+
+            if self.buttons['write'].isChecked():
+                self.buttons['start'].setDisabled(True)
+                self.buttons['write'].toggle()
+                while not self.buttons['write'].isEnabled():
+                    time.sleep(0.001)
+                self.buttons['start'].setDisabled(False)
+
+            self.comboboxes['pilot'].setDisabled(False)
+            self.comboboxes['camera'].setDisabled(False)
+            self.buttons['write'].setDisabled(True)
+            self.buttons['start'].setText('Start Streaming')
 
 
 
-def pop_dialog(message, msg_type="info", details="", buttons=['Ok']):
+    def write_video(self):
+        # import here so only import when this particular widget is used.
+        # (until we refactor GUI objects)
+        from autopilot.hardware.cameras import Video_Writer
+
+        if self.buttons['write'].isChecked():
+            if self.writer is None:
+                self.writer_file, _ = QtWidgets.QFileDialog.getSaveFileName(
+                    self, "Select Output Video Location",
+                    prefs.get("DATADIR"),
+                    "Video File (*.mp4)"
+                )
+
+                # remake queue just in case
+                self.writer_q = mp.Queue()
+
+                # try to get fps
+                try:
+                    fps = int(self.cameras[self.current_pilot][self.current_camera]['fps'])
+                except KeyError:
+                    self.logger.warning('Camera does not have an "fps" parameter, using 30')
+                    fps = 30
+
+                self.writer = Video_Writer(
+                    q = self.writer_q,
+                    path = self.writer_file,
+                    fps=fps,
+                    timestamps=True,
+                    blosc=False
+                )
+                self.writer.start()
+                self.writing.set()
+                self.buttons['write'].setText('Writing')
+        else:
+            if self.writer is not None:
+                self.writing.clear()
+                self.writer_q.put('END')
+
+                self.logger.info('Waiting for writer to finish...')
+                self.buttons['write'].setDisabled(True)
+                while not self.writer_q.empty():
+                    self.buttons['write'].setText(f'Writer finishing {self.writer_q.qsize()} frames')
+                    time.sleep(0.2)
+
+                # give the writer an additional second if it needs it
+                self.writer.join(3)
+
+                if self.writer.exitcode is None:
+                    # ask if we want to wait
+                    waitforit = pop_dialog(
+                        'Wait for writer?',
+                        details="Writer isn't finished but queue is empty, wait for it to finish? Otherwise we'll try to terminate it",
+                        msg_type='question',
+                        buttons=('Ok', 'Abort')
+                    )
+                    print(waitforit)
+
+                    if waitforit == True:
+                        start_time = time.time()
+                        while self.writer.exitcode is None:
+                            waited = time.time() - start_time
+                            self.buttons['write'].setText(f'Waiting for Writer ({waited:.1f})')
+                            self.writer.join(0.1)
+
+                    else:
+                        self.logger.exception("Had to terminate Video Writer!")
+                        self.writer.terminate()
+
+                self.writer = None
+
+                self.buttons['write'].setText("Write Video...")
+                self.buttons['write'].setDisabled(False)
+
+    def _clear_info(self):
+        self.cam_info['label'].setText('')
+        while self.cam_info['form'].count():
+            child = self.cam_info['form'].takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+
+
+    def l_frame(self, value):
+        self.video.update_frame('stream', value[self._streaming_cam_id])
+        if self.writing.is_set():
+            self.writer_q.put_nowait((value['timestamp'],
+                                      value[self._streaming_cam_id]))
+
+    def closeEvent(self, arg__1:QtGui.QCloseEvent):
+
+        if self.buttons['start'].isChecked():
+            self.buttons['start'].toggle()
+            # this will also stop the writer
+            max_wait = 10
+            waited = 0
+            while not self.buttons['start'].isEnabled() and waited < max_wait:
+                time.sleep(1)
+                waited += 1
+
+        super(Stream_Video, self).closeEvent(arg__1)
+
+
+def pop_dialog(message:str,
+               details:str="",
+               buttons:tuple=("Ok",),
+               modality:str="nonmodal",
+               msg_type:str="info",) -> QtWidgets.QMessageBox:
     """Convenience function to pop a :class:`.QtGui.QDialog window to display a message.
 
-    Args:
-        details:
-        message (str): message to be displayed
-        msg_type (str): "info" (default), "question", "warning", or "error" to use :meth:`.QtGui.QMessageBox.information`, :meth:`.QtGui.QMessageBox.question`, :meth:`.QtGui.QMessageBox.warning`, or :meth:`.QtGui.QMessageBox.error`, respectively
-        buttons (list): A list specifying which :class:`.QtGui.QMessageBox.StandardButton` s to display. Use a string matching the button name, eg. "Ok" gives :class:`.QtGui.QMessageBox.Ok`
+    .. note::
 
+        This function does *not* call `.exec_` on the dialog so that it can be managed by the caller.
+
+    Examples:
+        box = pop_dialog(
+            message='Hey what up',
+            details='i got something to tell you',
+            buttons = ('Ok', 'Cancel'))
+        ret = box.exec_()
+        if ret == box.Ok:
+            print("user answered 'Ok'")
+        else:
+            print("user answered 'Cancel'")
+
+    Args:
+        message (str): message to be displayed
+        details (str): Additional detailed to be added to the displayed message
+        buttons (list): A list specifying which :class:`.QtWidgets.QMessageBox.StandardButton` s to display. Use a string matching the button name, eg. "Ok" gives :class:`.QtWidgets.QMessageBox.Ok`
+
+            The full list of available buttons is::
+
+                ['NoButton', 'Ok', 'Save', 'SaveAll', 'Open', 'Yes', 'YesToAll',
+                 'No', 'NoToAll', 'Abort', 'Retry', 'Ignore', 'Close', 'Cancel',
+                 'Discard', 'Help', 'Apply', 'Reset', 'RestoreDefaults',
+                 'FirstButton', 'LastButton', 'YesAll', 'NoAll', 'Default',
+                 'Escape', 'FlagMask', 'ButtonMask']
+
+        modality (str): Window modality to use, one of "modal", "nonmodal" (default). Modal windows block nonmodal windows don't.
+        msg_type (str): "info" (default), "question", "warning", or "error" to use :meth:`.QtGui.QMessageBox.information`,
+            :meth:`.QtGui.QMessageBox.question`, :meth:`.QtGui.QMessageBox.warning`, or :meth:`.QtGui.QMessageBox.error`,
+            respectively
 
     Returns:
-        result (bool, str): The result of the dialog. If Ok/Cancel, boolean True/False, otherwise a string matching the button type
+        QtWidgets.QMessageBox
     """
 
     msgBox = QtWidgets.QMessageBox()
@@ -2820,420 +3335,15 @@ def pop_dialog(message, msg_type="info", details="", buttons=['Ok']):
     bitwise_buttons = reduce(ior, button_objs)
     msgBox.setStandardButtons(bitwise_buttons)
 
-    if 'Ok' in buttons:
+    if "Ok" in buttons:
         msgBox.setDefaultButton(QtWidgets.QMessageBox.Ok)
 
-    icon = None
-    if msg_type == "info":
-        icon = QtWidgets.QMessageBox.Information
-    elif msg_type == "question" or msg_type.startswith('q'):
-        icon = QtWidgets.QMessageBox.Question
-    elif msg_type == "warning":
-        icon = QtWidgets.QMessageBox.Warning
-    elif msg_type == "error":
-        icon = QtWidgets.QMessageBox.Critical
-
-    if icon:
+    icon = _MAPS['dialog']['icon'].get(msg_type, None)
+    if icon is not None:
         msgBox.setIcon(icon)
 
-    ret = msgBox.exec_()
+    modality = _MAPS['dialog']['modality'].get(modality, None)
+    if modality is not None:
+        msgBox.setWindowModality(modality)
 
-    # pdb.set_trace()
-
-    # get message box name
-    # for but in QtGui.QMessageBox.StandardButton
-
-    for but in button_objs:
-        print(but.name)
-        if ret == but:
-            ret = but.name
-
-    if ret in ("Ok", "Yes"):
-        ret = True
-    elif ret in ('Cancel', 'No'):
-        ret = False
-
-    return ret
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-###############
-# don't remove these - will be used to replace Protocol Wizard eventually
-
-###################################3
-# Parameter setting widgets
-######################################
-#
-# class Parameters(QtWidgets.QWidget):
-#     """
-#     A :class:`QtWidgets.QWidget` used to display and edit task parameters.
-#
-#     This class is typically instantiated by :class:`Protocol_Parameters`
-#     as a display window for a single step's parameters.
-#
-#     Attributes:
-#         param_layout (:class:`QtWidgets.QFormLayout`): Holds param tags and values
-#         param_changes (dict): Stores any changes made to protocol parameters,
-#             used to update the protocol stored in the :class:`~.subject.Subject` object.
-#     """
-#     # Superclass to embed wherever needed
-#     # Subclasses will implement use as standalong dialog and as step selector
-#     # Reads and edits tasks parameters from a subject's protocol
-#     def __init__(self, params=None, stash_changes=False):
-#         """
-#         Args:
-#             params (str, collections.OrderedDict): If a string, the name of a task in :py:data:`.tasks.TASK_LIST`
-#
-#                 If an odict, an odict of the form used by
-#                 :py:attr:`.Task.PARAMS` (see :py:attr:`.Nafc.PARAMS` for an example).
-#
-#                 we use an OrderedDict to preserve the order of some parameters that should appear together
-#
-#                 its general structure is::
-#
-#                     {'parameter_key': {'tag':'Human Readable Name',
-#                                        'type':'param_type'}}
-#
-#                 while some parameter types have extra items, eg.::
-#
-#                     {'list_param': {'tag':'Select from a List of Parameters',
-#                                     'type': 'list',
-#                                     'values': {'First Option':0, 'Second Option':1}}
-#
-#                 where k:v pairs are still used with lists to allow parameter values (0, 1) be human readable.
-#
-#                 The available types include:
-#                 - **int** - integer
-#                 - **bool** - boolean boolbox
-#                 - **list** - a list of `values` to choose from
-#                 - **sounds** - a :class:`Sound_Widget` that allows sounds to be defined.
-#
-#             stash_changes (bool): Should changes to parameters be stored in :py:attr:`Parameters.param_changes` ?
-#         """
-#         super(Parameters, self).__init__()
-#
-#         # We're just a simple label and a populateable form layout
-#         self.layout = QtWidgets.QVBoxLayout()
-#         self.setLayout(self.layout)
-#
-#         label = QtWidgets.QLabel("Parameters")
-#         label.setFixedHeight(40)
-#
-#         self.param_layout = QtWidgets.QFormLayout()
-#
-#         self.layout.addWidget(label)
-#         self.layout.addLayout(self.param_layout)
-#
-#         # sometimes we only are interested in the changes - like editing params
-#         # when that's the case, we keep a log of it
-#         self.stash_changes = stash_changes
-#         if self.stash_changes:
-#             self.param_changes = {}
-#
-#
-#         # If we were initialized with params, populate them now
-#         self.params = None
-#         if params:
-#             self.populate_params(params)
-#
-#     def populate_params(self, params):
-#         """
-#         Calls :py:meth:`clear_layout` and then creates widgets to edit parameter values.
-#
-#         Args:
-#             params (str, collections.OrderedDict): see `params` in the class instantiation arguments.
-#         """
-#         # We want to hang on to the protocol and step
-#         # because they are direct references to the subject file,
-#         # but we don't need to have them passed every time
-#
-#         self.clear_layout(self.param_layout)
-#
-#         if isinstance(params, basestring):
-#             # we are filling an empty parameter set
-#             self.params = {}
-#             task_type = params
-#         else:
-#             # we are populating an existing parameter set (ie. the fields already have values)
-#             self.params = params
-#             task_type = params['task_type']
-#
-#         self.param_layout.addRow("Task Type:", QtWidgets.QLabel(task_type))
-#
-#         # we need to load the task class to get the types of our parameters,
-#         self.task_params = copy.deepcopy(tasks.TASK_LIST[task_type].PARAMS)
-#
-#         # Make parameter widgets depending on type and populate with current values
-#         for k, v in self.task_params.items():
-#             if v['type'] == 'int' or v['type'] == 'str':
-#                 rowtag = QtWidgets.QLabel(v['tag'])
-#                 input_widget = QtWidgets.QLineEdit()
-#                 input_widget.setObjectName(k)
-#                 if v['type'] == 'int':
-#                     input_widget.setValidator(QtGui.QIntValidator())
-#                 input_widget.textEdited.connect(self.set_param)
-#                 if k in self.params.keys():
-#                     input_widget.setText(self.params[k])
-#                 self.param_layout.addRow(rowtag,input_widget)
-#             elif v['type'] == 'bool':
-#                 rowtag = QtWidgets.QLabel(v['tag'])
-#                 input_widget = QtWidgets.QCheckBox()
-#                 input_widget.setObjectName(k)
-#                 input_widget.stateChanged.connect(self.set_param)
-#                 if k in self.params.keys():
-#                     input_widget.setChecked(self.params[k])
-#                 self.param_layout.addRow(rowtag, input_widget)
-#             elif v['type'] == 'list':
-#                 rowtag = QtWidgets.QLabel(v['tag'])
-#                 input_widget = QtWidgets.QListWidget()
-#                 input_widget.setObjectName(k)
-#                 input_widget.insertItems(0, sorted(v['values'], key=v['values'].get))
-#                 input_widget.itemSelectionChanged.connect(self.set_param)
-#                 if k in self.params.keys():
-#                     select_item = input_widget.item(self.params[k])
-#                     input_widget.setCurrentItem(select_item)
-#                 self.param_layout.addRow(rowtag, input_widget)
-#             elif v['type'] == 'sounds':
-#                 self.sound_widget = Sound_Widget()
-#                 self.sound_widget.setObjectName(k)
-#                 self.sound_widget.pass_set_param_function(self.set_sounds)
-#                 self.param_layout.addRow(self.sound_widget)
-#                 if k in self.params.keys():
-#                     self.sound_widget.populate_lists(self.params[k]['sounds'])
-#             elif v['type'] == 'label':
-#                 # This is a .json label not for display
-#                 pass
-#
-#     def clear_layout(self, layout=None):
-#         """
-#         Clears widgets from current layout
-#
-#         Args:
-#             layout (:class:`QtWidgets.QLayout`): optional. if `None`, clears `param_layout`,
-#             otherwise clears the passed layout.
-#         """
-#         if not layout:
-#             layout = self.param_layout
-#         while layout.count():
-#             child = layout.takeAt(0)
-#             if child.widget():
-#                 child.widget().deleteLater()
-#
-#     def set_param(self):
-#         """
-#         Callback function connected to the signal each widget uses to signal it has changed.
-#
-#         Identifies the param that was changed, gets the current value, updates `self.param` and
-#         `self.param_changes` if `stash_changes` is True.
-#         """
-#         # A param was changed in the window, update our values here and in the subject object
-#         sender = self.sender()
-#         param_name = sender.objectName()
-#         sender_type = self.task_params[param_name]['type']
-#
-#         if sender_type == 'int' or sender_type == 'str':
-#             new_val = sender.text()
-#         elif sender_type == 'bool':
-#             new_val = sender.isChecked()
-#         elif sender_type == 'list':
-#             list_text = sender.currentItem().text()
-#             new_val = self.task_params[param_name]['values'][list_text]
-#         elif sender_type == 'sounds':
-#             new_val = self.sound_widget.sound_dict
-#
-#         self.params[param_name] = new_val
-#         if self.stash_changes:
-#             self.param_changes[param_name] = new_val
-#
-#     def set_sounds(self):
-#         """
-#         Stores parameters that define sounds.
-#
-#         Sound parameters work a bit differently, speficically we have to retrieve
-#         :py:attr:`.Sound_Widget.sound_dict`.
-#         """
-#         # Have to handle sounds slightly differently
-#         # because the sound widget updates its own parameters
-#         self.params[self.step]['sounds'] = self.sound_widget.sound_dict
-
-#
-# class Protocol_Parameters(QtWidgets.QWidget):
-#     """
-#     Allows the creation of multi-step protocols.
-#
-#     Composed of three windows:
-#     - **left**: possible task types from :py:data:`.tasks.TASK_LIST`
-#     - **center**: current steps in task
-#     - **right**: :class:`.Parameters` for currently selected step.
-#
-#     Attributes:
-#         protocol (dict)
-#     """
-#
-#     def __init__(self, protocol, step, protocol_name=None):
-#         """
-#         Args:
-#             protocol:
-#             step:
-#             protocol_name:
-#         """
-#         super(Protocol_Parameters, self).__init__()
-#
-#         self.protocol = protocol
-#         self.step = step
-#
-#         # We're just a Parameters window with a combobox that lets us change step
-#         self.layout = QtWidgets.QVBoxLayout()
-#         self.setLayout(self.layout)
-#
-#         if protocol_name:
-#             label = QtWidgets.QLabel(protocol_name)
-#         else:
-#             label = QtWidgets.QLabel('Protocol Parameters')
-#
-#         label.setFixedHeight(20)
-#
-#         # Make a combobox, we'll populate it in a second.
-#         self.step_selection = QtWidgets.QComboBox()
-#         self.step_selection.currentIndexChanged.connect(self.step_changed)
-#
-#         # And the rest of our body is the params window
-#         self.params_widget = Parameters(stash_changes=True)
-#         self.step_changes = []
-#
-#         # Add everything to the layout
-#         self.layout.addWidget(label)
-#         self.layout.addWidget(self.step_selection)
-#         self.layout.addWidget(self.params_widget)
-#
-#         # and populate
-#         self.populate_protocol(self.protocol, self.step)
-#
-#
-#     def populate_protocol(self, protocol, step=0):
-#         """
-#         Args:
-#             protocol:
-#             step:
-#         """
-#         # clean up first
-#         self.clear()
-#
-#         # store in case things have changed since init
-#         self.protocol = protocol
-#         self.step = step
-#
-#         if isinstance(self.protocol, basestring):
-#             # If we were passed a string, we're being passed a path to a protocol
-#             with open(self.protocol, 'r') as protocol_file:
-#                 self.protocol = json.load(protocol_file)
-#
-#         # Get step list and a dict to convert names back to ints
-#         self.step_list = []
-#         self.step_ind  = {}
-#         for i, s in enumerate(self.protocol):
-#             self.step_list.append(s['step_name'])
-#             self.step_ind[s['step_name']] = i
-#         # fill step_changes with empty dicts to be able to assign later
-#         self.step_changes = [{} for i in range(len(self.protocol))]
-#
-#
-#         # Add steps to combobox
-#         # disconnect indexChanged trigger first so we don't fire a billion times
-#         self.step_selection.currentIndexChanged.disconnect(self.step_changed)
-#         self.step_selection.insertItems(0, self.step_list)
-#         self.step_selection.currentIndexChanged.connect(self.step_changed)
-#
-#         # setting the current index should trigger the params window to refresh
-#         self.step_selection.setCurrentIndex(self.step)
-#         self.params_widget.populate_params(self.protocol[self.step])
-#
-#
-#     def clear(self):
-#         while self.step_selection.count():
-#             self.step_selection.removeItem(0)
-#
-#         self.params_widget.clear_layout()
-#
-#     def step_changed(self):
-#         # save any changes to last step
-#         if self.params_widget.params:
-#             self.protocol[self.step] = self.params_widget.params
-#         if self.params_widget.stash_changes:
-#             self.step_changes[self.step].update(self.params_widget.param_changes)
-#
-#         # the step was changed! Change our parameters here and update the subject object
-#         self.step = self.step_selection.currentIndex()
-#
-#         self.params_widget.populate_params(self.protocol[self.step])
-#
-#
-# class Protocol_Parameters_Dialogue(QtWidgets.QDialog):
-#     def __init__(self, protocol, step):
-#         """
-#         Args:
-#             protocol:
-#             step:
-#         """
-#         super(Protocol_Parameters_Dialogue, self).__init__()
-#
-#         # Dialogue wrapper for Protocol_Parameters
-#
-#         self.protocol = protocol
-#         self.step = step
-#
-#         # Since we share self.protocol, updates in the widget should propagate to us
-#         self.protocol_widget = Protocol_Parameters(self.protocol, self.step)
-#
-#         # We stash changes in the protocol widget and recover them on close
-#         self.step_changes = None
-#
-#         # ok/cancel buttons
-#         buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
-#         buttonBox.accepted.connect(self.accept)
-#         buttonBox.rejected.connect(self.reject)
-#
-#         self.layout = QtWidgets.QVBoxLayout()
-#         self.layout.addWidget(self.protocol_widget)
-#         self.layout.addWidget(buttonBox)
-#         self.setLayout(self.layout)
-#
-#         self.setWindowTitle("Edit Protocol Parameters")
-#
-#     def accept(self):
-#         # Get the changes from the currently open params window
-#         self.step_changes = self.protocol_widget.step_changes
-#         # And any since the last time the qcombobox was changed
-#         self.step_changes[self.protocol_widget.step].update(self.protocol_widget.params_widget.param_changes)
-#
-#         # call the rest of the accept method
-#         super(Protocol_Parameters_Dialogue, self).accept()
-
-#
-#
-# class Popup(QtWidgets.QDialog):
-#     def __init__(self, message):
-#         """
-#         Args:
-#             message:
-#         """
-#         super(Popup, self,).__init__()
-#         self.layout = QtWidgets.QVBoxLayout()
-#         self.text = QtWidgets.QLabel(message)
-#         self.layout.addWidget(self.text)
-#         self.setLayout(self.layout)
+    return msgBox

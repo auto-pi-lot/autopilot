@@ -1,6 +1,6 @@
-pyzmq
+pyzmq>=18.1.*
 npyscreen
-tornado
+tornado>=5.0.*
 inputs
 requests
 blosc

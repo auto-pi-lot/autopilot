@@ -22,6 +22,8 @@ import time
 import numpy as np
 from datetime import datetime
 import itertools
+import typing
+import warnings
 
 
 from autopilot import prefs
@@ -90,7 +92,44 @@ try:
     ENABLED = True
 
 except ImportError:
-    ImportWarning("pigpio could not be imported, gpio not enabled")
+    if prefs.get('AGENT') == "PILOT":
+        warnings.warn("pigpio could not be imported, gpio not enabled", ImportWarning)
+
+
+def clear_scripts(max_scripts=256):
+    """
+    Stop and delete all scripts running on the pigpio client.
+
+    To be called, eg. between tasks to ensure none are left hanging by badly behaved GPIO devices
+
+    Args:
+        max_scripts (int): maximum number of scripts allowed by pigpio. Set in ``pigpio.c`` and not exported
+            to the python module, so have to hardcode it again here, default for pigpio fork is 256
+    """
+
+    if globals()['ENABLED'] == False:
+        warnings.warn('pigpio was not imported, so scripts cannot be cleared')
+        return
+
+    pig = pigpio.pi()
+
+    for i in range(max_scripts):
+        try:
+            pig.stop_script(i)
+        except pigpio.error as e:
+            if 'unknown script id' in str(e):
+                continue
+
+        try:
+            pig.delete_script(i)
+        except Exception as e:
+            warnings.warn(f'Error deleting script {i}, got exception: \n{e}')
+
+
+
+
+
+
 
 
 class GPIO(Hardware):
@@ -142,7 +181,7 @@ class GPIO(Hardware):
             # if a subclass has made this a property, don't fail here
             self.logger.warning('pin_bcm is defined as a property without a setter so cant be set')
 
-        self.pig = None
+        self.pig = None # type: typing.Optional[pigpio.pi]
         self.pigpiod = None
 
         # init pigpio
@@ -159,8 +198,7 @@ class GPIO(Hardware):
         if not self.CONNECTED:
             RuntimeError('No connection could be made to the pigpio daemon')
 
-
-    def init_pigpio(self):
+    def init_pigpio(self) -> bool:
         """
         Create a socket connection to the pigpio daemon and set as :attr:`GPIO.pig`
 
@@ -191,6 +229,16 @@ class GPIO(Hardware):
 
         self._pin = int(pin)
         self.pin_bcm = BOARD_TO_BCM[self._pin]
+
+    @property
+    def state(self) -> bool:
+        """
+        Instantaneous state of GPIO pin, on (``True``) or off (``False``)
+
+        Returns:
+            bool
+        """
+        return bool(self.pig.read(self.pin_bcm))
 
     @property
     def pull(self):
@@ -976,6 +1024,9 @@ class LED_RGB(Digital_Out):
         self.channels = {}
         self.scripts = {}
 
+        if 'pin' in kwargs.keys():
+            raise ValueError('pin passed to LED_RGB, need a list of 3 pins instead (r, g, b). pin, used by single-pin GPIO objects, is otherwise ambiguous with pins.')
+
         super(LED_RGB, self).__init__(**kwargs)
 
         self.flash_params = None
@@ -991,7 +1042,7 @@ class LED_RGB(Digital_Out):
                              'g':PWM(g, polarity=polarity, name="{}_G".format(self.name)),
                              'b':PWM(b, polarity=polarity, name="{}_B".format(self.name))}
         else:
-            ValueError('Must either set with pins= list/tuple of r,g,b pins, or pass all three as separate params')
+            raise ValueError('Must either set with pins= list/tuple of r,g,b pins, or pass all three as separate params')
 
         self.store_series(id='blink',
                           colors=((1,0,0),(0,1,0),(0,0,1),(0,0,0)),
@@ -1035,24 +1086,29 @@ class LED_RGB(Digital_Out):
             g (float, int): value to set green channel
             b (float, int): value to set blue channel
         """
+        # Stop any running scripts (like blinks)
         self.stop_script()
 
-        # if we were given a value, ignore other arguments
+        # Set either by `value` or by individual r, g, b
         if value is not None:
+            # Set by `value`
             if isinstance(value, int) or isinstance(value, float):
+                # Apply `value` to each channel
                 for channel in self.channels.values():
                     channel.set(value)
             elif len(value) == 3:
+                # Assume value is a tuple of r, g, b
                 for channel_key, color_val in zip(('r','g','b'), value):
                     self.channels[channel_key].set(color_val)
             else:
                 raise ValueError('Value must either be a single value or a tuple of (r,g,b)')
         else:
-            if r:
+            # Set by individually specified r, g, b arguments
+            if r is not None:
                 self.channels['r'].set(r)
-            if g:
+            if g is not None:
                 self.channels['g'].set(g)
-            if b:
+            if b is not None:
                 self.channels['b'].set(b)
 
     def toggle(self):
@@ -1060,7 +1116,6 @@ class LED_RGB(Digital_Out):
 
     def pulse(self, duration=None):
         self.logger.warning('Use flash for LEDs instead')
-
 
     def _series_script(self, colors, durations = None, unit="ms", repeat=None, finish_off = True):
         """

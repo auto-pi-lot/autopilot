@@ -3,6 +3,7 @@ Object that implement Graduation criteria to move between
 different tasks in a protocol.
 """
 
+from autopilot.core.loggers import init_logger
 from collections import deque
 import numpy as np
 from itertools import count
@@ -15,6 +16,9 @@ class Graduation(object):
     `update` method.
 
     """
+    def __init__(self):
+        self.logger = init_logger(self)
+
     PARAMS = []
     """
     list: list of parameters to be defined
@@ -48,6 +52,7 @@ class Accuracy(Graduation):
             window (int):  number of trials to consider in the past.
             **kwargs: should have 'correct' corresponding to the corrects/incorrects of the past.
         """
+        super(Accuracy, self).__init__()
         #super(Accuracy, self).__init__()
         self.threshold = float(threshold)
         self.window    = int(window)
@@ -76,7 +81,7 @@ class Accuracy(Graduation):
         try:
             self.corrects.append(int(row['correct']))
         except KeyError:
-            Warning("key 'correct' not found in trial_row")
+            self.logger.warning("key 'correct' not found in trial_row")
             return False
 
         if len(self.corrects)<self.window:
@@ -104,7 +109,7 @@ class NTrials(Graduation):
             current_trial (int): If not starting from zero, start from here
             **kwargs:
         """
-        #super(NTrials, self).__init__()
+        super(NTrials, self).__init__()
 
         self.n_trials = int(n_trials)
         self.counter = count(start=int(current_trial))
@@ -127,9 +132,8 @@ class NTrials(Graduation):
             # so we just remake it
             try:
                 self.counter = count(int(trials))
-            except:
-                # TODO: Logging here
-                pass
+            except Exception as e:
+                self.logger.exception(f"Got exception updating internal counter from trial_num: {e}")
         else:
             trials = next(self.counter)
 
@@ -138,13 +142,3 @@ class NTrials(Graduation):
         else:
             return False
 
-
-
-
-GRAD_LIST = {
-    'accuracy': Accuracy,
-    'n_trials': NTrials
-}
-"""
-Mapping from string reference of graduation type to object.
-"""

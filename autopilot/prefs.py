@@ -48,6 +48,10 @@ Warning:
 
 This iteration of prefs with respect to work done on the `People's Ventilator Project <https://www.peoplesvent.org/en/latest/pvp.common.prefs.html>`_
 
+If a pref has a string for a ``'deprecation'`` field in :data:`.prefs._DEFAULTS` , a ``FutureWarning``
+will be raised with the string given as the message
+
+
 """
 
 # this is strictly a placeholder module to
@@ -62,7 +66,6 @@ This iteration of prefs with respect to work done on the `People's Ventilator Pr
 # Prefs is a top-level module! It shouldn't depend on anything else in Autopilot,
 # and if it does, it should carefully import it where it is needed!
 # (prefs needs to be possible to import everywhere, including eg. in setup_autopilot)
-
 import json
 import subprocess
 import multiprocessing as mp
@@ -105,13 +108,13 @@ class Scopes(Enum):
 
 
 
-_PREF_MANAGER = mp.Manager() # type: mp.Manager
+_PREF_MANAGER = mp.Manager() # type: mp.managers.SyncManager
 """
 The :class:`multiprocessing.Manager` that stores prefs during system operation and makes them available
 and consistent across processes.
 """
 
-_PREFS = _PREF_MANAGER.dict() # type: dict
+_PREFS = _PREF_MANAGER.dict() # type: mp.managers.SyncManager.dict
 """
 stores a dictionary of preferences that mirrors the global variables.
 """
@@ -128,7 +131,7 @@ _INITIALIZED = mp.Value(c_bool, False) # type: mp.Value
 Boolean flag to indicate whether prefs have been initialzied from ``prefs.json``
 """
 
-_LOCK = mp.Lock()
+_LOCK = mp.Lock() # type: mp.Lock
 """
 :class:`multiprocessing.Lock` to control access to ``prefs.json``
 """
@@ -192,7 +195,19 @@ _DEFAULTS = odict({
         'type': 'str',
         'text': 'Location of virtual environment, if used.',
         "scope": Scopes.COMMON,
-        "default": sys.prefix if hasattr(sys, 'real_prefix') or (sys.base_prefix != sys.prefix) else False
+        "default": str(Path(sys.prefix).resolve()) if hasattr(sys, 'real_prefix') or (sys.base_prefix != sys.prefix) else False
+    },
+    'AUTOPLUGIN': {
+        'type': 'bool',
+        'text': "Attempt to import the contents of the plugin directory",
+        "scope": Scopes.COMMON,
+        "default": True
+    },
+    'PLUGIN_DB': {
+        'type': 'str',
+        'text': 'filename to use for the .json plugin_db that keeps track of installed plugins',
+        "default": str(_basedir / "plugin_db.json"),
+        "scope": Scopes.COMMON
     },
     'BASEDIR': {
         'type': 'str',
@@ -233,7 +248,7 @@ _DEFAULTS = odict({
     'PLUGINDIR': {
         'type': 'str',
         "text": "Directory to import ",
-        "default": os.path.join(os.path.expanduser("~"), "autopilot"),
+        "default": str(_basedir / 'plugins'),
         "scope": Scopes.DIRECTORY
     },
     'REPODIR': {
@@ -270,6 +285,12 @@ _DEFAULTS = odict({
         'text': 'Pins to pull down on system startup? (list of form [1, 2])',
         "scope": Scopes.PILOT
     },
+    'PING_INTERVAL': {
+        'type': 'float',
+        'text': 'How many seconds should pilots wait in between pinging the Terminal?',
+        'default': 5,
+        'scope': Scopes.PILOT
+    },
     'DRAWFPS': {
         'type': 'int',
         "text": "FPS to draw videos displayed during acquisition",
@@ -282,6 +303,26 @@ _DEFAULTS = odict({
         "default": str(_basedir / "pilot_db.json"),
         "scope": Scopes.TERMINAL
     },
+    'TERMINAL_SETTINGS_FN':{
+        'type': 'str',
+        'text': 'filename to store QSettings file for Terminal',
+        'default': str(_basedir / "terminal.conf"),
+        "scope": Scopes.TERMINAL
+    },
+    'TERMINAL_WINSIZE_BEHAVIOR': {
+        'type': 'choice',
+        'text': 'Strategy for resizing terminal window on opening',
+        "choices": ('remember', 'moderate', 'maximum', 'custom'),
+        "default": "remember",
+        "scope": Scopes.TERMINAL    
+    },
+    'TERMINAL_CUSTOM_SIZE': {
+        'type': 'list',
+        'text': 'Custom size for window, specified as [px from left, px from top, width, height]',
+        'default': [0, 0, 1000, 400],
+        'depends': ('TERMINAL_WINSIZE_BEHAVIOR', 'custom'),
+        'scope': Scopes.TERMINAL
+    },
     'LINEAGE': {
         'type': 'choice',
         "text": "Are we a parent or a child?",
@@ -289,8 +330,9 @@ _DEFAULTS = odict({
         "scope": Scopes.LINEAGE
     },
     'CHILDID': {
-        'type': 'str',
-        "text": "Child ID:",
+        'type': 'list',
+        "text": "List of Child ID:",
+        'default': [],
         "depends": ("LINEAGE", "PARENT"),
         "scope": Scopes.LINEAGE
     },
@@ -319,15 +361,16 @@ _DEFAULTS = odict({
     },
     'NCHANNELS': {
         'type': 'int',
-        'text': "Number of Audio channels",
+        'text': "Number of Audio channels (deprecated; used OUTCHANNELS)",
         'default': 1,
         'depends': 'AUDIOSERVER',
-        "scope": Scopes.AUDIO
+        "scope": Scopes.AUDIO,
+        'deprecation': "Deprecated and will be removed, use OUTCHANNELS instead"
     },
     'OUTCHANNELS': {
         'type': 'list',
         'text': 'List of Audio channel indexes to connect to',
-        'default': '[1]',
+        'default': '',
         'depends': 'AUDIOSERVER',
         "scope": Scopes.AUDIO
     },
@@ -345,7 +388,6 @@ _DEFAULTS = odict({
         'depends': 'AUDIOSERVER',
         "scope": Scopes.AUDIO
     },
-
 })
 """
 Ordered Dictionary containing default values for prefs.
@@ -387,6 +429,11 @@ def get(key: typing.Union[str, None] = None):
         return globals()['_PREFS']._getvalue()
 
     else:
+        # check for deprecation
+        dep_notice = globals()['_DEFAULTS'].get(key, {}).get('deprecation', None)
+        if dep_notice is not None:
+            warnings.warn(dep_notice, FutureWarning)
+
         # try to get the value from the prefs manager
         try:
             return globals()['_PREFS'][key]
@@ -419,7 +466,7 @@ def set(key: str, val):
         val: Value of pref to set (prefs are not type validated against default types)
     """
     globals()['_PREFS'][key] = val
-    if globals()['_INITIALIZED'].value:
+    if globals()['_INITIALIZED'].value and 'pytest' not in sys.modules:
         save_prefs()
 
 
@@ -489,33 +536,32 @@ def init(fn=None):
         with open(fn, 'r') as pfile:
             prefs = json.load(pfile)
 
-    try:
-        assert(isinstance(prefs, dict))
-    except AssertionError:
-        print(prefs)
-        Exception('prefs must return a dict')
-
     # Get the current git hash
-    prefs['HASH'] = git_version(prefs['REPODIR'])
+    if prefs.get('REPODIR', False):
+        try:
+            prefs['HASH'] = git_version(prefs.get('REPODIR'))
+        except Exception as e:
+            prefs['HASH'] = ''
+            warnings.warn(f'git hash for repo could not be found! will not be able to keep good provenance! got exception: \n{e}')
+    else:
+        warnings.warn('REPODIR is not set in prefs.json, cant get git hash!!!')
 
-    # FIXME: Should this be here? if so need to restructure so that it uses calibration directory, more standardized way of doing calibrations.
+    # FIXME: This 100% should not happen here and should happen in the relevant hardware classes.
     # Load any calibration data
+    if prefs.get('BASEDIR', False):
+        cal_path = os.path.join(prefs['BASEDIR'], 'port_calibration_fit.json')
+        cal_raw = os.path.join(prefs['BASEDIR'], 'port_calibration.json')
 
-    cal_path = os.path.join(prefs['BASEDIR'], 'port_calibration_fit.json')
-    cal_raw = os.path.join(prefs['BASEDIR'], 'port_calibration.json')
-
-    #TODO: make fit calibration update if new calibration results received
-    # aka check if dates in raw results are more recent than date in a 'info' field, for example
-    if os.path.exists(cal_path):
-        with open(cal_path, 'r') as calf:
-            cal_fns = json.load(calf)
-        prefs['PORT_CALIBRATION'] = cal_fns
-    elif os.path.exists(cal_raw):
-        # aka raw calibration results exist but no fit has been computed
-        luts = compute_calibration(path=cal_raw, do_return=True)
-        with open(cal_path, 'w') as calf:
-            json.dump(luts, calf)
-        prefs['PORT_CALIBRATION'] = luts
+        if os.path.exists(cal_path):
+            with open(cal_path, 'r') as calf:
+                cal_fns = json.load(calf)
+            prefs['PORT_CALIBRATION'] = cal_fns
+        elif os.path.exists(cal_raw):
+            # aka raw calibration results exist but no fit has been computed
+            luts = compute_calibration(path=cal_raw, do_return=True)
+            with open(cal_path, 'w') as calf:
+                json.dump(luts, calf)
+            prefs['PORT_CALIBRATION'] = luts
 
     ###########################
 
@@ -574,11 +620,8 @@ def git_version(repo_dir):
         out = subprocess.Popen(cmd, stdout = subprocess.PIPE, env=env).communicate()[0]
         return out
 
-    try:
-        out = _minimal_ext_cmd(['git','-C',repo_dir, 'rev-parse', 'HEAD'])
-        GIT_REVISION = out.strip().decode('ascii')
-    except OSError:
-        GIT_REVISION = "Unknown"
+    out = _minimal_ext_cmd(['git','-C',repo_dir, 'rev-parse', 'HEAD'])
+    GIT_REVISION = out.strip().decode('ascii')
 
     return GIT_REVISION
 
@@ -630,82 +673,16 @@ def compute_calibration(path=None, calibration=None, do_return=False):
         with open(lut_fn, 'w') as lutf:
             json.dump(luts, lutf)
 
-#
-# class _Prefs(types.ModuleType):
-#     """
-#     Hidden class that replaces the module so that prefs can be subscripted
-#
-#     with respect to: https://sohliloquies.blogspot.com/2017/07/how-to-make-subscriptable-module-in.html
-#     """
-#
-#     def __init__(self, *args, **kwargs):
-#         super(_Prefs, self).__init__(*args, **kwargs)
-#
-#         # assign globals as attributes
-#         for key, val in globals().items():
-#             if key == "get":
-#                 continue
-#             self.__setattr__(key, val)
-#
-#     def __getitem__(self, item):
-#         return self.get(item)
-#
-#     def __setitem__(self, key, value):
-#         set(key, value)
-#
-#     def __getattr__(self, key):
-#         """
-#         get global (module) values first, then prefs
-#         """
-#
-#         # if key in globals().keys():
-#         #     return globals()[key]
-#         try:
-#             return object.__getattribute__(self, key)
-#         except AttributeError:
-#             return self.get(key)
-#
-#     def get(self, key: typing.Union[str, None] = None):
-#         """
-#         Get a pref!
-#
-#         If a value for the given ``key`` can't be found, prefs will attempt to
-#
-#         Args:
-#             key (str, None): get pref of specific ``key``, if ``None``, return all prefs
-#
-#         Returns:
-#             value of pref (type variable!), or ``None`` if no pref of passed ``key``
-#         """
-#
-#         # if nothing is requested of us, return everything
-#         if key is None:
-#             return self._PREFS._getvalue()
-#
-#         else:
-#             # try to get the value from the prefs manager
-#             try:
-#                 return self._PREFS[key]
-#
-#             # if none exists...
-#             except KeyError:
-#                 # try to get a default value
-#                 try:
-#                     default_val = globals()['_DEFAULTS'][key]['default']
-#                     warnings.warn(f'Returning default prefs value {key} : {default_val} (ideally this shouldnt '
-#                                   f'happen and everything should be specified in prefs')
-#                     return default_val
-#
-#                 # if you still can't find a value, None is an unambiguous signal for pref not set
-#                 # (no pref is ever None)
-#                 except KeyError:
-#                     return None
-#
-#     # def __setattr__(self, key, val):
-#     #     object.__setattr__(self, key, val)
-#     #     set(key, val)
-#
-#
+def clear():
+    """
+    Mostly for use in testing, clear loaded prefs (without deleting prefs.json)
+
+    (though you will probably overwrite prefs.json if you clear and then set another pref so don't use this except in testing probably)
+    """
+    global _PREFS
+    global _PREF_MANAGER
+    _PREFS = _PREF_MANAGER.dict()
+
 
 
 #######################3

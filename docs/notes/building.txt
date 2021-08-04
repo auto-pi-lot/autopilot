@@ -3,12 +3,14 @@ deployment
 - write changelog
 - bump version in __init__.py
 - bump version in CITATION.cff
+- refresh what's new
 
 - do PR
-- merge
 
 - create git tag with "git tag -a <tagname> -m <tagmessage>"
 - push tag with "git push origin <tagname>"
 - push tagged commit
+
+- merge PR
 
 - create new github release

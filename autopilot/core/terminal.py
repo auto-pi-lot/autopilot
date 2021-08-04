@@ -1,3 +1,6 @@
+"""Methods for running the Terminal GUI"""
+
+import typing
 import argparse
 import json
 import sys
@@ -37,16 +40,14 @@ if __name__ == '__main__':
     # init prefs for module access
     prefs.init(prefs_file)
 
-
-
 from autopilot.core.subject import Subject
 from autopilot.core.plots import Plot_Widget
-from autopilot.core.networking import Terminal_Station, Net_Node
-from autopilot.core.utils import InvokeEvent, Invoker, get_invoker
-from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test
+from autopilot.networking import Net_Node, Terminal_Station
+from autopilot.utils.invoker import get_invoker
+from autopilot.core.gui import Control_Panel, Protocol_Wizard, Weights, Reassign, Calibrate_Water, Bandwidth_Test, pop_dialog, Stream_Video, Plugins
 from autopilot.core.loggers import init_logger
 
-
+# Try to import viz, but continue if that doesn't work
 IMPORTED_VIZ = False
 VIZ_ERROR = None
 try:
@@ -67,10 +68,9 @@ import pdb
 
 _TERMINAL = None
 
-
 class Terminal(QtWidgets.QMainWindow):
     """
-    Central host to a fleet of :class:`.Pilot` s and user-facing
+    Central host to a swarm of :class:`.Pilot` s and user-facing
     :mod:`~.core.gui` objects.
 
     Called as a module with the -f flag to give the location of a prefs file, eg::
@@ -94,17 +94,10 @@ class Terminal(QtWidgets.QMainWindow):
     | `'HANDSHAKE'` | :meth:`~.Terminal.l_handshake` | Pilot first contact, telling us it's alive and its IP  |
     +---------------+--------------------------------+--------------------------------------------------------+
 
-    ** Prefs needed by Terminal **
-    Typically set by :mod:`.setup.setup_terminal`
 
-    * **BASEDIR** - Base directory for all local autopilot data, typically `/usr/autopilot`
-    * **MSGPORT** - Port to use for our ROUTER listener, default `5560`
-    * **DATADIR** -  `os.path.join(params['BASEDIR'], 'data')`
-    * **SOUNDDIR** - `os.path.join(params['BASEDIR'], 'sounds')`
-    * **PROTOCOLDIR** - `os.path.join(params['BASEDIR'], 'protocols')`
-    * **LOGDIR** - `os.path.join(params['BASEDIR'], 'logs')`
-    * **REPODIR** - Path to autopilot git repo
-    * **PILOT_DB** - Location of `pilot_db.json` used to populate :attr:`~.Terminal.pilots`
+    .. note::
+
+        See :mod:`autopilot.prefs` for full list of prefs needed by terminal!
 
     Attributes:
         node (:class:`~.networking.Net_Node`): Our Net_Node we use to communicate with our main networking object
@@ -115,6 +108,8 @@ class Terminal(QtWidgets.QMainWindow):
         data_panel (:class:`~.plots.Plot_Widget`): Plots for each pilot and subject.
         logo (:class:`QtWidgets.QLabel`): Label holding our beautiful logo ;X
         logger (:class:`logging.Logger`): Used to log messages and network events.
+        settings (:class:`PySide2.QtCore.QSettings`): QSettings used to store pyside configuration like window size,
+            stored in ``prefs.get("TERMINAL_SETTINGS_FN")``
     """
 
     def __init__(self):
@@ -123,6 +118,12 @@ class Terminal(QtWidgets.QMainWindow):
 
         # store instance
         globals()['_TERMINAL'] = self
+
+        # Load settings
+        # Currently, the only setting is "geometry", but loading here
+        # in case we start to use other ones in the future
+        self.settings = QtCore.QSettings(prefs.get("TERMINAL_SETTINGS_FN"),
+                                         QtCore.QSettings.NativeFormat)
 
         # networking
         self.node = None
@@ -172,14 +173,14 @@ class Terminal(QtWidgets.QMainWindow):
         # The split is so the external networking can run in another process, do potentially time-consuming tasks
         # like resending & confirming message delivery without blocking or missing messages
 
-        self.node = Net_Node(id="_T", upstream='T', port=prefs.get('MSGPORT'), listens=self.listens)
-        self.logger.info("Net Node Initialized")
-
         # Start external communications in own process
         # Has to be after init_network so it makes a new context
         self.networking = Terminal_Station(self.pilots)
         self.networking.start()
         self.logger.info("Station object Initialized")
+
+        self.node = Net_Node(id="_T", upstream='T', port=prefs.get('MSGPORT'), listens=self.listens, instance=False)
+        self.logger.info("Net Node Initialized")
 
         # send an initial ping looking for our pilots
         self.node.send('T', 'INIT')
@@ -191,6 +192,15 @@ class Terminal(QtWidgets.QMainWindow):
         #self.heartbeat(once=True)
         self.logger.info('Terminal Initialized')
 
+        # if we don't have any pilots, pop a dialogue to declare one
+        if len(self.pilots) == 0:
+            box = pop_dialog(
+                'No Pilots', 'No pilots were found in the pilot_db, add one now?',
+                buttons=('Yes', 'No')
+            )
+            ret = box.exec_()
+            if ret == box.Yes:
+                self.new_pilot()
 
 
 
@@ -204,40 +214,52 @@ class Terminal(QtWidgets.QMainWindow):
         * :class:`.gui.Control_Panel`
         * :class:`.plots.Plot_Widget`
         """
-
-
-        # set central widget
+        # Set central widget
         self.widget = QtWidgets.QWidget()
         self.setCentralWidget(self.widget)
 
-
-
-        # Start GUI
+        # Set the layout
         self.layout = QtWidgets.QGridLayout()
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0,0,0,0)
         self.widget.setLayout(self.layout)
 
+        # Set title
         self.setWindowTitle('Terminal')
         #self.menuBar().setFixedHeight(40)
 
-        # Main panel layout
-        #self.panel_layout.setContentsMargins(0,0,0,0)
+        # This is the pixel resolution of the entire screen
+        if 'pytest' in sys.modules:
+            primary_display = None
+            terminal_winsize_behavior = 'custom'
+            custom_size=[0,0,1000,480]
+        else:
+            terminal_winsize_behavior = prefs.get('TERMINAL_WINSIZE_BEHAVIOR')
+            custom_size = prefs.get('TERMINAL_CUSTOM_SIZE')
+            app = QtWidgets.QApplication.instance()
+            screensize = app.primaryScreen().size()
 
-        # Init toolbar
-        # File menu
-        # make menu take up 1/10 of the screen
-        winsize = app.desktop().availableGeometry()
+            # This is the available geometry of the primary screen, excluding
+            # window manager reserved areas such as task bars and system menus.
+            primary_display = app.primaryScreen().availableGeometry()
 
+        ## Initalize the menuBar
+        # Linux: Set the menuBar to a fixed height
+        # Darwin: Don't worry about menuBar
         if sys.platform == 'darwin':
             bar_height = 0
         else:
-            bar_height = (winsize.height()/30)+5
-            self.menuBar().setFixedHeight(bar_height)
+            if primary_display is None:
+                self.menuBar().setFixedHeight(30)
+            else:
+                bar_height = (primary_display.height()/30)+5
+                self.menuBar().setFixedHeight(bar_height)
 
-
+        # Create a File menu
         self.file_menu = self.menuBar().addMenu("&File")
         self.file_menu.setObjectName("file")
+
+        # Add "New Pilot" and "New Protocol" actions to File menu
         new_pilot_act = QtWidgets.QAction("New &Pilot", self, triggered=self.new_pilot)
         new_prot_act  = QtWidgets.QAction("New Pro&tocol", self, triggered=self.new_protocol)
         #batch_create_subjects = QtWidgets.QAction("Batch &Create subjects", self, triggered=self.batch_subjects)
@@ -246,8 +268,10 @@ class Terminal(QtWidgets.QMainWindow):
         self.file_menu.addAction(new_prot_act)
         #self.file_menu.addAction(batch_create_subjects)
 
-        # Tools menu
+        # Create a Tools menu
         self.tool_menu = self.menuBar().addMenu("&Tools")
+
+        # Add actions to Tools menu
         subject_weights_act = QtWidgets.QAction("View Subject &Weights", self, triggered=self.subject_weights)
         update_protocol_act = QtWidgets.QAction("Update Protocols", self, triggered=self.update_protocols)
         reassign_act = QtWidgets.QAction("Batch Reassign Protocols", self, triggered=self.reassign_protocols)
@@ -257,110 +281,107 @@ class Terminal(QtWidgets.QMainWindow):
         self.tool_menu.addAction(reassign_act)
         self.tool_menu.addAction(calibrate_act)
 
+        # Swarm menu
+        # (tools 4 administering and interacting with agents in swarm)
+        self.swarm_menu = self.menuBar().addMenu("S&warm")
+        stream_video = QtWidgets.QAction("Stream Video", self, triggered=self.stream_video)
+        self.swarm_menu.addAction(stream_video)
+
         # Plots menu
         self.plots_menu = self.menuBar().addMenu("&Plots")
         psychometric = QtWidgets.QAction("Psychometric Curve", self, triggered=self.plot_psychometric)
         self.plots_menu.addAction(psychometric)
 
-        # Tests menu
+        # Create a Tests menu and add a Test Bandwidth action
         self.tests_menu = self.menuBar().addMenu("Test&s")
         bandwidth_test_act = QtWidgets.QAction("Test Bandwidth", self, triggered=self.test_bandwidth)
         self.tests_menu.addAction(bandwidth_test_act)
+
+        # Create a Plugins menu to manage plugins and provide a hook to give them additional terminal actions
+        self.plugins_menu = self.menuBar().addMenu("Plugins")
+        plugin = QtWidgets.QAction("Manage Plugins", self, triggered=self.manage_plugins)
+        self.plugins_menu.addAction(plugin)
 
 
         ## Init main panels and add to layout
         # Control panel sits on the left, controls pilots & subjects
         self.control_panel = Control_Panel(pilots=self.pilots,
                                            subjects=self.subjects,
-                                           start_fn=self.toggle_start)
+                                           start_fn=self.toggle_start,
+                                           ping_fn=self.ping_pilot)
 
         # Data panel sits on the right, plots stuff.
         self.data_panel = Plot_Widget()
         self.data_panel.init_plots(self.pilots.keys())
 
+        # Set logo to corner widget
+        # if sys.platform != 'darwin':
+        #     self.menuBar().setCornerWidget(self.logo, QtCore.Qt.TopRightCorner)
+        #     self.menuBar().adjustSize()
 
-
-        # Logo goes up top
-        # https://stackoverflow.com/questions/25671275/pyside-how-to-set-an-svg-icon-in-qtreewidgets-item-and-change-the-size-of-the
-
-        #
-        # pixmap_path = os.path.join(os.path.dirname(prefs.get('AUTOPILOT_ROOT')), 'graphics', 'autopilot_logo_small.svg')
-        # #svg_renderer = QtSvg.QSvgRenderer(pixmap_path)
-        # #image = QtWidgets.QImage()
-        # #self.logo = QtSvg.QSvgWidget()
-        #
-        #
-        # # set size, preserving aspect ratio
-        # logo_height = round(44.0*((bar_height-5)/44.0))
-        # logo_width = round(139*((bar_height-5)/44.0))
-        #
-        # svg_renderer = QtSvg.QSvgRenderer(pixmap_path)
-        # image = QtGui.QImage(logo_width, logo_height, QtGui.QImage.Format_ARGB32)
-        # # Set the ARGB to 0 to prevent rendering artifacts
-        # image.fill(0x00000000)
-        # svg_renderer.render(QtGui.QPainter(image))
-        # pixmap = QtGui.QPixmap.fromImage(image)
-        # self.logo = QtWidgets.QLabel()
-        # self.logo.setPixmap(pixmap)
-
-        if sys.platform != 'darwin':
-            self.menuBar().setCornerWidget(self.logo, QtCore.Qt.TopRightCorner)
-            self.menuBar().adjustSize()
-
-        #self.logo.load(pixmap_path)
-        # Combine all in main layout
+        # Add Control Panel and Data Panel to main layout
         #self.layout.addWidget(self.logo, 0,0,1,2)
         self.layout.addWidget(self.control_panel, 0,0,1,1)
         self.layout.addWidget(self.data_panel, 0,1,1,1)
         self.layout.setColumnStretch(0, 1)
         self.layout.setColumnStretch(1, 3)
 
-        # Set size of window to be fullscreen without maximization
-        # Until a better solution is found, if not set large enough, the pilot tabs will
-        # expand into infinity. See the Expandable_Tabs class
-        #pdb.set_trace()
-        screensize = app.desktop().screenGeometry()
-        winsize = app.desktop().availableGeometry()
 
-        # want to subtract bounding title box, our title bar, and logo height.
-        # our y offset will be the size of the bounding title box
+        ## Set window size
+        # The window size behavior depends on TERMINAL_WINSIZE_BEHAVIOR pref
+        # If 'remember': restore to the geometry from the last close
+        # If 'maximum': restore to fill the entire screen
+        # If 'moderate': restore to a reasonable size of (1000, 400) pixels
 
-        # Then our tilebar
-        # multiply by three to get the inner (file, etc.) bar, the top bar (min, maximize, etc)
-        # and then the very top system tray bar in ubuntu
-        #titleBarHeight = self.style().pixelMetric(QtWidgets.QStyle.PM_TitleBarHeight,
-        #                                          QtWidgets.QStyleOptionTitleBar(), self) * 3
-        title_bar_height = screensize.height()-winsize.height()
+        # Set geometry according to pref
+        if terminal_winsize_behavior == 'maximum':
+            # Set geometry to available geometry
+            self.setGeometry(primary_display)
 
-        #titleBarHeight = bar_height*2
-        # finally our logo
-        logo_height = bar_height
+            # Set SizePolicy to maximum
+            self.setSizePolicy(
+                QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+
+            # Move to top left corner of primary display
+            self.move(primary_display.left(), primary_display.top())
+
+            # Also set the maximum height of each panel
+            self.control_panel.setMaximumHeight(primary_display.height())
+            self.data_panel.setMaximumHeight(primary_display.height())
+
+        elif terminal_winsize_behavior == 'remember':
+            # Attempt to restore previous geometry
+            if self.settings.value("geometry") is None:
+                # It was never saved, for instance, this is the first time
+                # this app has been run
+                # So default to the moderate size
+                self.move(primary_display.left(), primary_display.top())
+                self.resize(1000, 400)
+            else:
+                # It was saved, so restore the last geometry
+                self.restoreGeometry(self.settings.value("geometry"))
+
+        elif terminal_winsize_behavior == "custom":
+            self.move(custom_size[0], custom_size[1])
+            self.resize(custom_size[2], custom_size[3])
+        else:
+            if terminal_winsize_behavior != 'moderate':
+                self.logger.warning(f'TERMINAL_WINSIZE_BEHAVIOR {terminal_winsize_behavior} is not implemented, defaulting to "moderate"')
+
+            # The moderate size
+            self.move(primary_display.left(), primary_display.top())
+            self.resize(1000, 400)
 
 
-
-        winheight = winsize.height() - title_bar_height - logo_height  # also subtract logo height
-        winsize.setHeight(winheight)
-        self.max_height = winheight
-        self.setGeometry(winsize)
-        self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
-
-        # Set heights on control panel and data panel
-
-
-        # move to primary display and show maximized
-        primary_display = app.desktop().availableGeometry(0)
-        self.move(primary_display.left(), primary_display.top())
-        # self.resize(primary_display.width(), primary_display.height())
-        #
-        self.control_panel.setMaximumHeight(winheight)
-        self.data_panel.setMaximumHeight(winheight)
-
+        ## Finalize some aesthetics
         # set stylesheet for main window
         self.setStyleSheet(styles.TERMINAL)
 
         # set fonts to antialias
         self.setFont(self.font().setStyleStrategy(QtGui.QFont.PreferAntialias))
 
+
+        ## Show, and log that initialization is complete
         self.show()
         logging.info('UI Initialized')
 
@@ -468,6 +489,9 @@ class Terminal(QtWidgets.QMainWindow):
     ##########################3
     # Listens & inter-object methods
 
+    def ping_pilot(self, pilot):
+        self.send(pilot, 'PING')
+
     def heartbeat(self, once=False):
         """
         Perioducally send an ``INIT`` message that checks the status of connected pilots
@@ -484,7 +508,6 @@ class Terminal(QtWidgets.QMainWindow):
             self.heartbeat_timer = threading.Timer(self.heartbeat_dur, self.heartbeat)
             self.heartbeat_timer.daemon = True
             self.heartbeat_timer.start()
-
 
     def toggle_start(self, starting, pilot, subject=None):
         """Start or Stop running the currently selected subject's task. Sends a
@@ -607,18 +630,13 @@ class Terminal(QtWidgets.QMainWindow):
         # TODO: Also tell the relevant dataview to clear
 
         # update the pilot button
-        if value['pilot'] in self.pilots.keys():
-            if 'state' not in self.pilots[value['pilot']].keys():
-                self.pilots[value['pilot']]['state'] = value['state']
-                #self.control_panel.panels[value['pilot']].button.set_state(value['state'])
-            elif value['state'] != self.pilots[value['pilot']]['state']:
-                #self.control_panel.panels[value['pilot']].button.set_state(value['state'])
-                self.pilots[value['pilot']]['state'] = value['state']
+        self.logger.debug(f'updating pilot state: {value}')
+        if value['pilot'] not in self.pilots.keys():
+            self.logger.info('Got state info from an unknown pilot, adding...')
+            self.new_pilot(name=value['pilot'])
 
-            
-
-
-
+        self.pilots[value['pilot']]['state'] = value['state']
+        self.control_panel.panels[value['pilot']].button.set_state(value['state'])
 
     def l_handshake(self, value):
         """
@@ -631,13 +649,14 @@ class Terminal(QtWidgets.QMainWindow):
             value (dict): dict containing `ip` and `state`
         """
         if value['pilot'] in self.pilots.keys():
-            if 'ip' in value.keys():
-                self.pilots[value['pilot']]['ip'] = value['ip']
-            if 'state' in value.keys():
-                self.pilots[value['pilot']]['state'] = value['state']
+            self.pilots[value['pilot']]['ip'] = value.get('ip', '')
+            self.pilots[value['pilot']]['state'] = value.get('state', '')
+            self.pilots[value['pilot']]['prefs'] = value.get('prefs', {})
 
         else:
-            self.new_pilot(name=value['pilot'], ip=value['ip'])
+            self.new_pilot(name=value['pilot'],
+                           ip=value.get('ip', ''),
+                           pilot_prefs=value.get('prefs', {}))
 
         # update the pilot button
         if value['pilot'] in self.control_panel.panels.keys():
@@ -649,7 +668,10 @@ class Terminal(QtWidgets.QMainWindow):
     #############################
     # GUI & etc. methods
 
-    def new_pilot(self, ip='', name=None):
+    def new_pilot(self,
+                  name:typing.Optional[str]=None,
+                  ip:str='',
+                  pilot_prefs:typing.Optional[dict]=None):
         """
         Make a new entry in :attr:`.Terminal.pilots` and make appropriate
         GUI elements.
@@ -660,19 +682,21 @@ class Terminal(QtWidgets.QMainWindow):
         """
         if name is None:
             name, ok = QtWidgets.QInputDialog.getText(self, "Pilot ID", "Pilot ID:")
+            if not ok or not name:
+                self.logger.info('Cancel button clicked, not adding new pilot')
+                return
 
-        # make sure we won't overwrite ourself
+        # Warn if we're going to overwrite
         if name in self.pilots.keys():
-            # TODO: Pop a window confirming we want to overwrite
-            pass
+            self.logger.warning(f'pilot with id {name} already in pilot db, overwriting...')
 
-        if name != '':
-            new_pilot = {name:{'subjects':[], 'ip':ip}}
-            self.control_panel.update_db(new=new_pilot)
-            self.reset_ui()
-        else:
-            # Idk maybe pop a dialog window but i don't really see why
-            pass
+        if pilot_prefs is None:
+            pilot_prefs = {}
+
+        self.control_panel.add_pilot(name)
+        new_pilot = {name:{'subjects':[], 'ip':ip, 'prefs':pilot_prefs}}
+        self.control_panel.update_db(new=new_pilot)
+        self.logger.info(f'added new pilot {name}')
 
     def new_protocol(self):
         """
@@ -769,7 +793,6 @@ class Terminal(QtWidgets.QMainWindow):
         and applies any changes made in the window.
         """
 
-
         reassign_window = Reassign(self.subject_protocols, self.protocols)
         reassign_window.exec_()
 
@@ -783,18 +806,24 @@ class Terminal(QtWidgets.QMainWindow):
                 # since assign_protocol also changes the step, stash the step number here to tell if it's changed
                 subject_orig_step = self.subjects[subject].step
 
+                # if the protocol is the blank protocol, do nothing
+                if not protocol:
+                    self.logger.info(f'Protocol for {subject} set to blank, not setting')
+                    continue
 
-
-                if self.subjects[subject].protocol_name != protocol:
+                if self.subjects[subject].protocol_name != protocol or subject_orig_step != step:
                     self.logger.info('Setting {} protocol from {} to {}'.format(subject, self.subjects[subject].protocol_name, protocol))
                     protocol_file = os.path.join(prefs.get('PROTOCOLDIR'), protocol + '.json')
                     self.subjects[subject].assign_protocol(protocol_file, step)
 
                 if subject_orig_step != step:
                     self.logger.info('Setting {} step from {} to {}'.format(subject, subject_orig_step, step))
-                    step_name = self.subjects[subject].current[step]['step_name']
+                    # this now happens in .assign_protocol
+                    #step_name = self.subjects[subject].current[step]['step_name']
                     #update history also flushes current - aka it also actually changes the step number
-                    self.subjects[subject].update_history('step', step_name, step)
+                    #self.subjects[subject].update_history('step', step_name, step)
+        else:
+            self.logger.debug('reassign cancelled')
 
     def calibrate_ports(self):
         """
@@ -865,8 +894,6 @@ class Terminal(QtWidgets.QMainWindow):
         if psychometric_dialog.result() != 1:
             return
 
-
-
         chart = viz.plot_psychometric(psychometric_dialog.plot_params)
 
         text, ok = QtGui.QInputDialog.getText(self, 'save plot?', 'what to call this thing')
@@ -876,26 +903,26 @@ class Terminal(QtWidgets.QMainWindow):
 
         #chart.serve()
 
-
-
-
-
             #viz.plot_psychometric(self.subjects_protocols)
         #result = psychometric_dialog.exec_()
 
+    def manage_plugins(self):
+        plugs = Plugins()
+        plugs.exec_()
 
+    def stream_video(self):
+        """
+        Open a window to stream videos from a connected pilot.
 
+        Choose from connected pilots and configured :class:`~.hardware.cameras.Camera` objects
+        (``prefs.json`` sent by Pilots in :meth:`.Pilot.handshake` ). Stream video, save to file.
 
+        .. todo::
 
+            Configure camera parameters!!!
+        """
 
-
-
-
-
-
-
-
-
+        video_dialog = Stream_Video(self.pilots)
 
     def closeEvent(self, event):
         """
@@ -906,6 +933,9 @@ class Terminal(QtWidgets.QMainWindow):
         to explicitly kill it.
 
         """
+        # Save the window geometry, to be optionally restored next time
+        self.settings.setValue("geometry", self.saveGeometry())
+
         # TODO: Check if any subjects are currently running, pop dialog asking if we want to stop
 
         # Close all subjects files
@@ -919,15 +949,11 @@ class Terminal(QtWidgets.QMainWindow):
 
         event.accept()
 
+# Create the QApplication and run it
+# Prefs were already loaded at the very top
 if __name__ == "__main__":
-
-    #with open(prefs_file) as prefs_file_open:
-    #    prefs = json.load(prefs_file_open)
-
     app = QtWidgets.QApplication(sys.argv)
     #app.setGraphicsSystem("opengl")
     app.setStyle('GTK+') # Keeps some GTK errors at bay
     ex = Terminal()
     sys.exit(app.exec_())
-
-

@@ -1,18 +1,26 @@
-"""
-Classes to play sounds.
+"""This module defines classes to generate different sounds.
 
-Each sound inherits a base type depending on `prefs.get('AUDIOSERVER')`
+These classes are currently implemented:
+* Tone : a sinuosoidal pure tone
+* Noise : a burst of white noise
+* File : read from a file
+* Speech
+* Gap
 
-* `prefs.get('AUDIOSERVER') == 'jack'` : :class:`.Jack_Sound`
-* `prefs.get('AUDIOSERVER') == 'pyo'` : :class:`.Pyo_Sound`
-
-To avoid unnecessary dependencies, `Jack_Sound` is not defined if AUDIOSERVER is `'pyo'`
-and vice versa.
+The behavior of this module depends on `prefs.get('AUDIOSERVER')`.
+* If this is 'jack', or True:
+    Then import jack, define Jack_Sound, and all sounds inherit from that.
+* If this is 'pyo':
+    Then import pyo, define PyoSound, and all sounds inherit from that.
+* If this is 'docs':
+    Then import both jack and pyo, define both Jack_Sound and PyoSound,
+    and all sounds inherit from `object`.
+* Otherwise:
+    Then do not import jack or pyo, or define either Jack_Sound or PyoSound,
+    and all sounds inherit from `object`.
 
 TODO:
     Implement sound level and filter calibration
-
-
 """
 
 # Re: The organization of this module
@@ -28,7 +36,6 @@ TODO:
 # behavior for making sounds, so use an init_audio() method that
 # creates sound conditional on the type of audio server.
 
-# TODO: Be a whole lot more robust about handling different numbers of channels
 
 import os
 import sys
@@ -37,36 +44,53 @@ from scipy.io import wavfile
 from scipy.signal import resample
 import numpy as np
 import threading
-import logging
 from itertools import cycle
-import warnings
-if sys.version_info >= (3,0):
-    from queue import Empty, Full
-else:
-    from Queue import Empty, Full
-
+from queue import Empty, Full
 
 from autopilot import prefs
 from autopilot.core.loggers import init_logger
+from autopilot.stim import Stim
 
-# switch behavior based on audio server type
+
+## First, switch the behavior based on the pref AUDIOSERVER
+# Get the pref
+server_type = prefs.get('AUDIOSERVER')
+
+# True is a synonym for 'jack', the default server
+if server_type == True:
+    server_type = 'jack'
+
+# Force lower-case if string
 try:
-    if isinstance(prefs.get('AUDIOSERVER'), str):
-        server_type = prefs.get('AUDIOSERVER').lower()
-    else:
-        server_type = prefs.get('AUDIOSERVER')
-except:
-#    # TODO: The 'attribute don't exist' type - i think NameError?
+    server_type = server_type.lower()
+except AttributeError:
+    pass
+
+# From now on, server_type should be 'jack', 'pyo', 'docs', or None
+if server_type not in ['jack', 'pyo', 'docs']:
     server_type = None
 
+# if we're testing, set server_type to jack
+if 'pytest' in sys.modules:
+    server_type = 'jack'
 
 
-if server_type in ("pyo", "docs"):
+## Import the required modules
+if server_type in ['jack', 'docs']:
+    # This will warn if the jack library is not found
+    from autopilot.stim.sound import jackclient
+
+elif server_type in ['pyo', 'docs']:
+    # Using these import guards for compatibility, but I think we should
+    # actually error here
     try:
         import pyo
     except ImportError:
         pass
 
+
+## Define Pyo_Sound if needed
+if server_type in ("pyo", "docs"):
     class Pyo_Sound(object):
         """
         Metaclass for pyo sound objects.
@@ -77,8 +101,6 @@ if server_type in ("pyo", "docs"):
             intentionally left undocumented.
 
         """
-
-
         def __init__(self):
             self.PARAMS = None  # list of strings of parameters to be defined
             self.type = None  # string human readable name of sound
@@ -87,7 +109,6 @@ if server_type in ("pyo", "docs"):
             self.table = None
             self.trigger = None
             self.server_type = 'pyo'
-
 
         def play(self):
             self.table.out()
@@ -122,11 +143,8 @@ if server_type in ("pyo", "docs"):
             self.trigger = pyo.TrigFunc(self.table['trig'], trig_fn)
 
 
-if server_type in ("jack", "docs", True):
-    if server_type is True:
-        server_type = "jack"
-    from autopilot.stim.sound import jackclient
-
+## Define Jack_Sound if needed
+if server_type in ("jack", "docs"):
     class Jack_Sound(object):
         """
         Base class for sounds that use the :class:`~.jackclient.JackClient` audio
@@ -170,6 +188,14 @@ if server_type in ("jack", "docs", True):
         """
 
         def __init__(self):
+            """Initialize a new Jack_Sound
+            
+            This sets sound-specific parameters to None, set jack-specific
+            parameters to their equivalents in jackclient, initializes
+            some other flags and a logger.
+            """
+            # These sound-specific parameters will be set by the derived
+            # objects.
             self.duration = None  # duration in ms
             self.amplitude = None
             self.table = None  # numpy array of samples
@@ -179,7 +205,7 @@ if server_type in ("jack", "docs", True):
             self.padded = False # whether or not the sound was padded with zeros when chunked
             self.continuous = False
 
-
+            # These jack-specific parameters are copied from jackclient
             self.fs = jackclient.FS
             self.blocksize = jackclient.BLOCKSIZE
             self.server = jackclient.SERVER
@@ -190,36 +216,80 @@ if server_type in ("jack", "docs", True):
             self.continuous_flag = jackclient.CONTINUOUS
             self.continuous_q = jackclient.CONTINUOUS_QUEUE
             self.continuous_loop = jackclient.CONTINUOUS_LOOP
-            self.quitting = threading.Event()
 
+            # Initalize these flags
             self.initialized = False
             self.buffered = False
             self.buffered_continuous = False
 
+            # Initialize a logger
             self.logger = init_logger(self)
-
 
         def chunk(self, pad=True):
             """
             Split our `table` up into a list of :attr:`.Jack_Sound.blocksize` chunks.
 
             Args:
-                pad (bool): If the sound is not evenly divisible into chunks, pad with zeros (True, default), otherwise jackclient will pad with its continuous sound
+                pad (bool): If the sound is not evenly divisible into chunks, 
+                pad with zeros (True, default), otherwise jackclient will pad 
+                with its continuous sound
             """
-            # break sound into chunks
-
+            # Convert the table to float32 (if it isn't already)
             sound = self.table.astype(np.float32)
-            sound_list = [sound[i:i+self.blocksize] for i in range(0, sound.shape[0], self.blocksize)]
 
-            if (sound_list[-1].shape[0] < self.blocksize) and pad:
-                sound_list[-1] = np.pad(sound_list[-1],
-                                        (0, self.blocksize-sound_list[-1].shape[0]),
-                                        'constant')
+            # Determine how much longer it would have to be, if it were
+            # padded to a length that is a multiple of self.blocksize
+            oldlen = len(sound)
+            newlen = int(
+                np.ceil(float(oldlen) / self.blocksize) * self.blocksize)
+
+            
+            ## Only pad if necessary AND requested
+            if pad and newlen > oldlen:
+                # Pad differently depending on mono or stereo
+                if sound.ndim == 1:
+                    # Pad with 1d array of zeros
+                    to_concat = np.zeros((newlen - oldlen,), np.float32)
+
+                    # Pad
+                    sound = np.concatenate([sound, to_concat])
+
+                elif sound.ndim == 2:
+                    # Each column is a channel
+                    n_channels = sound.shape[1]
+                    
+                    # Raise error if more than two-channel sound
+                    # This would actually be fine for this function, but this 
+                    # almost surely indicates somebody has transposed something
+                    if n_channels > 2:
+                        raise ValueError("only 1- or 2-channel sound supported")
+                    
+                    # Pad with 2d array of zeros
+                    to_concat = np.zeros(
+                        (newlen - oldlen, sound.shape[1]), np.float32)
+
+                    # Pad
+                    sound = np.concatenate([sound, to_concat])
+                
+                else:
+                    raise ValueError("sound must be 1d or 2d")
+                
+                # Flag as padded
                 self.padded = True
+            
             else:
+                # Flag as not padded
                 self.padded = False
-
-            self.chunks = sound_list
+            
+            
+            ## Reshape into chunks, each of length `self.blocksize`
+            if sound.ndim == 1:
+                self.chunks = list(
+                    sound.reshape(-1, self.blocksize))
+            
+            elif sound.ndim == 2:
+                self.chunks = list(
+                    sound.reshape(-1, self.blocksize, sound.shape[1]))
 
         def set_trigger(self, trig_fn):
             """
@@ -285,13 +355,13 @@ if server_type in ("jack", "docs", True):
             # refresh nsamples
             self.get_nsamples()
 
-
-
-
-
         def buffer(self):
             """
             Dump chunks into the sound queue.
+            
+            After the last chunk, a `None` is put into the queue. This
+            tells the jack server that the sound is over and that it should
+            clear the play flag.
             """
 
             if hasattr(self, 'path'):
@@ -337,11 +407,6 @@ if server_type in ("jack", "docs", True):
             This method will call :meth:`.quantize_duration` to force duration such that the sound has full frames.
 
             An exception will be raised if the sound has been padded.
-
-
-
-            Returns:
-
             """
 
             # FIXME: Initialized should be more flexible,
@@ -351,13 +416,9 @@ if server_type in ("jack", "docs", True):
             self.initialized = False
 
             if not self.initialized and not self.table:
-                # try:
                 self.quantize_duration()
                 self.init_sound()
                 self.initialized = True
-                # except:
-                #     pass
-                    #TODO: Log this, better error handling here
 
             if not self.chunks:
                 self.chunk()
@@ -374,13 +435,11 @@ if server_type in ("jack", "docs", True):
                     # normal, get until it's empty
                     break
 
-            # load frames into continuous queue
-            for frame in self.chunks:
-                self.continuous_q.put_nowait(frame)
-            # The jack server looks for a None object to clear the play flag
-            # self.continuous_q.put_nowait(None)
-            self.buffered_continuous = True
+            # put all the chunks into the queue, rather than one at a time
+            # to avoid partial receipt
+            self.continuous_q.put(self.chunks.copy())
 
+            self.buffered_continuous = True
 
         def play(self):
             """
@@ -429,57 +488,20 @@ if server_type in ("jack", "docs", True):
             if not loop:
                 raise NotImplementedError('Continuous, unlooped streaming has not been implemented yet!')
 
-            # FIXME: Initialized should be more flexible,
-            # for now just deleting whatever init happened because
-            # continuous sounds are in development
-            self.table = None
-            self.initialized = False
-
-            self.quantize_duration()
-            self.init_sound()
-            self.initialized = True
-            self.chunk()
-
-            # if not self.buffered_continuous:
-            #     self.buffer_continuous()
-            self.continuous_cycle = cycle(self.chunks)
-
-            # start the buffering thread
-            self.cont_thread = threading.Thread(target=self._buffer_continuous)
-            self.cont_thread.setDaemon(True)
-            self.cont_thread.start()
+            if not self.buffered_continuous:
+                self.buffer_continuous()
 
             if loop:
                 self.continuous_loop.set()
             else:
                 self.continuous_loop.clear()
 
-
             # tell the sound server that it has a continuous sound now
             self.continuous_flag.set()
             self.continuous = True
 
-        def _buffer_continuous(self):
-
-            # empty queue
-            while not self.continuous_q.empty():
-                try:
-                    _ = self.continuous_q.get_nowait()
-                except Empty:
-                    # normal, get until it's empty
-                    break
-
-            # want to be able to quit if queue remains full for, say, 20 periods
-            #wait_time = (self.blocksize/float(self.fs))*20
-
-            while not self.quitting.is_set():
-                try:
-                    #self.continuous_q.put(self.continuous_cycle.next(), timeout=wait_time)
-                    self.continuous_q.put_nowait(next(self.continuous_cycle))
-                except Full:
-                    pass
-            # for chunk in self.chunks:
-            #     self.continuous_q.put_nowait(chunk)
+            # after the sound server start playing, it will clear the queue, unbuffering us
+            self.buffered_continuous = False
 
         def stop_continuous(self):
             """
@@ -491,14 +513,8 @@ if server_type in ("jack", "docs", True):
                 self.logger.warning("stop_continuous called but not a continuous sound!")
                 return
 
-            self.quitting.set()
             self.continuous_flag.clear()
             self.continuous_loop.clear()
-
-
-
-
-
 
         def end(self):
             """
@@ -529,27 +545,17 @@ if server_type in ("jack", "docs", True):
             self.end()
 
 
-
-
-else:
-    # just importing to query parameters, not play sounds.
-    pass
-
-
-
-
-
-####################
+## Now define BASE_CLASS to be Pyo_Sound, Jack_Sound, or object
 if server_type == "pyo":
     BASE_CLASS = Pyo_Sound
 elif server_type == "jack":
     BASE_CLASS = Jack_Sound
 else:
     # just importing to query parameters, not play sounds.
-    BASE_CLASS = object
-    warnings.warn('No Base Sound class specified! sounds will probably not work!!!')
+    BASE_CLASS = Stim
 
 
+## The rest of the module defines actual sounds, which inherit from BASE_CLASS
 class Tone(BASE_CLASS):
     """The Humble Sine Wave"""
 
@@ -590,39 +596,98 @@ class Tone(BASE_CLASS):
         self.initialized = True
 
 class Noise(BASE_CLASS):
-    """White Noise"""
-
-    PARAMS = ['duration','amplitude']
+    """Generates a white noise burst with specified parameters
+    
+    The `type` attribute is always "Noise".
+    """
+    # These are the parameters of the sound, I think this is used to generate
+    # sounds automatically for a protocol
+    PARAMS = ['duration','amplitude', 'channel']
+    
+    # The type of the sound
     type='Noise'
-    def __init__(self, duration, amplitude=0.01, **kwargs):
-        """
+    
+    def __init__(self, duration, amplitude=0.01, channel=None, **kwargs):
+        """Initialize a new white noise burst with specified parameters.
+        
+        The sound itself is stored as the attribute `self.table`. This can
+        be 1-dimensional or 2-dimensional, depending on `channel`. If it is
+        2-dimensional, then each channel is a column.
+        
         Args:
             duration (float): duration of the noise
             amplitude (float): amplitude of the sound as a proportion of 1.
+            channel (int or None): which channel should be used
+                If 0, play noise from the first channel
+                If 1, play noise from the second channel
+                If None, send the same information to all channels ("mono")
             **kwargs: extraneous parameters that might come along with instantiating us
         """
+        # This calls the base class, which sets server-specific parameters
+        # like samplign rate
         super(Noise, self).__init__()
-
+        
+        # Set the parameters specific to Noise
         self.duration = float(duration)
         self.amplitude = float(amplitude)
+        try:
+            self.channel = int(channel)
+        except TypeError:
+            self.channel = channel
+        
+        # Currently only mono or stereo sound is supported
+        if self.channel not in [None, 0, 1]:
+            raise ValueError(
+                "audio channel must be 0, 1, or None, not {}".format(
+                self.channel))
 
+        # Initialize the sound itself
         self.init_sound()
 
     def init_sound(self):
+        """Defines `self.table`, the waveform that is played. 
+        
+        The way this is generated depends on `self.server_type`, because
+        parameters like the sampling rate cannot be known otherwise.
+        
+        The sound is generated and then it is "chunked" (zero-padded and
+        divided into chunks). Finally `self.initialized` is set True.
         """
-        Create a table of Noise using pyo or numpy, depending on the server_type
-        """
-
-        if self.server_type == 'pyo':
+        # Depends on the server_type
+        if server_type == 'pyo':
             noiser = pyo.Noise(mul=self.amplitude)
             self.table = self.table_wrap(noiser)
-        elif self.server_type == 'jack':
+        
+        elif server_type == 'jack':
+            # This calculates the number of samples, using the specified 
+            # duration and the sampling rate from the server, and stores it
+            # as `self.nsamples`.
             self.get_nsamples()
-            # rand generates from 0 to 1, so subtract 0.5, double to get -1 to 1,
-            # then multiply by amplitude.
-            self.table = (self.amplitude * np.random.uniform(-1,1,self.nsamples)).astype(np.float32)
+            
+            # Generate the table by sampling from a uniform distribution
+            # The shape of the table depends on `self.channel`
+            if self.channel is None:
+                # The table will be 1-dimensional for mono sound
+                self.table = np.random.uniform(-1, 1, self.nsamples)
+            else:
+                # The table will be 2-dimensional for stereo sound
+                # Each channel is a column
+                # Only the specified channel contains data and the other is zero
+                data = np.random.uniform(-1, 1, self.nsamples)
+                self.table = np.zeros((self.nsamples, 2))
+                assert self.channel in [0, 1]
+                self.table[:, self.channel] = data
+            
+            # Scale by the amplitude
+            self.table = self.table * self.amplitude
+            
+            # Convert to float32
+            self.table = self.table.astype(np.float32)
+            
+            # Chunk the sound 
             self.chunk()
 
+        # Flag as initialized
         self.initialized = True
 
 class File(BASE_CLASS):
@@ -666,8 +731,6 @@ class File(BASE_CLASS):
         converting int to float as needed.
 
         Create a sound table, resampling sound if needed.
-
-
         """
 
         fs, audio = wavfile.read(self.path)
@@ -696,33 +759,6 @@ class File(BASE_CLASS):
             self.table = audio
 
         self.initialized = True
-
-
-class Speech(File):
-    """
-    Speech subclass of File sound.
-
-    Example of custom sound class - PARAMS are changed, but nothing else.
-    """
-
-    type='Speech'
-    PARAMS = ['path', 'amplitude', 'speaker', 'consonant', 'vowel', 'token']
-    def __init__(self, path, speaker, consonant, vowel, token, amplitude=0.05, **kwargs):
-        """
-        Args:
-            speaker (str): Which Speaker recorded this speech token?
-            consonant (str): Which consonant is in this speech token?
-            vowel (str): Which vowel is in this speech token?
-            token (int): Which token is this for a given combination of speaker, consonant, and vowel
-        """
-        super(Speech, self).__init__(path, amplitude, **kwargs)
-
-        self.speaker = speaker
-        self.consonant = consonant
-        self.vowel = vowel
-        self.token = token
-
-        # sound is init'd in the superclass
 
 class Gap(BASE_CLASS):
     """
@@ -799,42 +835,16 @@ class Gap(BASE_CLASS):
                 threading.Thread(target=self.wait_trigger).start()
 
 
-
-
-
-
-
-
-
-
-
-
-
-#######################
-# Has to be at bottom so fnxns already defined when assigned.
-SOUND_LIST = {
-    'Tone':Tone,
-    'Noise':Noise,
-    'File':File,
-    'Speech':Speech,
-    'speech':Speech,
-    'Gap': Gap
-}
-"""
-Sounds must be added to this SOUND_LIST so they can be indexed by the string keys used elsewhere. 
-"""
-
 # These parameters are strings not numbers... jonny should do this better
-STRING_PARAMS = ['path', 'speaker', 'consonant', 'vowel', 'type']
+STRING_PARAMS = ['path', 'type']
 """
 These parameters should be given string columns rather than float columns.
 
-Bother Jonny to do this better.
-
-v0.3 will be all about doing parameters better.
+Bother Jonny to do this better bc it's really bad.
 """
 
 
+## Helper function
 def int_to_float(audio):
     """
     Convert 16 or 32 bit integer audio to 32 bit float.
@@ -853,15 +863,3 @@ def int_to_float(audio):
         audio = audio / (float(2 ** 32) / 2)
 
     return audio
-
-
-
-
-
-
-
-
-
-
-
-
