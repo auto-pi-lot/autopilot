@@ -1,5 +1,8 @@
 """
-Utility functions for dealing with the wiki (https://wiki.auto-pi-lot.com)
+Utility functions for dealing with the wiki (https://wiki.auto-pi-lot.com).
+
+See the docstrings of the :func:`.ask` function, as well as the :ref:`guide_wiki_plugins` section
+in the user guide for use.
 """
 from typing import Union, Optional, List
 import requests
@@ -13,7 +16,7 @@ def ask(
         filters:Union[List[str],str],
         properties:Union[None,List[str],str]=None) -> List[dict]:
     """
-    Perform an API call to the wiki using the `ask API <https://www.semantic-mediawiki.org/wiki/Help:API:ask>_`
+    Perform an API call to the wiki using the `ask API <https://www.semantic-mediawiki.org/wiki/Help:API:ask>`_
     and simplify to a list of dictionaries
 
     Args:

@@ -43,8 +43,6 @@ def make_transform(transforms: typing.List[dict]) -> Transform:
     """
     Make a transform from a list of iterator specifications.
 
-
-
     Args:
         transforms (list): A list of :class:`Transform` s and parameterizations in the form::
 
@@ -65,10 +63,16 @@ def make_transform(transforms: typing.List[dict]) -> Transform:
             if len(t['transform'].split('.'))>1:
                 module, classname = t['transform'].split('.')
                 mod = __import__(f"autopilot.transform.{module}", fromlist=[classname])
-                t['transform'] = getattr(mod, classname)
+                tfm_class = getattr(mod, classname)
             else:
-                t['transform'] = autopilot.get('transform', t['transform'])
-        transform = t['transform'](
+                tfm_class = autopilot.get('transform', t['transform'])
+
+        elif issubclass(t['transform'], Transform):
+            tfm_class = t['transform']
+        else:
+            raise ValueError(f'Could not get transform from {t["transform"]}, need a name of a Transform class, or the class itself')
+
+        transform = tfm_class(
             *t.get('args', []),
             **t.get('kwargs', {})
         )

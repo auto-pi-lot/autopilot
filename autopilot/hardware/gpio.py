@@ -231,6 +231,16 @@ class GPIO(Hardware):
         self.pin_bcm = BOARD_TO_BCM[self._pin]
 
     @property
+    def state(self) -> bool:
+        """
+        Instantaneous state of GPIO pin, on (``True``) or off (``False``)
+
+        Returns:
+            bool
+        """
+        return bool(self.pig.read(self.pin_bcm))
+
+    @property
     def pull(self):
         """
         State of internal pullup/down resistor.
@@ -1014,6 +1024,9 @@ class LED_RGB(Digital_Out):
         self.channels = {}
         self.scripts = {}
 
+        if 'pin' in kwargs.keys():
+            raise ValueError('pin passed to LED_RGB, need a list of 3 pins instead (r, g, b). pin, used by single-pin GPIO objects, is otherwise ambiguous with pins.')
+
         super(LED_RGB, self).__init__(**kwargs)
 
         self.flash_params = None
@@ -1029,7 +1042,7 @@ class LED_RGB(Digital_Out):
                              'g':PWM(g, polarity=polarity, name="{}_G".format(self.name)),
                              'b':PWM(b, polarity=polarity, name="{}_B".format(self.name))}
         else:
-            ValueError('Must either set with pins= list/tuple of r,g,b pins, or pass all three as separate params')
+            raise ValueError('Must either set with pins= list/tuple of r,g,b pins, or pass all three as separate params')
 
         self.store_series(id='blink',
                           colors=((1,0,0),(0,1,0),(0,0,1),(0,0,0)),

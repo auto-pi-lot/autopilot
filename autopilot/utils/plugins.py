@@ -114,7 +114,8 @@ def list_wiki_plugins():
                  'Has Git Repository',
                  'Has Contributor',
                  'Is Autopilot Plugin Type',
-                 'Controls Hardware'
+                 'Controls Hardware',
+                 'Has DOI'
              ])
 
     ordered_plugins = []
@@ -124,6 +125,7 @@ def list_wiki_plugins():
         for field in ('name','Has Description',
                       'Created By', 'Has Contributor',
                       'url','Has Git Repository',
+                      'Has DOI',
                       'For Autopilot Version',
                       'Is Autopilot Plugin Type',
                       'Controls Hardware'):

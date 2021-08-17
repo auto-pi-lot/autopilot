@@ -96,9 +96,6 @@ be located anywhere.
 
     conda create --name autopilot python=3.7
 
-.. note::
-    Python version 3.7 is required on both the Terminal and the Pilot due to dependencies on the Spinnaker API for high-speed
-    cameras. In the future we will move to `aravis <https://github.com/SintefManufacturing/python-aravis>`_ to avoid this.
 
 The virtual environment must be "activated" now and any time you work with autopilot
 (:mod:`.setup_autopilot` will detect which venv it is run from and source it in the launch script).
@@ -162,7 +159,7 @@ After installation, set Autopilot up! Autopilot comes with a "guided installatio
 
 To start the guided process, run the following line. ::
 
-    python3 -m autopilot.setup.setup_autopilot
+    python3 -m autopilot.setup
 
 Select agent
 -------------
@@ -180,7 +177,8 @@ Select scripts
 ---------------
 Now you will see a menu of potential scripts that can be run.
 Select the scripts you want to run, and then hit "OK". Note that even the simplest task ("free water") requires pigpio,
-so you may want to include that one. You can see the commands that will be run in each of these scripts with :func:`.setup_autopilot.run_script` and :func:`.setup_autopilot.list_scripts`.
+so you may want to include that one. You can see the commands that will be run in each of these scripts with :mod:`.setup.run_script`
+in the :data:`.setup.scripts.SCRIPTS` dictionary.
 
 
 .. image:: ../_images/setup_scripts.png
@@ -207,7 +205,8 @@ Configure Hardware
 
 If configuring a Pilot, you'll be asked to configure your hardware.
 
-Press ``ctrl+x`` to add Hardware, and fill in the relevant parameters (most are optional and can be left blank)
+Press ``ctrl+x`` to add Hardware, and fill in the relevant parameters (most are optional and can be left blank).
+Consult the relevant page on the docs to see which arguments are relevant and how to use them.
 
 .. image:: ../_images/setup_hardware.gif
     :alt: Configure Hardware

@@ -27,3 +27,10 @@ def test_make_alias():
     else:
         make_alias(fake_launch_path)
         assert check_profile(bash_profile)
+
+def test_quiet_mode():
+    """
+    Autopilot can be setup programmatically by calling setup_autopilot with --quiet and passing
+    prefs and scripts manually
+    """
+    pass

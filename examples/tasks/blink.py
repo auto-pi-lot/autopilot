@@ -10,11 +10,6 @@ See the main tutorial for more detail: https://docs.auto-pi-lot.com/en/latest/gu
 
 This page is rendered in the docs here in order to provide links to the mentioned objects/classes/etc., but
 this example was intended to be read as source code, as some comments will only be visible there.
-
-.. note::
-
-    Currently, after completion, the task needs to be explicitly imported and added to :data:`autopilot.tasks.TASK_LIST` ,
-    this will be remedied shortly (see the ``registries`` branch).
 """
 import itertools
 import tables

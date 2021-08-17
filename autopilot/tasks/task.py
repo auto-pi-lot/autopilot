@@ -7,6 +7,7 @@ import logging
 import tables
 from itertools import count
 # from autopilot.core.networking import Net_Node
+import autopilot
 from autopilot.hardware import BCM_TO_BOARD
 from autopilot import prefs
 from autopilot.core.loggers import init_logger
@@ -148,6 +149,10 @@ class Task(object):
             self.hardware[type] = {}
             # then iterate through each pin and handler of this type
             for pin, handler in values.items():
+                # if the hardware is specified as a string, try and get it from registry
+                if isinstance(handler, str):
+                    handler = autopilot.get_hardware(handler)
+
                 try:
                     hw_args = pin_numbers[type][pin]
                     if isinstance(hw_args, dict):
@@ -173,8 +178,8 @@ class Task(object):
                         if 'pin' in hw_args.keys():
                             self.pin_id[hw_args['pin']] = pin 
 
-                except:
-                    self.logger.exception("Pin could not be instantiated - Type: {}, Pin: {}".format(type, pin))
+                except Exception as e:
+                    self.logger.exception("Pin could not be instantiated - Type: {}, Pin: {}\nGot exception:{}".format(type, pin, e))
 
     def set_reward(self, vol=None, duration=None, port=None):
         """

@@ -2770,6 +2770,8 @@ class Plugins(QtWidgets.QDialog):
         for k, v in plugin.items():
             if k == 'name':
                 continue
+            if isinstance(v, list):
+                v = ", ".join(v)
             self.plugin_details.addRow(k, QtWidgets.QLabel(v))
 
 
