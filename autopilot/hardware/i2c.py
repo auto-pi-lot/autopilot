@@ -487,8 +487,12 @@ class I2C_9DOF(Hardware):
         # read accelerometer
         (s, b) = self.pig.i2c_read_i2c_block_data(self.accel, 0x80 | self._REGISTER_OUT_X_L_XL, 6)
         if s >= 0:
-            self._acceleration[:] = np.squeeze(
-                np.frombuffer(b, '<3h') * self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD)
+            if self._accel_sphere is not None:
+                self._acceleration[:] = self._accel_sphere.process(np.squeeze(
+                    np.frombuffer(b, '<3h') * self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD))
+            else:
+                self._acceleration[:] = np.squeeze(
+                    np.frombuffer(b, '<3h') * self._accel_mg_lsb / 1000.0 * self._SENSORS_GRAVITY_STANDARD)
         else:
             self.logger.exception(f'Got pigpio exception code getting accelerometer {s}')
 

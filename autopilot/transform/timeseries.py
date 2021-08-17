@@ -71,6 +71,30 @@ class Kalman(Transform):
     Each of the arrays is named with its canonical letter and a short description, (eg. the x_state
     vector ``x_state`` is ``self.x_state``
 
+    Args:
+        dim_state (int): Dimensions of the state vector
+        dim_measurement (int): Dimensions of the measurement vector
+        dim_control (int): Dimensions of the control vector
+
+    Attributes:
+        x_state (:class:`numpy.ndarray`): Current state vector
+        P_cov (:class:`numpy.ndarray`): Uncertainty Covariance
+        Q_proc_var (:class:`numpy.ndarray`): Process Uncertainty
+        B_control (:class:`numpy.ndarray`): Control transition matrix
+        F_state_trans (:class:`numpy.ndarray`): State transition matrix
+        H_measure (:class:`numpy.ndarray`): Measurement function
+        R_measure_var (:class:`numpy.ndarray`): Measurement uncertainty
+        M_proc_measure_xcor (:class:`numpy.ndarray`): process-measurement cross correlation
+        z_measure (:class:`numpy.ndarray`):
+        K (:class:`numpy.ndarray`): Kalman gain
+        y (:class:`numpy.ndarray`):
+        S (:class:`numpy.ndarray`): System uncertainty
+        SI (:class:`numpy.ndarray`): Inverse system uncertainty
+        x_prior (:class:`numpy.ndarray`): State prior
+        P_prior (:class:`numpy.ndarray`): Uncertainty prior
+        x_post (:class:`numpy.ndarray`): State posterior probability
+        P_post (:class:`numpy.ndarray`): Uncertainty posterior probability
+
     References:
         Roger Labbe. "Kalman and Bayesian Filters in Python" - https://github.com/rlabbe/Kalman-and-Bayesian-Filters-in-Python
         Roger Labbe. "FilterPy" - https://github.com/rlabbe/filterpy
@@ -142,6 +166,8 @@ class Kalman(Transform):
         Predict next x_state (prior) using the Kalman filter x_state propagation
         equations.
 
+        Update our state and uncertainty priors, :attr:`.x_prior` and :attr:`.P_prior`
+
         Parameters
         ----------
 
@@ -190,29 +216,23 @@ class Kalman(Transform):
         np.copyto(self.P_prior, self.P_cov)
 
 
-    def update(self, z, R=None, H=None):
+    def update(self, z:np.ndarray, R=None, H=None) -> np.ndarray:
         """
         Add a new measurement (z_measure) to the Kalman filter.
 
         If z_measure is None, nothing is computed. However, x_post and P_post are
         updated with the prior (x_prior, P_prior), and self.z_measure is set to None.
 
-        Parameters
-        ----------
-        z : (dim_measurement, 1): array_like
-            measurement for this update. z_measure can be a scalar if dim_measurement is 1,
-            otherwise it must be convertible to a column vector.
+        Args:
+            z (:class:`numpy.ndarray`): measurement for this update. z_measure can be a scalar if dim_measurement is 1,
+                otherwise it must be convertible to a column vector.
 
-            If you pass in a value of H_measure, z_measure must be a column vector the
-            of the correct size.
-
-        R : np.array, scalar, or None
-            Optionally provide R_measure_var to override the measurement noise for this
-            one call, otherwise  self.R_measure_var will be used.
-
-        H : np.array, or None
-            Optionally provide H_measure to override the measurement function for this
-            one call, otherwise self.H_measure will be used.
+                If you pass in a value of H_measure, z_measure must be a column vector the
+                of the correct size.
+            R (:class:`numpy.ndarray`, int, None): Optionally provide R_measure_var to override the measurement noise for this
+                one call, otherwise  self.R_measure_var will be used.
+            H (:class:`numpy.ndarray`, None): Optionally provide H_measure to override the measurement function for this
+                one call, otherwise self.H_measure will be used.
         """
 
         # set to None to force recompute
@@ -358,6 +378,7 @@ class Kalman(Transform):
             raise ValueError('alpha must be a float greater than 1')
 
         self._alpha_sq = value**2
+
 
 
 class Integrate(Transform):

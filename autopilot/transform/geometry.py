@@ -155,8 +155,6 @@ class IMU_Orientation(Transform):
             # if using kalman filter, use private array to store raw orientation
             self._orientation[:] = (roll, pitch)
 
-
-
         # TODO: Don't assume that we're fed samples instantatneously -- ie. once data representations are stable, need to accept a timestamp here rather than making one
         if self._last_update is None or gyro is None:
             # first time through don't have dt to scale gyro by
