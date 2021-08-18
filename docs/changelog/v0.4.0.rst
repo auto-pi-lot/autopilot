@@ -9,6 +9,14 @@ Bugfixes
 * The :class:`autopilot.setup.forms.HARDWARE_FORM` would incorrectly use the class object itself
   rather than the class name in a few places which caused hardware names to incorrectly display and
   be impossible to add!
+* Correctly handle module name in loggers when running interactively
+* Use accelerometer calibration when computing :meth:`~autopilot.hardware.i2c.I2C_9DOF.rotation`
+* Use :func:`autopilot.get` in :func:`autopilot.transform.make_transform`
+
+Docs
+~~~~
+
+* Document the attributes in :class:`autopilot.transform.timeseries.Kalman`
 
 v0.4.0 - Become Multifarious (August 3rd, 2021)
 ------------------------------------------------------
