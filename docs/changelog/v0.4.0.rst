@@ -1,5 +1,15 @@
 .. _changelog_v040:
 
+v0.4.1 (August 17th)
+---------------------
+
+Bugfixes
+~~~~~~~~~
+
+* The :class:`autopilot.setup.forms.HARDWARE_FORM` would incorrectly use the class object itself
+  rather than the class name in a few places which caused hardware names to incorrectly display and
+  be impossible to add!
+
 v0.4.0 - Become Multifarious (August 3rd, 2021)
 ------------------------------------------------------
 

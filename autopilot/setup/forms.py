@@ -188,16 +188,20 @@ class Hardware_Form(nps.FormWithMenus, Autopilot_Form):
 
             mod_menu = self.add_menu(module)
             for class_name in hardware_classes:
-                mod_menu.addItem(text=class_name,
+                mod_menu.addItem(text=class_name.__name__,
                                  onSelect=self.add_hardware,
-                                 arguments=[module, class_name])
+                                 arguments=[class_name])
 
     def add_hardware(self, class_name):
         #self.nextrely = 1
         self.DISPLAY()
 
         # import the class
-        hw_class = autopilot.get_hardware(class_name)
+        if isinstance(class_name, str):
+            hw_class = autopilot.get_hardware(class_name)
+        else:
+            hw_class = class_name
+            class_name = hw_class.__name__
         # get its parent classes (which includes class itself)
         hw_parents = inspect.getmro(hw_class)
         # get signatures for each

@@ -19,5 +19,5 @@ license: "MPL-2.0"
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/wehr-lab/autopilot"
 title: "Autopilot: Automating behavioral experiments with lots of Raspberry Pis"
-version: "0.4.0"
+version: "0.4.1"
 ...
