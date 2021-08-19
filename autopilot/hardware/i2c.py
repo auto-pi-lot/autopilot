@@ -257,7 +257,8 @@ class I2C_9DOF(Hardware):
         if 'accelerometer' in self.calibration.keys():
             self._accel_sphere = Spheroid(target=(9.8,9.8,9.8,0,0,0),
                                     source = self.calibration['accelerometer']['spheroid'])
-
+        else:
+            self._accel_sphere = None
 
     @property
     def accel_range(self):

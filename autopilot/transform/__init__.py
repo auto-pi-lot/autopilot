@@ -39,7 +39,7 @@ from autopilot.transform import image, geometry, logical, selection, units
 IMPORTED = False
 
 
-def make_transform(transforms: typing.List[dict]) -> Transform:
+def make_transform(transforms: typing.Union[typing.List[dict],typing.Tuple[dict]]) -> Transform:
     """
     Make a transform from a list of iterator specifications.
 
