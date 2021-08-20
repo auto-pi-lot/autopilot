@@ -317,6 +317,8 @@ class Camera(Hardware):
             to (str): ID of the recipient. Default 'T' for Terminal.
             ip (str): IP of recipient. If None (default), 'localhost'. If None and ``to`` is 'T', ``prefs.get('TERMINALIP')``
             port (int, str): Port of recipient socket. If None (default), ``prefs.get('MSGPORT')``. If None and ``to`` is 'T', ``prefs.get('TERMINALPORT')``.
+            min_size (int): Number of frames to collect before sending (default: 5). use 1 to send frames as soon as they are available,
+                sacrificing the efficiency from compressing multiple frames together
             **kwargs: passed to :meth:`.Hardware.init_networking` and thus to :class:`.Net_Node`
 
         """

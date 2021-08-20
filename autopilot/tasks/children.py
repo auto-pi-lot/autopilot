@@ -188,6 +188,11 @@ class Transformer(Child):
                  router_port = None,
                  stage_block = None,
                  value_subset=None,
+                 forward_id=None,
+                 forward_ip=None,
+                 forward_port=None,
+                 forward_key=None,
+                 forward_what='both'
                  **kwargs):
         """
 
@@ -206,6 +211,7 @@ class Transformer(Child):
             router_port (None, int): If not ``None`` (default), spawn the node with a route port to receieve
             stage_block:
             value_subset (str): Optional - subset a value from from a dict/list sent to :meth:`.l_process`
+            forward_what (str): one of 'input', 'output', or 'both' (default) that determines what is forwarded
             **kwargs:
         """
         super(Transformer, self).__init__(**kwargs)
@@ -229,6 +235,13 @@ class Transformer(Child):
             self.node_id = node_id
         self.router_port = router_port
 
+        self.forward_id = forward_id
+        self.forward_ip = forward_ip
+        self.forward_port = forward_port
+        self.forward_key = forward_key
+        self.forward_node = None
+        self.forward_what = forward_what
+
         self.stage_block = stage_block
         self.stages = cycle([self.noop])
         # self.input_q = LifoQueue()
@@ -251,6 +264,19 @@ class Transformer(Child):
     def _process(self, transform):
 
         self.transform = autopilot.transform.make_transform(transform)
+
+        if all([x is not None for x in
+                (self.forward_id,
+                 self.forward_ip,
+                 self.forward_key,
+                 self.forward_port)]):
+            self.forward_node = Net_Node(
+                upstream=self.forward_id,
+                upstream_ip=self.forward_ip,
+                port=self.forward_port,
+                listens={}
+            )
+
 
         self.node = Net_Node(
             self.node_id,
@@ -281,11 +307,15 @@ class Transformer(Child):
             if self.operation == "trigger":
                 if result != self._last_result:
                     self.node.send(self.return_id, self.return_key, result)
+                    if self.forward_node is not None:
+                        self.forward(value, result)
                     self._last_result = result
 
             elif self.operation == 'stream':
                 # FIXME: Another key that's not TRIGGER
                 self.node.send(self.return_id, self.return_key, result)
+                if self.forward_node is not None:
+                    self.forward(value, result)
 
             elif self.operation == 'debug':
                 pass
@@ -300,6 +330,17 @@ class Transformer(Child):
         if self.value_subset:
             value = value[self.value_subset]
         self.input_q.append(value)
+
+    def forward(self, input=None, output=None):
+        if self.forward_what == 'both':
+            self.forward_node.send(self.forward_id, self.forward_key, {'input':input,'output':output})
+        elif self.forward_what == 'input':
+            self.forward_node.send(self.forward_id, self.forward_key, input)
+        elif self.forward_what == 'output':
+            self.forward_node.send(self.forward_id, self.forward_key, output)
+        else:
+            raise ValueError("forward_what must be one of 'input', 'output', or 'both'")
+
 
 
 

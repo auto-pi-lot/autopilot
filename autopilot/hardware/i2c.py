@@ -69,7 +69,8 @@ class I2C_9DOF(Hardware):
             One of :attr:`.GYRO_HPF_CUTOFF` (default: 4), or ``False`` to disable
         kalman_mode ('both', 'accel', None): Whether to use a kalman filter that integrates accelerometer and gyro readings ('both', default),
             a kalman filter with just the accelerometer values ('accel'), or just return the raw calculated orientation values from :attr:`.rotation`
-        invert_gyro (list, tuple):
+        invert_gyro (list, tuple): if not False (default), a list/tuple of the numerical axis index to invert on the gyroscope.
+            eg. passing (1, 2) will invert the y and z axes.
     """
 
     # Internal constants and register values:
