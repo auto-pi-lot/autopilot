@@ -277,7 +277,7 @@ class Transformer(Child):
             },
             instance=False
         )
-        
+
         if all([x is not None for x in
                 (self.forward_id,
                  self.forward_ip,
@@ -335,11 +335,11 @@ class Transformer(Child):
 
     def forward(self, input=None, output=None):
         if self.forward_what == 'both':
-            self.forward_node.send(self.forward_id, self.forward_key, {'input':input,'output':output})
+            self.forward_node.send(self.forward_id, self.forward_key, {'input':input,'output':output},flags={'MINPRINT':True,'NOREPEAT':True})
         elif self.forward_what == 'input':
-            self.forward_node.send(self.forward_id, self.forward_key, input)
+            self.forward_node.send(self.forward_id, self.forward_key, input,flags={'MINPRINT':True,'NOREPEAT':True})
         elif self.forward_what == 'output':
-            self.forward_node.send(self.forward_id, self.forward_key, output)
+            self.forward_node.send(self.forward_id, self.forward_key, output,flags={'MINPRINT':True,'NOREPEAT':True})
         else:
             raise ValueError("forward_what must be one of 'input', 'output', or 'both'")
 
