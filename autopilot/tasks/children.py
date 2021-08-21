@@ -192,7 +192,7 @@ class Transformer(Child):
                  forward_ip=None,
                  forward_port=None,
                  forward_key=None,
-                 forward_what='both'
+                 forward_what='both',
                  **kwargs):
         """
 
