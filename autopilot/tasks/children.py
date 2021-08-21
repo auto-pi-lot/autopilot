@@ -265,6 +265,19 @@ class Transformer(Child):
 
         self.transform = autopilot.transform.make_transform(transform)
 
+
+        self.node = Net_Node(
+            self.node_id,
+            upstream=self.return_id,
+            upstream_ip=self.return_ip,
+            port=self.return_port,
+            router_port=self.router_port,
+            listens = {
+                'CONTINUOUS': self.l_process
+            },
+            instance=False
+        )
+        
         if all([x is not None for x in
                 (self.forward_id,
                  self.forward_ip,
@@ -278,18 +291,6 @@ class Transformer(Child):
                 listens={}
             )
 
-
-        self.node = Net_Node(
-            self.node_id,
-            upstream=self.return_id,
-            upstream_ip=self.return_ip,
-            port=self.return_port,
-            router_port=self.router_port,
-            listens = {
-                'CONTINUOUS': self.l_process
-            },
-            instance=False
-        )
 
         self.node.send(self.return_id, 'STATE', value='READY')
 
