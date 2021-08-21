@@ -271,6 +271,7 @@ class Transformer(Child):
                  self.forward_key,
                  self.forward_port)]):
             self.forward_node = Net_Node(
+                id=self.node_id,
                 upstream=self.forward_id,
                 upstream_ip=self.forward_ip,
                 port=self.forward_port,
