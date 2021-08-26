@@ -229,6 +229,8 @@ class Hardware(object):
 
     @calibration.setter
     def calibration(self, calibration):
+        if calibration is None:
+            return
 
         # write to file
         # try and find calibration file
