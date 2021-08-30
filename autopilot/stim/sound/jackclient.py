@@ -7,6 +7,8 @@ import queue as queue
 import numpy as np
 from copy import copy
 from queue import Empty
+import time
+from threading import Thread
 
 
 # importing configures environment variables necessary for importing jack-client module below
@@ -114,6 +116,8 @@ class JackClient(mp.Process):
         self.play_evt = mp.Event()
         self.stop_evt = mp.Event()
         self.quit_evt = mp.Event()
+        self.play_started = mp.Event()
+        """set after the first frame of a sound is buffered, used to keep track internally when sounds are started and stopped."""
 
         # we make a client that dies now so we can stash the fs and etc.
         self.client = jack.Client(self.name)
@@ -300,6 +304,9 @@ class JackClient(mp.Process):
         Args:
             frames: number of frames (samples) to be processed. unused. passed by jack client
         """
+        state, pos = self.client.transport_query()
+        self.logger.debug(f'call 1 - frame_time: {self.client.frame_time}, last_frame_time: {self.client.last_frame_time}, usecs: {pos["usecs"]}, frames: {self.client.frames_since_cycle_start}')
+
         ## Switch on whether the play event is set
         if not self.play_evt.is_set():
             # A play event has not been set
@@ -331,12 +338,13 @@ class JackClient(mp.Process):
                     self.continuous_cycle = None
 
                 # Play zeros
-                data = np.zeros(self.blocksize, dtype='float32')
+                data = self.zero_arr.T
                 
                 # Write
                 self.write_to_outports(data)
 
         else:
+
             # A play event has been set
             # Play a sound
 
@@ -346,8 +354,7 @@ class JackClient(mp.Process):
             except queue.Empty:
                 data = None
                 self.logger.warning('Queue Empty')
-            
-            
+
             ## Switch on whether data is available
             if data is None:
                 # fill with continuous noise
@@ -364,13 +371,21 @@ class JackClient(mp.Process):
                 
                 # Write data
                 self.write_to_outports(data)
+
                 
                 # sound is over
                 self.play_evt.clear()
-                self.stop_evt.set()
+                # end time is just the start of the next frame??
+                Thread(target=self._wait_for_end, args=(self.client.last_frame_time+self.blocksize,)).start()
                 
             else:
                 ## There is data available
+                if data.shape[0] < self.blocksize:
+                    # sound is over!
+                    Thread(target=self._wait_for_end, args=(self.client.last_frame_time+data.shape[0],)).start()
+                    self.play_evt.clear()
+                    data = self._pad_continuous(data)
+
                 # Write
                 self.write_to_outports(data)
     
@@ -390,6 +405,8 @@ class JackClient(mp.Process):
                 Write one column to each outport, raising an error if there
                 is a different number of columns than outports.
         """
+        data = data.squeeze()
+
         ## Write the output to each outport
         if self.mono_output:
             ## Mono mode - Write the same data to all channels
@@ -431,4 +448,46 @@ class JackClient(mp.Process):
                 ## What would a 3d sound even mean?
                 raise ValueError(
                     "data must be 1 or 2d, not {}".format(data.shape))
+
+    def _pad_continuous(self, data:np.ndarray) -> np.ndarray:
+        """
+        When playing a sound in :meth:`.process`, if we're given a sound that is less than the blocksize,
+        pad it with either silence or the continuous sound
+
+        Returns:
+
+        """
+        # if sound was not padded, fill remaining with continuous sound or silence
+        n_from_end = self.blocksize - data.shape[0]
+        if self.continuous.is_set():
+            try:
+                cont_data = next(self.continuous_cycle)
+                data = np.concatenate((data, cont_data[-n_from_end:]),
+                                      axis=0)
+            except Exception as e:
+                self.logger.exception(f'Continuous mode was set but got exception with continuous queue:\n{e}')
+                pad_with = [(0, n_from_end)]
+                pad_with.extend([(0, 0) for i in range(len(data.ndim-1))])
+                data = np.pad(data, pad_with, 'constant')
+        else:
+            pad_with = [(0, n_from_end)]
+            pad_with.extend([(0, 0) for i in range(len(data.ndim - 1))])
+            data = np.pad(data, pad_with, 'constant')
+
+    def _wait_for_end(self, end_time:int):
+        """
+        Thread that waits for a time (returned by :attr:`jack.Client.frame_time`) passed as ``end_time``
+        and then sets :attr:`.JackClient.stop_evt`
+
+        Args:
+            end_time (int): the ``frame_time`` at which to set the event
+        """
+        try:
+            while self.client.frame_time < end_time:
+                time.sleep(0.000001)
+        finally:
+
+            self.stop_evt.set()
+            self.logger.debug(f'stop event set at f{self.client.frame_time}, requested {end_time}')
+
 
