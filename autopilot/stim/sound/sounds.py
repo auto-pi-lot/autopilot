@@ -279,16 +279,13 @@ if server_type in ("jack", "docs"):
             else:
                 # Flag as not padded
                 self.padded = False
-            
-            
+
             ## Reshape into chunks, each of length `self.blocksize`
-            if sound.ndim == 1:
-                self.chunks = list(
-                    sound.reshape(-1, self.blocksize))
-            
-            elif sound.ndim == 2:
-                self.chunks = list(
-                    sound.reshape(-1, self.blocksize, sound.shape[1]))
+            # the list comprehension version handles unpadded sounds (with
+            # the last array being smaller than blocksize) where the
+            # reshape argument is faster but chokes :(
+            self.chunks = [sound[i:i+self.blocksize] for i in range(0, sound.shape[0], self.blocksize)]
+
 
         def set_trigger(self, trig_fn):
             """
