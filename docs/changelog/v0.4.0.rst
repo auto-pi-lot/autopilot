@@ -1,5 +1,32 @@
 .. _changelog_v040:
 
+v0.4.2 (August 24th)
+---------------------
+
+Minor Improvements
+~~~~~~~~~~~~~~~~~~~
+
+* :class:`~.autopilot.tasks.children.Transformer` can now forward processed
+  data and input data in addition to returning the processed data. A lateral
+  improvement until the streaming API is finished.
+* :class:`~.autopilot.transform.selection.Slice` now accepts arbitrary indexing
+  objects, rather than just ``slice`` objects. Not sure why this wasn't the case before.
+
+Bugfixes
+~~~~~~~~~
+
+* Fixed a circular import problem that prevented the stim module from being imported because the
+  placeholder metaclass was in the __init__.py file. Moved it to its own file.
+* Fixed another instantiated but not raised value error in gpio
+
+Documentation
+~~~~~~~~~~~~~
+
+* Documenting flags in networking objects
+* Documenting min_size in camera stream method
+* Documenting invert_gyro in I2C_9DOF
+
+
 v0.4.1 (August 17th)
 ---------------------
 

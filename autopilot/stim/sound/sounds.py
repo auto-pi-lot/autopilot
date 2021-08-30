@@ -49,8 +49,7 @@ from queue import Empty, Full
 
 from autopilot import prefs
 from autopilot.core.loggers import init_logger
-from autopilot.stim import Stim
-
+from autopilot.stim.stim import Stim
 
 ## First, switch the behavior based on the pref AUDIOSERVER
 # Get the pref

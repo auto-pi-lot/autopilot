@@ -281,8 +281,7 @@ class GPIO(Hardware):
             self.on = 0
             self.off = 1
         else:
-            ValueError('polarity must be 0 or 1')
-            return
+            raise ValueError('polarity must be 0 or 1')
 
         self._polarity = polarity
 

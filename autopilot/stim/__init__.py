@@ -1,12 +1,7 @@
 from autopilot import prefs
 
+from autopilot.stim.stim import Stim
 from autopilot.stim.managers import Stim_Manager, Proportional, init_manager
-
-
-class Stim(object):
-    """
-    Placeholder stimulus meta-object until full implementation
-    """
 
 
 if prefs.get('AGENT') == "pilot":
