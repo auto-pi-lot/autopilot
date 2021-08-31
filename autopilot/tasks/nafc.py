@@ -447,5 +447,5 @@ class Nafc(Task):
         flash lights for punish_dir
         """
         for k, v in self.hardware['LEDS'].items():
-            if v.__class__:
+            if v.__class__.__name__ == "LED_RGB":
                 v.flash(self.punish_dur)
