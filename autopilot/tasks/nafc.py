@@ -14,6 +14,8 @@ from collections import OrderedDict as odict
 # TODO: Move this to __init__
 TASK = 'Nafc'
 
+LED_RGB = autopilot.get_hardware('LED_RGB')
+
 class Nafc(Task):
     """
     A Two-alternative forced choice task.
@@ -445,5 +447,5 @@ class Nafc(Task):
         flash lights for punish_dir
         """
         for k, v in self.hardware['LEDS'].items():
-            if isinstance(v, autopilot.get_hardware('LED_RGB')):
+            if isinstance(v, LED_RGB):
                 v.flash(self.punish_dur)
