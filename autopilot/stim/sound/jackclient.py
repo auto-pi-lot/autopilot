@@ -376,13 +376,13 @@ class JackClient(mp.Process):
                 # sound is over
                 self.play_evt.clear()
                 # end time is just the start of the next frame??
-                Thread(target=self._wait_for_end, args=(self.client.last_frame_time+self.blocksize,)).start()
+                Thread(target=self._wait_for_end, args=(self.client.last_frame_time+(self.blocksize*2),)).start()
                 
             else:
                 ## There is data available
                 if data.shape[0] < self.blocksize:
                     # sound is over!
-                    Thread(target=self._wait_for_end, args=(self.client.last_frame_time+data.shape[0],)).start()
+                    Thread(target=self._wait_for_end, args=(self.client.last_frame_time+data.shape[0]+self.blocksize,)).start()
                     self.play_evt.clear()
                     data = self._pad_continuous(data)
 
