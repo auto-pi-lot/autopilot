@@ -474,6 +474,8 @@ class JackClient(mp.Process):
             pad_with.extend([(0, 0) for i in range(len(data.ndim - 1))])
             data = np.pad(data, pad_with, 'constant')
 
+        return data
+
     def _wait_for_end(self, end_time:int):
         """
         Thread that waits for a time (returned by :attr:`jack.Client.frame_time`) passed as ``end_time``
