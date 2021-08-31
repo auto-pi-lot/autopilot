@@ -305,7 +305,7 @@ class JackClient(mp.Process):
             frames: number of frames (samples) to be processed. unused. passed by jack client
         """
         state, pos = self.client.transport_query()
-        self.logger.debug(f'call 1 - frame_time: {self.client.frame_time}, last_frame_time: {self.client.last_frame_time}, usecs: {pos["usecs"]}, frames: {self.client.frames_since_cycle_start}')
+        #self.logger.debug(f'call 1 - frame_time: {self.client.frame_time}, last_frame_time: {self.client.last_frame_time}, usecs: {pos["usecs"]}, frames: {self.client.frames_since_cycle_start}')
 
         ## Switch on whether the play event is set
         if not self.play_evt.is_set():
