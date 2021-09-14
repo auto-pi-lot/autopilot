@@ -1,0 +1,191 @@
+.. _changelog_v040:
+
+v0.4.2 (August 24th)
+---------------------
+
+Minor Improvements
+~~~~~~~~~~~~~~~~~~~
+
+* :class:`~.autopilot.tasks.children.Transformer` can now forward processed
+  data and input data in addition to returning the processed data. A lateral
+  improvement until the streaming API is finished.
+* :class:`~.autopilot.transform.selection.Slice` now accepts arbitrary indexing
+  objects, rather than just ``slice`` objects. Not sure why this wasn't the case before.
+
+Bugfixes
+~~~~~~~~~
+
+* Fixed a circular import problem that prevented the stim module from being imported because the
+  placeholder metaclass was in the __init__.py file. Moved it to its own file.
+* Fixed another instantiated but not raised value error in gpio
+
+Documentation
+~~~~~~~~~~~~~
+
+* Documenting flags in networking objects
+* Documenting min_size in camera stream method
+* Documenting invert_gyro in I2C_9DOF
+
+
+v0.4.1 (August 17th)
+---------------------
+
+Bugfixes
+~~~~~~~~~
+
+* The :class:`autopilot.setup.forms.HARDWARE_FORM` would incorrectly use the class object itself
+  rather than the class name in a few places which caused hardware names to incorrectly display and
+  be impossible to add!
+* Correctly handle module name in loggers when running interactively
+* Use accelerometer calibration when computing :meth:`~autopilot.hardware.i2c.I2C_9DOF.rotation`
+* Use :func:`autopilot.get` in :func:`autopilot.transform.make_transform`
+
+Docs
+~~~~
+
+* Document the attributes in :class:`autopilot.transform.timeseries.Kalman`
+
+v0.4.0 - Become Multifarious (August 3rd, 2021)
+------------------------------------------------------
+
+This release is primarily to introduce the new plugin system, the autopilot wiki, and their integration as a way of
+starting the transformation of Autopilot into a tool with decentralized development and governance (as well as
+make using the tool a whole lot easier and more powerful).
+
+*With humble thanks to Lucas Ott, Tillie Morris,* `Chris Rodgers <https://github.com/cxrodgers/>`_,
+`Arne Meyer <https://github.com/arnefmeyer>`_ , `Mikkel Roald-Arbøl <https://github.com/roaldarbol>`_ ,
+`David Robbe <https://github.com/neurodavidus>`_ ,
+*and an anonymous discussion board poster for being part of this release.*
+
+New Features
+~~~~~~~~~~~~~
+
+* `Registries & Plugins <https://github.com/wehr-lab/autopilot/pull/109>`_ - Autopilot now supports users writing their code
+  outside of the library as plugins! To support this, a registry system was implemented throughout the program. Plugin objects
+  can be developed as objects that inherit from the Autopilot object tree -- eg. implementing a GPIO object by subclassing
+  :class:`.hardware.gpio.GPIO` , or a new task by subclassing :class:`~.tasks.task.Task` . This system is flexible enough
+  to allow any lineage of objects to be included as a plugin -- stimuli, tasks, and so on -- and we will be working to
+  expand registries to every object in Autopilot, including the ability for plugins to replace core modules to make
+  Autopilot's flexibility verge on ludicrous. The basic syntax of the registry system is simple and doesn't require any
+  additional logic beyond inheritance to be implemented on plugin objects -- ``autopilot.get('object_type', 'object_name')``
+  is the basic method, with a few aliases for specific object types like ``autopilot.get_hardware()``. Also thanks to
+  `Arne Meyer <https://github.com/arnefmeyer>`_ for submitting an early draft of the registry system and
+  `Mikkel Roald-Arbøl <https://github.com/roaldarbol>`_ for raising the issue.
+* At long last, the Autopilot Wiki is alive!!!! - https://wiki.auto-pi-lot.com/ - The wiki is the place for communal
+  preservation of technical knowledge about using Autopilot, like hardware designs, build guides, parameter sets,
+  and beyond! This isn't any ordinary wiki, though, we got ourselves a *semantic wiki* which augments traditional wikis
+  with a rich system of human and computer-readable linked attributes: a particular type of page will have some set of attributes,
+  like a page about a 3D printed part will have an associated .stl file, but rather than having these be in plaintext
+  they are specified in a format that is queryable, extensible, and infinitely mutable. The vision for the wiki is much
+  grander (but not speculative! very concrete!) than just a place to take notes, but is intended to blend the use of
+  Autopilot as an experimental tool with body of knowledge that supports it. Autopilot can query the wiki with the ``wiki`` module
+  like ``wiki.ask('[[Category:3D_CAD]]', 'Has STL')`` to get links to all .stl files for all 3D parts on the wiki. The integration
+  between the two makes using and submitting information trivial, but *also* makes *designing whole new types of community interfaces*
+  completely trivial. As a first pass, the Wiki will be the place to index plugins, the system for submitting them, querying them,
+  and downloading them only took a few hours and few dozen lines of code to implement. The wiki is infinitely malleable -- that's the point --
+  and I am very excited to see how people use it.
+* Tests & Continuous Integration with Travis! We are on the board with having nonzero tests! The travis page is here: https://travis-ci.com/github/wehr-lab/autopilot
+  and the coveralls page is here: https://coveralls.io/github/wehr-lab/autopilot .  At the moment we have a whopping 27% coverage,
+  but as we build out our testing suite we hope that it will become much easier for people to contribute to Autopilot and be
+  confident that it works!
+* New Hardware Objects
+    * :class:`.cameras.PiCamera` - A fast interface to the PiCamera, wrapping the picamera library, and using tips from its developer to juice every bit of speed i could!
+    * The I2C_9DOF object was massively improved to take better advantage of its onboard DSP and expose more of its i2c commands.
+* New Transforms
+    * :class:`.timeseries.Kalman` - adapted a Kalman filter from the wonderful filterpy package! it's in the new timeseries transform module
+    * :class:`.geometry.IMU_Orientation` - IMU_Orientation performs a sensor fusion algorithm with the Kalman Filter class to combine gyroscope and accelerometer measurements into a better estimate of earth-centric roll and pitch.
+      This is used by the IMU class, but is made independent so it can be used without an Autopilot hardware object/post-facto/etc.
+    * :class:`.timeseries.Filter_IIR` - Filter_IIR implements scipy's IIR filter as a transform object.
+    * :class:`.timeseries.Integrate` - Integrate adds successive numbers together (scaled by dt if requested). not much by itself, but when used with a kalman filter very useful :)
+    * :class:`.geometry.Rotate` - use scipy to rotate a vector by some angle in x, y, and/or z
+    * :class:`.geometry.Spheroid` - fit and transform 3d coordinates according to some spheroid - used in the IMU's accelerometer calibration method: given some target spheroid, and some deformed spheroid (eg. a miscalibrated accelerometer might have the x, y, or z axis scaled or offset) either explicitly set or estimated from a series of point measurements, transform future input given that transformation to correct for the deformed source spheroid.
+* New Prefs
+    * ``'AUTOPLUGIN'`` - Attempt to import the contents of the plugin directory,
+    * ``'PLUGIN_DB'`` - filename to use for the .json plugin_db that keeps track of installed plugins',
+    * ``'PING_INTERVAL'`` - How many seconds should pilots wait in between pinging the Terminal?',
+    * ``'TERMINAL_SETTINGS_FN'`` - filename to store QSettings file for Terminal',
+    * ``'TERMINAL_WINSIZE_BEHAVIOR'`` - Strategy for resizing terminal window on opening',
+    * ``'TERMINAL_CUSTOM_SIZE'`` - Custom size for window, specified as [px from left, px from top, width, height]',
+
+Major Improvements
+~~~~~~~~~~~~~~~~~~~
+
+* Stereo Sound (Thank you `Chris Rodgers! <https://github.com/cxrodgers/>`_) - https://github.com/wehr-lab/autopilot/pull/102
+* Multihop messages & direct messaging - https://github.com/wehr-lab/autopilot/pull/99 - it is now possible to
+  send multihop messages through multiple Station objects, as well as easier to send messages directly
+  between net nodes. See the examples in the network tests section of the docs.
+* Multiple Children  (Thank you `Chris Rodgers! <https://github.com/cxrodgers/>`_) - https://github.com/wehr-lab/autopilot/pull/103 -
+  the ``CHILDID`` field now accepts a list, allowing a Pilot to initialize child tasks on multiple children. (this syntax and
+  the hierarchical nature of pilots and children will be deprecated as we refactor the networking modules into a general mesh system,
+  but this is lovely to have for now :)
+* Programmatic Setup - https://github.com/wehr-lab/autopilot/issues/33 - noninteractive setup of prefs and
+  scripts by using ``autopilot.setup -f prefs.json -p PREFNAME=VALUE -s scriptname1 -s scriptname2``
+* Widget to stream video, en route to more widgets for direct GUI control of hardware objects connected to pilots
+* Support python 3.8 and 3.9 essentially by not insisting that the spinnaker SDK be installable by all users (which at the time
+  was only available for 3.7)
+
+
+Minor Improvements
+~~~~~~~~~~~~~~~~~~~
+
+* Terminal can be opened maximized, or have its size and position set explicitly, preserve between launches (Thank you `Chris Rodgers! <https://github.com/cxrodgers/>`_) - https://github.com/wehr-lab/autopilot/pull/70
+* Pilots will periodically ping the Terminal again, Terminal can manually ping Pilots that may have gone silent - https://github.com/wehr-lab/autopilot/pull/91
+* Pilots share their prefs with the Terminal in their initial handshake - https://github.com/wehr-lab/autopilot/pull/91
+* Reintroduce router ports for net-nodes to allow them to bind a port to receive messages - https://github.com/wehr-lab/autopilot/pull/115/commits/35be5d634d98a7983ec3d3d6c5b94da6965a2579
+* Listen methods are now optional for net_nodes
+* Allowed the creation of dataless tasks - https://github.com/wehr-lab/autopilot/pull/115/commits/628e1fb9c8fcd15399b19b351fed87e4826bc9ab
+* Allowed the creation of plotless tasks - https://github.com/wehr-lab/autopilot/pull/115/commits/08d99d55a32b45f54e3853813c7c71ea230b25dc
+* The ``I2C_9DOF`` clas uses memoryviews rather than buffers for a small performance boost - https://github.com/wehr-lab/autopilot/pull/115/commits/890f2c500df8010b50d61f64e2755cd2c7a8aeed
+* Phasing out using ``Queue`` s in favor of ``collections.deque`` for applications that only need thread and not process safety because they
+  are way faster and what we wanted in the first place anyway.
+* New Scripts - ``i2c``, ``picamera``, ``env_terminal``
+* utils.NumpyEncoder and decoder to allow numpy arrays to be json serialized
+* calibrations are now loaded by hardware objects themselves instead of the extraordinarily convoluted system in ``prefs`` -- though
+  some zombie code still remains there.
+* Net nodes know their ip now, but this is a lateral improvement pending a reworking of the networking modules.
+* ``performance`` script now sets ``swappiness = 10`` to discourage the use of swapfiles - see https://www.raspberrypi.org/forums/viewtopic.php?t=198765
+* Setting a string in the ``deprecation`` field of a pref in ``_DEFAULTS`` prints it as a warning to start actually deprecating responsibly.
+* Logging in more places like Subject creation, manipulation, protocol assignation.
+
+Bugfixes
+~~~~~~~~
+
+* Loggers would only work for the last object that was instantiated, which was really embarassing. fixed - https://github.com/wehr-lab/autopilot/pull/91
+* Graduation criteria were calculated incorrectly when subjects were demoted in stages of a protocol - https://github.com/wehr-lab/autopilot/pull/91
+* fix durations in solenoid class (Thank you `Chris Rodgers! <https://github.com/cxrodgers/>`_) - https://github.com/wehr-lab/autopilot/pull/63
+* LED_RGB ignores zero - https://github.com/wehr-lab/autopilot/pull/98
+* Fix batch assignment window crashing when there are subjects that are unassigned to a task - https://github.com/wehr-lab/autopilot/pull/115/commits/e42fc5802792822ff5a53a2379041a4a8b301e9e
+* Catch malformed protocols in batch assignment widget - https://github.com/wehr-lab/autopilot/pull/115/commits/2cc8508a4bf3a6d49512197dc72433c60d0c656e
+* Remove broken ``Terminal.reset_ui`` method and made control panel better at adding/removing pilots - https://github.com/wehr-lab/autopilot/pull/91
+* Subject class handles unexpected state a lot better (eg. no task assigned, no step assigned, tasks with no data.) but is still
+  an absolute travesty that needs to be refactored badly.
+* The jackclient would crash with long-running continuous sounds as the thread feeding it samples eventually hiccuped.
+  Made more robust by having jackclient store samples locally int he sound server rather than being continuously streamed from the queue.
+* PySide2 references still incorrectly used ``QtGui`` rather than ``QtWidgets``
+* pigpio scripts would not be stopped and removed when a task was stopped, the :func:`.gpio.clear_scripts` function now handles that.
+* ``xcb`` was removed from ``PySide2`` distributions, so it's now listed in the requirements for the Terminal and made available in the ``env_terminal`` script.
+* ``LED_RGB`` didn't appropriately raise a ``ValueError`` when called with a single ``pin`` - https://github.com/wehr-lab/autopilot/issues/117
+* A fistful of lingering Python 2 artifacts
+
+Code Structure
+~~~~~~~~~~~~~~~
+
+* continuing to split out modules in :mod:`autopilot.core` - networking this time
+* utils is now a separate module instead of being in multiple places
+* the npyscreen forms in ``setup_autopilot`` were moved to a separate module
+* ``setup_autopilot`` was broken into functions instead of a very long and impenetrable script. still a bit of cleaning to do there.
+* ``autopilot.setup.setup_autopilot`` was always extremely awkward, so it's now been aliased as ``autopilot.setup``
+* the docs have now been split into subfolders rather than period separated names to make urls nicer -- eg /dev/hardware/cameras.htm
+  rather than /dev/hardware.cameras.html . this should break some links when switching between versions on readthedocs
+  but other than that be nondestructive.
+
+Docs
+~~~~
+
+* new :ref:`quickstart` documentation with lots of quick examples!
+
+Regressions
+~~~~~~~~~~~
+
+* Removed the ``check_compatible`` method in the Transforms class. We will want to make a call at some point if we want to implement a full realtime pipelining framework or if we want to use something like luigi or joblib or etc.
+  for now this is an admission that type and shape checking was never really implemented but it does raise some exceptions sometimes.

@@ -12,32 +12,29 @@ Note:
 """
 
 # Classes for plots
-import sys
 import logging
 import os
+from collections import deque
 import numpy as np
 import PySide2 # have to import to tell pyqtgraph to use it
 import pandas as pd
-from PySide2 import QtGui
 from PySide2 import QtCore
-from PySide2 import QtOpenGL
 from PySide2 import QtWidgets
 import pyqtgraph as pg
 from time import time, sleep
 from itertools import count
 from functools import wraps
 from threading import Event, Thread
-import multiprocessing as mp
-import pdb
 from queue import Queue, Empty, Full
 #import cv2
-pg.setConfigOptions(antialias=True)
+pg.setConfigOptions(antialias=True, imageAxisOrder='row-major')
+
 # from pyqtgraph.widgets.RawImageWidget import RawImageWidget, RawImageGLWidget
 
-from autopilot import tasks, prefs
+import autopilot
+from autopilot import prefs
 from autopilot.core import styles
-from autopilot.core.utils import get_invoker
-from .utils import InvokeEvent, Invoker
+from ..utils.invoker import InvokeEvent, Invoker, get_invoker
 from autopilot.networking import Net_Node
 from autopilot.core.loggers import init_logger
 
@@ -329,7 +326,7 @@ class Plot(QtWidgets.QWidget):
         self.info['Protocol'].setText(value['step_name'])
 
         # We're sent a task dict, we extract the plot params and send them to the plot object
-        self.plot_params = tasks.TASK_LIST[value['task_type']].PLOT
+        self.plot_params = autopilot.get_task(value['task_type']).PLOT
 
         # if we got no plot params, that's fine, just set as running and return
         if not self.plot_params:
@@ -368,7 +365,7 @@ class Plot(QtWidgets.QWidget):
             pass
 
         # Make plot items for each data type
-        for data, plot in self.plot_params['data'].items():
+        for data, plot in self.plot_params.get('data', {}).items():
             # TODO: Better way of doing params for plots, redo when params are refactored
             if plot == 'rollmean' and 'roll_window' in self.plot_params.keys():
                 self.plots[data] = Roll_Mean(winsize=self.plot_params['roll_window'])
@@ -798,7 +795,7 @@ class Video(QtWidgets.QWidget):
             self.layout.addWidget(self.vid_widgets[vid][0],row+1,col,5,1)
 
             # make queue for vid
-            self.qs[vid] = Queue(maxsize=1)
+            self.qs[vid] = deque(maxlen=1)
 
 
 
@@ -819,10 +816,10 @@ class Video(QtWidgets.QWidget):
             for vid, q in self.qs.items():
                 data = None
                 try:
-                    data = q.get_nowait()
+                    data = q.popleft()
                     self.vid_widgets[vid][2].setImage(data)
 
-                except Empty:
+                except IndexError:
                     pass
                 except KeyError:
                     pass
@@ -849,16 +846,8 @@ class Video(QtWidgets.QWidget):
         # cur_time = time()
 
         try:
-            # if there's a waiting frame, it's old now so pull it.
-            _ = self.qs[video].get_nowait()
-        except Empty:
-            pass
-
-        try:
             # put the new frame in there.
-            self.qs[video].put_nowait(data)
-        except Full:
-            return
+            self.qs[video].append(data)
         except KeyError:
             return
 
@@ -1046,40 +1035,6 @@ class ImageItem_TimedUpdate(pg.ImageItem):
 
 
     def setImage(self, image=None, autoLevels=None, **kargs):
-        """
-        Update the image displayed by this item. For more information on how the image
-        is processed before displaying, see :func:`makeARGB <pyqtgraph.makeARGB>`
-        =================  =========================================================================
-        **Arguments:**
-        image              (numpy array) Specifies the image data. May be 2D (width, height) or
-                           3D (width, height, RGBa). The array dtype must be integer or floating
-                           point of any bit depth. For 3D arrays, the third dimension must
-                           be of length 3 (RGB) or 4 (RGBA). See *notes* below.
-        autoLevels         (bool) If True, this forces the image to automatically select
-                           levels based on the maximum and minimum values in the data.
-                           By default, this argument is true unless the levels argument is
-                           given.
-        lut                (numpy array) The color lookup table to use when displaying the image.
-                           See :func:`setLookupTable <pyqtgraph.ImageItem.setLookupTable>`.
-        levels             (min, max) The minimum and maximum values to use when rescaling the image
-                           data. By default, this will be set to the minimum and maximum values
-                           in the image. If the image array has dtype uint8, no rescaling is necessary.
-        opacity            (float 0.0-1.0)
-        compositionMode    See :func:`setCompositionMode <pyqtgraph.ImageItem.setCompositionMode>`
-        border             Sets the pen used when drawing the image border. Default is None.
-        autoDownsample     (bool) If True, the image is automatically downsampled to match the
-                           screen resolution. This improves performance for large images and
-                           reduces aliasing. If autoDownsample is not specified, then ImageItem will
-                           choose whether to downsample the image based on its size.
-        =================  =========================================================================
-        **Notes:**
-        For backward compatibility, image data is assumed to be in column-major order (column, row).
-        However, most image data is stored in row-major order (row, column) and will need to be
-        transposed before calling setImage()::
-            imageitem.setImage(imagedata.T)
-        This requirement can be changed by calling ``image.setOpts(axisOrder='row-major')`` or
-        by changing the ``imageAxisOrder`` :ref:`global configuration option <apiref_config>`.
-        """
         #profile = debug.Profiler()
 
         gotNewData = False

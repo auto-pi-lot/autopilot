@@ -142,13 +142,3 @@ class NTrials(Graduation):
         else:
             return False
 
-
-
-
-GRAD_LIST = {
-    'accuracy': Accuracy,
-    'n_trials': NTrials
-}
-"""
-Mapping from string reference of graduation type to object.
-"""

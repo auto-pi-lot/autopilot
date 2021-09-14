@@ -19,13 +19,19 @@ from autopilot.hardware import cameras
 from autopilot.networking import Net_Node
 from autopilot.core.loggers import init_logger
 from autopilot.transform import transforms
+from autopilot.hardware.i2c import I2C_9DOF
+from autopilot.hardware.cameras import PiCamera
+from autopilot.tasks import Task
 from itertools import cycle
 from queue import Empty, LifoQueue
 import threading
 import logging
 from time import sleep
 
-class Wheel_Child(object):
+class Child(object):
+    """Just a placeholder class for now to work with :func:`autopilot.get`"""
+
+class Wheel_Child(Child):
     STAGE_NAMES = ['collect']
 
     PARAMS = odict()
@@ -42,6 +48,7 @@ class Wheel_Child(object):
 
 
     def __init__(self, stage_block=None, fs=10, thresh=100, **kwargs):
+        super(Wheel_Child, self).__init__(**kwargs)
         self.fs = fs
         self.thresh = thresh
 
@@ -64,7 +71,7 @@ class Wheel_Child(object):
         self.stage_block.set()
 
 
-class Video_Child(object):
+class Video_Child(Child):
     PARAMS = odict()
     PARAMS['cams'] = {'tag': 'Dictionary of camera params, or list of dicts',
                       'type': ('dict', 'list')}
@@ -80,6 +87,7 @@ class Video_Child(object):
                     'param1': 'first_param'
                 }
         """
+        super(Video_Child, self).__init__(**kwargs)
 
         if cams is None:
             Exception('Need to give us a cams dictionary!')
@@ -168,14 +176,23 @@ class Video_Child(object):
     #     for cam in self.cams.values():
     #         cam.release()
 
-class Transformer(object):
+class Transformer(Child):
 
     def __init__(self, transform,
                  operation: str ="trigger",
+                 node_id = None,
                  return_id = 'T',
+                 return_ip = None,
+                 return_port = None,
                  return_key = None,
+                 router_port = None,
                  stage_block = None,
                  value_subset=None,
+                 forward_id=None,
+                 forward_ip=None,
+                 forward_port=None,
+                 forward_key=None,
+                 forward_what='both',
                  **kwargs):
         """
 
@@ -188,10 +205,16 @@ class Transformer(object):
                 * "stream", where each result of the transformation is returned to sender
 
             return_id:
+            return_ip:
+            return_port:
+            return_key:
+            router_port (None, int): If not ``None`` (default), spawn the node with a route port to receieve
             stage_block:
             value_subset (str): Optional - subset a value from from a dict/list sent to :meth:`.l_process`
+            forward_what (str): one of 'input', 'output', or 'both' (default) that determines what is forwarded
             **kwargs:
         """
+        super(Transformer, self).__init__(**kwargs)
         assert operation in ('trigger', 'stream', 'debug')
         self.operation = operation
         self._last_result = None
@@ -202,6 +225,23 @@ class Transformer(object):
             self.return_key = return_key
 
         self.return_id = return_id
+        self.return_ip = return_ip
+        self.return_port = return_port
+        if self.return_port is None:
+            self.return_port = prefs.get('MSGPORT')
+        if node_id is None:
+            self.node_id = f"{prefs.get('NAME')}_TRANSFORMER"
+        else:
+            self.node_id = node_id
+        self.router_port = router_port
+
+        self.forward_id = forward_id
+        self.forward_ip = forward_ip
+        self.forward_port = forward_port
+        self.forward_key = forward_key
+        self.forward_node = None
+        self.forward_what = forward_what
+
         self.stage_block = stage_block
         self.stages = cycle([self.noop])
         # self.input_q = LifoQueue()
@@ -225,15 +265,32 @@ class Transformer(object):
 
         self.transform = autopilot.transform.make_transform(transform)
 
+
         self.node = Net_Node(
-            f"{prefs.get('NAME')}_TRANSFORMER",
-            upstream=prefs.get('NAME'),
-            port=prefs.get('MSGPORT'),
+            self.node_id,
+            upstream=self.return_id,
+            upstream_ip=self.return_ip,
+            port=self.return_port,
+            router_port=self.router_port,
             listens = {
                 'CONTINUOUS': self.l_process
             },
             instance=False
         )
+
+        if all([x is not None for x in
+                (self.forward_id,
+                 self.forward_ip,
+                 self.forward_key,
+                 self.forward_port)]):
+            self.forward_node = Net_Node(
+                id=self.node_id,
+                upstream=self.forward_id,
+                upstream_ip=self.forward_ip,
+                port=self.forward_port,
+                listens={}
+            )
+
 
         self.node.send(self.return_id, 'STATE', value='READY')
 
@@ -249,15 +306,18 @@ class Transformer(object):
 
             self.node.logger.debug(f'Processed frame, result: {result}')
 
-
             if self.operation == "trigger":
                 if result != self._last_result:
                     self.node.send(self.return_id, self.return_key, result)
+                    if self.forward_node is not None:
+                        self.forward(value, result)
                     self._last_result = result
 
             elif self.operation == 'stream':
                 # FIXME: Another key that's not TRIGGER
                 self.node.send(self.return_id, self.return_key, result)
+                if self.forward_node is not None:
+                    self.forward(value, result)
 
             elif self.operation == 'debug':
                 pass
@@ -272,6 +332,18 @@ class Transformer(object):
         if self.value_subset:
             value = value[self.value_subset]
         self.input_q.append(value)
+
+    def forward(self, input=None, output=None):
+        if self.forward_what == 'both':
+            self.forward_node.send(self.forward_id, self.forward_key, {'input':input,'output':output},flags={'MINPRINT':True,'NOREPEAT':True})
+        elif self.forward_what == 'input':
+            self.forward_node.send(self.forward_id, self.forward_key, input,flags={'MINPRINT':True,'NOREPEAT':True})
+        elif self.forward_what == 'output':
+            self.forward_node.send(self.forward_id, self.forward_key, output,flags={'MINPRINT':True,'NOREPEAT':True})
+        else:
+            raise ValueError("forward_what must be one of 'input', 'output', or 'both'")
+
+
 
 
 

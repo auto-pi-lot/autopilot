@@ -1,7 +1,7 @@
 """
 Run scripts to setup system dependencies and autopilot plugins
 
-.. example::
+::
 
     > # to list scripts
     > python3 -m autopilot.setup.run_script --list
@@ -13,6 +13,7 @@ Run scripts to setup system dependencies and autopilot plugins
     > python3 -m autopilot.setup.run_script hifiberry jackd
 
 """
+import typing
 import subprocess
 from autopilot.setup.scripts import SCRIPTS
 import argparse
@@ -73,28 +74,48 @@ def run_script(script_name):
     if script_name in SCRIPTS.keys():
         call_series(SCRIPTS[script_name]['commands'], script_name)
     else:
-        Exception('No script named {}, must be one of {}'.format(script_name, "\n".join(SCRIPTS.keys())))
+        raise NameError('No script named {}, must be one of {}'.format(script_name, "\n".join(SCRIPTS.keys())))
 
-def run_scripts(scripts):
+def run_scripts(scripts, return_all=False,print_status=True) -> typing.Union[bool, typing.Dict[str,bool]]:
+    """
+    Run a series of scripts, printing results
+
+    Args:
+        scripts (list): list of script names
+
+    Returns:
+        bool: success or failure of scripts - ``True`` if all were successful, ``False`` otherwise.
+    """
     env_results = {}
     for script_name in scripts:
-        commands = SCRIPTS[script_name]['commands']
-        env_results[script_name] = call_series(commands, script_name)
+        commands = SCRIPTS[script_name].get('commands', None)
+        if commands is not None:
+            env_results[script_name] = call_series(commands, script_name)
+
+    # indicate global success
+    success = True
 
     # make results string
-    env_result = "\033[0;32;40m\n--------------------------------\nScript Results:\n"
-    for config, result in env_results.items():
-        if result:
-            env_result += "  [ SUCCESS ] "
-        else:
-            env_result += "  [ FAILURE ] "
+    if print_status:
+        env_result = "\033[0;32;40m\n--------------------------------\nScript Results:\n"
+        for config, result in env_results.items():
+            if result:
+                env_result += "  [ SUCCESS ] "
+            else:
+                env_result += "  [ FAILURE ] "
+                success = False
 
-        env_result += config
-        env_result += '\n'
+            env_result += config
+            env_result += '\n'
 
-    env_result += '--------------------------------\u001b[0m'
+        env_result += '--------------------------------\u001b[0m'
 
-    print(env_result)
+        print(env_result)
+
+    if return_all:
+        return env_results
+    else:
+        return success
 
 
 def list_scripts():
@@ -118,7 +139,10 @@ if __name__ == "__main__":
         list_scripts()
         sys.exit()
     elif args.scripts:
-        run_scripts(args.scripts)
-        sys.exit()
+        res = run_scripts(args.scripts)
+        if res:
+            sys.exit()
+        else:
+            sys.exit(1)
     else:
         raise RuntimeError('Need to give name of one or multiple scripts, ')

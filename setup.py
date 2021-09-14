@@ -61,24 +61,10 @@ def load_requirements(req_file):
 
 # configure for raspberry pi
 if IS_RASPI:
-    # install raspi dependencies
-    # subprocess.call(['autopilot/setup/setup_environment_pi.sh'])
-
-
-    #CMAKE_ARGS.extend(['-DPIGPIO=ON', '-DJACK=ON'])
-    # FIXME: Need to get jack build in egg working, continue the CMakelists work on integrating during build. for now just adding to env dependencies
-
-    # CMAKE_ARGS = ['-DPIGPIO=ON']
-    #SCRIPTS.append('autopilot/external/pigpio/pigpiod')
-    #PACKAGES.append('autopilot.external.pigpio')
     REQUIREMENTS = load_requirements('requirements/requirements_pilot.txt')
 
 elif ARCH == 'x86':
     # is a terminal,
-    # install dependencies
-    # subprocess.call(['autopilot/setup/setup_environment_terminal.sh'])
-
-    # sys.argv.append('--skip-cmake')
     REQUIREMENTS = load_requirements('requirements/requirements_terminal.txt')
 
 elif os.environ.get('TRAVIS', False):
@@ -146,5 +132,5 @@ setup(
         "Operating System :: MacOS",
         "Topic :: Scientific/Engineering"
     ],
-    python_requires="==3.7.*"
+    python_requires=">=3.7.*"
 )

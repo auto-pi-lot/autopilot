@@ -60,8 +60,12 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
         if "__main__" in module_name:
             # awkward workaround to get module name of __main__ run objects
             mod_obj = inspect.getmodule(instance)
-            mod_suffix  = inspect.getmodulename(inspect.getmodule(instance).__file__)
-            module_name = '.'.join([mod_obj.__package__, mod_suffix])
+            try:
+                mod_suffix  = inspect.getmodulename(inspect.getmodule(instance).__file__)
+                module_name = '.'.join([mod_obj.__package__, mod_suffix])
+            except AttributeError:
+                # when running interactively or from a plugin, __main__ does not have __file__
+                module_name = "__main__"
 
 
         module_name = re.sub('^autopilot.', '', module_name)
@@ -164,6 +168,5 @@ def init_logger(instance=None, module_name=None, class_name=None, object_name=No
 
         logger = logging.getLogger(logger_name)
         logger.info(f"Logger created: {logger_name}")
-
 
     return logger

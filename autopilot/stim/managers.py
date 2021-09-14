@@ -11,11 +11,11 @@ import os
 import pdb
 from collections import deque
 import numpy as np
+import autopilot
 from autopilot import prefs
 if prefs.get('AGENT') and prefs.get('AGENT').upper() == 'PILOT':
     if 'AUDIO' in prefs.get('CONFIG') or prefs.get('AUDIOSERVER') is not None:
         from autopilot.stim.sound import sounds
-        # TODO be loud about trying to init sounds when not in config
 
 def init_manager(stim):
     if 'manager' in stim.keys():
@@ -115,7 +115,7 @@ class Stim_Manager(object):
     def init_sounds(self, sound_dict):
         """
         Instantiate sound objects, using the 'type' value to choose an object from
-        :data:`.sounds.SOUND_LIST` .
+        ``autopilot.get('sound')`` .
 
         Args:
             sound_dict (dict): a dictionary like::
@@ -133,10 +133,10 @@ class Stim_Manager(object):
                 for sound in v:
                     # We send the dict 'sound' to the function specified by 'type' and '
                     # ' as kwargs
-                    self.stimuli[k].append(sounds.SOUND_LIST[sound['type']](**sound))
+                    self.stimuli[k].append(autopilot.get('sound', sound['type'])(**sound))
             # If not a list, a single sound
             else:
-                self.stimuli[k] = [sounds.SOUND_LIST[v['type']](**v)]
+                self.stimuli[k] = [autopilot.get('sound', v['type'])(**v)]
 
     def set_triggers(self, trig_fn):
         """
@@ -288,26 +288,27 @@ class Proportional(Stim_Manager):
     (frequency)/(sum(frequencies)).
 
     Arguments:
-        stim (dict): Dictionary with the structure::
+        stim (dict): Dictionary with the structure:
+            ::
 
-            {'manager': 'proportional',
-             'type': 'sounds',
-             'groups': (
-                 {'name':'group_name',
-                  'frequency': 0.2,
-                  'sounds':{
-                      'L': [{Tone1_params}, {Tone2_params}...],
-                      'R': [{Tone3_params}, {Tone4_params}...]
-                  }
-                },
-                {'name':'second_group',
-                  'frequency': 0.8,
-                  'sounds':{
-                      'L': [{Tone1_params}, {Tone2_params}...],
-                      'R': [{Tone3_params}, {Tone4_params}...]
-                  }
-                })
-            }
+                {'manager': 'proportional',
+                 'type': 'sounds',
+                 'groups': (
+                     {'name':'group_name',
+                      'frequency': 0.2,
+                      'sounds':{
+                          'L': [{Tone1_params}, {Tone2_params}...],
+                          'R': [{Tone3_params}, {Tone4_params}...]
+                      }
+                    },
+                    {'name':'second_group',
+                      'frequency': 0.8,
+                      'sounds':{
+                          'L': [{Tone1_params}, {Tone2_params}...],
+                          'R': [{Tone3_params}, {Tone4_params}...]
+                      }
+                    })
+                }
 
     Attributes:
         stimuli (dict): A dictionary of stimuli organized into groups
@@ -341,22 +342,24 @@ class Proportional(Stim_Manager):
         Instantiate sound objects similarly to :class:`.Stim_Manager`, just organizes them into groups.
 
         Args:
-            sound_stim (tuple, list): an iterator like::
-                (
-                 {'name':'group_name',
-                  'frequency': 0.2,
-                  'sounds': {
-                      'L': [{Tone1_params}, {Tone2_params}...],
-                      'R': [{Tone3_params}, {Tone4_params}...]
-                    }
-                },
-                {'name':'second_group',
-                  'frequency': 0.8,
-                  'sounds':{
-                      'L': [{Tone1_params}, {Tone2_params}...],
-                      'R': [{Tone3_params}, {Tone4_params}...]
-                  }
-                })
+            sound_stim (tuple, list): an iterator like:
+                ::
+
+                    (
+                     {'name':'group_name',
+                      'frequency': 0.2,
+                      'sounds': {
+                          'L': [{Tone1_params}, {Tone2_params}...],
+                          'R': [{Tone3_params}, {Tone4_params}...]
+                        }
+                    },
+                    {'name':'second_group',
+                      'frequency': 0.8,
+                      'sounds':{
+                          'L': [{Tone1_params}, {Tone2_params}...],
+                          'R': [{Tone3_params}, {Tone4_params}...]
+                      }
+                    })
         """
         # Iterate through sounds and load them to memory
         self.stimuli = {}
@@ -373,10 +376,10 @@ class Proportional(Stim_Manager):
                         for sound in v:
                             # We send the dict 'sound' to the function specified by 'type' and '
                             # ' as kwargs
-                            self.stimuli[group_name][k].append(sounds.SOUND_LIST[sound['type']](**sound))
+                            self.stimuli[group_name][k].append(autopilot.get('sound', sound['type'])(**sound))
                     # If not a list, a single sound
                     else:
-                        self.stimuli[group_name][k] = [sounds.SOUND_LIST[v['type']](**v)]
+                        self.stimuli[group_name][k] = [autopilot.get('sound', v['type'])(**v)]
 
 
     def init_sounds_individual(self, sound_stim):
@@ -400,10 +403,10 @@ class Proportional(Stim_Manager):
             self.stim_freqs[side] = []
             if isinstance(sound_params, list):
                 for sound in sound_params:
-                    self.stimuli[side].append(sounds.SOUND_LIST[sound['type']](**sound))
+                    self.stimuli[side].append(autopilot.get('sound', sound['type'])(**sound))
                     self.stim_freqs[side].append(float(sound['management']['frequency']))
             else:
-                self.stimuli[side].append(sounds.SOUND_LIST[sound_params['type']](**sound_params))
+                self.stimuli[side].append(autopilot.get('sound', sound_params['type'])(**sound_params))
                 self.stim_freqs[side].append(float(sound_params['management']['frequency']))
 
         # normalize frequencies within sides to sum to 1

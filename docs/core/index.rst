@@ -17,5 +17,4 @@ core
    styles
    subject
    terminal
-   utils
 

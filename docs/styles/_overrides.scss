@@ -1,0 +1,16 @@
+//hline underneath example section titles
+p.rubric {
+  border-bottom: 1px black solid;
+  font-size: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+// less space between list items
+li p {
+  margin-bottom: 0.75rem;
+}
+
+section {
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+}

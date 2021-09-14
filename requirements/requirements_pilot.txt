@@ -11,8 +11,9 @@ blosc
 JACK-Client
 scikit-video
 tqdm
-numpy
+numpy>=1.16.5
 pandas
 tables
 cffi
 pigpio @ https://github.com/sneakers-the-rat/pigpio/tarball/master
+scipy

@@ -1,7 +1,8 @@
 sphinx>=3.1.2
 sphinx-bootstrap-theme>=0.6.5
 sphinx-automodapi
-numpy>=1.12.1
+numpy>=1.16.5
+sphinxcontrib-bibtex
 pyzmq>=18.1.*
 # pyo>=0.7.8
 pandas>=0.19.2
@@ -26,3 +27,6 @@ blosc
 scikit-video
 sphinx-autobuild
 git+https://github.com/sneakers-the-rat/sphinx-sass
+picamera
+requests
+pytest

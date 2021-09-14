@@ -4,6 +4,13 @@ import os
 import socket
 import threading
 import time
+import os
+import multiprocessing
+import base64
+import socket
+import struct
+import blosc
+from collections import deque
 from copy import copy
 from itertools import count
 import typing
@@ -591,7 +598,7 @@ class Station(multiprocessing.Process):
                 listen_thread = threading.Thread(target=listen_funk, args=(msg,))
                 listen_thread.start()
             except KeyError:
-                self.logger.exception('ERROR: No function could be found for msg id {} with key: {}'.format(msg.id, msg.key))
+                self.logger.exception('No function could be found for msg id {} with key: {}'.format(msg.id, msg.key))
 
 
             # send a return message that confirms even if we except
@@ -894,22 +901,26 @@ class Terminal_Station(Station):
         send to :class:`.Plot` according to update rate in ``prefs.get('DRAWFPS')``
 
         Args:
-            msg (dict): A continuous data message
+            msg (:class:`.Message`): A continuous data message
         """
 
-        if not self.plot_timer:
-            self.start_plot_timer()
+
 
         # Send through to terminal
         #msg.value.update({'continuous':True})
         self.send(to='_T', msg=msg)
 
         # Send to plot widget, which should be listening to "P_{pilot_name}"
-        if msg.sender not in self.sent_plot.keys():
-            self.sent_plot[msg.sender] = threading.Event()
-        if self.sent_plot[msg.sender].is_set():
-            self.send(to='P_{}'.format(msg.value['pilot']), msg=msg)
-            self.sent_plot[msg.sender].clear()
+        plot_id = 'P_{}'.format(msg.value['pilot'])
+        if plot_id in self.senders.keys():
+            if not self.plot_timer:
+                self.start_plot_timer()
+
+            if msg.sender not in self.sent_plot.keys():
+                self.sent_plot[msg.sender] = threading.Event()
+            if self.sent_plot[msg.sender].is_set():
+                self.send(to=plot_id, msg=msg)
+                self.sent_plot[msg.sender].clear()
 
 
     # def l_continuous(self, msg):
@@ -1056,7 +1067,8 @@ class Pilot_Station(Station):
             'HANDSHAKE': self.l_noop,
             'CALIBRATE_PORT': self.l_forward,
             'CALIBRATE_RESULT': self.l_forward,
-            'BANDWIDTH': self.l_forward
+            'BANDWIDTH': self.l_forward,
+            'STREAM_VIDEO': self.l_forward
         })
 
         # ping back our status to the terminal every so often
@@ -1270,19 +1282,40 @@ class Pilot_Station(Station):
 
     def l_child(self, msg:Message):
         """
-        Telling our child to run a task.
+        Tell one or more children to start running a task.
+
+        By default, the `key` argument passed to `self.send` is 'START'.
+        However, this can be overriden by providing the desired string
+        as `msg.value['KEY']`.
+
+        This checks the pref `CHILDID` to get the names of one or more children.
+        If that pref is a string, sends the message to just that child.
+        If that pref is a list, sends the message to each child in the list.
 
         Args:
-            msg ():
+            msg (): A message to send to the child or children.
 
-        Returns:
-
+        Returns: 
+            nothing
         """
+        # Take `KEY` from msg.value['KEY'] if available
+        # Otherwise, use 'START'
         if 'KEY' in msg.value.keys():
             KEY = msg.value['KEY']
         else:
             KEY = 'START'
-        self.send(to=prefs.get('CHILDID'), key=KEY, value=msg.value)
+        
+        # Get the list of children
+        pref_childid = prefs.get('CHILDID')
+        
+        # Send to one or more children
+        if isinstance(pref_childid, list):
+            # It's a list of multiple children, send to each
+            for childid in pref_childid:
+                self.send(to=childid, key=KEY, value=msg.value)
+        else:
+            # Send to the only child
+            self.send(to=pref_childid, key=KEY, value=msg.value)
 
     def l_forward(self, msg:Message):
         """
