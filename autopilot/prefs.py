@@ -436,6 +436,14 @@ def get(key: typing.Union[str, None] = None):
 
         # try to get the value from the prefs manager
         try:
+            # if it's a directory and it doesn't exist, try and make it
+            if globals()['_DEFAULTS'].get(key, {}).get('scope', False) == Scopes.DIRECTORY:
+                try:
+                    path = Path(globals()['_PREFS'][key]).resolve()
+                    if not path.exists():
+                        path.mkdir(parents=True, exist_ok=True)
+                except Exception as e:
+                    warnings.warn(f"prefs {key} was a directory, but a directory couldnt be created. got exception {e}")
             return globals()['_PREFS'][key]
 
         # if none exists...

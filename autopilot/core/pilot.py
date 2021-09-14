@@ -736,7 +736,9 @@ class Pilot:
         """
         # TODO: give a net node to the Task class and let the task run itself.
         # Run as a separate thread, just keeps calling next() and shoveling data
+        self.logger.debug('initializing task')
         self.task = task_class(stage_block=self.stage_block, **task_params)
+        self.logger.debug('task initialized')
 
         # do we expect TrialData?
         trial_data = False
