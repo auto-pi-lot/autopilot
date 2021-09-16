@@ -283,12 +283,15 @@ if server_type in ("jack", "docs"):
             
             ## Reshape into chunks, each of length `self.blocksize`
             if sound.ndim == 1:
-                self.chunks = list(
-                    sound.reshape(-1, self.blocksize))
+                sound_list = [sound[i:i+self.blocksize] for i in range(0, sound.shape[0], self.blocksize)]
             
             elif sound.ndim == 2:
-                self.chunks = list(
-                    sound.reshape(-1, self.blocksize, sound.shape[1]))
+                sound_list = [sound[i:i + self.blocksize,:] for i in range(0, sound.shape[0], self.blocksize)]
+
+            else:
+                raise NotImplementedError(f"sounds with more than 2 dimensions arent supported, got ndim {sound.ndim}")
+
+            self.chunks = sound_list
 
         def set_trigger(self, trig_fn):
             """
