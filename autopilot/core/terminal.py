@@ -490,7 +490,7 @@ class Terminal(QtWidgets.QMainWindow):
     # Listens & inter-object methods
 
     def ping_pilot(self, pilot):
-        self.send(pilot, 'PING')
+        self.node.send(pilot, 'PING')
 
     def heartbeat(self, once=False):
         """
