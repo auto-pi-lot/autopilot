@@ -7,6 +7,7 @@ import sys
 import os
 from pathlib import Path
 from pprint import pformat
+import time
 
 import datetime
 import logging
@@ -595,6 +596,9 @@ class Terminal(QtWidgets.QMainWindow):
             self.subjects[subject_name].graduate()
             task = self.subjects[subject_name].prepare_run()
             task['pilot'] = value['pilot']
+
+            # FIXME: Don't hardcode wait time, wait until we get confirmation that the running task has fully unloaded
+            time.sleep(5)
 
             self.node.send(to=value['pilot'], key="START", value=task)
 
