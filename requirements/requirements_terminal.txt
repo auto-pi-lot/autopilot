@@ -4,7 +4,7 @@ numpy>=1.16.5
 pyzmq>=18.1.*
 pandas>=0.19.2
 npyscreen
-scipy
+scipy>=1.6.0
 requests
 tornado>=5.0.*
 inputs

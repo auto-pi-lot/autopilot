@@ -39,6 +39,7 @@ TODO:
 
 import os
 import sys
+import typing
 from time import sleep
 from scipy.io import wavfile
 from scipy.signal import resample
@@ -50,6 +51,7 @@ from queue import Empty, Full
 from autopilot import prefs
 from autopilot.core.loggers import init_logger
 from autopilot.stim.stim import Stim
+import autopilot
 
 ## First, switch the behavior based on the pref AUDIOSERVER
 # Get the pref
@@ -837,7 +839,57 @@ class Gap(BASE_CLASS):
                 threading.Thread(target=self.wait_trigger).start()
 
 
-# These parameters are strings not numbers... jonny should do this better
+class Gammatone(Noise):
+    """
+    Gammatone filtered noise, using :class:`.timeseries.Gammatone` --
+    see that class for the filter documentation.
+    """
+
+    type = "Gammatone"
+
+    PARAMS = Noise.PARAMS.copy()
+    PARAMS.insert(0, 'frequency')
+
+    def __init__(self,
+                 frequency:float, duration:float, amplitude:float=0.01,
+                 channel:typing.Optional[int]=None,
+                 **kwargs):
+        """
+        Args:
+            frequency (float): Center frequency of filter, in Hz
+            duration (float): Duration of sound, in ms
+            amplitude (float): Amplitude scaling of sound (absolute value 0-1, default is .01)
+            **kwargs: passed on to :class:`.timeseries.Gammatone`
+        """
+
+        super(Gammatone, self).__init__(duration, amplitude, channel, **kwargs)
+
+        self.frequency = float(frequency)
+        self.kwargs = kwargs
+
+        self.filter = autopilot.get('transform', 'Gammatone')(
+            self.frequency, self.fs, axis=0, **self.kwargs
+        )
+
+        # superclass init calls its init sound, so we just call the gammatone filter part
+        self._init_sound()
+
+    def init_sound(self):
+        # superclass generates the noise table and chunks it, so
+        # we need to apply the filter to the table and rechunk
+        super(Gammatone, self).init_sound()
+        self._init_sound()
+
+    def _init_sound(self):
+        # just the gammatone specific parts so they can be called separately on init
+        self.table = self.filter.process(self.table)
+        self.chunk()
+
+
+
+
+
+    # These parameters are strings not numbers... jonny should do this better
 STRING_PARAMS = ['path', 'type']
 """
 These parameters should be given string columns rather than float columns.

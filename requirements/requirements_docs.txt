@@ -7,7 +7,7 @@ pyzmq>=18.1.*
 # pyo>=0.7.8
 pandas>=0.19.2
 npyscreen
-scipy
+scipy>=1.6.0
 tornado>=5.0.*
 pigpio
 git+https://github.com/pyqtgraph/pyqtgraph@develop
