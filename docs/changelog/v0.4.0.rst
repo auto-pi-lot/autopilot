@@ -1,5 +1,38 @@
 .. _changelog_v040:
 
+v0.4.3 (October 20th)
+---------------------
+
+New Features
+~~~~~~~~~~~~
+
+* :class:`.timeseries.Gammatone` filter and :class:`.sounds.Gammatone` filtered noise classes!
+  Thank you scipy team for making this simple!
+
+Minor Improvements
+~~~~~~~~~~~~~~~~~~~
+
+* `579ef1a <https://github.com/wehr-lab/autopilot/commit/579ef1a41518f57721decd7ecfc289f2b358b356>`_ -
+  En route to implementing universal calibrations, load and save them in a specified place for each hardware object
+  instead of the horrific olde way which was built into ``prefs`` for some reason
+* prefs attempts to make directories if they don't exist
+* plenty of new debugging flags!
+
+Bugfixes
+~~~~~~~~
+
+* `a775723 <https://github.com/wehr-lab/autopilot/commit/a775723acc66e327492145066eea0e7dff59331e>`_ -
+  Sleep before graduating tasks, lateral fix until we rework the task initiation ritual
+* `360062d <https://github.com/wehr-lab/autopilot/commit/360062d3ad4cd30cdba1c53eebe5ff7d7698ffad>`_ -
+  pad sounds with silence or continuous sounds if they aren't a full period length
+* `6614c80 <https://github.com/wehr-lab/autopilot/commit/6614c808ec2f3fc86e01df17b78aa976e8843b5a>`_ -
+  Revert to old way of making chunks to make it work with both padded and unpadded sounds
+* Import sounds module directly instead of referring from the package root in tests
+* Terminal node pings pilots instead of an erroneous reference to a nonexistent ``Terminal.send`` method
+* `47dd4c2 <https://github.com/wehr-lab/autopilot/commit/47dd4c2345df081fb5f3ca1c1705d2f696fc62c9>`_ -
+  Fix pinging by passing pilot id, and handle pressing start/stop button when subject not selected
+* Fixed some GUI exceptions from trying to make blank lines in reassign window, improperly handling the Subject class.
+
 v0.4.2 (August 24th)
 ---------------------
 
