@@ -30,3 +30,4 @@ git+https://github.com/sneakers-the-rat/sphinx-sass
 picamera
 requests
 pytest
+matplotlib
