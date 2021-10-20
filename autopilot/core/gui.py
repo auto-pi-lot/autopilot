@@ -534,6 +534,8 @@ class Pilot_Button(QtWidgets.QPushButton):
         # toggling the button - ie. responding to pilot state changes - double triggers.
         self.clicked.connect(self.toggle_start)
 
+        self.logger = init_logger(self)
+
 
     def toggle_start(self):
         """
@@ -542,17 +544,17 @@ class Pilot_Button(QtWidgets.QPushButton):
 
         """
         # If we're stopped, start, and vice versa...
-        current_subject = self.subject_list.currentItem().text()
 
         if self.state == "DISCONNECTED":
             # ping our lil bebs
-            self.ping_fn()
+            self.ping_fn(self.pilot)
             return
 
-        if current_subject is None:
-            Warning("Start button clicked, but no subject selected.")
+        try:
+            current_subject = self.subject_list.currentItem().text()
+        except AttributeError:
+            self.logger.warning('Start button clicked, but no subject selected')
             return
-
 
         toggled = self.isChecked()
         if toggled is True: # ie button is already down, already running.
@@ -2464,7 +2466,7 @@ class Reassign(QtWidgets.QDialog):
             protocol_box.setObjectName(subject_name)
             protocol_box.insertItems(0, self.protocols)
             # add blank at the end
-            protocol_box.addItem(text='')
+            # protocol_box.addItem(text='')
 
             # set current item if subject has matching protocol
             protocol_bool = [protocol == p for p in self.protocols]

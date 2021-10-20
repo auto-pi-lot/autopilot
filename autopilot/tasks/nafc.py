@@ -200,15 +200,20 @@ class Nafc(Task):
         else:
             self.stim_manager = init_manager(stim)
 
+        self.logger.debug('stimuli initialized')
+
         # give the sounds a function to call when they end
         self.stim_manager.set_triggers(self.stim_end)
+        self.logger.debug('stim triggers set')
 
         if self.correction:
             self.stim_manager.do_correction(self.correction_pct)
+            self.logger.debug(f'correction trials initialized, correction_pct: {self.correction_pct}')
 
         if bias_mode:
             self.stim_manager.do_bias(mode=self.bias_mode,
                                       thresh=self.bias_threshold)
+            self.logger.debug(f'bias correction initialized, bias_mode: {self.bias_mode}, threshold: {self.bias_threshold}')
         self.logger.debug('Stimulus manager initialized')
 
         # If we aren't passed an event handler
@@ -218,6 +223,8 @@ class Nafc(Task):
             raise Warning('No stage_block Event() was passed, youll need to handle stage progression on your own')
         else:
             self.stage_block = stage_block
+
+        self.logger.debug('finished initializing Nafc class')
 
     #
     # def center_out(self, pin, level, tick):

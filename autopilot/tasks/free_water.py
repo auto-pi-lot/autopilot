@@ -86,9 +86,10 @@ class Free_Water(Task):
             **kwargs:
         """
         super(Free_Water, self).__init__()
+        self.logger.debug('superclass initialized')
 
         if not stage_block:
-            raise Warning('No stage_block Event() was passed, youll need to handle stage progression on your own')
+            self.logger.warning('No stage_block Event() was passed, youll need to handle stage progression on your own')
         else:
             self.stage_block = stage_block
 
@@ -116,6 +117,7 @@ class Free_Water(Task):
         self.hardware = {}
         self.pin_id = {} # Inverse pin dictionary
         self.init_hardware()
+        self.logger.debug('hardware initialized')
 
         # Set reward values for solenoids
         # TODO: Super inelegant, implement better with reward manager
@@ -123,6 +125,7 @@ class Free_Water(Task):
             self.set_reward(vol=self.reward['value'])
         else:
             self.set_reward(duration=self.reward['value'])
+        self.logger.debug('reward set')
 
         self.allow_repeat = bool(allow_repeat)
 

@@ -1,6 +1,7 @@
 """
 Timeseries transformations, filters, etc.
 """
+import typing
 from time import time
 from collections import deque
 from autopilot.transform.transforms import Transform
@@ -58,6 +59,108 @@ class Filter_IIR(Transform):
             return signal.lfilter(self.coefs[0], self.coefs[1], self.buffer, axis=self.axis)[-1]
         elif self.coef_type == "sos":
             return signal.sosfilt(self.coefs, self.buffer, axis=self.axis)[-1]
+
+
+class Gammatone(Transform):
+    """
+    Single gammatone filter based on :cite:`slaneyEfficientImplementationPattersonHoldsworth1997`
+
+    Thin wrapper around :class:`scipy.signal.gammatone` !! (started rewriting this and realized they had made a legible
+    version <3 ty scipy team, additional implementations in the references)
+
+    Examples:
+
+        .. plot::
+
+            import matplotlib.pyplot as plt
+            import numpy as np
+
+            from autopilot.transform.timeseries import Gammatone
+            gamma_1k = Gammatone(1000, fs=44100)
+            gamma_15k = Gammatone(15000, fs=44100)
+
+            signal = (np.random.rand(44100)-0.5)*2
+            filt_1k = gamma_1k.process(signal)
+            filt_15k = gamma_15k.process(signal)
+
+            fig, ax = plt.subplots(1,3, subplot_kw={'aspect':'equal'})
+            ax[0].set_title('White Noise')
+            ax[0].specgram(signal, Fs=44100)
+
+            ax[1].set_title('1kHz Gammatone Filter')
+            ax[1].axes.yaxis.set_visible(False)
+            ax[1].specgram(filt_1k, Fs=44100)
+
+            ax[2].set_title('15kHz Gammatone Filter')
+            ax[2].axes.yaxis.set_visible(False)
+            ax[2].specgram(filt_15k, Fs=44100)
+
+            plt.tight_layout()
+            plt.show()
+
+
+    References:
+
+        * :cite:`slaneyEfficientImplementationPattersonHoldsworth1997`
+        * `Brian2hears implementation <https://github.com/brian-team/brian2hears/blob/131fd6d86c3ec460c45b42ea9c2f3b62c62d0631/brian2hears/filtering/filterbanklibrary.py#L26>`_
+        * `detly/gammatone <https://github.com/detly/gammatone>`_
+    """
+    def __init__(self,
+                 freq:float,
+                 fs:int,
+                 ftype:str="iir",
+                 filtfilt:bool=True,
+                 order:int=None,
+                 numtaps:int=None,
+                 axis:int=-1,
+                 **kwargs):
+        """
+        Args:
+            freq (float): Center frequency of the filter in Hz
+            fs (int): Sampling rate of the signal to process
+            ftype (str): Type of filter to return from :func:`scipy.signal.gammatone`
+            filtfilt (bool): If ``True`` (default), use :func:`scipy.signal.filtfilt`, else use :func:`scipy.signal.lfilt`
+            order (int): From scipy docs: The order of the filter. Only used when ``ftype='fir'``.
+                Default is 4 to model the human auditory system. Must be between
+                0 and 24.
+            numtaps (int): From scipy docs: Length of the filter. Only used when ``ftype='fir'``.
+                Default is ``fs*0.015`` if `fs` is greater than 1000,
+                15 if `fs` is less than or equal to 1000.
+            axis (int): Axis of input signal to apply filter over (default ``-1``)
+            **kwargs: passed to :func:`scipy.signal.filtfilt` or :func:`scipy.signal.lfilt`
+        """
+
+        self._filter_a = None
+        self._filter_b = None
+
+        self.freq = float(freq)
+        self.fs = int(fs)
+        self.ftype = str(ftype)
+        self.axis = int(axis)
+        self.filtfilt = bool(filtfilt)
+
+        self.order = order
+        self.numtaps = numtaps
+        self.kwargs = kwargs
+
+        self._init_arrays()
+
+    def _init_arrays(self):
+        self._filter_b, self._filter_a = signal.gammatone(
+            self.freq, self.ftype, self.order, self.numtaps, self.fs
+        )
+
+    def process(self, input:typing.Union[np.ndarray, list]) -> np.ndarray:
+        if self.filtfilt:
+            return signal.filtfilt(self._filter_b, self._filter_a, input,
+                                   axis=self.axis, **self.kwargs)
+        else:
+            return signal.lfilter(self._filter_b, self._filter_a, input,
+                                  axis=self.axis, **self.kwargs)
+
+
+
+
 
 
 

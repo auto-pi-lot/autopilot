@@ -82,6 +82,7 @@ extensions = [
     'sphinx.ext.graphviz',
     'sphinx.ext.autosummary',
     'sphinx.ext.imgconverter',
+    'matplotlib.sphinxext.plot_directive',
     #'sphinx_automodapi.automodapi',
     'autodocsumm',   # https://github.com/Chilipp/autodocsumm
     #'sphinxcontrib.fulltoc',
@@ -285,7 +286,7 @@ epub_exclude_files = ['search.html']
 intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
                        'PySide2': ('https://doc.qt.io/qtforpython/PySide2/', None),
                        'tables': ('https://pytables.readthedocs.io/en/latest/', None),
-                       'pandas': ('https://pandas.pydata.org/pandas-docs/stable/objects.inv', None),
+                       'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
                        'zmq': ('https://pyzmq.readthedocs.io/en/latest/', None),
                        'tornado': ('https://www.tornadoweb.org/en/stable/', None),
                        'pyqtgraph': ('https://pyqtgraph.readthedocs.io/en/latest/', None),

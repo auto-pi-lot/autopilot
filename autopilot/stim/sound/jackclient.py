@@ -361,7 +361,8 @@ class JackClient(mp.Process):
                 else:
                     # Play zeros
                     data = np.zeros(self.blocksize, dtype='float32')
-                
+
+
                 # Write data
                 self.write_to_outports(data)
                 
@@ -371,8 +372,42 @@ class JackClient(mp.Process):
                 
             else:
                 ## There is data available
+
+                # pad if needed
+                if data.shape[0] < self.blocksize:
+                    data = self.pad(data)
+
                 # Write
                 self.write_to_outports(data)
+
+    def pad(self, data: np.ndarray) -> np.ndarray:
+        """
+        Pad a sound that is not a full chunk length long, either by filling with silence
+        or with a continuous sound, if any.
+
+        Args:
+            data (:class:`numpy.ndarray`): The sound to pad!
+
+        Returns:
+            :class:`numpy.ndarray` - the padded sound!
+        """
+        # if sound was not padded, fill remaining with continuous sound or silence
+        n_from_end = self.blocksize - data.shape[0]
+        if self.continuous.is_set():
+            # data = np.concatenate((data, self.continuous_cycle.next()[-n_from_end:]),
+            #                       axis=0)
+            try:
+                cont_data = next(self.continuous_cycle)
+                data = np.concatenate((data, cont_data[-n_from_end:]),
+                                      axis=0)
+            except Exception as e:
+                self.logger.exception(f'Continuous mode was set but got exception with continuous queue:\n{e}')
+                data = np.pad(data, (0, n_from_end), 'constant')
+        else:
+            data = np.pad(data, (0, n_from_end), 'constant')
+
+        return data
+
     
     def write_to_outports(self, data):
         """Write the sound in `data` to the outport(s).

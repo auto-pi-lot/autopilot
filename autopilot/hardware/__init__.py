@@ -115,7 +115,7 @@ class Hardware(object):
                 self.name = None
         self.group = group
 
-        self._calibration = {}
+        self._calibration = None
 
         self.logger = init_logger(self)  # type: logging.Logger
         self.listens = {}
@@ -189,7 +189,7 @@ class Hardware(object):
         )
 
     @property
-    def calibration(self) -> dict:
+    def calibration(self) -> typing.Optional[dict]:
         """
         Calibration used by the hardware object.
 
@@ -202,9 +202,9 @@ class Hardware(object):
         by overwriting ``Hardware.calibration.__doc__``
 
         Returns:
-            (dict): if calibration is found, a dictionary of calibration for each property. Empty if no calibration found
+            (dict): if calibration is found, a dictionary of calibration for each property. None if no calibration found
         """
-        if not self._calibration:
+        if self._calibration is None:
             # try and find calibration file
             cal_name = None
             if self.name is not None and self.group is not None:
@@ -229,7 +229,9 @@ class Hardware(object):
 
     @calibration.setter
     def calibration(self, calibration):
-
+        if calibration is None:
+            self._calibration = calibration
+            return
         # write to file
         # try and find calibration file
         cal_name = None
