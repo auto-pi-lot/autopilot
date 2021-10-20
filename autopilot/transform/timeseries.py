@@ -68,6 +68,37 @@ class Gammatone(Transform):
     Thin wrapper around :class:`scipy.signal.gammatone` !! (started rewriting this and realized they had made a legible
     version <3 ty scipy team, additional implementations in the references)
 
+    Examples:
+
+        .. plot::
+
+            import matplotlib.pyplot as plt
+            import numpy as np
+
+            from autopilot.transform.timeseries import Gammatone
+            gamma_1k = Gammatone(1000, fs=44100)
+            gamma_15k = Gammatone(15000, fs=44100)
+
+            signal = (np.random.rand(44100)-0.5)*2
+            filt_1k = gamma_1k.process(signal)
+            filt_15k = gamma_15k.process(signal)
+
+            fig, ax = plt.subplots(1,3, subplot_kw={'aspect':'equal'})
+            ax[0].set_title('White Noise')
+            ax[0].specgram(signal, Fs=44100)
+
+            ax[1].set_title('1kHz Gammatone Filter')
+            ax[1].axes.yaxis.set_visible(False)
+            ax[1].specgram(filt_1k, Fs=44100)
+
+            ax[2].set_title('15kHz Gammatone Filter')
+            ax[2].axes.yaxis.set_visible(False)
+            ax[2].specgram(filt_15k, Fs=44100)
+
+            plt.tight_layout()
+            plt.show()
+
+
     References:
 
         * :cite:`slaneyEfficientImplementationPattersonHoldsworth1997`
