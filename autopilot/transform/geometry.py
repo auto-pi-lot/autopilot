@@ -291,18 +291,26 @@ class Spheroid(Transform):
     Does not estimate/correct for rotation of the spheroid.
 
     Examples:
-        ######
-        # Calibrate an accelerometer by transforming readings to a 9.8-radius sphere centered at 0
-        >>> sphere = Spheroid(target=(9.8,9.8,9.8,0,0,0))
-        # take some readings...
-        # imagine we're taking them from some sensor idk
-        # say our sensor slightly exaggerates gravity in the z-axis...
-        >>> readings = np.array((0.,0.,10.5))
-        # fit our object (need >>1 sample)
-        >>> sphere.fit(readings)
-        # transform to proper gravity
-        >>> sphere.process(readings)
-        [0., 0., 9.8]
+
+        .. code-block:: python
+
+            # Calibrate an accelerometer by transforming
+            # readings to a 9.8-radius sphere centered at 0
+            >>> sphere = Spheroid(target=(9.8,9.8,9.8,0,0,0))
+
+            # take some readings...
+            # imagine we're taking them from some sensor idk
+            # say our sensor slightly exaggerates gravity
+            # in the z-axis...
+            >>> readings = np.array((0.,0.,10.5))
+
+            # fit our object (need >>1 sample)
+            >>> sphere.fit(readings)
+            
+            # transform to proper gravity
+            >>> sphere.process(readings)
+            [0., 0., 9.8]
+
 
     Args:
         target (tuple): parameterization of spheroid to transform to, if none is passed, transform to unit circle
