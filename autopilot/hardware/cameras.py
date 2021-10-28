@@ -894,6 +894,20 @@ class Camera_CV(Camera):
         operating multiple cameras at once, so the performance of this class will be variable depending on camera
         type.
 
+        .. note::
+
+            OpenCV must be installed to use this class! A Prebuilt opencv binary is available for the raspberry pi,
+            but it doesn't take advantage of some performance-enhancements available to OpenCV. Use
+            ``autopilot.setup.run_script opencv`` to compile OpenCV with these enhancements.
+
+        If your camera isn't working and you're using v4l2, to print debugging information you can run::
+
+            # set the debug log level
+            echo 3 > /sys/class/video4linux/videox/dev_debug
+
+            # check logs
+            dmesg
+
         Args:
             camera_idx (int): The index of the desired camera
             **kwargs: Passed to the :class:`.Camera` metaclass.
@@ -902,23 +916,6 @@ class Camera_CV(Camera):
             camera_idx (int): The index of the desired camera
             last_opencv_init (float): See :data:`~cameras.OPENCV_LAST_INIT_TIME`
             last_init_lock (:class:`threading.Lock`): Lock for setting :attr:`.last_opencv_init`
-
-
-        .. note::
-
-            OpenCV must be installed to use this class! A Prebuilt opencv binary is available for the raspberry pi,
-            but it doesn't take advantage of some performance-enhancements available to OpenCV. Use the ``install_opencv.sh``
-            script in the setup directory to compile OpenCV with these enhancements.
-
-        If your camera isn't working, to print debugging information you can run::
-
-            echo 3 > /sys/class/video4linux/videox/dev_debug
-
-            # check logs
-            dmesg
-
-
-
         """
         if not globals()['OPENCV']:
             ImportError('opencv was not imported, and is required for Camera_CV')
