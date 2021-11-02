@@ -393,14 +393,15 @@ class JackClient(mp.Process):
                 ## There is data available
                 if data.shape[0] < self.blocksize:
                     data = self._pad_continuous(data)
+                    # sound is over!
+                    self.wait_until = self.client.last_frame_time + self.blocksize + data.shape[0]
+                    self.logger.debug(
+                        f'Sound has ended, size {data.shape[0]}, requesting end event at {self.wait_until}')
+                    self.play_evt.clear()
 
                 # Write
                 self.write_to_outports(data)
-                # sound is over!
-                self.wait_until = self.client.last_frame_time + self.blocksize + data.shape[0]
-                self.logger.debug(
-                    f'Sound has ended, size {data.shape[0]}, requesting end event at {self.wait_until}')
-                self.play_evt.clear()
+
 
             # start timer if we haven't yet
             if self.querythread is None:
