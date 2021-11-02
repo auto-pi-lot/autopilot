@@ -112,7 +112,7 @@ def start_jackd():
 
     # replace string nperiods with number
     if prefs.get('ALSA_NPERIODS'):
-        jackd_string.jackd_wstring.replace('-nper', f"-n{prefs.get('ALSA_NPERIODS')}")
+        jackd_string = jackd_string.replace('-nper', f"-n{prefs.get('ALSA_NPERIODS')}")
 
     # construct rest of launch string!
     # if JACKD_MODULE:
