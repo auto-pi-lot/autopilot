@@ -285,7 +285,7 @@ class JackClient(mp.Process):
             self.querythread = Thread(target=self._query_timebase)
             self.querythread.start()
 
-        self.logger.debug(f'jack information: {jack.get_all_properties()}')
+        self.logger.debug(f'jack information: {jack.get_properties(self.client.uuid)}')
 
         # we are just holding the process open, so wait to quit
         try:
