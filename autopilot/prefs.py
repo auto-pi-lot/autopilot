@@ -381,10 +381,17 @@ _DEFAULTS = odict({
         'depends': 'AUDIOSERVER',
         "scope": Scopes.AUDIO
     },
+    'ALSA_NPERIODS': {
+        'type': 'int',
+        'text': 'number of buffer periods to use with ALSA sound driver',
+        'default': 3,
+        'depends': 'AUDIOSERVER',
+        'scope': Scopes.AUDIO
+    },
     'JACKDSTRING': {
         'type': 'str',
         'text': 'Arguments to pass to jackd, see the jackd manpage',
-        'default': 'jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -n3 -s &',
+        'default': 'jackd -P75 -p16 -t2000 -dalsa -dhw:sndrpihifiberry -P -rfs -nper -s &',
         'depends': 'AUDIOSERVER',
         "scope": Scopes.AUDIO
     },

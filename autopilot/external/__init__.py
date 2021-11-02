@@ -110,6 +110,10 @@ def start_jackd():
     if prefs.get('FS'):
         jackd_string = jackd_string.replace('-rfs', f"-r{prefs.get('FS')}")
 
+    # replace string nperiods with number
+    if prefs.get('ALSA_NPERIODS'):
+        jackd_string.jackd_wstring.replace('-nper', f"-n{prefs.get('ALSA_NPERIODS')}")
+
     # construct rest of launch string!
     # if JACKD_MODULE:
     #     jackd_path = os.path.join(autopilot_jack.__path__._path[0])
