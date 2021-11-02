@@ -1047,6 +1047,9 @@ class Pilot_Station(Station):
 
         #self.id = prefs.get('NAME').encode('utf-8')
         self.id = prefs.get('NAME')
+        if self.id is None or self.id == '':
+            self.logger.exception(f"pilot NAME in prefs.json cannot be blank, got {self.id}")
+            raise ValueError(f"pilot NAME in prefs.json cannot be blank, got {self.id}")
         self.pi_id = "_{}".format(self.id)
         self.subject = None # Store current subject ID
         self.state = 'IDLE' # store current pi state

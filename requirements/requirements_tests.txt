@@ -9,10 +9,15 @@ numpy>=1.16.5
 pyzmq>=18.1.*
 pandas>=0.19.2
 npyscreen
-scipy
+scipy>=1.6.0
 tornado>=5.0.*
 inputs
 scikit-video
 pyqtgraph>=0.11.0rc0
 PySide2
+pytest
+pytest-qt~=3.3.0
+pytest-cov
+pylint
+coveralls
 pytest-qt~=3.3.0

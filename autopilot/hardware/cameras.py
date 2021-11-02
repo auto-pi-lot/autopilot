@@ -9,6 +9,7 @@ import multiprocessing as mp
 from tqdm.auto import tqdm
 import inspect
 import typing
+import shutil
 
 import time
 import traceback
@@ -127,6 +128,7 @@ class Camera(Hardware):
 
         # internal attributes
         self._cam = None #: camera subobject test
+        self._fps = None
         self._output_filename = None
         self._capture_thread = None
         self._writer = None
@@ -653,8 +655,9 @@ class PiCamera(Camera):
         super(PiCamera, self).__init__(*args, **kwargs)
 
         if not globals()['PICAMERA']:
-            self.logger.exception('the picamera package could not be imported, install it before use!')
-            return
+            nopicam = 'the picamera package could not be imported, install it before use!'
+            self.logger.exception(nopicam)
+            raise ImportError(nopicam)
 
         self._sensor_mode = None
         self._cam = None
@@ -894,6 +897,20 @@ class Camera_CV(Camera):
         operating multiple cameras at once, so the performance of this class will be variable depending on camera
         type.
 
+        .. note::
+
+            OpenCV must be installed to use this class! A Prebuilt opencv binary is available for the raspberry pi,
+            but it doesn't take advantage of some performance-enhancements available to OpenCV. Use
+            ``autopilot.setup.run_script opencv`` to compile OpenCV with these enhancements.
+
+        If your camera isn't working and you're using v4l2, to print debugging information you can run::
+
+            # set the debug log level
+            echo 3 > /sys/class/video4linux/videox/dev_debug
+
+            # check logs
+            dmesg
+
         Args:
             camera_idx (int): The index of the desired camera
             **kwargs: Passed to the :class:`.Camera` metaclass.
@@ -902,23 +919,6 @@ class Camera_CV(Camera):
             camera_idx (int): The index of the desired camera
             last_opencv_init (float): See :data:`~cameras.OPENCV_LAST_INIT_TIME`
             last_init_lock (:class:`threading.Lock`): Lock for setting :attr:`.last_opencv_init`
-
-
-        .. note::
-
-            OpenCV must be installed to use this class! A Prebuilt opencv binary is available for the raspberry pi,
-            but it doesn't take advantage of some performance-enhancements available to OpenCV. Use the ``install_opencv.sh``
-            script in the setup directory to compile OpenCV with these enhancements.
-
-        If your camera isn't working, to print debugging information you can run::
-
-            echo 3 > /sys/class/video4linux/videox/dev_debug
-
-            # check logs
-            dmesg
-
-
-
         """
         if not globals()['OPENCV']:
             ImportError('opencv was not imported, and is required for Camera_CV')
@@ -1177,7 +1177,6 @@ class Camera_Spinnaker(Camera):
         # internal variables
         self._bin = None
         self._exposure = None
-        self._fps = None
         self._frame_trigger = None
         self._pixel_format = None
         self._acquisition_mode = None
@@ -1862,6 +1861,9 @@ class Directory_Writer(object):
             ffmpeg_bin (str): ffmpeg binary to use, default is to use ffmpeg in ``$PATH``,
                 otherwise specific binary can be specified.
         """
+
+        _check_ffmpeg()
+
         self.dir = dir
         self.fps = fps
         self.ext = ext
@@ -1929,6 +1931,9 @@ class Video_Writer(mp.Process):
         """
 
         super(Video_Writer, self).__init__()
+
+        _check_ffmpeg()
+
 
         self.q = q
         self.path = path
@@ -2037,3 +2042,11 @@ def list_spinnaker_cameras():
     system.ReleaseInstance()
 
     return cam_info
+
+
+def _check_ffmpeg() -> bool:
+    if shutil.which('ffmpeg') is None:
+        raise ImportError(
+            'ffmpeg could not be found on the system, and it is needed in order to write videos. install it with apt (sudo apt update && sudo apt install ffmpeg)')
+    else:
+        return True

@@ -16,6 +16,7 @@ import subprocess
 import warnings
 import numpy as np
 import pandas as pd
+from pathlib import Path
 from scipy.stats import linregress
 
 import tables
@@ -140,13 +141,19 @@ class Pilot:
     def __init__(self, splash=True):
 
         if splash:
-            with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'setup', 'welcome_msg.txt'), 'r') as welcome_f:
-                welcome = welcome_f.read()
-                print('')
-                for line in welcome.split('\n'):
-                    print(line)
-                print('')
-                sys.stdout.flush()
+            try:
+                welcome_msg = Path(__file__).resolve().parents[1] / 'setup' / 'welcome_msg.txt'
+                if welcome_msg.exists():
+                    with open(welcome_msg, 'r') as welcome_f:
+                        welcome = welcome_f.read()
+                        print('')
+                        for line in welcome.split('\n'):
+                            print(line)
+                        print('')
+                        sys.stdout.flush()
+            except:
+                # truly an unnecessary thing, just pass quietly
+                pass
 
         self.name = prefs.get('NAME')
         if prefs.get('LINEAGE') == "CHILD":
@@ -172,7 +179,6 @@ class Pilot:
         # Init audio server
         if prefs.get('AUDIOSERVER') or 'AUDIO' in prefs.get('CONFIG'):
             self.init_audio()
-
 
         # Init Station
         # Listen dictionary - what do we do when we receive different messages?
@@ -205,13 +211,10 @@ class Pilot:
             for pin in prefs.get('PULLDOWNS'):
                 self.pulls.append(gpio.Digital_Out(int(pin), pull='D', polarity=1))
 
+        self.logger.debug('pullups and pulldowns set')
+
         # store some hardware we use outside of a task
         self.hardware = {}
-
-
-        self.logger.debug('pullups and pulldowns set')
-        # check if the calibration file needs to be updated
-
 
         # Set and update state
         self.state = 'IDLE' # or 'Running'
@@ -222,13 +225,7 @@ class Pilot:
         self.handshake()
         self.logger.debug('handshake sent')
 
-
-
-        #self.blank_LEDs()
-
         # TODO Synchronize system clock w/ time from terminal.
-
-
 
     #################################################################
     # Station
@@ -736,7 +733,9 @@ class Pilot:
         """
         # TODO: give a net node to the Task class and let the task run itself.
         # Run as a separate thread, just keeps calling next() and shoveling data
+        self.logger.debug('initializing task')
         self.task = task_class(stage_block=self.stage_block, **task_params)
+        self.logger.debug('task initialized')
 
         # do we expect TrialData?
         trial_data = False

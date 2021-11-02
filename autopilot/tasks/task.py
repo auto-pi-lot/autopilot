@@ -272,6 +272,7 @@ class Task(object):
 
         # clear triggers
         self.triggers = {}
+        self.trigger_lock.release()
 
         # Set the stage block so the pilot calls the next stage
         self.stage_block.set()

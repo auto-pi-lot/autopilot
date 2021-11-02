@@ -67,7 +67,7 @@ video! First make sure the camera is enabled::
 and then capture a video with :class:`.cameras.PiCamera` and write it to ``test_video.mp4``::
 
     from autopilot.hardware.cameras import PiCamera
-    cam = PiCamera()
+    cam = PiCamera(name="my_picamera", fps=30)
     cam.write('test_video.mp4')
     cam.capture(timed=10)
 

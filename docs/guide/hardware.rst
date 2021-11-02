@@ -51,7 +51,3 @@ GPIO-based objects are built around abstractions of commands to the ``pig``. See
 a subclass that overrides some methods from the :class:`.gpio.GPIO` metaclass to be able to control three PWM objects
 with a similar syntax as other GPIO outputs.
 
-
-
-
-

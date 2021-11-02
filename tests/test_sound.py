@@ -66,7 +66,7 @@ import multiprocessing
 import autopilot.prefs
 import autopilot.external
 import autopilot.stim.sound
-from autopilot.stim.sound import jackclient
+from autopilot.stim.sound import jackclient, sounds
 
 
 ## Ensure we get the same random sound every time
@@ -166,7 +166,7 @@ def test_init_noise(duration_ms, amplitude,
             noise = autopilot.stim.sound.sounds.Noise(
                 duration=duration_ms, amplitude=amplitude, channel=None)
         else:
-            noise = autopilot.stim.sound.sounds.Noise(
+            noise = sounds.Noise(
                 duration=duration_ms, amplitude=amplitude)
 
         
@@ -315,7 +315,7 @@ def test_init_multichannel_noise(duration_ms, amplitude, channel,
 
     
     ## Init sound
-    noise = autopilot.stim.sound.sounds.Noise(
+    noise = sounds.Noise(
         duration=duration_ms, amplitude=amplitude, channel=channel)
 
 
@@ -373,3 +373,16 @@ def test_init_multichannel_noise(duration_ms, amplitude, channel,
     assert concatted.shape == (len(noise.table) + n_padded_zeros, 2)
     assert (concatted[:len(noise.table)] == noise.table).all()
 
+def test_unpadded_gap():
+    """
+    A gap in a continous sound should not be padded (had its last chunk filled with zeros).
+    """
+
+    # make a sound that is 1.5x the duration of a chunk
+    nsamples = round(block_size*1.5)
+    duration = round((nsamples/sample_rate)*1000)
+    gap = sounds.Gap(duration)
+
+    assert len(gap.chunks) == 2
+    assert len(gap.chunks[1]) == nsamples % block_size
+    assert len(gap.chunks[1]) != block_size
