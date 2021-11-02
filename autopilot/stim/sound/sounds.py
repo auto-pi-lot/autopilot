@@ -281,19 +281,13 @@ if server_type in ("jack", "docs"):
             else:
                 # Flag as not padded
                 self.padded = False
-            
-            
+
             ## Reshape into chunks, each of length `self.blocksize`
-            if sound.ndim == 1:
-                sound_list = [sound[i:i+self.blocksize] for i in range(0, sound.shape[0], self.blocksize)]
-            
-            elif sound.ndim == 2:
-                sound_list = [sound[i:i + self.blocksize,:] for i in range(0, sound.shape[0], self.blocksize)]
+            # the list comprehension version handles unpadded sounds (with
+            # the last array being smaller than blocksize) where the
+            # reshape argument is faster but chokes :(
+            self.chunks = [sound[i:i+self.blocksize] for i in range(0, sound.shape[0], self.blocksize)]
 
-            else:
-                raise NotImplementedError(f"sounds with more than 2 dimensions arent supported, got ndim {sound.ndim}")
-
-            self.chunks = sound_list
 
         def set_trigger(self, trig_fn):
             """

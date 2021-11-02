@@ -162,7 +162,7 @@ class JackClient(mp.Process):
 
         self.debug_timing = debug_timing
         self.querythread = None
-    
+
 
     def boot_server(self):
         """
@@ -484,6 +484,8 @@ class JackClient(mp.Process):
             pad_with = [(0, n_from_end)]
             pad_with.extend([(0, 0) for i in range(len(data.ndim - 1))])
             data = np.pad(data, pad_with, 'constant')
+
+        return data
 
     def _wait_for_end(self, end_time:int):
         """
