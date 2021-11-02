@@ -99,7 +99,7 @@ class JackClient(mp.Process):
         mono_output (bool): ``True`` or ``False`` depending on if the number of output channels is 1 or >1, respectively.
             detected and set in :meth:`.JackClient.boot_server` , initialized to ``True`` (which is hopefully harmless)
     """
-    def __init__(self, name='jack_client'):
+    def __init__(self, name='jack_client', debug_timing=False):
         """
         Args:
             name:
@@ -159,6 +159,9 @@ class JackClient(mp.Process):
             self.logger.warning(
                 f"Sampling rate was set to {prefs.get('FS')} in prefs, but the jack audio daemon is running at {self.fs}. \
                 Check that jackd was not already running, and is being correctly started by autopilot (see autopilot.external)")
+
+        self.debug_timing = debug_timing
+        self.querythread = None
     
 
     def boot_server(self):
@@ -277,13 +280,17 @@ class JackClient(mp.Process):
         self.logger = init_logger(self)
         self.boot_server()
 
+        if self.debug_timing:
+            self.querythread = Thread(target=self._query_timebase)
+            self.querythread.start()
+
         # we are just holding the process open, so wait to quit
         try:
             self.quit_evt.clear()
             self.quit_evt.wait()
         except KeyboardInterrupt:
             # just want to kill the process, so just continue from here
-            pass
+            self.quit_evt.set()
 
     def quit(self):
         """
@@ -305,7 +312,7 @@ class JackClient(mp.Process):
             frames: number of frames (samples) to be processed. unused. passed by jack client
         """
         state, pos = self.client.transport_query()
-        self.logger.debug(f'call 1 - frame_time: {self.client.frame_time}, last_frame_time: {self.client.last_frame_time}, usecs: {pos["usecs"]}, frames: {self.client.frames_since_cycle_start}')
+        self.logger.debug(f'inproc - frame_time: {self.client.frame_time}, last_frame_time: {self.client.last_frame_time}, usecs: {pos["usecs"]}, frames: {self.client.frames_since_cycle_start}')
 
         ## Switch on whether the play event is set
         if not self.play_evt.is_set():
@@ -351,6 +358,7 @@ class JackClient(mp.Process):
             # Try to get data
             try:
                 data = self.q.get_nowait()
+                self.logger.debug('Got new audio samples')
             except queue.Empty:
                 data = None
                 self.logger.warning('Queue Empty')
@@ -377,12 +385,15 @@ class JackClient(mp.Process):
                 self.play_evt.clear()
                 # end time is just the start of the next frame??
                 Thread(target=self._wait_for_end, args=(self.client.last_frame_time+self.blocksize,)).start()
+                self.logger.debug(f'Sound has ended, requesting end event at {self.client.last_frame_time+self.blocksize}')
                 
             else:
                 ## There is data available
                 if data.shape[0] < self.blocksize:
                     # sound is over!
-                    Thread(target=self._wait_for_end, args=(self.client.last_frame_time+data.shape[0],)).start()
+                    Thread(target=self._wait_for_end, args=(self.client.last_frame_time + self.blocksize + data.shape[0],)).start()
+                    self.logger.debug(
+                        f'Sound has ended, requesting end event at {self.client.last_frame_time + self.blocksize +  data.shape[0]}')
                     self.play_evt.clear()
                     data = self._pad_continuous(data)
 
@@ -489,5 +500,12 @@ class JackClient(mp.Process):
 
             self.stop_evt.set()
             self.logger.debug(f'stop event set at f{self.client.frame_time}, requested {end_time}')
+
+    def _query_timebase(self):
+        while not self.quit_evt.is_set():
+            state, pos = self.client.transport_query()
+            self.logger.debug(
+                f'query thread - frame_time: {self.client.frame_time}, last_frame_time: {self.client.last_frame_time}, usecs: {pos["usecs"]}, frames: {self.client.frames_since_cycle_start}')
+            time.sleep(0.00001)
 
 
