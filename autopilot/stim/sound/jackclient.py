@@ -285,6 +285,8 @@ class JackClient(mp.Process):
             self.querythread = Thread(target=self._query_timebase)
             self.querythread.start()
 
+        self.logger.debug(f'jack information: {jack.get_all_properties()}')
+
         # we are just holding the process open, so wait to quit
         try:
             self.quit_evt.clear()
@@ -519,5 +521,6 @@ class JackClient(mp.Process):
             self.logger.debug(
                 f'query thread - frame_time: {self.client.frame_time}, last_frame_time: {self.client.last_frame_time}, usecs: {pos["usecs"]}, frames: {self.client.frames_since_cycle_start}')
             time.sleep(0.00001)
+
 
 
