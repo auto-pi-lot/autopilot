@@ -162,6 +162,10 @@ class JackClient(mp.Process):
 
         self.debug_timing = debug_timing
         self.querythread = None
+        self.wait_until = None
+        self.alsa_nperiods = prefs.get('ALSA_NPERIODS')
+        if self.alsa_nperiods is None:
+            self.alsa_nperiods = 1
 
 
     def boot_server(self):
@@ -311,8 +315,9 @@ class JackClient(mp.Process):
         Args:
             frames: number of frames (samples) to be processed. unused. passed by jack client
         """
-        state, pos = self.client.transport_query()
-        self.logger.debug(f'inproc - frame_time: {self.client.frame_time}, last_frame_time: {self.client.last_frame_time}, usecs: {pos["usecs"]}, frames: {self.client.frames_since_cycle_start}')
+        if self.debug_timing:
+            state, pos = self.client.transport_query()
+            self.logger.debug(f'inproc - frame_time: {self.client.frame_time}, last_frame_time: {self.client.last_frame_time}, usecs: {pos["usecs"]}, frames: {self.client.frames_since_cycle_start}')
 
         ## Switch on whether the play event is set
         if not self.play_evt.is_set():
@@ -358,7 +363,8 @@ class JackClient(mp.Process):
             # Try to get data
             try:
                 data = self.q.get_nowait()
-                self.logger.debug('Got new audio samples')
+                if self.debug_timing:
+                    self.logger.debug('Got new audio samples')
             except queue.Empty:
                 data = None
                 self.logger.warning('Queue Empty')
@@ -384,21 +390,30 @@ class JackClient(mp.Process):
                 # sound is over
                 self.play_evt.clear()
                 # end time is just the start of the next frame??
-                Thread(target=self._wait_for_end, args=(self.client.last_frame_time+self.blocksize,)).start()
-                self.logger.debug(f'Sound has ended, requesting end event at {self.client.last_frame_time+self.blocksize}')
+                self.wait_until = self.client.last_frame_time+(self.blocksize*self.alsa_nperiods)
+                # Thread(target=self._wait_for_end, args=(self.client.last_frame_time+self.blocksize,)).start()
+                if self.debug_timing:
+                    self.logger.debug(f'Sound has ended, requesting end event at {self.wait_until}')
                 
             else:
                 ## There is data available
                 if data.shape[0] < self.blocksize:
-                    # sound is over!
-                    Thread(target=self._wait_for_end, args=(self.client.last_frame_time + self.blocksize + data.shape[0],)).start()
-                    self.logger.debug(
-                        f'Sound has ended, requesting end event at {self.client.last_frame_time + self.blocksize +  data.shape[0]}')
-                    self.play_evt.clear()
                     data = self._pad_continuous(data)
+                    # sound is over!
+                    self.wait_until = self.client.last_frame_time + (self.blocksize*self.alsa_nperiods) + data.shape[0]
+                    if self.debug_timing:
+                        self.logger.debug(
+                            f'Sound has ended, size {data.shape[0]}, requesting end event at {self.wait_until}')
+                    self.play_evt.clear()
 
                 # Write
                 self.write_to_outports(data)
+
+
+            # start timer if we haven't yet
+            if self.querythread is None:
+                self.querythread = Thread(target=self._wait_for_end)
+                self.querythread.start()
     
     def write_to_outports(self, data):
         """Write the sound in `data` to the outport(s).
@@ -487,7 +502,7 @@ class JackClient(mp.Process):
 
         return data
 
-    def _wait_for_end(self, end_time:int):
+    def _wait_for_end(self):
         """
         Thread that waits for a time (returned by :attr:`jack.Client.frame_time`) passed as ``end_time``
         and then sets :attr:`.JackClient.stop_evt`
@@ -496,12 +511,14 @@ class JackClient(mp.Process):
             end_time (int): the ``frame_time`` at which to set the event
         """
         try:
-            while self.client.frame_time < end_time:
+            while self.wait_until is None or self.client.frame_time < self.wait_until:
                 time.sleep(0.000001)
         finally:
-
+            if self.debug_timing:
+                self.logger.debug(f'stop event set at f{self.client.frame_time}, requested {self.wait_until}')
             self.stop_evt.set()
-            self.logger.debug(f'stop event set at f{self.client.frame_time}, requested {end_time}')
+            self.querythread = None
+            self.wait_until = None
 
     def _query_timebase(self):
         while not self.quit_evt.is_set():
@@ -509,5 +526,6 @@ class JackClient(mp.Process):
             self.logger.debug(
                 f'query thread - frame_time: {self.client.frame_time}, last_frame_time: {self.client.last_frame_time}, usecs: {pos["usecs"]}, frames: {self.client.frames_since_cycle_start}')
             time.sleep(0.00001)
+
 
 
