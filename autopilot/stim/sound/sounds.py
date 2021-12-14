@@ -19,7 +19,8 @@ The behavior of this module depends on `prefs.get('AUDIOSERVER')`.
     Then do not import jack or pyo, or define either Jack_Sound or PyoSound,
     and all sounds inherit from `object`.
 
-TODO:
+.. todo::
+
     Implement sound level and filter calibration
 """
 
@@ -92,7 +93,7 @@ elif server_type in ['pyo', 'docs']:
 
 ## Define Pyo_Sound if needed
 if server_type in ("pyo", "docs"):
-    class Pyo_Sound(object):
+    class Pyo_Sound(Stim):
         """
         Metaclass for pyo sound objects.
 
@@ -146,7 +147,7 @@ if server_type in ("pyo", "docs"):
 
 ## Define Jack_Sound if needed
 if server_type in ("jack", "docs"):
-    class Jack_Sound(object):
+    class Jack_Sound(Stim):
         """
         Base class for sounds that use the :class:`~.jackclient.JackClient` audio
         server.
@@ -188,7 +189,7 @@ if server_type in ("jack", "docs"):
         str: type of server, always 'jack' for `Jack_Sound` s.
         """
 
-        def __init__(self):
+        def __init__(self, jack_client:typing.Optional[jackclient.JackClient]=None):
             """Initialize a new Jack_Sound
             
             This sets sound-specific parameters to None, set jack-specific
@@ -206,25 +207,35 @@ if server_type in ("jack", "docs"):
             self.padded = False # whether or not the sound was padded with zeros when chunked
             self.continuous = False
 
-            # These jack-specific parameters are copied from jackclient
-            self.fs = jackclient.FS
-            self.blocksize = jackclient.BLOCKSIZE
-            self.server = jackclient.SERVER
-            self.q = jackclient.QUEUE
-            self.q_lock = jackclient.Q_LOCK
-            self.play_evt = jackclient.PLAY
-            self.stop_evt = jackclient.STOP
-            self.continuous_flag = jackclient.CONTINUOUS
-            self.continuous_q = jackclient.CONTINUOUS_QUEUE
-            self.continuous_loop = jackclient.CONTINUOUS_LOOP
+            # Initialize a logger
+            self.logger = init_logger(self)
+
+            if jack_client is not None:
+                self.logger.debug('Getting jack_client objects from passed jackclient')
+                self.server = jack_client
+                self.continuous_flag = self.server.continuous
+                for attr in ('fs', 'blocksize', 'q', 'q_lock', 'play_evt', 'stop_evt',
+                             'continuous_q', 'continuous_loop'):
+                    setattr(self, attr, getattr(jack_client, attr))
+
+            else:
+                # These jack-specific parameters are copied from jackclient
+                self.fs = jackclient.FS
+                self.blocksize = jackclient.BLOCKSIZE
+                self.server = jackclient.SERVER
+                self.q = jackclient.QUEUE
+                self.q_lock = jackclient.Q_LOCK
+                self.play_evt = jackclient.PLAY
+                self.stop_evt = jackclient.STOP
+                self.continuous_flag = jackclient.CONTINUOUS
+                self.continuous_q = jackclient.CONTINUOUS_QUEUE
+                self.continuous_loop = jackclient.CONTINUOUS_LOOP
 
             # Initalize these flags
             self.initialized = False
             self.buffered = False
             self.buffered_continuous = False
 
-            # Initialize a logger
-            self.logger = init_logger(self)
 
         def chunk(self, pad=True):
             """
@@ -574,7 +585,7 @@ class Tone(BASE_CLASS):
             amplitude (float): amplitude of the sound as a proportion of 1.
             **kwargs: extraneous parameters that might come along with instantiating us
         """
-        super(Tone, self).__init__()
+        super(Tone, self).__init__(**kwargs)
 
         self.frequency = float(frequency)
         self.duration = float(duration)
@@ -629,7 +640,7 @@ class Noise(BASE_CLASS):
         """
         # This calls the base class, which sets server-specific parameters
         # like samplign rate
-        super(Noise, self).__init__()
+        super(Noise, self).__init__(**kwargs)
         
         # Set the parameters specific to Noise
         self.duration = float(duration)
@@ -712,7 +723,7 @@ class File(BASE_CLASS):
             amplitude (float): amplitude of the sound as a proportion of 1.
             **kwargs: extraneous parameters that might come along with instantiating us
         """
-        super(File, self).__init__()
+        super(File, self).__init__(**kwargs)
 
         if os.path.exists(path):
             self.path = path
@@ -782,7 +793,7 @@ class Gap(BASE_CLASS):
         Attributes:
             gap_zero (bool): True if duration is zero, effectively do nothing on play.
         """
-        super(Gap, self).__init__()
+        super(Gap, self).__init__(**kwargs)
 
         self.duration = float(duration)
         self.gap_zero = False
