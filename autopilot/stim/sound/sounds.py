@@ -855,15 +855,16 @@ class Gammatone(Noise):
             amplitude (float): Amplitude scaling of sound (absolute value 0-1, default is .01)
             **kwargs: passed on to :class:`.timeseries.Gammatone`
         """
+        self.filter = autopilot.get('transform', 'Gammatone')(
+            self.frequency, self.fs, axis=0, **self.kwargs
+        )
 
         super(Gammatone, self).__init__(duration, amplitude, channel, **kwargs)
 
         self.frequency = float(frequency)
         self.kwargs = kwargs
 
-        self.filter = autopilot.get('transform', 'Gammatone')(
-            self.frequency, self.fs, axis=0, **self.kwargs
-        )
+
 
         # superclass init calls its init sound, so we just call the gammatone filter part
         self._init_sound()
