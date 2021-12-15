@@ -79,9 +79,9 @@ setup(
     packages=packs,
     install_requires = REQUIREMENTS,
     extras_require={
-        'pilot': ['JACK-Client', 'git+https://github.com/sneakers-the-rat/pigpio'],
+        'pilot': ['JACK-Client', 'pigpio @ git+https://github.com/sneakers-the-rat/pigpio'],
         'terminal': ['PyOpenGL', 'pyqtgraph>=0.11.0rc0', 'PySide2'],
-        'docs': ['autodocsumm', 'sphinx_rtd_theme', 'sphinx-autobuild', 'git+https://github.com/sneakers-the-rat/sphinx-sass']
+        'docs': ['autodocsumm', 'sphinx_rtd_theme', 'sphinx-autobuild', 'sphinx-sass @ git+https://github.com/sneakers-the-rat/sphinx-sass']
     },
     classifiers=[
         "Programming Language :: Python :: 3.7",
