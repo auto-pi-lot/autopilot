@@ -12,17 +12,8 @@ import site
 site.ENABLE_USER_SITE = "--user" in sys.argv[1:]
 
 # declare defaults
-IS_RASPI = False
 SCRIPTS = []
 PACKAGES = []
-# CMAKE_ARGS = ['-DCMAKE_BUILD_DIR={}'.format(constants.CMAKE_BUILD_DIR()),
-#               '-DCMAKE_INSTALL_DIR={}'.format(constants.CMAKE_INSTALL_DIR()),
-#               '-DSETUPTOOLS_INSTALL_DIR={}'.format(constants.SETUPTOOLS_INSTALL_DIR()),
-#               '-DSKBUILD_DIR={}'.format(constants.SKBUILD_DIR()),
-#               '-DCMAKE_BUILD_RPATH_USE_ORIGIN=1', # use relative paths in Rpaths
-#               '-DCMAKE_INSTALL_RPATH=$ORIGIN/lib;$ORIGIN/../lib'
-#               ]
-
 REQUIREMENTS = []
 
 
@@ -36,15 +27,6 @@ except:
     pass
 
 
-# detect architecture
-_ARCH = platform.uname().machine
-ARCH = None
-if _ARCH in ('armv7l',):
-    ARCH = "ARM32"
-elif _ARCH in ('aarch64',):
-    ARCH = 'ARM64'
-elif _ARCH in ('x86_64',):
-    ARCH = "x86"
 
 
 def load_requirements(req_file):
@@ -59,17 +41,8 @@ def load_requirements(req_file):
 
     return requirements
 
-# configure for raspberry pi
-if IS_RASPI:
-    REQUIREMENTS = load_requirements('requirements/requirements_pilot.txt')
-
-elif ARCH == 'x86':
-    # is a terminal,
-    REQUIREMENTS = load_requirements('requirements/requirements_terminal.txt')
-
-elif os.environ.get('TRAVIS', False):
+if os.environ.get('TRAVIS', False):
     REQUIREMENTS = load_requirements('requirements/requirements_tests.txt')
-
 else:
     REQUIREMENTS = load_requirements('requirements.txt')
 
@@ -117,8 +90,12 @@ setup(
     license="MPL-2.0",
     scripts = SCRIPTS,
     packages=packs,
-    #cmake_args=CMAKE_ARGS,
     install_requires = REQUIREMENTS,
+    extras_require={
+        'pilot': ['JACK-Client', 'pigpio @ https://github.com/sneakers-the-rat/pigpio/tarball/master'],
+        'terminal': ['PyOpenGL', 'pyqtgraph>=0.11.0rc0', 'PySide2'],
+        'docs': ['autodocsumm', 'sphinx_rtd_theme', 'sphinx-autobuild', 'git+https://github.com/sneakers-the-rat/sphinx-sass']
+    },
     classifiers=[
         "Programming Language :: Python :: 3.7",
         "Development Status :: 4 - Beta",
