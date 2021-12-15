@@ -16,19 +16,6 @@ SCRIPTS = []
 PACKAGES = []
 REQUIREMENTS = []
 
-
-
-# detect if on raspberry pi
-try:
-    ret = subprocess.call(['grep', '-q', 'BCM', '/proc/cpuinfo'])
-    if ret == 0:
-        IS_RASPI = True
-except:
-    pass
-
-
-
-
 def load_requirements(req_file):
     with open(req_file, 'r') as f:
         requirements = f.read().splitlines()
