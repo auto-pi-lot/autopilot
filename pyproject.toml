@@ -74,7 +74,7 @@ pilot = ["pigpio", "JACK-Client"]
 terminal = ["PyOpenGL", "pyqtgraph", "PySide2"]
 docs = ["Sphinx", "autodocsumm", "matplotlib", "sphinxcontrib-bibtex",
         "scikit-learn", "altair", "bokeh", "colorcet", "sphinx-rtd-theme", "sphinx-sass", "pytest"]
-tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt"]
+tests = ["pytest", "pytest-cov", "pylint", "coveralls", "pytest-qt", "PySide2", "pyqtgraph", "JACK-Client"]
 
 
 
