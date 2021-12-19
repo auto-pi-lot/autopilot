@@ -128,7 +128,7 @@ to manage your autopilot environment::
 **Install with pip** - install an "editable" version with `-e`, this makes it so python uses the source code in your
 cloned repository, rather than from the system/venv libraries::
 
-    pip3 install -e . [<optional>]
+    pip3 install -e .[<optional>]
 
 .. note::
 
