@@ -2,7 +2,7 @@ import base64
 import datetime
 import json
 
-import blosc
+import blosc2 as blosc
 
 
 class Message(object):

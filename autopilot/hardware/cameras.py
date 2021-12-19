@@ -13,7 +13,7 @@ import shutil
 
 import time
 import traceback
-import blosc
+import blosc2 as blosc
 import warnings
 import subprocess
 
