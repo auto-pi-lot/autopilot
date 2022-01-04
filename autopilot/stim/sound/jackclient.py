@@ -1,6 +1,7 @@
 """
 Client that dumps samples directly to the jack client with the :mod:`jack` package.
 """
+import typing
 from itertools import cycle
 import multiprocessing as mp
 import queue as queue
@@ -82,8 +83,13 @@ class JackClient(mp.Process):
 
     When first initialized, sets module level variables above.
 
-    Attributes:
+    Args:
         name (str): name of client, default "jack_client"
+        outchannels (list): Optionally manually pass outchannels rather than getting
+            from prefs. A list of integers corresponding to output channels to initialize.
+            if ``None`` (default), get ``'OUTCHANNELS'`` from prefs
+
+    Attributes:
         q (:class:`~.multiprocessing.Queue`): Queue that stores buffered frames of audio
         q_lock (:class:`~.multiprocessing.Lock`): Lock that manages access to the Queue
         play_evt (:class:`multiprocessing.Event`): Event used to trigger loading samples from `QUEUE`, ie. playing.
@@ -97,7 +103,9 @@ class JackClient(mp.Process):
         mono_output (bool): ``True`` or ``False`` depending on if the number of output channels is 1 or >1, respectively.
             detected and set in :meth:`.JackClient.boot_server` , initialized to ``True`` (which is hopefully harmless)
     """
-    def __init__(self, name='jack_client'):
+    def __init__(self,
+                 name='jack_client',
+                 outchannels: typing.Optional[list] = None):
         """
         Args:
             name:
@@ -107,6 +115,11 @@ class JackClient(mp.Process):
         # TODO: If global client variable is set, just return that one.
 
         self.name = name
+        if outchannels is None:
+            self.outchannels = prefs.get('OUTCHANNELS')
+        else:
+            self.outchannels = outchannels
+
         #self.pipe = pipe
         self.q = mp.Queue()
         self.q_lock = mp.Lock()
@@ -187,22 +200,20 @@ class JackClient(mp.Process):
         processing sample starts.
         """
         ## Parse OUTCHANNELS into listified_outchannels and set `self.mono_output`
-        # Get the pref
-        outchannels = prefs.get('OUTCHANNELS')
         
         # This generates `listified_outchannels`, which is always a list
         # It also sets `self.mono_output` if outchannels is None
-        if outchannels == '':
+        if self.outchannels == '':
             # Mono mode
             listified_outchannels = []
             self.mono_output = True
-        elif not isinstance(outchannels, list):
+        elif not isinstance(self.outchannels, list):
             # Must be a single integer-like thing
-            listified_outchannels = [int(outchannels)]
+            listified_outchannels = [int(self.outchannels)]
             self.mono_output = False
         else:
             # Already a list
-            listified_outchannels = outchannels
+            listified_outchannels = self.outchannels
             self.mono_output = False
         
         ## Initalize self.client
