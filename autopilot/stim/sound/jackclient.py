@@ -81,7 +81,25 @@ class JackClient(mp.Process):
     """
     Client that dumps frames of audio directly into a running jackd client.
 
-    When first initialized, sets module level variables above.
+    See the :meth:`.process` method to see how the client works in detail, but
+    as a narrative overview:
+
+    * The client interacts with a running jackd daemon, typically launched with :func:`.external.start_jackd`
+      The jackd process is configured with the ``JACKDSTRING`` pref, which by default is built from other parameters
+      like the ``FS`` sampling rate et al.
+    * :class:`multiprocessing.Event` objects are used to synchronize state within the client,
+      eg. the play event signals that the client should begin to pull frames from the sound queue
+    * :class:`multiprocessing.Queue` objects are used to send samples to the client,
+      specifically chunks samples with length ``BLOCKSIZE``
+    * The general pattern of using both together is to load a queue with chunks of samples and then set the
+      play event.
+    * Jackd will call the ``process`` method repeatedly, within which this class will check the state
+      of the event flags and pull from the appropriate queues to load the samples into jackd's audio buffer
+
+    When first initialized, sets module level variables above, which are the public
+    hooks to use the client. Within autopilot, the module-level variables are used, but
+    if using the jackclient or sound system outside of a typical autopilot context, you can
+    instantiate a JackClient and then pass it to sounds as ``jack_client``.
 
     Args:
         name (str): name of client, default "jack_client"

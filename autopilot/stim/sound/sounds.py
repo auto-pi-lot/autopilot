@@ -877,6 +877,8 @@ class Gammatone(Noise):
 
         self.frequency = float(frequency)
         self.kwargs = kwargs
+        if 'jack_client' in self.kwargs.keys():
+            del self.kwargs['jack_client']
 
         self.filter = autopilot.get('transform', 'Gammatone')(
             self.frequency, self.fs, axis=0, **self.kwargs
