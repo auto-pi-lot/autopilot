@@ -885,12 +885,6 @@ class Gammatone(Noise):
         # superclass init calls its init sound, so we just call the gammatone filter part
         self._init_sound()
 
-    def init_sound(self):
-        # superclass generates the noise table and chunks it, so
-        # we need to apply the filter to the table and rechunk
-        super(Gammatone, self).init_sound()
-        self._init_sound()
-
     def _init_sound(self):
         # just the gammatone specific parts so they can be called separately on init
         self.table = self.filter.process(self.table)
