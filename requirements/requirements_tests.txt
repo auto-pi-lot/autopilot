@@ -21,3 +21,4 @@ pytest-cov
 pylint
 coveralls
 pytest-qt~=3.3.0
+validators

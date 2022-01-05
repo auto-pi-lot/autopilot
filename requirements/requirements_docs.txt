@@ -31,3 +31,4 @@ picamera
 requests
 pytest
 matplotlib
+validators

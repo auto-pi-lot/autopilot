@@ -260,6 +260,7 @@ class JackClient(mp.Process):
 
         # Activate the client
         self.client.activate()
+        self.logger.debug('client activated')
         
         
         ## Hook up the outports (data sinks) to physical ports
@@ -301,6 +302,7 @@ class JackClient(mp.Process):
         """
         self.logger = init_logger(self)
         self.boot_server()
+        self.logger.debug('server booted')
 
         # we are just holding the process open, so wait to quit
         try:
