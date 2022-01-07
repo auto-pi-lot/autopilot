@@ -519,6 +519,7 @@ class Order_Points(Transform):
 
             ax[1].set_title('threshold = 1')
             ax[2].set_title('threshold = 0.25')
+            plt.show()
 
 
     """
@@ -634,6 +635,7 @@ class Linefit_Prasad(Transform):
             ax[0].set_title('ordered points')
             ax[1].set_title('prasad fit line')
             fig.tight_layout()
+            plt.show()
 
 
     References:
